@@ -13,7 +13,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Infrastructure.Repositories
@@ -265,6 +264,7 @@ namespace Infrastructure.Repositories
         /// <param name="isSearchSanteiItem"></param>
         /// <param name="searchFollowUsage"></param> (0: all, 1: search no usage, 2: search usage) 
         /// <returns></returns>
+        /*
         public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, List<int> kouiKbns, string masterSBT)
         {
             string kanaKeyword = keyword;
@@ -291,7 +291,7 @@ namespace Infrastructure.Repositories
             var queryResult = NoTrackingDataContext.TenMsts.Where(t =>
                                 t.ItemCd.StartsWith(keyword)
                                 || (t.SanteiItemCd != null && t.SanteiItemCd.StartsWith(keyword))
-                                || (t.KanaName1 != null && t.KanaName1 != "" && t.KanaName1.ToUpper()
+                                || (!string.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
                                   .Replace("ｩ", "ｳ")
@@ -302,7 +302,7 @@ namespace Infrastructure.Repositories
                                   .Replace("ｮ", "ﾖ")
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
                                 ||
-                                  (t.KanaName2 != null && t.KanaName2 != "" && t.KanaName2.ToUpper()
+                                  (!string.IsNullOrEmpty(t.KanaName2) && t.KanaName2.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
                                   .Replace("ｩ", "ｳ")
@@ -313,7 +313,7 @@ namespace Infrastructure.Repositories
                                   .Replace("ｮ", "ﾖ")
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
 
-                                || (t.KanaName3 != null && t.KanaName3 != "" && t.KanaName3.ToUpper()
+                                || (!string.IsNullOrEmpty(t.KanaName3) && t.KanaName3.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
                                   .Replace("ｩ", "ｳ")
@@ -323,18 +323,7 @@ namespace Infrastructure.Repositories
                                   .Replace("ｭ", "ﾕ")
                                   .Replace("ｮ", "ﾖ")
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                || (t.KanaName4 != null && t.KanaName4 != "" && t.KanaName4.ToUpper()
-                                  .Replace("ｧ", "ｱ")
-                                  .Replace("ｨ", "ｲ")
-                                  .Replace("ｩ", "ｳ")
-                                  .Replace("ｪ", "ｴ")
-                                  .Replace("ｫ", "ｵ")
-                                  .Replace("ｬ", "ﾔ")
-                                  .Replace("ｭ", "ﾕ")
-                                  .Replace("ｮ", "ﾖ")
-                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                ||
-                                (t.KanaName5 != null && t.KanaName5 != "" && t.KanaName5.ToUpper()
+                                || (!string.IsNullOrEmpty(t.KanaName4) && t.KanaName4.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
                                   .Replace("ｩ", "ｳ")
@@ -345,18 +334,7 @@ namespace Infrastructure.Repositories
                                   .Replace("ｮ", "ﾖ")
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
                                 ||
-                                (t.KanaName6 != null && t.KanaName6 != "" && t.KanaName6.ToUpper()
-                                  .Replace("ｧ", "ｱ")
-                                  .Replace("ｨ", "ｲ")
-                                  .Replace("ｩ", "ｳ")
-                                  .Replace("ｪ", "ｴ")
-                                  .Replace("ｫ", "ｵ")
-                                  .Replace("ｬ", "ﾔ")
-                                  .Replace("ｭ", "ﾕ")
-                                  .Replace("ｮ", "ﾖ")
-                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                || (
-                                  t.KanaName7 != null && t.KanaName7 != "" && t.KanaName7.ToUpper()
+                                (!string.IsNullOrEmpty(t.KanaName5) && t.KanaName5.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
                                   .Replace("ｩ", "ｳ")
@@ -367,11 +345,31 @@ namespace Infrastructure.Repositories
                                   .Replace("ｮ", "ﾖ")
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
                                 ||
-                                (t.Name != null && t.Name != "" && t.Name.Contains(keyword)));
+                                (!string.IsNullOrEmpty(t.KanaName6) && t.KanaName6.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                || (!string.IsNullOrEmpty(t.KanaName7) && t.KanaName7.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                || (!string.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
 
             if (masterSBT.ToLower() != "all")
             {
-                queryResult = queryResult.Where(t => t.MasterSbt == masterSBT);
+                queryResult = queryResult.Where(t => t.IsDeleted == DeleteTypes.None);
             }
 
             if (kouiKbns.Count == 0)
@@ -706,6 +704,467 @@ namespace Infrastructure.Repositories
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
+        }
+        */
+
+        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, List<int> kouiKbns, string masterSBT)
+        {
+            string sBigKeyword = searchItemCondition.Keyword?.ToUpper()
+              .Replace("ｧ", "ｱ")
+              .Replace("ｨ", "ｲ")
+              .Replace("ｩ", "ｳ")
+              .Replace("ｪ", "ｴ")
+              .Replace("ｫ", "ｵ")
+              .Replace("ｬ", "ﾔ")
+              .Replace("ｭ", "ﾕ")
+              .Replace("ｮ", "ﾖ")
+              .Replace("ｯ", "ﾂ");
+
+            var yakkaSyusaiMstList = NoTrackingDataContext.YakkaSyusaiMsts.AsAsyncEnumerable();
+
+            var queryResult = NoTrackingDataContext.TenMsts
+                    .Where(t =>
+                        t.ItemCd.StartsWith(searchItemCondition.Keyword)
+                        || t.SanteiItemCd.StartsWith(searchItemCondition.Keyword)
+                        || t.KanaName1.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName2.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName3.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName4.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName5.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName6.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName7.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.Name.Contains(searchItemCondition.Keyword));
+            if (searchItemCondition.IsAllowSearchDeletedItem)
+            {
+                if (searchItemCondition.IsDeleted)
+                {
+                    queryResult = queryResult.Where(t => t.IsDeleted == DeleteTypes.Deleted || t.IsDeleted == DeleteTypes.None);
+                }
+                else
+                {
+                    queryResult = queryResult.Where(t => t.IsDeleted == DeleteTypes.None);
+                }
+            }
+            else
+            {
+                queryResult = queryResult.Where(t => t.IsDeleted == DeleteTypes.None);
+            }
+            if (searchItemCondition.KouiKbns == null)
+            {
+                switch (searchItemCondition.KouiKbn)
+                {
+                    case 11:
+                        queryResult = queryResult.Where(t => new[] { 11, 99 }.Contains(t.SinKouiKbn) || new[] { 1, 3, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T" || t.MasterSbt == "U");
+                        break;
+                    case 12:
+                        queryResult = queryResult.Where(t => new[] { 12, 99 }.Contains(t.SinKouiKbn) || new[] { 1, 3, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T" || t.MasterSbt == "U");
+                        break;
+                    case 13:
+                        queryResult = queryResult.Where(t => new[] { 13, 99 }.Contains(t.SinKouiKbn) || new[] { 1, 3, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T" || t.MasterSbt == "U");
+                        break;
+                    case 14:
+                        queryResult = queryResult.Where(t => new[] { 14, 99 }.Contains(t.SinKouiKbn) || new[] { 1, 3, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T" || t.MasterSbt == "U");
+                        break;
+                    case 21:
+                    case 22:
+                    case 23:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.YohoKbn > 0 || new[] { 1, 3, 6 }.Contains(t.DrugKbn) || t.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu || t.ItemCd == ItemCdConst.Con_Refill);
+                        break;
+                    case 20:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || (t.SinKouiKbn >= 20 && t.SinKouiKbn <= 29) || t.DrugKbn == 3 || t.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu || t.ItemCd == ItemCdConst.Con_Refill);
+                        break;
+                    case 24:
+                    case 25:
+                    case 26:
+                    case 27:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || (t.SinKouiKbn >= 20 && t.SinKouiKbn <= 29) || t.DrugKbn == 3);
+                        break;
+                    case 28:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T" || t.MasterSbt == "U" || t.ItemCd == ItemCdConst.Con_Refill);
+                        break;
+                    case 30:
+                        if (searchItemCondition.OriKouiKbn == 28)
+                        {
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || (t.SinKouiKbn >= 30 && t.SinKouiKbn <= 39) || t.MasterSbt == "T" || t.MasterSbt == "U" || new[] { 4, 6 }.Contains(t.DrugKbn) || t.ItemCd == ItemCdConst.Con_Refill);
+                        }
+                        else
+                        {
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || (t.SinKouiKbn >= 30 && t.SinKouiKbn <= 39) || t.MasterSbt == "T" || t.MasterSbt == "U" || new[] { 4, 6 }.Contains(t.DrugKbn));
+                        }
+                        break;
+                    case 31:
+                    case 32:
+                    case 33:
+                    case 34:
+                    case 35:
+                    case 36:
+                    case 37:
+                    case 38:
+                    case 39:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || (t.SinKouiKbn >= 30 && t.SinKouiKbn <= 39) || t.MasterSbt == "T" || t.MasterSbt == "U" || new[] { 4, 6 }.Contains(t.DrugKbn));
+                        break;
+                    case 40:
+                    case 41:
+                    case 42:
+                    case 43:
+                    case 44:
+                    case 45:
+                    case 46:
+                    case 47:
+                    case 48:
+                    case 49:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 40 && t.SinKouiKbn <= 49) || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T" || t.MasterSbt == "U");
+                        break;
+                    case 50:
+                    case 51:
+                    case 52:
+                    case 53:
+                    case 54:
+                    case 55:
+                    case 56:
+                    case 57:
+                    case 58:
+                    case 59:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 50 && t.SinKouiKbn <= 59) || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T" || t.MasterSbt == "U");
+                        break;
+                    case 60:
+                    case 61:
+                    case 62:
+                    case 63:
+                    case 64:
+                    case 65:
+                    case 66:
+                    case 67:
+                    case 68:
+                    case 69:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 60 && t.SinKouiKbn <= 69) || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T" || t.MasterSbt == "U");
+                        break;
+                    case 70:
+                    case 71:
+                    case 72:
+                    case 73:
+                    case 74:
+                    case 75:
+                    case 76:
+                    case 77:
+                    case 78:
+                    case 79:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 70 && t.SinKouiKbn <= 79) || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T" || t.MasterSbt == "U");
+                        break;
+                    case 80:
+                    case 81:
+                    case 82:
+                    case 83:
+                    case 84:
+                    case 85:
+                    case 86:
+                    case 87:
+                    case 88:
+                    case 89:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 80 && t.SinKouiKbn <= 89) || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T" || t.MasterSbt == "U");
+                        break;
+                    case 95:
+                    case 96:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 95 && t.SinKouiKbn <= 96));
+                        break;
+                    case 100:
+                    case 101:
+                        queryResult = queryResult.Where(t => t.SinKouiKbn == 99);
+                        break;
+                }
+
+                if (searchItemCondition.KouiKbn >= 20 && searchItemCondition.KouiKbn <= 27 || searchItemCondition.KouiKbn >= 30 && searchItemCondition.KouiKbn <= 39)
+                {
+                    queryResult = queryResult.Where(t => !(new[] {
+                        ItemCdConst.TouyakuTokuSyo1Syoho,
+                        ItemCdConst.TouyakuTokuSyo2Syoho,
+                        ItemCdConst.TouyakuTokuSyo1Syohosen,
+                        ItemCdConst.TouyakuTokuSyo2Syohosen,
+                        ItemCdConst.ZanGigi,
+                        ItemCdConst.ZanTeiKyo}.Contains(t.ItemCd)));
+                }
+            }
+            else
+            {
+                queryResult = queryResult.Where(t => searchItemCondition.KouiKbns.Contains(t.SinKouiKbn));
+            }
+
+            if (searchItemCondition.DrugKbns != null)
+            {
+                queryResult = queryResult.Where(p => searchItemCondition.DrugKbns.Contains(p.DrugKbn));
+            }
+
+
+            if (!searchItemCondition.IsIncludeUsage)
+            {
+                queryResult = queryResult.Where(t => t.YohoKbn == 0);
+            }
+
+            if (searchItemCondition.OnlyUsage)
+            {
+                queryResult = queryResult.Where(t => t.YohoKbn != 0);
+            }
+
+            if (!searchItemCondition.IncludeRosai)
+            {
+                queryResult = queryResult.Where(t => t.RousaiKbn != 1);
+            }
+
+            if (!searchItemCondition.IncludeMisai)
+            {
+                queryResult = queryResult.Where(t => t.IsAdopted == 1);
+            }
+
+            if (searchItemCondition.PointFrom.HasValue)
+            {
+                queryResult = queryResult.Where(t => t.Ten >= searchItemCondition.PointFrom.Value);
+            }
+
+            if (searchItemCondition.PointTo.HasValue)
+            {
+                queryResult = queryResult.Where(t => t.Ten <= searchItemCondition.PointTo.Value);
+            }
+
+            if (searchItemCondition.IsExpiredSearchIfNoData)
+            {
+                if (!searchItemCondition.IsExpired && searchItemCondition.STDDate > 0)
+                {
+                    queryResult = queryResult.Where(t => t.StartDate <= searchItemCondition.STDDate && t.EndDate >= searchItemCondition.STDDate);
+                    yakkaSyusaiMstList = yakkaSyusaiMstList.Where(t => t.StartDate <= searchItemCondition.STDDate && t.EndDate >= searchItemCondition.STDDate);
+                }
+            }
+            else if (!searchItemCondition.IsMasterSearch || !searchItemCondition.IsExpired)
+            {
+                if (searchItemCondition.STDDate > 0)
+                {
+                    queryResult = queryResult.Where(t => t.StartDate <= searchItemCondition.STDDate && t.EndDate >= searchItemCondition.STDDate);
+
+                    yakkaSyusaiMstList = yakkaSyusaiMstList.Where(t => t.StartDate <= searchItemCondition.STDDate && t.EndDate >= searchItemCondition.STDDate);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(searchItemCondition.ItemCodeStartWith))
+            {
+                queryResult = queryResult.Where(t => t.ItemCd.StartsWith(searchItemCondition.ItemCodeStartWith));
+            }
+
+            if (!string.IsNullOrEmpty(searchItemCondition.YJCode))
+            {
+                queryResult = queryResult.Where(t => t.YjCd.StartsWith(searchItemCondition.YJCode));
+            }
+
+            if (!searchItemCondition.IsMasterSearch && !searchItemCondition.IsSearch831SuffixOnly)
+            {
+                if (searchItemCondition.IsSearchSanteiItem)
+                {
+                    queryResult = queryResult.Where(t => t.IsNosearch == 0 ||
+                                                        (t.ItemCd.StartsWith("16") &&
+                                                        t.SinKouiKbn >= 60 && t.SinKouiKbn <= 69 &&
+                                                        t.IsNosearch == 1));
+                }
+                else
+                {
+                    queryResult = queryResult.Where(t => t.IsNosearch == 0);
+                }
+            }
+
+            if (searchItemCondition.IsSearch831SuffixOnly)
+            {
+                queryResult = queryResult.Where(t => t.ItemCd.Length == 9 && !t.ItemCd.StartsWith("8") && (t.MasterSbt == "S" || t.MasterSbt == "R"));
+            }
+            // Search kensa item 
+            if (searchItemCondition.IsSearchKenSaItem)
+            {
+                queryResult = queryResult.Where(t => t.ItemCd.StartsWith("16") && t.ItemCd == t.SanteiItemCd &&
+                                                     t.SinKouiKbn >= 60 && t.SinKouiKbn <= 69);
+            }
+
+
+            if (searchItemCondition.ItemFilter != null && searchItemCondition.ItemFilter.Count > 0)
+            {
+                if (searchItemCondition.ItemFilter.Count == 1)
+                {
+                    if (searchItemCondition.ItemFilter.FirstOrDefault() == ItemTypeEnums.Tokuzai)
+                    {
+                        queryResult = queryResult.Where(t => t.ItemCd.StartsWith("7") && t.ItemCd.Length == 9);
+                    }
+                    else if (searchItemCondition.ItemFilter.FirstOrDefault() == ItemTypeEnums.KensaItem)
+                    {
+                        queryResult = queryResult.Where(t => t.ItemCd.Length == 9 && t.SinKouiKbn == 61);
+                    }
+                }
+                else
+                {
+                    // In case search item teikyo byomei in tenmst screen
+                    queryResult = queryResult.Where(t => (searchItemCondition.ItemFilter.Contains(ItemTypeEnums.Tokuzai) ? (t.ItemCd.StartsWith("7") && t.ItemCd.Length == 9) : false) ||
+                                                         (searchItemCondition.ItemFilter.Contains(ItemTypeEnums.Yakuzai) ? (t.ItemCd.StartsWith("6") && t.ItemCd.Length == 9) : false) ||
+                                                         (searchItemCondition.ItemFilter.Contains(ItemTypeEnums.ShinryoKoi) ? (t.ItemCd.StartsWith("1") && t.ItemCd.Length == 9) : false) ||
+                                                         (searchItemCondition.ItemFilter.Contains(ItemTypeEnums.JihiItem) ? (t.ItemCd.StartsWith("J")) : false) ||
+                                                         (searchItemCondition.ItemFilter.Contains(ItemTypeEnums.SpecificMedicalMeterialItem) ? (t.ItemCd.StartsWith("Z")) : false) ||
+                                                         (searchItemCondition.ItemFilter.Contains(ItemTypeEnums.CommentItem) ? (t.ItemCd.StartsWith("8") && t.ItemCd.Length == 9) : false) ||
+                                                         (searchItemCondition.ItemFilter.Contains(ItemTypeEnums.COCommentItem) ? (t.ItemCd.StartsWith("CO")) : false) ||
+                                                         (searchItemCondition.ItemFilter.Contains(ItemTypeEnums.Bui) ? (t.ItemCd.Length == 4) : false) ||
+                                                         (searchItemCondition.ItemFilter.Contains(ItemTypeEnums.KensaItem) ? (t.ItemCd.StartsWith("KN")) : false) ||
+                                                         (searchItemCondition.ItemFilter.Contains(ItemTypeEnums.Kogai) ? (t.ItemCd.Length >= 2 && t.ItemCd.StartsWith("K")) : false));
+                }
+            }
+            
+            // Query 点数 for KN% item
+            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.HpId == Session.HospitalID
+                                                                                       && item.StartDate <= searchItemCondition.STDDate
+                                                                                       && item.EndDate >= searchItemCondition.STDDate);
+            if (searchItemCondition.IsAllowSearchDeletedItem)
+            {
+                if (searchItemCondition.IsDeleted)
+                {
+                    tenMstQuery = tenMstQuery.Where(t => t.IsDeleted == DeleteTypes.Deleted || t.IsDeleted == DeleteTypes.None);
+                }
+                else
+                {
+                    tenMstQuery = tenMstQuery.Where(t => t.IsDeleted == DeleteTypes.None);
+                }
+            }
+            else
+            {
+                tenMstQuery = tenMstQuery.Where(t => t.IsDeleted == DeleteTypes.None);
+            }
+
+            var tenMstQueryForGetlastDate = NoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(item => item.HpId == Session.HospitalID);
+            if (searchItemCondition.IsAllowSearchDeletedItem)
+            {
+                if (searchItemCondition.IsDeleted)
+                {
+                    tenMstQueryForGetlastDate = tenMstQueryForGetlastDate.Where(t => t.IsDeleted == DeleteTypes.None || t.IsDeleted == DeleteTypes.Deleted);
+                }
+                else
+                {
+                    tenMstQueryForGetlastDate = tenMstQueryForGetlastDate.Where(t => t.IsDeleted == DeleteTypes.None);
+                }
+            }
+            else
+            {
+                tenMstQueryForGetlastDate = tenMstQueryForGetlastDate.Where(t => t.IsDeleted == DeleteTypes.None);
+            }
+            var tenMstGetLastDateQuery = tenMstQueryForGetlastDate.Select(x => new { ItemCd = x.ItemCd, EndDate = x.EndDate })
+                                                           .GroupBy(x => x.ItemCd)
+                                                           .Select(x => new { ItemCd = x.Key, EndDate = x.Max(y => y.EndDate) });
+
+            var kensaMstQuery = NoTrackingDataContext.KensaMstRepository.FindListQueryableNoTrack();
+
+            var queryKNTensu = from tenKN in queryResult
+                               join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
+                               where tenKN.ItemCd.StartsWith("KN")
+                               select new { tenKN.ItemCd, ten.Ten };
+
+            var tenJoinYakkaSyusai = from ten in queryResult
+                                     join yakkaSyusaiMstItem in yakkaSyusaiMstList
+                                     on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
+                                     from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
+                                     select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
+
+            var sinKouiCollection = new SinkouiCollection();
+
+            var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
+                             join tenLastDate in tenMstGetLastDateQuery.AsEnumerable()
+                             on ten.TenMst.ItemCd equals tenLastDate.ItemCd
+                             join kouiKbnItem in sinKouiCollection.AsEnumerable()
+                             on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
+                             from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
+                             join tenKN in queryKNTensu
+                             on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
+                             from tenKN in tenKNLeft.DefaultIfEmpty()
+
+                             select new { TenMst = ten.TenMst, KouiName = tenKouiKbn.SinkouiName, ten.YakkaSyusaiItem, tenKN, LastEndDate = tenLastDate.EndDate };
+
+            var queryJoinWithKensa = from q in queryFinal
+                                     join k in kensaMstQuery
+                                     on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
+                                     from kensaMst in kensaMsts.DefaultIfEmpty()
+                                     select new { q.TenMst, q.KouiName, q.YakkaSyusaiItem, q.tenKN, KensaMst = kensaMst, LastEndDate = q.LastEndDate };
+
+            var queryJoinWithKensaOrder = queryFinal.OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name);
+
+            var tenMstModels = queryJoinWithKensa.AsEnumerable().Select(item => new TenItemModel(item.TenMst)
+            {
+                KouiName = TenUtils.BuildKouiName(item.TenMst.ItemCd, item.TenMst.DrugKbn, item.TenMst.MasterSbt, item.TenMst.BuiKbn, item.KouiName),
+                Ten = item.tenKN != null ? item.tenKN.Ten : item.TenMst.Ten,
+                KensaMst = item.KensaMst,
+                EndDateDisplay = item.LastEndDate,
+            }).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).ToList();
+            if (searchItemCondition.ItemFilter != null && searchItemCondition.ItemFilter.Contains(ItemTypeEnums.Kogai))
+            {
+                tenMstModels = tenMstModels.Where(t => (t.ItemCd.Length >= 2 && t.ItemCd.StartsWith("K") && Char.IsDigit(t.ItemCd, 1)) || t.ItemCd.StartsWith("KN") || !t.ItemCd.StartsWith("K")).ToList();
+            }
+            // Get Master search result
+            if (searchItemCondition.IsMasterSearch || searchItemCondition.IsExpiredSearchIfNoData)
+            {
+                tenMstModels = tenMstModels.GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate).FirstOrDefault()).ToList();
+            }
+
+            return tenMstModels;
         }
 
         public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem, int hpId, int userId)
@@ -4027,7 +4486,7 @@ namespace Infrastructure.Repositories
                 return new RenkeiMstModel(renkei.HpId, renkei.RenkeiId, renkei.RenkeiName ?? string.Empty, renkei.RenkeiSbt, renkei.FunctionType, renkei.IsInvalid, renkei.SortNo);
             return ObjectExtension.CreateInstance<RenkeiMstModel>();
         }
-        
+
         public bool IsTenMstUsed(int hpId, string itemCd, int startDate, int endDate)
         {
             return NoTrackingDataContext.OdrInfDetails.FirstOrDefault(
