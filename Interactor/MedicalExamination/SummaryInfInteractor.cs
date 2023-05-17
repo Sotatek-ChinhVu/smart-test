@@ -468,7 +468,7 @@ namespace Interactor.MedicalExamination
                 }
                 var splitHeaderInfo = !string.IsNullOrEmpty(headerInf) ? headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList() : summaryInfItem.HeaderInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-                summaryInfItem = new SummaryInfItem(!string.IsNullOrEmpty(headerInf) ? headerInf : summaryInfItem.HeaderInfo, !string.IsNullOrEmpty(headerName) ? headerName : summaryInfItem.HeaderName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInfo);
+                summaryInfItem = new SummaryInfItem(!string.IsNullOrEmpty(headerInf) ? headerInf : summaryInfItem.HeaderInfo, !string.IsNullOrEmpty(headerName) ? headerName : summaryInfItem.HeaderName, string.Empty, 0, 0, 0, grpItemCd == 0 ? summaryInfItem.GrpItemCd : grpItemCd, string.Empty, splitHeaderInfo);
             }
 
             summaryInfItem = summaryInfItem.ChangePropertyColor("000000");
