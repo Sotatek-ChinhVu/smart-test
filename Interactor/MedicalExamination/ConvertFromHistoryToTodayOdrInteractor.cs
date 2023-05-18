@@ -118,7 +118,15 @@ namespace Interactor.MedicalExamination
                                 itemDetail.CnvUnitName,
                                 itemDetail.OdrUnitName,
                                 itemDetail.CenterItemCd1,
-                                itemDetail.CenterItemCd2
+                                itemDetail.CenterItemCd2,
+                                itemDetail.CmtColKeta1,
+                                itemDetail.CmtColKeta2,
+                                itemDetail.CmtColKeta3,
+                                itemDetail.CmtColKeta4,
+                                itemDetail.CmtCol2,
+                                itemDetail.CmtCol3,
+                                itemDetail.CmtCol4,
+                                itemDetail.HandanGrpKbn
                             )
                             ).ToList(),
                         DateTime.MinValue,
