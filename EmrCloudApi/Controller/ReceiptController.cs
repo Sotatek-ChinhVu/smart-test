@@ -41,6 +41,7 @@ using UseCase.Receipt.SyoukiInfHistory;
 using Helper.Extension;
 using Helper.Common;
 using UseCase.Receipt.ValidateCreateUKEFile;
+using System.Net.Mime;
 
 namespace EmrCloudApi.Controller;
 
@@ -444,7 +445,7 @@ public class ReceiptController : AuthorizeControllerBase
                         }
                     }
                 }
-                return File(ms.ToArray(), "application/zip", GetFileUKECreateName(request.FileName ?? string.Empty));
+                return File(ms.ToArray(), MediaTypeNames.Application.Zip, GetFileUKECreateName(request.FileName ?? string.Empty));
             }
         }
         return Ok(presenter.Result);
