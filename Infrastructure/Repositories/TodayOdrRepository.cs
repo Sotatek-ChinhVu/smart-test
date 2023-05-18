@@ -2980,7 +2980,7 @@ namespace Infrastructure.Repositories
             return entities.ToList();
         }
 
-        private SanteiCntCheck FindSanteiCntCheck(int hpId, int santeiGrpCd, int sinDate)
+        private SanteiCntCheck? FindSanteiCntCheck(int hpId, int santeiGrpCd, int sinDate)
         {
             var entity = NoTrackingDataContext.SanteiCntChecks.Where(e =>
                  e.HpId == hpId &&
@@ -2988,7 +2988,7 @@ namespace Infrastructure.Repositories
                  e.StartDate <= sinDate &&
                  e.EndDate >= sinDate)
                  .FirstOrDefault();
-            return entity ?? new SanteiCntCheck();
+            return entity;
         }
 
         public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)

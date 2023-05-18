@@ -13,7 +13,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Infrastructure.Repositories
@@ -265,7 +264,7 @@ namespace Infrastructure.Repositories
         /// <param name="isSearchSanteiItem"></param>
         /// <param name="searchFollowUsage"></param> (0: all, 1: search no usage, 2: search usage) 
         /// <returns></returns>
-        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, List<int> kouiKbns, string masterSBT)
+        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, bool isDeleted, List<int> kouiKbns, List<int> drugKbns, string masterSBT)
         {
             string kanaKeyword = keyword;
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
@@ -326,7 +325,6 @@ namespace Infrastructure.Repositories
             {
                 if (kouiKbn > 0)
                 {
-                    //2019-12-04 @duong.vu said: this is a self injection -> search items relate to injection only
                     var SELF_INJECTION_KOUIKBN = 28;
                     if (kouiKbn == SELF_INJECTION_KOUIKBN)
                     {
@@ -463,6 +461,11 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => kouiKbns.Distinct().Contains(t.SinKouiKbn));
             }
 
+            if (drugKbns.Any())
+            {
+                queryResult = queryResult.Where(p => drugKbns.Contains(p.DrugKbn));
+            }
+
             if (sinDate > 0)
             {
                 queryResult = queryResult.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
@@ -562,6 +565,22 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => t.IsAdopted == 1);
             }
 
+            if (!masterSBT.Equals("all"))
+            {
+                if (isDeleted)
+                {
+                    queryResult = queryResult.Where(t => t.IsDeleted == DeleteTypes.Deleted || t.IsDeleted == DeleteTypes.None);
+                }
+                else
+                {
+                    queryResult = queryResult.Where(t => t.IsDeleted == DeleteTypes.None);
+                }
+            }
+            else
+            {
+                queryResult = queryResult.Where(t => t.IsDeleted == DeleteTypes.None);
+            }
+
             var tenKnList = queryResult.ToList();
             var santeiItemCdList = tenKnList.Where(t => t.ItemCd.StartsWith("KN")).Select(t => t.SanteiItemCd).ToList();
 
@@ -650,7 +669,8 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.DefaultVal ?? 0,
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
                                                            item.TenMst?.Kokuji2 ?? string.Empty,
-                                                           item.IpnName
+                                                           item.IpnName,
+                                                           item.TenMst.IsDeleted
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -3975,7 +3995,7 @@ namespace Infrastructure.Repositories
                 return new RenkeiMstModel(renkei.HpId, renkei.RenkeiId, renkei.RenkeiName ?? string.Empty, renkei.RenkeiSbt, renkei.FunctionType, renkei.IsInvalid, renkei.SortNo);
             return ObjectExtension.CreateInstance<RenkeiMstModel>();
         }
-        
+
         public bool IsTenMstUsed(int hpId, string itemCd, int startDate, int endDate)
         {
             return NoTrackingDataContext.OdrInfDetails.FirstOrDefault(
