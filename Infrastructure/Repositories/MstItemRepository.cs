@@ -13,7 +13,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Infrastructure.Repositories
@@ -265,7 +264,7 @@ namespace Infrastructure.Repositories
         /// <param name="isSearchSanteiItem"></param>
         /// <param name="searchFollowUsage"></param> (0: all, 1: search no usage, 2: search usage) 
         /// <returns></returns>
-        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, List<int> kouiKbns, string masterSBT)
+        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, bool isDeleted, List<int> kouiKbns, List<int> drugKbns, string masterSBT)
         {
             string kanaKeyword = keyword;
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
@@ -288,84 +287,32 @@ namespace Infrastructure.Repositories
                                         .Replace("ｮ", "ﾖ")
                                         .Replace("ｯ", "ﾂ");
 
+            string sSmallKeyword = kanaKeyword.ToUpper()
+                                    .Replace("ｱ", "ｧ")
+                                    .Replace("ｲ", "ｨ")
+                                    .Replace("ｳ", "ｩ")
+                                    .Replace("ｴ", "ｪ")
+                                    .Replace("ｵ", "ｫ")
+                                    .Replace("ﾔ", "ｬ")
+                                    .Replace("ﾕ", "ｭ")
+                                    .Replace("ﾖ", "ｮ")
+                                    .Replace("ﾂ", "ｯ");
+
             var queryResult = NoTrackingDataContext.TenMsts.Where(t =>
                                 t.ItemCd.StartsWith(keyword)
                                 || (t.SanteiItemCd != null && t.SanteiItemCd.StartsWith(keyword))
-                                || (t.KanaName1 != null && t.KanaName1 != "" && t.KanaName1.ToUpper()
-                                  .Replace("ｧ", "ｱ")
-                                  .Replace("ｨ", "ｲ")
-                                  .Replace("ｩ", "ｳ")
-                                  .Replace("ｪ", "ｴ")
-                                  .Replace("ｫ", "ｵ")
-                                  .Replace("ｬ", "ﾔ")
-                                  .Replace("ｭ", "ﾕ")
-                                  .Replace("ｮ", "ﾖ")
-                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                || (t.KanaName1 != null && t.KanaName1 != "" && (t.KanaName1.StartsWith(sBigKeyword) || t.KanaName1.StartsWith(sSmallKeyword)))
                                 ||
-                                  (t.KanaName2 != null && t.KanaName2 != "" && t.KanaName2.ToUpper()
-                                  .Replace("ｧ", "ｱ")
-                                  .Replace("ｨ", "ｲ")
-                                  .Replace("ｩ", "ｳ")
-                                  .Replace("ｪ", "ｴ")
-                                  .Replace("ｫ", "ｵ")
-                                  .Replace("ｬ", "ﾔ")
-                                  .Replace("ｭ", "ﾕ")
-                                  .Replace("ｮ", "ﾖ")
-                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                  (t.KanaName2 != null && t.KanaName2 != "" && (t.KanaName2.StartsWith(sBigKeyword) || t.KanaName2.StartsWith(sSmallKeyword)))
 
-                                || (t.KanaName3 != null && t.KanaName3 != "" && t.KanaName3.ToUpper()
-                                  .Replace("ｧ", "ｱ")
-                                  .Replace("ｨ", "ｲ")
-                                  .Replace("ｩ", "ｳ")
-                                  .Replace("ｪ", "ｴ")
-                                  .Replace("ｫ", "ｵ")
-                                  .Replace("ｬ", "ﾔ")
-                                  .Replace("ｭ", "ﾕ")
-                                  .Replace("ｮ", "ﾖ")
-                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                || (t.KanaName4 != null && t.KanaName4 != "" && t.KanaName4.ToUpper()
-                                  .Replace("ｧ", "ｱ")
-                                  .Replace("ｨ", "ｲ")
-                                  .Replace("ｩ", "ｳ")
-                                  .Replace("ｪ", "ｴ")
-                                  .Replace("ｫ", "ｵ")
-                                  .Replace("ｬ", "ﾔ")
-                                  .Replace("ｭ", "ﾕ")
-                                  .Replace("ｮ", "ﾖ")
-                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                || (t.KanaName3 != null && t.KanaName3 != "" && (t.KanaName3.StartsWith(sBigKeyword) || t.KanaName3.StartsWith(sSmallKeyword)))
+                                || (t.KanaName4 != null && t.KanaName4 != "" && (t.KanaName4.StartsWith(sBigKeyword) || t.KanaName4.StartsWith(sSmallKeyword)))
                                 ||
-                                (t.KanaName5 != null && t.KanaName5 != "" && t.KanaName5.ToUpper()
-                                  .Replace("ｧ", "ｱ")
-                                  .Replace("ｨ", "ｲ")
-                                  .Replace("ｩ", "ｳ")
-                                  .Replace("ｪ", "ｴ")
-                                  .Replace("ｫ", "ｵ")
-                                  .Replace("ｬ", "ﾔ")
-                                  .Replace("ｭ", "ﾕ")
-                                  .Replace("ｮ", "ﾖ")
-                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                (t.KanaName5 != null && t.KanaName5 != "" && (t.KanaName5.StartsWith(sBigKeyword) || t.KanaName5.StartsWith(sSmallKeyword)))
                                 ||
-                                (t.KanaName6 != null && t.KanaName6 != "" && t.KanaName6.ToUpper()
-                                  .Replace("ｧ", "ｱ")
-                                  .Replace("ｨ", "ｲ")
-                                  .Replace("ｩ", "ｳ")
-                                  .Replace("ｪ", "ｴ")
-                                  .Replace("ｫ", "ｵ")
-                                  .Replace("ｬ", "ﾔ")
-                                  .Replace("ｭ", "ﾕ")
-                                  .Replace("ｮ", "ﾖ")
-                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                (t.KanaName6 != null && t.KanaName6 != "" && (t.KanaName6.StartsWith(sBigKeyword) || t.KanaName6.StartsWith(sSmallKeyword)))
                                 || (
-                                  t.KanaName7 != null && t.KanaName7 != "" && t.KanaName7.ToUpper()
-                                  .Replace("ｧ", "ｱ")
-                                  .Replace("ｨ", "ｲ")
-                                  .Replace("ｩ", "ｳ")
-                                  .Replace("ｪ", "ｴ")
-                                  .Replace("ｫ", "ｵ")
-                                  .Replace("ｬ", "ﾔ")
-                                  .Replace("ｭ", "ﾕ")
-                                  .Replace("ｮ", "ﾖ")
-                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                  t.KanaName7 != null && t.KanaName7 != "" && (t.KanaName7.StartsWith(sBigKeyword) || t.KanaName7.StartsWith(sSmallKeyword)))
                                 ||
                                 (t.Name != null && t.Name != "" && t.Name.Contains(keyword)));
 
@@ -378,7 +325,6 @@ namespace Infrastructure.Repositories
             {
                 if (kouiKbn > 0)
                 {
-                    //2019-12-04 @duong.vu said: this is a self injection -> search items relate to injection only
                     var SELF_INJECTION_KOUIKBN = 28;
                     if (kouiKbn == SELF_INJECTION_KOUIKBN)
                     {
@@ -515,6 +461,11 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => kouiKbns.Distinct().Contains(t.SinKouiKbn));
             }
 
+            if (drugKbns.Any())
+            {
+                queryResult = queryResult.Where(p => drugKbns.Contains(p.DrugKbn));
+            }
+
             if (sinDate > 0)
             {
                 queryResult = queryResult.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
@@ -614,6 +565,22 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => t.IsAdopted == 1);
             }
 
+            if (!masterSBT.Equals("all"))
+            {
+                if (isDeleted)
+                {
+                    queryResult = queryResult.Where(t => t.IsDeleted == DeleteTypes.Deleted || t.IsDeleted == DeleteTypes.None);
+                }
+                else
+                {
+                    queryResult = queryResult.Where(t => t.IsDeleted == DeleteTypes.None);
+                }
+            }
+            else
+            {
+                queryResult = queryResult.Where(t => t.IsDeleted == DeleteTypes.None);
+            }
+
             var tenKnList = queryResult.ToList();
             var santeiItemCdList = tenKnList.Where(t => t.ItemCd.StartsWith("KN")).Select(t => t.SanteiItemCd).ToList();
 
@@ -702,7 +669,8 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.DefaultVal ?? 0,
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
                                                            item.TenMst?.Kokuji2 ?? string.Empty,
-                                                           item.IpnName
+                                                           item.IpnName,
+                                                           item.TenMst.IsDeleted
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -4027,7 +3995,7 @@ namespace Infrastructure.Repositories
                 return new RenkeiMstModel(renkei.HpId, renkei.RenkeiId, renkei.RenkeiName ?? string.Empty, renkei.RenkeiSbt, renkei.FunctionType, renkei.IsInvalid, renkei.SortNo);
             return ObjectExtension.CreateInstance<RenkeiMstModel>();
         }
-        
+
         public bool IsTenMstUsed(int hpId, string itemCd, int startDate, int endDate)
         {
             return NoTrackingDataContext.OdrInfDetails.FirstOrDefault(
@@ -4045,6 +4013,141 @@ namespace Infrastructure.Repositories
                                                 && item.HpId == hpId)
                 .OrderBy(i => i.SortNo)
                 .AsEnumerable().Select(i => new JihiSbtMstModel(i.HpId, i.JihiSbt, i.SortNo, i.Name ?? string.Empty, i.IsDeleted)).ToList();
+            return result;
+        }
+
+        public List<TenMstMaintenanceModel> GetTenMstListByItemType(int hpId, ItemTypeEnums itemType, string startWithstr, int sinDate)
+        {
+            string GetJibaiItemType(TenMst tenmst)
+            {
+                switch (tenmst.SyukeiSaki)
+                {
+                    case "ZZ0":
+                        return "診断書料";
+                    case "ZZ1":
+                        return "明細書料";
+                    case "A18":
+                        return "その他";
+                }
+                return string.Empty;
+            }
+
+            List<TenMstMaintenanceModel> result = new List<TenMstMaintenanceModel>();
+
+            IQueryable<TenMst> listTenMst = NoTrackingDataContext.TenMsts.Where(item => item.ItemCd.StartsWith(startWithstr) &&
+                                                                                item.StartDate <= sinDate &&
+                                                                                item.EndDate >= sinDate &&
+                                                                                item.IsDeleted == DeleteTypes.None);
+            if (itemType == ItemTypeEnums.JihiItem)
+            {
+                var listJihiSbtMst = NoTrackingDataContext.JihiSbtMsts.Where(j => j.HpId == hpId &&
+                                                                                   j.IsDeleted == DeleteStatus.None)
+                                                                                   .Select(r => new
+                                                                                   {
+                                                                                       JihiSbt = r.JihiSbt,
+                                                                                       Name = r.Name
+                                                                                   });
+                var queryTenMst = from tenMst in listTenMst
+                                  join jihiSbtMst in listJihiSbtMst on
+                                  tenMst.JihiSbt equals jihiSbtMst.JihiSbt into listJihiSbt
+                                  from jihiSbt in listJihiSbt.DefaultIfEmpty()
+                                  select new
+                                  {
+                                      TenMst = tenMst,
+                                      JihiMst = jihiSbt
+                                  };
+
+                result = queryTenMst.AsEnumerable()
+                          .Select(x => new TenMstMaintenanceModel(x.TenMst.HpId,
+                                                                  x.TenMst.ItemCd,
+                                                                  x.TenMst.StartDate,
+                                                                  x.TenMst.EndDate,
+                                                                  x.TenMst.MasterSbt ?? string.Empty,
+                                                                  x.TenMst.SinKouiKbn,
+                                                                  x.TenMst.Name ?? string.Empty,
+                                                                  x.TenMst.KanaName1 ?? string.Empty,
+                                                                  x.TenMst.KanaName2 ?? string.Empty,
+                                                                  x.TenMst.KanaName3 ?? string.Empty,
+                                                                  x.TenMst.KanaName4 ?? string.Empty,
+                                                                  x.TenMst.KanaName5 ?? string.Empty,
+                                                                  x.TenMst.KanaName6 ?? string.Empty,
+                                                                  x.TenMst.KanaName7 ?? string.Empty,
+                                                                  x.TenMst.RyosyuName ?? string.Empty,
+                                                                  x.TenMst.ReceName ?? string.Empty,
+                                                                  x.TenMst.TenId,
+                                                                  x.TenMst.Ten,
+                                                                  x.TenMst.ReceUnitCd ?? string.Empty,
+                                                                  x.TenMst.ReceUnitName ?? string.Empty,
+                                                                  x.TenMst.OdrUnitName ?? string.Empty,
+                                                                  x.TenMst.CnvUnitName ?? string.Empty,
+                                                                  x.TenMst.OdrTermVal,
+                                                                  x.TenMst.CnvTermVal,
+                                                                  x.TenMst.DefaultVal,
+                                                                  x.TenMst.IsAdopted,
+                                                                  x.TenMst.KoukiKbn,
+                                                                  x.TenMst.SanteiItemCd ?? string.Empty,
+                                                                  x.JihiMst == null ? string.Empty : x.JihiMst.Name))
+                          .GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate).First())
+                          .OrderBy(item => item.KanaName1)
+                          .ThenBy(item => item.Name)
+                          .ToList();
+            }
+            else
+            {
+                // Check kikin_mst code for display CombinedContraindicationItem
+                if (string.IsNullOrEmpty(startWithstr) && itemType == ItemTypeEnums.CombinedContraindicationItem)
+                {
+                    IQueryable<KinkiMst> kinki = NoTrackingDataContext.KinkiMsts.Where(item => item.HpId == hpId && item.IsDeleted == DeleteStatus.None);
+                    listTenMst = listTenMst.Where(item => kinki.Any(k => k.ACd == item.ItemCd));
+                    if (!listTenMst.Any())
+                    {
+                        return new List<TenMstMaintenanceModel>();
+                    }
+                }
+
+                var sinKouiCollection = new SinkouiCollection();
+
+                var query = from ten in listTenMst.AsEnumerable()
+                            join kouiKbn in sinKouiCollection.AsEnumerable()
+                                 on ten.SinKouiKbn equals kouiKbn.SinKouiCd into tenKouiKbns
+                            from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
+                            select new { TenMst = ten, KouiName = tenKouiKbn.SinkouiName };
+
+                result = query.AsEnumerable()
+                              .Select(x => new TenMstMaintenanceModel(x.TenMst.HpId,
+                                                                      x.TenMst.ItemCd,
+                                                                      x.TenMst.StartDate,
+                                                                      x.TenMst.EndDate,
+                                                                      x.TenMst.MasterSbt ?? string.Empty,
+                                                                      x.TenMst.SinKouiKbn,
+                                                                      x.TenMst.Name ?? string.Empty,
+                                                                      x.TenMst.KanaName1 ?? string.Empty,
+                                                                      x.TenMst.KanaName2 ?? string.Empty,
+                                                                      x.TenMst.KanaName3 ?? string.Empty,
+                                                                      x.TenMst.KanaName4 ?? string.Empty,
+                                                                      x.TenMst.KanaName5 ?? string.Empty,
+                                                                      x.TenMst.KanaName6 ?? string.Empty,
+                                                                      x.TenMst.KanaName7 ?? string.Empty,
+                                                                      x.TenMst.RyosyuName ?? string.Empty,
+                                                                      x.TenMst.ReceName ?? string.Empty,
+                                                                      x.TenMst.TenId,
+                                                                      x.TenMst.Ten,
+                                                                      x.TenMst.ReceUnitCd ?? string.Empty,
+                                                                      x.TenMst.ReceUnitName ?? string.Empty,
+                                                                      x.TenMst.OdrUnitName ?? string.Empty,
+                                                                      x.TenMst.CnvUnitName ?? string.Empty,
+                                                                      x.TenMst.OdrTermVal,
+                                                                      x.TenMst.CnvTermVal,
+                                                                      x.TenMst.DefaultVal,
+                                                                      x.TenMst.IsAdopted,
+                                                                      x.TenMst.KoukiKbn,
+                                                                      x.TenMst.SanteiItemCd ?? string.Empty,
+                                                                      itemType == ItemTypeEnums.Jibaiseki ? GetJibaiItemType(x.TenMst) : x.KouiName))
+                              .GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate).First())
+                              .OrderBy(item => item.KanaName1)
+                              .ThenBy(item => item.Name)
+                              .ToList();
+            }
             return result;
         }
     }

@@ -237,7 +237,8 @@ namespace Infrastructure.Repositories
                                 x.TodoInf.IsDone,
                                 x.Status,
                                 x.Sex,
-                                x.TodoGrpColor
+                                x.TodoGrpColor,
+                                x.TodoInf.CreateId
                                 )).OrderByDescending(model => model.UpdateDate)
                                 .ThenBy(model => model.PtId)
                                 .ToList();

@@ -175,7 +175,21 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPrint)]
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
-        var data = _reportService.GetReceiptPrint(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
+        var data = _reportService.GetReceiptPrint(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.MemoMsgPrint)]
+    public async Task<IActionResult> MemoMsgPrint([FromQuery] MemoMsgPrintRequest request)
+    {
+        var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.ReceTarget)]
+    public async Task<IActionResult> ReceTarget([FromQuery] ReceTargetRequest request)
+    {
+        var data = _reportService.GetReceTargetPrint(request.HpId, request.SeikyuYm);
         return await RenderPdf(data, ReportType.Common);
     }
 

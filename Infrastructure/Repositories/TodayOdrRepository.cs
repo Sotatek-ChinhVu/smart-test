@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
         {
             if (odrInfs.Count > 0)
             {
-                UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs, userId);
+                UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs, userId, status);
             }
 
             SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId, status);
@@ -588,7 +588,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs, int userId)
+        private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs, int userId, int status)
         {
             var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
             rpNoMax = rpNoMax < 2 ? 1 : rpNoMax;
@@ -599,7 +599,7 @@ namespace Infrastructure.Repositories
                     var ordInfo = TrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.Id == item.Id && o.RaiinNo == item.RaiinNo && o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo);
                     if (ordInfo != null)
                     {
-                        ordInfo.IsDeleted = item.IsDeleted;
+                        ordInfo.IsDeleted = status == RaiinState.Reservation ?   DeleteTypes.Confirm :  item.IsDeleted;
                         ordInfo.UpdateId = userId;
                         ordInfo.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
@@ -1986,7 +1986,7 @@ namespace Infrastructure.Repositories
             return ordInfs;
         }
 
-        public List<OrdInfModel> FromHistory(int hpId, int sinDate, long raiinNo, int userId, long ptId, List<OrdInfModel> historyOdrInfModels)
+        public List<OrdInfModel> FromHistory(int hpId, int sinDate, long raiinNo, int sainteiKbn, int userId, long ptId, List<OrdInfModel> historyOdrInfModels)
         {
             List<OrdInfModel> ordInfModels = new();
             int autoSetKohatu = (int)_systemConf.GetSettingValue(2020, 2, hpId);
@@ -2240,7 +2240,14 @@ namespace Infrastructure.Repositories
                             tenMst?.CnvUnitName ?? string.Empty,
                             tenMst?.OdrUnitName ?? string.Empty,
                             kensaMstModel?.CenterItemCd1 ?? string.Empty,
-                            kensaMstModel?.CenterItemCd2 ?? string.Empty
+                            kensaMstModel?.CenterItemCd2 ?? string.Empty,
+                            tenMst?.CmtColKeta1 ?? 0,
+                            tenMst?.CmtColKeta2 ?? 0,
+                            tenMst?.CmtColKeta3 ?? 0,
+                            tenMst?.CmtColKeta4 ?? 0,
+                            tenMst?.CmtCol2 ?? 0,
+                            tenMst?.CmtCol3 ?? 0,
+                            tenMst?.CmtCol4 ?? 0
                         );
 
                     odrInfDetails.Add(odrInfDetail);
@@ -2258,7 +2265,7 @@ namespace Infrastructure.Repositories
                    historyOdrInfModel.InoutKbn,
                    historyOdrInfModel.SikyuKbn,
                    historyOdrInfModel.SyohoSbt,
-                   historyOdrInfModel.SanteiKbn,
+                   historyOdrInfModel.SanteiKbn == 1 ? 1 : sainteiKbn,
                    historyOdrInfModel.TosekiKbn,
                    historyOdrInfModel.DaysCnt,
                    historyOdrInfModel.SortNo,
@@ -2345,7 +2352,7 @@ namespace Infrastructure.Repositories
 
                     int currenRowNo = ++rowNo;
                     var odrInfDetail = new OrdInfDetailModel(
-                           odrDetail.HpId, raiinNo, 0, 0, currenRowNo, odrDetail.PtId, sinDate, sinKouiKbn, itemCd, itemName, suryo, unitName, unitSBT, termVal, kohatuKbn, syosai.Item1, syosai.Item2, drugKbn, yohoKbn, kokuji1, kokuji2, isNodspRece, ipnCd, ipnName, 0, DateTime.MinValue, 0, string.Empty, string.Empty, bunkatu, cmtName, cmtOpt, fontColor, commentNewline, masterSbt ?? string.Empty, 0, ipnMinYakka?.Yakka ?? 0, isGetPriceInYakka, 0, cmtCol1, ten, 0, 0, 0, 0, 0, string.Empty, new(), 0, 0, string.Empty, string.Empty, kensMst?.CenterItemCd1 ?? string.Empty, kensMst?.CenterItemCd2 ?? string.Empty
+                           odrDetail.HpId, raiinNo, 0, 0, currenRowNo, odrDetail.PtId, sinDate, sinKouiKbn, itemCd, itemName, suryo, unitName, unitSBT, termVal, kohatuKbn, syosai.Item1, syosai.Item2, drugKbn, yohoKbn, kokuji1, kokuji2, isNodspRece, ipnCd, ipnName, 0, DateTime.MinValue, 0, string.Empty, string.Empty, bunkatu, cmtName, cmtOpt, fontColor, commentNewline, masterSbt ?? string.Empty, 0, ipnMinYakka?.Yakka ?? 0, isGetPriceInYakka, 0, cmtCol1, ten, 0, 0, 0, 0, 0, string.Empty, new(), 0, 0, string.Empty, string.Empty, kensMst?.CenterItemCd1 ?? string.Empty, kensMst?.CenterItemCd2 ?? string.Empty, tenMst?.CmtColKeta1 ?? 0, tenMst?.CmtColKeta2 ?? 0, tenMst?.CmtColKeta3 ?? 0, tenMst?.CmtColKeta4 ?? 0, tenMst?.CmtCol2 ?? 0, tenMst?.CmtCol3 ?? 0, tenMst?.CmtCol4 ?? 0
                         );
                     odrInfDetails.Add(odrInfDetail);
                 }
@@ -2973,7 +2980,7 @@ namespace Infrastructure.Repositories
             return entities.ToList();
         }
 
-        private SanteiCntCheck FindSanteiCntCheck(int hpId, int santeiGrpCd, int sinDate)
+        private SanteiCntCheck? FindSanteiCntCheck(int hpId, int santeiGrpCd, int sinDate)
         {
             var entity = NoTrackingDataContext.SanteiCntChecks.Where(e =>
                  e.HpId == hpId &&
@@ -2981,7 +2988,7 @@ namespace Infrastructure.Repositories
                  e.StartDate <= sinDate &&
                  e.EndDate >= sinDate)
                  .FirstOrDefault();
-            return entity ?? new SanteiCntCheck();
+            return entity;
         }
 
         public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)

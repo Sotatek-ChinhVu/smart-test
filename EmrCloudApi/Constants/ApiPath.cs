@@ -95,6 +95,8 @@
         public const string SyojyoSyoki = "SyojyoSyoki";
         public const string Kensalrai = "Kensalrai";
         public const string ReceiptPrint = "ReceiptPrint";
+        public const string MemoMsgPrint = "MemoMsgPrint";
+        public const string ReceTarget = "ReceTarget";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -303,6 +305,7 @@
         public const string SaveSetDataTenMst = "SaveSetDataTenMst";
         public const string GetRenkeiMst = "GetRenkeiMst";
         public const string CheckIsTenMstUsed = "CheckIsTenMstUsed";
+        public const string GetTenMstListByItemType = "GetTenMstListByItemType";
 
         //Lock
         public const string AddLock = "AddLock";

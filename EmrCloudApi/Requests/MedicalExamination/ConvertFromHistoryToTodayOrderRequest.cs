@@ -8,6 +8,8 @@ namespace EmrCloudApi.Requests.MedicalExamination
 
         public long RaiinNo { get; set; }
 
+        public int SanteiKbn { get; set; }
+
         public long PtId { get; set; }
 
         public List<OdrInfItemOfTodayOrder> HistoryOdrInfModels { get; set; } = new();

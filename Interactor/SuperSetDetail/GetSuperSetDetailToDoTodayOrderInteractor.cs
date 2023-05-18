@@ -155,8 +155,9 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
                          od.CmtCol2,
                          od.CmtCol3,
                          od.CmtCol4
-                    )
-                ).ToList()
+                )).ToList(),
+                o.CreateDate,
+                o.CreateName
             )).ToList();
     }
 

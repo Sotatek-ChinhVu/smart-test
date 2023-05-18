@@ -107,7 +107,15 @@ namespace Interactor.OrdInfs
                             od.OdrUnitName,
                             od.HasCmtName,
                             od.CenterItemCd1,
-                            od.CenterItemCd2
+                            od.CenterItemCd2,
+                            od.CmtColKeta1,
+                            od.CmtColKeta2,
+                            od.CmtColKeta3,
+                            od.CmtColKeta4,
+                            od.CmtCol1,
+                            od.CmtCol2,
+                            od.CmtCol3,
+                            od.CmtCol4
                         )).OrderBy(odrDetail => odrDetail.RpNo)
                         .ThenBy(odrDetail => odrDetail.RpEdaNo)
                         .ThenBy(odrDetail => odrDetail.RowNo)

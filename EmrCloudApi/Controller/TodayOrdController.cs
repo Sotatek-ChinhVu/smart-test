@@ -370,7 +370,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.ConvertFromHistoryToTodayOrder)]
         public ActionResult<Response<ConvertFromHistoryToTodayOrderResponse>> ConvertFromHistoryToTodayOrder([FromBody] ConvertFromHistoryToTodayOrderRequest request)
         {
-            var input = new ConvertFromHistoryTodayOrderInputData(HpId, request.SinDate, request.RaiinNo, UserId, request.PtId, request.HistoryOdrInfModels);
+            var input = new ConvertFromHistoryTodayOrderInputData(HpId, request.SinDate, request.RaiinNo, request.SanteiKbn, UserId, request.PtId, request.HistoryOdrInfModels);
             var output = _bus.Handle(input);
 
             var presenter = new ConvertFromHistoryToTodayOrderPresenter();

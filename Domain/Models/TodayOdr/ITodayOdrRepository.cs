@@ -38,7 +38,7 @@ namespace Domain.Models.TodayOdr
 
         List<(int type, string message, int odrInfPosition, int odrInfDetailPosition, TenItemModel tenItemMst, double suryo)> AutoCheckOrder(int hpId, int sinDate, long ptId, List<OrdInfModel> odrInfs);
 
-        List<OrdInfModel> FromHistory(int hpId, int sinDate, long raiinNo, int userId, long ptId, List<OrdInfModel> historyOdrInfModels);
+        List<OrdInfModel> FromHistory(int hpId, int sinDate, long raiinNo, int sainteiKbn, int userId, long ptId, List<OrdInfModel> historyOdrInfModels);
 
         bool IsHolidayForDefaultTime(int hpId, int sinDate);
 

@@ -21,4 +21,5 @@ public enum ValidateFamilyListStatus : byte
     DuplicateFamily,
     InvalidNameMaxLength,
     InvalidKanaNameMaxLength,
+    FamilyNotAllow,
 }

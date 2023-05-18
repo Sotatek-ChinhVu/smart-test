@@ -38,7 +38,11 @@
 
         public byte SearchFollowUsage { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
+
         public List<int> KouiKbns { get; set; } = new();
+
+        public List<int> DrugKbns { get; set; } = new();
 
         public string MasterSBT { get; set; } = string.Empty;
     }

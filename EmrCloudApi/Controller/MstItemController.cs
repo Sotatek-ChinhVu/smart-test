@@ -12,6 +12,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
@@ -22,8 +23,10 @@ using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
+using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
@@ -33,11 +36,6 @@ using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
-using Helper.Extension;
-using Domain.Models.OrdInf;
-using Domain.Models.TodayOdr;
-using UseCase.MstItem.GetRenkeiMst;
-using UseCase.MstItem.CheckIsTenMstUsed;
 
 namespace EmrCloudApi.Controller
 {
@@ -102,7 +100,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SearchTenItem)]
         public ActionResult<Response<SearchTenItemResponse>> SearchTenItem([FromBody] SearchTenItemRequest request)
         {
-            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, HpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith, request.IsMasterSearch, request.IsSearch831SuffixOnly, request.IsSearchSanteiItem, request.SearchFollowUsage, request.KouiKbns, request.MasterSBT);
+            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, HpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith, request.IsMasterSearch, request.IsSearch831SuffixOnly, request.IsSearchSanteiItem, request.SearchFollowUsage, request.IsDeleted, request.KouiKbns, request.DrugKbns, request.MasterSBT);
             var output = _bus.Handle(input);
             var presenter = new SearchTenItemPresenter();
             presenter.Complete(output);
@@ -340,6 +338,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetJihiMstsPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetJihiMstsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTenMstListByItemType)]
+        public ActionResult<Response<GetTenMstListByItemTypeResponse>> GetTenMstListByItemType([FromQuery] GetTenMstListByItemTypeRequest request)
+        {
+            var input = new GetTenMstListByItemTypeInputData(HpId, request.ItemType, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenMstListByItemTypePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenMstListByItemTypeResponse>>(presenter.Result);
         }
     }
 }

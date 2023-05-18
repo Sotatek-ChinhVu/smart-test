@@ -62,7 +62,11 @@ public class ValidateFamilyList : IValidateFamilyList
         // validate familyId
         var listFamilyId = listFamily.Where(item => item.FamilyId > 0).Select(item => item.FamilyId).Distinct().ToList();
         var onlyFamlilyList = _familyRepository.GetListByPtId(hpId, ptId);
-        if (onlyFamlilyList.Count(item => listFamilyId.Contains(item.FamilyId)) != listFamilyId.Count)
+        if (onlyFamlilyList.Exists(item => item.FamilyPtId == ptId) || listFamily.Exists(item => item.FamilyPtId == ptId))
+        {
+            return ValidateFamilyListStatus.FamilyNotAllow;
+        }
+        else if (onlyFamlilyList.Count(item => listFamilyId.Contains(item.FamilyId)) != listFamilyId.Count)
         {
             return ValidateFamilyListStatus.InvalidFamilyId;
         }

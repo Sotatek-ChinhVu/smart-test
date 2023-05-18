@@ -39,11 +39,16 @@ namespace Interactor.MedicalExamination
                 {
                     return new ConvertFromHistoryTodayOrderOutputData(ConvertFromHistoryTodayOrderStatus.InvalidUserId, new());
                 }
+                if (inputData.SainteiKbn < 0 || inputData.SainteiKbn > 2)
+                {
+                    return new ConvertFromHistoryTodayOrderOutputData(ConvertFromHistoryTodayOrderStatus.InvalidSanteiKbn, new());
+                }
                 if (inputData.HistoryOdrInfModels.Count <= 0)
                 {
                     return new ConvertFromHistoryTodayOrderOutputData(ConvertFromHistoryTodayOrderStatus.InputNoData, new());
                 }
-                var result = _todayOdrRepository.FromHistory(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.UserId, inputData.PtId, inputData.HistoryOdrInfModels.Select(item =>
+
+                var result = _todayOdrRepository.FromHistory(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.SainteiKbn, inputData.UserId, inputData.PtId, inputData.HistoryOdrInfModels.Select(item =>
                         new OrdInfModel(
                         item.HpId,
                         item.RaiinNo,
@@ -118,7 +123,14 @@ namespace Interactor.MedicalExamination
                                 itemDetail.CnvUnitName,
                                 itemDetail.OdrUnitName,
                                 itemDetail.CenterItemCd1,
-                                itemDetail.CenterItemCd2
+                                itemDetail.CenterItemCd2,
+                                itemDetail.CmtColKeta1,
+                                itemDetail.CmtColKeta2,
+                                itemDetail.CmtColKeta3,
+                                itemDetail.CmtColKeta4,
+                                itemDetail.CmtCol2,
+                                itemDetail.CmtCol3,
+                                itemDetail.CmtCol4
                             )
                             ).ToList(),
                         DateTime.MinValue,
@@ -203,7 +215,15 @@ namespace Interactor.MedicalExamination
                             od.OdrUnitName,
                             od.HasCmtName,
                             od.CenterItemCd1,
-                            od.CenterItemCd2
+                            od.CenterItemCd2,
+                            od.CmtColKeta1,
+                            od.CmtColKeta2,
+                            od.CmtColKeta3,
+                            od.CmtColKeta4,
+                            od.CmtCol1,
+                            od.CmtCol2,
+                            od.CmtCol3,
+                            od.CmtCol4
                         )).OrderBy(odrDetail => odrDetail.RpNo)
                         .ThenBy(odrDetail => odrDetail.RpEdaNo)
                         .ThenBy(odrDetail => odrDetail.RowNo)
