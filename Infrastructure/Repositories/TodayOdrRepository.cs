@@ -2549,14 +2549,15 @@ namespace Infrastructure.Repositories
                                 }
                             }
 
-                            var checkingOrders = addingOdrList.Where(a => a != checkingOdr).ToList();
+                            var checkingOrders = addingOdrList;
+                                //.Where(a => a != checkingOdr).ToList();
                             if (santeiCntCheck.CntType == 2)
                             {
                                 foreach (var item in checkingOrders)
                                 {
                                     foreach (var itemDetail in item.OrdInfDetails)
                                     {
-                                        if (itemDetail.ItemCd == detail.ItemCd)
+                                        if (itemDetail.ItemCd == detail.ItemCd && itemDetail != detail)
                                         {
                                             countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
                                         }
@@ -2569,7 +2570,7 @@ namespace Infrastructure.Repositories
                                 {
                                     foreach (var itemDetail in item.OrdInfDetails)
                                     {
-                                        if (itemDetail.ItemCd == detail.ItemCd)
+                                        if (itemDetail.ItemCd == detail.ItemCd && itemDetail != detail)
                                         {
                                             countInCurrentOdr++;
                                         }
