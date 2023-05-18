@@ -112,6 +112,7 @@ namespace Interactor.OrdInfs
                             od.CmtColKeta2,
                             od.CmtColKeta3,
                             od.CmtColKeta4,
+                            od.CmtCol1,
                             od.CmtCol2,
                             od.CmtCol3,
                             od.CmtCol4
