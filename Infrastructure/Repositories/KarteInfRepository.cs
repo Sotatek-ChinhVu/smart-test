@@ -231,32 +231,37 @@ namespace Infrastructure.Repositories
             if (listFileKarte.Any())
             {
                 List<FileInfModel> result = new();
-                foreach (var karte in listFileKarte)
+                foreach (var raiinNo in listRaiinNo)
                 {
-                    var lastSeqNo = listFileKarte.Max(item => item.SeqNo);
-                    if (!isGetAll)
+                    var karteFileListByRaiinNo = listFileKarte.Where(item => item.RaiinNo == raiinNo).ToList();
+                    foreach (var karte in karteFileListByRaiinNo)
                     {
-                        if (karte.SeqNo == lastSeqNo)
+                        var lastSeqNo = karteFileListByRaiinNo.Max(item => item.SeqNo);
+                        if (!isGetAll)
+                        {
+                            if (karte.SeqNo == lastSeqNo)
+                            {
+                                result.Add(new FileInfModel(
+                                            karte.RaiinNo,
+                                            karte.SeqNo,
+                                            karte.KarteKbn > 0,
+                                            karte.FileName ?? string.Empty,
+                                            karte.SeqNo != lastSeqNo
+                                        ));
+                            }
+                        }
+                        else
                         {
                             result.Add(new FileInfModel(
-                                        karte.RaiinNo,
-                                        karte.SeqNo,
-                                        karte.KarteKbn > 0,
-                                        karte.FileName ?? string.Empty,
-                                        karte.SeqNo != lastSeqNo
-                                    ));
+                                            karte.RaiinNo,
+                                            karte.SeqNo,
+                                            karte.KarteKbn > 0,
+                                            karte.FileName ?? string.Empty,
+                                            karte.SeqNo != lastSeqNo
+                                        ));
                         }
                     }
-                    else
-                    {
-                        result.Add(new FileInfModel(
-                                        karte.RaiinNo,
-                                        karte.SeqNo,
-                                        karte.KarteKbn > 0,
-                                        karte.FileName ?? string.Empty,
-                                        karte.SeqNo != lastSeqNo
-                                    ));
-                    }
+
                 }
                 return result;
             }
