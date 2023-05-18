@@ -186,6 +186,7 @@ using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.KokhoSeikyu.DB;
 using Reporting.Sokatu.KokhoSokatu.DB;
 using Reporting.Sokatu.KokhoSokatu.Service;
+using Reporting.Sokatu.KoukiSeikyu.Service;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
@@ -676,6 +677,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMemoMsgCoReportService, MemoMsgCoReportService>();
             services.AddTransient<IP28KokhoSokatuCoReportService, P28KokhoSokatuCoReportService>();
             services.AddTransient<IP11KokhoSokatuCoReportService, P11KokhoSokatuCoReportService>();
+            services.AddTransient<IP28KoukiSeikyuCoReportService, P28KoukiSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
