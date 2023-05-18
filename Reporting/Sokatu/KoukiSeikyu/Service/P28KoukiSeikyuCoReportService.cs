@@ -1,18 +1,11 @@
 ﻿using Helper.Common;
-using Helper.Constants;
 using Helper.Extension;
 using Reporting.Mappers.Common;
-using Reporting.ReadRseReportFile.Service;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.Common.Utils;
 using Reporting.Sokatu.KokhoSeikyu.DB;
 using Reporting.Sokatu.KoukiSeikyu.Mapper;
 using Reporting.Structs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reporting.Sokatu.KoukiSeikyu.Service
 {
@@ -53,12 +46,10 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
         /// </summary>
 
         private readonly ICoKokhoSeikyuFinder _kokhoFinder;
-        private readonly IReadRseReportFileService _readRseReportFileService;
 
-        public P28KoukiSeikyuCoReportService(ICoKokhoSeikyuFinder kokhoFinder, IReadRseReportFileService readRseReportFileService)
+        public P28KoukiSeikyuCoReportService(ICoKokhoSeikyuFinder kokhoFinder)
         {
             _kokhoFinder = kokhoFinder;
-            _readRseReportFileService = readRseReportFileService;
         }
 
         #endregion
@@ -67,7 +58,6 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
             _hpId = hpId;
             _seikyuYm = seikyuYm;
             _seikyuType = seikyuType;
-            _formYm = seikyuYm >= KaiseiDate.m202210 ? "_2210" : string.Empty;
             var getData = GetData();
             AddFileNamePageMap();
             _hasNextPage = true;
@@ -287,7 +277,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
 
         private void AddFileNamePageMap()
         {
-            _fileNamePageMap.Add("1", string.Concat("p28KoukiSeikyu", _formYm + ".rse"));
+            _fileNamePageMap.Add("1", string.Concat("p28KoukiSeikyu" + ".rse"));
         }
     }
 }

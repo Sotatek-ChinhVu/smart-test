@@ -1,5 +1,4 @@
-﻿using Domain.Common;
-using Reporting.Sokatu.Common.Models;
+﻿using Reporting.Sokatu.Common.Models;
 using Reporting.Structs;
 
 namespace Reporting.Sokatu.KoukiSeikyu.DB
