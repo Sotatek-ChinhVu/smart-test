@@ -28,7 +28,7 @@ namespace Interactor.ReceSeikyu
             try
             {
                 string content = ReadAsString(inputData.File);
-                string[] fileContent = content.Split("\r\n");
+                List<string> fileContent = content.Split("\r\n").Where(x=> !string.IsNullOrEmpty(x)).ToList();
                 string fileName = inputData.File.FileName;
 
                 var result = new List<ReceSeikyuModel>();
@@ -46,7 +46,7 @@ namespace Interactor.ReceSeikyu
             }
         }
 
-        private ImportFileReceSeikyuOutputData HandlerImportFileRece(string fileName, string[] fileContent, int hpId, int userId)
+        private ImportFileReceSeikyuOutputData HandlerImportFileRece(string fileName, List<string> fileContent, int hpId, int userId)
         {
             string sRecKind = string.Empty;
             int ARECnt = 0;
@@ -258,21 +258,22 @@ namespace Interactor.ReceSeikyu
             }
 
             //ファイルを退避
-            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-            string sTmpPath = appPath + @"\Temp\ReceiptcHen\" + ASeikyuYm.AsString();
-            string newFile = DateTime.Now.ToString("yyyyMMdd_HHmmss_") + fileName;
-            string destFile = Path.Combine(sTmpPath, newFile);
+            //string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+            //string sTmpPath = appPath + @"\Temp\ReceiptcHen\" + ASeikyuYm.AsString();
+            //string newFile = DateTime.Now.ToString("yyyyMMdd_HHmmss_") + fileName;
+            //string destFile = Path.Combine(sTmpPath, newFile);
 
-            if (!CIUtil.IsDirectoryExisting(sTmpPath))
-            {
-                Directory.CreateDirectory(sTmpPath);
-            }
-            File.Copy(importFileName, destFile, true);
+            //if (!CIUtil.IsDirectoryExisting(sTmpPath))
+            //{
+            //    Directory.CreateDirectory(sTmpPath);
+            //}
+            //File.Copy(importFileName, destFile, true);
 
 
             if (_receSeikyuRepository.SaveChangeImportFileRececeikyus())
             {
-                return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.Successful, string.Empty);
+                string message = string.Format(ErrorMessage.MessageType_mEnt02020, CIUtil.SMonthToShowSMonth(ASeikyuYm) + "請求分(" + ARECnt + "件) の返戻レセプト");
+                return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.Successful, message);
             }
             else
             {

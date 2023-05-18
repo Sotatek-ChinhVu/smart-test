@@ -119,7 +119,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.ImportFileReceSeikyu)]
         public ActionResult<Response<ImportFileReceSeikyuResponse>> ImportFileReceSeikyu(IFormFile fileImport)
         {
-            var input = new ImportFileReceSeikyuInputData(HpId, UserId, fileImport);
+            var input = new ImportFileReceSeikyuInputData(1, 2, fileImport);
             var output = _bus.Handle(input);
             var presenter = new ImportFileReceSeikyuPresenter();
             presenter.Complete(output);

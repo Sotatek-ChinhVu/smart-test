@@ -34,6 +34,7 @@ namespace Domain.Constant
         public const string MessageType_mDo00010 = "{0}を実行しますか？";
         public const string MessageType_mDo00050 = "{0}ため、この処理には時間がかかる場合があります。" + "\r\n" + "実行しますか？";
         public const string MessageType_mEnt01030 = "問題が発生したため、{0}は登録できません。";
+        public const string MessageType_mEnt02020 = "{0}を登録しました。";
     }
 
     public static class TypeMessage
