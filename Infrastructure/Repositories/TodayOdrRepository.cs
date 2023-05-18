@@ -2240,7 +2240,14 @@ namespace Infrastructure.Repositories
                             tenMst?.CnvUnitName ?? string.Empty,
                             tenMst?.OdrUnitName ?? string.Empty,
                             kensaMstModel?.CenterItemCd1 ?? string.Empty,
-                            kensaMstModel?.CenterItemCd2 ?? string.Empty
+                            kensaMstModel?.CenterItemCd2 ?? string.Empty,
+                            tenMst?.CmtColKeta1 ?? 0,
+                            tenMst?.CmtColKeta2 ?? 0,
+                            tenMst?.CmtColKeta3 ?? 0,
+                            tenMst?.CmtColKeta4 ?? 0,
+                            tenMst?.CmtCol2 ?? 0,
+                            tenMst?.CmtCol3 ?? 0,
+                            tenMst?.CmtCol4 ?? 0
                         );
 
                     odrInfDetails.Add(odrInfDetail);
@@ -2345,7 +2352,7 @@ namespace Infrastructure.Repositories
 
                     int currenRowNo = ++rowNo;
                     var odrInfDetail = new OrdInfDetailModel(
-                           odrDetail.HpId, raiinNo, 0, 0, currenRowNo, odrDetail.PtId, sinDate, sinKouiKbn, itemCd, itemName, suryo, unitName, unitSBT, termVal, kohatuKbn, syosai.Item1, syosai.Item2, drugKbn, yohoKbn, kokuji1, kokuji2, isNodspRece, ipnCd, ipnName, 0, DateTime.MinValue, 0, string.Empty, string.Empty, bunkatu, cmtName, cmtOpt, fontColor, commentNewline, masterSbt ?? string.Empty, 0, ipnMinYakka?.Yakka ?? 0, isGetPriceInYakka, 0, cmtCol1, ten, 0, 0, 0, 0, 0, string.Empty, new(), 0, 0, string.Empty, string.Empty, kensMst?.CenterItemCd1 ?? string.Empty, kensMst?.CenterItemCd2 ?? string.Empty
+                           odrDetail.HpId, raiinNo, 0, 0, currenRowNo, odrDetail.PtId, sinDate, sinKouiKbn, itemCd, itemName, suryo, unitName, unitSBT, termVal, kohatuKbn, syosai.Item1, syosai.Item2, drugKbn, yohoKbn, kokuji1, kokuji2, isNodspRece, ipnCd, ipnName, 0, DateTime.MinValue, 0, string.Empty, string.Empty, bunkatu, cmtName, cmtOpt, fontColor, commentNewline, masterSbt ?? string.Empty, 0, ipnMinYakka?.Yakka ?? 0, isGetPriceInYakka, 0, cmtCol1, ten, 0, 0, 0, 0, 0, string.Empty, new(), 0, 0, string.Empty, string.Empty, kensMst?.CenterItemCd1 ?? string.Empty, kensMst?.CenterItemCd2 ?? string.Empty, tenMst?.CmtColKeta1 ?? 0, tenMst?.CmtColKeta2 ?? 0, tenMst?.CmtColKeta3 ?? 0, tenMst?.CmtColKeta4 ?? 0, tenMst?.CmtCol2 ?? 0, tenMst?.CmtCol3 ?? 0, tenMst?.CmtCol4 ?? 0
                         );
                     odrInfDetails.Add(odrInfDetail);
                 }
