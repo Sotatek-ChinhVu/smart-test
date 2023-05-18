@@ -491,7 +491,7 @@ namespace Infrastructure.Repositories
                             yakka,
                             isGetPriceInYakka,
                             0,
-                            0,
+                            tenMst.CmtCol1,
                             ten,
                             bunkatuKoui,
                             alternationIndex,
