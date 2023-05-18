@@ -512,7 +512,8 @@ namespace Infrastructure.Repositories
                             tenMst.CmtColKeta4,
                             tenMst.CmtCol2,
                             tenMst.CmtCol3,
-                            tenMst.CmtCol4
+                            tenMst.CmtCol4,
+                            tenMst.HandanGrpKbn
                 );
         }
 
