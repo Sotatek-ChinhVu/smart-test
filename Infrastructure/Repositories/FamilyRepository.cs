@@ -303,7 +303,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 raiinInf.KaId,
                 kaMst?.KaName ?? string.Empty,
                 raiinInf.TantoId,
-                doctor?.Name ?? string.Empty,
+                doctor?.Sname ?? string.Empty,
                 hokenPattern?.HokenPid ?? CommonConstants.InvalidId,
                 hokenPattern?.StartDate ?? 0,
                 hokenPattern?.EndDate ?? 0,
