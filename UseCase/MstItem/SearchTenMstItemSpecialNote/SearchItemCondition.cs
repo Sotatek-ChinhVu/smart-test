@@ -1,7 +1,7 @@
 ﻿using Helper.Enum;
 using System.Text.Json.Serialization;
 
-namespace UseCase.MstItem.SearchTenItem
+namespace UseCase.MstItem.SearchTenMstItemSpecialNote
 {
     public class SearchItemCondition
     {

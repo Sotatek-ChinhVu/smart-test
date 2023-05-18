@@ -243,6 +243,471 @@ namespace Infrastructure.Repositories
             )).ToList();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keyword"></param>
+        /// <param name="kouiKbn"></param>
+        /// <param name="sinDate"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageCount"></param>
+        /// <param name="genericOrSameItem"></param>
+        /// <param name="yjCd"></param>
+        /// <param name="hpId"></param>
+        /// <param name="pointFrom"></param>
+        /// <param name="pointTo"></param>
+        /// <param name="isRosai"></param>
+        /// <param name="isMirai"></param>
+        /// <param name="isExpired"></param>
+        /// <param name="itemCodeStartWith"></param>
+        /// <param name="isMasterSearch"></param>
+        /// <param name="isSearch831SuffixOnly"></param>
+        /// <param name="isSearchSanteiItem"></param>
+        /// <param name="searchFollowUsage"></param> (0: all, 1: search no usage, 2: search usage) 
+        /// <returns></returns>
+        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, List<int> kouiKbns, string masterSBT)
+        {
+            string kanaKeyword = keyword;
+            if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
+            {
+                var inputKeyword = keyword;
+                kanaKeyword = CIUtil.ToHalfsize(keyword);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
+            }
+
+            var listTenMstModels = new List<TenItemModel>();
+            string sBigKeyword = kanaKeyword.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ");
+
+            var queryResult = NoTrackingDataContext.TenMsts.Where(t =>
+                                t.ItemCd.StartsWith(keyword)
+                                || (t.SanteiItemCd != null && t.SanteiItemCd.StartsWith(keyword))
+                                || (t.KanaName1 != null && t.KanaName1 != "" && t.KanaName1.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                ||
+                                  (t.KanaName2 != null && t.KanaName2 != "" && t.KanaName2.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+
+                                || (t.KanaName3 != null && t.KanaName3 != "" && t.KanaName3.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                || (t.KanaName4 != null && t.KanaName4 != "" && t.KanaName4.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                ||
+                                (t.KanaName5 != null && t.KanaName5 != "" && t.KanaName5.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                ||
+                                (t.KanaName6 != null && t.KanaName6 != "" && t.KanaName6.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                || (
+                                  t.KanaName7 != null && t.KanaName7 != "" && t.KanaName7.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                ||
+                                (t.Name != null && t.Name != "" && t.Name.Contains(keyword)));
+
+            if (masterSBT.ToLower() != "all")
+            {
+                queryResult = queryResult.Where(t => t.MasterSbt == masterSBT);
+            }
+
+            if (kouiKbns.Count == 0)
+            {
+                if (kouiKbn > 0)
+                {
+                    //2019-12-04 @duong.vu said: this is a self injection -> search items relate to injection only
+                    var SELF_INJECTION_KOUIKBN = 28;
+                    if (kouiKbn == SELF_INJECTION_KOUIKBN)
+                    {
+                        kouiKbn = 30;
+                    }
+
+                    switch (kouiKbn)
+                    {
+                        case 11:
+                            queryResult = queryResult.Where(t => new[] { 11, 99 }.Contains(t.SinKouiKbn) || new[] { 1, 3, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T");
+                            break;
+                        case 12:
+                            queryResult = queryResult.Where(t => new[] { 12, 99 }.Contains(t.SinKouiKbn) || new[] { 1, 3, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T");
+                            break;
+                        case 13:
+                            queryResult = queryResult.Where(t => new[] { 13, 99 }.Contains(t.SinKouiKbn) || new[] { 1, 3, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T");
+                            break;
+                        case 14:
+                            queryResult = queryResult.Where(t => new[] { 14, 99 }.Contains(t.SinKouiKbn) || new[] { 1, 3, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T");
+                            break;
+                        case 21:
+                        case 22:
+                        case 23:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.YohoKbn > 0 || new[] { 1, 3, 6 }.Contains(t.DrugKbn) || t.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu);
+                            break;
+                        case 20:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || (t.SinKouiKbn >= 20 && t.SinKouiKbn <= 29) || t.DrugKbn == 3 || t.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu);
+                            break;
+                        case 24:
+                        case 25:
+                        case 26:
+                        case 27:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || (t.SinKouiKbn >= 20 && t.SinKouiKbn <= 29) || t.DrugKbn == 3);
+                            break;
+                        case 28:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T");
+                            break;
+                        case 30:
+                        case 31:
+                        case 32:
+                        case 33:
+                        case 34:
+                        case 35:
+                        case 36:
+                        case 37:
+                        case 38:
+                        case 39:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || (t.SinKouiKbn >= 30 && t.SinKouiKbn <= 39) || t.MasterSbt == "T" || new[] { 4, 6 }.Contains(t.DrugKbn));
+                            break;
+                        case 40:
+                        case 41:
+                        case 42:
+                        case 43:
+                        case 44:
+                        case 45:
+                        case 46:
+                        case 47:
+                        case 48:
+                        case 49:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 40 && t.SinKouiKbn <= 49) || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T");
+                            break;
+                        case 50:
+                        case 51:
+                        case 52:
+                        case 53:
+                        case 54:
+                        case 55:
+                        case 56:
+                        case 57:
+                        case 58:
+                        case 59:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 50 && t.SinKouiKbn <= 59) || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T");
+                            break;
+                        case 60:
+                        case 61:
+                        case 62:
+                        case 63:
+                        case 64:
+                        case 65:
+                        case 66:
+                        case 67:
+                        case 68:
+                        case 69:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 60 && t.SinKouiKbn <= 69) || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T");
+                            break;
+                        case 70:
+                        case 71:
+                        case 72:
+                        case 73:
+                        case 74:
+                        case 75:
+                        case 76:
+                        case 77:
+                        case 78:
+                        case 79:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 70 && t.SinKouiKbn <= 79) || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T");
+                            break;
+                        case 80:
+                        case 81:
+                        case 82:
+                        case 83:
+                        case 84:
+                        case 85:
+                        case 86:
+                        case 87:
+                        case 88:
+                        case 89:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 80 && t.SinKouiKbn <= 89) || new[] { 1, 4, 6 }.Contains(t.DrugKbn) || t.MasterSbt == "T");
+                            break;
+                        case 95:
+                        case 96:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99 || t.BuiKbn > 0 || (t.SinKouiKbn >= 95 && t.SinKouiKbn <= 96));
+                            break;
+                        case 100:
+                        case 101:
+                            queryResult = queryResult.Where(t => t.SinKouiKbn == 99);
+                            break;
+                    }
+
+                    if (kouiKbn >= 20 && kouiKbn <= 27 || kouiKbn >= 30 && kouiKbn <= 39)
+                    {
+                        queryResult = queryResult.Where(t => !(new[] {
+                        ItemCdConst.TouyakuTokuSyo1Syoho,
+                        ItemCdConst.TouyakuTokuSyo2Syoho,
+                        ItemCdConst.TouyakuTokuSyo1Syohosen,
+                        ItemCdConst.TouyakuTokuSyo2Syohosen,
+                        ItemCdConst.ZanGigi,
+                        ItemCdConst.ZanTeiKyo}.Contains(t.ItemCd)));
+                    }
+                }
+            }
+            else
+            {
+                queryResult = queryResult.Where(t => kouiKbns.Distinct().Contains(t.SinKouiKbn));
+            }
+
+            if (sinDate > 0)
+            {
+                queryResult = queryResult.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
+            }
+            else
+            {
+                var newQuery = queryResult.ToList();
+                if (newQuery != null)
+                {
+                    queryResult = queryResult.GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate).FirstOrDefault() ?? new TenMst());
+                }
+            }
+
+            string YJCode = "";
+            if (genericOrSameItem == 1)
+            {
+                if (yjCd.Length >= 9)
+                {
+                    YJCode = CIUtil.Copy(yjCd, 1, 9);
+                }
+                else
+                {
+                    YJCode = yjCd;
+                }
+            }
+            else if (genericOrSameItem == 2)
+            {
+                if (yjCd.Length >= 4)
+                {
+                    YJCode = CIUtil.Copy(yjCd, 1, 4);
+                }
+                else
+                {
+                    YJCode = yjCd;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(itemCodeStartWith))
+            {
+                queryResult = queryResult.Where(t => t.ItemCd.StartsWith(itemCodeStartWith));
+            }
+
+            if (!string.IsNullOrEmpty(YJCode))
+            {
+                queryResult = queryResult.Where(t => !String.IsNullOrEmpty(t.YjCd) && t.YjCd.StartsWith(YJCode));
+            }
+
+            if (!isMasterSearch && !isSearch831SuffixOnly)
+            {
+                if (isSearchSanteiItem)
+                {
+                    queryResult = queryResult.Where(t => t.IsNosearch == 0 ||
+                                                        (t.ItemCd.StartsWith("16") &&
+                                                        t.SinKouiKbn >= 60 && t.SinKouiKbn <= 69 &&
+                                                        t.IsNosearch == 1));
+                }
+                else
+                {
+                    queryResult = queryResult.Where(t => t.IsNosearch == 0);
+                }
+            }
+
+            if (isSearch831SuffixOnly)
+            {
+                queryResult = queryResult.Where(t => t.ItemCd.Length == 9 && !t.ItemCd.StartsWith("8") && (t.MasterSbt == "S" || t.MasterSbt == "R"));
+            }
+
+            if (pointFrom > 0)
+            {
+                queryResult = queryResult.Where(t => t.Ten >= pointFrom);
+            }
+
+            if (pointTo > 0)
+            {
+                queryResult = queryResult.Where(t => t.Ten <= pointTo);
+            }
+
+            if (searchFollowUsage == 1)
+            {
+                queryResult = queryResult.Where(t => t.YohoKbn == 0);
+            }
+
+            if (searchFollowUsage == 2)
+            {
+                queryResult = queryResult.Where(t => t.YohoKbn != 0);
+            }
+
+            //!searchItemCondition.IncludeRosai
+            if (!isRosai)
+            {
+                queryResult = queryResult.Where(t => t.RousaiKbn != 1);
+            }
+
+            //!searchItemCondition.IncludeMisai
+            if (!isMirai)
+            {
+                queryResult = queryResult.Where(t => t.IsAdopted == 1);
+            }
+
+            var tenKnList = queryResult.ToList();
+            var santeiItemCdList = tenKnList.Where(t => t.ItemCd.StartsWith("KN")).Select(t => t.SanteiItemCd).ToList();
+
+            // Query 点数 for KN% item
+            var tenMstList = NoTrackingDataContext.TenMsts
+                .Where(item => item.HpId == hpId
+                               && item.StartDate <= sinDate
+                               && item.EndDate >= sinDate
+                               && santeiItemCdList.Contains(item.ItemCd))
+                .ToList();
+
+            var knTensuList = (from tenKN in tenKnList
+                               join ten in tenMstList on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
+                               select new { tenKN.ItemCd, ten.Ten }).ToList();
+
+            var queryFinal = (from ten in tenKnList
+                              join tenKN in knTensuList
+                              on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
+                              from tenKN in tenKNLeft.DefaultIfEmpty()
+                              select new { TenMst = ten, tenKN }).ToList();
+
+            var kensaItemCdList = queryFinal.Select(q => q.TenMst.KensaItemCd).ToList();
+            var kensaMstList = NoTrackingDataContext.KensaMsts.Where(k => kensaItemCdList.Contains(k.KensaItemCd)).ToList();
+
+            var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
+            var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
+
+            var queryJoinWithKensaIpnName = from q in queryFinal
+                                            join k in kensaMstList
+                                            on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
+                                            from kensaMst in kensaMsts.DefaultIfEmpty()
+                                            join i in ipnNameMstList
+                                            on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
+                                            from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
+                                            select new { q.TenMst, q.tenKN, KensaMst = kensaMst, IpnName = ipnNameMst?.IpnName ?? string.Empty };
+            var totalCount = queryJoinWithKensaIpnName.Count(item => item.TenMst != null);
+
+            var listTenMst = queryJoinWithKensaIpnName.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
+            if (pageCount > 0)
+            {
+                listTenMst = listTenMst.Take(pageCount);
+            }
+
+            if (listTenMst != null && listTenMst.Any())
+            {
+
+                listTenMstModels = listTenMst.Select(item => new TenItemModel(
+                                                           item.TenMst.HpId,
+                                                           item.TenMst.ItemCd ?? string.Empty,
+                                                           item.TenMst.RousaiKbn,
+                                                           item.TenMst.KanaName1 ?? string.Empty,
+                                                           item.TenMst?.Name ?? string.Empty,
+                                                           item.TenMst?.KohatuKbn ?? 0,
+                                                           item.TenMst?.MadokuKbn ?? 0,
+                                                           item.TenMst?.KouseisinKbn ?? 0,
+                                                           item.TenMst?.OdrUnitName ?? string.Empty,
+                                                           item.TenMst?.EndDate ?? 0,
+                                                           item.TenMst?.DrugKbn ?? 0,
+                                                           item.TenMst?.MasterSbt ?? string.Empty,
+                                                           item.TenMst?.BuiKbn ?? 0,
+                                                           item.TenMst?.IsAdopted ?? 0,
+                                                           item.tenKN != null ? item.tenKN.Ten : (item.TenMst?.Ten ?? 0),
+                                                           item.TenMst?.TenId ?? 0,
+                                                           item.KensaMst != null ? (item.KensaMst.CenterItemCd1 ?? string.Empty) : string.Empty,
+                                                           item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty,
+                                                           item.TenMst?.CmtCol1 ?? 0,
+                                                           item.TenMst?.IpnNameCd ?? string.Empty,
+                                                           item.TenMst?.SinKouiKbn ?? 0,
+                                                           item.TenMst?.YjCd ?? string.Empty,
+                                                           item.TenMst?.CnvUnitName ?? string.Empty,
+                                                           item.TenMst?.StartDate ?? 0,
+                                                           item.TenMst?.YohoKbn ?? 0,
+                                                           item.TenMst?.CmtColKeta1 ?? 0,
+                                                           item.TenMst?.CmtColKeta2 ?? 0,
+                                                           item.TenMst?.CmtColKeta3 ?? 0,
+                                                           item.TenMst?.CmtColKeta4 ?? 0,
+                                                           item.TenMst?.CmtCol2 ?? 0,
+                                                           item.TenMst?.CmtCol3 ?? 0,
+                                                           item.TenMst?.CmtCol4 ?? 0,
+                                                           item.TenMst?.IpnNameCd ?? string.Empty,
+                                                           item.TenMst?.MinAge ?? string.Empty,
+                                                           item.TenMst?.MaxAge ?? string.Empty,
+                                                           item.TenMst?.SanteiItemCd ?? string.Empty,
+                                                           item.TenMst?.OdrTermVal ?? 0,
+                                                           item.TenMst?.CnvTermVal ?? 0,
+                                                           item.TenMst?.DefaultVal ?? 0,
+                                                           item.TenMst?.Kokuji1 ?? string.Empty,
+                                                           item.TenMst?.Kokuji2 ?? string.Empty,
+                                                           item.IpnName
+                                                            )).ToList();
+            }
+            return (listTenMstModels, totalCount);
+        }
+
         public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(int hpId, int pageIndex, int pageCount, string keyword, double pointFrom, double pointTo, int kouiKbn, int oriKouiKbn,
             List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage,
             bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem,
@@ -694,9 +1159,9 @@ namespace Infrastructure.Repositories
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
                                      select new { q.TenMst, q.KouiName, q.YakkaSyusaiItem, q.tenKN, KensaMst = kensaMst, LastEndDate = q.LastEndDate };
 
-            var queryJoinWithKensaOrder = queryJoinWithKensa.OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
+            queryJoinWithKensa = queryJoinWithKensa.Skip((pageIndex - 1) * pageCount);
 
-            var tenMstModels = queryJoinWithKensaOrder.Select(item => new TenItemModel(
+            var tenMstModels = queryJoinWithKensa.Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
                                                            item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,

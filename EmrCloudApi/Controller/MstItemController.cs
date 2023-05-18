@@ -33,6 +33,7 @@ using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
+using UseCase.MstItem.SearchTenMstItemSpecialNote;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
@@ -100,9 +101,19 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SearchTenItem)]
         public ActionResult<Response<SearchTenItemResponse>> SearchTenItem([FromBody] SearchTenItemRequest request)
         {
-            var input = new SearchTenItemInputData(HpId, request.PageIndex, request.PageCount, request.ItemCondition);
+            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, HpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith, request.IsMasterSearch, request.IsSearch831SuffixOnly, request.IsSearchSanteiItem, request.SearchFollowUsage, request.KouiKbns, request.MasterSBT);
             var output = _bus.Handle(input);
             var presenter = new SearchTenItemPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SearchTenMstSpecialNote)]
+        public ActionResult<Response<SearchTenMstSpecialNoteResponse>> SearchTenItem([FromBody] SearchTenMstSpecialNoteRequest request)
+        {
+            var input = new SearchTenMstItemSpecialNoteInputData(HpId, request.PageIndex, request.PageCount, request.ItemCondition);
+            var output = _bus.Handle(input);
+            var presenter = new SearchTenMstItemSpecialNotePresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
