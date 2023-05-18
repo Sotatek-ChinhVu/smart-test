@@ -25,7 +25,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetListKarteInfResponse>> GetList([FromQuery] GetListKarteInfRequest request)
         {
-            var input = new GetListKarteInfInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.IsDeleted);
+            var input = new GetListKarteInfInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.IsDeleted, UserId);
             var output = _bus.Handle(input);
 
             var presenter = new GetListKarteInfPresenter();
