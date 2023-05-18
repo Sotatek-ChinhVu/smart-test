@@ -215,7 +215,7 @@ public class ReceTargetCoReportService : IReceTargetCoReportService
         void UpdateFormHeader()
         {
             // 請求月
-            SetFieldData("dfseikyuYm", $"{seikyuYm / 100}年{seikyuYm % 100}月");
+            SetFieldData("dfSeikyuYm", $"{seikyuYm / 100}年{seikyuYm % 100}月");
 
             // 発行日時
             int date = CIUtil.DateTimeToInt(printoutDateTime);
