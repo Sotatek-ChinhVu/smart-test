@@ -425,7 +425,8 @@ namespace Infrastructure.Repositories
                          kasan?.Kasan2 ?? 0,
                          kensaMst?.CenterItemCd1 ?? string.Empty,
                          kensaMst?.CenterItemCd2 ?? string.Empty,
-                         tenMst?.HandanGrpKbn ?? 0
+                         tenMst?.HandanGrpKbn ?? 0,
+                         kensaMst == null
                         );
                 lock (obj)
                 {

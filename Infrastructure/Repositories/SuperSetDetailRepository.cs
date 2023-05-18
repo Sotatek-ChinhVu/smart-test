@@ -112,7 +112,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             if (karteInf != null)
                 karteInfs.Add(karteInf);
             if (karteFileOfItem != null && karteFileOfItem.Count > 0)
-                karteFiles.Add(new (currentSetCd, karteFileOfItem));
+                karteFiles.Add(new(currentSetCd, karteFileOfItem));
             ordInfs.AddRange(taskOrder.Result);
         });
 
@@ -593,7 +593,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                         tenMst.CmtCol1,
                         tenMst.CmtCol2,
                         tenMst.CmtCol3,
-                        tenMst.CmtCol4
+                        tenMst.CmtCol4,
+                        tenMst.HandanGrpKbn,
+                        kensaMst == null
             );
     }
 
@@ -655,7 +657,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                         tenMst.CmtCol1,
                         tenMst.CmtCol2,
                         tenMst.CmtCol3,
-                        tenMst.CmtCol4
+                        tenMst.CmtCol4,
+                        tenMst.HandanGrpKbn,
+                        kensaMst == null
             );
     }
 
