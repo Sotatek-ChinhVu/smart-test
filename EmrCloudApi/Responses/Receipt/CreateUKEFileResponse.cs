@@ -1,4 +1,5 @@
-﻿using UseCase.Receipt.CreateUKEFile;
+﻿using Microsoft.AspNetCore.Mvc;
+using UseCase.Receipt.CreateUKEFile;
 
 namespace EmrCloudApi.Responses.Receipt
 {
@@ -16,5 +17,7 @@ namespace EmrCloudApi.Responses.Receipt
         public string Message { get; private set; }
 
         public int TypeMessage { get; private set; }
+
+        public FileContentResult? File { get; set; } = null;
     }
 }
