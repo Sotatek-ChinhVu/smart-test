@@ -190,7 +190,8 @@ namespace Infrastructure.Repositories
                 tenMst?.DefaultVal ?? 0,
                 tenMst?.Kokuji1 ?? string.Empty,
                 tenMst?.Kokuji2 ?? string.Empty,
-                string.Empty
+                string.Empty,
+                true
             );
         }
 
@@ -240,7 +241,8 @@ namespace Infrastructure.Repositories
                 tenMst.DefaultVal,
                 tenMst.Kokuji1 ?? string.Empty,
                 tenMst.Kokuji2 ?? string.Empty,
-                string.Empty
+                string.Empty,
+                true
             )).ToList();
         }
         /// <summary>
@@ -702,7 +704,8 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.DefaultVal ?? 0,
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
                                                            item.TenMst?.Kokuji2 ?? string.Empty,
-                                                           item.IpnName
+                                                           item.IpnName,
+                                                           item.KensaMst == null
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -797,7 +800,8 @@ namespace Infrastructure.Repositories
                                                            item.DefaultVal,
                                                            item.Kokuji1 ?? string.Empty,
                                                            item.Kokuji2 ?? string.Empty,
-                                                           string.Empty
+                                                           string.Empty,
+                                                           true
                                                            )).ToList();
             }
 
@@ -962,7 +966,8 @@ namespace Infrastructure.Repositories
                     entity?.DefaultVal ?? 0,
                     entity?.Kokuji1 ?? string.Empty,
                     entity?.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    true
                );
         }
 
@@ -1017,7 +1022,8 @@ namespace Infrastructure.Repositories
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    true
                )).ToList();
         }
 
@@ -1069,7 +1075,8 @@ namespace Infrastructure.Repositories
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    true
                )).ToList();
         }
 
@@ -1122,7 +1129,8 @@ namespace Infrastructure.Repositories
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    true
                )).ToList();
         }
 
@@ -1496,7 +1504,8 @@ namespace Infrastructure.Repositories
                         tenMst?.DefaultVal ?? 0,
                         tenMst?.Kokuji1 ?? string.Empty,
                         tenMst?.Kokuji2 ?? string.Empty,
-                        string.Empty
+                        string.Empty,
+                        true
                         );
         }
 

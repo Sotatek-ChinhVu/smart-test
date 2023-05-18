@@ -2662,9 +2662,11 @@ namespace Infrastructure.Repositories
             var addingOdrList = odrInfs.Where(o => o.Id == -1).ToList();
             int odrInfIndex = 0, odrInfDetailIndex = 0;
             List<string> ipnNameCds = new List<string>();
+            List<string> itemCds = new List<string>();
             foreach (var ordInfDetails in odrInfs.Select(o => o.OrdInfDetails))
             {
                 ipnNameCds.AddRange(ordInfDetails.Select(od => od.IpnCd));
+                itemCds.AddRange(ordInfDetails.Select(od => od.ItemCd));
             }
             ipnNameCds = ipnNameCds.Distinct().ToList();
             var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(i =>
@@ -2676,6 +2678,7 @@ namespace Infrastructure.Repositories
             var autoSetSyohoLimitKohatuDrug = _systemConf.GetSettingValue(2020, 1, hpId);
             var autoSetSyohoKbnSenpatuDrug = _systemConf.GetSettingValue(2021, 0, hpId);
             var autoSetSyohoLimitSenpatuDrug = _systemConf.GetSettingValue(2021, 1, hpId);
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate) && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
 
             foreach (var checkingOdr in addingOdrList)
             {
@@ -2690,6 +2693,7 @@ namespace Infrastructure.Repositories
                 var odrInfDetails = checkingOdr.OrdInfDetails.Where(d => !d.IsEmpty).ToList();
                 bool isAdded = false;
                 odrInfDetailIndex = 0;
+                var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
                 foreach (var detail in odrInfDetails)
                 {
                     var targetItem = targetItems.FirstOrDefault(t => t.Item3 == odrInfIndex && t.Item4 == odrInfDetailIndex);
@@ -2868,7 +2872,8 @@ namespace Infrastructure.Repositories
                                 }
                             }
 
-                            List<OrdInfDetailModel> odrInfDetail = new();
+                            var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == targetItem.Item5.ItemCd);
+                            var kensaMst = targetItem == null ? null : kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst?.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo); List<OrdInfDetailModel> odrInfDetail = new();
                             var odrInfDetailModel = new OrdInfDetailModel(
                                 hpId,
                                 raiinNo,
@@ -2909,7 +2914,7 @@ namespace Infrastructure.Repositories
                                 0,
                                 false,
                                 0,
-                                0,
+                                tenMst?.CmtCol1 ?? 0,
                                 0,
                                 0,
                                 0,
@@ -2922,8 +2927,17 @@ namespace Infrastructure.Repositories
                                 0,
                                 string.Empty,
                                 string.Empty,
-                                string.Empty,
-                                string.Empty
+                                kensaMst?.CenterItemCd1 ?? string.Empty,
+                                kensaMst?.CenterItemCd2 ?? string.Empty,
+                                tenMst?.CmtColKeta1 ?? 0,
+                                tenMst?.CmtColKeta2 ?? 0,
+                                tenMst?.CmtColKeta3 ?? 0,
+                                tenMst?.CmtColKeta4 ?? 0,
+                                tenMst?.CmtCol2 ?? 0,
+                                tenMst?.CmtCol3 ?? 0,
+                                tenMst?.CmtCol4 ?? 0,
+                                tenMst?.HandanGrpKbn ?? 0,
+                                kensaMst == null
                             );
                             odrInfDetail.Add(odrInfDetailModel);
 
@@ -3053,7 +3067,8 @@ namespace Infrastructure.Repositories
                    entity.DefaultVal,
                    entity.Kokuji1 ?? string.Empty,
                    entity.Kokuji2 ?? string.Empty,
-                   string.Empty
+                   string.Empty,
+                   true
                 ) : new();
 
         }
