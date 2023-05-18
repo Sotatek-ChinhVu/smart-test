@@ -286,20 +286,20 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, string token, int userId)
+        public bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, int userId)
         {
             // Check lockMedicalExamination
             var raiinInfo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.SinDate == sinDate && p.RaiinNo == raiinNo && p.IsDeleted == DeleteTypes.None);
             long oyaRaiinNo = raiinInfo != null ? raiinInfo.OyaRaiinNo : 0;
-            var result = CheckLockInfo(hpId, ptId, FunctionCode.MedicalExaminationCode, raiinNo, oyaRaiinNo, sinDate, token, userId);
+            var result = CheckLockInfo(hpId, ptId, FunctionCode.MedicalExaminationCode, raiinNo, oyaRaiinNo, sinDate, userId);
             return GetPermissionByScreenCode(hpId, userId, FunctionCode.MedicalExaminationCode) == PermissionType.Unlimited && !(result != null && result.Item2?.LockLevel == 0);
         }
 
-        private Tuple<LockInf, LockMst, UserMst, FunctionMst>? CheckLockInfo(int hpID, long ptID_B, string functionCD_B, long raiinNo_B, long oyaRaiinNo_B, int sinDate_B, string token, int currentUserID)
+        private Tuple<LockInf, LockMst, UserMst, FunctionMst>? CheckLockInfo(int hpID, long ptID_B, string functionCD_B, long raiinNo_B, long oyaRaiinNo_B, int sinDate_B, int currentUserID)
         {
             var listCheckedResult =
                 (
-                    from lockInf in NoTrackingDataContext.LockInfs.Where(i => i.HpId == hpID && i.PtId == ptID_B && i.Machine != token)
+                    from lockInf in NoTrackingDataContext.LockInfs.Where(i => i.HpId == hpID && i.PtId == ptID_B && i.UserId!=currentUserID)
                     join raiinInf in NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpID)
                     on lockInf.RaiinNo equals raiinInf.RaiinNo into rfg
                     from lockedRaiinInf in rfg.DefaultIfEmpty()
@@ -310,7 +310,7 @@ namespace Infrastructure.Repositories
                     from lockedUserInf in gj.DefaultIfEmpty()
                     join functionMst in NoTrackingDataContext.FunctionMsts
                     on lockInf.FunctionCd equals functionMst.FunctionCd
-                    where (lockMst.FunctionCdA != lockMst.FunctionCdB) || (lockMst.FunctionCdA == lockMst.FunctionCdB && (lockInf.Machine != token || lockInf.UserId != currentUserID))
+                    where (lockMst.FunctionCdA != lockMst.FunctionCdB) || (lockMst.FunctionCdA == lockMst.FunctionCdB && lockInf.UserId != currentUserID)
                     orderby lockMst.LockLevel, lockMst.LockRange
                     select new
                     {

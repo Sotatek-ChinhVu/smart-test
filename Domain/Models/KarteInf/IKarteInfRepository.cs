@@ -5,7 +5,7 @@ namespace Domain.Models.KarteInfs
 {
     public interface IKarteInfRepository : IRepositoryBase
     {
-        List<KarteInfModel> GetList(long ptId, long rainNo, long sinDate, bool isDeleted);
+        List<KarteInfModel> GetList(int hpId, long ptId, long rainNo, int sinDate, bool isDeleted, int userId);
 
         List<KarteInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long> raiinNos);
 

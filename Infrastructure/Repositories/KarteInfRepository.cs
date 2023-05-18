@@ -1,27 +1,78 @@
-﻿using Domain.Models.KarteInf;
+﻿using Domain.Models.Family;
+using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
+using Domain.Models.User;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
+using System;
 using System.Text;
+using static Helper.Constants.UserConst;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Infrastructure.Repositories
 {
     public class KarteInfRepository : RepositoryBase, IKarteInfRepository
     {
-        public KarteInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IUserRepository _userRepository;
+        public KarteInfRepository(ITenantProvider tenantProvider, IUserRepository userRepository) : base(tenantProvider)
         {
+            _userRepository = userRepository;
         }
 
-        public List<KarteInfModel> GetList(long ptId, long rainNo, long sinDate, bool isDeleted)
+        public List<KarteInfModel> GetList(int hpId, long ptId, long rainNo, int sinDate, bool isDeleted, int userId)
         {
-            var karteInfEntity = NoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId && k.KarteKbn == 1 && k.RaiinNo == rainNo && k.SinDate == sinDate && (isDeleted || k.IsDeleted == 0)).ToList();
+            var karteInfEntity = NoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId && k.PtId == ptId && k.KarteKbn == 1 && k.RaiinNo == rainNo && k.SinDate == sinDate).ToList();
 
-            if (karteInfEntity == null)
+            if (!karteInfEntity.Any())
             {
-                return new List<KarteInfModel>();
+                var isEnableMode = _userRepository.CheckLockMedicalExamination(hpId, ptId, rainNo, sinDate, userId);
+                var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.SinDate == sinDate
+                                                                                     && p.RaiinNo == rainNo && p.IsDeleted == DeleteTypes.None);
+
+                if (raiinInf == null)
+                {
+                    return new();
+                }
+                if (!(isEnableMode && raiinInf.Status < RaiinState.TempSave))
+                {
+                    return new();
+                }
+                var karteKbnInsert = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2003 && item.GrpEdaNo == 0)?.Val ?? 0;
+                if (karteKbnInsert > 0 && ptId > 0)
+                {
+                    var ptPregnancy = NoTrackingDataContext.PtPregnancies.Where(item => item.HpId == hpId && item.PtId == ptId && item.IsDeleted == 0
+                                                                                        && item.StartDate <= sinDate && item.EndDate >= sinDate)
+                                                                         .OrderByDescending(item => item.StartDate)
+                                                                         .FirstOrDefault();
+
+
+                    if (ptPregnancy == null)
+                    {
+                        return new();
+                    }
+
+                    int startDate = ptPregnancy.PeriodDate;
+                    int endDate = ptPregnancy.EndDate;
+
+                    if (!CIUtil.SDateToDateTime(ptPregnancy.PeriodDate).HasValue && CIUtil.SDateToDateTime(ptPregnancy.PeriodDueDate).HasValue)
+                    {
+                        startDate = CIUtil.IntToDate(ptPregnancy.PeriodDueDate).AddDays(-280).ToString("yyyyMMdd").AsInteger();
+                    }
+                    string periodWeek = GetPeriodWeek(sinDate, startDate, 0, endDate);
+                    if (ptPregnancy != null && !string.IsNullOrEmpty(periodWeek))
+                    {
+                        return new() {
+                                         new KarteInfModel(hpId, rainNo, ptId, sinDate, periodWeek),
+                                     };
+                    }
+                }
             }
+            karteInfEntity = karteInfEntity.Where(item => isDeleted || item.IsDeleted == 0).ToList();
             return karteInfEntity.Select(k => ConvertToModel(k)).ToList();
         }
 
@@ -302,5 +353,38 @@ namespace Infrastructure.Repositories
             }
             return 0;
         }
+
+        private string GetPeriodWeek(int sinDay, int startDay, int ovulation, int endDay = 0)
+        {
+            if (startDay == 0) return string.Empty;
+            if (startDay >= sinDay)
+            {
+                return "0W0D";
+            }
+            if (endDay != 0 && endDay < startDay)
+            {
+                return "0W0D";
+            }
+            DateTime dtStartDay = CIUtil.IntToDate(startDay);
+            dtStartDay = dtStartDay.AddDays(-14 * ovulation);
+
+            DateTime dtToDay;
+            if (sinDay > endDay && endDay > 0)
+            {
+                dtToDay = CIUtil.IntToDate(endDay);
+            }
+            else
+            {
+                dtToDay = CIUtil.IntToDate(sinDay);
+            }
+
+            int countDays = dtToDay.Subtract(dtStartDay).Days;
+            if (countDays < 0)
+            {
+                countDays *= -1;
+            }
+            return (countDays / 7) + "W" + (countDays % 7) + "D";
+        }
+
     }
 }

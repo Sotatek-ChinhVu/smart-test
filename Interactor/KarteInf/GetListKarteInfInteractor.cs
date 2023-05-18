@@ -40,15 +40,17 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
 
         try
         {
-            var karteInfModel = _karteInfRepository.GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted).OrderBy(o => o.KarteKbn).ToList();
+            var karteInfModel = _karteInfRepository.GetList(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted, inputData.UserId).OrderBy(o => o.KarteKbn).ToList();
             List<KarteFileOutputItem> listFile = new();
             var listKarteFile = _karteInfRepository.GetListKarteFile(inputData.HpId, inputData.PtId, inputData.RaiinNo, false);
             if (listKarteFile.Any())
             {
                 var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
-                List<string> listFolders = new();
-                listFolders.Add(CommonConstants.Store);
-                listFolders.Add(CommonConstants.Karte);
+                List<string> listFolders = new()
+                {
+                    CommonConstants.Store,
+                    CommonConstants.Karte
+                };
                 string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
                 foreach (var file in listKarteFile)
                 {
