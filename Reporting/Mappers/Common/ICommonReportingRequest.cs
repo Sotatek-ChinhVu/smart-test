@@ -22,6 +22,6 @@ namespace Reporting.Mappers
 
         string GetJobName();
 
-        List<ListTextObject> GetListTextData();
+        Dictionary<int, List<ListTextObject>> GetListTextData();
     }
 }

@@ -96,6 +96,7 @@
         public const string Kensalrai = "Kensalrai";
         public const string ReceiptPrint = "ReceiptPrint";
         public const string MemoMsgPrint = "MemoMsgPrint";
+        public const string ReceTarget = "ReceTarget";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
