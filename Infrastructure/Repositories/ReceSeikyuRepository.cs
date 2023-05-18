@@ -5,6 +5,8 @@ using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -292,6 +294,140 @@ namespace Infrastructure.Repositories
                 model.SeikyuYm = seikyuYm;
                 return TrackingDataContext.SaveChanges() > 0;
             }
+        }
+
+        public bool IsReceSeikyuExisted(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            return NoTrackingDataContext.ReceSeikyus.FirstOrDefault(item => item.HpId == hpId
+                                                                                            && item.PtId == ptId
+                                                                                            && item.HokenId != hokenId
+                                                                                            && item.PreHokenId == hokenId
+                                                                                            && item.SinYm == sinYm
+                                                                                            && item.IsDeleted == 0) != null;
+        }
+
+        public int GetReceSeikyuPreHoken(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            var receSeikyu = NoTrackingDataContext.ReceSeikyus.FirstOrDefault(item => item.HpId == hpId
+                                                                                            && item.PtId == ptId
+                                                                                            && item.HokenId == hokenId
+                                                                                            && item.SinYm == sinYm
+                                                                                            && item.SeikyuKbn == 3
+                                                                                            && item.IsDeleted == 0);
+            if (receSeikyu != null)
+            {
+                return receSeikyu.PreHokenId;
+            }
+            return 0;
+        }
+
+        public void DeleteReceSeikyu(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            var receSeikyuList = TrackingDataContext.ReceSeikyus.Where(item => item.HpId == hpId
+                                                                                    && item.PtId == ptId
+                                                                                    && item.SinYm == sinYm
+                                                                                    && item.HokenId == hokenId
+                                                                                    && item.IsDeleted == 0);
+            foreach (var receSeikyu in receSeikyuList)
+            {
+                receSeikyu.IsDeleted = 1;
+            }
+        }
+
+        public void DeleteHenJiyuuRireki(int hpId, long ptId, int sinYm, int preHokenId)
+        {
+            // RECEDEN_HEN_JIYUU
+            var henJiyuuList = TrackingDataContext.RecedenHenJiyuus.Where(item => item.HpId == hpId
+                                                                              && item.PtId == ptId
+                                                                              && item.SinYm == sinYm
+                                                                              && item.HokenId == preHokenId
+                                                                              && item.IsDeleted == 0);
+            foreach (var henJiyuu in henJiyuuList)
+            {
+                henJiyuu.IsDeleted = 1;
+            }
+
+            // RECEDEN_RIREKI_INF
+            var rirekiInfList = TrackingDataContext.RecedenRirekiInfs.Where(item => item.HpId == hpId
+                                                                              && item.PtId == ptId
+                                                                              && item.SinYm == sinYm
+                                                                              && item.HokenId == preHokenId
+                                                                              && item.IsDeleted == 0);
+            foreach (var rirekiInf in rirekiInfList)
+            {
+                rirekiInf.IsDeleted = 1;
+            }
+        }
+
+        public void InsertSingleReceSeikyu(int hpId, long ptId, int sinYm, int hokenId, int userId)
+        {
+            ReceSeikyu receSeikyu = new ReceSeikyu()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                SinYm = sinYm,
+                HokenId = hokenId,
+                SeikyuYm = 999999,
+                SeikyuKbn = 3,
+                PreHokenId = hokenId,
+                Cmt = "返戻ファイルより登録",
+                IsDeleted = 0,
+                CreateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId,
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+            TrackingDataContext.ReceSeikyus.Add(receSeikyu);
+        }
+
+        public void InsertSingleRerikiInf(int hpId, long ptId, int sinYm, int hokenId, string searchNo, string rireki, int userId)
+        {
+            RecedenRirekiInf recedenRirekiInf = new RecedenRirekiInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                SinYm = sinYm,
+                HokenId = hokenId,
+                SearchNo = searchNo,
+                Rireki = rireki,
+                IsDeleted = 0,
+                CreateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId,
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+            TrackingDataContext.RecedenRirekiInfs.Add(recedenRirekiInf);
+        }
+
+        public void InsertSingleHenJiyuu(int hpId, long ptId, int sinYm, int hokenId, string hosoku, string henreiJiyuuCd, string henreiJiyuu, int userId)
+        {
+            RecedenHenJiyuu recedenHen = new RecedenHenJiyuu()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                SinYm = sinYm,
+                HokenId = hokenId,
+                Hosoku = hosoku,
+                HenreiJiyuu = henreiJiyuu,
+                HenreiJiyuuCd = henreiJiyuuCd,
+                IsDeleted = 0,
+                CreateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId,
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+            TrackingDataContext.RecedenHenJiyuus.Add(recedenHen);
+        }
+
+        /// <summary>
+        /// Save changes all entities tracking by this TennantDataContext
+        /// </summary>
+        /// <returns></returns>
+        public bool SaveChangeImportFileRececeikyus()
+        {
+            int changeDatas = TrackingDataContext.ChangeTracker.Entries().Count(x => x.State == EntityState.Modified || x.State == EntityState.Added);
+            if (changeDatas == 0) return true; //case nochanges
+            return TrackingDataContext.SaveChanges() > 0;
         }
     }
 }

@@ -289,6 +289,7 @@
         public const string GetListReceSeikyu = "GetListReceSeikyu";
         public const string SearchReceInf = "SearchReceInf";
         public const string SaveReceSeikyu = "SaveReceSeikyu";
+        public const string ImportFileReceSeikyu = "ImportFileReceSeikyu";
 
         //WeightedSetConfirmation
         public const string IsOpenWeightChecking = "IsOpenWeightChecking";
