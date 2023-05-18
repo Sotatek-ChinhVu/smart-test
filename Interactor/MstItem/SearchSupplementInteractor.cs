@@ -15,13 +15,28 @@ namespace Interactor.MstItem
         {
             try
             {
-                var datas = _inputItemRepository.GetListSupplement(inputData.SearchValue, inputData.PageIndex, inputData.PageSize);
-                if (datas.Item1 == null || !(datas.Item2 > 0))
+                var supplements = _inputItemRepository.GetListSupplement(inputData.SearchValue, inputData.PageIndex, inputData.PageSize);
+
+                var result = new List<SearchSupplementModel>();
+                foreach (var supplementModelItem in supplements)
+                {
+                    var supplementModel = result.Where(u => u.IndexCd == supplementModelItem.IndexCd).FirstOrDefault();
+                    if (result.Count == 0 || supplementModel == null)
+                    {
+                        result.Add(supplementModelItem);
+                        result[result.Count - 1].SeibunGroupByIndexCd = supplementModelItem.Seibun;
+                    }else if(supplementModel != null)
+                    {
+                        supplementModel.SeibunGroupByIndexCd += ", " + supplementModelItem.Seibun;
+                    }
+                }
+
+                if (!result.Any())
                 {
                     return new SearchSupplementOutputData(new List<SearchSupplementModel>(), 0, SearchSupplementStatus.NoData);
                 }
 
-                return new SearchSupplementOutputData(datas.Item1, datas.Item2, SearchSupplementStatus.Successed);
+                return new SearchSupplementOutputData(result, result.Count(), SearchSupplementStatus.Successed);
             }
             catch
             {

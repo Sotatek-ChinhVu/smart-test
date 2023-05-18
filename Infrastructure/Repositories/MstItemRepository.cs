@@ -101,46 +101,41 @@ namespace Infrastructure.Repositories
             return aleFoodKbns;
         }
 
-        public (List<SearchSupplementModel>, int) GetListSupplement(string searchValue, int pageIndex, int pageSize)
+        public List<SearchSupplementModel> GetListSupplement(string searchValue, int pageIndex, int pageSize)
         {
             searchValue = searchValue.Trim();
-            try
+
+            var listSuppleIndexCode = NoTrackingDataContext.M41SuppleIndexcodes.AsQueryable();
+            var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.AsQueryable();
+            var listSuppleIngre = NoTrackingDataContext.M41SuppleIngres.AsQueryable();
+
+            var query = (from indexDef in listSuppleIndexDef
+                         orderby indexDef.IndexWord
+                         join indexCode in listSuppleIndexCode on indexDef.SeibunCd equals indexCode.IndexCd into supplementList
+                         from supplement in supplementList.DefaultIfEmpty()
+                         join ingre in listSuppleIngre on supplement.SeibunCd equals ingre.SeibunCd into suppleIngreList
+                         from ingreItem in suppleIngreList.DefaultIfEmpty()
+                         where ((indexDef.IndexWord ?? string.Empty).Contains(searchValue) || supplement.IndexCd.StartsWith(searchValue))
+                         select new SearchSupplementModel(
+                             ingreItem.SeibunCd,
+                             ingreItem.Seibun ?? string.Empty,
+                             indexDef.IndexWord ?? string.Empty,
+                             indexDef.TokuhoFlg ?? string.Empty,
+                             supplement.IndexCd,
+                             string.Empty
+                         )).AsQueryable();
+
+            var result = query.AsEnumerable().OrderBy(data => data.IndexWord)
+                              .Skip((pageIndex - 1) * pageSize)
+                              .Take(pageSize)
+                              .ToList();
+
+            if (result == null || !result.Any())
             {
-                var listSuppleIndexCode = NoTrackingDataContext.M41SuppleIndexcodes.AsQueryable();
-                var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.AsQueryable();
-                var listSuppleIngre = NoTrackingDataContext.M41SuppleIngres.AsQueryable();
-
-                var query = (from indexDef in listSuppleIndexDef
-                             orderby indexDef.IndexWord
-                             join indexCode in listSuppleIndexCode on indexDef.SeibunCd equals indexCode.IndexCd into supplementList
-                             from supplement in supplementList.DefaultIfEmpty()
-                             join ingre in listSuppleIngre on supplement.SeibunCd equals ingre.SeibunCd into suppleIngreList
-                             from ingreItem in suppleIngreList.DefaultIfEmpty()
-                             where ((indexDef.IndexWord ?? string.Empty).Contains(searchValue) || supplement.IndexCd.StartsWith(searchValue))
-                             select new SearchSupplementModel(
-                                 ingreItem.SeibunCd,
-                                 ingreItem.Seibun ?? string.Empty,
-                                 indexDef.IndexWord ?? string.Empty,
-                                 indexDef.TokuhoFlg ?? string.Empty,
-                                 supplement.IndexCd
-                             )).AsQueryable();
-
-                var total = query.Count();
-                var result = query.Skip((pageIndex - 1) * pageSize)
-                                  .Take(pageSize)
-                                  .ToList();
-
-                if (result == null || !result.Any())
-                {
-                    return (new List<SearchSupplementModel>(), 0);
-                }
-
-                return (result, total);
+                return new List<SearchSupplementModel>();
             }
-            catch (Exception)
-            {
-                return (new List<SearchSupplementModel>(), 0);
-            }
+
+            return result;
         }
 
         public TenItemModel GetTenMst(int hpId, int sinDate, string itemCd)
