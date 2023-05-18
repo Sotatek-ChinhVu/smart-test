@@ -13,6 +13,7 @@ public class CommonReportingRequest : ICommonReportingRequest
             TableFieldData = GetTableFieldData(),
             SystemConfigList = GetSystemConfigList(),
             ExtralData = GetExtralData(),
+            ListTextData = GetListTextData(),
             ReportConfigModel = new ReportConfigModel()
             {
                 VisibleFieldList = GetVisibleFieldData(),
@@ -71,5 +72,10 @@ public class CommonReportingRequest : ICommonReportingRequest
     public virtual string GetJobName()
     {
         return string.Empty;
+    }
+
+    public virtual List<ListTextObject> GetListTextData()
+    {
+        return new();
     }
 }

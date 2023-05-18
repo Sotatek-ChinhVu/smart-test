@@ -27,6 +27,9 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("extralData")]
         public Dictionary<string, string> ExtralData { get; set; } = new();
+
+        [JsonPropertyName("listTextData")]
+        public List<ListTextObject> ListTextData { get; set; } = new();
     }
 
     public class CellModel
@@ -66,5 +69,23 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("wrapFieldList")]
         public Dictionary<string, bool> WrapFieldList { get; set; } = new Dictionary<string, bool>();
+    }
+
+    public class ListTextObject
+    {
+        [JsonPropertyName("listName")]
+        public string ListName { get; set; } = string.Empty;
+
+        [JsonPropertyName("col")]
+        public int Col { get; set; }
+
+        [JsonPropertyName("row")]
+        public int Row { get; set; }
+
+        [JsonPropertyName("data")]
+        public string Data { get; set; } = string.Empty;
+
+        [JsonPropertyName("pageIndex")]
+        public int PageIndex { get; set; }
     }
 }
