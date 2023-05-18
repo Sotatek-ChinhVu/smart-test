@@ -15,7 +15,7 @@ namespace Interactor.MstItem
         {
             try
             {
-                var supplements = _inputItemRepository.GetListSupplement(inputData.SearchValue, inputData.PageIndex, inputData.PageSize);
+                var supplements = _inputItemRepository.GetListSupplement(inputData.SearchValue);
 
                 var result = new List<SearchSupplementModel>();
                 foreach (var supplementModelItem in supplements)
@@ -25,9 +25,10 @@ namespace Interactor.MstItem
                     {
                         result.Add(supplementModelItem);
                         result[result.Count - 1].SeibunGroupByIndexCd = supplementModelItem.Seibun;
-                    }else if(supplementModel != null)
+                    }
+                    else if (supplementModel != null)
                     {
-                        supplementModel.SeibunGroupByIndexCd += ", " + supplementModelItem.Seibun;
+                        supplementModel.SeibunGroupByIndexCd = (supplementModel.SeibunGroupByIndexCd + ", " + supplementModelItem.Seibun);
                     }
                 }
 
@@ -35,8 +36,11 @@ namespace Interactor.MstItem
                 {
                     return new SearchSupplementOutputData(new List<SearchSupplementModel>(), 0, SearchSupplementStatus.NoData);
                 }
-
-                return new SearchSupplementOutputData(result, result.Count(), SearchSupplementStatus.Successed);
+                var total = result.Count();
+                result = result.AsEnumerable()
+                               .Skip((inputData.PageIndex - 1) * inputData.PageSize)
+                               .Take(inputData.PageSize).ToList();
+                return new SearchSupplementOutputData(result, total, SearchSupplementStatus.Successed);
             }
             catch
             {
