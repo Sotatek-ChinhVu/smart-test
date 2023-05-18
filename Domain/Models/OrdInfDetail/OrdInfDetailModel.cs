@@ -63,12 +63,92 @@ namespace Domain.Models.OrdInfDetails
         public string CenterItemCd1 { get; private set; }
         public string CenterItemCd2 { get; private set; }
         public bool IsDummy { get; private set; }
+
+        public int CmtColKeta1 { get; private set; }
+
+        public int CmtColKeta2 { get; private set; }
+
+        public int CmtColKeta3 { get; private set; }
+
+        public int CmtColKeta4 { get; private set; }
+
+        public int CmtCol2 { get; private set; }
+
+        public int CmtCol3 { get; private set; }
+
+        public int CmtCol4 { get; private set; }
+
         public int SinYm
         {
             get
             {
                 return SinDate / 100;
             }
+        }
+
+        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, string centerItemCd1, string centerItemCd2, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4)
+        {
+            HpId = hpId;
+            RaiinNo = raiinNo;
+            RpNo = rpNo;
+            RpEdaNo = rpEdaNo;
+            RowNo = rowNo;
+            PtId = ptId;
+            SinDate = sinDate;
+            SinKouiKbn = sinKouiKbn;
+            ItemCd = itemCd;
+            ItemName = itemName;
+            Suryo = suryo;
+            UnitName = unitName;
+            UnitSbt = unitSbt;
+            TermVal = termVal;
+            KohatuKbn = kohatuKbn;
+            SyohoKbn = syohoKbn;
+            SyohoLimitKbn = syohoLimitKbn;
+            DrugKbn = drugKbn;
+            YohoKbn = yohoKbn;
+            Kokuji1 = kokuji1;
+            Kokuji2 = kokuji2;
+            IsNodspRece = isNodspRece;
+            IpnCd = ipnCd;
+            IpnName = ipnName;
+            JissiKbn = jissiKbn;
+            JissiDate = jissiDate;
+            JissiId = jissiId;
+            JissiMachine = jissiMachine;
+            ReqCd = reqCd;
+            Bunkatu = bunkatu;
+            CmtName = cmtName;
+            CmtOpt = cmtOpt;
+            FontColor = fontColor;
+            CommentNewline = commentNewline;
+            MasterSbt = masterSbt;
+            InOutKbn = inOutKbn;
+            Yakka = yakka;
+            IsGetPriceInYakka = isGetPriceInYakka;
+            RefillSetting = refillSetting;
+            CmtCol1 = cmtCol1;
+            Ten = ten;
+            BunkatuKoui = bunkatuKoui;
+            AlternationIndex = alternationIndex;
+            KensaGaichu = kensaGaichu;
+            OdrTermVal = odrTermVal;
+            CnvTermVal = cnvTermVal;
+            YjCd = yjCd;
+            YohoSets = yohoSets;
+            Kasan1 = kasan1;
+            Kasan2 = kasan2;
+            CnvUnitName = cnvUnitName;
+            OdrUnitName = odrUnitName;
+            CenterItemCd1 = centerItemCd1;
+            CenterItemCd2 = centerItemCd2;
+            CmtCol2 = cmtCol2;
+            CmtCol3 = cmtCol3;
+            CmtCol4 = cmtCol4;
+            CmtColKeta1 = cmtColKeta1;
+            CmtColKeta2 = cmtColKeta2;
+            CmtColKeta3 = cmtColKeta3;
+            CmtColKeta4 = cmtColKeta4;
         }
 
         public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, string centerItemCd1, string centerItemCd2)
