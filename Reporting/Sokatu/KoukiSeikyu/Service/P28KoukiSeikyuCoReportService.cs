@@ -59,7 +59,6 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
             _seikyuYm = seikyuYm;
             _seikyuType = seikyuType;
             var getData = GetData();
-            AddFileNamePageMap();
             _hasNextPage = true;
             _currentPage = 1;
 
@@ -69,6 +68,8 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
                 _currentPage++;
             }
 
+            _extralData.Add("maxRow", "2");
+            _fileNamePageMap.Add("1", string.Concat("p28KoukiSeikyu.rse"));
             return new KoukiSeikyuMapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, _reportType, _visibleFieldData, _fileNamePageMap).GetData();
         }
 
@@ -275,9 +276,5 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
             return (receInfs?.Count ?? 0) > 0;
         }
 
-        private void AddFileNamePageMap()
-        {
-            _fileNamePageMap.Add("1", string.Concat("p28KoukiSeikyu" + ".rse"));
-        }
     }
 }
