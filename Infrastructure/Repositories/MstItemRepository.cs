@@ -129,37 +129,10 @@ namespace Infrastructure.Repositories
 
             var result = query
                   .AsEnumerable()
-                  .Select(data => new SearchSupplementModel(data.Ingre.SeibunCd, data.Ingre.Seibun ?? string.Empty, data.IndexDef.IndexWord, data.IndexDef.TokuhoFlg ?? string.Empty, data.IndexCode.IndexCd, string.Empty))
+                  .Select(data => new SearchSupplementModel(data.Ingre.SeibunCd, data.Ingre.Seibun ?? string.Empty, data.IndexDef.IndexWord ?? string.Empty, data.IndexDef.TokuhoFlg ?? string.Empty, data.IndexCode.IndexCd, string.Empty))
                   .OrderBy(data => data.IndexWord)
+                  .ThenBy(data => data.SeibunCd)
                   .ToList();
-
-            //var listSuppleIndexCode = NoTrackingDataContext.M41SuppleIndexcodes.AsQueryable();
-            //var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.AsQueryable();
-            //var listSuppleIngre = NoTrackingDataContext.M41SuppleIngres.AsQueryable();
-
-            //var query = (from indexDef in listSuppleIndexDef
-            //             orderby indexDef.IndexWord
-            //             join indexCode in listSuppleIndexCode on indexDef.SeibunCd equals indexCode.IndexCd into supplementList
-            //             from supplement in supplementList.DefaultIfEmpty()
-            //             join ingre in listSuppleIngre on supplement.SeibunCd equals ingre.SeibunCd into suppleIngreList
-            //             from ingreItem in suppleIngreList.DefaultIfEmpty()
-            //             where ((indexDef.IndexWord ?? string.Empty).Contains(searchValue) || supplement.IndexCd.StartsWith(searchValue))
-            //             select new SearchSupplementModel(
-            //                 ingreItem.SeibunCd,
-            //                 ingreItem.Seibun ?? string.Empty,
-            //                 indexDef.IndexWord ?? string.Empty,
-            //                 indexDef.TokuhoFlg ?? string.Empty,
-            //                 supplement.IndexCd,
-            //                 string.Empty
-            //             )).AsEnumerable();
-
-            //var result = query.OrderBy(data => data.IndexWord)
-            //                  .ToList();
-
-            //if (result == null || !result.Any())
-            //{
-            //    return new List<SearchSupplementModel>();
-            //}
 
             return result;
         }

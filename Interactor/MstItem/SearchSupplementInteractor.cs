@@ -16,19 +16,24 @@ namespace Interactor.MstItem
             try
             {
                 var supplements = _inputItemRepository.GetListSupplement(inputData.SearchValue);
-
+                var oMycustomclassname = Newtonsoft.Json.JsonConvert.SerializeObject(supplements);
                 var result = new List<SearchSupplementModel>();
                 foreach (var supplementModelItem in supplements)
                 {
                     var supplementModel = result.Where(u => u.IndexCd == supplementModelItem.IndexCd).FirstOrDefault();
                     if (result.Count == 0 || supplementModel == null)
                     {
-                        result.Add(supplementModelItem);
-                        result[result.Count - 1].SeibunGroupByIndexCd = supplementModelItem.Seibun;
+                        result.Add(new SearchSupplementModel(
+                                                            supplementModelItem.SeibunCd,
+                                                            supplementModelItem.Seibun,
+                                                            supplementModelItem.IndexWord,
+                                                            supplementModelItem.TokuhoFlg,
+                                                            supplementModelItem.IndexCd,
+                                                            supplementModelItem.Seibun));
                     }
                     else if (supplementModel != null)
                     {
-                        supplementModel.SeibunGroupByIndexCd = (supplementModel.SeibunGroupByIndexCd + ", " + supplementModelItem.Seibun);
+                        supplementModel.SeibunGroupByIndexCd += ", " + supplementModelItem.Seibun;
                     }
                 }
 
