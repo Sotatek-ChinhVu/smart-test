@@ -116,7 +116,9 @@ namespace Infrastructure.Converter
                                           tenMst?.CmtColKeta4 ?? 0,
                                           tenMst?.CmtCol2 ?? 0,
                                           tenMst?.CmtCol3 ?? 0,
-                                          tenMst?.CmtCol4 ?? 0
+                                          tenMst?.CmtCol4 ?? 0,
+                                          tenMst?.HandanGrpKbn ?? 0,
+                                          kensaMst == null
                                           );
                 odrInfDetailModelList.Add(odrInfDetailModel);
             }

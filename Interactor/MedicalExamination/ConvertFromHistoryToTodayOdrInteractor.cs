@@ -130,7 +130,9 @@ namespace Interactor.MedicalExamination
                                 itemDetail.CmtColKeta4,
                                 itemDetail.CmtCol2,
                                 itemDetail.CmtCol3,
-                                itemDetail.CmtCol4
+                                itemDetail.CmtCol4,
+                                itemDetail.HandanGrpKbn,
+                                itemDetail.IsKensaMstEmpty
                             )
                             ).ToList(),
                         DateTime.MinValue,
@@ -223,7 +225,9 @@ namespace Interactor.MedicalExamination
                             od.CmtCol1,
                             od.CmtCol2,
                             od.CmtCol3,
-                            od.CmtCol4
+                            od.CmtCol4,
+                            od.HandanGrpKbn,
+                            od.IsKensaMstEmpty
                         )).OrderBy(odrDetail => odrDetail.RpNo)
                         .ThenBy(odrDetail => odrDetail.RpEdaNo)
                         .ThenBy(odrDetail => odrDetail.RowNo)
