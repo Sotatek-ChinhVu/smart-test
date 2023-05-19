@@ -52,8 +52,8 @@ namespace Interactor.ReceSeikyu
         private ImportFileReceSeikyuOutputData HandlerImportFileRece(string fileName, List<string> fileContent, int hpId, int userId, Stream file)
         {
             string sRecKind = string.Empty;
-            int ARECnt = 0;
-            int ASeikyuYm = 0;
+            int areCnt = 0;
+            int aSeikyuYm = 0;
             int sinYm = 0;
             int birthday = 0;
             long ptId = 0;
@@ -118,7 +118,7 @@ namespace Interactor.ReceSeikyu
 
                         // Insert RECE_SEIKYU
                         if (!InsertReceSeikyuProcess(hpId, ptId, sinYm, birthday, hokenId, userId)) continue;
-                        ARECnt++;
+                        areCnt++;
                         // Insert RECEDEN_RIREKI_INF_(レセオンライン返戻履歴管理)
                         _receSeikyuRepository.InsertSingleRerikiInf(hpId, ptId, sinYm, hokenId, slCol[18], fileContent[iRow], userId);
                     }
@@ -141,7 +141,7 @@ namespace Interactor.ReceSeikyu
                             return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.Failed, message);
                         }
                         sRecKind = slCol[0];
-                        ASeikyuYm = StringToSinYmImport(slCol[2]);
+                        aSeikyuYm = StringToSinYmImport(slCol[2]);
                     }
                     //レセプト共通レコード
                     else if (slCol[0] == "RE")
@@ -156,7 +156,7 @@ namespace Interactor.ReceSeikyu
                         {
                             if (InsertReceSeikyuProcess(hpId, ptId, sinYm, birthday, hokenId, userId))
                             {
-                                ARECnt++;
+                                areCnt++;
                             }
                         }
 
@@ -255,19 +255,19 @@ namespace Interactor.ReceSeikyu
                         }
                         sRecKind = "HG";
                         InsertReceSeikyuProcess(hpId, ptId, sinYm, birthday, hokenId, userId);
-                        ARECnt++;
+                        areCnt++;
                     }
                 }
             }
 
-            string path = $"{CommonConstants.Tempotary}/{CommonConstants.ReceiptcHen}/{ASeikyuYm}/";
+            string path = $"{CommonConstants.Tempotary}/{CommonConstants.ReceiptcHen}/{aSeikyuYm}/";
             string fileNameUpload = $"{DateTime.Now.ToString("yyyyMMdd_HHmmss_")}{fileName}";
 
             string idCloud = _amazonS3Service.UploadObjectAsync(path, fileNameUpload, file, true).Result;
 
             if (_receSeikyuRepository.SaveChangeImportFileRececeikyus())
             {
-                string message = string.Format(ErrorMessage.MessageType_mEnt02020, CIUtil.SMonthToShowSMonth(ASeikyuYm) + "請求分(" + ARECnt + "件) の返戻レセプト");
+                string message = string.Format(ErrorMessage.MessageType_mEnt02020, CIUtil.SMonthToShowSMonth(aSeikyuYm) + "請求分(" + areCnt + "件) の返戻レセプト");
                 return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.Successful, message);
             }
             else
