@@ -3068,6 +3068,7 @@ namespace Infrastructure.Repositories
                    entity.Kokuji1 ?? string.Empty,
                    entity.Kokuji2 ?? string.Empty,
                    string.Empty,
+                   0,
                    true
                 ) : new();
 

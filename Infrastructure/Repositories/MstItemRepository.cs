@@ -191,6 +191,7 @@ namespace Infrastructure.Repositories
                 tenMst?.Kokuji1 ?? string.Empty,
                 tenMst?.Kokuji2 ?? string.Empty,
                 string.Empty,
+                0,
                 true
             );
         }
@@ -242,6 +243,7 @@ namespace Infrastructure.Repositories
                 tenMst.Kokuji1 ?? string.Empty,
                 tenMst.Kokuji2 ?? string.Empty,
                 string.Empty,
+                0,
                 true
             )).ToList();
         }
@@ -705,6 +707,7 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
                                                            item.TenMst?.Kokuji2 ?? string.Empty,
                                                            item.IpnName,
+                                                           item.TenMst?.HandanGrpKbn ?? 0,
                                                            item.KensaMst == null
                                                             )).ToList();
             }
@@ -801,6 +804,7 @@ namespace Infrastructure.Repositories
                                                            item.Kokuji1 ?? string.Empty,
                                                            item.Kokuji2 ?? string.Empty,
                                                            string.Empty,
+                                                           0,
                                                            true
                                                            )).ToList();
             }
@@ -967,6 +971,7 @@ namespace Infrastructure.Repositories
                     entity?.Kokuji1 ?? string.Empty,
                     entity?.Kokuji2 ?? string.Empty,
                     string.Empty,
+                    0,
                     true
                );
         }
@@ -1023,6 +1028,7 @@ namespace Infrastructure.Repositories
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
                     string.Empty,
+                    0,
                     true
                )).ToList();
         }
@@ -1076,6 +1082,7 @@ namespace Infrastructure.Repositories
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
                     string.Empty,
+                    0,
                     true
                )).ToList();
         }
@@ -1130,6 +1137,7 @@ namespace Infrastructure.Repositories
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
                     string.Empty,
+                    0,
                     true
                )).ToList();
         }
@@ -1505,6 +1513,7 @@ namespace Infrastructure.Repositories
                         tenMst?.Kokuji1 ?? string.Empty,
                         tenMst?.Kokuji2 ?? string.Empty,
                         string.Empty,
+                        0,
                         true
                         );
         }
