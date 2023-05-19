@@ -887,7 +887,8 @@ namespace Infrastructure.Repositories
             for (long i = startIndex; i < endIndex; i++)
             {
                 if (isPtNumCheckDigit && !CIUtil.PtNumCheckDigits(i))
-                {
+                {     
+                    endIndex++;
                     continue;
                 }
 
