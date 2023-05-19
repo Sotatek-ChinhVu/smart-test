@@ -14,7 +14,6 @@ using Helper.Messaging.Data;
 using Helper.Messaging;
 using Domain.Models.ReceSeikyu;
 using UseCase.ReceSeikyu.ImportFile;
-using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {
@@ -115,11 +114,10 @@ namespace EmrCloudApi.Controller
             }
         }
 
-        [AllowAnonymous]
         [HttpPost(ApiPath.ImportFileReceSeikyu)]
         public ActionResult<Response<ImportFileReceSeikyuResponse>> ImportFileReceSeikyu(IFormFile fileImport)
         {
-            var input = new ImportFileReceSeikyuInputData(1, 2, fileImport);
+            var input = new ImportFileReceSeikyuInputData(HpId, UserId, fileImport);
             var output = _bus.Handle(input);
             var presenter = new ImportFileReceSeikyuPresenter();
             presenter.Complete(output);

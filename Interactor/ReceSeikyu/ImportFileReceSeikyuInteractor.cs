@@ -6,6 +6,7 @@ using Domain.Models.ReceSeikyu;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.Text;
 using UseCase.ReceSeikyu.ImportFile;
@@ -16,11 +17,13 @@ namespace Interactor.ReceSeikyu
     {
         private readonly IReceSeikyuRepository _receSeikyuRepository;
         private readonly IPatientInforRepository _patientInforRepository;
+        private readonly IAmazonS3Service _amazonS3Service;
 
-        public ImportFileReceSeikyuInteractor(IReceSeikyuRepository receptionRepository, IPatientInforRepository patientInforRepository)
+        public ImportFileReceSeikyuInteractor(IReceSeikyuRepository receptionRepository, IPatientInforRepository patientInforRepository, IAmazonS3Service amazonS3Service)
         {
             _receSeikyuRepository = receptionRepository;
             _patientInforRepository = patientInforRepository;
+            _amazonS3Service = amazonS3Service;
         }
 
         public ImportFileReceSeikyuOutputData Handle(ImportFileReceSeikyuInputData inputData)
@@ -38,7 +41,7 @@ namespace Interactor.ReceSeikyu
                 if (fileContent == null || fileContent.Count() == 0)
                     return new ImportFileReceSeikyuOutputData(ImportFileReceSeikyuStatus.InvalidContentFile, string.Empty);
 
-                return HandlerImportFileRece(fileName, fileContent, inputData.HpId, inputData.UserId);
+                return HandlerImportFileRece(fileName, fileContent, inputData.HpId, inputData.UserId, inputData.File.OpenReadStream());
             }
             finally
             {
@@ -46,7 +49,7 @@ namespace Interactor.ReceSeikyu
             }
         }
 
-        private ImportFileReceSeikyuOutputData HandlerImportFileRece(string fileName, List<string> fileContent, int hpId, int userId)
+        private ImportFileReceSeikyuOutputData HandlerImportFileRece(string fileName, List<string> fileContent, int hpId, int userId, Stream file)
         {
             string sRecKind = string.Empty;
             int ARECnt = 0;
@@ -257,18 +260,10 @@ namespace Interactor.ReceSeikyu
                 }
             }
 
-            //ファイルを退避
-            //string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-            //string sTmpPath = appPath + @"\Temp\ReceiptcHen\" + ASeikyuYm.AsString();
-            //string newFile = DateTime.Now.ToString("yyyyMMdd_HHmmss_") + fileName;
-            //string destFile = Path.Combine(sTmpPath, newFile);
+            string path = $"{CommonConstants.Tempotary}/{CommonConstants.ReceiptcHen}/{ASeikyuYm}/";
+            string fileNameUpload = $"{DateTime.Now.ToString("yyyyMMdd_HHmmss_")}{fileName}";
 
-            //if (!CIUtil.IsDirectoryExisting(sTmpPath))
-            //{
-            //    Directory.CreateDirectory(sTmpPath);
-            //}
-            //File.Copy(importFileName, destFile, true);
-
+            string idCloud = _amazonS3Service.UploadObjectAsync(path, fileNameUpload, file, true).Result;
 
             if (_receSeikyuRepository.SaveChangeImportFileRececeikyus())
             {
