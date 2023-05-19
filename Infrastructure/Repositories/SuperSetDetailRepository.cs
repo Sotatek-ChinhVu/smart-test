@@ -341,7 +341,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                  join user in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && listUserId.Contains(u.UserId))
                                  on odrInf.CreateId equals user.UserId into odrUsers
                                  from odrUser in odrUsers.DefaultIfEmpty()
-                                 select ConvertToOrderInfModel(odrInf, odrUser?.Name ?? string.Empty);
+                                 select ConvertToOrderInfModel(odrInf, odrUser?.Sname ?? string.Empty);
 
         // Convert to list SetOrderInfModel
         foreach (var itemOrderModel in listOrderInfModels)
@@ -425,7 +425,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                  join user in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && listUserId.Contains(u.UserId))
                                  on odrInf.CreateId equals user.UserId into odrUsers
                                  from odrUser in odrUsers.DefaultIfEmpty()
-                                 select ConvertToOrderInfModel(odrInf, odrUser?.Name ?? string.Empty);
+                                 select ConvertToOrderInfModel(odrInf, odrUser?.Sname ?? string.Empty);
 
         // Convert to list SetOrderInfModel
         foreach (var itemOrderModel in listOrderInfModels)
