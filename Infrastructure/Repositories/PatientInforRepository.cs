@@ -2118,5 +2118,25 @@ namespace Infrastructure.Repositories
             }
             return false;
         }
+
+        public long GetPtIdFromPtNum(int hpId, long ptNum)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                            && item.PtNum == ptNum);
+            if (ptInf != null)
+            {
+                return ptInf.PtId;
+            }
+            return 0;
+        }
+
+        public int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus)
+        {
+            return NoTrackingDataContext.RaiinInfs.Count(u => u.PtId == ptId &&
+                                                                              u.SinDate >= fromDate &&
+                                                                              u.SinDate <= toDate &&
+                                                                              u.Status >= raiintStatus &&
+                                                                              u.IsDeleted == DeleteTypes.None);
+        }
     }
 }

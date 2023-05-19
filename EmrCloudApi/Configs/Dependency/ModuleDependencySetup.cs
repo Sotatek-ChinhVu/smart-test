@@ -476,6 +476,7 @@ using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.ReceSeikyu.GetList;
+using UseCase.ReceSeikyu.ImportFile;
 using UseCase.ReceSeikyu.Save;
 using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.Santei.GetListSanteiInf;
@@ -1195,6 +1196,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
             busBuilder.RegisterUseCase<SearchReceInfInputData, SearchReceInfInteractor>();
             busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
+            busBuilder.RegisterUseCase<ImportFileReceSeikyuInputData, ImportFileReceSeikyuInteractor>();
 
             //WeightedSetConfirmation
             busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
