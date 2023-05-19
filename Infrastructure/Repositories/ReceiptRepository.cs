@@ -3254,16 +3254,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         RcStatus = receInfJoinPtInf.RcStatus
                     };
 
-
         return query.Select(x => new ReceInfValidateModel(x.PtInf.PtId,
                                                          x.PtInf.PtNum,
                                                          x.ReceInf.SinYm,
                                                          x.ReceInf.IsTester,
                                                          x.ReceInf.HokenKbn,
                                                          x.RcStatus == null ? 0 : x.RcStatus.IsPaperRece,
-                                                         x.PtHokenInf.RousaiSaigaiKbn,
+                                                         x.PtHokenInf == null ? 0 : x.PtHokenInf .RousaiSaigaiKbn,
                                                          x.ReceInf.HokenId,
-                                                         x.PtHokenInf.RousaiSyobyoDate)).ToList();
+                                                         x.PtHokenInf == null ? 0 : x.PtHokenInf.RousaiSyobyoDate)).ToList();
     }
 
     public bool ExistSyobyoKeikaData(int hpId, long ptId, int sinYm, int hokenId)
