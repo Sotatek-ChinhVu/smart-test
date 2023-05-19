@@ -37,7 +37,7 @@ public class SetOrderInfDetailModel
         YohoSets = yohoSets;
     }
 
-    public SetOrderInfDetailModel(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string centerItemCd1, string centerItemCd2, int kasan1, int kasan2, List<YohoSetMstModel> yohoSets, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4)
+    public SetOrderInfDetailModel(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string centerItemCd1, string centerItemCd2, int kasan1, int kasan2, List<YohoSetMstModel> yohoSets, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int handanGrpKbn, bool isKensaMstEmpty)
     {
         HpId = hpId;
         SetCd = setCd;
@@ -91,6 +91,8 @@ public class SetOrderInfDetailModel
         CmtColKeta2 = cmtColKeta2;
         CmtColKeta3 = cmtColKeta3;
         CmtColKeta4 = cmtColKeta4;
+        HandanGrpKbn = handanGrpKbn;
+        IsKensaMstEmpty = isGetPriceInYakka;
     }
 
     public int HpId { get; private set; }
@@ -194,6 +196,10 @@ public class SetOrderInfDetailModel
     public int CmtCol3 { get; private set; }
 
     public int CmtCol4 { get; private set; }
+
+    public int HandanGrpKbn { get; private set; }
+
+    public bool IsKensaMstEmpty { get; private set; }
 
     public List<YohoSetMstModel> YohoSets { get; private set; }
 

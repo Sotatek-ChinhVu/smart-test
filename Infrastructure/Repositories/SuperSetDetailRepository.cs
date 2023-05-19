@@ -112,7 +112,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             if (karteInf != null)
                 karteInfs.Add(karteInf);
             if (karteFileOfItem != null && karteFileOfItem.Count > 0)
-                karteFiles.Add(new (currentSetCd, karteFileOfItem));
+                karteFiles.Add(new(currentSetCd, karteFileOfItem));
             ordInfs.AddRange(taskOrder.Result);
         });
 
@@ -341,7 +341,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                  join user in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && listUserId.Contains(u.UserId))
                                  on odrInf.CreateId equals user.UserId into odrUsers
                                  from odrUser in odrUsers.DefaultIfEmpty()
-                                 select ConvertToOrderInfModel(odrInf, odrUser?.Name ?? string.Empty);
+                                 select ConvertToOrderInfModel(odrInf, odrUser?.Sname ?? string.Empty);
 
         // Convert to list SetOrderInfModel
         foreach (var itemOrderModel in listOrderInfModels)
@@ -425,7 +425,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                  join user in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && listUserId.Contains(u.UserId))
                                  on odrInf.CreateId equals user.UserId into odrUsers
                                  from odrUser in odrUsers.DefaultIfEmpty()
-                                 select ConvertToOrderInfModel(odrInf, odrUser?.Name ?? string.Empty);
+                                 select ConvertToOrderInfModel(odrInf, odrUser?.Sname ?? string.Empty);
 
         // Convert to list SetOrderInfModel
         foreach (var itemOrderModel in listOrderInfModels)
@@ -593,7 +593,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                         tenMst.CmtCol1,
                         tenMst.CmtCol2,
                         tenMst.CmtCol3,
-                        tenMst.CmtCol4
+                        tenMst.CmtCol4,
+                        tenMst.HandanGrpKbn,
+                        kensaMst == null
             );
     }
 
@@ -655,7 +657,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                         tenMst.CmtCol1,
                         tenMst.CmtCol2,
                         tenMst.CmtCol3,
-                        tenMst.CmtCol4
+                        tenMst.CmtCol4,
+                        tenMst.HandanGrpKbn,
+                        kensaMst == null
             );
     }
 

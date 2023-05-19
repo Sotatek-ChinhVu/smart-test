@@ -219,7 +219,8 @@ namespace Interactor.NextOrder
                     0,
                     string.Empty,
                     string.Empty,
-                    0
+                    0,
+                    true
                 );
         }
 
