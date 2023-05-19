@@ -95,7 +95,7 @@ namespace Infrastructure.Converter
                                           0,
                                           false,
                                           0,
-                                          0,
+                                          tenMst?.CmtCol1 ?? 0,
                                           ten,
                                           0,
                                           0,
@@ -109,7 +109,16 @@ namespace Infrastructure.Converter
                                           string.Empty,
                                           string.Empty,
                                           string.Empty,
-                                          string.Empty
+                                          string.Empty,
+                                          tenMst?.CmtColKeta1 ?? 0,
+                                          tenMst?.CmtColKeta2 ?? 0,
+                                          tenMst?.CmtColKeta3 ?? 0,
+                                          tenMst?.CmtColKeta4 ?? 0,
+                                          tenMst?.CmtCol2 ?? 0,
+                                          tenMst?.CmtCol3 ?? 0,
+                                          tenMst?.CmtCol4 ?? 0,
+                                          tenMst?.HandanGrpKbn ?? 0,
+                                          kensaMst == null
                                           );
                 odrInfDetailModelList.Add(odrInfDetailModel);
             }

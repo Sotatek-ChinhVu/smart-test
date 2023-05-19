@@ -62,5 +62,6 @@
         Yakutai = 57,
         YoyakuHyo = 58,
         YoyakuList = 59,
+        MemoMsg = 60,
     }
 }

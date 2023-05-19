@@ -179,6 +179,20 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common);
     }
 
+    [HttpGet(ApiPath.MemoMsgPrint)]
+    public async Task<IActionResult> MemoMsgPrint([FromQuery] MemoMsgPrintRequest request)
+    {
+        var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.ReceTarget)]
+    public async Task<IActionResult> ReceTarget([FromQuery] ReceTargetRequest request)
+    {
+        var data = _reportService.GetReceTargetPrint(request.HpId, request.SeikyuYm);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
     [HttpGet("ExportKarte2")]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {

@@ -897,7 +897,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
                     join ptKyusei in ptKyuseis on new { receInf.HpId, receInf.PtId }
                                               equals new { ptKyusei.HpId, ptKyusei.PtId } into ptKyuseiLeft
-                    from ptKyusei in ptKyuseiLeft.Where(item => item.EndDate >= kaikeiInf.SinDate && item.PtId == kaikeiInf.PtId).Take(1).DefaultIfEmpty()
+                    from ptKyusei in ptKyuseiLeft.Where(item => kaikeiInf != null && item.EndDate >= kaikeiInf.SinDate && item.PtId == kaikeiInf.PtId).Take(1).DefaultIfEmpty()
 
                     join kaMst in kaMsts on new { receInf.HpId, receInf.KaId }
                                                equals new { kaMst.HpId, kaMst.KaId } into kaMstLeft
@@ -929,13 +929,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         Output = receStatus != null ? receStatus.Output : 0,
                         FusenKbn = receStatus != null ? receStatus.FusenKbn : 0,
                         StatusKbn = receStatus != null ? receStatus.StatusKbn : 0,
-                        ReceCheckCmt = receCheckCmt != null ? receCheckCmt.Cmt : (receCheckErr != null ? receCheckErr.Message1 + receCheckErr.Message2 : string.Empty),
+                        ReceCheckCmt = receCheckCmt != null ? receCheckCmt.Cmt : (receCheckErr != null ? receCheckErr?.Message1 ?? string.Empty + receCheckErr?.Message2 ?? string.Empty : string.Empty),
                         IsPending = receCheckCmt != null ? receCheckCmt.IsPending : -1,
-                        ptInf.PtNum,
+                        PtNum = ptInf != null ? ptInf.PtNum : 0,
                         Name = ptKyusei != null ? ptKyusei.Name : ptInf.Name,
                         KanaName = ptKyusei != null ? ptKyusei.KanaName : ptInf.KanaName,
-                        ptInf.Sex,
-                        ptInf.Birthday,
+                        Sex = ptInf != null ? ptInf.Sex : 0,
+                        Birthday = ptInf != null ? ptInf.Birthday : 0,
                         receInf.IsTester,
                         HokensyaNo = ptHokenInf?.HokensyaNo ?? string.Empty,
                         IsSyoukiInfExist = syoukiInf != null ? 1 : 0,
@@ -943,7 +943,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         IsSyobyoKeikaExist = syobyokeika != null ? 1 : 0,
                         SeikyuCmt = receSeikyu != null ? receSeikyu.Cmt : string.Empty,
                         LastVisitDate = ptLastVisitDate != null ? ptLastVisitDate.SinDate : 0,
-                        kaMst.KaName,
+                        KaName = kaMst != null ? kaMst.KaName : string.Empty,
                         UserName = userMst?.Name ?? string.Empty,
                         IsPtKyuseiExist = ptKyusei != null ? 1 : 0,
                         FutansyaNoKohi1 = ptKohi1 != null ? ptKohi1.FutansyaNo : string.Empty,
@@ -3302,7 +3302,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public bool SaveReceStatusCalc(List<ReceStatusModel> newReceStatus, List<ReceStatusModel> updateList, int userId, int hpId)
     {
-        foreach(var item in updateList)
+        foreach (var item in updateList)
         {
             var update = TrackingDataContext.ReceStatuses.FirstOrDefault(x => x.HpId == hpId && x.PtId == item.PtId
                                                                             && x.SeikyuYm == item.SeikyuYm
@@ -3325,7 +3325,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
-    
+
 
     public void ReleaseResource()
     {

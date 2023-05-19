@@ -350,7 +350,7 @@ public class HistoryCommon : IHistoryCommon
                                                                 od.ReqCd,
                                                                 od.Bunkatu,
                                                                 od.CmtName,
-                                                                od.CmtName,
+                                                                od.CmtOpt,
                                                                 od.FontColor,
                                                                 od.CommentNewline,
                                                                 od.Yakka,
@@ -370,7 +370,17 @@ public class HistoryCommon : IHistoryCommon
                                                                 od.OdrUnitName,
                                                                 od.HasCmtName,
                                                                 od.CenterItemCd1,
-                                                                od.CenterItemCd2
+                                                                od.CenterItemCd2,
+                                                                od.CmtColKeta1,
+                                                                od.CmtColKeta2,
+                                                                od.CmtColKeta3,
+                                                                od.CmtColKeta4,
+                                                                od.CmtCol1,
+                                                                od.CmtCol2,
+                                                                od.CmtCol3,
+                                                                od.CmtCol4,
+                                                                od.HandanGrpKbn,
+                                                                od.IsKensaMstEmpty
                                                         )
                                                         ).ToList(),
                                                         rpOdrInf.CreateDate,

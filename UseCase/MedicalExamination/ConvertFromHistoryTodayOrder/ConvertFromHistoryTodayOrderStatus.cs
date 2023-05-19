@@ -8,6 +8,7 @@
         InvalidRaiinNo,
         InvalidUserId,
         InvalidPtId,
+        InvalidSanteiKbn,
         InputNoData
     }
 }

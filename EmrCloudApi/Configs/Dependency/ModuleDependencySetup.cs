@@ -164,6 +164,7 @@ using Reporting.Kensalrai.DB;
 using Reporting.Kensalrai.Service;
 using Reporting.MedicalRecordWebId.DB;
 using Reporting.MedicalRecordWebId.Service;
+using Reporting.Memo.Service;
 using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.DB;
 using Reporting.OrderLabel.Service;
@@ -179,6 +180,8 @@ using Reporting.ReceiptCheck.Service;
 using Reporting.ReceiptList.DB;
 using Reporting.ReceiptList.Service;
 using Reporting.ReceiptPrint.Service;
+using Reporting.ReceTarget.DB;
+using Reporting.ReceTarget.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
 using Reporting.Sokatu.Common.DB;
@@ -672,8 +675,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoKokhoSeikyuFinder, CoKokhoSeikyuFinder>();
             services.AddTransient<ICoKokhoSokatuFinder, CoKokhoSokatuFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IMemoMsgCoReportService, MemoMsgCoReportService>();
             services.AddTransient<IP28KokhoSokatuCoReportService, P28KokhoSokatuCoReportService>();
             services.AddTransient<IP11KokhoSokatuCoReportService, P11KokhoSokatuCoReportService>();
+            services.AddTransient<IReceTargetCoReportService, ReceTargetCoReportService>();
+            services.AddTransient<ICoReceTargetFinder, CoReceTargetFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
