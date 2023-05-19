@@ -94,8 +94,8 @@ public class GetReceByomeiCheckingInteractor : IGetReceByomeiCheckingInputPort
             // No.6510 future byomei check
             var byomeiCds = byomeisByOdr.Select(item => item.ByomeiCd).Distinct().ToList();
             if (!orderInfDetailList.Exists(item => item.ItemCd == odrDetail.ItemCd)
-                && !todayByomeiList.Where(item => item.IsNodspRece == 0
-                                                  && item.HokenPid == 0
+                && !todayByomeiList.Where(item => item.IsDspRece
+                                                  && (item.HokenPid == 0 || item.HokenPid == inputData.HokenId)
                                                   && item.StartDate <= inputData.SinDate
                                                   && (!item.IsTenki || item.TenkiDate >= inputData.SinDate)
                                                   && (!odrDetail.IsDrug || !item.FullByomei.AsString().Contains(_suspectFlag)))
