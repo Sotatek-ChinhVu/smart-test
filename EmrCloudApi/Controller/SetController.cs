@@ -1,5 +1,7 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.SetMst;
+using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.SetMst;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.SetMst;
@@ -24,9 +26,11 @@ namespace EmrCloudApi.Controller;
 public class SetController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    public SetController(UseCaseBus bus, IUserService userService) : base(userService)
+    private readonly IWebSocketService _webSocketService;
+    public SetController(UseCaseBus bus, IUserService userService, IWebSocketService webSocketService) : base(userService)
     {
         _bus = bus;
+        _webSocketService = webSocketService;
     }
 
     [HttpGet(ApiPath.GetList)]
@@ -54,10 +58,16 @@ public class SetController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.Save)]
-    public ActionResult<Response<SaveSetMstResponse>> Save([FromBody] SaveSetMstRequest request)
+    public async Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
     {
         var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, HpId, UserId, request.IsGroup);
         var output = _bus.Handle(input);
+
+        if (output.Status == SaveSetMstStatus.Successed)
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.SuperSetChanged,
+                new SuperSetMessage { SetCds = new List<int> { output.setMstModel?.SetCd ?? 0 } });
+        }
 
         var presenter = new SaveSetMstPresenter();
         presenter.Complete(output);
@@ -66,10 +76,16 @@ public class SetController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.Reorder)]
-    public ActionResult<Response<ReorderSetMstResponse>> Reorder([FromBody] ReorderSetMstRequest request)
+    public async Task<ActionResult<Response<ReorderSetMstResponse>>> Reorder([FromBody] ReorderSetMstRequest request)
     {
         var input = new ReorderSetMstInputData(HpId, request.DragSetCd, request.DropSetCd, UserId);
         var output = _bus.Handle(input);
+
+        if (output.Status == ReorderSetMstStatus.Successed)
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.SuperSetChanged,
+                new SuperSetMessage { SetCds = new List<int> { request.DragSetCd, request.DropSetCd } });
+        }
 
         var presenter = new ReorderSetMstPresenter();
         presenter.Complete(output);
@@ -78,10 +94,16 @@ public class SetController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.Paste)]
-    public ActionResult<Response<CopyPasteSetMstResponse>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
+    public async Task<ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
         var input = new CopyPasteSetMstInputData(HpId, UserId, request.GenerationId, request.CopySetCd, request.PasteSetCd, request.PasteToOtherGroup, request.CopySetKbnEdaNo, request.CopySetKbn, request.PasteSetKbnEdaNo, request.PasteSetKbn);
         var output = _bus.Handle(input);
+
+        if (output.Status == CopyPasteSetMstStatus.Successed)
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.SuperSetChanged,
+                new SuperSetMessage { SetCds = new List<int> { output.NewSetCd} });
+        }
 
         var presenter = new CopyPasteSetMstPresenter();
         presenter.Complete(output);

@@ -1000,5 +1000,6 @@
         public static readonly string InvalidMenuName = "Invalid MenuName!";
 
         public static readonly string NoPermission = "No permission";
+        public static readonly string InvalidContentFile = "Invalid file content";
     }
 }

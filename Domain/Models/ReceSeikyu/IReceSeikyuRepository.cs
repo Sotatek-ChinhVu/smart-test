@@ -19,5 +19,21 @@ namespace Domain.Models.ReceSeikyu
         bool RemoveReceSeikyuDuplicateIfExist(long ptId, int sinYm, int hokenId, int userId, int hpId);
 
         bool UpdateSeikyuYmReceipSeikyuIfExist(long ptId, int sinYm, int hokenId , int seikyuYm, int userId, int hpId);
+
+        bool IsReceSeikyuExisted(int hpId, long ptId, int sinYm, int hokenId);
+
+        int GetReceSeikyuPreHoken(int hpId, long ptId, int sinYm, int hokenId);
+
+        void DeleteReceSeikyu(int hpId, long ptId, int sinYm, int hokenId);
+
+        void DeleteHenJiyuuRireki(int hpId, long ptId, int sinYm, int preHokenId);
+
+        void InsertSingleReceSeikyu(int hpId, long ptId, int sinYm, int hokenId, int userId);
+
+        void InsertSingleRerikiInf(int hpId, long ptId, int sinYm, int hokenId, string searchNo, string rireki, int userId);
+
+        void InsertSingleHenJiyuu(int hpId, long ptId, int sinYm, int hokenId, string hosoku, string henreiJiyuuCd, string henreiJiyuu, int userId);
+
+        bool SaveChangeImportFileRececeikyus();
     }
 }
