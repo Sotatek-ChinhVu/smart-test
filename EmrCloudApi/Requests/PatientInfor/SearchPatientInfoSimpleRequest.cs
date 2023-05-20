@@ -9,5 +9,7 @@
         public int PageIndex { get; set; }
 
         public int PageSize { get; set; }
+
+        public Dictionary<string, string> SortData { get; set; } = new();
     }
 }

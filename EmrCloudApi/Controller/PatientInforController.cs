@@ -161,7 +161,7 @@ namespace EmrCloudApi.Controller
         [HttpGet("SearchSimple")]
         public ActionResult<Response<SearchPatientInforSimpleResponse>> SearchSimple([FromQuery] SearchPatientInfoSimpleRequest request)
         {
-            var input = new SearchPatientInfoSimpleInputData(request.Keyword, request.IsContainMode, HpId, request.PageIndex, request.PageSize);
+            var input = new SearchPatientInfoSimpleInputData(request.Keyword, request.IsContainMode, HpId, request.PageIndex, request.PageSize, request.SortData);
             var output = _bus.Handle(input);
 
             var present = new SearchPatientInfoSimplePresenter();
