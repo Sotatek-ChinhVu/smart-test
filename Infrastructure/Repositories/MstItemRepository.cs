@@ -1036,38 +1036,49 @@ namespace Infrastructure.Repositories
 
             var kensaMstQuery = NoTrackingDataContext.KensaMsts.AsQueryable();
 
-            var queryKNTensu = (from tenKN in queryResult
+            var queryKNTensu = from tenKN in queryResult
                                join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
                                where tenKN.ItemCd.StartsWith("KN")
-                               select new { tenKN.ItemCd, ten.Ten }).ToList();
+                               select new { tenKN.ItemCd, ten.Ten };
 
-            var tenJoinYakkaSyusai = (from ten in queryResult
+            var tenJoinYakkaSyusai = from ten in queryResult
                                      join yakkaSyusaiMstItem in yakkaSyusaiMstList
                                      on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
                                      from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
-                                     select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem }).ToList();
+                                     select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
 
             var sinKouiCollection = new SinkouiCollection();
 
-            var queryFinal = (from ten in tenJoinYakkaSyusai
-                             //join tenLastDate in tenMstGetLastDateQuery
-                             //on ten.TenMst.ItemCd equals tenLastDate.ItemCd
+            var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
+                                 //join tenLastDate in tenMstGetLastDateQuery
+                                 //on ten.TenMst.ItemCd equals tenLastDate.ItemCd
                              join kouiKbnItem in sinKouiCollection
                              on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
                              from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
                              join tenKN in queryKNTensu
                              on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
                              from tenKN in tenKNLeft.DefaultIfEmpty()
-                             select new { ten.TenMst, KouiName = tenKouiKbn.SinkouiName, ten.YakkaSyusaiItem, tenKN
-                             //, LastEndDate = tenLastDate.EndDate 
-                             }
-                             ).ToList();
+                             select new
+                             {
+                                 ten.TenMst,
+                                 KouiName = tenKouiKbn.SinkouiName,
+                                 ten.YakkaSyusaiItem,
+                                 tenKN
+                                 //, LastEndDate = tenLastDate.EndDate 
+                             };
+
             var queryJoinWithKensa = (from q in queryFinal
                                       join k in kensaMstQuery
                                       on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                       from kensaMst in kensaMsts.DefaultIfEmpty()
-                                      select new { q.TenMst, q.KouiName, q.YakkaSyusaiItem, q.tenKN, KensaMst = kensaMst
-                                     // , q.LastEndDate 
+                                      select new
+                                      {
+                                          q.TenMst,
+                                          q.KouiName,
+                                          q.YakkaSyusaiItem,
+                                          q.tenKN,
+                                          KensaMst = kensaMst
+                                          // , q.LastEndDate 
                                       }
                                      ).OrderBy(item => item.TenMst.KanaName1)
                                       .ThenBy(item => item.TenMst.Name)
