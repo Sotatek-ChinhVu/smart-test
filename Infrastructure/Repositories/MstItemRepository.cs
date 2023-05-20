@@ -697,7 +697,7 @@ namespace Infrastructure.Repositories
                                             { 'ｯ', 'ﾂ' }
                                         };
 
-            string sBigKeyword = keyword?.ToUpper();
+            string sBigKeyword = keyword.ToUpper();
 
             foreach (var kvp in optimizedReplaceDict)
             {
@@ -707,15 +707,15 @@ namespace Infrastructure.Repositories
             var queryResult = NoTrackingDataContext.TenMsts
                 .Where(t =>
                     t.ItemCd.StartsWith(keyword)
-                    || t.SanteiItemCd.StartsWith(keyword)
-                    || t.KanaName1.ToUpper().StartsWith(sBigKeyword)
-                    || t.KanaName2.ToUpper().StartsWith(sBigKeyword)
-                    || t.KanaName3.ToUpper().StartsWith(sBigKeyword)
-                    || t.KanaName4.ToUpper().StartsWith(sBigKeyword)
-                    || t.KanaName5.ToUpper().StartsWith(sBigKeyword)
-                    || t.KanaName6.ToUpper().StartsWith(sBigKeyword)
-                    || t.KanaName7.ToUpper().StartsWith(sBigKeyword)
-                    || t.Name.Contains(keyword));
+                    || !string.IsNullOrEmpty(t.SanteiItemCd) && t.SanteiItemCd.StartsWith(keyword)
+                    || !string.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper().StartsWith(sBigKeyword)
+                    || !string.IsNullOrEmpty(t.KanaName2) && t.KanaName2.ToUpper().StartsWith(sBigKeyword)
+                    || !string.IsNullOrEmpty(t.KanaName3) && t.KanaName3.ToUpper().StartsWith(sBigKeyword)
+                    || !string.IsNullOrEmpty(t.KanaName4) && t.KanaName4.ToUpper().StartsWith(sBigKeyword)
+                    || !string.IsNullOrEmpty(t.KanaName5) && t.KanaName5.ToUpper().StartsWith(sBigKeyword)
+                    || !string.IsNullOrEmpty(t.KanaName6) && t.KanaName6.ToUpper().StartsWith(sBigKeyword)
+                    || !string.IsNullOrEmpty(t.KanaName7) && t.KanaName7.ToUpper().StartsWith(sBigKeyword)
+                    || !string.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword));
 
             if (isAllowSearchDeletedItem)
             {
@@ -1030,9 +1030,6 @@ namespace Infrastructure.Repositories
             {
                 tenMstQueryForGetlastDate = tenMstQueryForGetlastDate.Where(t => t.IsDeleted == DeleteTypes.None);
             }
-            //var tenMstGetLastDateQuery = tenMstQueryForGetlastDate.Select(x => new { ItemCd = x.ItemCd, EndDate = x.EndDate })
-            //                                               .GroupBy(x => x.ItemCd)
-            //                                               .Select(x => new { ItemCd = x.Key, EndDate = x.Max(y => y.EndDate) });
 
             var kensaMstQuery = NoTrackingDataContext.KensaMsts.AsQueryable();
 
@@ -1050,8 +1047,6 @@ namespace Infrastructure.Repositories
             var sinKouiCollection = new SinkouiCollection();
 
             var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
-                                 //join tenLastDate in tenMstGetLastDateQuery
-                                 //on ten.TenMst.ItemCd equals tenLastDate.ItemCd
                              join kouiKbnItem in sinKouiCollection
                              on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
                              from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
@@ -1064,7 +1059,6 @@ namespace Infrastructure.Repositories
                                  KouiName = tenKouiKbn.SinkouiName,
                                  ten.YakkaSyusaiItem,
                                  tenKN
-                                 //, LastEndDate = tenLastDate.EndDate 
                              };
 
             var queryJoinWithKensa = (from q in queryFinal
@@ -1078,7 +1072,6 @@ namespace Infrastructure.Repositories
                                           q.YakkaSyusaiItem,
                                           q.tenKN,
                                           KensaMst = kensaMst
-                                          // , q.LastEndDate 
                                       }
                                      ).OrderBy(item => item.TenMst.KanaName1)
                                       .ThenBy(item => item.TenMst.Name)
