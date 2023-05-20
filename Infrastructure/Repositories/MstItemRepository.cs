@@ -1178,6 +1178,7 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.HandanGrpKbn ?? 0,
                                                            item.KensaMst == null
                                                             )).ToList();
+
             if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
             {
                 tenMstModels = tenMstModels.Where(t => (t.ItemCd.Length >= 2 && t.ItemCd.StartsWith("K") && Char.IsDigit(t.ItemCd, 1)) || t.ItemCd.StartsWith("KN") || !t.ItemCd.StartsWith("K")).ToList();
