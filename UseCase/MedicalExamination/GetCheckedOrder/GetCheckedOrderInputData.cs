@@ -4,7 +4,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
 {
     public class GetCheckedOrderInputData : IInputData<GetCheckedOrderOutputData>
     {
-        public GetCheckedOrderInputData(int hpId, int userId, int sinDate, int hokenId, int hokenPid, long ptId, int iBirthDay, long raiinNo, int syosaisinKbn, long oyaRaiinNo, int tantoId, int primaryDoctor, List<OdrInfItem> odrInfItems, List<DiseaseItem> diseaseItems)
+        public GetCheckedOrderInputData(int hpId, int userId, int sinDate, int hokenId, int hokenPid, long ptId, int iBirthDay, long raiinNo, int syosaisinKbn, long oyaRaiinNo, int tantoId, int primaryDoctor, bool enabledSanteiCheck, List<OdrInfItem> odrInfItems, List<DiseaseItem> diseaseItems)
         {
             HpId = hpId;
             UserId = userId;
@@ -18,6 +18,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             OyaRaiinNo = oyaRaiinNo;
             TantoId = tantoId;
             PrimaryDoctor = primaryDoctor;
+            EnabledSanteiCheck = enabledSanteiCheck;
             OdrInfItems = odrInfItems;
             DiseaseItems = diseaseItems;
         }
@@ -45,6 +46,8 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
         public int TantoId { get; private set; }
 
         public int PrimaryDoctor { get; private set; }
+
+        public bool EnabledSanteiCheck { get; private set; }
 
         public List<OdrInfItem> OdrInfItems { get; private set; }
 

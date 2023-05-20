@@ -115,7 +115,9 @@ namespace Interactor.OrdInfs
                             od.CmtCol1,
                             od.CmtCol2,
                             od.CmtCol3,
-                            od.CmtCol4
+                            od.CmtCol4,
+                            od.HandanGrpKbn,
+                            od.IsKensaMstEmpty
                         )).OrderBy(odrDetail => odrDetail.RpNo)
                         .ThenBy(odrDetail => odrDetail.RpEdaNo)
                         .ThenBy(odrDetail => odrDetail.RowNo)

@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.Receipt
 
         public void Complete(CreateUKEFileOutputData outputData)
         {
-            Result.Data = new CreateUKEFileResponse(outputData.Status, outputData.Message);
+            Result.Data = new CreateUKEFileResponse(outputData.Status, outputData.Message, outputData.TypeMessage);
             Result.Status = (int)outputData.Status;
             Result.Message = outputData.Message ?? GetMessage(outputData.Status);
         }

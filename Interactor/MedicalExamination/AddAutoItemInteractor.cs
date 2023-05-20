@@ -33,7 +33,7 @@ namespace Interactor.MedicalExamination
                     return new AddAutoItemOutputData(AddAutoItemStatus.InvalidAddedAutoItem, new());
                 }
 
-                var result = _todayOdrRepository.AutoAddOrders(inputData.HpId, inputData.UserId, inputData.SinDate, inputData.OrderInfItems.Select(c => new Tuple<int, int, string, int, int>(c.OrderPosition, c.OrderDetailPosition, c.RpName, c.InOutKbn, c.OdrKouiKbn)).ToList(), inputData.AddedOrderInfs.Select(o => new Tuple<int, int, string, long>(o.OrderDetailPosition, o.OrderDetailPosition, o.ItemCd, o.Id)).ToList());
+                var result = _todayOdrRepository.AutoAddOrders(inputData.HpId, inputData.UserId, inputData.SinDate, inputData.OrderInfItems.Select(c => new Tuple<int, int, string, int, int>(c.OrderPosition, c.OrderDetailPosition, c.RpName, c.InOutKbn, c.OdrKouiKbn)).ToList(), inputData.AddedOrderInfs.Select(o => new Tuple<int, int, string, long>(o.OrderPosition, o.OrderDetailPosition, o.ItemCd, o.Id)).ToList());
 
 
                 return new AddAutoItemOutputData(AddAutoItemStatus.Successed, result.Select(r => new OdrInfItem(
@@ -108,7 +108,17 @@ namespace Interactor.MedicalExamination
                                  od.OdrUnitName,
                                  od.HasCmtName,
                                  od.CenterItemCd1,
-                                 od.CenterItemCd2
+                                 od.CenterItemCd2,
+                                 od.CmtColKeta1,
+                                 od.CmtColKeta2,
+                                 od.CmtColKeta3,
+                                 od.CmtColKeta4,
+                                 od.CmtCol1,
+                                 od.CmtCol2,
+                                 od.CmtCol3,
+                                 od.CmtCol4,
+                                 od.HandanGrpKbn,
+                                 od.IsKensaMstEmpty
                                  )
                             ).ToList(),
                            r.CreateDate,

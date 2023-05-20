@@ -183,7 +183,10 @@ namespace Infrastructure.Repositories
                 tenMst?.DefaultVal ?? 0,
                 tenMst?.Kokuji1 ?? string.Empty,
                 tenMst?.Kokuji2 ?? string.Empty,
-                string.Empty
+                string.Empty,
+                0,
+                0,
+                true
             );
         }
 
@@ -233,7 +236,10 @@ namespace Infrastructure.Repositories
                 tenMst.DefaultVal,
                 tenMst.Kokuji1 ?? string.Empty,
                 tenMst.Kokuji2 ?? string.Empty,
-                string.Empty
+                string.Empty,
+                0,
+                0,
+                true
             )).ToList();
         }
         /// <summary>
@@ -664,7 +670,9 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
                                                            item.TenMst?.Kokuji2 ?? string.Empty,
                                                            item.IpnName,
-                                                           item.TenMst?.IsDeleted ?? 0
+                                                           item.TenMst?.IsDeleted ?? 0,
+                                                           item.TenMst?.HandanGrpKbn ?? 0,
+                                                           item.KensaMst == null
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -759,7 +767,10 @@ namespace Infrastructure.Repositories
                                                            item.DefaultVal,
                                                            item.Kokuji1 ?? string.Empty,
                                                            item.Kokuji2 ?? string.Empty,
-                                                           string.Empty
+                                                           string.Empty,
+                                                           0,
+                                                           0,
+                                                           true
                                                            )).ToList();
             }
 
@@ -924,7 +935,10 @@ namespace Infrastructure.Repositories
                     entity?.DefaultVal ?? 0,
                     entity?.Kokuji1 ?? string.Empty,
                     entity?.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    0,
+                    0,
+                    true
                );
         }
 
@@ -979,7 +993,10 @@ namespace Infrastructure.Repositories
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    0,
+                    0,
+                    true
                )).ToList();
         }
 
@@ -1031,7 +1048,10 @@ namespace Infrastructure.Repositories
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    0,
+                    0,
+                    true
                )).ToList();
         }
 
@@ -1084,7 +1104,10 @@ namespace Infrastructure.Repositories
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    0,
+                    0,
+                    true
                )).ToList();
         }
 
@@ -1458,7 +1481,10 @@ namespace Infrastructure.Repositories
                         tenMst?.DefaultVal ?? 0,
                         tenMst?.Kokuji1 ?? string.Empty,
                         tenMst?.Kokuji2 ?? string.Empty,
-                        string.Empty
+                        string.Empty,
+                        0,
+                        0,
+                        true
                         );
         }
 

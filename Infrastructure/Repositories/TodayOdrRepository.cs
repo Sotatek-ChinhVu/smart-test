@@ -1256,7 +1256,7 @@ namespace Infrastructure.Repositories
 
                 int kensaGaichu = GetKensaGaichu(odrDetail, tenMst, addingOdr.Item4, addingOdr.Item5, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
 
-                var newOdr = ConvertToModel(odrInf, odrDetail, tenMst ?? new TenMst(), isGetPriceInYakka, alternationIndex, kensaGaichu, addingOdr.Item4, GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()));
+                var newOdr = ConvertToModel(odrInf, odrDetail, tenMst ?? new TenMst(), isGetPriceInYakka, alternationIndex, kensaGaichu, addingOdr.Item4, GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()), kensaMst ?? new());
                 autoAddOdr.Add(newOdr);
             }
 
@@ -1460,7 +1460,7 @@ namespace Infrastructure.Repositories
             return autoItemList;
         }
 
-        private static OrdInfModel ConvertToModel(OdrInf ordInf, OdrInfDetail odrInfDetail, TenMst tenMst, bool isGetPriceInYakka, int alternationIndex, int kensaGaichu, int inOutKbn, List<YohoSetMstModel> yohoSets)
+        private static OrdInfModel ConvertToModel(OdrInf ordInf, OdrInfDetail odrInfDetail, TenMst tenMst, bool isGetPriceInYakka, int alternationIndex, int kensaGaichu, int inOutKbn, List<YohoSetMstModel> yohoSets, KensaMst kensaMst)
         {
             var ordDetail = new OrdInfDetailModel(
                                 odrInfDetail.HpId,
@@ -1515,8 +1515,17 @@ namespace Infrastructure.Repositories
                                 0,
                                 tenMst?.CnvUnitName ?? string.Empty,
                                 tenMst?.OdrUnitName ?? string.Empty,
-                                string.Empty,
-                                string.Empty
+                                kensaMst?.CenterItemCd1 ?? string.Empty,
+                                kensaMst?.CenterItemCd2 ?? string.Empty,
+                                tenMst?.CmtColKeta1 ?? 0,
+                                tenMst?.CmtColKeta2 ?? 0,
+                                tenMst?.CmtColKeta3 ?? 0,
+                                tenMst?.CmtColKeta4 ?? 0,
+                                tenMst?.CmtCol2 ?? 0,
+                                tenMst?.CmtCol3 ?? 0,
+                                tenMst?.CmtCol4 ?? 0,
+                                tenMst?.HandanGrpKbn ?? 0,
+                                kensaMst == null
                     );
 
             return new OrdInfModel(ordInf.HpId,
@@ -2247,7 +2256,9 @@ namespace Infrastructure.Repositories
                             tenMst?.CmtColKeta4 ?? 0,
                             tenMst?.CmtCol2 ?? 0,
                             tenMst?.CmtCol3 ?? 0,
-                            tenMst?.CmtCol4 ?? 0
+                            tenMst?.CmtCol4 ?? 0,
+                            tenMst?.HandanGrpKbn ?? 0,
+                            kensaMstModel == null
                         );
 
                     odrInfDetails.Add(odrInfDetail);
@@ -2352,7 +2363,7 @@ namespace Infrastructure.Repositories
 
                     int currenRowNo = ++rowNo;
                     var odrInfDetail = new OrdInfDetailModel(
-                           odrDetail.HpId, raiinNo, 0, 0, currenRowNo, odrDetail.PtId, sinDate, sinKouiKbn, itemCd, itemName, suryo, unitName, unitSBT, termVal, kohatuKbn, syosai.Item1, syosai.Item2, drugKbn, yohoKbn, kokuji1, kokuji2, isNodspRece, ipnCd, ipnName, 0, DateTime.MinValue, 0, string.Empty, string.Empty, bunkatu, cmtName, cmtOpt, fontColor, commentNewline, masterSbt ?? string.Empty, 0, ipnMinYakka?.Yakka ?? 0, isGetPriceInYakka, 0, cmtCol1, ten, 0, 0, 0, 0, 0, string.Empty, new(), 0, 0, string.Empty, string.Empty, kensMst?.CenterItemCd1 ?? string.Empty, kensMst?.CenterItemCd2 ?? string.Empty, tenMst?.CmtColKeta1 ?? 0, tenMst?.CmtColKeta2 ?? 0, tenMst?.CmtColKeta3 ?? 0, tenMst?.CmtColKeta4 ?? 0, tenMst?.CmtCol2 ?? 0, tenMst?.CmtCol3 ?? 0, tenMst?.CmtCol4 ?? 0
+                           odrDetail.HpId, raiinNo, 0, 0, currenRowNo, odrDetail.PtId, sinDate, sinKouiKbn, itemCd, itemName, suryo, unitName, unitSBT, termVal, kohatuKbn, syosai.Item1, syosai.Item2, drugKbn, yohoKbn, kokuji1, kokuji2, isNodspRece, ipnCd, ipnName, 0, DateTime.MinValue, 0, string.Empty, string.Empty, bunkatu, cmtName, cmtOpt, fontColor, commentNewline, masterSbt ?? string.Empty, 0, ipnMinYakka?.Yakka ?? 0, isGetPriceInYakka, 0, cmtCol1, ten, 0, 0, 0, 0, 0, string.Empty, new(), 0, 0, string.Empty, string.Empty, kensMst?.CenterItemCd1 ?? string.Empty, kensMst?.CenterItemCd2 ?? string.Empty, tenMst?.CmtColKeta1 ?? 0, tenMst?.CmtColKeta2 ?? 0, tenMst?.CmtColKeta3 ?? 0, tenMst?.CmtColKeta4 ?? 0, tenMst?.CmtCol2 ?? 0, tenMst?.CmtCol3 ?? 0, tenMst?.CmtCol4 ?? 0, tenMst?.HandanGrpKbn ?? 0, kensMst == null
                         );
                     odrInfDetails.Add(odrInfDetail);
                 }
@@ -2651,9 +2662,11 @@ namespace Infrastructure.Repositories
             var addingOdrList = odrInfs.Where(o => o.Id == -1).ToList();
             int odrInfIndex = 0, odrInfDetailIndex = 0;
             List<string> ipnNameCds = new List<string>();
+            List<string> itemCds = new List<string>();
             foreach (var ordInfDetails in odrInfs.Select(o => o.OrdInfDetails))
             {
                 ipnNameCds.AddRange(ordInfDetails.Select(od => od.IpnCd));
+                itemCds.AddRange(ordInfDetails.Select(od => od.ItemCd));
             }
             ipnNameCds = ipnNameCds.Distinct().ToList();
             var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(i =>
@@ -2665,6 +2678,7 @@ namespace Infrastructure.Repositories
             var autoSetSyohoLimitKohatuDrug = _systemConf.GetSettingValue(2020, 1, hpId);
             var autoSetSyohoKbnSenpatuDrug = _systemConf.GetSettingValue(2021, 0, hpId);
             var autoSetSyohoLimitSenpatuDrug = _systemConf.GetSettingValue(2021, 1, hpId);
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate) && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
 
             foreach (var checkingOdr in addingOdrList)
             {
@@ -2679,6 +2693,7 @@ namespace Infrastructure.Repositories
                 var odrInfDetails = checkingOdr.OrdInfDetails.Where(d => !d.IsEmpty).ToList();
                 bool isAdded = false;
                 odrInfDetailIndex = 0;
+                var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
                 foreach (var detail in odrInfDetails)
                 {
                     var targetItem = targetItems.FirstOrDefault(t => t.Item3 == odrInfIndex && t.Item4 == odrInfDetailIndex);
@@ -2857,7 +2872,8 @@ namespace Infrastructure.Repositories
                                 }
                             }
 
-                            List<OrdInfDetailModel> odrInfDetail = new();
+                            var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == targetItem.Item5.ItemCd);
+                            var kensaMst = targetItem == null ? null : kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst?.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo); List<OrdInfDetailModel> odrInfDetail = new();
                             var odrInfDetailModel = new OrdInfDetailModel(
                                 hpId,
                                 raiinNo,
@@ -2898,7 +2914,7 @@ namespace Infrastructure.Repositories
                                 0,
                                 false,
                                 0,
-                                0,
+                                tenMst?.CmtCol1 ?? 0,
                                 0,
                                 0,
                                 0,
@@ -2911,8 +2927,17 @@ namespace Infrastructure.Repositories
                                 0,
                                 string.Empty,
                                 string.Empty,
-                                string.Empty,
-                                string.Empty
+                                kensaMst?.CenterItemCd1 ?? string.Empty,
+                                kensaMst?.CenterItemCd2 ?? string.Empty,
+                                tenMst?.CmtColKeta1 ?? 0,
+                                tenMst?.CmtColKeta2 ?? 0,
+                                tenMst?.CmtColKeta3 ?? 0,
+                                tenMst?.CmtColKeta4 ?? 0,
+                                tenMst?.CmtCol2 ?? 0,
+                                tenMst?.CmtCol3 ?? 0,
+                                tenMst?.CmtCol4 ?? 0,
+                                tenMst?.HandanGrpKbn ?? 0,
+                                kensaMst == null
                             );
                             odrInfDetail.Add(odrInfDetailModel);
 
@@ -3042,7 +3067,10 @@ namespace Infrastructure.Repositories
                    entity.DefaultVal,
                    entity.Kokuji1 ?? string.Empty,
                    entity.Kokuji2 ?? string.Empty,
-                   string.Empty
+                   string.Empty,
+                   0,
+                   0,
+                   true
                 ) : new();
 
         }
@@ -3242,7 +3270,7 @@ namespace Infrastructure.Repositories
             int cmtColKeta2 = tenMst.CmtColKeta2;
             int cmtColKeta3 = tenMst.CmtColKeta3;
             int cmtColKeta4 = tenMst.CmtColKeta4;
-            var kensaMstModel = new KensaMst();
+            KensaMst? kensaMstModel = null;
             if ((sourceDetail.SinKouiKbn == 61 || sourceDetail.SinKouiKbn == 64)
                 && !string.IsNullOrEmpty(tenMst.KensaItemCd))
             {
@@ -3309,7 +3337,17 @@ namespace Infrastructure.Repositories
                    tenMst?.CnvUnitName ?? string.Empty,
                    tenMst?.OdrUnitName ?? string.Empty,
                    sourceDetail.CenterItemCd1,
-                   sourceDetail.CenterItemCd2);
+                   sourceDetail.CenterItemCd2,
+                   tenMst?.CmtColKeta1 ?? 0,
+                   tenMst?.CmtColKeta2 ?? 0,
+                   tenMst?.CmtColKeta3 ?? 0,
+                   tenMst?.CmtColKeta4 ?? 0,
+                   tenMst?.CmtCol2 ?? 0,
+                   tenMst?.CmtCol3 ?? 0,
+                   tenMst?.CmtCol4 ?? 0,
+                   tenMst?.HandanGrpKbn ?? 0,
+                   sourceDetail == null
+                   );
 
             return result;
         }

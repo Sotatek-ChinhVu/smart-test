@@ -13,6 +13,7 @@ using System.Text;
 using Helper.Messaging.Data;
 using Helper.Messaging;
 using Domain.Models.ReceSeikyu;
+using UseCase.ReceSeikyu.ImportFile;
 
 namespace EmrCloudApi.Controller
 {
@@ -111,6 +112,16 @@ namespace EmrCloudApi.Controller
                 Messenger.Instance.Deregister<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
                 Messenger.Instance.Deregister<RecalculateInSeikyuPendingStop>(this, StopCalculation);
             }
+        }
+
+        [HttpPost(ApiPath.ImportFileReceSeikyu)]
+        public ActionResult<Response<ImportFileReceSeikyuResponse>> ImportFileReceSeikyu(IFormFile fileImport)
+        {
+            var input = new ImportFileReceSeikyuInputData(HpId, UserId, fileImport);
+            var output = _bus.Handle(input);
+            var presenter = new ImportFileReceSeikyuPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<ImportFileReceSeikyuResponse>>(presenter.Result);
         }
 
         private void StopCalculation(RecalculateInSeikyuPendingStop stopCalcStatus)

@@ -134,7 +134,10 @@ namespace Interactor.MedicalExamination
                             od.CmtCol1,
                             od.CmtCol2,
                             od.CmtCol3,
-                            od.CmtCol4
+                            od.CmtCol4,
+                            od.HandanGrpKbn,
+                            od.IsKensaMstEmpty
+
                         )).ToList(),
                          o.CreateDate,
                          o.CreateId,

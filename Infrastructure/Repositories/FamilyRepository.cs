@@ -183,22 +183,21 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                                                     && item.JobCd == JobCdConstant.Doctor
                                                                     && tantoIdList.Contains(item.UserId))
                                                       .ToList();
+
         var kaMstList = NoTrackingDataContext.KaMsts.Where(item => item.IsDeleted != 1
                                                                    && kaIdList.Contains(item.KaId))
                                                     .ToList();
+
         var hokenPatternList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.IsDeleted != 1
                                                                                    && hokenPIdList.Contains(item.HokenPid))
                                                                     .ToList();
-        var kohiHokenIdList = hokenPatternList.Select(item => item.Kohi1Id).ToList();
-        kohiHokenIdList.AddRange(hokenPatternList.Select(item => item.Kohi2Id).ToList());
-        kohiHokenIdList.AddRange(hokenPatternList.Select(item => item.Kohi3Id).ToList());
-        kohiHokenIdList.AddRange(hokenPatternList.Select(item => item.Kohi4Id).ToList());
 
-        var ptKohis = NoTrackingDataContext.PtKohis.Where(item => item.IsDeleted != 1
-                                                                  && item.PtId == ptId
-                                                                  && kohiHokenIdList.Contains(item.HokenId))
-                                                   .ToList();
-        return raiinInfList.Select(item => ConvertToRaiinInfModel(item, doctorList, kaMstList, hokenPatternList, ptKohis))
+        var hokenIdList = hokenPatternList.Select(item => item.HokenId).Distinct().ToList();
+        var hokenInfList = NoTrackingDataContext.PtHokenInfs.Where(item => item.IsDeleted != 1
+                                                                           && hokenIdList.Contains(item.HokenId))
+                                                            .ToList();
+
+        return raiinInfList.Select(item => ConvertToRaiinInfModel(item, doctorList, kaMstList, hokenPatternList, hokenInfList))
                            .OrderByDescending(item => item.SinDate)
                            .ToList();
     }
@@ -287,15 +286,19 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                     );
     }
 
-    private RaiinInfModel ConvertToRaiinInfModel(RaiinInf raiinInf, List<UserMst> doctorList, List<KaMst> kaMstList, List<PtHokenPattern> hokenPatternList, List<PtKohi> ptKohiList)
+    private RaiinInfModel ConvertToRaiinInfModel(RaiinInf raiinInf, List<UserMst> doctorList, List<KaMst> kaMstList, List<PtHokenPattern> hokenPatternList, List<PtHokenInf> hokenInfList)
     {
         var doctor = doctorList.FirstOrDefault(item => item.UserId == raiinInf.TantoId);
         var kaMst = kaMstList.FirstOrDefault(item => item.KaId == raiinInf.KaId);
+
+        string hokenPatternName = string.Empty;
         var hokenPattern = hokenPatternList.FirstOrDefault(item => item.HokenPid == raiinInf.HokenPid);
-        var ptKohi1 = ptKohiList.FirstOrDefault(item => item.HokenId == hokenPattern?.Kohi1Id);
-        var ptKohi2 = ptKohiList.FirstOrDefault(item => item.HokenId == hokenPattern?.Kohi2Id);
-        var ptKohi3 = ptKohiList.FirstOrDefault(item => item.HokenId == hokenPattern?.Kohi3Id);
-        var ptKohi4 = ptKohiList.FirstOrDefault(item => item.HokenId == hokenPattern?.Kohi4Id);
+        if (hokenPattern != null)
+        {
+            var hokenInf = hokenInfList.FirstOrDefault(item => item.HokenId == hokenPattern.HokenId);
+            hokenPatternName = GetHokenName(hokenPattern.HokenKbn, hokenPattern.HokenSbtCd, hokenInf?.Houbetu ?? string.Empty);
+        }
+
         return new RaiinInfModel(
                 raiinInf.PtId,
                 raiinInf.SinDate,
@@ -303,21 +306,60 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 raiinInf.KaId,
                 kaMst?.KaName ?? string.Empty,
                 raiinInf.TantoId,
-                doctor?.Name ?? string.Empty,
+                doctor?.Sname ?? string.Empty,
                 hokenPattern?.HokenPid ?? CommonConstants.InvalidId,
-                hokenPattern?.StartDate ?? 0,
-                hokenPattern?.EndDate ?? 0,
-                hokenPattern?.HokenSbtCd ?? CommonConstants.InvalidId,
-                hokenPattern?.HokenKbn ?? CommonConstants.InvalidId,
-                ptKohi1?.HokenSbtKbn ?? CommonConstants.InvalidId,
-                ptKohi1?.Houbetu ?? string.Empty,
-                ptKohi2?.HokenSbtKbn ?? CommonConstants.InvalidId,
-                ptKohi2?.Houbetu ?? string.Empty,
-                ptKohi3?.HokenSbtKbn ?? CommonConstants.InvalidId,
-                ptKohi3?.Houbetu ?? string.Empty,
-                ptKohi4?.HokenSbtKbn ?? CommonConstants.InvalidId,
-                ptKohi4?.Houbetu ?? string.Empty
+                hokenPatternName
             );
+    }
+
+    private string GetHokenName(int hokenKbn, int hokenSbtCd, string houbetu)
+    {
+        string result = string.Empty;
+        switch (hokenKbn)
+        {
+            case 0:
+                switch (houbetu)
+                {
+                    case "108":
+                        result = "自費";
+                        break;
+                    case "109":
+                        result = "自レ";
+                        break;
+                }
+                break;
+            case 11:
+            case 12:
+            case 13:
+                result = "労災";
+                break;
+            case 14:
+                result = "自賠";
+                break;
+            default:
+                if (hokenSbtCd >= 100 && hokenSbtCd <= 199)
+                {
+                    result = "社保";
+                }
+                else if (hokenSbtCd >= 200 && hokenSbtCd <= 299)
+                {
+                    result = "国保";
+                }
+                else if (hokenSbtCd >= 300 && hokenSbtCd <= 399)
+                {
+                    result = "後期";
+                }
+                else if (hokenSbtCd >= 400 && hokenSbtCd <= 499)
+                {
+                    result = "退職";
+                }
+                else if (hokenSbtCd >= 500 && hokenSbtCd <= 599)
+                {
+                    result = "公費";
+                }
+                break;
+        }
+        return result;
     }
 
     private bool SaveFamilyListAction(int hpId, int userId, List<FamilyModel> listFamily)

@@ -255,6 +255,7 @@
         public const string SaveReceiptEdit = "SaveReceiptEdit";
         public const string SaveReceStatus = "SaveReceStatus";
         public const string GetReceStatus = "GetReceStatus";
+        public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -290,6 +291,7 @@
         public const string GetListReceSeikyu = "GetListReceSeikyu";
         public const string SearchReceInf = "SearchReceInf";
         public const string SaveReceSeikyu = "SaveReceSeikyu";
+        public const string ImportFileReceSeikyu = "ImportFileReceSeikyu";
 
         //WeightedSetConfirmation
         public const string IsOpenWeightChecking = "IsOpenWeightChecking";

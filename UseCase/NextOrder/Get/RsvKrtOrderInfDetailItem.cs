@@ -55,6 +55,7 @@ namespace UseCase.NextOrder.Get
             CenterItemCd1 = rsvKrtOrderInfDetailModel.CenterItemCd1;
             CenterItemCd2 = rsvKrtOrderInfDetailModel.CenterItemCd2;
             HandanGrpKbn = rsvKrtOrderInfDetailModel.HandanGrpKbn;
+            IsKensaMstEmpty = rsvKrtOrderInfDetailModel.IsKensaMstEmpty;
         }
 
         public int HpId { get; private set; }
@@ -152,5 +153,7 @@ namespace UseCase.NextOrder.Get
         public string CenterItemCd2 { get; private set; }
 
         public int HandanGrpKbn { get; private set; }
+
+        public bool IsKensaMstEmpty { get; private set; }
     }
 }
