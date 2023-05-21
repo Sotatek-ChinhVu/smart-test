@@ -184,7 +184,7 @@ namespace Interactor.MedicalExamination
                 {
                     allOdrInfDetail.AddRange(odr.OrdInfDetails);
                 }
-                if (inputData.SyosaisinKbn != SyosaiConst.Jihi)
+                if (inputData.SyosaisinKbn != SyosaiConst.Jihi && inputData.EnabledSanteiCheck)
                 {
                     bool isJouhou = allOdrInfDetail.Any(d => d.ItemCd == ItemCdConst.Con_Jouhou);
                     List<CheckedOrderModel> checkingOrders = _medicalExaminationRepository.IgakuTokusitu(inputData.HpId, inputData.SinDate, inputData.HokenId, inputData.SyosaisinKbn, diseases, allOdrInfDetail, isJouhou);

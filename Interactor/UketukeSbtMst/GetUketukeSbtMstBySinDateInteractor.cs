@@ -54,7 +54,7 @@ public class GetUketukeSbtMstBySinDateInteractor : IGetUketukeSbtMstBySinDateInp
             return mstBySinDate;
         }
 
-        var firstMst = uketukeSbtMsts.OrderBy(u => u.SortNo).FirstOrDefault();
+        var firstMst = uketukeSbtMsts.OrderBy(u => u.KbnId).FirstOrDefault();
         if (firstMst is null)
         {
             return null;

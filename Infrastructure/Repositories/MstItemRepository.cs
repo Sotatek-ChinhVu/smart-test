@@ -101,46 +101,40 @@ namespace Infrastructure.Repositories
             return aleFoodKbns;
         }
 
-        public (List<SearchSupplementModel>, int) GetListSupplement(string searchValue, int pageIndex, int pageSize)
+        public List<SearchSupplementModel> GetListSupplement(string searchValue)
         {
             searchValue = searchValue.Trim();
-            try
-            {
-                var listSuppleIndexCode = NoTrackingDataContext.M41SuppleIndexcodes.AsQueryable();
-                var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.AsQueryable();
-                var listSuppleIngre = NoTrackingDataContext.M41SuppleIngres.AsQueryable();
 
-                var query = (from indexDef in listSuppleIndexDef
-                             orderby indexDef.IndexWord
-                             join indexCode in listSuppleIndexCode on indexDef.SeibunCd equals indexCode.IndexCd into supplementList
-                             from supplement in supplementList.DefaultIfEmpty()
-                             join ingre in listSuppleIngre on supplement.SeibunCd equals ingre.SeibunCd into suppleIngreList
-                             from ingreItem in suppleIngreList.DefaultIfEmpty()
-                             where ((indexDef.IndexWord ?? string.Empty).Contains(searchValue) || supplement.IndexCd.StartsWith(searchValue))
-                             select new SearchSupplementModel(
-                                 ingreItem.SeibunCd,
-                                 ingreItem.Seibun ?? string.Empty,
-                                 indexDef.IndexWord ?? string.Empty,
-                                 indexDef.TokuhoFlg ?? string.Empty,
-                                 supplement.IndexCd
-                             )).AsQueryable();
+            var listSuppleIndexCode = NoTrackingDataContext.M41SuppleIndexcodes.AsQueryable();
+            var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.Where(u => string.IsNullOrEmpty(searchValue.Trim()) ? true : u.IndexWord.Contains(searchValue.Trim())).OrderBy(u => u.SeibunCd).ThenBy(u => u.IndexWord).ThenBy(u => u.TokuhoFlg);
+            var listSuppleIngre = NoTrackingDataContext.M41SuppleIngres.AsQueryable();
+            var indexDefJoinIngreQueryList = from indexCode in listSuppleIndexCode
+                                             join ingre in listSuppleIngre on indexCode.SeibunCd equals ingre.SeibunCd into suppleIngreList
+                                             from ingreItem in suppleIngreList.DefaultIfEmpty()
+                                             select new
+                                             {
+                                                 IndexCode = indexCode,
+                                                 Ingre = ingreItem,
+                                             };
 
-                var total = query.Count();
-                var result = query.Skip((pageIndex - 1) * pageSize)
-                                  .Take(pageSize)
-                                  .ToList();
+            var query = from indexDef in listSuppleIndexDef
+                        join indexDefJoinIngreQuery in indexDefJoinIngreQueryList on indexDef.SeibunCd equals indexDefJoinIngreQuery.IndexCode.IndexCd into supplementList
+                        from supplementItem in supplementList.DefaultIfEmpty()
+                        select new
+                        {
+                            IndexDef = indexDef,
+                            IndexCode = supplementItem.IndexCode,
+                            Ingre = supplementItem.Ingre,
+                        };
 
-                if (result == null || !result.Any())
-                {
-                    return (new List<SearchSupplementModel>(), 0);
-                }
+            var result = query
+                  .AsEnumerable()
+                  .Select(data => new SearchSupplementModel(data.Ingre.SeibunCd, data.Ingre.Seibun ?? string.Empty, data.IndexDef.IndexWord ?? string.Empty, data.IndexDef.TokuhoFlg ?? string.Empty, data.IndexCode.IndexCd, string.Empty))
+                  .OrderBy(data => data.IndexWord)
+                  .ThenBy(data => data.SeibunCd)
+                  .ToList();
 
-                return (result, total);
-            }
-            catch (Exception)
-            {
-                return (new List<SearchSupplementModel>(), 0);
-            }
+            return result;
         }
 
         public TenItemModel GetTenMst(int hpId, int sinDate, string itemCd)
@@ -189,7 +183,10 @@ namespace Infrastructure.Repositories
                 tenMst?.DefaultVal ?? 0,
                 tenMst?.Kokuji1 ?? string.Empty,
                 tenMst?.Kokuji2 ?? string.Empty,
-                string.Empty
+                string.Empty,
+                0,
+                0,
+                true
             );
         }
 
@@ -239,7 +236,10 @@ namespace Infrastructure.Repositories
                 tenMst.DefaultVal,
                 tenMst.Kokuji1 ?? string.Empty,
                 tenMst.Kokuji2 ?? string.Empty,
-                string.Empty
+                string.Empty,
+                0,
+                0,
+                true
             )).ToList();
         }
         /// <summary>
@@ -670,7 +670,9 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
                                                            item.TenMst?.Kokuji2 ?? string.Empty,
                                                            item.IpnName,
-                                                           item.TenMst.IsDeleted
+                                                           item.TenMst?.IsDeleted ?? 0,
+                                                           item.TenMst?.HandanGrpKbn ?? 0,
+                                                           item.KensaMst == null
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -765,7 +767,10 @@ namespace Infrastructure.Repositories
                                                            item.DefaultVal,
                                                            item.Kokuji1 ?? string.Empty,
                                                            item.Kokuji2 ?? string.Empty,
-                                                           string.Empty
+                                                           string.Empty,
+                                                           0,
+                                                           0,
+                                                           true
                                                            )).ToList();
             }
 
@@ -930,7 +935,10 @@ namespace Infrastructure.Repositories
                     entity?.DefaultVal ?? 0,
                     entity?.Kokuji1 ?? string.Empty,
                     entity?.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    0,
+                    0,
+                    true
                );
         }
 
@@ -985,7 +993,10 @@ namespace Infrastructure.Repositories
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    0,
+                    0,
+                    true
                )).ToList();
         }
 
@@ -1037,7 +1048,10 @@ namespace Infrastructure.Repositories
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    0,
+                    0,
+                    true
                )).ToList();
         }
 
@@ -1090,7 +1104,10 @@ namespace Infrastructure.Repositories
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
-                    string.Empty
+                    string.Empty,
+                    0,
+                    0,
+                    true
                )).ToList();
         }
 
@@ -1464,7 +1481,10 @@ namespace Infrastructure.Repositories
                         tenMst?.DefaultVal ?? 0,
                         tenMst?.Kokuji1 ?? string.Empty,
                         tenMst?.Kokuji2 ?? string.Empty,
-                        string.Empty
+                        string.Empty,
+                        0,
+                        0,
+                        true
                         );
         }
 

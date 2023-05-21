@@ -17,3 +17,8 @@ public class LockMessage
     public byte Type { get; set; }
     public string FunctionCod { get; set; } = String.Empty;
 }
+
+public class SuperSetMessage
+{
+    public List<int> SetCds { get; set; } = new();
+}

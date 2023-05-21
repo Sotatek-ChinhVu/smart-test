@@ -51,6 +51,8 @@ namespace EmrCloudApi.Responses.MstItem
             CnvTermVal = model.CnvTermVal;
             DefaultValue = model.DefaultValue;
             IpnName = model.IpnName;
+            IsKensaMstEmpty = model.IsKensaMstEmpty;
+            HandanGrpKbn = model.HandanGrpKbn;
         }
 
         [JsonConstructor]
@@ -192,5 +194,10 @@ namespace EmrCloudApi.Responses.MstItem
         public int ModeStatus { get; private set; }
 
         public string IpnName { get; private set; }
+
+        public int HandanGrpKbn { get; private set; }
+
+        public bool IsKensaMstEmpty { get; private set; }
+
     }
 }

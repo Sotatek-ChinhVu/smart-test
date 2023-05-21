@@ -378,7 +378,9 @@ public class HistoryCommon : IHistoryCommon
                                                                 od.CmtCol1,
                                                                 od.CmtCol2,
                                                                 od.CmtCol3,
-                                                                od.CmtCol4
+                                                                od.CmtCol4,
+                                                                od.HandanGrpKbn,
+                                                                od.IsKensaMstEmpty
                                                         )
                                                         ).ToList(),
                                                         rpOdrInf.CreateDate,

@@ -4,7 +4,7 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder
 {
     public class SetOrderInfDetailItem
     {
-        public SetOrderInfDetailItem(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string centerItemCd1, string centerItemCd2, int kasan1, int kasan2, List<YohoSetMstModel> yohoSets, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4)
+        public SetOrderInfDetailItem(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string centerItemCd1, string centerItemCd2, int kasan1, int kasan2, List<YohoSetMstModel> yohoSets, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int handanGrpKbn, bool isKensaMstEmpty)
         {
             HpId = hpId;
             SetCd = setCd;
@@ -57,6 +57,8 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder
             CmtColKeta2 = cmtColKeta2;
             CmtColKeta3 = cmtColKeta3;
             CmtColKeta4 = cmtColKeta4;
+            HandanGrpKbn = handanGrpKbn;
+            IsKensaMstEmpty = isKensaMstEmpty;
         }
 
         public int HpId { get; private set; }
@@ -160,5 +162,9 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder
         public int CmtCol3 { get; private set; }
 
         public int CmtCol4 { get; private set; }
+
+        public int HandanGrpKbn { get; private set; }
+
+        public bool IsKensaMstEmpty { get; private set; }
     }
 }
