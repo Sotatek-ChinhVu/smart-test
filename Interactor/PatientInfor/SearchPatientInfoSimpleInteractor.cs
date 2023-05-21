@@ -111,7 +111,7 @@ namespace Interactor.PatientInfor
             var ptIdList = patientInfList.Select(p => p.PtId).ToList();
             var patientGroupInfList = _groupInfRepository.GetAllByPtIdList(ptIdList);
 
-            List<PatientInfoWithGroup> patientInfoListWithGroup = new List<PatientInfoWithGroup>();
+            List<PatientInfoWithGroup> patientInfoListWithGroup = new();
             foreach (var patientInfo in patientInfList)
             {
                 long ptId = patientInfo.PtId;

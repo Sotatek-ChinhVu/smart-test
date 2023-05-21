@@ -28,18 +28,18 @@ public class SearchPatientInfoAdvancedInteractor : ISearchPatientInfoAdvancedInp
             var patientInfos = _patientInforRepository.GetAdvancedSearchResults(input.SearchInput, input.HpId, input.PageIndex, input.PageSize, input.SortData);
             var ptIds = patientInfos.Select(p => p.PtId).ToList();
             var patientGroups = _groupInfRepository.GetAllByPtIdList(ptIds);
-            var result =
-                (from pt in patientInfos
-                 join grp in patientGroups on pt.PtId equals grp.PtId into groups
-                 select new PatientInfoWithGroup(pt, groups.ToList()))
-                .ToList();
+            var patientInfoList =
+                from pt in patientInfos
+                join grp in patientGroups on pt.PtId equals grp.PtId into groups
+                select new PatientInfoWithGroup(pt, groups.ToList());
 
-            var status = result.Any() ? SearchPatientInfoAdvancedStatus.Success : SearchPatientInfoAdvancedStatus.NoData;
+            var status = patientInfoList.Any() ? SearchPatientInfoAdvancedStatus.Success : SearchPatientInfoAdvancedStatus.NoData;
             if (sortGroup)
             {
-                result = _sortPatientCommon.SortData(result, input.SortData, input.PageIndex, input.PageSize);
+                var result = _sortPatientCommon.SortData(patientInfoList, input.SortData, input.PageIndex, input.PageSize);
+                return new SearchPatientInfoAdvancedOutputData(status, result);
             }
-            return new SearchPatientInfoAdvancedOutputData(status, result);
+            return new SearchPatientInfoAdvancedOutputData(status, patientInfoList.ToList());
         }
         finally
         {

@@ -7,8 +7,15 @@ public class SortPatientCommon : ISortPatientCommon
 {
     private const string startGroupOrderKey = "group_";
 
-    public List<PatientInfoWithGroup> SortData(List<PatientInfoWithGroup> ptInfList, Dictionary<string, string> sortData, int pageIndex, int pageSize)
+    public List<PatientInfoWithGroup> SortData(IEnumerable<PatientInfoWithGroup> ptInfList, Dictionary<string, string> sortData, int pageIndex, int pageSize)
     {
+        if (!sortData.Any())
+        {
+            return ptInfList
+                   .Skip((pageIndex - 1) * pageSize)
+                   .Take(pageSize)
+                   .ToList();
+        }
         int index = 1;
         IOrderedEnumerable<PatientInfoWithGroup> sortQuery = ptInfList.OrderBy(item => item.PtId);
         foreach (var item in sortData)
