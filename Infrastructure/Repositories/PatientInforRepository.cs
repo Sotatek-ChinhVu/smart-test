@@ -269,8 +269,10 @@ namespace Infrastructure.Repositories
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
 
-        public List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize)
+        public List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
         {
+            bool sortGroup = sortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
+
             var ptInfQuery = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
             // PtNum
             if (input.FromPtNum > 0)
@@ -665,10 +667,10 @@ namespace Infrastructure.Repositories
             // Add LastVisitDate to patient info
             var ptInfWithLastVisitDateQuery =
                 from ptInf in ptInfQuery
-                select new
+                select new PatientInfQueryModel
                 {
-                    ptInf,
-                    lastVisitDate = (
+                    PtInf = ptInf,
+                    LastVisitDate = (
                         from r in raiinInfQuery
                         where r.PtId == ptInf.PtId
                             && r.Status >= RaiinState.TempSave
@@ -676,12 +678,16 @@ namespace Infrastructure.Repositories
                         select r.SinDate
                     ).FirstOrDefault()
                 };
-            return ptInfWithLastVisitDateQuery
-                                            .AsEnumerable()
-                                            .Skip((pageIndex - 1) * pageSize)
-                                            .Take(pageSize)
-                                            .Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate))
-                                            .ToList();
+
+            var result = sortGroup
+                         ?
+                         ptInfWithLastVisitDateQuery
+                         .AsEnumerable()
+                         .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
+                         .ToList()
+                         :
+                         SortData(ptInfWithLastVisitDateQuery.AsEnumerable(), sortData, pageIndex, pageSize);
+            return result;
 
             #region Helper methods
 
@@ -906,7 +912,7 @@ namespace Infrastructure.Repositories
             for (long i = startIndex; i < endIndex; i++)
             {
                 if (isPtNumCheckDigit && !CIUtil.PtNumCheckDigits(i))
-                {     
+                {
                     endIndex++;
                     continue;
                 }
@@ -2147,6 +2153,14 @@ namespace Infrastructure.Repositories
 
         private List<PatientInforModel> SortData(IEnumerable<PatientInfQueryModel> ptInfWithLastVisitDate, Dictionary<string, string> sortData, int pageIndex, int pageSize)
         {
+            if (!sortData.Any())
+            {
+                return ptInfWithLastVisitDate
+                       .Skip((pageIndex - 1) * pageSize)
+                       .Take(pageSize)
+                       .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
+                       .ToList();
+            }
             int index = 1;
             var sortQuery = ptInfWithLastVisitDate.OrderBy(item => item.PtInf.PtId);
             foreach (var item in sortData)

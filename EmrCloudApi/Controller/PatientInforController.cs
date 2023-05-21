@@ -161,7 +161,7 @@ namespace EmrCloudApi.Controller
         [HttpGet("SearchSimple")]
         public ActionResult<Response<SearchPatientInforSimpleResponse>> SearchSimple([FromQuery] SearchPatientInfoSimpleRequest request)
         {
-            var input = new SearchPatientInfoSimpleInputData(request.Keyword, request.IsContainMode, HpId, request.PageIndex, request.PageSize, request.SortData);
+            var input = new SearchPatientInfoSimpleInputData(request.Keyword, request.IsContainMode, HpId, request.PageIndex, request.PageSize, ConvertToSortData(request.SortData));
             var output = _bus.Handle(input);
 
             var present = new SearchPatientInfoSimplePresenter();
@@ -173,7 +173,7 @@ namespace EmrCloudApi.Controller
         [HttpPost("SearchAdvanced")]
         public ActionResult<Response<SearchPatientInfoAdvancedResponse>> GetList([FromBody] SearchPatientInfoAdvancedRequest request)
         {
-            var input = new SearchPatientInfoAdvancedInputData(ConvertToPatientAdvancedSearchInput(request), HpId, request.PageIndex, request.PageSize);
+            var input = new SearchPatientInfoAdvancedInputData(ConvertToPatientAdvancedSearchInput(request), HpId, request.PageIndex, request.PageSize, request.SortData);
             var output = _bus.Handle(input);
             var presenter = new SearchPatientInfoAdvancedPresenter();
             presenter.Complete(output);
@@ -588,7 +588,7 @@ namespace EmrCloudApi.Controller
                                                                     x.FileName,
                                                                     x.File == null ? Stream.Null : x.File.OpenReadStream(),
                                                                     x.IsDeleted,
-                                                                    string.Empty)).ToList(); 
+                                                                    string.Empty)).ToList();
 
             var input = new SavePatientInfoInputData(patient,
                  patientInfo.PtKyuseis,
@@ -883,7 +883,7 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<GetPatientInfoBetweenTimesListResponse>>(presenter.Result);
         }
-   
+
         [HttpGet(ApiPath.SearchPatientInfoByPtNum)]
         public ActionResult<Response<SearchPatientInfoByPtNumResponse>> SearchPatientInfoByPtNum([FromQuery] SearchPatientInfoByPtNumRequest request)
         {
@@ -893,7 +893,7 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<SearchPatientInfoByPtNumResponse>>(presenter.Result);
         }
-    
+
         [HttpGet(ApiPath.GetTokkiMstList)]
         public ActionResult<Response<GetTokkiMstListResponse>> GetTokkiMstList([FromQuery] GetTokkiMstListRequest request)
         {
@@ -905,7 +905,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.CalculationSwapHoken)]
-        public void CalculationSwapHoken([FromBody] CalculationSwapHokenRequest request , CancellationToken cancellationToken)
+        public void CalculationSwapHoken([FromBody] CalculationSwapHokenRequest request, CancellationToken cancellationToken)
         {
             _cancellationToken = cancellationToken;
             try
@@ -958,6 +958,21 @@ namespace EmrCloudApi.Controller
             var resultForFrontEnd = Encoding.UTF8.GetBytes(titleProgressbar.ToString());
             HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
             HttpContext.Response.Body.FlushAsync();
+        }
+
+        private Dictionary<string, string> ConvertToSortData(List<SortCol> sortColList)
+        {
+            Dictionary<string, string> result = new();
+            foreach (var item in sortColList)
+            {
+                if (!result.ContainsKey(item.Col))
+                {
+                    result.Add(item.Col, item.Type);
+                    continue;
+                }
+                result[item.Col] = item.Type;
+            }
+            return result;
         }
     }
 }

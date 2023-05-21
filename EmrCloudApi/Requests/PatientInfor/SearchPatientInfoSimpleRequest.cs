@@ -10,6 +10,13 @@
 
         public int PageSize { get; set; }
 
-        public Dictionary<string, string> SortData { get; set; } = new();
+        public List<SortCol> SortData { get; set; }
+    }
+
+    public class SortCol
+    {
+        public string Col { get; set; } = string.Empty;
+
+        public string Type { get; set; } = string.Empty;
     }
 }

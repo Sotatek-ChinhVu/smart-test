@@ -26,7 +26,7 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> SearchSimple(string keyword, bool isContainMode, int hpId);
 
-        List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize);
+        List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
@@ -63,7 +63,7 @@ namespace Domain.Models.PatientInfor
 
         public bool IsRyosyoFuyou(int hpId, long ptId);
 
-        long GetPtIdFromPtNum(int hpId,long ptNum);
+        long GetPtIdFromPtNum(int hpId, long ptNum);
 
         int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus);
     }
