@@ -5,7 +5,7 @@ namespace UseCase.MstItem.SearchTenMstItem
 {
     public class SearchTenMstItemInputData : IInputData<SearchTenMstItemOutputData>
     {
-        public SearchTenMstItemInputData(int hpId, int pageIndex, int pageCount, string keyword, double pointFrom, double pointTo, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem, bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly)
+        public SearchTenMstItemInputData(int hpId, int pageIndex, int pageCount, string keyword, double pointFrom, double pointTo, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem, bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly, bool isSearchSuggestion)
         {
             HpId = hpId;
             PageIndex = pageIndex;
@@ -33,6 +33,7 @@ namespace UseCase.MstItem.SearchTenMstItem
             IsSearchKenSaItem = isSearchKenSaItem;
             ItemFilter = itemFilter;
             IsSearch831SuffixOnly = isSearch831SuffixOnly;
+            IsSearchSuggestion = isSearchSuggestion;
         }
 
         public int HpId { get; private set; }
@@ -61,5 +62,6 @@ namespace UseCase.MstItem.SearchTenMstItem
         public bool IsSearchKenSaItem { get; private set; }
         public List<ItemTypeEnums> ItemFilter { get; private set; }
         public bool IsSearch831SuffixOnly { get; private set; }
+        public bool IsSearchSuggestion { get; private set; }
     }
 }

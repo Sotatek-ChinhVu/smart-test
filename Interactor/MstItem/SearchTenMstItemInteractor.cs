@@ -48,7 +48,7 @@ namespace Interactor.MstItem
                     inputData.IsExpiredSearchIfNoData, inputData.IsAllowSearchDeletedItem,
                     inputData.IsExpired, inputData.IsDeleted, inputData.DrugKbns,
                     inputData.IsSearchSanteiItem, inputData.IsSearchKenSaItem,
-                    inputData.ItemFilter, inputData.IsSearch831SuffixOnly);
+                    inputData.ItemFilter, inputData.IsSearch831SuffixOnly, inputData.IsSearchSuggestion);
 
                 return new SearchTenMstItemOutputData(data.tenItemModels, data.totalCount, SearchTenMstItemStatus.Successed);
             }

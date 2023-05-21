@@ -682,7 +682,7 @@ namespace Infrastructure.Repositories
             List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage,
             bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem,
             bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter,
-            bool isSearch831SuffixOnly)
+            bool isSearch831SuffixOnly, bool isSearchSuggestion)
         {
             var optimizedReplaceDict = new Dictionary<char, char>
                                         {
@@ -1061,22 +1061,35 @@ namespace Infrastructure.Repositories
                                  tenKN
                              };
 
-            var queryJoinWithKensa = (from q in queryFinal
-                                      join k in kensaMstQuery
-                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
-                                      from kensaMst in kensaMsts.DefaultIfEmpty()
-                                      select new
-                                      {
-                                          q.TenMst,
-                                          q.KouiName,
-                                          q.YakkaSyusaiItem,
-                                          q.tenKN,
-                                          KensaMst = kensaMst
-                                      }
-                                     ).OrderBy(item => item.TenMst.KanaName1)
+            var queryJoinWithKensa = from q in queryFinal
+                                     join k in kensaMstQuery
+                                     on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
+                                     from kensaMst in kensaMsts.DefaultIfEmpty()
+                                     select new
+                                     {
+                                         q.TenMst,
+                                         q.KouiName,
+                                         q.YakkaSyusaiItem,
+                                         q.tenKN,
+                                         KensaMst = kensaMst
+                                     };
+
+            if (isSearchSuggestion)
+            {
+                queryJoinWithKensa = queryJoinWithKensa
+                                      .OrderByDescending(item => item.TenMst.IsAdopted)
+                                      .ThenBy(item => item.TenMst.KanaName1)
                                       .ThenBy(item => item.TenMst.Name)
                                       .Skip((pageIndex - 1) * pageCount)
                                       .Take(pageCount);
+            }
+            else
+            {
+                queryJoinWithKensa = queryJoinWithKensa.OrderBy(item => item.TenMst.KanaName1)
+                                     .ThenBy(item => item.TenMst.Name)
+                                     .Skip((pageIndex - 1) * pageCount)
+                                     .Take(pageCount);
+            }
 
             var tenMstModels = queryJoinWithKensa.Select(item => new TenItemModel(
                                                            item.TenMst.HpId,

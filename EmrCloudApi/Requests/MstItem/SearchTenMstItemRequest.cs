@@ -15,7 +15,7 @@ namespace EmrCloudApi.Requests.MstItem
         public List<int> KouiKbns { get; set; } = new();
         public bool IncludeRosai { get; set; }
         public bool IncludeMisai { get; set; }
-        public int STDDate { get; set; }
+        public int SinDate { get; set; }
         public string ItemCodeStartWith { get; set; } = string.Empty;
         public bool IsIncludeUsage { get; set; } = true;
         public bool OnlyUsage { get; set; } = false;
@@ -30,5 +30,6 @@ namespace EmrCloudApi.Requests.MstItem
         public bool IsSearchKenSaItem { get; set; } = false;
         public List<ItemTypeEnums> ItemFilter { get; set; } = new();
         public bool IsSearch831SuffixOnly { get; set; } = false;
+        public bool IsSearchSuggestion { get; set; } = false;
     }
 }
