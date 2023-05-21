@@ -180,6 +180,8 @@ using Reporting.ReceiptCheck.Service;
 using Reporting.ReceiptList.DB;
 using Reporting.ReceiptList.Service;
 using Reporting.ReceiptPrint.Service;
+using Reporting.ReceTarget.DB;
+using Reporting.ReceTarget.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
 using Reporting.Sokatu.Common.DB;
@@ -677,6 +679,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMemoMsgCoReportService, MemoMsgCoReportService>();
             services.AddTransient<IP28KokhoSokatuCoReportService, P28KokhoSokatuCoReportService>();
             services.AddTransient<IP11KokhoSokatuCoReportService, P11KokhoSokatuCoReportService>();
+            services.AddTransient<IReceTargetCoReportService, ReceTargetCoReportService>();
+            services.AddTransient<ICoReceTargetFinder, CoReceTargetFinder>();
             services.AddTransient<IP28KoukiSeikyuCoReportService, P28KoukiSeikyuCoReportService>();
 
             //call Calculate API

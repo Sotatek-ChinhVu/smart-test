@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.MstItem.SearchTenItem
 {
     public class SearchTenItemInputData : IInputData<SearchTenItemOutputData>
     {
-        public SearchTenItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, List<int> kouiKbns, string masterSBT)
+        public SearchTenItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, bool isDeleted, List<int> kouiKbns, List<int> drugKbns, string masterSBT)
         {
             Keyword = keyword;
             KouiKbn = kouiKbn;
@@ -25,7 +24,9 @@ namespace UseCase.MstItem.SearchTenItem
             IsSearch831SuffixOnly = isSearch831SuffixOnly;
             IsSearchSanteiItem = isSearchSanteiItem;
             SearchFollowUsage = searchFollowUsage;
+            IsDeleted = isDeleted;
             KouiKbns = kouiKbns;
+            DrugKbns = drugKbns;
             MasterSBT = masterSBT;
         }
 
@@ -65,7 +66,11 @@ namespace UseCase.MstItem.SearchTenItem
 
         public byte SearchFollowUsage { get; private set; }
 
+        public bool IsDeleted { get; private set; }
+
         public List<int> KouiKbns { get; private set; }
+
+        public List<int> DrugKbns { get; set; }
 
         public string MasterSBT { get; private set; }
     }

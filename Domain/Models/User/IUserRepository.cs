@@ -52,7 +52,7 @@ namespace Domain.Models.User
 
         bool MigrateDatabase();
 
-        bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, string token, int userId);
+        bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, int userId);
 
         PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode);
 

@@ -41,7 +41,7 @@ public class CheckedLockMedicalExaminationInteractor : ICheckedLockMedicalExamin
                 return new CheckedLockMedicalExaminationOutputData(CheckedLockMedicalExaminationStatus.InvalidToken, true);
             }
 
-            var check = _userRepository.CheckLockMedicalExamination(input.HpId, input.PtId, input.RaiinNo, input.SinDate, input.Token, input.UserId);
+            var check = _userRepository.CheckLockMedicalExamination(input.HpId, input.PtId, input.RaiinNo, input.SinDate, input.UserId);
 
             return new CheckedLockMedicalExaminationOutputData(CheckedLockMedicalExaminationStatus.Successed, !check);
         }
