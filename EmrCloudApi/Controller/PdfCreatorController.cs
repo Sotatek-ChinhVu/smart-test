@@ -179,8 +179,8 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common);
     }
 
-    [HttpGet(ApiPath.MemoMsgPrint)]
-    public async Task<IActionResult> MemoMsgPrint([FromQuery] MemoMsgPrintRequest request)
+    [HttpPost(ApiPath.MemoMsgPrint)]
+    public async Task<IActionResult> MemoMsgPrint([FromBody] MemoMsgPrintRequest request)
     {
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
         return await RenderPdf(data, ReportType.Common);
