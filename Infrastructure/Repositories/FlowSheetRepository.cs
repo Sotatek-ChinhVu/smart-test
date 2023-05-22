@@ -248,7 +248,8 @@ namespace Infrastructure.Repositories
                 holidayUpdate.KyusinKbn = holiday.KyusinKbn;
                 holidayUpdate.HolidayKbn = holiday.HolidayKbn;
                 holidayUpdate.HolidayName = holiday.HolidayName;
-
+                holidayUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                holidayUpdate.UpdateId = userId;
                 if (holidayUpdate.HolidayKbn == 0)
                     holidayUpdate.HolidayName = string.Empty;
             }
