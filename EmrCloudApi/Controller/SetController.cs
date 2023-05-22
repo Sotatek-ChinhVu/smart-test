@@ -127,6 +127,9 @@ public class SetController : AuthorizeControllerBase
     public ActionResult<Response<SaveSuperSetDetailResponse>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
     {
         var input = new SaveSuperSetDetailInputData(
+                        request.PtId,
+                        request.RaiinNo,
+                        request.SinDate,
                         request.SetCd,
                         UserId,
                         HpId,
