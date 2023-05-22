@@ -565,36 +565,64 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         var rootSetCd = 0;
                         if (rootSet != null)
                         {
-                            rootSetCd = rootSet.SetCd;
-                            listCopyItems.Remove(rootSet);
-
-                            rootSet.SetCd = 0;
-                            rootSet.SetKbn = pasteSetKbn;
-                            rootSet.SetKbnEdaNo = pasteSetKbnEdaNo;
-                            rootSet.CreateDate = CIUtil.GetJapanDateTimeNow();
-                            rootSet.CreateId = userId;
-                            rootSet.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                            rootSet.UpdateId = userId;
-                            TrackingDataContext.SetMsts.Add(rootSet);
-                            TrackingDataContext.SaveChanges();
-                            setCd = rootSet.SetCd;
-                            // Convert SetMst copy to SetMst paste
-                            foreach (var item in listCopyItems)
+                            try
                             {
-                                SetMst setMst = item.DeepClone();
-                                setMst.SetCd = 0;
-                                setMst.SetKbn = pasteSetKbn;
-                                setMst.SetKbnEdaNo = pasteSetKbnEdaNo;
-                                setMst.CreateDate = CIUtil.GetJapanDateTimeNow();
-                                setMst.CreateId = userId;
-                                setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                                setMst.UpdateId = userId;
-                                listPasteItems.Add(setMst);
-                            }
+                                rootSetCd = rootSet.SetCd;
+                                listCopyItems.Remove(rootSet);
 
-                            TrackingDataContext.SetMsts.AddRange(listPasteItems);
-                            TrackingDataContext.SaveChanges();
-                            listPasteItems.Add(rootSet);
+                                rootSet.SetCd = 0;
+                                rootSet.SetKbn = pasteSetKbn;
+                                rootSet.SetKbnEdaNo = pasteSetKbnEdaNo;
+                                rootSet.CreateDate = CIUtil.GetJapanDateTimeNow();
+                                rootSet.CreateId = userId;
+                                rootSet.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                rootSet.UpdateId = userId;
+                                TrackingDataContext.SetMsts.Add(rootSet);
+                                TrackingDataContext.SaveChanges();
+                                setCd = rootSet.SetCd;
+                                // Convert SetMst copy to SetMst paste
+                                foreach (var item in listCopyItems)
+                                {
+                                    SetMst setMst = item.DeepClone();
+                                    setMst.SetCd = 0;
+                                    setMst.SetKbn = pasteSetKbn;
+                                    setMst.SetKbnEdaNo = pasteSetKbnEdaNo;
+                                    setMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+                                    setMst.CreateId = userId;
+                                    setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                    setMst.UpdateId = userId;
+                                    listPasteItems.Add(setMst);
+                                }
+
+                                TrackingDataContext.SetMsts.AddRange(listPasteItems);
+                                TrackingDataContext.SaveChanges();
+                                listPasteItems.Add(rootSet);
+                            }
+                            catch (Exception ex)
+                            {
+                                if (HandleException(ex) == 23000)
+                                {
+                                    foreach (var pasteItem in listPasteItems)
+                                {
+                                   
+                                        if (pasteItem.Level2 == 0 && pasteItem.Level3 == 0)
+                                        {
+                                            pasteItem.Level1++;
+                                        }
+                                        else if (pasteItem.Level2 > 0 && pasteItem.Level3 == 0)
+                                        {
+                                            pasteItem.Level2++;
+                                        }
+                                        else
+                                        {
+                                            pasteItem.Level3++;
+                                        }
+                                        TrackingDataContext.Add(pasteItem);
+                                        TrackingDataContext.SaveChanges();
+                                    }
+
+                                }
+                            }
                         }
 
                         // get paste content item
