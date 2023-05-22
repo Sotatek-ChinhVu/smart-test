@@ -60,7 +60,7 @@ public class SetController : AuthorizeControllerBase
     [HttpPost(ApiPath.Save)]
     public async Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
     {
-        var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, HpId, UserId, request.IsGroup);
+        var input = new SaveSetMstInputData(request.PtId, request.RaiinNo, request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, HpId, UserId, request.IsGroup);
         var output = _bus.Handle(input);
 
         if (output.Status == SaveSetMstStatus.Successed)
@@ -102,7 +102,7 @@ public class SetController : AuthorizeControllerBase
         if (output.Status == CopyPasteSetMstStatus.Successed)
         {
             await _webSocketService.SendMessageAsync(FunctionCodes.SuperSetChanged,
-                new SuperSetMessage { SetCds = new List<int> { output.NewSetCd} });
+                new SuperSetMessage { SetCds = new List<int> { output.NewSetCd } });
         }
 
         var presenter = new CopyPasteSetMstPresenter();

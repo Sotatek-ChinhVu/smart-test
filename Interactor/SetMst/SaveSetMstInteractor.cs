@@ -1,4 +1,5 @@
 ﻿using Domain.Models.SetMst;
+using Domain.Models.User;
 using UseCase.SetMst.SaveSetMst;
 
 namespace Interactor.SetMst;
@@ -6,13 +7,21 @@ namespace Interactor.SetMst;
 public class SaveSetMstInteractor : ISaveSetMstInputPort
 {
     private readonly ISetMstRepository _setMstRepository;
-    public SaveSetMstInteractor(ISetMstRepository setMstRepository)
+    private readonly IUserRepository _userRepository;
+
+    public SaveSetMstInteractor(ISetMstRepository setMstRepository, IUserRepository userRepository)
     {
         _setMstRepository = setMstRepository;
+        _userRepository = userRepository;
     }
 
     public SaveSetMstOutputData Handle(SaveSetMstInputData inputData)
     {
+        var checkLockMedical = _userRepository.CheckLockMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+        if (checkLockMedical)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.MedicalScreenLocked);
+        }
         if (inputData.SinDate <= 15000101 && inputData.SinDate > 30000000)
         {
             return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSindate);

@@ -9,7 +9,6 @@ using UseCase.Diseases.Upsert;
 using UseCase.Family;
 using UseCase.FlowSheet.Upsert;
 using UseCase.MedicalExamination.SaveMedical;
-using UseCase.Receipt.GetRecePreviewList;
 
 namespace EmrCloudApi.Presenters.MedicalExamination;
 
