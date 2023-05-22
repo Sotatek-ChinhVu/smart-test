@@ -96,7 +96,7 @@ public class SetController : AuthorizeControllerBase
     [HttpPost(ApiPath.Paste)]
     public async Task<ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
-        var input = new CopyPasteSetMstInputData(HpId, UserId, request.GenerationId, request.CopySetCd, request.PasteSetCd, request.PasteToOtherGroup, request.CopySetKbnEdaNo, request.CopySetKbn, request.PasteSetKbnEdaNo, request.PasteSetKbn);
+        var input = new CopyPasteSetMstInputData(HpId, UserId, request.PtId, request.RaiinNo, request.SinDate, request.GenerationId, request.CopySetCd, request.PasteSetCd, request.PasteToOtherGroup, request.CopySetKbnEdaNo, request.CopySetKbn, request.PasteSetKbnEdaNo, request.PasteSetKbn);
         var output = _bus.Handle(input);
 
         if (output.Status == CopyPasteSetMstStatus.Successed)

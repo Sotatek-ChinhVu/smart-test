@@ -1,4 +1,5 @@
 ﻿using Domain.Models.SetMst;
+using Domain.Models.User;
 using UseCase.SetMst.CopyPasteSetMst;
 
 namespace Interactor.SetMst;
@@ -6,14 +7,22 @@ namespace Interactor.SetMst;
 public class CopyPasteSetMstInteractor : ICopyPasteSetMstInputPort
 {
     private readonly ISetMstRepository _setMstRepository;
+    private readonly IUserRepository _userRepository;
 
-    public CopyPasteSetMstInteractor(ISetMstRepository setMstRepository)
+    public CopyPasteSetMstInteractor(ISetMstRepository setMstRepository, IUserRepository userRepository)
     {
         _setMstRepository = setMstRepository;
+        _userRepository = userRepository;
     }
+
     public CopyPasteSetMstOutputData Handle(CopyPasteSetMstInputData inputData)
     {
-        if (inputData.HpId <= 0)
+        var checkLockMedical = _userRepository.CheckLockMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+        if (checkLockMedical)
+        {
+            return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.MedicalScreenLocked);
+        }
+        else if (inputData.HpId <= 0)
         {
             return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.InvalidHpId);
         }
