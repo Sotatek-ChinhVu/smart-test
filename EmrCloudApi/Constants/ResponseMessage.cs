@@ -62,6 +62,7 @@
         public static readonly string ExistedId = "ExistedId";
         public static readonly string InputDataNull = "Input data is null";
         public static readonly string Valid = "Valid";
+        public static readonly string MedicalScreenLocked = "Medical Screen Locked!";
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";

@@ -80,6 +80,23 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     {
         try
         {
+            var checkLockMedical = _userRepository.CheckLockMedicalExamination(inputDatas.HpId, inputDatas.PtId, inputDatas.RaiinNo, inputDatas.SinDate, inputDatas.UserId);
+            if (checkLockMedical)
+            {
+                return new SaveMedicalOutputData(
+                       SaveMedicalStatus.MedicalScreenLocked,
+                       RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                       new(),
+                       KarteValidationStatus.Valid,
+                       ValidateFamilyListStatus.ValidateSuccess,
+                       UpsertFlowSheetStatus.Valid,
+                       UpsertPtDiseaseListStatus.Valid,
+                       0,
+                       0,
+                       0
+                       );
+            }
+
             //Raiin Info
             var inputDataList = inputDatas.OdrItems.ToList();
             var hpIds = inputDataList.Select(x => x.HpId).ToList();
