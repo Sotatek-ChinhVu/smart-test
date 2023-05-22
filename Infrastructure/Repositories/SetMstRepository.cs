@@ -6,6 +6,8 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Npgsql;
+using System.Data;
 using System.Text;
 
 namespace Infrastructure.Repositories;
@@ -151,6 +153,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     public SetMstModel SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
     {
+        SetMst setMst = new();
         try
         {
             // Check SetMstModel is delete?
@@ -172,7 +175,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 oldSetMst = oldSetMst != null ? oldSetMst : new SetMst();
             }
-            var setMst = ConvertSetMstModelToSetMst(oldSetMst, setMstModel, userId);
+            setMst = ConvertSetMstModelToSetMst(oldSetMst, setMstModel, userId);
 
             if (!isDelete)
             {
@@ -282,8 +285,25 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     setMst.IsGroup
                 );
         }
-        catch
+        catch(Exception ex)
         {
+            if (HandleException(ex) == 23000)
+            {
+                if (setMst.Level2 == 0 && setMst.Level3 == 0)
+                {
+                    setMst.Level1++;
+                }
+                else if (setMst.Level2 > 0 && setMst.Level3 == 0)
+                {
+                    setMst.Level2++;
+                }
+                else
+                {
+                    setMst.Level3++;
+                }
+                TrackingDataContext.Add(setMst);
+                TrackingDataContext.SaveChanges();
+            }
             return new SetMstModel();
         }
         finally
@@ -1310,6 +1330,29 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 item.UpdateId = userId;
             }
         }
+    }
+    #endregion
+
+    #region Catch Exception
+    private int HandleException(Exception exception)
+    {
+        if (exception is DbUpdateConcurrencyException concurrencyEx)
+        {
+            return 0;
+        }
+        else if (exception is DbUpdateException dbUpdateEx)
+        {
+            if (dbUpdateEx.InnerException != null
+                    && dbUpdateEx.InnerException.InnerException != null)
+            {
+                if (dbUpdateEx.InnerException.InnerException is PostgresException postgreException)
+                {
+                    return postgreException.ErrorCode;
+                }
+            }
+        }
+
+        return 0;
     }
     #endregion
 }

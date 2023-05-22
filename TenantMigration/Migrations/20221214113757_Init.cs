@@ -6671,6 +6671,7 @@ namespace TenantMigration.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SET_MST", x => new { x.HPID, x.SETCD });
+                    table.UniqueConstraint("UQ_SET_MST", x => new { x.HPID, x.SETCD, x.SETKBN, x.SETKBNEDANO, x.GENERATIONID, x.LEVEL1, x.LEVEL2, x.LEVEL3 });
                 });
 
             migrationBuilder.CreateTable(
