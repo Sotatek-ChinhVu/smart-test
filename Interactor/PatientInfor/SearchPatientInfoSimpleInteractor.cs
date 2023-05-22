@@ -2,6 +2,7 @@
 using Domain.Models.PatientInfor;
 using Helper.Common;
 using Helper.Extension;
+using Interactor.PatientInfor.SortPatientCommon;
 using System.Text.RegularExpressions;
 using UseCase.PatientInfor;
 using UseCase.PatientInfor.SearchSimple;
@@ -12,12 +13,15 @@ namespace Interactor.PatientInfor
     {
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IGroupInfRepository _groupInfRepository;
+        private readonly ISortPatientCommon _sortPatientCommon;
         private const string _regPhone = @"[^0-9^\-]";
+        private const string startGroupOrderKey = "group_";
 
-        public SearchPatientInfoSimpleInteractor(IPatientInforRepository patientInforRepository, IGroupInfRepository groupInfRepository)
+        public SearchPatientInfoSimpleInteractor(IPatientInforRepository patientInforRepository, IGroupInfRepository groupInfRepository, ISortPatientCommon sortPatientCommon)
         {
             _patientInforRepository = patientInforRepository;
             _groupInfRepository = groupInfRepository;
+            _sortPatientCommon = sortPatientCommon;
         }
 
         public SearchPatientInfoSimpleOutputData Handle(SearchPatientInfoSimpleInputData inputData)
@@ -49,43 +53,46 @@ namespace Interactor.PatientInfor
                 }
 
                 int searchType = DetectSearchType(inputData.Keyword);
-                List<PatientInforModel> patientInfoList;
+                List<PatientInforModel> patientInfoList = new();
+                bool sortGroup = inputData.SortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
                 switch (searchType)
                 {
                     case 0:
-                        patientInfoList = _patientInforRepository.SearchContainPtNum(ptNum, halfSizekeyword, inputData.HpId, inputData.PageIndex, inputData.PageSize);
+                        patientInfoList = _patientInforRepository.SearchContainPtNum(ptNum, halfSizekeyword, inputData.HpId, inputData.PageIndex, inputData.PageSize, inputData.SortData);
                         if (patientInfoList.Count == 0)
                         {
                             return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
                         }
-
-                        return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
+                        break;
                     case 1:
                         int sindate = halfSizekeyword.AsInteger();
-                        patientInfoList = _patientInforRepository.SearchBySindate(sindate, inputData.HpId, inputData.PageIndex, inputData.PageSize);
+                        patientInfoList = _patientInforRepository.SearchBySindate(sindate, inputData.HpId, inputData.PageIndex, inputData.PageSize, inputData.SortData);
                         if (patientInfoList.Count == 0)
                         {
                             return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
                         }
-
-                        return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
+                        break;
                     case 2:
-                        patientInfoList = _patientInforRepository.SearchPhone(inputData.Keyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize);
+                        patientInfoList = _patientInforRepository.SearchPhone(inputData.Keyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize, inputData.SortData);
                         if (patientInfoList.Count == 0)
                         {
                             return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
                         }
-                        return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
+                        break;
                     case 3:
-                        patientInfoList = _patientInforRepository.SearchName(inputData.Keyword, halfSizekeyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize);
+                        patientInfoList = _patientInforRepository.SearchName(inputData.Keyword, halfSizekeyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize, inputData.SortData);
                         if (patientInfoList.Count == 0)
                         {
                             return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
                         }
-                        return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
+                        break;
                 }
-
-                return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
+                var result = AppendGroupInfo(patientInfoList);
+                if (sortGroup)
+                {
+                    result = _sortPatientCommon.SortData(result, inputData.SortData, inputData.PageIndex, inputData.PageSize);
+                }
+                return new SearchPatientInfoSimpleOutputData(result, SearchPatientInfoSimpleStatus.Success);
             }
             finally
             {
@@ -104,7 +111,7 @@ namespace Interactor.PatientInfor
             var ptIdList = patientInfList.Select(p => p.PtId).ToList();
             var patientGroupInfList = _groupInfRepository.GetAllByPtIdList(ptIdList);
 
-            List<PatientInfoWithGroup> patientInfoListWithGroup = new List<PatientInfoWithGroup>();
+            List<PatientInfoWithGroup> patientInfoListWithGroup = new();
             foreach (var patientInfo in patientInfList)
             {
                 long ptId = patientInfo.PtId;
