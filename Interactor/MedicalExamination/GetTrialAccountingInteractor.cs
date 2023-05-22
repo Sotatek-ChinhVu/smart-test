@@ -36,7 +36,7 @@ namespace Interactor.MedicalExamination
                 {
                     return new GetTrialAccountingOutputData(GetTrialAccountingStatus.MedicalScreenLocked);
                 }
-                    var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
+                var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
                 var requestRaiinInf = new ReceptionItem(raiinInf);
                 var runTraialCalculateRequest = new RunTraialCalculateRequest(
                                 inputData.HpId,

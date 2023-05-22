@@ -1,4 +1,5 @@
 ﻿using Domain.Models.RaiinKubunMst;
+using Domain.Models.User;
 using Helper.Constants;
 using UseCase.Reception.UpdateDynamicCell;
 
@@ -7,14 +8,21 @@ namespace Interactor.Reception;
 public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellInputPort
 {
     private readonly IRaiinKubunMstRepository _raiinKbnInfRepository;
+    private readonly IUserRepository _userRepository;
 
-    public UpdateReceptionDynamicCellInteractor(IRaiinKubunMstRepository raiinKbnInfRepository)
+    public UpdateReceptionDynamicCellInteractor(IRaiinKubunMstRepository raiinKbnInfRepository, IUserRepository userRepository)
     {
         _raiinKbnInfRepository = raiinKbnInfRepository;
+        _userRepository = userRepository;
     }
 
     public UpdateReceptionDynamicCellOutputData Handle(UpdateReceptionDynamicCellInputData input)
     {
+        var checkLockMedical = _userRepository.CheckLockMedicalExamination(input.HpId, input.PtId, input.RaiinNo, input.SinDate, input.UserId);
+        if (checkLockMedical)
+        {
+            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.MedicalScreenLocked);
+        }
         if (input.HpId <= 0)
         {
             return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidHpId);
