@@ -4,7 +4,7 @@ namespace EmrCloudApi.Requests.Receipt
 {
     public class CreateUKEFileRequest
     {
-        public CreateUKEFileRequest(int hpId, ModeTypeCreateUKE modeType, int seikyuYm, int seikyuYmOutput, bool chkHenreisai, bool chkTogetsu, bool includeOutDrug, bool includeTester, int kaId, int doctorId, int sort, bool skipWarningIncludeOutDrug, bool skipWarningIncludeTester, bool skipWarningKaId, bool skipWarningDoctorId, bool confirmCreateUKEFile, string fileName)
+        public CreateUKEFileRequest(int hpId, ModeTypeCreateUKE modeType, int seikyuYm, int seikyuYmOutput, bool chkHenreisai, bool chkTogetsu, bool includeOutDrug, bool includeTester, int kaId, int doctorId, int sort, string fileName)
         {
             HpId = hpId;
             ModeType = modeType;
@@ -17,11 +17,6 @@ namespace EmrCloudApi.Requests.Receipt
             KaId = kaId;
             DoctorId = doctorId;
             Sort = sort;
-            SkipWarningIncludeOutDrug = skipWarningIncludeOutDrug;
-            SkipWarningIncludeTester = skipWarningIncludeTester;
-            SkipWarningKaId = skipWarningKaId;
-            SkipWarningDoctorId = skipWarningDoctorId;
-            ConfirmCreateUKEFile = confirmCreateUKEFile;
             FileName = fileName;
         }
 
@@ -46,16 +41,6 @@ namespace EmrCloudApi.Requests.Receipt
         public int DoctorId { get; private set; }
 
         public int Sort { get; private set; }
-
-        public bool SkipWarningIncludeOutDrug { get; private set; }
-
-        public bool SkipWarningIncludeTester { get; private set; }
-
-        public bool SkipWarningKaId { get; private set; }
-
-        public bool SkipWarningDoctorId { get; private set; }
-
-        public bool ConfirmCreateUKEFile { get; private set; }
 
         public string FileName { get; private set; }
     }

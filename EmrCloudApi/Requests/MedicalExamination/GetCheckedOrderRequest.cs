@@ -24,6 +24,8 @@ namespace EmrCloudApi.Requests.MedicalExamination
 
         public int HokenPid { get; set; }
 
+        public bool EnabledSanteiCheck { get; set; }
+
         public List<OdrInfItemU> OdrInfItems { get; set; } = new();
 
         public List<DiseaseItem> DiseaseItems { get; set; } = new();
