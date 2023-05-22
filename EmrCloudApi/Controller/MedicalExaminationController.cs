@@ -378,7 +378,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.Calculate)]
         public ActionResult<Response<CalculateResponseOfMedical>> Calculate([FromBody] CalculateRequest request)
         {
-            var input = new CalculateInputData(request.FromRcCheck, request.IsSagaku, HpId, request.PtId, request.SinDate, request.SeikyuUp, request.Prefix);
+            var input = new CalculateInputData(request.RaiinNo, request.FromRcCheck, request.IsSagaku, HpId, request.PtId, request.SinDate, request.SeikyuUp, request.Prefix, UserId);
             var output = _bus.Handle(input);
             var presenter = new CalculatePresenter();
             presenter.Complete(output);
