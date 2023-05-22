@@ -2,12 +2,14 @@
 using Domain.Models.CalculateModel;
 using Domain.Models.MstItem;
 using Domain.Models.Reception;
+using Domain.Models.User;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Interactor.CalculateService;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.TrailAccounting;
+using UseCase.SetMst.CopyPasteSetMst;
 
 namespace Interactor.MedicalExamination
 {
@@ -16,19 +18,26 @@ namespace Interactor.MedicalExamination
         private readonly ICalculateService _calculateRepository;
         private readonly IReceptionRepository _receptionRepository;
         private readonly IAccountingRepository _accountingRepository;
+        private readonly IUserRepository _userRepository;
 
-        public GetTrialAccountingInteractor(ICalculateService calculateRepository, IReceptionRepository receptionRepository, IAccountingRepository accountingRepository)
+        public GetTrialAccountingInteractor(ICalculateService calculateRepository, IReceptionRepository receptionRepository, IAccountingRepository accountingRepository, IUserRepository userRepository)
         {
             _calculateRepository = calculateRepository;
             _receptionRepository = receptionRepository;
             _accountingRepository = accountingRepository;
+            _userRepository = userRepository;
         }
 
         public GetTrialAccountingOutputData Handle(GetTrialAccountingInputData inputData)
         {
             try
             {
-                var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
+                var checkLockMedical = _userRepository.CheckLockMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+                if (checkLockMedical)
+                {
+                    return new GetTrialAccountingOutputData(GetTrialAccountingStatus.MedicalScreenLocked);
+                }
+                    var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
                 var requestRaiinInf = new ReceptionItem(raiinInf);
                 var runTraialCalculateRequest = new RunTraialCalculateRequest(
                                 inputData.HpId,
