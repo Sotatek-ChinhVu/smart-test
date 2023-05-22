@@ -555,6 +555,7 @@ using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
 using UseCase.Receipt.ValidateCreateUKEFile;
+using Reporting.Sokatu.KoukiSeikyu.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -683,6 +684,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP11KokhoSokatuCoReportService, P11KokhoSokatuCoReportService>();
             services.AddTransient<IReceTargetCoReportService, ReceTargetCoReportService>();
             services.AddTransient<ICoReceTargetFinder, CoReceTargetFinder>();
+            services.AddTransient<ICoKoukiSeikyuFinder, CoKoukiSeikyuFinder>();
             services.AddTransient<IP28KoukiSeikyuCoReportService, P28KoukiSeikyuCoReportService>();
 
             //call Calculate API

@@ -5,47 +5,31 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
     public class KoukiSeikyuMapper : CommonReportingRequest
     {
         private readonly Dictionary<string, string> _singleFieldData;
-        private readonly List<Dictionary<string, CellModel>> _tableFieldData;
+        private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, string> _extralData;
-        private readonly Dictionary<string, string> _fileNamePageMap;
-        private readonly Dictionary<string, bool> _visibleFieldData;
-        private readonly int _reportType;
-        private readonly string _rowCountFieldName;
+        private readonly string _formFileName;
 
-        public KoukiSeikyuMapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, Dictionary<string, string> extralData, string rowCountFieldName, int reportType, Dictionary<string, bool> visibleFieldData, Dictionary<string, string> fileNamePageMap)
+        public KoukiSeikyuMapper(Dictionary<string, string> singleFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName)
         {
             _singleFieldData = singleFieldData;
-            _tableFieldData = tableFieldData;
+            _listTextData = listTextData;
             _extralData = extralData;
-            _rowCountFieldName = rowCountFieldName;
-            _reportType = reportType;
-            _visibleFieldData = visibleFieldData;
-            _fileNamePageMap = fileNamePageMap;
+            _formFileName = formFileName;
         }
 
         public override int GetReportType()
         {
-            return _reportType;
+            return (int)CoReportType.KoukiSeikyu;
         }
 
         public override string GetRowCountFieldName()
         {
-            return _rowCountFieldName;
-        }
-
-        public override Dictionary<string, string> GetSingleFieldData()
-        {
-            return _singleFieldData;
+            return string.Empty;
         }
 
         public override List<Dictionary<string, CellModel>> GetTableFieldData()
         {
-            return _tableFieldData;
-        }
-
-        public override Dictionary<string, bool> GetVisibleFieldData()
-        {
-            return _visibleFieldData;
+            return new();
         }
 
         public override Dictionary<string, string> GetExtralData()
@@ -53,14 +37,37 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
             return _extralData;
         }
 
+        public override string GetJobName()
+        {
+            return string.Empty;
+        }
+
+        public override Dictionary<string, string> GetSingleFieldData()
+        {
+            return _singleFieldData;
+        }
+
+        public override Dictionary<string, bool> GetVisibleFieldData()
+        {
+            return new();
+        }
+
         public override Dictionary<string, bool> GetWrapFieldData()
         {
             return new();
         }
 
+        public override Dictionary<int, List<ListTextObject>> GetListTextData()
+        {
+            return _listTextData;
+        }
         public override Dictionary<string, string> GetFileNamePageMap()
         {
-            return _fileNamePageMap;
+            var fileName = new Dictionary<string, string>
+        {
+            { "1", _formFileName }
+        };
+            return fileName;
         }
     }
 }

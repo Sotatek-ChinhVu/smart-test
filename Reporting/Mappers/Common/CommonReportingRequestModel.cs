@@ -34,10 +34,17 @@ namespace Reporting.Mappers.Common
 
     public class CellModel
     {
+        private bool value;
+
         public CellModel(string value)
         {
             Value = value;
             IsUnderline = false;
+        }
+
+        public CellModel(bool value)
+        {
+            this.value = value;
         }
 
         public CellModel(string value, bool isUnderline)
