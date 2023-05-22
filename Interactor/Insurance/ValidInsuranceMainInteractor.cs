@@ -252,12 +252,19 @@ namespace Interactor.Insurance
                 message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
                 validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidHokenNoEquals0, message, TypeMessage.TypeMessageError));
             }
-            if (string.IsNullOrEmpty(hokenSyaNo) || Int32.Parse(hokenSyaNo) == 0)
+            if (string.IsNullOrEmpty(hokenSyaNo))
             {
                 var paramsMessage = new string[] { "保険者番号は 0 〜 9 の範囲で入力してください。" };
                 message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
                 validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidHokensyaNoEquals0, message, TypeMessage.TypeMessageError));
             }
+
+            if (!int.TryParse(hokenSyaNo, out _))
+            {
+                message = "・数値のみを入力してください。";
+                validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidHokensyaNoEquals0, message, TypeMessage.TypeMessageError));
+            }
+
             // 記号
             if (hokenSyaNo.Length == 8 && hokenSyaNo.Trim().StartsWith("39"))
             {
