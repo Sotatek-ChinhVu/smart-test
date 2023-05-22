@@ -56,5 +56,7 @@ namespace Domain.Models.Reception
         bool CheckExistOfRaiinNos(List<long> raininNos);
 
         List<ReceptionModel> GetRaiinListWithKanInf(int hpId, long ptId);
+
+        ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate);
     }
 }

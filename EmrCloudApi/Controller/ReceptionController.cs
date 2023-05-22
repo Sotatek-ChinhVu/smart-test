@@ -80,7 +80,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetLastRaiinInfs)]
         public ActionResult<Response<GetLastRaiinInfsResponse>> GetLastRaiinInfs([FromQuery] GetLastRaiinInfsRequest request)
         {
-            var input = new GetLastRaiinInfsInputData(HpId, request.PtId, request.SinDate);
+            var input = new GetLastRaiinInfsInputData(HpId, request.PtId, request.SinDate, request.IsLastVisit);
             var output = _bus.Handle(input);
 
             var presenter = new GetLastRaiinInfsPresenter();
