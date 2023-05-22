@@ -101,5 +101,7 @@ public class SearchPatientInfoAdvancedRequest
 
     public int PageSize { get; set; }
 
-    public bool IsOrderOr { get; private set; }
+    public bool IsOrderOr { get; set; }
+
+    public Dictionary<string, string> SortData { get; set; } = new();
 }

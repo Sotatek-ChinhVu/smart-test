@@ -555,6 +555,8 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.Receipt.ValidateCreateUKEFile;
+using Interactor.PatientInfor.SortPatientCommon;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -779,6 +781,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoSta3020Finder, CoSta3020Finder>();
             services.AddTransient<IKensaIraiCoReportService, KensaIraiCoReportService>();
             services.AddTransient<ICoKensaIraiFinder, CoKensaIraiFinder>();
+            services.AddTransient<ISortPatientCommon, SortPatientCommon>();
         }
 
         private void SetupUseCase(IServiceCollection services)

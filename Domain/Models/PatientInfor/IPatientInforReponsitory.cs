@@ -16,17 +16,17 @@ namespace Domain.Models.PatientInfor
 
         (PatientInforModel ptInfModel, bool isFound) SearchExactlyPtNum(long ptNum, int hpId);
 
-        List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize);
+        List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
-        List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize);
+        List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
-        List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize);
+        List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
-        List<PatientInforModel> SearchName(string originKeyword, string halfsizeKeyword, bool isContainMode, int hpId, int pageIndex, int pageSize);
+        List<PatientInforModel> SearchName(string originKeyword, string halfsizeKeyword, bool isContainMode, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
         List<PatientInforModel> SearchSimple(string keyword, bool isContainMode, int hpId);
 
-        List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize);
+        List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
@@ -63,7 +63,7 @@ namespace Domain.Models.PatientInfor
 
         public bool IsRyosyoFuyou(int hpId, long ptId);
 
-        long GetPtIdFromPtNum(int hpId,long ptNum);
+        long GetPtIdFromPtNum(int hpId, long ptNum);
 
         int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus);
     }
