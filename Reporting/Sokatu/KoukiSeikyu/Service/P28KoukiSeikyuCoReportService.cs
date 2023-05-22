@@ -272,6 +272,5 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
 
         var responses = javaOutputData.responses;
         _dataRowCount = responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListRowCount && item.listName == "lsSokatu")!.result;
-        //_dataColCount = responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListColCount && item.listName == "lsSokatu")!.result;
     }
 }
