@@ -9,7 +9,6 @@ using Helper.Extension;
 using Interactor.CalculateService;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.TrailAccounting;
-using UseCase.SetMst.CopyPasteSetMst;
 
 namespace Interactor.MedicalExamination
 {
