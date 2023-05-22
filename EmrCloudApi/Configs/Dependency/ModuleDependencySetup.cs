@@ -98,6 +98,7 @@ using Interactor.Family.ValidateFamilyList;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.HokenMst;
+using Interactor.Holiday;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.JsonSetting;
@@ -118,6 +119,7 @@ using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
 using Interactor.PatientInfor.PtKyuseiInf;
+using Interactor.PatientInfor.SortPatientCommon;
 using Interactor.PtGroupMst;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
@@ -236,6 +238,8 @@ using Reporting.Statistics.Sta9000.DB;
 using Reporting.Statistics.Sta9000.Service;
 using Reporting.SyojyoSyoki.DB;
 using Reporting.SyojyoSyoki.Service;
+using Reporting.Yakutai.DB;
+using Reporting.Yakutai.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -292,6 +296,7 @@ using UseCase.FlowSheet.GetTooltip;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
+using UseCase.Holiday.SaveHoliday;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.Insurance.GetKohiPriorityList;
@@ -457,6 +462,7 @@ using UseCase.Receipt.SaveReceiptEdit;
 using UseCase.Receipt.SaveReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
+using UseCase.Receipt.ValidateCreateUKEFile;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastRaiinInfs;
@@ -553,10 +559,6 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.Receipt.ValidateCreateUKEFile;
-using Interactor.PatientInfor.SortPatientCommon;
-using UseCase.Holiday.SaveHoliday;
-using Interactor.Holiday;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -685,6 +687,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP11KokhoSokatuCoReportService, P11KokhoSokatuCoReportService>();
             services.AddTransient<IReceTargetCoReportService, ReceTargetCoReportService>();
             services.AddTransient<ICoReceTargetFinder, CoReceTargetFinder>();
+            services.AddTransient<IYakutaiCoReportService, YakutaiCoReportService>();
+            services.AddTransient<ICoYakutaiFinder, CoYakutaiFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

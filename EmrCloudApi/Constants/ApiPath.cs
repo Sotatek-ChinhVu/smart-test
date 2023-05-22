@@ -97,6 +97,7 @@
         public const string ReceiptPrint = "ReceiptPrint";
         public const string MemoMsgPrint = "MemoMsgPrint";
         public const string ReceTarget = "ReceTarget";
+        public const string Yakutai = "Yakutai";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
