@@ -1,5 +1,5 @@
 ﻿using Domain.Models.SetMst;
-using Helper.Constants;
+using Domain.Models.User;
 using UseCase.SetMst.ReorderSetMst;
 
 namespace Interactor.SetMst;
@@ -7,27 +7,36 @@ namespace Interactor.SetMst;
 public class ReorderSetMstInteractor : IReorderSetMstInputPort
 {
     private readonly ISetMstRepository _setMstRepository;
-    public ReorderSetMstInteractor(ISetMstRepository setMstRepository)
+    private readonly IUserRepository _userRepository;
+
+    public ReorderSetMstInteractor(ISetMstRepository setMstRepository, IUserRepository userRepository)
     {
         _setMstRepository = setMstRepository;
+        _userRepository = userRepository;
     }
-    public ReorderSetMstOutputData Handle(ReorderSetMstInputData reorderSetMstInputData)
+
+    public ReorderSetMstOutputData Handle(ReorderSetMstInputData inputData)
     {
-        if (reorderSetMstInputData.HpId <= 0)
+        var checkLockMedical = _userRepository.CheckLockMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+        if (checkLockMedical)
+        {
+            return new ReorderSetMstOutputData(ReorderSetMstStatus.MedicalScreenLocked);
+        }
+        else if (inputData.HpId <= 0)
         {
             return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidHpId);
         }
-        else if (reorderSetMstInputData.DragSetCd <= 0)
+        else if (inputData.DragSetCd <= 0)
         {
             return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidDragSetCd);
         }
-        else if (reorderSetMstInputData.DropSetCd < 0)
+        else if (inputData.DropSetCd < 0)
         {
             return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidDropSetCd);
         }
         try
         {
-            if (_setMstRepository.ReorderSetMst(reorderSetMstInputData.UserId, reorderSetMstInputData.HpId, reorderSetMstInputData.DragSetCd, reorderSetMstInputData.DropSetCd))
+            if (_setMstRepository.ReorderSetMst(inputData.UserId, inputData.HpId, inputData.DragSetCd, inputData.DropSetCd))
             {
                 return new ReorderSetMstOutputData(ReorderSetMstStatus.Successed);
             }

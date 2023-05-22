@@ -78,7 +78,7 @@ public class SetController : AuthorizeControllerBase
     [HttpPost(ApiPath.Reorder)]
     public async Task<ActionResult<Response<ReorderSetMstResponse>>> Reorder([FromBody] ReorderSetMstRequest request)
     {
-        var input = new ReorderSetMstInputData(HpId, request.DragSetCd, request.DropSetCd, UserId);
+        var input = new ReorderSetMstInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.DragSetCd, request.DropSetCd, UserId);
         var output = _bus.Handle(input);
 
         if (output.Status == ReorderSetMstStatus.Successed)
