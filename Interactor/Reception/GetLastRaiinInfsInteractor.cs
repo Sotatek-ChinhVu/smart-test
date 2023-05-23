@@ -24,10 +24,6 @@ public class GetLastRaiinInfsInteractor : IGetLastRaiinInfsInputPort
             {
                 return new GetLastRaiinInfsOutputData(GetLastRaiinInfsStatus.InvalidPtId);
             }
-            else if (inputData.SinDate <= 10000101 || inputData.SinDate > 99999999)
-            {
-                return new GetLastRaiinInfsOutputData(GetLastRaiinInfsStatus.InvalidSinDate);
-            }
 
             var result = new List<ReceptionModel>();
             if (inputData.IsLastVisit)
