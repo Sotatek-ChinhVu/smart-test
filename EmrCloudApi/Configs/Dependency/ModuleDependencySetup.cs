@@ -192,7 +192,6 @@ using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.KokhoSeikyu.DB;
 using Reporting.Sokatu.KokhoSokatu.DB;
 using Reporting.Sokatu.KokhoSokatu.Service;
-using Reporting.Sokatu.KoukiSeikyu.Service;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
@@ -560,9 +559,6 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.Receipt.ValidateCreateUKEFile;
-using Interactor.PatientInfor.SortPatientCommon;
-using Reporting.Sokatu.KoukiSeikyu.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
