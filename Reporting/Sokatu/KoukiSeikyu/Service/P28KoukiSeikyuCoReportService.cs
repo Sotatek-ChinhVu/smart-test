@@ -67,7 +67,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         _hpId = hpId;
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
-        GetRowCount();
+        //GetRowCount();
         //UpdateCrForm();
         var getData = GetData();
 
@@ -268,7 +268,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         return (receInfs?.Count ?? 0) > 0;
     }
 
-    private void GetRowCount()
+    /*private void GetRowCount()
     {
         List<ObjectCalculate> fieldInputList = new()
     {
@@ -281,7 +281,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
 
         var responses = javaOutputData.responses;
         _dataRowCount = responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListRowCount && item.listName == "lsSokatu")!.result;
-    }
+    }*/
 
     private void SetVisibleFieldData(string field, bool value)
     {
