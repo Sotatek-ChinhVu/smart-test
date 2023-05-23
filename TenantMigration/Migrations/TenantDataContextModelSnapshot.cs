@@ -19961,7 +19961,7 @@ namespace TenantMigration.Migrations
                         .HasColumnName("WEIGHT_KBN");
 
                     b.HasKey("HpId", "SetCd");
-                    b.HasIndex("HpId", "SetCd", "SetKbn", "SetKbnEdaNo", "GenerationId", "Level1", "Level2", "Level3").IsUnique();
+                    b.HasIndex("HpId", "SetKbn", "SetKbnEdaNo", "GenerationId", "Level1", "Level2", "Level3").IsUnique();
                     b.ToTable("SET_MST");
                 });
 

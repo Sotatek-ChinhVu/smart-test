@@ -285,24 +285,27 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     setMst.IsGroup
                 );
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             if (HandleException(ex) == 23000)
             {
-                if (setMst.Level2 == 0 && setMst.Level3 == 0)
+                int count = 0;
+                while (count <= 3)
                 {
-                    setMst.Level1++;
+                    try
+                    {
+                        RetrySaveSetMst(setMst);
+                    }
+                    catch (Exception tryEx)
+                    {
+
+                        if (HandleException(tryEx) == 23000)
+                        {
+                            RetrySaveSetMst(setMst);
+                        }
+                    }
+                    count++;
                 }
-                else if (setMst.Level2 > 0 && setMst.Level3 == 0)
-                {
-                    setMst.Level2++;
-                }
-                else
-                {
-                    setMst.Level3++;
-                }
-                TrackingDataContext.Add(setMst);
-                TrackingDataContext.SaveChanges();
             }
             return new SetMstModel();
         }
@@ -565,64 +568,42 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         var rootSetCd = 0;
                         if (rootSet != null)
                         {
-                            try
+                            rootSetCd = rootSet.SetCd;
+                            listCopyItems.Remove(rootSet);
+
+                            rootSet.SetCd = 0;
+                            rootSet.SetKbn = pasteSetKbn;
+                            rootSet.SetKbnEdaNo = pasteSetKbnEdaNo;
+                            rootSet.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            rootSet.CreateId = userId;
+                            rootSet.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            rootSet.UpdateId = userId;
+                            TrackingDataContext.SetMsts.Add(rootSet);
+                            TrackingDataContext.SaveChanges();
+                            setCd = rootSet.SetCd;
+                            //Get max level1
+                            var levelMax = GetMaxLevel(rootSet.HpId, rootSet.SetKbn, rootSet.SetKbnEdaNo, rootSet.GenerationId, rootSet.Level1, 0, 0);
+                            var setLevel = Int32.MaxValue - listCopyItems.Count;
+                            // Convert SetMst copy to SetMst paste
+                            foreach (var item in listCopyItems)
                             {
-                                rootSetCd = rootSet.SetCd;
-                                listCopyItems.Remove(rootSet);
-
-                                rootSet.SetCd = 0;
-                                rootSet.SetKbn = pasteSetKbn;
-                                rootSet.SetKbnEdaNo = pasteSetKbnEdaNo;
-                                rootSet.CreateDate = CIUtil.GetJapanDateTimeNow();
-                                rootSet.CreateId = userId;
-                                rootSet.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                                rootSet.UpdateId = userId;
-                                TrackingDataContext.SetMsts.Add(rootSet);
-                                TrackingDataContext.SaveChanges();
-                                setCd = rootSet.SetCd;
-                                // Convert SetMst copy to SetMst paste
-                                foreach (var item in listCopyItems)
-                                {
-                                    SetMst setMst = item.DeepClone();
-                                    setMst.SetCd = 0;
-                                    setMst.SetKbn = pasteSetKbn;
-                                    setMst.SetKbnEdaNo = pasteSetKbnEdaNo;
-                                    setMst.CreateDate = CIUtil.GetJapanDateTimeNow();
-                                    setMst.CreateId = userId;
-                                    setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                                    setMst.UpdateId = userId;
-                                    listPasteItems.Add(setMst);
-                                }
-
-                                TrackingDataContext.SetMsts.AddRange(listPasteItems);
-                                TrackingDataContext.SaveChanges();
-                                listPasteItems.Add(rootSet);
+                                SetMst setMst = item.DeepClone();
+                                setMst.SetCd = 0;
+                                setMst.SetKbn = pasteSetKbn;
+                                setMst.SetKbnEdaNo = pasteSetKbnEdaNo;
+                                setMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+                                setMst.CreateId = userId;
+                                setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                setMst.UpdateId = userId;
+                                setMst.Level1 = setLevel++;
+                                setMst.Level2 = setLevel++;
+                                setMst.Level3 = setLevel++;
+                                listPasteItems.Add(setMst);
                             }
-                            catch (Exception ex)
-                            {
-                                if (HandleException(ex) == 23000)
-                                {
-                                    foreach (var pasteItem in listPasteItems)
-                                {
-                                   
-                                        if (pasteItem.Level2 == 0 && pasteItem.Level3 == 0)
-                                        {
-                                            pasteItem.Level1++;
-                                        }
-                                        else if (pasteItem.Level2 > 0 && pasteItem.Level3 == 0)
-                                        {
-                                            pasteItem.Level2++;
-                                        }
-                                        else
-                                        {
-                                            pasteItem.Level3++;
-                                        }
-                                        TrackingDataContext.Add(pasteItem);
-                                        TrackingDataContext.SaveChanges();
-                                    }
 
-                                }
-                            }
+                            TrackingDataContext.SetMsts.AddRange(listPasteItems);
+                            TrackingDataContext.SaveChanges();
+                            listPasteItems.Add(rootSet);
                         }
 
                         // get paste content item
@@ -648,11 +629,42 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         }
                         AddNewItemToSave(userId, listCopySetCds, dictionarySetMstMap);
 
-                        // Set level for item 
-                        ReSetLevelForItem(indexPaste, copyItem, pasteItem, listPasteItems);
+                        // Set level for item
+                        try
+                        {
+                            ReSetLevelForItem(indexPaste, copyItem, pasteItem, listPasteItems);
 
-                        TrackingDataContext.SaveChanges();
-                        transaction.Commit();
+                            TrackingDataContext.SaveChanges();
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            if (HandleException(ex) == 23000)
+                            {
+                                var count = 0;
+                                while (count <= 3)
+                                {
+                                    try
+                                    {
+                                        RetryCopyPasteSetMst(copyItem, pasteItem, listPasteItems);
+
+                                        TrackingDataContext.SaveChanges();
+                                        transaction.Commit();
+                                    }
+                                    catch (Exception tryEx)
+                                    {
+                                        if (HandleException(tryEx) == 23000)
+                                        {
+                                            RetryCopyPasteSetMst(copyItem, pasteItem, listPasteItems);
+
+                                            TrackingDataContext.SaveChanges();
+                                            transaction.Commit();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                     }
                     catch
                     {
@@ -1358,6 +1370,71 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 item.UpdateId = userId;
             }
         }
+    }
+
+    private int GetMaxLevel(int hpId, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, bool isCheckLevel0 = false)
+    {
+        var setMsts = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo && s.GenerationId == generationId).ToList();
+        int max = 0;
+
+        if ((isCheckLevel0 || level1 > 0) && level2 == 0 && level3 == 0)
+        {
+            max = setMsts.Count == 0 ? 0 : setMsts.Max(s => s.Level1);
+        }
+        else if (level1 > 0 && level2 > 0 && level3 == 0)
+        {
+            max = setMsts.Count == 0 ? 0 : setMsts.Where(s => s.Level1 == level1).Max(s => s.Level2);
+        }
+        else if (level1 > 0 && level2 > 0 && level3 > 0)
+        {
+            max = setMsts.Count == 0 ? 0 : setMsts.Where(s => s.Level1 == level1 && s.Level2 == level2).Max(s => s.Level3);
+        }
+
+        return max;
+    }
+
+    private void RetrySaveSetMst(SetMst setMst)
+    {
+        var levelMax = GetMaxLevel(setMst.HpId, setMst.SetKbn, setMst.SetKbnEdaNo, setMst.GenerationId, setMst.Level1, setMst.Level2, setMst.Level3);
+        if (setMst.Level2 == 0 && setMst.Level3 == 0)
+        {
+            setMst.Level1 = levelMax++;
+        }
+        else if (setMst.Level2 > 0 && setMst.Level3 == 0)
+        {
+            setMst.Level2 = levelMax++;
+        }
+        else
+        {
+            setMst.Level3 = levelMax++;
+        }
+        TrackingDataContext.Add(setMst);
+        TrackingDataContext.SaveChanges();
+    }
+
+    private void RetryCopyPasteSetMst(SetMst copyItem, SetMst? pasteItem, List<SetMst> listPasteItems)
+    {
+        var levelPaste = 0;
+        if (pasteItem == null)
+        {
+            levelPaste = 1;
+        }
+        else if (pasteItem?.Level1 > 0 && pasteItem?.Level2 == 0 && pasteItem?.Level3 == 0)
+        {
+            levelPaste = 2;
+        }
+        else if (pasteItem?.Level1 > 0 && pasteItem?.Level2 > 0 && pasteItem?.Level3 == 0)
+        {
+            levelPaste = 3;
+        }
+        else if (pasteItem?.Level1 > 0 && pasteItem?.Level2 > 0 && pasteItem?.Level3 > 0)
+        {
+            levelPaste = 4;
+        }
+
+        var levelMax = GetMaxLevel(copyItem.HpId, copyItem.SetKbn, copyItem.SetKbnEdaNo, copyItem.GenerationId, levelPaste >= 1 ? pasteItem?.Level1 ?? 0 : 0, levelPaste >= 2 ? pasteItem?.Level2 ?? 0 : 0, levelPaste >= 3 ? pasteItem?.Level3 ?? 0 : 0, pasteItem == null);
+
+        ReSetLevelForItem(levelMax, copyItem, pasteItem, listPasteItems);
     }
     #endregion
 
