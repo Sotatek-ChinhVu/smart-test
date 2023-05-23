@@ -1,4 +1,4 @@
-﻿namespace UseCase.FlowSheet.GetList
+﻿namespace Domain.Models.FlowSheet
 {
     public class HolidayDto
     {

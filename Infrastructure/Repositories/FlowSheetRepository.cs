@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Diagnostics;
 using System.Linq.Dynamic.Core;
-using UseCase.FlowSheet.GetList;
 
 namespace Infrastructure.Repositories
 {
@@ -214,7 +213,7 @@ namespace Infrastructure.Repositories
         {
             var holidayModelList = NoTrackingDataContext.HolidayMsts
                 .Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None)
-                .Select(h => new HolidayDto(h.SeqNo ,h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
+                .Select(h => new HolidayDto(h.SeqNo, h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
                 .ToList();
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -227,7 +226,7 @@ namespace Infrastructure.Repositories
         public bool SaveHolidayMst(HolidayModel holiday, int userId)
         {
             var holidayUpdate = TrackingDataContext.HolidayMsts.FirstOrDefault(x => x.HpId == holiday.HpId && x.SinDate == holiday.SinDate);
-            if(holidayUpdate == null)
+            if (holidayUpdate == null)
             {
                 TrackingDataContext.HolidayMsts.Add(new HolidayMst()
                 {
