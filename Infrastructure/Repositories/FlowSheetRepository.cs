@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Diagnostics;
 using System.Linq.Dynamic.Core;
+using UseCase.FlowSheet.GetList;
 
 namespace Infrastructure.Repositories
 {
@@ -209,11 +210,11 @@ namespace Infrastructure.Repositories
         #endregion
 
         #region HolidayMst
-        private List<HolidayModel> ReloadHolidayCache(int hpId)
+        private List<HolidayDto> ReloadHolidayCache(int hpId)
         {
             var holidayModelList = NoTrackingDataContext.HolidayMsts
                 .Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None)
-                .Select(h => new HolidayModel(h.HpId, h.SeqNo ,h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
+                .Select(h => new HolidayDto(h.SeqNo ,h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
                 .ToList();
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -257,14 +258,14 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public List<HolidayModel> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
+        public List<HolidayDto> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
         {
 
-            if (!_memoryCache.TryGetValue(HolidayMstCacheKey, out IEnumerable<HolidayModel>? setKbnMstList))
+            if (!_memoryCache.TryGetValue(HolidayMstCacheKey, out IEnumerable<HolidayDto>? holidayMstList))
             {
-                setKbnMstList = ReloadHolidayCache(hpId);
+                holidayMstList = ReloadHolidayCache(hpId);
             }
-            return setKbnMstList!.Where(h => holidayFrom <= h.SinDate && h.SinDate <= holidayTo).ToList();
+            return holidayMstList!.Where(h => holidayFrom <= h.SinDate && h.SinDate <= holidayTo).ToList();
         }
 
         #endregion

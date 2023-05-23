@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Models.RaiinListMst;
+using UseCase.FlowSheet.GetList;
 
 namespace Domain.Models.FlowSheet
 {
@@ -13,7 +14,7 @@ namespace Domain.Models.FlowSheet
 
         bool SaveHolidayMst(HolidayModel holiday, int userId);
 
-        List<HolidayModel> GetHolidayMst(int hpId, int holidayFrom, int holidayTo);
+        List<HolidayDto> GetHolidayMst(int hpId, int holidayFrom, int holidayTo);
 
         void UpsertTag(List<FlowSheetModel> inputDatas, int hpId, int userId);
 
