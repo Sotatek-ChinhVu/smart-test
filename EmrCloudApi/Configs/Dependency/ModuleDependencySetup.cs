@@ -557,6 +557,8 @@ using UseCase.Receipt.ValidateCreateUKEFile;
 using Interactor.PatientInfor.SortPatientCommon;
 using UseCase.Holiday.SaveHoliday;
 using Interactor.Holiday;
+using Reporting.DrugNoteSeal.Service;
+using Reporting.DrugNoteSeal.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -685,6 +687,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP11KokhoSokatuCoReportService, P11KokhoSokatuCoReportService>();
             services.AddTransient<IReceTargetCoReportService, ReceTargetCoReportService>();
             services.AddTransient<ICoReceTargetFinder, CoReceTargetFinder>();
+            services.AddTransient<IDrugNoteSealCoReportService, DrugNoteSealCoReportService>();
+            services.AddTransient<ICoDrugNoteSealFinder, CoDrugNoteSealFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

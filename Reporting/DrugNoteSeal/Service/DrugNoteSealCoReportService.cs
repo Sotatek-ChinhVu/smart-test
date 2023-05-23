@@ -1,7 +1,7 @@
-﻿using Entity.Tenant;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Constants;
 using Reporting.DrugNoteSeal.DB;
+using Reporting.DrugNoteSeal.Mapper;
 using Reporting.DrugNoteSeal.Model;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
@@ -12,28 +12,55 @@ namespace Reporting.DrugNoteSeal.Service;
 public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
 {
     private readonly Dictionary<string, string> _singleFieldData;
-    private readonly IReadRseReportFileService _readRseReportFileService;
     private readonly List<Dictionary<string, CellModel>> _tableFieldData;
-    private readonly Dictionary<string, string> _extralData;
 
     private CoDrugNoteSealModel coModel;
     private int currentPage;
     private bool hasNextPage;
     private List<CoDrugNoteSealPrintDataModel> printOutData;
-    private int _dataCharCount;
-    private int _dataRowCount;
-    private int _suryoTaniCharCount;
-    private DateTime _printoutDateTime;
+    private int dataCharCount;
+    private int dataRowCount;
+    private int suryoTaniCharCount;
+    private DateTime printoutDateTime;
     private long ptId;
     private int hpId;
     private int sinDate;
     private long raiinNo;
 
+    private readonly IReadRseReportFileService _readRseReportFileService;
     private readonly ICoDrugNoteSealFinder _finder;
 
-    public DrugNoteSealCoReportService(ICoDrugNoteSealFinder finder)
+    public DrugNoteSealCoReportService(ICoDrugNoteSealFinder finder, IReadRseReportFileService readRseReportFileService)
     {
+        hasNextPage = true;
+        _singleFieldData = new();
+        _tableFieldData = new();
+        coModel = new();
+        printOutData = new();
+        _readRseReportFileService = readRseReportFileService;
         _finder = finder;
+    }
+
+    public CommonReportingRequestModel GetDrugNoteSealPrintData(int hpId, long ptId, int sinDate, long raiinNo)
+    {
+        this.hpId = hpId;
+        this.ptId = ptId;
+        this.sinDate = sinDate;
+        this.raiinNo = raiinNo;
+
+        GetRowCount();
+        currentPage = 1;
+        printoutDateTime = DateTime.Now;
+        coModel = GetData();
+        string rowCountFieldName = "lsOrder";
+        MakeOdrDtlList();
+
+        while (hasNextPage)
+        {
+            UpdateDrawForm();
+            currentPage++;
+        }
+        return new DrugNoteSealMapper(_singleFieldData, _tableFieldData, rowCountFieldName).GetData();
     }
 
     private void UpdateDrawForm()
@@ -46,19 +73,19 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
             // 発行日
             void _printPrintDate()
             {
-                SetFieldData("dfPrintDateS", _printoutDateTime.ToString("yyyy/MM/dd"));
-                SetFieldData("dfPrintDateW", CIUtil.SDateToShowWDate3(CIUtil.DateTimeToInt(_printoutDateTime)).Ymd);
+                SetFieldData("dfPrintDateS", printoutDateTime.ToString("yyyy/MM/dd"));
+                SetFieldData("dfPrintDateW", CIUtil.SDateToShowWDate3(CIUtil.DateTimeToInt(printoutDateTime)).Ymd);
             }
             // 発行時間
             void _printPrintTime()
             {
-                SetFieldData("dfPrintTime", _printoutDateTime.ToString("HH:mm"));
+                SetFieldData("dfPrintTime", printoutDateTime.ToString("HH:mm"));
             }
             // 発行日時
             void _printPrintDateTime()
             {
-                SetFieldData("dfPrintDateTimeS", _printoutDateTime.ToString("yyyy/MM/dd HH:mm"));
-                SetFieldData("dfPrintDateTimeW", CIUtil.SDateToShowWDate3(CIUtil.DateTimeToInt(_printoutDateTime)).Ymd + _printoutDateTime.ToString(" HH:mm"));
+                SetFieldData("dfPrintDateTimeS", printoutDateTime.ToString("yyyy/MM/dd HH:mm"));
+                SetFieldData("dfPrintDateTimeW", CIUtil.SDateToShowWDate3(CIUtil.DateTimeToInt(printoutDateTime)).Ymd + printoutDateTime.ToString(" HH:mm"));
             }
             // 診療日
             void _printSinDate()
@@ -211,7 +238,7 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
         // 本体
         void UpdateFormBody()
         {
-            int sijisenIndex = (currentPage - 1) * _dataRowCount;
+            int sijisenIndex = (currentPage - 1) * dataRowCount;
 
             if (printOutData == null || printOutData.Count == 0)
             {
@@ -219,7 +246,7 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
                 return;
             }
 
-            for (short i = 0; i < _dataRowCount; i++)
+            for (short i = 0; i < dataRowCount; i++)
             {
                 Dictionary<string, CellModel> data = new();
                 AddListData(ref data, "lsRpNo", printOutData[sijisenIndex].RpNo);
@@ -236,13 +263,6 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
                     break;
                 }
             }
-
-            // 次ページ有無
-
-            if (hasNextPage)
-            {
-                SetFieldData("dfPageInfo", "--- 次頁あり ---");
-            }
         }
 
         #endregion
@@ -250,7 +270,7 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
         UpdateFormBody();
     }
 
-    private CoDrugNoteSealModel? GetData()
+    private CoDrugNoteSealModel GetData()
     {
         // 病院情報
         CoHpInfModel hpInf = _finder.FindHpInf(hpId, sinDate);
@@ -279,7 +299,7 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
         }
         else
         {
-            return null;
+            return new();
         }
     }
 
@@ -311,7 +331,7 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
                 else if (odrDtl.ItemCd == "" || odrDtl.ItemCd.StartsWith("C") || (odrDtl.ItemCd.StartsWith("8") && odrDtl.ItemCd.Length == 9))
                 {
                     // コメント
-                    addPrintOutData.AddRange(AddList(odrDtl.ItemName, _dataCharCount, preSet));
+                    addPrintOutData.AddRange(AddList(odrDtl.ItemName, dataCharCount, preSet));
                 }
                 else
                 {
@@ -322,7 +342,7 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
                         itemName += TenUtils.GetBunkatu(odrInf.OdrKouiKbn, odrDtl.Bunkatu);
                     }
 
-                    addPrintOutData.AddRange(AddList(itemName, _dataCharCount - _suryoTaniCharCount, preSet));
+                    addPrintOutData.AddRange(AddList(itemName, dataCharCount - suryoTaniCharCount, preSet));
 
                 }
 
@@ -337,37 +357,6 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
 
             printOutData.AddRange(addPrintOutData);
         }
-    }
-
-    private string GetSikyu(int sikyuKbn, int tosekiKbn)
-    {
-        string sikyu = "";
-        if (tosekiKbn == 1)
-        {
-            sikyu = "透前";
-        }
-        else if (tosekiKbn == 2)
-        {
-            sikyu = "透後";
-        }
-
-        if (sikyuKbn == 1)
-        {
-            if (sikyu == "")
-            {
-                sikyu = "至急";
-            }
-            else
-            {
-                sikyu = sikyu.Substring(1, 1) + "急";
-            }
-        }
-
-        if (sikyu != "")
-        {
-            sikyu = $"《{sikyu}》";
-        }
-        return sikyu;
     }
 
     private List<CoDrugNoteSealPrintDataModel> AddList(string str, int maxLength, string preset = "")
@@ -397,16 +386,6 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
         return addPrintOutData;
     }
 
-    private int GetPrintedLineCount()
-    {
-        return printOutData.Count % _dataRowCount;
-    }
-
-    private int GetRemainingLineCount()
-    {
-        return _dataRowCount - GetPrintedLineCount();
-    }
-
     private void SetFieldData(string field, string value)
     {
         if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
@@ -423,15 +402,19 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
         }
     }
 
-    private void GetRowCount(string fileName)
+    private void GetRowCount()
     {
         List<ObjectCalculate> fieldInputList = new()
         {
-            new ObjectCalculate(_rowCountFieldName, (int)CalculateTypeEnum.GetListRowCount)
+            new ObjectCalculate("lsOrder", (int)CalculateTypeEnum.GetListRowCount),
+            new ObjectCalculate("lsOrder", (int)CalculateTypeEnum.GetListFormatLendB),
+            new ObjectCalculate("lsSuryoTani", (int)CalculateTypeEnum.GetListFormatLendB),
         };
 
-        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2001, fileName, fieldInputList);
+        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.DrugNoteSeal, string.Empty, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
-        maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
+        dataCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsOrder" && item.typeInt == (int)CalculateTypeEnum.GetListFormatLendB)?.result ?? 0;
+        suryoTaniCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsSuryoTani" && item.typeInt == (int)CalculateTypeEnum.GetListFormatLendB)?.result ?? 0;
+        dataRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsOrder" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
     }
 }

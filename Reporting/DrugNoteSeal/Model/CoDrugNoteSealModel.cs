@@ -27,6 +27,15 @@ public class CoDrugNoteSealModel
         OdrInfModels = odrInfs;
         OdrInfDetailModels = odrDtls;
     }
+    
+    public CoDrugNoteSealModel()
+    {
+        HpInfModel = new();
+        PtInfModel = new();
+        RaiinInfModel = new();
+        OdrInfModels = new();
+        OdrInfDetailModels = new();
+    }
 
     /// <summary>
     /// 患者番号

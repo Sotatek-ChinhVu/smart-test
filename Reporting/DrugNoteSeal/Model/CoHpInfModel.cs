@@ -10,6 +10,11 @@ public class CoHpInfModel
     {
         HpInf = hpInf;
     }
+    
+    public CoHpInfModel()
+    {
+        HpInf = new();
+    }
 
     /// <summary>
     /// 医療機関情報
