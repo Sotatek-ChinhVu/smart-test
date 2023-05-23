@@ -213,7 +213,7 @@ namespace Infrastructure.Repositories
         {
             var holidayModelList = NoTrackingDataContext.HolidayMsts
                 .Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None)
-                .Select(h => new HolidayModel(h.HpId, h.SeqNo ,h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
+                .Select(h => new HolidayModel(h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
                 .ToList();
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -221,40 +221,6 @@ namespace Infrastructure.Repositories
             _memoryCache.Set(HolidayMstCacheKey, holidayModelList, cacheEntryOptions);
 
             return holidayModelList;
-        }
-
-        public bool SaveHolidayMst(HolidayModel holiday, int userId)
-        {
-            var holidayUpdate = TrackingDataContext.HolidayMsts.FirstOrDefault(x => x.HpId == holiday.HpId && x.SinDate == holiday.SinDate);
-            if(holidayUpdate == null)
-            {
-                TrackingDataContext.HolidayMsts.Add(new HolidayMst()
-                {
-                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                    CreateId = userId,
-                    HolidayKbn = holiday.HolidayKbn,
-                    HolidayName = holiday.HolidayKbn == 0 ? string.Empty : holiday.HolidayName,
-                    IsDeleted = DeleteTypes.None,
-                    HpId = holiday.HpId,
-                    KyusinKbn = holiday.KyusinKbn,
-                    UpdateId = userId,
-                    SeqNo = 0,
-                    SinDate = holiday.SinDate,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow()
-                });
-            }
-            else
-            {
-                holidayUpdate.KyusinKbn = holiday.KyusinKbn;
-                holidayUpdate.HolidayKbn = holiday.HolidayKbn;
-                holidayUpdate.HolidayName = holiday.HolidayName;
-                holidayUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                holidayUpdate.UpdateId = userId;
-                if (holidayUpdate.HolidayKbn == 0)
-                    holidayUpdate.HolidayName = string.Empty;
-            }
-            _memoryCache.Remove(HolidayMstCacheKey);
-            return TrackingDataContext.SaveChanges() > 0;
         }
 
         public List<HolidayModel> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
