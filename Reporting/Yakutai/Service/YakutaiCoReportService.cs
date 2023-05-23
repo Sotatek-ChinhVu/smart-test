@@ -83,7 +83,7 @@ namespace Reporting.Yakutai.Service
             _ptId = ptId;
             _sinDate = sinDate;
             _raiinNo = raiinNo;
-
+            _printoutDateTime = DateTime.Now;
             coModels = GetData();
 
             if (coModels == null || coModels.Any() == false)
@@ -119,7 +119,7 @@ namespace Reporting.Yakutai.Service
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
-            return new YakutaiMapper(_singleFieldData, _tableFieldData, _fileNamePageMap, "lsOrder").GetData();
+            return new YakutaiMapper(_singleFieldData, _fileNamePageMap, string.Empty, _singleFieldDataM, _listTextData, _extralData).GetData();
         }
         #endregion
 
@@ -301,7 +301,7 @@ namespace Reporting.Yakutai.Service
         {
             _hasNextPage = true;
             #region SubMethod
-
+            List<ListTextObject> listDataPerPage = new();
             // ヘッダー
             int UpdateFormHeader()
             {
@@ -364,7 +364,6 @@ namespace Reporting.Yakutai.Service
                 void _printYoho()
                 {
                     fieldDataPerPage.Add("dfYoho", coModel.Yoho);
-                   // SetFieldData("dfYoho", coModel.Yoho);
                 }
 
                 // 日数回数
@@ -372,7 +371,7 @@ namespace Reporting.Yakutai.Service
                 {
                     if (coModel.YohoSuryo > 0)
                     {
-                        SetFieldData("dfNisu", $"{coModel.YohoSuryo}{coModel.YohoTani}");
+                        fieldDataPerPage.Add("dfNisu", $"{coModel.YohoSuryo}{coModel.YohoTani}");
                     }
                 }
 
@@ -387,9 +386,6 @@ namespace Reporting.Yakutai.Service
                         i++;
 
                     }
-                    var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                    _listTextData.Add(pageIndex, listDataPerPage);
-                    _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
                 }
 
                 // 医療機関住所
@@ -509,13 +505,15 @@ namespace Reporting.Yakutai.Service
                 // １回に（１日に）
                 _printIkkairyo();
 
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
                 return 1;
             }
 
             // 本体
             int UpdateFormBody()
             {
-                List<ListTextObject> listDataPerPage = new();
+
                 int dataIndex = (_currentPage - 1) * _dataRowCount;
 
                 if (printOutData == null || printOutData.Count == 0)

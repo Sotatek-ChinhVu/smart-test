@@ -6,14 +6,34 @@ namespace Reporting.Yakutai.Mapper
     {
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<string, string> _fileNamePageMap;
-        private readonly List<Dictionary<string, CellModel>> _tableFieldData;
         private readonly string _rowCountFieldName;
-        public YakutaiMapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, Dictionary<string, string> fileNamePageMap, string rowCountFieldName)
+        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+        private readonly Dictionary<int, List<ListTextObject>> _listTextData;
+        private readonly Dictionary<string, string> _extralData;
+
+        public YakutaiMapper(Dictionary<string, string> singleFieldData, Dictionary<string, string> fileNamePageMap,  string rowCountFieldName, Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData)
         {
             _singleFieldData = singleFieldData;
-            _tableFieldData = tableFieldData;
             _fileNamePageMap = fileNamePageMap;
             _rowCountFieldName = rowCountFieldName;
+            _singleFieldDataM = singleFieldDataM;
+            _listTextData = listTextData;
+            _extralData = extralData;
+        }
+
+        public override Dictionary<string, string> GetExtralData()
+        {
+            return _extralData;
+        }
+
+        public override Dictionary<int, List<ListTextObject>> GetListTextData()
+        {
+            return _listTextData;
+        }
+
+        public override Dictionary<int, Dictionary<string, string>> GetSetFieldData()
+        {
+            return _singleFieldDataM;
         }
 
         public override int GetReportType()
@@ -32,11 +52,6 @@ namespace Reporting.Yakutai.Mapper
         }
 
         public override List<Dictionary<string, CellModel>> GetTableFieldData()
-        {
-            return _tableFieldData;
-        }
-
-        public override Dictionary<string, string> GetExtralData()
         {
             return new();
         }
