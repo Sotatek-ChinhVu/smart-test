@@ -85,7 +85,7 @@ namespace Infrastructure.Repositories
                                      HokenMaster = hkObj,
                                      HokenCheckList = (from hkC in NoTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None && x.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern
                                                                             && x.HokenId == inf.HokenId).OrderByDescending(o => o.CheckDate)
-                                                       join userMst in NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == 0)
+                                                       join userMst in NoTrackingDataContext.UserMsts.AsQueryable()
                                                        on hkC.CheckId equals userMst.UserId
                                                        select new
                                                        {
@@ -203,7 +203,7 @@ namespace Infrastructure.Repositories
                                  HokenMaster = hkObj,
                                  HokenCheckList = (from hkC in NoTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None && x.HokenGrp == HokenGroupConstant.HokenGroupKohi
                                                                               && x.HokenId == kohi.HokenId).OrderByDescending(o => o.CheckDate)
-                                                   join userMst in NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == 0)
+                                                   join userMst in NoTrackingDataContext.UserMsts.AsQueryable()
                                                    on hkC.CheckId equals userMst.UserId
                                                    select new
                                                    {
@@ -611,7 +611,7 @@ namespace Infrastructure.Repositories
             var confirmDateList =
                 (
                     from hokenCheck in NoTrackingDataContext.PtHokenChecks.Where(p => p.PtID == ptId && p.HpId == hpId && p.IsDeleted == 0)
-                    join userMst in NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == 0)
+                    join userMst in NoTrackingDataContext.UserMsts.AsQueryable()
                     on hokenCheck.CheckId equals userMst.UserId
                     select new
                     {
@@ -1107,7 +1107,7 @@ namespace Infrastructure.Repositories
             var confirmDateList =
                 (
                     from hokenCheck in NoTrackingDataContext.PtHokenChecks.Where(p => p.PtID == ptId && p.HpId == hpId && p.IsDeleted == 0)
-                    join userMst in NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == 0)
+                    join userMst in NoTrackingDataContext.UserMsts.AsQueryable()
                     on hokenCheck.CheckId equals userMst.UserId
                     select new
                     {
