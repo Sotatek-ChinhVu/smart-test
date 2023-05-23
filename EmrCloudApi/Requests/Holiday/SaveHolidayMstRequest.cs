@@ -1,4 +1,6 @@
-﻿namespace EmrCloudApi.Requests.Holiday
+﻿using Domain.Models.FlowSheet;
+
+namespace EmrCloudApi.Requests.Holiday
 {
     public class SaveHolidayMstRequest
     {

@@ -85,7 +85,7 @@ namespace Infrastructure.Repositories
                                      HokenMaster = hkObj,
                                      HokenCheckList = (from hkC in NoTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None && x.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern
                                                                             && x.HokenId == inf.HokenId).OrderByDescending(o => o.CheckDate)
-                                                       join userMst in NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == 0)
+                                                       join userMst in NoTrackingDataContext.UserMsts.AsQueryable()
                                                        on hkC.CheckId equals userMst.UserId
                                                        select new
                                                        {
@@ -193,7 +193,7 @@ namespace Infrastructure.Repositories
             IQueryable<PtKohi> kohiQuery = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId).OrderByDescending(entity => entity.HokenId);
 
             var queryKohi = (from kohi in kohiQuery
-                             join hkMaster in hokenMasterFinal on new { kohi.HokenNo, kohi.HokenEdaNo } equals new { hkMaster.HokenNo, hkMaster.HokenEdaNo } into hkMtObject
+                             join hkMaster in hokenMasterFinal on new { kohi.HokenNo, kohi.HokenEdaNo, kohi.PrefNo } equals new { hkMaster.HokenNo, hkMaster.HokenEdaNo, hkMaster.PrefNo } into hkMtObject
                              from hkObj in hkMtObject.DefaultIfEmpty()
                              join roudou in NoTrackingDataContext.RoudouMsts on hkObj.PrefNo.ToString() equals roudou.RoudouCd into rouObject
                              from rou in rouObject.DefaultIfEmpty()
@@ -203,7 +203,7 @@ namespace Infrastructure.Repositories
                                  HokenMaster = hkObj,
                                  HokenCheckList = (from hkC in NoTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None && x.HokenGrp == HokenGroupConstant.HokenGroupKohi
                                                                               && x.HokenId == kohi.HokenId).OrderByDescending(o => o.CheckDate)
-                                                   join userMst in NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == 0)
+                                                   join userMst in NoTrackingDataContext.UserMsts.AsQueryable()
                                                    on hkC.CheckId equals userMst.UserId
                                                    select new
                                                    {
@@ -611,7 +611,7 @@ namespace Infrastructure.Repositories
             var confirmDateList =
                 (
                     from hokenCheck in NoTrackingDataContext.PtHokenChecks.Where(p => p.PtID == ptId && p.HpId == hpId && p.IsDeleted == 0)
-                    join userMst in NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == 0)
+                    join userMst in NoTrackingDataContext.UserMsts.AsQueryable()
                     on hokenCheck.CheckId equals userMst.UserId
                     select new
                     {
@@ -1107,7 +1107,7 @@ namespace Infrastructure.Repositories
             var confirmDateList =
                 (
                     from hokenCheck in NoTrackingDataContext.PtHokenChecks.Where(p => p.PtID == ptId && p.HpId == hpId && p.IsDeleted == 0)
-                    join userMst in NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == 0)
+                    join userMst in NoTrackingDataContext.UserMsts.AsQueryable()
                     on hokenCheck.CheckId equals userMst.UserId
                     select new
                     {
