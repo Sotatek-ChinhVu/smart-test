@@ -30,6 +30,9 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("listTextData")]
         public Dictionary<int, List<ListTextObject>> ListTextData { get; set; } = new();
+
+        [JsonPropertyName("setFieldData")]
+        public Dictionary<int, Dictionary<string, string>> SetFieldData { get; set; } = new();
     }
 
     public class CellModel

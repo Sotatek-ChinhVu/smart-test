@@ -4,17 +4,21 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
 {
     public class KoukiSeikyuMapper : CommonReportingRequest
     {
+        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, string> _extralData;
         private readonly string _formFileName;
+        private readonly Dictionary<string, bool> _visibleFieldData;
 
-        public KoukiSeikyuMapper(Dictionary<string, string> singleFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName)
+        public KoukiSeikyuMapper(Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
         {
-            _singleFieldData = singleFieldData;
+            _singleFieldDataM = singleFieldDataM;
             _listTextData = listTextData;
             _extralData = extralData;
             _formFileName = formFileName;
+            _singleFieldData = singleFieldData;
+            _visibleFieldData = visibleFieldData;
         }
 
         public override int GetReportType()
@@ -47,11 +51,6 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
             return _singleFieldData;
         }
 
-        public override Dictionary<string, bool> GetVisibleFieldData()
-        {
-            return new();
-        }
-
         public override Dictionary<string, bool> GetWrapFieldData()
         {
             return new();
@@ -61,6 +60,11 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
         {
             return _listTextData;
         }
+
+        public override Dictionary<int, Dictionary<string, string>> GetSetFieldData()
+        {
+            return _singleFieldDataM;
+        }
         public override Dictionary<string, string> GetFileNamePageMap()
         {
             var fileName = new Dictionary<string, string>
@@ -68,6 +72,11 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
             { "1", _formFileName }
         };
             return fileName;
+        }
+
+        public override Dictionary<string, bool> GetVisibleFieldData()
+        {
+            return _visibleFieldData;
         }
     }
 }

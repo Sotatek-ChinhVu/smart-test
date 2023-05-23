@@ -38,9 +38,11 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
     /// <summary>
     /// OutPut Data
     /// </summary>
+    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
+    private readonly Dictionary<string, bool> _visibleFieldData;
 
     /// <summary>
     /// Finder
@@ -53,8 +55,10 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         _finder = finder;
         _readRseReportFileService = readRseReportFileService;
         _singleFieldData = new();
+        _singleFieldDataM = new();
         _listTextData = new();
         _extralData = new();
+        _visibleFieldData = new();
     }
 
     #endregion
@@ -81,7 +85,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         }
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_singleFieldData, _listTextData, _extralData, _formFileName).GetData();
+        return new KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     private void UpdateDrawForm()
@@ -91,7 +95,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         #region Header
         void UpdateFormHeader()
         {
-            Dictionary<string, CellModel> data = new();
+            Dictionary<string, string> fieldDataPerPage = new();
             //医療機関コード
             SetFieldData("hpCode", hpInf.ReceHpCd);
             //医療機関情報
@@ -114,11 +118,15 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
             SetFieldData("reportDay", wrkYmd.Day.AsString());
 
             //保険者
-            SetFieldData("hokensyaNo", _currentHokensyaNo);
+            //SetFieldDataM("hokensyaNo".AsInteger(), _currentHokensyaNo);
+            fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.ToString());
             //印
-            AddListData(ref data, "inkan", _seikyuYm < KaiseiDate.m202210);
-            AddListData(ref data, "kbnRate9", _seikyuYm < KaiseiDate.m202210);
-            AddListData(ref data, "kbnIppan", _seikyuYm >= KaiseiDate.m202210);
+            SetVisibleFieldData("kbnIppan", _seikyuYm >= KaiseiDate.m202210);
+            SetVisibleFieldData("kbnRate9", _seikyuYm < KaiseiDate.m202210);
+            
+            SetVisibleFieldData("inkan", _seikyuYm < KaiseiDate.m202210);
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
         }
         #endregion
 
@@ -231,6 +239,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         UpdateFormHeader();
         UpdateFormBody();
     }
+
     private void SetFieldData(string field, string value)
     {
         if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
@@ -272,5 +281,13 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
 
         var responses = javaOutputData.responses;
         _dataRowCount = responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListRowCount && item.listName == "lsSokatu")!.result;
+    }
+
+    private void SetVisibleFieldData(string field, bool value)
+    {
+        if (!string.IsNullOrEmpty(field) && !_visibleFieldData.ContainsKey(field))
+        {
+            _visibleFieldData.Add(field, value);
+        }
     }
 }

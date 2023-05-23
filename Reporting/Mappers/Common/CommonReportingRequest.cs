@@ -14,6 +14,7 @@ public class CommonReportingRequest : ICommonReportingRequest
             SystemConfigList = GetSystemConfigList(),
             ExtralData = GetExtralData(),
             ListTextData = GetListTextData(),
+            SetFieldData = GetSetFieldData(),
             ReportConfigModel = new ReportConfigModel()
             {
                 VisibleFieldList = GetVisibleFieldData(),
@@ -75,6 +76,11 @@ public class CommonReportingRequest : ICommonReportingRequest
     }
 
     public virtual Dictionary<int, List<ListTextObject>> GetListTextData()
+    {
+        return new();
+    }
+
+    public virtual Dictionary<int, Dictionary<string, string>> GetSetFieldData()
     {
         return new();
     }
