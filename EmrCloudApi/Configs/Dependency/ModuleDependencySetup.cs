@@ -556,8 +556,8 @@ using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
 using UseCase.Receipt.ValidateCreateUKEFile;
 using Interactor.PatientInfor.SortPatientCommon;
-using UseCase.Holiday.SaveHoliday;
-using Interactor.Holiday;
+using Reporting.DrugNoteSeal.Service;
+using Reporting.DrugNoteSeal.DB;
 using Reporting.Sokatu.KoukiSeikyu.DB;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -687,6 +687,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP11KokhoSokatuCoReportService, P11KokhoSokatuCoReportService>();
             services.AddTransient<IReceTargetCoReportService, ReceTargetCoReportService>();
             services.AddTransient<ICoReceTargetFinder, CoReceTargetFinder>();
+            services.AddTransient<IDrugNoteSealCoReportService, DrugNoteSealCoReportService>();
+            services.AddTransient<ICoDrugNoteSealFinder, CoDrugNoteSealFinder>();
             services.AddTransient<ICoKoukiSeikyuFinder, CoKoukiSeikyuFinder>();
             services.AddTransient<IP28KoukiSeikyuCoReportService, P28KoukiSeikyuCoReportService>();
             services.AddTransient<IP29KoukiSeikyuCoReportService, P29KoukiSeikyuCoReportService>();
@@ -1249,9 +1251,6 @@ namespace EmrCloudApi.Configs.Dependency
 
             //MstItem
             busBuilder.RegisterUseCase<GetJihiSbtMstListInputData, GetJihiMstsInteractor>();
-
-            //HolidayMst
-            busBuilder.RegisterUseCase<SaveHolidayMstInputData, SaveHolidayMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

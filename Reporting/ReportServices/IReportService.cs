@@ -61,4 +61,6 @@ public interface IReportService
     CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId);
 
     CommonReportingRequestModel GetReceTargetPrint(int hpId, int seikyuYm);
+
+    CommonReportingRequestModel GetDrugNoteSealPrintData(int hpId, long ptId, int sinDate, long raiinNo);
 }
