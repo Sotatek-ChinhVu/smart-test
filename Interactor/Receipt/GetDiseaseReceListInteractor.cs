@@ -70,45 +70,59 @@ public class GetDiseaseReceListInteractor : IGetDiseaseReceListInputPort
 
     private DiseaseReceOutputItem ConvertToDiseaseReceItem(PtDiseaseModel model, int displayByomeiDateType)
     {
+        StringBuilder fullByomei = new();
         StringBuilder byomei = new();
+        StringBuilder freFixString = new();
+        StringBuilder sufFixString = new();
+        foreach (var item in model.PrefixSuffixList)
+        {
+            if (item.Code.StartsWith("8"))
+            {
+                sufFixString.Append(item.Name);
+                continue;
+            }
+            freFixString.Append(item.Name);
+        }
+        byomei = freFixString.Append(model.Byomei).Append(sufFixString);
+
         if (model.SyubyoKbn == 1)
         {
-            byomei.Append("(主)");
+            fullByomei.Append("(主)");
         }
 
         switch (model.SikkanKbn)
         {
             case 3:
-                byomei.Append("(皮1)");
+                fullByomei.Append("(皮1)");
                 break;
             case 4:
-                byomei.Append("(皮2)");
+                fullByomei.Append("(皮2)");
                 break;
             case 5:
-                byomei.Append("(特)");
+                fullByomei.Append("(特)");
                 break;
             case 7:
-                byomei.Append("(て)");
+                fullByomei.Append("(て)");
                 break;
             case 8:
-                byomei.Append("(特て)");
+                fullByomei.Append("(特て)");
                 break;
         }
 
         if (model.NanbyoCd == 9)
         {
-            byomei.Append("(難)");
+            fullByomei.Append("(難)");
         }
 
-        byomei.Append(model.Byomei);
+        fullByomei.Append(byomei);
 
         if (!string.IsNullOrWhiteSpace(model.HosokuCmt))
         {
-            byomei.Append("(").Append(model.HosokuCmt).Append(")");
+            fullByomei.Append("(").Append(model.HosokuCmt).Append(")");
         }
 
         return new DiseaseReceOutputItem(
-                    byomei.ToString(),
+                    fullByomei.ToString(),
                     displayByomeiDateType == 0 ? CIUtil.SDateToShowSDate(model.StartDate) : CIUtil.SDateToShowWDate(model.StartDate),
                     model.TenkiKbn == 0 ? string.Empty : TenkiKbnConst.DisplayedTenkiKbnDict[model.TenkiKbn],
                     displayByomeiDateType == 0 ? CIUtil.SDateToShowSDate(model.TenkiDate) : CIUtil.SDateToShowWDate(model.TenkiDate)
