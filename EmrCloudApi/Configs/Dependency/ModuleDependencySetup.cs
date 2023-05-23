@@ -1249,9 +1249,6 @@ namespace EmrCloudApi.Configs.Dependency
             //MstItem
             busBuilder.RegisterUseCase<GetJihiSbtMstListInputData, GetJihiMstsInteractor>();
 
-            //HolidayMst
-            busBuilder.RegisterUseCase<SaveHolidayMstInputData, SaveHolidayMstInteractor>();
-
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
         }

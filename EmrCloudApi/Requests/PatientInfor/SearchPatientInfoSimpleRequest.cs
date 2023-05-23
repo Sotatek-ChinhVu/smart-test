@@ -10,7 +10,7 @@
 
         public int PageSize { get; set; }
 
-        public List<SortCol> SortData { get; set; }
+        public List<SortCol> SortData { get; set; } = new();
     }
 
     public class SortCol
