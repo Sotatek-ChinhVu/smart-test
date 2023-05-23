@@ -81,7 +81,7 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
             }
         }
         
-        var pageIndex = _listTextData.Select(item => item.Key).Count();
+        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
         return new KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
@@ -114,15 +114,15 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
             SetFieldData("reportMonth", wrkYmd.Month.ToString());
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //保険者
-            fieldDataPerPage.Add("hokensyaName", hokensyaNames.Find(h => h.HokensyaNo == _currentHokensyaNo)?.Name ?? "");
+            SetFieldData("hokensyaName", hokensyaNames.Find(h => h.HokensyaNo == _currentHokensyaNo)?.Name ?? "");
             fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.ToString());
-            var pageIndex = _listTextData.Select(item => item.Key).Count() + 1;
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
             //在医総及び在医総管
             if (printZaiiso)
             {
-                SetFieldData("zaiisoWord", "在");
-                SetFieldData("zaiisoCircle", "〇");
+                fieldDataPerPage.Add("zaiisoWord", "在");
+                fieldDataPerPage.Add("zaiisoCircle", "〇");
             }
         }
         #endregion
@@ -210,7 +210,7 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
                 }
             }
 
-            var pageIndex = _listTextData.Select(item => item.Key).Count() + 1;
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             _listTextData.Add(pageIndex, listDataPerPage);
         }
         #endregion
