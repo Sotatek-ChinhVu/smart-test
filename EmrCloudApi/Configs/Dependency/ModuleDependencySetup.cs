@@ -555,6 +555,9 @@ using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
 using UseCase.Receipt.ValidateCreateUKEFile;
 using Interactor.PatientInfor.SortPatientCommon;
+using UseCase.RaiinListSetting.GetDocCategory;
+using Interactor.RaiinListSetting;
+using Domain.Models.RaiinListSetting;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -780,6 +783,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaIraiCoReportService, KensaIraiCoReportService>();
             services.AddTransient<ICoKensaIraiFinder, CoKensaIraiFinder>();
             services.AddTransient<ISortPatientCommon, SortPatientCommon>();
+            services.AddTransient<IRaiinListSettingRepository, RaiinListSettingRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1242,6 +1246,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //MstItem
             busBuilder.RegisterUseCase<GetJihiSbtMstListInputData, GetJihiMstsInteractor>();
+
+            //RaiinListSetting
+            busBuilder.RegisterUseCase<GetDocCategoryRaiinInputData, GetDocCategoryRaiinInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
