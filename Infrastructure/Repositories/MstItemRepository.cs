@@ -678,13 +678,22 @@ namespace Infrastructure.Repositories
             return (listTenMstModels, totalCount);
         }
 
-        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(int hpId, int pageIndex, int pageCount, string keyword, double pointFrom, double pointTo, int kouiKbn, int oriKouiKbn,
+        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMasterItem(int hpId, int pageIndex, int pageCount, string keyword, double pointFrom, double pointTo, int kouiKbn, int oriKouiKbn,
             List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage,
             bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem,
             bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter,
             bool isSearch831SuffixOnly, bool isSearchSuggestion)
         {
-            var optimizedReplaceDict = new Dictionary<char, char>
+            string kanaKeyword = keyword;
+            if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
+            {
+                var inputKeyword = keyword;
+                kanaKeyword = CIUtil.ToHalfsize(keyword);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
+            }
+
+            var replaceDictBigKeyWord = new Dictionary<char, char>
                                         {
                                             { 'ｧ', 'ｱ' },
                                             { 'ｨ', 'ｲ' },
@@ -697,24 +706,43 @@ namespace Infrastructure.Repositories
                                             { 'ｯ', 'ﾂ' }
                                         };
 
-            string sBigKeyword = keyword.ToUpper();
+            var replaceDictSmallKeyWord = new Dictionary<char, char>
+                                        {
+                                            {'ｱ', 'ｧ' },
+                                            {'ｲ', 'ｨ' },
+                                            {'ｳ', 'ｩ' },
+                                            {'ｴ', 'ｪ' },
+                                            {'ｵ', 'ｫ' },
+                                            {'ﾔ', 'ｬ' },
+                                            {'ﾕ', 'ｭ' },
+                                            {'ﾖ', 'ｮ' },
+                                            {'ﾂ', 'ｯ' }
+                                        };
 
-            foreach (var kvp in optimizedReplaceDict)
+            string sBigKeyword = kanaKeyword.ToUpper();
+            string sSmallKeyword = kanaKeyword.ToUpper();
+
+            foreach (var item in replaceDictBigKeyWord)
             {
-                sBigKeyword = sBigKeyword.Replace(kvp.Key, kvp.Value);
+                sBigKeyword = sBigKeyword.Replace(item.Key, item.Value);
+            }
+
+            foreach (var item in replaceDictSmallKeyWord)
+            {
+                sSmallKeyword = sSmallKeyword.Replace(item.Key, item.Value);
             }
 
             var queryResult = NoTrackingDataContext.TenMsts
                 .Where(t =>
                     t.ItemCd.StartsWith(keyword)
                     || !string.IsNullOrEmpty(t.SanteiItemCd) && t.SanteiItemCd.StartsWith(keyword)
-                    || !string.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper().StartsWith(sBigKeyword)
-                    || !string.IsNullOrEmpty(t.KanaName2) && t.KanaName2.ToUpper().StartsWith(sBigKeyword)
-                    || !string.IsNullOrEmpty(t.KanaName3) && t.KanaName3.ToUpper().StartsWith(sBigKeyword)
-                    || !string.IsNullOrEmpty(t.KanaName4) && t.KanaName4.ToUpper().StartsWith(sBigKeyword)
-                    || !string.IsNullOrEmpty(t.KanaName5) && t.KanaName5.ToUpper().StartsWith(sBigKeyword)
-                    || !string.IsNullOrEmpty(t.KanaName6) && t.KanaName6.ToUpper().StartsWith(sBigKeyword)
-                    || !string.IsNullOrEmpty(t.KanaName7) && t.KanaName7.ToUpper().StartsWith(sBigKeyword)
+                    || !string.IsNullOrEmpty(t.KanaName1) && (t.KanaName1.ToUpper().StartsWith(sBigKeyword) || t.KanaName1.ToUpper().StartsWith(sSmallKeyword))
+                    || !string.IsNullOrEmpty(t.KanaName2) && (t.KanaName2.ToUpper().StartsWith(sBigKeyword) || t.KanaName2.ToUpper().StartsWith(sSmallKeyword))
+                    || !string.IsNullOrEmpty(t.KanaName3) && (t.KanaName3.ToUpper().StartsWith(sBigKeyword) || t.KanaName3.ToUpper().StartsWith(sSmallKeyword))
+                    || !string.IsNullOrEmpty(t.KanaName4) && (t.KanaName4.ToUpper().StartsWith(sBigKeyword) || t.KanaName4.ToUpper().StartsWith(sSmallKeyword))
+                    || !string.IsNullOrEmpty(t.KanaName5) && (t.KanaName5.ToUpper().StartsWith(sBigKeyword) || t.KanaName5.ToUpper().StartsWith(sSmallKeyword))
+                    || !string.IsNullOrEmpty(t.KanaName6) && (t.KanaName6.ToUpper().StartsWith(sBigKeyword) || t.KanaName6.ToUpper().StartsWith(sSmallKeyword))
+                    || !string.IsNullOrEmpty(t.KanaName7) && (t.KanaName7.ToUpper().StartsWith(sBigKeyword) || t.KanaName7.ToUpper().StartsWith(sSmallKeyword))
                     || !string.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword));
 
             if (isAllowSearchDeletedItem)
@@ -1074,6 +1102,7 @@ namespace Infrastructure.Repositories
                                          KensaMst = kensaMst
                                      };
 
+            var totalCount = queryJoinWithKensa.Count();
             if (isSearchSuggestion)
             {
                 queryJoinWithKensa = queryJoinWithKensa
@@ -1142,14 +1171,16 @@ namespace Infrastructure.Repositories
             if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
             {
                 tenMstModels = tenMstModels.Where(t => (t.ItemCd.Length >= 2 && t.ItemCd.StartsWith("K") && Char.IsDigit(t.ItemCd, 1)) || t.ItemCd.StartsWith("KN") || !t.ItemCd.StartsWith("K")).ToList();
+                totalCount = tenMstModels.Count();
             }
             // Get Master search result
             if (isMasterSearch || isExpiredSearchIfNoData)
             {
                 tenMstModels = tenMstModels.GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate)?.FirstOrDefault() ?? new()).ToList();
+                totalCount = tenMstModels.Count();
             }
 
-            var totalCount = tenMstModels.Count();
+
 
             return (tenMstModels, totalCount);
         }

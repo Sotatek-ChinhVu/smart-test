@@ -39,7 +39,7 @@ namespace Interactor.MstItem
 
             try
             {
-                var data = _mstItemRepository.SearchTenMst(
+                var data = _mstItemRepository.SearchTenMasterItem(
                     inputData.HpId, inputData.PageIndex, inputData.PageCount, inputData.Keyword, inputData.PointFrom,
                     inputData.PointTo, inputData.KouiKbn, inputData.OriKouiKbn,
                     inputData.KouiKbns, inputData.IncludeRosai, inputData.IncludeMisai,
