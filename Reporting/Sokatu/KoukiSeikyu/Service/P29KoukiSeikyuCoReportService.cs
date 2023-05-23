@@ -114,7 +114,6 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
             SetFieldData("reportMonth", wrkYmd.Month.ToString());
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //保険者
-            //SetFieldData("hokensyaName", hokensyaNames.Find(h => h.HokensyaNo == _currentHokensyaNo)?.Name ?? "");
             fieldDataPerPage.Add("hokensyaName", hokensyaNames.Find(h => h.HokensyaNo == _currentHokensyaNo)?.Name ?? "");
             fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.ToString());
             var pageIndex = _listTextData.Select(item => item.Key).Count() + 1;
@@ -210,6 +209,7 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
                     break;
                 }
             }
+
             var pageIndex = _listTextData.Select(item => item.Key).Count() + 1;
             _listTextData.Add(pageIndex, listDataPerPage);
         }
