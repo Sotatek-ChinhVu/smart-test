@@ -14,7 +14,7 @@ public class DefaultSelectedTimeModel
         BeforeTimeKbn = 0;
     }
 
-    public DefaultSelectedTimeModel(string timeKbnName, string uketukeTime, string startTime, string endTime, int currentTimeKbn, int beforeTimeKbn, bool isPatientChildren, bool isShowPopup, int jikanKbnDefault)
+    public DefaultSelectedTimeModel(string timeKbnName, string uketukeTime, string startTime, string endTime, int currentTimeKbn, int beforeTimeKbn, bool isPatientChildren, bool isShowPopup, int jikanKbnDefault, int timeKbnForChild)
     {
         TimeKbnName = timeKbnName;
         UketukeTime = uketukeTime;
@@ -25,6 +25,7 @@ public class DefaultSelectedTimeModel
         IsShowPopup = isShowPopup;
         JikanKbnDefault = jikanKbnDefault;
         IsPatientChildren = isPatientChildren;
+        TimeKbnForChild = timeKbnForChild;
     }
 
     // for message popup
@@ -47,4 +48,5 @@ public class DefaultSelectedTimeModel
 
     // for default value JikanKbn
     public int JikanKbnDefault { get; private set; }
+    public int TimeKbnForChild { get; private set; }
 }
