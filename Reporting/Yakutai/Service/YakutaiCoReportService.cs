@@ -63,9 +63,11 @@ namespace Reporting.Yakutai.Service
         private int _raiinNo;
         private string _formFileName;
 
+        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM = new Dictionary<int, Dictionary<string, string>>();
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _fileNamePageMap = new Dictionary<string, string>();
-        private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
+        private readonly Dictionary<int, List<ListTextObject>> _listTextData = new Dictionary<int, List<ListTextObject>>();
+        private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly IReadRseReportFileService _readRseReportFileService;
 
         public YakutaiCoReportService(ICoYakutaiFinder finder, ISystemConfig systemConfig, IReadRseReportFileService readRseReportFileService)
@@ -115,6 +117,8 @@ namespace Reporting.Yakutai.Service
 
             }
 
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
             return new YakutaiMapper(_singleFieldData, _tableFieldData, _fileNamePageMap, "lsOrder").GetData();
         }
         #endregion
@@ -374,13 +378,15 @@ namespace Reporting.Yakutai.Service
                 void _printYohoCmt()
                 {
                     short i = 0;
+                    List<ListTextObject> listDataPerPage = new();
                     foreach (string yohoCmt in coModel.YohoComments)
                     {
-                        Dictionary<string, CellModel> data = new();
-                        AddListData(ref data, "lsYohoCmt", yohoCmt);
+                        listDataPerPage.Add(new("lsYohoCmt", 0, i, yohoCmt));
                         i++;
-                        _tableFieldData.Add(data);
+
                     }
+                    var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                    _listTextData.Add(pageIndex, listDataPerPage);
                 }
 
                 // 医療機関住所
@@ -506,6 +512,7 @@ namespace Reporting.Yakutai.Service
             // 本体
             int UpdateFormBody()
             {
+                List<ListTextObject> listDataPerPage = new();
                 int dataIndex = (_currentPage - 1) * _dataRowCount;
 
                 if (printOutData == null || printOutData.Count == 0)
@@ -516,12 +523,10 @@ namespace Reporting.Yakutai.Service
 
                 for (short i = 0; i < _dataRowCount; i++)
                 {
-                    Dictionary<string, CellModel> data = new();
-                    AddListData(ref data, "lsOrder", printOutData[dataIndex].Data);
-                    AddListData(ref data, "lsSuryo", printOutData[dataIndex].Suuryo);
-                    AddListData(ref data, "lsTani", printOutData[dataIndex].Tani);
+                    listDataPerPage.Add(new("lsOrder", 0, i, printOutData[dataIndex].Data));
+                    listDataPerPage.Add(new("lsSuryo", 0, i, printOutData[dataIndex].Suuryo));
+                    listDataPerPage.Add(new("lsTani", 0, i, printOutData[dataIndex].Tani));
 
-                    _tableFieldData.Add(data);
                     dataIndex++;
                     if (dataIndex >= printOutData.Count)
                     {
@@ -529,6 +534,9 @@ namespace Reporting.Yakutai.Service
                         break;
                     }
                 }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                _listTextData.Add(pageIndex, listDataPerPage);
 
                 return dataIndex;
 
