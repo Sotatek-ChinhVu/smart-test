@@ -193,6 +193,13 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common);
     }
 
+    [HttpGet(ApiPath.DrugNoteSeal)]
+    public async Task<IActionResult> GetDrugNoteSealPrintData([FromQuery] DrugNoteSealPrintDataRequest request)
+    {
+        var data = _reportService.GetDrugNoteSealPrintData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
     [HttpGet(ApiPath.Yakutai)]
     public async Task<IActionResult> Yakutai([FromQuery] YakutaiRequest request)
     {

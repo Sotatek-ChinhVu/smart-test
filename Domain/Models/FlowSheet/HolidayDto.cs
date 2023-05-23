@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Requests.Holiday
+﻿namespace Domain.Models.FlowSheet
 {
     public class HolidayDto
     {

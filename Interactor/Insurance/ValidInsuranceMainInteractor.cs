@@ -261,7 +261,7 @@ namespace Interactor.Insurance
 
             if (!int.TryParse(hokenSyaNo, out _))
             {
-                message = "・数値のみを入力してください。";
+                message = "保険者番号が正しくありません。\r\n・数値のみを入力してください。";
                 validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidHokensyaNoEquals0, message, TypeMessage.TypeMessageError));
             }
 
