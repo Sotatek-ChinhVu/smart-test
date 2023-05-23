@@ -1,6 +1,7 @@
 ﻿using Domain.Models.TimeZone;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using UseCase.Reception.GetDefaultSelectedTime;
 
 namespace Interactor.Reception;
@@ -66,92 +67,16 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         bool isShowPopup = false;
         bool isPatientChildren = IsPatientChildren(hpId, birthDay, sinDate);
         bool isHoliday = _timeZoneRepository.IsHoliday(hpId, sinDate);
-
-        //Child Patient
-        int timeKbnForChild = GetTimeKbnForChild(isPatientChildren, dayOfWeek, uketukeTime);
-
-        //Adult Patient
-        var listTimeZoneConfig = _timeZoneRepository.GetTimeZoneConfs(hpId);
-
-        var timeZoneConfig = listTimeZoneConfig.FirstOrDefault(item => item.YoubiKbn == dayOfWeek && item.StartTime <= uketukeTime && item.EndTime > uketukeTime);
-        if (timeZoneConfig != null)
-        {
-            currentTimeKbn = timeZoneConfig.TimeKbn;
-        }
-
-        var timeZoneDayInf = _timeZoneRepository.GetLatestTimeZoneDayInf(hpId, sinDate, uketukeTime);
-        if (timeZoneDayInf != null)
-        {
-            beforeTimeKbn = timeZoneDayInf.TimeKbn;
-        }
-
         string timeKbnName = string.Empty;
-        if (currentTimeKbn != beforeTimeKbn)
-        {
-            //GetDataForMessage
-            isShowPopup = true;
-            timeKbnName = JikanConst.JikanKotokuDict[currentTimeKbn];
-            if (currentTimeKbn != JikanConst.JikanNai && timeZoneConfig != null)
-            {
-                startTime = CIUtil.TimeToShowTime(timeZoneConfig.StartTime);
-                endTime = CIUtil.TimeToShowTime(timeZoneConfig.EndTime);
-            }
-        }
-        return new DefaultSelectedTimeModel(
-                        timeKbnName,
-                        CIUtil.TimeToShowTime(uketukeTime),
-                        startTime,
-                        endTime,
-                        currentTimeKbn,
-                        beforeTimeKbn,
-                        isPatientChildren,
-                        isShowPopup,
-                        GetJikanKbnDefaultValue(hpId, dayOfWeek, isPatientChildren, isHoliday, uketukeTime, sinDate, currentTimeKbn, timeKbnForChild, listTimeZoneConfig)
-                    );
-    }
-
-    private int GetJikanKbnDefaultValue(int hpId, int dayOfWeek, bool isPatientChildren, bool isHoliday, int uketukeTime, int sinDate, int currentTimeKbn, int timeKbnForChild, List<TimeZoneConfModel> listTimeZoneConfig)
-    {
-        var timeZoneConfs = _timeZoneRepository.GetTimeZoneConfs(hpId);
-        TimeZoneConfModel? timeZoneConf = null;
-        if (isPatientChildren && isHoliday && uketukeTime >= 600 && uketukeTime < 2200)
-        {
-            return JikanConst.KyujituKotoku;
-        }
-        if (timeZoneConfs != null)
-        {
-            timeZoneConf = timeZoneConfs.Find(t => t.YoubiKbn == dayOfWeek && t.StartTime <= uketukeTime && t.EndTime > uketukeTime);
-        }
-        if (isHoliday && timeZoneConf == null)
-        {
-            return JikanConst.Kyujitu;
-        }
-        else if (sinDate != int.Parse(DateTime.Now.ToString("yyyyMMdd")))
-        {
-            return JikanConst.JikanNai;
-        }
-        else if (!listTimeZoneConfig.Any())
-        {
-            return JikanConst.JikanNai;
-        }
-        else if (currentTimeKbn == 0)
-        {
-            return currentTimeKbn;
-        }
-        else if (timeKbnForChild > 0 &&
-          (timeKbnForChild == JikanConst.YakanKotoku && currentTimeKbn == JikanConst.Yasou) ||
-          (timeKbnForChild == JikanConst.SinyaKotoku && currentTimeKbn == JikanConst.Sinya))
-        {
-            return timeKbnForChild;
-        }
-        return currentTimeKbn;
-    }
-
-    private int GetTimeKbnForChild(bool isPatientChildren, int dayOfWeek, int uketukeTime)
-    {
+        //Child Patient
+        int jikanKbn = 0;
         int timeKbnForChild = 0;
         if (isPatientChildren)
         {
+            if (isHoliday && uketukeTime >= 600 && uketukeTime < 2200)
+            {
+                jikanKbn = JikanConst.KyujituKotoku;
+            }
             //夜間小特 : 6h-8h or 18h-22h
             if ((uketukeTime >= 600 && uketukeTime < 800) ||
                 ((dayOfWeek == 7 ? uketukeTime >= 1200 : uketukeTime >= 1800) && uketukeTime < 2200))
@@ -164,8 +89,73 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
                 timeKbnForChild = JikanConst.SinyaKotoku;
             }
         }
-        return timeKbnForChild;
+
+        //Adult Patient
+        var timeZoneConfs = _timeZoneRepository.GetTimeZoneConfs(hpId);
+        TimeZoneConfModel timeZoneConf = new();
+        if (timeZoneConfs != null && timeZoneConfs.Any())
+        {
+            timeZoneConf = timeZoneConfs.Find(t => t.YoubiKbn == dayOfWeek && t.StartTime <= uketukeTime && t.EndTime > uketukeTime) ?? new();
+        }
+        if (isHoliday)
+        {
+            if (timeZoneConf == null)
+            {
+                jikanKbn = JikanConst.Kyujitu;
+            }
+        }
+        if (sinDate != DateTime.Now.ToString("yyyyMMdd").AsInteger())
+        {
+            jikanKbn = JikanConst.JikanNai;
+        }
+        if (timeZoneConfs == null)
+        {
+            jikanKbn = JikanConst.JikanNai;
+        }
+
+        if (timeZoneConf != null)
+        {
+            currentTimeKbn = timeZoneConf.TimeKbn;
+        }
+        var timeZoneDayInf = _timeZoneRepository.GetLatestTimeZoneDayInf(hpId, sinDate, uketukeTime);
+        if (timeZoneDayInf != null)
+        {
+            beforeTimeKbn = timeZoneDayInf.TimeKbn;
+        }
+        if (currentTimeKbn != beforeTimeKbn)
+        {
+            timeKbnName = JikanConst.JikanKotokuDict[currentTimeKbn];
+
+            //change out of time => in of time
+            if (currentTimeKbn == JikanConst.JikanNai)
+            {
+                isShowPopup = true;
+            }
+            //change in of time => out of time
+            else
+            {
+
+                startTime = CIUtil.TimeToShowTime(timeZoneConf.StartTime);
+                endTime = CIUtil.TimeToShowTime(timeZoneConf.EndTime);
+                isShowPopup = true;
+            }
+
+        }
+
+        return new DefaultSelectedTimeModel(
+                        timeKbnName,
+                        CIUtil.TimeToShowTime(uketukeTime),
+                        startTime,
+                        endTime,
+                        currentTimeKbn,
+                        beforeTimeKbn,
+                        isPatientChildren,
+                        isShowPopup,
+                        jikanKbn,
+                        timeKbnForChild);
+
     }
+
 
     private bool IsPatientChildren(int hpId, int birthDay, int sinDate)
     {
