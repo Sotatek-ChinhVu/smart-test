@@ -97,6 +97,7 @@
         public const string ReceiptPrint = "ReceiptPrint";
         public const string MemoMsgPrint = "MemoMsgPrint";
         public const string ReceTarget = "ReceTarget";
+        public const string DrugNoteSeal = "DrugNoteSeal";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
