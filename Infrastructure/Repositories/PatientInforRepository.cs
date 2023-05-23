@@ -1,5 +1,4 @@
-﻿using Domain.Constant;
-using Domain.Models.CalculationInf;
+﻿using Domain.Models.CalculationInf;
 using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
@@ -9,11 +8,11 @@ using Domain.Models.PatientInfor;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Enum;
 using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -21,6 +20,7 @@ namespace Infrastructure.Repositories
 {
     public class PatientInforRepository : RepositoryBase, IPatientInforRepository
     {
+        private const string startGroupOrderKey = "group_";
         public PatientInforRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
         }
@@ -53,16 +53,17 @@ namespace Infrastructure.Repositories
             return new(ptInfModel, true);
         }
 
-        public List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize)
+        public List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
         {
+            List<PatientInforModel> result = new();
             var ptInfWithLastVisitDate =
                 from p in NoTrackingDataContext.PtInfs
                 where p.IsDelete == 0 && (p.PtNum == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
                 orderby p.PtNum descending
-                select new
+                select new PatientInfQueryModel
                 {
-                    ptInf = p,
-                    lastVisitDate = (
+                    PtInf = p,
+                    LastVisitDate = (
                         from r in NoTrackingDataContext.RaiinInfs
                         where r.HpId == hpId
                             && r.PtId == p.PtId
@@ -73,13 +74,18 @@ namespace Infrastructure.Repositories
                     ).FirstOrDefault()
                 };
 
-            return ptInfWithLastVisitDate
+            bool sortGroup = sortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
+            result = sortGroup
+                         ?
+                         ptInfWithLastVisitDate
                          .AsEnumerable()
-                         .Skip((pageIndex - 1) * pageSize)
-                         .Take(pageSize)
-                         .Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate))
-                         .ToList();
+                         .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
+                         .ToList()
+                         :
+                         SortData(ptInfWithLastVisitDate.AsEnumerable(), sortData, pageIndex, pageSize);
+            return result;
         }
+
 
         public PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo)
         {
@@ -263,8 +269,10 @@ namespace Infrastructure.Repositories
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
 
-        public List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize)
+        public List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
         {
+            bool sortGroup = sortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
+
             var ptInfQuery = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
             // PtNum
             if (input.FromPtNum > 0)
@@ -659,10 +667,10 @@ namespace Infrastructure.Repositories
             // Add LastVisitDate to patient info
             var ptInfWithLastVisitDateQuery =
                 from ptInf in ptInfQuery
-                select new
+                select new PatientInfQueryModel
                 {
-                    ptInf,
-                    lastVisitDate = (
+                    PtInf = ptInf,
+                    LastVisitDate = (
                         from r in raiinInfQuery
                         where r.PtId == ptInf.PtId
                             && r.Status >= RaiinState.TempSave
@@ -670,12 +678,16 @@ namespace Infrastructure.Repositories
                         select r.SinDate
                     ).FirstOrDefault()
                 };
-            return ptInfWithLastVisitDateQuery
-                                            .AsEnumerable()
-                                            .Skip((pageIndex - 1) * pageSize)
-                                            .Take(pageSize)
-                                            .Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate))
-                                            .ToList();
+
+            var result = sortGroup
+                         ?
+                         ptInfWithLastVisitDateQuery
+                         .AsEnumerable()
+                         .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
+                         .ToList()
+                         :
+                         SortData(ptInfWithLastVisitDateQuery.AsEnumerable(), sortData, pageIndex, pageSize);
+            return result;
 
             #region Helper methods
 
@@ -778,17 +790,17 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize)
+        public List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
         {
             var ptIdList = NoTrackingDataContext.RaiinInfs.Where(r => r.SinDate == sindate).GroupBy(r => r.PtId).Select(gr => gr.Key).ToList();
             var ptInfWithLastVisitDate =
                 (from p in NoTrackingDataContext.PtInfs
                  where p.IsDelete == 0 && ptIdList.Contains(p.PtId)
                  orderby p.PtNum descending
-                 select new
+                 select new PatientInfQueryModel
                  {
-                     ptInf = p,
-                     lastVisitDate = (
+                     PtInf = p,
+                     LastVisitDate = (
                          from r in NoTrackingDataContext.RaiinInfs
                          where r.HpId == hpId
                              && r.PtId == p.PtId
@@ -799,18 +811,23 @@ namespace Infrastructure.Repositories
                      ).FirstOrDefault()
                  }).ToList();
 
-            return ptInfWithLastVisitDate
-                                         .Skip((pageIndex - 1) * pageSize)
-                                         .Take(pageSize)
-                                         .Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate))
-                                         .ToList();
+            bool sortGroup = sortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
+            var result = sortGroup
+                         ?
+                         ptInfWithLastVisitDate
+                         .AsEnumerable()
+                         .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
+                         .ToList()
+                         :
+                         SortData(ptInfWithLastVisitDate.AsEnumerable(), sortData, pageIndex, pageSize);
+            return result;
         }
 
-        public List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
+        public List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
-                return new List<PatientInforModel>();
+                return new();
             }
 
             var ptInfWithLastVisitDate =
@@ -819,10 +836,10 @@ namespace Infrastructure.Repositories
                                       p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2.StartsWith(keyword)) ||
                                       p.Name == keyword)
             orderby p.PtNum descending
-            select new
+            select new PatientInfQueryModel
             {
-                ptInf = p,
-                lastVisitDate = (
+                PtInf = p,
+                LastVisitDate = (
                         from r in NoTrackingDataContext.RaiinInfs
                         where r.HpId == hpId
                             && r.PtId == p.PtId
@@ -833,20 +850,24 @@ namespace Infrastructure.Repositories
                     ).FirstOrDefault()
             };
 
-            return ptInfWithLastVisitDate
-                                         .AsEnumerable()
-                                         .Skip((pageIndex - 1) * pageSize)
-                                         .Take(pageSize)
-                                         .Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate))
-                                         .ToList();
+            bool sortGroup = sortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
+            var result = sortGroup
+                         ?
+                         ptInfWithLastVisitDate
+                         .AsEnumerable()
+                         .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
+                         .ToList()
+                         :
+                         SortData(ptInfWithLastVisitDate.AsEnumerable(), sortData, pageIndex, pageSize);
+            return result;
         }
 
-        public List<PatientInforModel> SearchName(string originKeyword, string halfsizeKeyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
+        public List<PatientInforModel> SearchName(string originKeyword, string halfsizeKeyword, bool isContainMode, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
         {
             if (string.IsNullOrWhiteSpace(originKeyword) ||
                 string.IsNullOrWhiteSpace(halfsizeKeyword))
             {
-                return new List<PatientInforModel>();
+                return new();
             }
 
             var ptInfWithLastVisitDate =
@@ -854,10 +875,10 @@ namespace Infrastructure.Repositories
             where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(originKeyword) || p.Name.StartsWith(originKeyword)) ||
                                       p.KanaName != null && (isContainMode && p.KanaName.Contains(halfsizeKeyword) || p.KanaName.StartsWith(halfsizeKeyword)))
             orderby p.PtNum descending
-            select new
+            select new PatientInfQueryModel
             {
-                ptInf = p,
-                lastVisitDate = (
+                PtInf = p,
+                LastVisitDate = (
                         from r in NoTrackingDataContext.RaiinInfs
                         where r.HpId == hpId
                             && r.PtId == p.PtId
@@ -868,12 +889,16 @@ namespace Infrastructure.Repositories
                     ).FirstOrDefault()
             };
 
-            return ptInfWithLastVisitDate
-                                         .AsEnumerable()
-                                         .Skip((pageIndex - 1) * pageSize)
-                                         .Take(pageSize)
-                                         .Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate))
-                                         .ToList();
+            bool sortGroup = sortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
+            var result = sortGroup
+                         ?
+                         ptInfWithLastVisitDate
+                         .AsEnumerable()
+                         .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
+                         .ToList()
+                         :
+                         SortData(ptInfWithLastVisitDate.AsEnumerable(), sortData, pageIndex, pageSize);
+            return result;
         }
 
         public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting)
@@ -887,7 +912,7 @@ namespace Infrastructure.Repositories
             for (long i = startIndex; i < endIndex; i++)
             {
                 if (isPtNumCheckDigit && !CIUtil.PtNumCheckDigits(i))
-                {     
+                {
                     endIndex++;
                     continue;
                 }
@@ -2117,6 +2142,322 @@ namespace Infrastructure.Repositories
                 }
             }
             return false;
+        }
+
+        private class PatientInfQueryModel
+        {
+            public PtInf PtInf { get; set; } = new();
+
+            public int LastVisitDate { get; set; }
+        }
+
+        private List<PatientInforModel> SortData(IEnumerable<PatientInfQueryModel> ptInfWithLastVisitDate, Dictionary<string, string> sortData, int pageIndex, int pageSize)
+        {
+            if (!sortData.Any())
+            {
+                return ptInfWithLastVisitDate
+                       .Skip((pageIndex - 1) * pageSize)
+                       .Take(pageSize)
+                       .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
+                       .ToList();
+            }
+            int index = 1;
+            var sortQuery = ptInfWithLastVisitDate.OrderBy(item => item.PtInf.PtId);
+            foreach (var item in sortData)
+            {
+                int field = int.Parse(item.Key);
+                string typeSort = item.Value.Replace(" ", string.Empty).ToLower();
+                if (index == 1)
+                {
+                    sortQuery = OrderByAction((FieldSortPatientEnum)field, typeSort, sortQuery);
+                    index++;
+                    continue;
+                }
+                sortQuery = ThenOrderByAction((FieldSortPatientEnum)field, typeSort, sortQuery);
+            }
+
+            var result = sortQuery
+                         .Skip((pageIndex - 1) * pageSize)
+                         .Take(pageSize)
+                         .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
+                         .ToList();
+            return result;
+        }
+
+        private IOrderedEnumerable<PatientInfQueryModel> OrderByAction(FieldSortPatientEnum field, string typeSort, IOrderedEnumerable<PatientInfQueryModel> sortQuery)
+        {
+            switch (field)
+            {
+                case FieldSortPatientEnum.PtId:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.PtId);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.PtId);
+                    }
+                    break;
+                case FieldSortPatientEnum.PtNum:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.PtNum);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.PtNum);
+                    }
+                    break;
+                case FieldSortPatientEnum.KanaName:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.KanaName);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.KanaName);
+                    }
+                    break;
+                case FieldSortPatientEnum.Name:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.Name);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.Name);
+                    }
+                    break;
+                case FieldSortPatientEnum.Birthday:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.Birthday);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.Birthday);
+                    }
+                    break;
+                case FieldSortPatientEnum.Sex:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.Sex);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.Sex);
+                    }
+                    break;
+                case FieldSortPatientEnum.Age:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.Birthday);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.Birthday);
+                    }
+                    break;
+                case FieldSortPatientEnum.Tel1:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.Tel1);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.Tel1);
+                    }
+                    break;
+                case FieldSortPatientEnum.Tel2:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.Tel2);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.Tel2);
+                    }
+                    break;
+                case FieldSortPatientEnum.RenrakuTel:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.RenrakuTel);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.RenrakuTel);
+                    }
+                    break;
+                case FieldSortPatientEnum.HomePost:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.HomePost);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.HomePost);
+                    }
+                    break;
+                case FieldSortPatientEnum.HomeAddress:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.PtInf.HomeAddress1 + '\u3000' + item.PtInf.HomeAddress2);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.PtInf.HomeAddress1 + '\u3000' + item.PtInf.HomeAddress2);
+                    }
+                    break;
+                case FieldSortPatientEnum.LastVisitDate:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.OrderByDescending(item => item.LastVisitDate);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.OrderBy(item => item.LastVisitDate);
+                    }
+                    break;
+            }
+            return sortQuery;
+        }
+
+        private IOrderedEnumerable<PatientInfQueryModel> ThenOrderByAction(FieldSortPatientEnum field, string typeSort, IOrderedEnumerable<PatientInfQueryModel> sortQuery)
+        {
+            switch (field)
+            {
+                case FieldSortPatientEnum.PtId:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.PtId);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.PtId);
+                    }
+                    break;
+                case FieldSortPatientEnum.PtNum:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.PtNum);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.PtNum);
+                    }
+                    break;
+                case FieldSortPatientEnum.KanaName:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.KanaName);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.KanaName);
+                    }
+                    break;
+                case FieldSortPatientEnum.Name:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.Name);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.Name);
+                    }
+                    break;
+                case FieldSortPatientEnum.Birthday:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.Birthday);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.Birthday);
+                    }
+                    break;
+                case FieldSortPatientEnum.Sex:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.Sex);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.Sex);
+                    }
+                    break;
+                case FieldSortPatientEnum.Age:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.Birthday);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.Birthday);
+                    }
+                    break;
+                case FieldSortPatientEnum.Tel1:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.Tel1);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.Tel1);
+                    }
+                    break;
+                case FieldSortPatientEnum.Tel2:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.Tel2);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.Tel2);
+                    }
+                    break;
+                case FieldSortPatientEnum.RenrakuTel:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.RenrakuTel);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.RenrakuTel);
+                    }
+                    break;
+                case FieldSortPatientEnum.HomePost:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.HomePost);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.HomePost);
+                    }
+                    break;
+                case FieldSortPatientEnum.HomeAddress:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.PtInf.HomeAddress1 + '\u3000' + item.PtInf.HomeAddress2);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.PtInf.HomeAddress1 + '\u3000' + item.PtInf.HomeAddress2);
+                    }
+                    break;
+                case FieldSortPatientEnum.LastVisitDate:
+                    if (typeSort.Equals("desc"))
+                    {
+                        sortQuery = sortQuery.ThenByDescending(item => item.LastVisitDate);
+                    }
+                    else
+                    {
+                        sortQuery = sortQuery.ThenBy(item => item.LastVisitDate);
+                    }
+                    break;
+            }
+            return sortQuery;
         }
 
         public long GetPtIdFromPtNum(int hpId, long ptNum)

@@ -84,20 +84,6 @@ namespace Interactor.PatientInfor
                 (bool resultSave, long ptId) result;
                 if (inputData.Patient.PtId == 0)
                 {
-                    if (inputData.Patient.PtNum != 0)
-                    {
-                        if (_systemConfRepository.GetSettingValue(1001, 0, inputData.Patient.HpId) == 1)
-                        {
-                            if (!CIUtil.PtNumCheckDigits(inputData.Patient.PtNum))
-                            {
-                                string msg = string.Format(ErrorMessage.MessageType_mNG01010, "患者番号");
-                                return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>()
-                                {
-                                    new SavePatientInfoValidationResult(msg, SavePatientInforValidationCode.InvalidPtNumCheckDigits, TypeMessage.TypeMessageError)
-                                }, SavePatientInfoStatus.Failed, 0);
-                            }
-                        }
-                    }
                     result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
                 }
                 else
@@ -128,6 +114,19 @@ namespace Interactor.PatientInfor
             int hpId = model.Patient.HpId;
 
             #region Patient Info
+            string message = string.Empty;
+            if (model.Patient.PtId == 0 && model.Patient.PtNum != 0)
+            {
+                if (_systemConfRepository.GetSettingValue(1001, 0, model.Patient.HpId) == 1)
+                {
+                    if (!CIUtil.PtNumCheckDigits(model.Patient.PtNum))
+                    {
+                        message = string.Format(ErrorMessage.MessageType_mNG01010, "患者番号");
+                        resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidPtNumCheckDigits, TypeMessage.TypeMessageError));
+                    }
+                }
+            }
+
             if (model.Patient.HpId <= 0)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.HpId`"), SavePatientInforValidationCode.InvalidHpId, TypeMessage.TypeMessageError));
 
@@ -137,7 +136,6 @@ namespace Interactor.PatientInfor
             if (model.Patient.KanaName != null && model.Patient.KanaName.Length > 100)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.KanaName`"), SavePatientInforValidationCode.InvalidKanaName, TypeMessage.TypeMessageError));
 
-            string message = string.Empty;
             if (!isPatientTempotary || isUpdate)
             {
                 if (model.Patient.Birthday == 0)
