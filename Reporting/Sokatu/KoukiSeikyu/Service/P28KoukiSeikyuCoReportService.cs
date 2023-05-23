@@ -67,8 +67,6 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         _hpId = hpId;
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
-        GetRowCount();
-        //UpdateCrForm();
         var getData = GetData();
 
         foreach (string currentNo in hokensyaNos)
@@ -137,7 +135,6 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
             int dataIndex = (_currentPage - 1) * _dataRowCount;
 
             var curReceInfs = receInfs.Where(r => r.HokensyaNo == _currentHokensyaNo);
-            var count = curReceInfs.Count();
 
             #region Body
             const int maxRow = 2;
@@ -147,7 +144,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel>? wrkReces = null;
                     switch (rowNo)
                     {
                         case 0: wrkReces = curReceInfs.Where(r => r.IsKoukiIppan).ToList(); break;
@@ -266,22 +263,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
 
         return (receInfs?.Count ?? 0) > 0;
     }
-
-    private void GetRowCount()
-    {
-        List<ObjectCalculate> fieldInputList = new()
-    {
-        new ObjectCalculate("lsSokatu", (int)CalculateTypeEnum.GetListRowCount),
-        new ObjectCalculate("lsSokatu", (int)CalculateTypeEnum.GetListColCount)
-    };
-
-        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.KoukiSeikyu, _formFileName, fieldInputList);
-        var javaOutputData = _readRseReportFileService.ReadFileRse(data);
-
-        var responses = javaOutputData.responses;
-        _dataRowCount = responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListRowCount && item.listName == "lsSokatu")!.result;
-    }
-
+    
     private void SetVisibleFieldData(string field, bool value)
     {
         if (!string.IsNullOrEmpty(field) && !_visibleFieldData.ContainsKey(field))
