@@ -305,6 +305,7 @@ namespace Reporting.Yakutai.Service
             // ヘッダー
             int UpdateFormHeader()
             {
+                Dictionary<string, string> fieldDataPerPage = new();
                 #region print method
                 // 発行日
                 void _printPrintDate()
@@ -362,7 +363,8 @@ namespace Reporting.Yakutai.Service
                 // 用法
                 void _printYoho()
                 {
-                    SetFieldData("dfYoho", coModel.Yoho);
+                    fieldDataPerPage.Add("dfYoho", coModel.Yoho);
+                   // SetFieldData("dfYoho", coModel.Yoho);
                 }
 
                 // 日数回数
@@ -387,6 +389,7 @@ namespace Reporting.Yakutai.Service
                     }
                     var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                     _listTextData.Add(pageIndex, listDataPerPage);
+                    _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
                 }
 
                 // 医療機関住所
