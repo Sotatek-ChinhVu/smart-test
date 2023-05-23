@@ -80,7 +80,6 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
             {
                 UpdateDrawForm();
                 _currentPage++;
-                _hasNextPage = false;
             }
         }
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
