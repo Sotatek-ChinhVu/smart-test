@@ -63,13 +63,9 @@ namespace Reporting.Yakutai.Service
         private int _raiinNo;
         private string _formFileName;
 
-        private List<string> objectRseList;
-        private string rowCountFieldName;
-
-        private readonly Dictionary<string, string> _singleFieldData;
-        private readonly Dictionary<string, string> _extralData;
-        private readonly Dictionary<string, string> _fileNamePageMap;
-        private readonly List<Dictionary<string, CellModel>> _tableFieldData;
+        private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _fileNamePageMap = new Dictionary<string, string>();
+        private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
         private readonly IReadRseReportFileService _readRseReportFileService;
 
         public YakutaiCoReportService(ICoYakutaiFinder finder, ISystemConfig systemConfig, IReadRseReportFileService readRseReportFileService)
@@ -92,17 +88,17 @@ namespace Reporting.Yakutai.Service
             {
                 return new();
             }
-
-
-
+            _currentPage = 1;
             foreach (CoYakutaiModel coYakutaiModel in coModels)
             {
                 try
                 {
+                    coModel = coYakutaiModel;
+
                     _formFileName = GetFormFilePrinterName(coYakutaiModel).Item1;
-                    _fileNamePageMap.Add(_currentPage.ToString(), _formFileName);
+                    AddFileNamePageMap("1", _formFileName);
                     _hasNextPage = true;
-                    _currentPage = 1;
+
                     GetRowCount(_formFileName);
                     MakeOdrDtlList();
                     //印刷
@@ -114,10 +110,9 @@ namespace Reporting.Yakutai.Service
                 }
                 finally
                 {
-                    //CoRep.FinishPrint();
-                    coModel = null;
                     _currentPage = 1;
                 }
+
             }
 
             return new YakutaiMapper(_singleFieldData, _tableFieldData, _fileNamePageMap, "lsOrder").GetData();
@@ -188,7 +183,7 @@ namespace Reporting.Yakutai.Service
 
                             if (!string.IsNullOrEmpty(odrDtl.UnitName))
                             {
-                                if (coModel.IsOnceAmount)
+                                if (coModel.IsOnceAmount && _systemConfig.YakutaiOnceAmount() == 1)
                                 {
                                     // 1回量に換算（小数2桁まで)
                                     addPrintOutData.Last().Suuryo = (Math.Floor(odrDtl.SuryoDsp / coModel.CnvToOnceValue * coModel.OnceValue * 100) / 100).ToString();
@@ -427,7 +422,7 @@ namespace Reporting.Yakutai.Service
                         if (coModel.YohoTani != "調剤")
                         {
                             // "調剤" の場合は出さない
-                            if (coModel.IsOnceAmount || coModel.IsFukuyojiIppo)
+                            if ((coModel.IsOnceAmount && _systemConfig.YakutaiOnceAmount() == 1) || coModel.IsFukuyojiIppo)
                             {
                                 // 1回量に換算する場合
                                 SetFieldData("dfIkkairyo", "１回に");
@@ -754,45 +749,47 @@ namespace Reporting.Yakutai.Service
                                         suryo = Math.Floor(suryo / totakuYoji * fukuyojis[i] * 100) / 100;
                                     }
 
-                                    appendOdrDtls.Add(new CoOdrInfDetailModel(new OdrInfDetail()
-                                    {
-                                        HpId = odrInf.HpId,
-                                        PtId = odrInf.PtId,
-                                        SinDate = odrInf.SinDate,
-                                        RaiinNo = odrInf.RaiinNo,
-                                        RpNo = odrInf.RpNo,
-                                        RpEdaNo = rpEdaNo,
-                                        RowNo = rowNo++,
-                                        SinKouiKbn = odrInfDtl.SinKouiKbn,
-                                        ItemCd = itemCd,
-                                        ItemName = itemName,
-                                        Suryo = suryo,
-                                        UnitName = odrInfDtl.UnitName,
-                                        UnitSBT = odrInfDtl.UnitSBT,
-                                        TermVal = odrInfDtl.TermVal,
-                                        KohatuKbn = odrInfDtl.KohatuKbn,
-                                        SyohoKbn = odrInfDtl.SyohoKbn,
-                                        SyohoLimitKbn = odrInfDtl.SyohoLimitKbn,
-                                        DrugKbn = odrInfDtl.DrugKbn,
-                                        YohoKbn = odrInfDtl.YohoKbn,
-                                        Kokuji1 = odrInfDtl.Kokuji1,
-                                        Kokiji2 = odrInfDtl.Kokiji2,
-                                        IsNodspRece = odrInfDtl.IsNodspRece,
-                                        IpnCd = odrInfDtl.IpnCd,
-                                        IpnName = odrInfDtl.IpnName,
-                                        JissiKbn = odrInfDtl.JissiKbn,
-                                        JissiDate = odrInfDtl.JissiDate,
-                                        JissiId = odrInfDtl.JissiId,
-                                        JissiMachine = odrInfDtl.JissiMachine,
-                                        ReqCd = odrInfDtl.ReqCd,
-                                        Bunkatu = odrInfDtl.Bunkatu,
-                                        CmtName = odrInfDtl.CmtName,
-                                        CmtOpt = odrInfDtl.CmtOpt,
-                                        FontColor = odrInfDtl.FontColor
-                                    },
+                                    appendOdrDtls.Add(new CoOdrInfDetailModel(
+                                        new OdrInfDetail()
+                                        {
+                                            HpId = odrInf.HpId,
+                                            PtId = odrInf.PtId,
+                                            SinDate = odrInf.SinDate,
+                                            RaiinNo = odrInf.RaiinNo,
+                                            RpNo = odrInf.RpNo,
+                                            RpEdaNo = rpEdaNo,
+                                            RowNo = rowNo++,
+                                            SinKouiKbn = odrInfDtl.SinKouiKbn,
+                                            ItemCd = itemCd,
+                                            ItemName = itemName,
+                                            Suryo = suryo,
+                                            UnitName = odrInfDtl.UnitName,
+                                            UnitSBT = odrInfDtl.UnitSBT,
+                                            TermVal = odrInfDtl.TermVal,
+                                            KohatuKbn = odrInfDtl.KohatuKbn,
+                                            SyohoKbn = odrInfDtl.SyohoKbn,
+                                            SyohoLimitKbn = odrInfDtl.SyohoLimitKbn,
+                                            DrugKbn = odrInfDtl.DrugKbn,
+                                            YohoKbn = odrInfDtl.YohoKbn,
+                                            Kokuji1 = odrInfDtl.Kokuji1,
+                                            Kokiji2 = odrInfDtl.Kokiji2,
+                                            IsNodspRece = odrInfDtl.IsNodspRece,
+                                            IpnCd = odrInfDtl.IpnCd,
+                                            IpnName = odrInfDtl.IpnName,
+                                            JissiKbn = odrInfDtl.JissiKbn,
+                                            JissiDate = odrInfDtl.JissiDate,
+                                            JissiId = odrInfDtl.JissiId,
+                                            JissiMachine = odrInfDtl.JissiMachine,
+                                            ReqCd = odrInfDtl.ReqCd,
+                                            Bunkatu = odrInfDtl.Bunkatu,
+                                            CmtName = odrInfDtl.CmtName,
+                                            CmtOpt = odrInfDtl.CmtOpt,
+                                            FontColor = odrInfDtl.FontColor
+                                        },
                                     appendOdrInfs.Last().OdrInf,
                                     odrInfDtl.TenMst,
-                                    odrInfDtl.YohoInfMst
+                                    odrInfDtl.YohoInfMst,
+                                    _systemConfig
                                     )
                                     {
                                         FukuyoRise = fukuyoRise,
@@ -925,6 +922,14 @@ namespace Reporting.Yakutai.Service
             }
         }
 
+        private void AddFileNamePageMap(string field, string value)
+        {
+            if (!string.IsNullOrEmpty(field) && !_fileNamePageMap.ContainsKey(field))
+            {
+                _fileNamePageMap.Add(field, value);
+            }
+        }
+
         private void GetRowCount(string formFileName)
         {
             List<ObjectCalculate> fieldInputList = new();
@@ -937,7 +942,7 @@ namespace Reporting.Yakutai.Service
 
             CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Yakutai, formFileName, fieldInputList);
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
-            _dataRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsSyojyoSyoki" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
+            _dataRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsOrder" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
             _dataCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsOrder" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result ?? 0;
             _suryoCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsSuryo" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result ?? 0;
             _unitCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsTani" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result ?? 0;

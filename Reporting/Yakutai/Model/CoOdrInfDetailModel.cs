@@ -5,18 +5,13 @@ namespace Reporting.Yakutai.Model
 {
     public class CoOdrInfDetailModel
     {
-        private readonly ISystemConfig _systemConfig;
-
-        public CoOdrInfDetailModel(ISystemConfig systemConfig)
-        {
-            _systemConfig = systemConfig;
-        }
+        public  ISystemConfig _systemConfig;
         public OdrInfDetail OdrInfDetail { get; } = null;
         public OdrInf OdrInf { get; } = null;
         public TenMst TenMst { get; } = null;
         public YohoInfMst YohoInfMst { get; } = null;
 
-        public CoOdrInfDetailModel(OdrInfDetail odrInfDetail, OdrInf odrInf, TenMst tenMst, YohoInfMst yohoInfMst)
+        public CoOdrInfDetailModel(OdrInfDetail odrInfDetail, OdrInf odrInf, TenMst tenMst, YohoInfMst yohoInfMst, ISystemConfig systemConfig)
         {
             OdrInfDetail = odrInfDetail;
             OdrInf = odrInf;
@@ -29,6 +24,7 @@ namespace Reporting.Yakutai.Model
             FukuyoSleep = (TenMst != null ? TenMst.FukuyoSleep : 0);
 
             YohoInfMst = yohoInfMst;
+            _systemConfig = systemConfig;
         }
 
         /// <summary>

@@ -4,12 +4,6 @@ namespace Reporting.Yakutai.Model
 {
     public class CoYakutaiModel
     {
-        private readonly ISystemConfig _systemConfig;
-
-        public CoYakutaiModel(ISystemConfig systemConfig)
-        {
-            _systemConfig = systemConfig;
-        }
         // 医療機関情報
         public CoHpInfModel HpInfModel;
 
@@ -297,8 +291,7 @@ namespace Reporting.Yakutai.Model
             {
                 bool ret = true;
 
-                if (_systemConfig.YakutaiOnceAmount() == 1 &&
-                    CnvToOnceValue > 0 &&
+                if (CnvToOnceValue > 0 &&
                     SingleDoseMstModels != null &&
                     SingleDoseMstModels.Any() &&
                     IsFukinto == false)

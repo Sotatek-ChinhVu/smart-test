@@ -1,16 +1,17 @@
 ﻿using Domain.Constant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Reporting.CommonMasters.Config;
 using Reporting.Yakutai.Model;
 
 namespace Reporting.Yakutai.DB
 {
     public class CoYakutaiFinder : RepositoryBase, ICoYakutaiFinder
     {
-
-        public CoYakutaiFinder(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly ISystemConfig _systemConfig;
+        public CoYakutaiFinder(ISystemConfig systemConfig, ITenantProvider tenantProvider) : base(tenantProvider)
         {
-
+            _systemConfig = systemConfig;
         }
         /// <summary>
         /// 医療機関情報を取得する
@@ -276,7 +277,8 @@ namespace Reporting.Yakutai.DB
                         data.odrInfDetail,
                         data.odrInf,
                         data.tenMst,
-                        data.yohoInfMst
+                        data.yohoInfMst,
+                        _systemConfig
                     )
                 )
                 .ToList();
@@ -291,7 +293,8 @@ namespace Reporting.Yakutai.DB
                             entity.OdrInfDetail,
                             entity.OdrInf,
                             entity.TenMst,
-                            entity.YohoInfMst
+                            entity.YohoInfMst,
+                            _systemConfig
                             ));
                 }
             }
