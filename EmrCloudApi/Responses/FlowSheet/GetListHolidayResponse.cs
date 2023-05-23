@@ -1,10 +1,11 @@
 ﻿using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
+using UseCase.FlowSheet.GetList;
 
 namespace EmrCloudApi.Responses.FlowSheet
 {
     public class GetListHolidayResponse
     {
-        public List<HolidayModel> ListHolidayModel {get; set; } = new List<HolidayModel>();
+        public List<HolidayDto> ListHolidayModel {get; set; } = new();
     }
 }

@@ -11,7 +11,9 @@ namespace Domain.Models.FlowSheet
 
         List<RaiinListMstModel> GetRaiinListMsts(int hpId);
 
-        List<HolidayModel> GetHolidayMst(int hpId, int holidayFrom, int holidayTo);
+        bool SaveHolidayMst(HolidayModel holiday, int userId);
+
+        List<HolidayDto> GetHolidayMst(int hpId, int holidayFrom, int holidayTo);
 
         void UpsertTag(List<FlowSheetModel> inputDatas, int hpId, int userId);
 
