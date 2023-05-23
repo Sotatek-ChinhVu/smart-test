@@ -29,6 +29,8 @@ public class TimeZoneConfModel
         IsNewEndTime = false;
     }
 
+    public TimeZoneConfModel() { }
+
     /// <summary>
     /// 時間帯設定
     /// </summary>

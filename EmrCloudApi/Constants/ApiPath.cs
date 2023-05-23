@@ -332,8 +332,5 @@
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
         public const string SaveTimeZoneConf = "SaveTimeZoneConf";
-
-        //Holiday
-        public const string SaveHolidayMst = "SaveHolidayMst";
     }
 }
