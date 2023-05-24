@@ -780,7 +780,7 @@ namespace Infrastructure.Repositories
 
             foreach (var model in models)
             {
-                if (models.Any(m => m.KanaName == model.KanaName))
+                if (models.Any(m => m.KanaName == model.KanaName && m != model))
                 {
                     model.IsNameDuplicate = true;
                 }
