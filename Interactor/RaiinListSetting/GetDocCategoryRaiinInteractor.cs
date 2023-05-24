@@ -1,14 +1,16 @@
-﻿using Domain.Models.RaiinListSetting;
+﻿using Domain.Models.Document;
+using Domain.Models.RaiinListSetting;
 using UseCase.RaiinListSetting.GetDocCategory;
 
 namespace Interactor.RaiinListSetting
 {
     public class GetDocCategoryRaiinInteractor : IGetDocCategoryRaiinInputPort
     {
-        private readonly IRaiinListSettingRepository _raiinListSettingRepository;
-        public GetDocCategoryRaiinInteractor(IRaiinListSettingRepository raiinListSettingRepository)
+        private readonly IDocumentRepository _documentRepository;
+
+        public GetDocCategoryRaiinInteractor(IDocumentRepository documentRepository)
         {
-            _raiinListSettingRepository = raiinListSettingRepository;
+            _documentRepository = documentRepository;
         }
 
         public GetDocCategoryRaiinOutputData Handle(GetDocCategoryRaiinInputData inputData)
@@ -20,7 +22,7 @@ namespace Interactor.RaiinListSetting
                     return new GetDocCategoryRaiinOutputData(GetDocCategoryRaiinStatus.InvalidHpId, new());
                 }
 
-                var data = _raiinListSettingRepository.GetDocCategoryCollection(inputData.HpId);
+                var data = _documentRepository.GetAllDocCategory(inputData.HpId);
 
                 if (data.Any())
                 {
@@ -33,7 +35,7 @@ namespace Interactor.RaiinListSetting
             }
             finally
             {
-                _raiinListSettingRepository.ReleaseResource();
+                _documentRepository.ReleaseResource();
             }
         }
     }

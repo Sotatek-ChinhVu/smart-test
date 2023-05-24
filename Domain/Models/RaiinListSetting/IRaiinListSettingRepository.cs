@@ -5,6 +5,6 @@ namespace Domain.Models.RaiinListSetting
 {
     public interface IRaiinListSettingRepository : IRepositoryBase
     {
-        List<DocCategoryModel> GetDocCategoryCollection(int hpId);
+        
     }
 }
