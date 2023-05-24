@@ -152,6 +152,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return new SetMstTooltipModel(listKarteNames, listOrders, byomeiNameList);
     }
 
+    [Obsolete]
     public SetMstModel SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
     {
         SetMst setMst = new();
@@ -207,6 +208,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 // set status for IsDelete
                 setMst.IsDeleted = 1;
+                TrackingDataContext.SetMsts.Remove(setMst);
 
                 // if SetMst have children element
                 // if SetMst is level 2 and have children element
@@ -226,6 +228,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         item.IsDeleted = 1;
                         item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
+                        TrackingDataContext.SetMsts.Remove(item);
                     }
                 }
 
@@ -259,6 +262,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         level2.IsDeleted = 1;
                         level2.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         level2.UpdateId = userId;
+                        TrackingDataContext.SetMsts.Remove(level2);
                     }
 
                     foreach (var level3 in listSetMstLevel3)
@@ -266,6 +270,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         level3.IsDeleted = 1;
                         level3.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         level3.UpdateId = userId;
+                        TrackingDataContext.SetMsts.Remove(level3);
                     }
                 }
             }
@@ -288,29 +293,55 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         catch (Exception ex)
         {
-            if (HandleException(ex) == 23000)
+            var innerException = ex.InnerException?.ToString() ?? string.Empty;
+            bool flag = false;
+            if (HandleException(ex) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
             {
                 int count = 0;
                 while (count <= tryCountSave)
                 {
                     try
                     {
+                        flag = true;
                         RetrySaveSetMst(setMst);
                     }
                     catch (Exception tryEx)
                     {
-
-                        if (HandleException(tryEx) == 23000)
+                        flag = false;
+                        innerException = tryEx.InnerException?.ToString() ?? string.Empty;
+                        if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
+                            if (HandleException(ex) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
                         {
-                            RetrySaveSetMst(setMst);
+                                //RetrySaveSetMst(setMst);
+                                continue;
                         }
                         Console.WriteLine(tryEx.Message);
+                        break;
                     }
                     count++;
+                    break;
                 }
             }
             Console.WriteLine(ex.Message);
-            return new SetMstModel();
+            if (!flag)
+            {
+                RetrySaveSetMst(setMst);
+            }
+            return flag ? new SetMstModel(
+                    setMst.HpId,
+                    setMst.SetCd,
+                    setMst.SetKbn,
+                    setMst.SetKbnEdaNo,
+                    setMst.GenerationId,
+                    setMst.Level1,
+                    setMst.Level2,
+                    setMst.Level3,
+                    setMst.SetName ?? String.Empty,
+                    setMst.WeightKbn,
+                    setMst.Color,
+                    setMst.IsDeleted,
+                    setMst.IsGroup
+                ) : new SetMstModel();
         }
         finally
         {
@@ -642,13 +673,16 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         }
                         catch (Exception ex)
                         {
-                            if (HandleException(ex) == 23000)
-                            {
+                            bool flag = false;
+                            var innerException = ex.InnerException?.ToString() ?? string.Empty;
+                            if (HandleException(ex) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
+                                {
                                 var count = 0;
                                 while (count <= tryCountSave)
                                 {
                                     try
                                     {
+                                        flag = true;
                                         RetryCopyPasteSetMst(copyItem, pasteItem, listPasteItems);
 
                                         TrackingDataContext.SaveChanges();
@@ -656,16 +690,27 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                     }
                                     catch (Exception tryEx)
                                     {
-                                        if (HandleException(tryEx) == 23000)
+                                        flag = false;
+                                        innerException = tryEx.InnerException?.ToString() ?? string.Empty;
+                                        if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
                                         {
-                                            RetryCopyPasteSetMst(copyItem, pasteItem, listPasteItems);
+                                            //RetryCopyPasteSetMst(copyItem, pasteItem, listPasteItems);
 
-                                            TrackingDataContext.SaveChanges();
-                                            transaction.Commit();
+                                            //TrackingDataContext.SaveChanges();
+                                            //transaction.Commit();
+                                            continue;
                                         }
                                         Console.WriteLine(tryEx.Message);
+                                        break;
                                     }
                                 }
+                            }
+                            if (!flag)
+                            {
+                                RetryCopyPasteSetMst(copyItem, pasteItem, listPasteItems);
+
+                                TrackingDataContext.SaveChanges();
+                                transaction.Commit();
                             }
                             Console.WriteLine(ex.Message);
                         }
@@ -1316,26 +1361,38 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         catch (Exception ex)
         {
-            if (HandleException(ex) == 23000)
+            bool flag = false;
+            var innerException = ex.InnerException?.ToString() ?? string.Empty;
+            if (HandleException(ex) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
             {
                 var count = 0;
                 while (count <= tryCountSave)
                 {
                     try
                     {
+                        flag = true;
                         LevelDown(3, userId, listUpdate);
                         TrackingDataContext.SaveChanges();
                     }
                     catch (Exception tryEx)
                     {
-                        if (HandleException(tryEx) == 23000)
+                        flag = false;
+                        innerException = tryEx.InnerException?.ToString() ?? string.Empty;
+                        if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
                         {
-                            LevelDown(3, userId, listUpdate);
-                            TrackingDataContext.SaveChanges();
+                            continue;
+                            //LevelDown(3, userId, listUpdate);
+                            //TrackingDataContext.SaveChanges();
                         }
                         Console.WriteLine(tryEx.Message);
+                        break;
                     }
                 }
+            }
+            if (!flag)
+            {
+                LevelDown(3, userId, listUpdate);
+                TrackingDataContext.SaveChanges();
             }
             Console.WriteLine(ex.Message);
         }
@@ -1451,15 +1508,15 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         var levelMax = GetMaxLevel(setMst.HpId, setMst.SetKbn, setMst.SetKbnEdaNo, setMst.GenerationId, setMst.Level1, setMst.Level2, setMst.Level3);
         if (setMst.Level2 == 0 && setMst.Level3 == 0)
         {
-            setMst.Level1 = levelMax++;
+            setMst.Level1 = ++levelMax;
         }
         else if (setMst.Level2 > 0 && setMst.Level3 == 0)
         {
-            setMst.Level2 = levelMax++;
+            setMst.Level2 = ++levelMax;
         }
         else
         {
-            setMst.Level3 = levelMax++;
+            setMst.Level3 = ++levelMax;
         }
         TrackingDataContext.Add(setMst);
         TrackingDataContext.SaveChanges();
@@ -1492,25 +1549,25 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     #endregion
 
     #region Catch Exception
-    private int HandleException(Exception exception)
+    [Obsolete]
+    private static string HandleException(Exception exception)
     {
         if (exception is DbUpdateConcurrencyException concurrencyEx)
         {
-            return 0;
+            return "0";
         }
         else if (exception is DbUpdateException dbUpdateEx)
         {
-            if (dbUpdateEx.InnerException != null
-                    && dbUpdateEx.InnerException.InnerException != null)
+            if (dbUpdateEx.InnerException != null)
             {
-                if (dbUpdateEx.InnerException.InnerException is PostgresException postgreException)
+                if (dbUpdateEx.InnerException is PostgresException postgreException)
                 {
-                    return postgreException.ErrorCode;
+                    return postgreException.Code ?? string.Empty;
                 }
             }
         }
 
-        return 0;
+        return "0";
     }
     #endregion
 }
