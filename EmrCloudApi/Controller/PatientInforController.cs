@@ -219,6 +219,9 @@ namespace EmrCloudApi.Controller
         [HttpGet("GetInsuranceMst")]
         public ActionResult<Response<GetInsuranceMstResponse>> GetInsuranceMst([FromQuery] GetInsuranceMstRequest request)
         {
+            //HttpContext.Response.Headers.Append("Clear-Site-Data", "\"cache\"");
+            Response.Headers.Add("Clear-Site-Data", "\"cache\"");
+            //HttpContext.Response.Headers.Append("Clear-Site-Data", "\"*\"");
             var input = new GetInsuranceMstInputData(HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
