@@ -173,12 +173,12 @@ namespace Domain.Models.Insurance
                 {
                     return false;
                 }
-                List<ConfirmDateModel> isValidHokenChecks = ConfirmDateList
+                var isValidHokenChecks = ConfirmDateList
                     .Where(x => x.IsDeleted == 0)
                     .OrderByDescending(x => x.ConfirmDate)
                     .ToList();
                 int sinYM = CIUtil.Copy(SinDate.AsString(), 1, 6).AsInteger();
-                foreach (ConfirmDateModel ptHokenCheck in isValidHokenChecks)
+                foreach (var ptHokenCheck in isValidHokenChecks)
                 {
                     int currentConfirmYM = CIUtil.Copy(ptHokenCheck.ConfirmDate.AsString(), 1, 6).AsInteger();
                     if (currentConfirmYM == sinYM)
