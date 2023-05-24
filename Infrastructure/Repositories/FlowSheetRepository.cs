@@ -58,7 +58,6 @@ namespace Infrastructure.Repositories
                                                                                         && r.PtId == ptId
                                                                                         && r.IsDeleted == DeleteTypes.None
                                                                                         && r.RsvkrtKbn == 0);
-
             var groupNextOdr = (
                                     from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable<RsvkrtOdrInf>()
                                     join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
