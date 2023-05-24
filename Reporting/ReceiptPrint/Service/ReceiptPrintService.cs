@@ -1,6 +1,7 @@
 ﻿using Reporting.Mappers.Common;
 using Reporting.Sokatu.HikariDisk.Service;
 using Reporting.Sokatu.KokhoSokatu.Service;
+using Reporting.Sokatu.KoukiSeikyu.Service;
 using Reporting.Structs;
 
 namespace Reporting.ReceiptPrint.Service;
@@ -19,15 +20,16 @@ public class ReceiptPrintService : IReceiptPrintService
     private readonly IP28KokhoSokatuCoReportService _p28KokhoSokatuCoReportService;
     private readonly IP11KokhoSokatuCoReportService _p11KokhoSokatuCoReportService;
     private readonly IHikariDiskCoReportService _hikariDiskCoReportService;
+    private readonly IP28KoukiSeikyuCoReportService _p28KoukiSeikyuCoReportService;
+    private readonly IP29KoukiSeikyuCoReportService _p29KoukiSeikyuCoReportService;
 
-    public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService
-        , IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService
-        , IHikariDiskCoReportService hikariDiskCoReportService
-                              )
+    public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService, IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService, IHikariDiskCoReportService hikariDiskCoReportService, IP28KoukiSeikyuCoReportService p28KoukiSeikyuCoReportService, IP29KoukiSeikyuCoReportService p29KoukiSeikyuCoReportService)
     {
         _p28KokhoSokatuCoReportService = p28KokhoSokatuCoReportService;
         _p11KokhoSokatuCoReportService = p11KokhoSokatuCoReportService;
         _hikariDiskCoReportService = hikariDiskCoReportService;
+        _p28KoukiSeikyuCoReportService = p28KoukiSeikyuCoReportService;
+        _p29KoukiSeikyuCoReportService = p29KoukiSeikyuCoReportService;
     }
 
     public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt)
@@ -42,11 +44,20 @@ public class ReceiptPrintService : IReceiptPrintService
         {
             return _p11KokhoSokatuCoReportService.GetP11KokhoSokatuReportingData(hpId, seikyuYm, seikyuType);
         }
+        else if (prefNo == 28 && reportId == 104 && reportEdaNo == 0)
+        {
+            return _p28KoukiSeikyuCoReportService.GetP28KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
+        }
+        else if (prefNo == 29 && reportId == 104 && reportEdaNo == 0)
+        {
+            return _p29KoukiSeikyuCoReportService.GetP29KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
+        }
         else if (reportId == 2 && reportEdaNo == 0)
         {
             int hokenKbn = 1;
             return _hikariDiskCoReportService.GetHikariDiskPrintData(hpId, seikyuYm, hokenKbn, diskKind, diskCnt);
         }
+
         return new();
     }
 

@@ -76,6 +76,17 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
             if (isHoliday && uketukeTime >= 600 && uketukeTime < 2200)
             {
                 jikanKbn = JikanConst.KyujituKotoku;
+                return new DefaultSelectedTimeModel(
+                    timeKbnName,
+                    CIUtil.TimeToShowTime(uketukeTime),
+                    startTime,
+                    endTime,
+                    currentTimeKbn,
+                    beforeTimeKbn,
+                    isPatientChildren,
+                    isShowPopup,
+                    jikanKbn,
+                    timeKbnForChild);
             }
             //夜間小特 : 6h-8h or 18h-22h
             if ((uketukeTime >= 600 && uketukeTime < 800) ||
@@ -102,15 +113,49 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
             if (timeZoneConf == null)
             {
                 jikanKbn = JikanConst.Kyujitu;
+                return new DefaultSelectedTimeModel(
+                    timeKbnName,
+                    CIUtil.TimeToShowTime(uketukeTime),
+                    startTime,
+                    endTime,
+                    currentTimeKbn,
+                    beforeTimeKbn,
+                    isPatientChildren,
+                    isShowPopup,
+                    jikanKbn,
+                    timeKbnForChild);
+
             }
         }
         if (sinDate != DateTime.Now.ToString("yyyyMMdd").AsInteger())
         {
             jikanKbn = JikanConst.JikanNai;
+            return new DefaultSelectedTimeModel(
+                    timeKbnName,
+                    CIUtil.TimeToShowTime(uketukeTime),
+                    startTime,
+                    endTime,
+                    currentTimeKbn,
+                    beforeTimeKbn,
+                    isPatientChildren,
+                    isShowPopup,
+                    jikanKbn,
+                    timeKbnForChild);
         }
         if (timeZoneConfs == null)
         {
             jikanKbn = JikanConst.JikanNai;
+            return new DefaultSelectedTimeModel(
+                    timeKbnName,
+                    CIUtil.TimeToShowTime(uketukeTime),
+                    startTime,
+                    endTime,
+                    currentTimeKbn,
+                    beforeTimeKbn,
+                    isPatientChildren,
+                    isShowPopup,
+                    jikanKbn,
+                    timeKbnForChild);
         }
 
         if (timeZoneConf != null)
@@ -142,6 +187,43 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
 
         }
 
+        if (currentTimeKbn == 0)
+        {
+            jikanKbn = currentTimeKbn;
+
+            return new DefaultSelectedTimeModel(
+                        timeKbnName,
+                        CIUtil.TimeToShowTime(uketukeTime),
+                        startTime,
+                        endTime,
+                        currentTimeKbn,
+                        beforeTimeKbn,
+                        isPatientChildren,
+                        isShowPopup,
+                        jikanKbn,
+                        timeKbnForChild);
+        };
+        if (timeKbnForChild > 0 &&
+          (timeKbnForChild == JikanConst.YakanKotoku && currentTimeKbn == JikanConst.Yasou) ||
+          (timeKbnForChild == JikanConst.SinyaKotoku && currentTimeKbn == JikanConst.Sinya))
+        {
+            jikanKbn = timeKbnForChild;
+
+            return new DefaultSelectedTimeModel(
+                        timeKbnName,
+                        CIUtil.TimeToShowTime(uketukeTime),
+                        startTime,
+                        endTime,
+                        currentTimeKbn,
+                        beforeTimeKbn,
+                        isPatientChildren,
+                        isShowPopup,
+                        jikanKbn,
+                        timeKbnForChild);
+        }
+
+        jikanKbn = currentTimeKbn;
+
         return new DefaultSelectedTimeModel(
                         timeKbnName,
                         CIUtil.TimeToShowTime(uketukeTime),
@@ -155,7 +237,6 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
                         timeKbnForChild);
 
     }
-
 
     private bool IsPatientChildren(int hpId, int birthDay, int sinDate)
     {

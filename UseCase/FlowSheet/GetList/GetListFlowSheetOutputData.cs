@@ -1,27 +1,22 @@
 ﻿using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.FlowSheet.GetList
 {
-    public class GetListFlowSheetOutputData :IOutputData
+    public class GetListFlowSheetOutputData : IOutputData
     {
         public List<FlowSheetModel> ListFlowSheetModel { get; private set; }
 
         public List<RaiinListMstModel> ListRaiinListMstModel { get; private set; }
 
-        public List<HolidayModel> ListHolidayModel { get; private set; }
+        public List<HolidayDto> ListHolidayModel { get; private set; }
 
         public Dictionary<long, List<RaiinListInfModel>> ListRaiinListInfModel { get; private set; }
 
         public long TotalListFlowSheet { get; private set; }
 
-        public GetListFlowSheetOutputData(List<HolidayModel> listHolidayModel)
+        public GetListFlowSheetOutputData(List<HolidayDto> listHolidayModel)
         {
             ListFlowSheetModel = new List<FlowSheetModel>();
             ListRaiinListMstModel = new List<RaiinListMstModel>();
@@ -35,7 +30,7 @@ namespace UseCase.FlowSheet.GetList
             ListFlowSheetModel = listFlowSheetModel;
             ListRaiinListMstModel = listRaiinListMstModel;
             ListRaiinListInfModel = listRaiinListInfModel;
-            ListHolidayModel = new List<HolidayModel>();
+            ListHolidayModel = new List<HolidayDto>();
             TotalListFlowSheet = totalListFlowSheet;
         }
     }
