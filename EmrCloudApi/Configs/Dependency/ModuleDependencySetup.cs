@@ -566,6 +566,9 @@ using Interactor.PatientInfor.SortPatientCommon;
 using Reporting.DrugNoteSeal.Service;
 using Reporting.DrugNoteSeal.DB;
 using Reporting.Sokatu.KoukiSeikyu.DB;
+using UseCase.RaiinListSetting.GetDocCategory;
+using Interactor.RaiinListSetting;
+using Domain.Models.RaiinListSetting;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -796,6 +799,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaIraiCoReportService, KensaIraiCoReportService>();
             services.AddTransient<ICoKensaIraiFinder, CoKensaIraiFinder>();
             services.AddTransient<ISortPatientCommon, SortPatientCommon>();
+            services.AddTransient<IRaiinListSettingRepository, RaiinListSettingRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1262,6 +1266,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //HolidayMst
             busBuilder.RegisterUseCase<SaveHolidayMstInputData, SaveHolidayMstInteractor>();
+
+            //RaiinListSetting
+            busBuilder.RegisterUseCase<GetDocCategoryRaiinInputData, GetDocCategoryRaiinInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
