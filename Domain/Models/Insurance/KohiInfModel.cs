@@ -180,7 +180,7 @@ namespace Domain.Models.Insurance
                 int sinYM = CIUtil.Copy(SinDate.AsString(), 1, 6).AsInteger();
                 foreach (ConfirmDateModel ptHokenCheck in isValidHokenChecks)
                 {
-                    int currentConfirmYM = ptHokenCheck.ConfirmDate;
+                    int currentConfirmYM = CIUtil.Copy(ptHokenCheck.ConfirmDate.AsString(), 1, 6).AsInteger();
                     if (currentConfirmYM == sinYM)
                     {
                         return true;
