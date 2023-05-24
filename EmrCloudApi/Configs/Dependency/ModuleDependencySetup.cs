@@ -557,6 +557,8 @@ using UseCase.Receipt.ValidateCreateUKEFile;
 using Interactor.PatientInfor.SortPatientCommon;
 using Reporting.DrugNoteSeal.Service;
 using Reporting.DrugNoteSeal.DB;
+using Reporting.Sokatu.HikariDisk.DB;
+using Reporting.Sokatu.HikariDisk.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -687,6 +689,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoReceTargetFinder, CoReceTargetFinder>();
             services.AddTransient<IDrugNoteSealCoReportService, DrugNoteSealCoReportService>();
             services.AddTransient<ICoDrugNoteSealFinder, CoDrugNoteSealFinder>();
+            services.AddTransient<IHikariDiskCoReportService, HikariDiskCoReportService>();
+            services.AddTransient<ICoHikariDiskFinder, CoHikariDiskFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
