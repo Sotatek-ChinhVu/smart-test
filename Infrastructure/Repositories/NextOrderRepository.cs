@@ -136,7 +136,7 @@ namespace Infrastructure.Repositories
                         rsvkrtNo = oldNextOrder.RsvkrtNo;
                         UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
                         UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
-                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo);
+                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
                     }
                     else
                     {
@@ -146,7 +146,7 @@ namespace Infrastructure.Repositories
                         rsvkrtNo = nextOrderEntity.RsvkrtNo;
                         UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
                         UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
-                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo);
+                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
                     }
                     SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
                 }
@@ -156,7 +156,7 @@ namespace Infrastructure.Repositories
             return rsvkrtNo;
         }
 
-        private void UpsertOrderInf(int userId, long maxRpNo, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels, long rsvkrtNo = 0)
+        private void UpsertOrderInf(int userId, long maxRpNo, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels, long rsvkrtNo = 0, int rsvDate = 0)
         {
             var oldOrderInfs = TrackingDataContext.RsvkrtOdrInfs.Where(o => o.HpId == rsvkrtOrderInfModels.Select(o => o.HpId).Distinct().FirstOrDefault() && o.PtId == rsvkrtOrderInfModels.Select(o => o.PtId).Distinct().FirstOrDefault() && o.RsvkrtNo == rsvkrtNo && o.IsDeleted == DeleteTypes.None);
 
@@ -179,6 +179,7 @@ namespace Infrastructure.Repositories
                         oldOrderInf.IsDeleted = DeleteTypes.Deleted;
                         oldOrderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         oldOrderInf.CreateId = userId;
+                        orderInf.ChangeDate(rsvDate);
                         var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, oldOrderInf.RpNo, orderInf, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1);
                         TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
                         var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(oldOrderInf.RpNo, od, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1));
@@ -187,6 +188,7 @@ namespace Infrastructure.Repositories
                     else
                     {
                         maxRpNo++;
+                        orderInf.ChangeDate(rsvDate);
                         var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, maxRpNo, orderInf, rsvkrtNo);
                         TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
                         var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInfEntity.RpNo, od, rsvkrtNo));

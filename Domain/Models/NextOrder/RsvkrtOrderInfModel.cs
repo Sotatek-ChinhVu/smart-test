@@ -146,5 +146,11 @@ namespace Domain.Models.NextOrder
                 return OdrKouiKbn >= 30 && OdrKouiKbn <= 34;
             }
         }
+
+        public RsvkrtOrderInfModel ChangeDate(int rsvDate)
+        {
+            RsvDate = rsvDate;
+            return this;
+        }
     }
 }
