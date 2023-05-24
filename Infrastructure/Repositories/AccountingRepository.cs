@@ -989,13 +989,9 @@ namespace Infrastructure.Repositories
             {
                 var item = syunoSeikyuModels[i];
 
-                int thisSeikyuGaku = 0;
-                if (item.SyunoNyukinModels.Any())
-                {
-                    thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
-                                     item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+                int thisSeikyuGaku = item.SeikyuGaku - (item.SyunoNyukinModels.Count == 0 ? 0 : item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku)) -
+                                 (item.SyunoNyukinModels.Count == 0 ? 0 :item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan));
 
-                }
                 bool isLastRecord = i == syunoSeikyuModels.Count - 1;
                 if (!isDisCharged)
                 {
