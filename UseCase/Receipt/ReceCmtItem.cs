@@ -16,6 +16,14 @@ public class ReceCmtItem
         Cmt = model.Cmt;
         CmtData = model.CmtData;
         ItemCd = model.ItemCd;
+        CmtCol1 = model.CmtCol1;
+        CmtCol2 = model.CmtCol2;
+        CmtCol3 = model.CmtCol3;
+        CmtCol4 = model.CmtCol4;
+        CmtColKeta1 = model.CmtColKeta1;
+        CmtColKeta2 = model.CmtColKeta2;
+        CmtColKeta3 = model.CmtColKeta3;
+        CmtColKeta4 = model.CmtColKeta4;
         IsDeleted = false;
     }
 
@@ -31,6 +39,14 @@ public class ReceCmtItem
         Cmt = model.Cmt;
         CmtData = model.CmtData;
         ItemCd = model.ItemCd;
+        CmtCol1 = model.CmtCol1;
+        CmtCol2 = model.CmtCol2;
+        CmtCol3 = model.CmtCol3;
+        CmtCol4 = model.CmtCol4;
+        CmtColKeta1 = model.CmtColKeta1;
+        CmtColKeta2 = model.CmtColKeta2;
+        CmtColKeta3 = model.CmtColKeta3;
+        CmtColKeta4 = model.CmtColKeta4;
         IsDeleted = isDeleted;
     }
 
@@ -68,6 +84,22 @@ public class ReceCmtItem
     public string CmtData { get; private set; }
 
     public string ItemCd { get; private set; }
+
+    public int CmtCol1 { get; private set; }
+
+    public int CmtCol2 { get; private set; }
+
+    public int CmtCol3 { get; private set; }
+
+    public int CmtCol4 { get; private set; }
+
+    public int CmtColKeta1 { get; private set; }
+
+    public int CmtColKeta2 { get; private set; }
+
+    public int CmtColKeta3 { get; private set; }
+
+    public int CmtColKeta4 { get; private set; }
 
     public bool IsDeleted { get; private set; }
 }

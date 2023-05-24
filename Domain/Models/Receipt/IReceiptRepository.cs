@@ -12,7 +12,7 @@ public interface IReceiptRepository : IRepositoryBase
 {
     List<ReceiptListModel> GetReceiptList(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel);
 
-    List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId);
+    List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId, int sinDate);
 
     List<ReceCmtModel> GetLastMonthReceCmt(int hpId, int sinDate, long ptId);
 
