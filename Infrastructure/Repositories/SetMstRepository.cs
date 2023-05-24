@@ -140,14 +140,13 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         var listKarteNames = listKarteInfs.Where(item => !string.IsNullOrEmpty(item.Text)).Select(item => item.Text ?? string.Empty).ToList();
         var keys = NoTrackingDataContext.SetOdrInf.Where(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted != 1).Select(s => new { s.RpNo, s.RpEdaNo }).ToList();
         var allOrderDetails = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.SetCd == setCd && item.HpId == hpId).ToList();
-        Dictionary<long, List<OrderTooltipModel>> dicOrders = new();
+        var listOrders = new List<OrderTooltipModel>();
         foreach (var key in keys)
         {
-            var orderDetailPerRpNo = allOrderDetails.Where(item => item.SetCd == setCd && item.HpId == hpId && key.RpNo == item.RpNo && key.RpEdaNo == item.RpEdaNo).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList();
-            dicOrders.Add(key.RpNo, orderDetailPerRpNo);
+            listOrders.AddRange(allOrderDetails.Where(item => item.SetCd == setCd && item.HpId == hpId && key.RpNo == item.RpNo && key.RpEdaNo == item.RpEdaNo).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)));
         }
 
-        return new SetMstTooltipModel(listKarteNames, dicOrders, byomeiNameList);
+        return new SetMstTooltipModel(listKarteNames, listOrders, byomeiNameList);
     }
 
     public SetMstModel SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)

@@ -1,13 +1,14 @@
 ﻿using Domain.Models.SetMst;
 
-namespace EmrCloudApi.Responses.SetMst;
-
-public class GetSetMstToolTipResponse
+namespace EmrCloudApi.Responses.SetMst
 {
-    public GetSetMstToolTipResponse(SetMstTooltipModel data)
+    public class GetSetMstToolTipResponse
     {
-        Data = data;
-    }
+        public GetSetMstToolTipResponse(SetMstTooltipModel data)
+        {
+            Data = data;
+        }
 
-    public SetMstTooltipModel Data { get; private set; }
+        public SetMstTooltipModel Data { get; private set; }
+    }
 }
