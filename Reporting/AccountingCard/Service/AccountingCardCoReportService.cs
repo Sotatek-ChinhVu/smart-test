@@ -7,8 +7,9 @@ using Reporting.Calculate.Interface;
 using Reporting.Calculate.Receipt.Constants;
 using Reporting.Calculate.Receipt.Models;
 using Reporting.Calculate.Receipt.ViewModels;
-using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
+using Reporting.ReadRseReportFile.Model;
+using Reporting.ReadRseReportFile.Service;
 using Reporting.Receipt.Models;
 
 namespace Reporting.AccountingCard.Service
@@ -48,6 +49,7 @@ namespace Reporting.AccountingCard.Service
         private readonly IEmrLogger _emrLogger;
         private readonly ITenantProvider _tenantProvider;
         private readonly ISystemConfigProvider _systemConfigProvider;
+        private readonly IReadRseReportFileService _readRseReportFileService;
         private CoAccountingCardModel coModel;
         private int _byomeiCharCount;
         private int _byomeiRowCount;
@@ -69,12 +71,13 @@ namespace Reporting.AccountingCard.Service
         #endregion
 
         #region Constructor and Init
-        public AccountingCardCoReportService(ICoAccountingCardFinder finder, ISystemConfigProvider systemConfigProvider, ITenantProvider tenantProvider, IEmrLogger emrLogger)
+        public AccountingCardCoReportService(ICoAccountingCardFinder finder, ISystemConfigProvider systemConfigProvider, ITenantProvider tenantProvider, IEmrLogger emrLogger, IReadRseReportFileService readRseReportFileService)
         {
             _finder = finder;
             _systemConfigProvider = systemConfigProvider;
             _tenantProvider = tenantProvider;
             _emrLogger = emrLogger;
+            _readRseReportFileService = readRseReportFileService;
         }
 
         public CommonReportingRequestModel GetAccountingCardReportingData(int hpId, long ptId, int sinYm, int hokenId, bool includeOutDrug)
@@ -85,11 +88,14 @@ namespace Reporting.AccountingCard.Service
             _hokenId = hokenId;
             _includeOutDrug = includeOutDrug;
             _printoutDateTime = DateTime.Now;
+            byomeiModels = new List<CoReceiptByomeiModel>();
+            tekiyoModels = new List<CoReceiptTekiyoModel>();
             coModel = GetData();
             if (coModel == null) return new();
 
             _currentPage = 1;
             _hasNextPage = true;
+            GetRowCount("fmAccountingCard.rse");
             MakeByoList();
 
             MakeTekiyoList();
@@ -762,6 +768,9 @@ namespace Reporting.AccountingCard.Service
                 // 次ページあり
                 SetVisibleFieldData("lbNextPage", _hasNextPage);
 
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                _listTextData.Add(pageIndex, listDataPerPage);
+
                 return dataIndex;
 
             }
@@ -822,6 +831,24 @@ namespace Reporting.AccountingCard.Service
             {
                 _visibleFieldData.Add(field, value);
             }
+        }
+
+        private void GetRowCount(string formFileName)
+        {
+            List<ObjectCalculate> fieldInputList = new();
+
+            fieldInputList.Add(new ObjectCalculate("lsByomei", (int)CalculateTypeEnum.GetListRowCount));
+            fieldInputList.Add(new ObjectCalculate("lsByomei", (int)CalculateTypeEnum.GetFormatLength));
+            fieldInputList.Add(new ObjectCalculate("lsTekiyo", (int)CalculateTypeEnum.GetFormatLength));
+            fieldInputList.Add(new ObjectCalculate("lsTekiyo", (int)CalculateTypeEnum.GetListRowCount));
+
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.AccountingCard, formFileName, fieldInputList);
+            var javaOutputData = _readRseReportFileService.ReadFileRse(data);
+            _byomeiRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsByomei" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
+            _byomeiCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsByomei" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result - CON_BYOMEI_NO_WIDTH ?? 0;
+            _tekiyoCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsTekiyo" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result - CON_TEKIYO_TENKAI_WIDTH ?? 0;
+            _tekiyoByoCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsTekiyo" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result - CON_TEKIYO_BYOMEI_NO_WIDTH - CON_TEKIYO_BYOMEI_START_WIDTH - CON_TEKIYO_BYOMEI_TENKI_WIDTH - CON_TEKIYO_BYOMEI_TENKIDATE_WIDTH ?? 0;
+            _tekiyoRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsTekiyo" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
         }
         #endregion
     }
