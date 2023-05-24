@@ -569,6 +569,7 @@ using Reporting.Sokatu.KoukiSeikyu.DB;
 using UseCase.RaiinListSetting.GetDocCategory;
 using Interactor.RaiinListSetting;
 using Domain.Models.RaiinListSetting;
+using UseCase.RaiinListSetting.GetFilingcategory;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1269,6 +1270,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //RaiinListSetting
             busBuilder.RegisterUseCase<GetDocCategoryRaiinInputData, GetDocCategoryRaiinInteractor>();
+            busBuilder.RegisterUseCase<GetFilingcategoryInputData, GetFilingcategoryInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

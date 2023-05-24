@@ -6,6 +6,7 @@ using UseCase.Core.Sync;
 using EmrCloudApi.Responses.RaiinListSetting;
 using UseCase.RaiinListSetting.GetDocCategory;
 using EmrCloudApi.Presenters.RaiinListSetting;
+using UseCase.RaiinListSetting.GetFilingcategory;
 
 namespace EmrCloudApi.Controller
 {
@@ -27,6 +28,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetDocCategoryRaiinPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetDocCategoryRaiinResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetList + "GetFilingcategory")]
+        public ActionResult<Response<GetFilingcategoryResponse>> GetFilingcategory()
+        {
+            var input = new GetFilingcategoryInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetFilingcategoryPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetFilingcategoryResponse>>(presenter.Result);
         }
     }
 }
