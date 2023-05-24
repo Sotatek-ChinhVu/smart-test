@@ -5,7 +5,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -493,7 +492,9 @@ namespace Infrastructure.Repositories
                                                                         p.HpId == hpId
                                                                         && p.PtId == ptId
                                                                         && p.IsDeleted == DeleteTypes.None
-                                                                        && p.SinDate < sinDate && p.Status >= RaiinState.TempSave);
+                                                                        && p.SinDate < sinDate && p.Status >= RaiinState.TempSave)
+                                                        .OrderByDescending(p => p.SinDate)
+                                                        .ThenByDescending(p => p.RaiinNo);
             return result.Select(r => new ReceptionModel(
                     r.HpId,
                     r.PtId,
@@ -520,6 +521,48 @@ namespace Infrastructure.Repositories
                     r.JikanKbn,
                     string.Empty
                )).ToList();
+        }
+
+        public ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate)
+        {
+            var result = NoTrackingDataContext.RaiinInfs
+                            .Where(p => p.HpId == hpId &&
+                                                           p.PtId == ptId &&
+                                                           p.IsDeleted == DeleteTypes.None &&
+                                                           p.Status >= RaiinState.TempSave &&
+                                                           (sinDate <= 0 || p.SinDate < sinDate))
+                            .OrderByDescending(p => p.SinDate)
+                            .ThenByDescending(p => p.RaiinNo)
+                            .FirstOrDefault();
+            if (result == null)
+                return new();
+
+            return new ReceptionModel(
+                    result.HpId,
+                    result.PtId,
+                    result.SinDate,
+                    result.RaiinNo,
+                    result.OyaRaiinNo,
+                    result.HokenPid,
+                    result.SanteiKbn,
+                    result.Status,
+                    result.IsYoyaku,
+                    result.YoyakuTime ?? String.Empty,
+                    result.YoyakuId,
+                    result.UketukeSbt,
+                    result.UketukeTime ?? String.Empty,
+                    result.UketukeId,
+                    result.UketukeNo,
+                    result.SinStartTime ?? string.Empty,
+                    result.SinEndTime ?? String.Empty,
+                    result.KaikeiTime ?? String.Empty,
+                    result.KaikeiId,
+                    result.KaId,
+                    result.TantoId,
+                    result.SyosaisinKbn,
+                    result.JikanKbn,
+                    string.Empty
+               );
         }
 
         public bool CheckListNo(List<long> raininNos)

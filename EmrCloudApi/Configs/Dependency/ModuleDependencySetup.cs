@@ -98,6 +98,7 @@ using Interactor.Family.ValidateFamilyList;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.HokenMst;
+using Interactor.Holiday;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.JsonSetting;
@@ -118,6 +119,7 @@ using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
 using Interactor.PatientInfor.PtKyuseiInf;
+using Interactor.PatientInfor.SortPatientCommon;
 using Interactor.PtGroupMst;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
@@ -159,6 +161,8 @@ using Reporting.DailyStatic.DB;
 using Reporting.DailyStatic.Service;
 using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
+using Reporting.DrugNoteSeal.DB;
+using Reporting.DrugNoteSeal.Service;
 using Reporting.Karte1.Service;
 using Reporting.Kensalrai.DB;
 using Reporting.Kensalrai.Service;
@@ -188,6 +192,7 @@ using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.KokhoSeikyu.DB;
 using Reporting.Sokatu.KokhoSokatu.DB;
 using Reporting.Sokatu.KokhoSokatu.Service;
+using Reporting.Sokatu.KoukiSeikyu.Service;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
@@ -292,6 +297,7 @@ using UseCase.FlowSheet.GetTooltip;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
+using UseCase.Holiday.SaveHoliday;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.Insurance.GetKohiPriorityList;
@@ -386,6 +392,7 @@ using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
+using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
@@ -457,6 +464,7 @@ using UseCase.Receipt.SaveReceiptEdit;
 using UseCase.Receipt.SaveReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
+using UseCase.Receipt.ValidateCreateUKEFile;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastRaiinInfs;
@@ -555,6 +563,12 @@ using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
 using UseCase.Receipt.ValidateCreateUKEFile;
 using Interactor.PatientInfor.SortPatientCommon;
+using Reporting.DrugNoteSeal.Service;
+using Reporting.DrugNoteSeal.DB;
+using Reporting.Sokatu.KoukiSeikyu.DB;
+using UseCase.RaiinListSetting.GetDocCategory;
+using Interactor.RaiinListSetting;
+using Domain.Models.RaiinListSetting;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -683,6 +697,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP11KokhoSokatuCoReportService, P11KokhoSokatuCoReportService>();
             services.AddTransient<IReceTargetCoReportService, ReceTargetCoReportService>();
             services.AddTransient<ICoReceTargetFinder, CoReceTargetFinder>();
+            services.AddTransient<IDrugNoteSealCoReportService, DrugNoteSealCoReportService>();
+            services.AddTransient<ICoDrugNoteSealFinder, CoDrugNoteSealFinder>();
+            services.AddTransient<ICoKoukiSeikyuFinder, CoKoukiSeikyuFinder>();
+            services.AddTransient<IP28KoukiSeikyuCoReportService, P28KoukiSeikyuCoReportService>();
+            services.AddTransient<IP29KoukiSeikyuCoReportService, P29KoukiSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -780,6 +799,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaIraiCoReportService, KensaIraiCoReportService>();
             services.AddTransient<ICoKensaIraiFinder, CoKensaIraiFinder>();
             services.AddTransient<ISortPatientCommon, SortPatientCommon>();
+            services.AddTransient<IRaiinListSettingRepository, RaiinListSettingRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1009,6 +1029,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetAdoptedItemListInputData, GetAdoptedItemListInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedItemListInputData, UpdateAdoptedItemListInteractor>();
             busBuilder.RegisterUseCase<GetCmtCheckMstListInputData, GetCmtCheckMstListInteractor>();
+            busBuilder.RegisterUseCase<SearchTenMstItemInputData, SearchTenMstItemInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -1242,6 +1263,12 @@ namespace EmrCloudApi.Configs.Dependency
 
             //MstItem
             busBuilder.RegisterUseCase<GetJihiSbtMstListInputData, GetJihiMstsInteractor>();
+
+            //HolidayMst
+            busBuilder.RegisterUseCase<SaveHolidayMstInputData, SaveHolidayMstInteractor>();
+
+            //RaiinListSetting
+            busBuilder.RegisterUseCase<GetDocCategoryRaiinInputData, GetDocCategoryRaiinInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

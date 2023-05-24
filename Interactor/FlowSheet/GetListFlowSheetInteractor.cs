@@ -19,7 +19,7 @@ namespace Interactor.FlowSheet
                 if (inputData.IsHolidayOnly)
                 {
                     var holidayMstList = _flowsheetRepository.GetHolidayMst(inputData.HpId, inputData.HolidayFrom, inputData.HolidayTo);
-                    return new GetListFlowSheetOutputData(holidayMstList);
+                    return new GetListFlowSheetOutputData(holidayMstList.Select(h => new HolidayDto(h.SeqNo, h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName)).ToList());
                 }
                 else
                 {

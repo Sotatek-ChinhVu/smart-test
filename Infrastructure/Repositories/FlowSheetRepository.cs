@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
 
             // From History
             var allRaiinInfList = NoTrackingDataContext.RaiinInfs
-                .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status > 3 && r.IsDeleted == 0)
+                .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status >= RaiinState.TempSave && r.IsDeleted == 0)
                 .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.UketukeTime ?? string.Empty, r.SyosaisinKbn, r.Status))
                 .ToList();
 
@@ -209,11 +209,11 @@ namespace Infrastructure.Repositories
         #endregion
 
         #region HolidayMst
-        private List<HolidayModel> ReloadHolidayCache(int hpId)
+        private List<HolidayDto> ReloadHolidayCache(int hpId)
         {
             var holidayModelList = NoTrackingDataContext.HolidayMsts
                 .Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None)
-                .Select(h => new HolidayModel(h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
+                .Select(h => new HolidayDto(h.SeqNo, h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
                 .ToList();
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -223,14 +223,48 @@ namespace Infrastructure.Repositories
             return holidayModelList;
         }
 
-        public List<HolidayModel> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
+        public bool SaveHolidayMst(HolidayModel holiday, int userId)
+        {
+            var holidayUpdate = TrackingDataContext.HolidayMsts.FirstOrDefault(x => x.HpId == holiday.HpId && x.SinDate == holiday.SinDate);
+            if (holidayUpdate == null)
+            {
+                TrackingDataContext.HolidayMsts.Add(new HolidayMst()
+                {
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    CreateId = userId,
+                    HolidayKbn = holiday.HolidayKbn,
+                    HolidayName = holiday.HolidayKbn == 0 ? string.Empty : holiday.HolidayName,
+                    IsDeleted = DeleteTypes.None,
+                    HpId = holiday.HpId,
+                    KyusinKbn = holiday.KyusinKbn,
+                    UpdateId = userId,
+                    SeqNo = 0,
+                    SinDate = holiday.SinDate,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow()
+                });
+            }
+            else
+            {
+                holidayUpdate.KyusinKbn = holiday.KyusinKbn;
+                holidayUpdate.HolidayKbn = holiday.HolidayKbn;
+                holidayUpdate.HolidayName = holiday.HolidayName;
+                holidayUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                holidayUpdate.UpdateId = userId;
+                if (holidayUpdate.HolidayKbn == 0)
+                    holidayUpdate.HolidayName = string.Empty;
+            }
+            _memoryCache.Remove(HolidayMstCacheKey);
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public List<HolidayDto> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
         {
 
-            if (!_memoryCache.TryGetValue(HolidayMstCacheKey, out IEnumerable<HolidayModel>? setKbnMstList))
+            if (!_memoryCache.TryGetValue(HolidayMstCacheKey, out IEnumerable<HolidayDto>? holidayMstList))
             {
-                setKbnMstList = ReloadHolidayCache(hpId);
+                holidayMstList = ReloadHolidayCache(hpId);
             }
-            return setKbnMstList!.Where(h => holidayFrom <= h.SinDate && h.SinDate <= holidayTo).ToList();
+            return holidayMstList!.Where(h => holidayFrom <= h.SinDate && h.SinDate <= holidayTo).ToList();
         }
 
         #endregion
