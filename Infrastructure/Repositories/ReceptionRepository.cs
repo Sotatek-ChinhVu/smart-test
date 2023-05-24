@@ -778,6 +778,14 @@ namespace Infrastructure.Repositories
                 r.ptKohi4?.Houbetu ?? string.Empty
             )).ToList();
 
+            foreach (var model in models)
+            {
+                if (models.Any(m => m.KanaName == model.KanaName))
+                {
+                    model.IsNameDuplicate = true;
+                }
+            }
+
             return models;
         }
 
