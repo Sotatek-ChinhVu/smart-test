@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
 
             // From History
             var allRaiinInfList = NoTrackingDataContext.RaiinInfs
-                .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status > 3 && r.IsDeleted == 0)
+                .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status >= RaiinState.TempSave && r.IsDeleted == 0)
                 .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.UketukeTime ?? string.Empty, r.SyosaisinKbn, r.Status))
                 .ToList();
 
