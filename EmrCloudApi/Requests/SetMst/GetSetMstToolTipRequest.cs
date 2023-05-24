@@ -1,6 +1,8 @@
-﻿namespace EmrCloudApi.Requests.SetMst;
-
-public class GetSetMstToolTipRequest
+﻿namespace EmrCloudApi.Requests.SetMst
 {
-    public int SetCd { get; set; }
+    public class GetSetMstToolTipRequest
+    {
+        public int HpId { get; set; }
+        public int SetCd { get; set; }
+    }
 }
