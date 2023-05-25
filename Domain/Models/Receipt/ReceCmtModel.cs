@@ -2,7 +2,7 @@
 
 public class ReceCmtModel
 {
-    public ReceCmtModel(long id, long ptId, int seqNo, int sinYm, int hokenId, int cmtKbn, int cmtSbt, string cmt, string cmtData, string itemCd)
+    public ReceCmtModel(long id, long ptId, int seqNo, int sinYm, int hokenId, int cmtKbn, int cmtSbt, string cmt, string cmtData, string itemCd, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4)
     {
         Id = id;
         PtId = ptId;
@@ -14,6 +14,14 @@ public class ReceCmtModel
         Cmt = cmt;
         ItemCd = itemCd;
         CmtData = cmtData;
+        CmtCol1 = cmtCol1;
+        CmtCol2 = cmtCol2;
+        CmtCol3 = cmtCol3;
+        CmtCol4 = cmtCol4;
+        CmtColKeta1 = cmtColKeta1;
+        CmtColKeta2 = cmtColKeta2;
+        CmtColKeta3 = cmtColKeta3;
+        CmtColKeta4 = cmtColKeta4;
         IsDeleted = false;
     }
 
@@ -53,4 +61,20 @@ public class ReceCmtModel
     public string ItemCd { get; private set; }
 
     public bool IsDeleted { get; private set; }
+
+    public int CmtCol1 { get; private set; }
+
+    public int CmtCol2 { get; private set; }
+
+    public int CmtCol3 { get; private set; }
+
+    public int CmtCol4 { get; private set; }
+
+    public int CmtColKeta1 { get; private set; }
+
+    public int CmtColKeta2 { get; private set; }
+
+    public int CmtColKeta3 { get; private set; }
+
+    public int CmtColKeta4 { get; private set; }
 }

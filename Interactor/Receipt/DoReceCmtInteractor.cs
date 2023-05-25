@@ -17,7 +17,7 @@ public class DoReceCmtInteractor : IDoReceCmtInputPort
         try
         {
             List<ReceCmtModel> result = new();
-            var allHistoryReceCmtList = _receiptRepository.GetReceCmtList(inputData.HpId, 0, inputData.PtId, 0);
+            var allHistoryReceCmtList = _receiptRepository.GetReceCmtList(inputData.HpId, 0, inputData.PtId, 0, 0);
 
             var allLatestReceCmtList = _receiptRepository.GetLastMonthReceCmt(inputData.HpId, inputData.SinYm * 100 + 1, inputData.PtId);
             var lastReceCmt = allLatestReceCmtList.GroupBy(item => new { item.SinYm, item.HokenId })

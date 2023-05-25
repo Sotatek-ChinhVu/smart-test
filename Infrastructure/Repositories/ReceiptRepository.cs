@@ -15,6 +15,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -1228,16 +1229,24 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     #endregion
 
     #region Rece check screeen
-    public List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId)
+    public List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId, int sinDate)
     {
         var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
-                                                                 && (sinYm == 0 || item.SinYm == sinYm)
-                                                                 && item.PtId == ptId
-                                                                 && (hokenId == 0 || item.HokenId == hokenId)
-                                                                 && item.IsDeleted == DeleteTypes.None)
+                                                                    && (sinYm == 0 || item.SinYm == sinYm)
+                                                                    && item.PtId == ptId
+                                                                    && (hokenId == 0 || item.HokenId == hokenId)
+                                                                    && item.IsDeleted == DeleteTypes.None)
                                                      .ToList();
 
-        var result = receCmts.Select(item => ConvertToReceCmtModel(item)).ToList();
+        var itemCdList = receCmts.Select(item => item.ItemCd).Distinct().ToList();
+        var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                     && item.StartDate <= sinDate
+                                                                     && item.EndDate >= sinDate
+                                                                     && itemCdList.Contains(item.ItemCd))
+                                                      .ToList();
+
+
+        var result = receCmts.Select(item => ConvertToReceCmtModel(item, sinDate, tenMstList)).ToList();
         return result;
     }
 
@@ -1698,9 +1707,16 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                      .ToList();
         }
 
+        var itemCdList = receCmts.Select(item => item.ItemCd).Distinct().ToList();
+        var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId &&
+                                                                     item.StartDate <= sinDate &&
+                                                                     item.EndDate >= sinDate &&
+                                                                     itemCdList.Contains(item.ItemCd))
+                                                      .ToList();
+
         foreach (var receCmt in receCmts)
         {
-            result.Add(ConvertToReceCmtModel(receCmt));
+            result.Add(ConvertToReceCmtModel(receCmt, sinDate, tenMstList));
         }
         return result;
     }
@@ -2737,8 +2753,11 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return systemConf?.Param ?? string.Empty;
     }
 
-    private ReceCmtModel ConvertToReceCmtModel(ReceCmt receCmt)
+    private ReceCmtModel ConvertToReceCmtModel(ReceCmt receCmt, int sinDate, List<TenMst> tenMstList)
     {
+        var tenMst = tenMstList.FirstOrDefault(item => item.ItemCd == receCmt.ItemCd
+                                                       && item.StartDate <= sinDate
+                                                       && item.EndDate >= sinDate);
         return new ReceCmtModel(
                 receCmt.Id,
                 receCmt.PtId,
@@ -2749,7 +2768,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 receCmt.CmtSbt,
                 receCmt.Cmt ?? string.Empty,
                 receCmt.CmtData ?? string.Empty,
-                receCmt.ItemCd ?? string.Empty
+                receCmt.ItemCd ?? string.Empty,
+                tenMst?.CmtCol1 ?? 0,
+                tenMst?.CmtCol2 ?? 0,
+                tenMst?.CmtCol3 ?? 0,
+                tenMst?.CmtCol4 ?? 0,
+                tenMst?.CmtColKeta1 ?? 0,
+                tenMst?.CmtColKeta2 ?? 0,
+                tenMst?.CmtColKeta3 ?? 0,
+                tenMst?.CmtColKeta4 ?? 0
             );
     }
 
@@ -3260,7 +3287,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                          x.ReceInf.IsTester,
                                                          x.ReceInf.HokenKbn,
                                                          x.RcStatus == null ? 0 : x.RcStatus.IsPaperRece,
-                                                         x.PtHokenInf == null ? 0 : x.PtHokenInf .RousaiSaigaiKbn,
+                                                         x.PtHokenInf == null ? 0 : x.PtHokenInf.RousaiSaigaiKbn,
                                                          x.ReceInf.HokenId,
                                                          x.PtHokenInf == null ? 0 : x.PtHokenInf.RousaiSyobyoDate)).ToList();
     }
