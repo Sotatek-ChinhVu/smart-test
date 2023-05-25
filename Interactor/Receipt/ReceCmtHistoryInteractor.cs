@@ -22,7 +22,7 @@ public class ReceCmtHistoryInteractor : IReceCmtHistoryInputPort
         {
             var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, 0);
             var hokenInfList = insuranceData.ListHokenInf;
-            var receCmtList = _receiptRepository.GetReceCmtList(inputData.HpId, 0, inputData.PtId, 0);
+            var receCmtList = _receiptRepository.GetReceCmtList(inputData.HpId, 0, inputData.PtId, 0, 0);
 
             var result = ConvertToResult(hokenInfList, receCmtList);
             return new ReceCmtHistoryOutputData(result, ReceCmtHistoryStatus.Successed);

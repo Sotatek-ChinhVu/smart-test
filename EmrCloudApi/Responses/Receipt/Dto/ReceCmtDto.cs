@@ -16,6 +16,14 @@ public class ReceCmtDto
         Cmt = output.Cmt;
         CmtData = output.CmtData;
         ItemCd = output.ItemCd;
+        CmtCol1 = output.CmtCol1;
+        CmtCol2 = output.CmtCol2;
+        CmtCol3 = output.CmtCol3;
+        CmtCol4 = output.CmtCol4;
+        CmtColKeta1 = output.CmtColKeta1;
+        CmtColKeta2 = output.CmtColKeta2;
+        CmtColKeta3 = output.CmtColKeta3;
+        CmtColKeta4 = output.CmtColKeta4;
     }
 
     public long Id { get; private set; }
@@ -37,4 +45,20 @@ public class ReceCmtDto
     public string CmtData { get; private set; }
 
     public string ItemCd { get; private set; }
+
+    public int CmtCol1 { get; private set; }
+
+    public int CmtCol2 { get; private set; }
+
+    public int CmtCol3 { get; private set; }
+
+    public int CmtCol4 { get; private set; }
+
+    public int CmtColKeta1 { get; private set; }
+
+    public int CmtColKeta2 { get; private set; }
+
+    public int CmtColKeta3 { get; private set; }
+
+    public int CmtColKeta4 { get; private set; }
 }

@@ -6,15 +6,18 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Npgsql;
+using System.Data;
 using System.Text;
 
 namespace Infrastructure.Repositories;
 
 public class SetMstRepository : RepositoryBase, ISetMstRepository
 {
-    private readonly string DefaultSetName = "新規セット";
-    private readonly string DefaultGroupName = "新規グループ";
+    private readonly string defaultSetName = "新規セット";
+    private readonly string defaultGroupName = "新規グループ";
     private readonly IMemoryCache _memoryCache;
+    private readonly int tryCountSave = 10;
     public SetMstRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
     {
         _memoryCache = memoryCache;
@@ -140,17 +143,20 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         var listKarteNames = listKarteInfs.Where(item => !string.IsNullOrEmpty(item.Text)).Select(item => item.Text ?? string.Empty).ToList();
         var keys = NoTrackingDataContext.SetOdrInf.Where(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted != 1).Select(s => new { s.RpNo, s.RpEdaNo }).ToList();
         var allOrderDetails = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.SetCd == setCd && item.HpId == hpId).ToList();
-        var listOrders = new List<OrderTooltipModel>();
+        Dictionary<long, List<OrderTooltipModel>> dicOrders = new();
         foreach (var key in keys)
         {
-            listOrders.AddRange(allOrderDetails.Where(item => item.SetCd == setCd && item.HpId == hpId && key.RpNo == item.RpNo && key.RpEdaNo == item.RpEdaNo).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)));
+            var orderDetailPerRpNo = allOrderDetails.Where(item => item.SetCd == setCd && item.HpId == hpId && key.RpNo == item.RpNo && key.RpEdaNo == item.RpEdaNo).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList();
+            dicOrders.Add(key.RpNo, orderDetailPerRpNo);
         }
 
-        return new SetMstTooltipModel(listKarteNames, listOrders, byomeiNameList);
+        return new SetMstTooltipModel(listKarteNames, dicOrders, byomeiNameList);
     }
 
+    [Obsolete]
     public SetMstModel SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
     {
+        SetMst setMst = new();
         try
         {
             // Check SetMstModel is delete?
@@ -172,7 +178,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 oldSetMst = oldSetMst != null ? oldSetMst : new SetMst();
             }
-            var setMst = ConvertSetMstModelToSetMst(oldSetMst, setMstModel, userId);
+            setMst = ConvertSetMstModelToSetMst(oldSetMst, setMstModel, userId);
 
             if (!isDelete)
             {
@@ -186,7 +192,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     setMst.IsGroup = setMstModel.IsGroup;
                     if (setMst.SetName == null || setMst.SetName.Length == 0)
                     {
-                        setMst.SetName = setMst.IsGroup == 1 ? DefaultGroupName : DefaultSetName;
+                        setMst.SetName = setMst.IsGroup == 1 ? defaultGroupName : defaultSetName;
                     }
                     setMst.GenerationId = GetGenerationId(setMst.HpId, sinDate);
                     setMst.CreateDate = CIUtil.GetJapanDateTimeNow();
@@ -203,7 +209,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 // set status for IsDelete
                 setMst.IsDeleted = 1;
-
                 // if SetMst have children element
                 // if SetMst is level 2 and have children element
                 if (setMst.Level2 > 0 && setMst.Level3 == 0)
@@ -282,9 +287,57 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     setMst.IsGroup
                 );
         }
-        catch
+        catch (Exception ex)
         {
-            return new SetMstModel();
+            var innerException = ex.InnerException?.ToString() ?? string.Empty;
+            bool flag = false;
+            if (HandleException(ex) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
+            {
+                int count = 0;
+                while (count <= tryCountSave)
+                {
+                    try
+                    {
+                        flag = true;
+                        RetrySaveSetMst(setMst);
+                    }
+                    catch (Exception tryEx)
+                    {
+                        flag = false;
+                        innerException = tryEx.InnerException?.ToString() ?? string.Empty;
+                        if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
+                            if (HandleException(ex) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
+                        {
+                                //RetrySaveSetMst(setMst);
+                                continue;
+                        }
+                        Console.WriteLine(tryEx.Message);
+                        break;
+                    }
+                    count++;
+                    break;
+                }
+            }
+            Console.WriteLine(ex.Message);
+            if (!flag)
+            {
+                RetrySaveSetMst(setMst);
+            }
+            return flag ? new SetMstModel(
+                    setMst.HpId,
+                    setMst.SetCd,
+                    setMst.SetKbn,
+                    setMst.SetKbnEdaNo,
+                    setMst.GenerationId,
+                    setMst.Level1,
+                    setMst.Level2,
+                    setMst.Level3,
+                    setMst.SetName ?? String.Empty,
+                    setMst.WeightKbn,
+                    setMst.Color,
+                    setMst.IsDeleted,
+                    setMst.IsGroup
+                ) : new SetMstModel();
         }
         finally
         {
@@ -292,6 +345,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
     }
 
+    [Obsolete]
     public bool ReorderSetMst(int userId, int hpId, int setCdDragItem, int setCdDropItem)
     {
         bool status = false;
@@ -358,6 +412,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return status;
     }
 
+    [Obsolete]
     public int PasteSetMst(int hpId, int userId, int generationId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int copySetKbnEdaNo, int copySetKbn, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
         if (pasteSetKbnEdaNo <= 0 && pasteSetKbn <= 0)
@@ -427,6 +482,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setMst;
     }
 
+    [Obsolete]
     private int CopyPasteItemSetMst(int hpId, int userId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int generationId, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
         int setCd = -1;
@@ -514,6 +570,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return PasteGroupAction(userId, indexPaste, pasteSetKbnEdaNo, pasteSetKbn, listCopySetMsts);
     }
 
+    [Obsolete]
     private int PasteItemAction(int indexPaste, int pasteSetKbnEdaNo, int pasteSetKbn, int userId, SetMst copyItem, SetMst? pasteItem, List<SetMst> listSetMsts)
     {
         int setCd = -1;
@@ -558,6 +615,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             TrackingDataContext.SetMsts.Add(rootSet);
                             TrackingDataContext.SaveChanges();
                             setCd = rootSet.SetCd;
+                            //Get max level1
+                            var levelMax = GetMaxLevel(rootSet.HpId, rootSet.SetKbn, rootSet.SetKbnEdaNo, rootSet.GenerationId, rootSet.Level1, 0, 0);
+                            var setLevel = Int32.MaxValue - listCopyItems.Count;
                             // Convert SetMst copy to SetMst paste
                             foreach (var item in listCopyItems)
                             {
@@ -569,6 +629,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                 setMst.CreateId = userId;
                                 setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                 setMst.UpdateId = userId;
+                                setMst.Level1 = setLevel++;
+                                setMst.Level2 = setLevel++;
+                                setMst.Level3 = setLevel++;
                                 listPasteItems.Add(setMst);
                             }
 
@@ -600,11 +663,58 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         }
                         AddNewItemToSave(userId, listCopySetCds, dictionarySetMstMap);
 
-                        // Set level for item 
-                        ReSetLevelForItem(indexPaste, copyItem, pasteItem, listPasteItems);
+                        // Set level for item
+                        try
+                        {
+                            ReSetLevelForItem(indexPaste, copyItem, pasteItem, listPasteItems);
 
-                        TrackingDataContext.SaveChanges();
-                        transaction.Commit();
+                            TrackingDataContext.SaveChanges();
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            bool flag = false;
+                            var innerException = ex.InnerException?.ToString() ?? string.Empty;
+                            if (HandleException(ex) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
+                                {
+                                var count = 0;
+                                while (count <= tryCountSave)
+                                {
+                                    try
+                                    {
+                                        flag = true;
+                                        RetryCopyPasteSetMst(copyItem, pasteItem, listPasteItems);
+
+                                        TrackingDataContext.SaveChanges();
+                                        transaction.Commit();
+                                    }
+                                    catch (Exception tryEx)
+                                    {
+                                        flag = false;
+                                        innerException = tryEx.InnerException?.ToString() ?? string.Empty;
+                                        if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
+                                        {
+                                            //RetryCopyPasteSetMst(copyItem, pasteItem, listPasteItems);
+
+                                            //TrackingDataContext.SaveChanges();
+                                            //transaction.Commit();
+                                            continue;
+                                        }
+                                        Console.WriteLine(tryEx.Message);
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!flag)
+                            {
+                                RetryCopyPasteSetMst(copyItem, pasteItem, listPasteItems);
+
+                                TrackingDataContext.SaveChanges();
+                                transaction.Commit();
+                            }
+                            Console.WriteLine(ex.Message);
+                        }
+
                     }
                     catch
                     {
@@ -906,6 +1016,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         TrackingDataContext.SetByomei.AddRange(listPasteSetByomeies);
     }
 
+    [Obsolete]
     private bool DragItemIsLevel1(SetMst dragItem, SetMst dropItem, int userId, List<SetMst> listSetMsts)
     {
         var listDragItem = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1).ToList();
@@ -915,7 +1026,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             if (dragItem.Level1 > dropItem.Level1)
             {
                 var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dropItem.Level1 && mst.Level1 < dragItem.Level1).ToList();
-                LevelDown(1, userId, listUpdateLevel1);
+                //LevelDown(1, userId, listUpdateLevel1);
+                SaveLevelDown(1, userId, listUpdateLevel1);
 
                 foreach (var item in listDragItem)
                 {
@@ -956,7 +1068,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 return false;
             }
             var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
-            LevelDown(3, userId, listUpdateLevel3);
+            //LevelDown(3, userId, listUpdateLevel3);
+            SaveLevelDown(3, userId, listUpdateLevel3);
 
             var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dragItem.Level1).ToList();
             LevelUp(1, userId, listUpdateLevel1);
@@ -973,6 +1086,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return true;
     }
 
+    [Obsolete]
     private bool DragItemIsLevel2(SetMst dragItem, SetMst dropItem, int userId, List<SetMst> listSetMsts)
     {
         // if dropItem is level1
@@ -981,7 +1095,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             if (dragItem.Level1 == dropItem.Level1)
             {
                 var listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > 0 && mst.Level2 < dragItem.Level2).ToList();
-                LevelDown(2, userId, listDropUpdateLevel2);
+                //LevelDown(2, userId, listDropUpdateLevel2);
+                SaveLevelDown(2, userId, listDropUpdateLevel2);
 
                 var listDragItem = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
                 foreach (var item in listDragItem)
@@ -996,7 +1111,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 var listDrag = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
 
                 var listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList() ?? new();
-                LevelDown(2, userId, listDropUpdateLevel2);
+                //LevelDown(2, userId, listDropUpdateLevel2);
+                SaveLevelDown(2, userId, listDropUpdateLevel2);
 
                 var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
                 LevelUp(2, userId, listDragUpdateLevel2);
@@ -1019,7 +1135,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 if (dragItem.Level2 > dropItem.Level2)
                 {
                     var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dropItem.Level2 && mst.Level2 < dragItem.Level2).ToList();
-                    LevelDown(2, userId, listUpdateLevel2);
+                    //LevelDown(2, userId, listUpdateLevel2);
+                    SaveLevelDown(3, userId, listUpdateLevel2);
 
                     foreach (var item in listDragUpdateLevel2)
                     {
@@ -1052,7 +1169,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     return false;
                 }
                 var listUpdateLevel3 = listSetMsts?.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList() ?? new();
-                LevelDown(3, userId, listUpdateLevel3);
+                //LevelDown(3, userId, listUpdateLevel3);
+                SaveLevelDown(3, userId, listUpdateLevel3);
 
                 var listDragUpdateLevel2 = listSetMsts?.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
                 LevelUp(2, userId, listDragUpdateLevel2);
@@ -1072,6 +1190,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return true;
     }
 
+    [Obsolete]
     private bool DragItemIsLevel3(SetMst dragItem, SetMst dropItem, int userId, List<SetMst> listSetMsts)
     {
         // if dropItem is level1 
@@ -1081,7 +1200,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             LevelUp(3, userId, listUpdateLevel3);
 
             var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList();
-            LevelDown(2, userId, listUpdateLevel2);
+            //LevelDown(2, userId, listUpdateLevel2);
+            SaveLevelDown(2, userId, listUpdateLevel2);
 
             dragItem.Level1 = dropItem.Level1;
             dragItem.Level2 = 1;
@@ -1094,7 +1214,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             if (dragItem.Level1 == dropItem.Level1 && dragItem.Level2 == dropItem.Level2)
             {
                 var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
-                LevelDown(3, userId, listUpdateLevel3);
+                //LevelDown(3, userId, listUpdateLevel3);
+                SaveLevelDown(3, userId, listUpdateLevel3);
                 dragItem.Level3 = 1;
                 dragItem.UpdateId = userId;
                 dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -1105,7 +1226,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 LevelUp(3, userId, listDragUpdateLevel3);
 
                 var listDropUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
-                LevelDown(3, userId, listDropUpdateLevel3);
+                SaveLevelDown(3, userId, listDropUpdateLevel3);
+                //LevelDown(3, userId, listDropUpdateLevel3);
 
                 dragItem.Level1 = dropItem.Level1;
                 dragItem.Level2 = dropItem.Level2;
@@ -1121,7 +1243,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 if (dragItem.Level3 > dropItem.Level3)
                 {
                     var listDropUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > dropItem.Level3 && mst.Level3 < dragItem.Level3).ToList();
-                    LevelDown(3, userId, listDropUpdateLevel3);
+                    //LevelDown(3, userId, listDropUpdateLevel3);
+                    SaveLevelDown(3, userId, listDropUpdateLevel3);
 
                     dragItem.Level3 = dropItem.Level3 + 1;
                     dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -1149,13 +1272,16 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return true;
     }
 
+    [Obsolete]
     private bool DragItemWithDropItemIsLevel0(SetMst dragItem, int userId, List<SetMst> listSetMsts)
     {
         if (dragItem.Level2 == 0)
         {
             var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > 0 && mst.Level1 < dragItem.Level1).ToList();
             var listDragUpdate = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1).ToList();
-            LevelDown(1, userId, listUpdateLevel1);
+            //LevelDown(1, userId, listUpdateLevel1);
+            SaveLevelDown(1, userId, listUpdateLevel1);
+
             foreach (var item in listDragUpdate)
             {
                 item.Level1 = 1;
@@ -1166,7 +1292,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         else if (dragItem.Level2 > 0 && dragItem.Level3 == 0)
         {
             var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > 0).ToList();
-            LevelDown(1, userId, listUpdateLevel1);
+            //LevelDown(1, userId, listUpdateLevel1);
+            SaveLevelDown(1, userId, listUpdateLevel1);
 
             var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList();
             var listDragUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > 0).ToList();
@@ -1194,7 +1321,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > 0).ToList();
             var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > dragItem.Level3).ToList();
 
-            LevelDown(1, userId, listUpdateLevel1);
+            //LevelDown(1, userId, listUpdateLevel1);
+            SaveLevelDown(1, userId, listUpdateLevel1);
 
             LevelUp(3, userId, listUpdateLevel3);
 
@@ -1225,6 +1353,53 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             }
             item.UpdateDate = CIUtil.GetJapanDateTimeNow();
             item.UpdateId = userId;
+        }
+    }
+
+    [Obsolete]
+    private void SaveLevelDown(int level, int userId, List<SetMst> listUpdate)
+    {
+        try
+        {
+            LevelDown(level, userId, listUpdate);
+            TrackingDataContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            bool flag = false;
+            var innerException = ex.InnerException?.ToString() ?? string.Empty;
+            if (HandleException(ex) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
+            {
+                var count = 0;
+                while (count <= tryCountSave)
+                {
+                    try
+                    {
+                        flag = true;
+                        LevelDown(3, userId, listUpdate);
+                        TrackingDataContext.SaveChanges();
+                    }
+                    catch (Exception tryEx)
+                    {
+                        flag = false;
+                        innerException = tryEx.InnerException?.ToString() ?? string.Empty;
+                        if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
+                        {
+                            continue;
+                            //LevelDown(3, userId, listUpdate);
+                            //TrackingDataContext.SaveChanges();
+                        }
+                        Console.WriteLine(tryEx.Message);
+                        break;
+                    }
+                }
+            }
+            if (!flag)
+            {
+                LevelDown(3, userId, listUpdate);
+                TrackingDataContext.SaveChanges();
+            }
+            Console.WriteLine(ex.Message);
         }
     }
 
@@ -1310,6 +1485,94 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 item.UpdateId = userId;
             }
         }
+    }
+
+    private int GetMaxLevel(int hpId, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, bool isCheckLevel0 = false)
+    {
+        var setMsts = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo && s.GenerationId == generationId).ToList();
+        int max = 0;
+
+        if ((isCheckLevel0 || level1 > 0) && level2 == 0 && level3 == 0)
+        {
+            max = setMsts.Count == 0 ? 0 : setMsts.Max(s => s.Level1);
+        }
+        else if (level1 > 0 && level2 > 0 && level3 == 0)
+        {
+            max = setMsts.Count == 0 ? 0 : setMsts.Where(s => s.Level1 == level1).Max(s => s.Level2);
+        }
+        else if (level1 > 0 && level2 > 0 && level3 > 0)
+        {
+            max = setMsts.Count == 0 ? 0 : setMsts.Where(s => s.Level1 == level1 && s.Level2 == level2).Max(s => s.Level3);
+        }
+
+        return max;
+    }
+
+    private void RetrySaveSetMst(SetMst setMst)
+    {
+        var levelMax = GetMaxLevel(setMst.HpId, setMst.SetKbn, setMst.SetKbnEdaNo, setMst.GenerationId, setMst.Level1, setMst.Level2, setMst.Level3);
+        if (setMst.Level2 == 0 && setMst.Level3 == 0)
+        {
+            setMst.Level1 = ++levelMax;
+        }
+        else if (setMst.Level2 > 0 && setMst.Level3 == 0)
+        {
+            setMst.Level2 = ++levelMax;
+        }
+        else
+        {
+            setMst.Level3 = ++levelMax;
+        }
+        TrackingDataContext.Add(setMst);
+        TrackingDataContext.SaveChanges();
+    }
+
+    private void RetryCopyPasteSetMst(SetMst copyItem, SetMst? pasteItem, List<SetMst> listPasteItems)
+    {
+        var levelPaste = 0;
+        if (pasteItem == null)
+        {
+            levelPaste = 1;
+        }
+        else if (pasteItem?.Level1 > 0 && pasteItem?.Level2 == 0 && pasteItem?.Level3 == 0)
+        {
+            levelPaste = 2;
+        }
+        else if (pasteItem?.Level1 > 0 && pasteItem?.Level2 > 0 && pasteItem?.Level3 == 0)
+        {
+            levelPaste = 3;
+        }
+        else if (pasteItem?.Level1 > 0 && pasteItem?.Level2 > 0 && pasteItem?.Level3 > 0)
+        {
+            levelPaste = 4;
+        }
+
+        var levelMax = GetMaxLevel(copyItem.HpId, copyItem.SetKbn, copyItem.SetKbnEdaNo, copyItem.GenerationId, levelPaste >= 1 ? pasteItem?.Level1 ?? 0 : 0, levelPaste >= 2 ? pasteItem?.Level2 ?? 0 : 0, levelPaste >= 3 ? pasteItem?.Level3 ?? 0 : 0, pasteItem == null);
+
+        ReSetLevelForItem(levelMax, copyItem, pasteItem, listPasteItems);
+    }
+    #endregion
+
+    #region Catch Exception
+    [Obsolete]
+    private static string HandleException(Exception exception)
+    {
+        if (exception is DbUpdateConcurrencyException concurrencyEx)
+        {
+            return "0";
+        }
+        else if (exception is DbUpdateException dbUpdateEx)
+        {
+            if (dbUpdateEx.InnerException != null)
+            {
+                if (dbUpdateEx.InnerException is PostgresException postgreException)
+                {
+                    return postgreException.Code ?? string.Empty;
+                }
+            }
+        }
+
+        return "0";
     }
     #endregion
 }
