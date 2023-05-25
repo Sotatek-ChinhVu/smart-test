@@ -2,6 +2,7 @@
 using Reporting.CommonMasters.Enums;
 using Reporting.Karte3.DB;
 using Reporting.Karte3.Model;
+using Reporting.Mappers.Common;
 using static Reporting.Karte3.Enum.CoKarte3Column;
 
 namespace Reporting.Karte3.Service
@@ -55,6 +56,12 @@ namespace Reporting.Karte3.Service
 
         private int _dataRowCount;
         private DateTime _printoutDateTime;
+
+        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM = new Dictionary<int, Dictionary<string, string>>();
+        private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
+        private readonly Dictionary<int, List<ListTextObject>> _listTextData = new Dictionary<int, List<ListTextObject>>();
+        private readonly Dictionary<string, bool> _visibleFieldData = new Dictionary<string, bool>();
 
         #endregion
 
@@ -313,7 +320,7 @@ namespace Reporting.Karte3.Service
         {
             _hasNextPage = true;
             #region SubMethod
-
+            List<ListTextObject> listDataPerPage = new();
             // ヘッダー
             int UpdateFormHeader()
             {
@@ -329,28 +336,28 @@ namespace Reporting.Karte3.Service
                 #endregion
 
                 // 発行日時
-                CoRep.SetFieldData("dfPrintDateTime", _printoutDateTime.ToString("yyyy/MM/dd HH:mm"));
+                SetFieldData("dfPrintDateTime", _printoutDateTime.ToString("yyyy/MM/dd HH:mm"));
 
                 // ページ
-                CoRep.SetFieldData("dfPage", _currentPage);
+                SetFieldData("dfPage", _currentPage.ToString());
 
                 // 患者番号
-                CoRep.SetFieldData("dfPtNum", coModel.PtNum);
+                SetFieldData("dfPtNum", coModel.PtNum.ToString());
                 // 患者氏名
-                CoRep.SetFieldData("dfPtName", coModel.PtName);
+                SetFieldData("dfPtName", coModel.PtName);
 
                 // 性別
-                CoRep.SetFieldData("dfSex", coModel.PtSex);
+                SetFieldData("dfSex", coModel.PtSex);
 
                 // 生年月日
-                CoRep.SetFieldData("dfBirthDay", CIUtil.SDateToShowWDate3(coModel.BirthDay).Ymd);
+                SetFieldData("dfBirthDay", CIUtil.SDateToShowWDate3(coModel.BirthDay).Ymd);
 
                 // 保険の種類
-                CoRep.SetFieldData("dfHokenSbt", coModel.HokenSyu);
+                SetFieldData("dfHokenSbt", coModel.HokenSyu);
 
                 // 集計期間
-                CoRep.SetFieldData("dfSyukeiStartDate", _getWarekiYm(_startSinYm));
-                CoRep.SetFieldData("dfSyukeiEndDate", _getWarekiYm(_endSinYm));
+                SetFieldData("dfSyukeiStartDate", _getWarekiYm(_startSinYm));
+                SetFieldData("dfSyukeiEndDate", _getWarekiYm(_endSinYm));
 
                 return 1;
             }
@@ -368,21 +375,21 @@ namespace Reporting.Karte3.Service
 
                 for (short i = 0; i < _dataRowCount; i++)
                 {
-                    CoRep.ListText("lsData", 0, i, printOutData[dataIndex].Date);
-                    CoRep.ListText("lsData", 1, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Sinsatu], "#,0"));
-                    CoRep.ListText("lsData", 2, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Zaitaku], "#,0"));
-                    CoRep.ListText("lsData", 3, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.IgakuKanri], "#,0"));
-                    CoRep.ListText("lsData", 4, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Toyaku], "#,0"));
-                    CoRep.ListText("lsData", 5, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Chusya], "#,0"));
-                    CoRep.ListText("lsData", 6, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Shoti] + printOutData[dataIndex][Karte3Column.Ope], "#,0"));
-                    CoRep.ListText("lsData", 7, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Kensa], "#,0"));
-                    CoRep.ListText("lsData", 8, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Gazo], "#,0"));
-                    CoRep.ListText("lsData", 9, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Sonota], "#,0"));
+                    listDataPerPage.Add(new("lsData", 0, i, printOutData[dataIndex].Date));
+                    listDataPerPage.Add(new("lsData", 1, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Sinsatu], "#,0")));
+                    listDataPerPage.Add(new("lsData", 2, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Zaitaku], "#,0")));
+                    listDataPerPage.Add(new("lsData", 3, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.IgakuKanri], "#,0")));
+                    listDataPerPage.Add(new("lsData", 4, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Toyaku], "#,0")));
+                    listDataPerPage.Add(new("lsData", 5, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Chusya], "#,0")));
+                    listDataPerPage.Add(new("lsData", 6, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Shoti] + printOutData[dataIndex][Karte3Column.Ope], "#,0")));
+                    listDataPerPage.Add(new("lsData", 7, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Kensa], "#,0")));
+                    listDataPerPage.Add(new("lsData", 8, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Gazo], "#,0")));
+                    listDataPerPage.Add(new("lsData", 9, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.Sonota], "#,0")));
 
-                    CoRep.ListText("lsData", 10, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex].GokeiTensu, "#,0"));
-                    CoRep.ListText("lsData", 11, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex].GokeiFutan, "#,0"));
+                    listDataPerPage.Add(new("lsData", 10, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex].GokeiTensu, "#,0")));
+                    listDataPerPage.Add(new("lsData", 11, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex].GokeiFutan, "#,0")));
 
-                    CoRep.ListText("lsData", 12, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.HokenGai], "#,0"));
+                    listDataPerPage.Add(new("lsData", 12, i, CIUtil.ToStringIgnoreZero(printOutData[dataIndex][Karte3Column.HokenGai], "#,0")));
 
                     #region セル装飾
                     // 行の四方位置を取得する
@@ -541,6 +548,14 @@ namespace Reporting.Karte3.Service
             retDatas.Add(new CoKarte3Model(ptInf, null, filteredSinKouis, kaikeiInfs, houbetuNos));
 
             return retDatas;
+        }
+
+        private void SetFieldData(string field, string value)
+        {
+            if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
+            {
+                _singleFieldData.Add(field, value);
+            }
         }
 
         #endregion
