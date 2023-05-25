@@ -8,8 +8,8 @@ namespace EmrCloudApi.Requests.MstItem
         public int PageIndex { get; set; }
         public int PageCount { get; set; }
         public string Keyword { get; set; } = string.Empty;
-        public double PointFrom { get; set; } = -1;
-        public double PointTo { get; set; } = -1;
+        public double? PointFrom { get; set; } = null;
+        public double? PointTo { get; set; } = null;
         public int KouiKbn { get; set; }
         public int OriKouiKbn { get; set; }
         public List<int> KouiKbns { get; set; } = new();

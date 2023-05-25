@@ -678,7 +678,7 @@ namespace Infrastructure.Repositories
             return (listTenMstModels, totalCount);
         }
 
-        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMasterItem(int hpId, int pageIndex, int pageCount, string keyword, double pointFrom, double pointTo, int kouiKbn, int oriKouiKbn,
+        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMasterItem(int hpId, int pageIndex, int pageCount, string keyword, double? pointFrom, double? pointTo, int kouiKbn, int oriKouiKbn,
             List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage,
             bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem,
             bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter,
@@ -926,12 +926,12 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => t.IsAdopted == 1);
             }
 
-            if (pointFrom != -1)
+            if (pointFrom != null)
             {
                 queryResult = queryResult.Where(t => t.Ten >= pointFrom);
             }
 
-            if (pointTo != -1)
+            if (pointTo != null)
             {
                 queryResult = queryResult.Where(t => t.Ten <= pointTo);
             }
