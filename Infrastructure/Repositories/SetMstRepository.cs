@@ -208,8 +208,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 // set status for IsDelete
                 setMst.IsDeleted = 1;
-                TrackingDataContext.SetMsts.Remove(setMst);
-
                 // if SetMst have children element
                 // if SetMst is level 2 and have children element
                 if (setMst.Level2 > 0 && setMst.Level3 == 0)
@@ -228,7 +226,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         item.IsDeleted = 1;
                         item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
-                        TrackingDataContext.SetMsts.Remove(item);
                     }
                 }
 
@@ -262,7 +259,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         level2.IsDeleted = 1;
                         level2.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         level2.UpdateId = userId;
-                        TrackingDataContext.SetMsts.Remove(level2);
                     }
 
                     foreach (var level3 in listSetMstLevel3)
@@ -270,7 +266,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         level3.IsDeleted = 1;
                         level3.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         level3.UpdateId = userId;
-                        TrackingDataContext.SetMsts.Remove(level3);
                     }
                 }
             }
@@ -349,6 +344,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
     }
 
+    [Obsolete]
     public bool ReorderSetMst(int userId, int hpId, int setCdDragItem, int setCdDropItem)
     {
         bool status = false;
@@ -415,6 +411,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return status;
     }
 
+    [Obsolete]
     public int PasteSetMst(int hpId, int userId, int generationId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int copySetKbnEdaNo, int copySetKbn, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
         if (pasteSetKbnEdaNo <= 0 && pasteSetKbn <= 0)
@@ -484,6 +481,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setMst;
     }
 
+    [Obsolete]
     private int CopyPasteItemSetMst(int hpId, int userId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int generationId, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
         int setCd = -1;
@@ -1017,6 +1015,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         TrackingDataContext.SetByomei.AddRange(listPasteSetByomeies);
     }
 
+    [Obsolete]
     private bool DragItemIsLevel1(SetMst dragItem, SetMst dropItem, int userId, List<SetMst> listSetMsts)
     {
         var listDragItem = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1).ToList();
@@ -1086,6 +1085,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return true;
     }
 
+    [Obsolete]
     private bool DragItemIsLevel2(SetMst dragItem, SetMst dropItem, int userId, List<SetMst> listSetMsts)
     {
         // if dropItem is level1
@@ -1189,6 +1189,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return true;
     }
 
+    [Obsolete]
     private bool DragItemIsLevel3(SetMst dragItem, SetMst dropItem, int userId, List<SetMst> listSetMsts)
     {
         // if dropItem is level1 
@@ -1270,6 +1271,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return true;
     }
 
+    [Obsolete]
     private bool DragItemWithDropItemIsLevel0(SetMst dragItem, int userId, List<SetMst> listSetMsts)
     {
         if (dragItem.Level2 == 0)
@@ -1353,6 +1355,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
     }
 
+    [Obsolete]
     private void SaveLevelDown(int level, int userId, List<SetMst> listUpdate)
     {
         try
