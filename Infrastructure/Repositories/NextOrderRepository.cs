@@ -248,12 +248,17 @@ namespace Infrastructure.Repositories
 
         private void UpsertByomei(int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
         {
-            var allOldByomeis = NoTrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.HpId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && o.RsvkrtNo == rsvkrtNo).ToList();
+            var allOldByomeis = TrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.HpId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && o.RsvkrtNo == rsvkrtNo).ToList();
             var oldByomeis = allOldByomeis.Where(o => o.IsDeleted == DeleteTypes.None);
             var maxSeqNo = allOldByomeis.Count > 0 ? allOldByomeis.Max(a => a.SeqNo) : 0;
             foreach (var byomei in byomeis)
             {
-                var oldByomei = oldByomeis.FirstOrDefault(o => o.HpId == byomei.HpId && o.PtId == byomei.PtId && o.RsvkrtNo == rsvkrtNo && o.IsDeleted == DeleteTypes.None);
+                var oldByomei = oldByomeis.FirstOrDefault(item => item.HpId == byomei.HpId
+                                                                  && item.PtId == byomei.PtId
+                                                                  && item.RsvkrtNo == rsvkrtNo
+                                                                  && item.IsDeleted == DeleteTypes.None
+                                                                  && item.SeqNo == byomei.SeqNo);
+
                 if (byomei.IsDeleted == DeleteTypes.Deleted)
                 {
                     if (oldByomei != null)
@@ -267,7 +272,6 @@ namespace Infrastructure.Repositories
                 {
                     if (oldByomei != null)
                     {
-                        oldByomei.SeqNo = byomei.SeqNo;
                         oldByomei.ByomeiCd = byomei.ByomeiCd;
                         oldByomei.SyusyokuCd1 = byomei.PrefixSuffixList.FirstOrDefault()?.Code ?? string.Empty;
                         oldByomei.SyusyokuCd2 = byomei.PrefixSuffixList.Skip(1).FirstOrDefault()?.Code ?? string.Empty;
@@ -308,8 +312,6 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
-
-            //TrackingDataContext.SaveChanges();
         }
 
         private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei, List<ByomeiMst> byomeiMsts)
