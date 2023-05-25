@@ -76,5 +76,5 @@ public class FamilyItem
 
     public List<FamilyRekiItem> PtFamilyRekiList { get; private set; }
 
-    public bool IsRevertItem { get; set; }
+    public bool IsRevertItem { get; private set; }
 }
