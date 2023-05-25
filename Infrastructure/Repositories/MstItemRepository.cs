@@ -900,7 +900,7 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => kouiKbns.Contains(t.SinKouiKbn));
             }
 
-            if (drugKbns != null)
+            if (drugKbns.Any())
             {
                 queryResult = queryResult.Where(p => drugKbns.Contains(p.DrugKbn));
             }
