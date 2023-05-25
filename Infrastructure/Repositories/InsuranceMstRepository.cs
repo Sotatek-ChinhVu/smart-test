@@ -89,7 +89,7 @@ namespace Infrastructure.Repositories
                                                                         hoken.ReceFutanRound,
                                                                         hoken.ReceZeroKisai,
                                                                         hoken.ReceSpKbn,
-                                                                        r.RoudouCd ?? string.Empty,
+                                                                        r.RoudouName ?? string.Empty,
                                                                         hoken.PrefNo,
                                                                         hoken.SortNo,
                                                                         hoken.SeikyuYm,
