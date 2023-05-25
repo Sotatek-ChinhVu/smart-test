@@ -440,6 +440,7 @@ using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
 using UseCase.RaiinListSetting.GetDocCategory;
+using UseCase.RaiinListSetting.GetFilingcategory;
 using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
@@ -567,15 +568,6 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.Receipt.ValidateCreateUKEFile;
-using Interactor.PatientInfor.SortPatientCommon;
-using Reporting.DrugNoteSeal.Service;
-using Reporting.DrugNoteSeal.DB;
-using Reporting.Sokatu.KoukiSeikyu.DB;
-using UseCase.RaiinListSetting.GetDocCategory;
-using Interactor.RaiinListSetting;
-using Domain.Models.RaiinListSetting;
-using UseCase.RaiinListSetting.GetFilingcategory;
 
 namespace EmrCloudApi.Configs.Dependency
 {
