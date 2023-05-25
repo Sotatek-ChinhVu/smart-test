@@ -422,12 +422,6 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtFamily>().HasKey(p => new { p.FamilyId });
             modelBuilder.Entity<SokatuMst>().HasKey(s => new { s.HpId, s.PrefNo, s.StartYm, s.ReportEdaNo, s.ReportId });
             modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
-            modelBuilder.Entity<SetMst>()
-           .HasIndex(s => new { s.HpId, s.SetCd,  s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3}).HasFilter("IsDeleted = 0").IsUnique();
-
-            modelBuilder
-                .Entity<SetMst>()
-                .HasQueryFilter(p => p.IsDeleted == 0);
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

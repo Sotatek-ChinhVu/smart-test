@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -6671,13 +6672,6 @@ namespace TenantMigration.Migrations
                 {
                     table.PrimaryKey("PK_SET_MST", x => new { x.HPID, x.SETCD });
                 });
-
-            migrationBuilder.CreateIndex(
-            name: "Set_Mst_Uq",
-            table: "SET_MST",
-            columns: new[] { "HP_ID", "SET_CD", "SET_KBN", "SET_KBN_EDA_NO", "GENERATION_ID", "LEVEL1", "LEVEL2", "LEVEL3" },
-            unique: true,
-            filter: "IsDeleted = 0");
 
             migrationBuilder.CreateTable(
                 name: "SET_ODR_INF",
