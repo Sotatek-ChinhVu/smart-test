@@ -935,30 +935,31 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                int hokenNo = Int32.Parse(futansyaNo.Substring(0, 2));
                 string digit1 = futansyaNo.Substring(0, 1);
                 string digit2 = futansyaNo.Substring(1, 1);
                 var listDefHoken = NoTrackingDataContext.DefHokenNos
                 .Where(x => x.HpId == hpId
-                        && (x.HokenNo == hokenNo || x.HokenNo == 0)
-                        && x.Digit1.Equals(digit1)
-                        && x.Digit2.Equals(digit2)
-                        && x.IsDeleted == 0)
-                .OrderBy(x => x.SortNo)
+                            && x.Digit1.Equals(digit1)
+                            && x.Digit2.Equals(digit2)
+                            && x.IsDeleted == 0)
+                .OrderBy(entity => entity.HpId)
+                .ThenBy(entity => entity.HokenNo)
+                .ThenBy(entity => entity.HokenEdaNo)
+                .ThenBy(entity => entity.SortNo)
                 .Select(x => new DefHokenNoModel(
-                    x.Digit1,
-                    x.Digit2,
-                    x.Digit3 ?? string.Empty,
-                    x.Digit4 ?? string.Empty,
-                    x.Digit5 ?? string.Empty,
-                    x.Digit6 ?? string.Empty,
-                    x.Digit7 ?? string.Empty,
-                    x.Digit8 ?? string.Empty,
-                    x.SeqNo,
-                    x.HokenNo,
-                    x.HokenEdaNo,
-                    x.SortNo,
-                    x.IsDeleted
+                                 x.Digit1,
+                                 x.Digit2,
+                                 x.Digit3 ?? string.Empty,
+                                 x.Digit4 ?? string.Empty,
+                                 x.Digit5 ?? string.Empty,
+                                 x.Digit6 ?? string.Empty,
+                                 x.Digit7 ?? string.Empty,
+                                 x.Digit8 ?? string.Empty,
+                                 x.SeqNo,
+                                 x.HokenNo,
+                                 x.HokenEdaNo,
+                                 x.SortNo,
+                                 x.IsDeleted
                     ))
                 .ToList();
 
