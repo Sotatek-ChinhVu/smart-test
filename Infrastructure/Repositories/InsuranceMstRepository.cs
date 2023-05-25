@@ -28,7 +28,7 @@ namespace Infrastructure.Repositories
                     .ToList();
 
             int prefNo = 0;
-            var hpInf = NoTrackingDataContext.HpInfs.FirstOrDefault(x => x.HpId == hpId);
+            var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
             if (hpInf != null)
             {
                 prefNo = hpInf.PrefNo;
