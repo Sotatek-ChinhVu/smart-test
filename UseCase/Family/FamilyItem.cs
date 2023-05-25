@@ -6,7 +6,7 @@ namespace UseCase.Family;
 public class FamilyItem
 {
     [JsonConstructor]
-    public FamilyItem(long familyId, long ptId, string zokugaraCd, long familyPtId, string name, string kanaName, int sex, int birthday, int isDead, int isSeparated, string biko, int sortNo, bool isDeleted, List<FamilyRekiItem> ptFamilyRekiList)
+    public FamilyItem(long familyId, long ptId, string zokugaraCd, long familyPtId, string name, string kanaName, int sex, int birthday, int isDead, int isSeparated, string biko, int sortNo, bool isDeleted, List<FamilyRekiItem> ptFamilyRekiList, bool isRevertItem)
     {
         FamilyId = familyId;
         PtId = ptId;
@@ -22,6 +22,7 @@ public class FamilyItem
         SortNo = sortNo;
         IsDeleted = isDeleted;
         PtFamilyRekiList = ptFamilyRekiList;
+        IsRevertItem = isRevertItem;
     }
 
     public FamilyItem(FamilyModel model)
@@ -74,4 +75,6 @@ public class FamilyItem
     public bool IsDeleted { get; private set; }
 
     public List<FamilyRekiItem> PtFamilyRekiList { get; private set; }
+
+    public bool IsRevertItem { get; set; }
 }
