@@ -25,16 +25,17 @@ namespace Interactor.Accounting
         {
             try
             {
-                if (!inputData.RaiinNos.Any()) return new GetMeiHoGaiOutputData(new(), new(), new(), GetMeiHoGaiStatus.NoData);
+                var raiinNos = _accountingRepository.GetRaiinNos(inputData.HpId, inputData.PtId, inputData.RaiinNo, true);
+                if (!raiinNos.Any()) { return new GetMeiHoGaiOutputData(new(), new(), new(), GetMeiHoGaiStatus.NoData); }
 
-                var sinMeiInputData = new GetSinMeiDtoInputData(inputData.RaiinNos, inputData.PtId, inputData.SinDate, inputData.HpId, SinMeiModeConst.Kaikei);
+                var sinMeiInputData = new GetSinMeiDtoInputData(raiinNos, inputData.PtId, inputData.SinDate, inputData.HpId, SinMeiModeConst.Kaikei);
 
                 var sinMei = GetSinMei(sinMeiInputData);
                 if (!sinMei.Any()) { return new GetMeiHoGaiOutputData(new(), new(), new(), GetMeiHoGaiStatus.NoData); }
 
                 var sinHo = GetSinHo(sinMei);
 
-                var sinGai = GetSinGai(inputData.HpId, inputData.PtId, inputData.RaiinNos, sinMei);
+                var sinGai = GetSinGai(inputData.HpId, inputData.PtId, raiinNos, sinMei);
 
                 return new GetMeiHoGaiOutputData(sinMei, sinHo, sinGai, GetMeiHoGaiStatus.Successed);
 
