@@ -62,7 +62,7 @@ namespace Infrastructure.Repositories
                                     from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable<RsvkrtOdrInf>()
                                     join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
                                                      equals new { rsvkrtMst.HpId, rsvkrtMst.PtId, rsvkrtMst.RsvkrtNo }
-                                    group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo} into g
+                                    group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo } into g
                                     select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, string.Empty, -1, 0)
                                ).ToList();
 
@@ -127,17 +127,17 @@ namespace Infrastructure.Repositories
             List<FlowSheetModel> result = new List<FlowSheetModel>();
             foreach (var flowSheetModel in flowSheetModelList)
             {
-                string? karteContent = string.Empty;
+                string karteContent = string.Empty;
 
                 if (flowSheetModel.IsNext)
                 {
                     var nextKarte = nextKarteList.FirstOrDefault(n => n.RsvkrtNo == flowSheetModel.RaiinNo);
-                    karteContent = nextKarte == null ? null : nextKarte.Text ?? string.Empty;
+                    karteContent = nextKarte?.Text ?? string.Empty;
                 }
                 else
                 {
                     var historyKarte = historyKarteList.FirstOrDefault(n => n.RaiinNo == flowSheetModel.RaiinNo);
-                    karteContent = historyKarte == null ? null : historyKarte.Text ?? string.Empty;
+                    karteContent = historyKarte?.Text ?? string.Empty;
                 }
 
                 int tagNoValue = 0;
@@ -150,25 +150,22 @@ namespace Infrastructure.Repositories
                 var commentInf = commentList.FirstOrDefault(t => t.RaiinNo == flowSheetModel.RaiinNo);
                 string commentValue = (commentInf == null || commentInf.Text == null) ? string.Empty : commentInf.Text;
 
-                if (karteContent != null)
-                {
-                    result.Add(new FlowSheetModel
-                        (
-                            flowSheetModel.SinDate,
-                            tagNoValue,
-                            karteContent,
-                            flowSheetModel.RaiinNo,
-                            flowSheetModel.UketukeTime,
-                            flowSheetModel.SyosaisinKbn,
-                            commentValue,
-                            flowSheetModel.Status,
-                            flowSheetModel.IsNext,
-                            !flowSheetModel.IsNext,
-                            new List<RaiinListInfModel>(),
-                            ptId,
-                            false
-                        ));
-                }
+                result.Add(new FlowSheetModel
+                    (
+                        flowSheetModel.SinDate,
+                        tagNoValue,
+                        karteContent,
+                        flowSheetModel.RaiinNo,
+                        flowSheetModel.UketukeTime,
+                        flowSheetModel.SyosaisinKbn,
+                        commentValue,
+                        flowSheetModel.Status,
+                        flowSheetModel.IsNext,
+                        !flowSheetModel.IsNext,
+                        new List<RaiinListInfModel>(),
+                        ptId,
+                        false
+                    ));
             }
 
             Console.WriteLine("End GetListFlowSheet");
