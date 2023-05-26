@@ -251,7 +251,7 @@ namespace Infrastructure.Repositories
                                                                                      && item.HpId == hpId
                                                                                      && item.IsDeleted == 0
                                                                       ).ToList();
-                var newOyaRaiinNo = raiinListSameVisit.FirstOrDefault()?.OyaRaiinNo ?? 0;
+                var newOyaRaiinNo = raiinListSameVisit.FirstOrDefault()?.RaiinNo ?? 0;
                 if (raiinListSameVisit.Any() && newOyaRaiinNo > 0)
                 {
                     foreach (var raiinInf in raiinListSameVisit)
