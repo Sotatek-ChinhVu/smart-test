@@ -69,23 +69,7 @@ public class ReceiptPrintService : IReceiptPrintService
 
     private SeikyuType GetSeikyuType(int dataKbn)
     {
-        //int targetReceiptVal = (dataKbn >= 0 && dataKbn <= 2) ? (dataKbn + 1) : 0;
-        int targetReceiptVal;
-        switch (dataKbn)
-        {
-            case 0:
-                targetReceiptVal = (int)TargetReceipt.All;
-                break;
-            case 1:
-                targetReceiptVal = (int)TargetReceipt.DenshiSeikyu;
-                break;
-            case 2:
-                targetReceiptVal = (int)TargetReceipt.KamiSeikyu;
-                break;
-            default:
-                targetReceiptVal = 0;
-                break;
-        }
+        int targetReceiptVal = (dataKbn >= 0 && dataKbn <= 2) ? (dataKbn + 1) : 0;
         switch (targetReceiptVal)
         {
             case 1:
