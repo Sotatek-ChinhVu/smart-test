@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -14,6 +13,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
+        
         [Column("HP_ID", Order = 1)]
         //[Index("SET_MST_UI001", 1)]
         //[Index("SET_MST_IDX01", 1)]
