@@ -1100,8 +1100,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 return false;
             }
-            var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
-            var maxLevel3s = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == )
+            var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).OrderByDescending(mst => mst.Level3).ToList();
             var listUpdateLevel3SkipLast = listUpdateLevel3.Skip(1).ToList();
             var lastLevel3 = listUpdateLevel3.FirstOrDefault();
 
@@ -1165,6 +1164,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             if (dragItem.Level1 == dropItem.Level1)
             {
                 var listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > 0 && mst.Level2 < dragItem.Level2).ToList();
+                var maxLevel2 = listDropUpdateLevel2.Count > 0 ? listDropUpdateLevel2.Max(mst => mst.Level2) : 0;
+                var childMaxLevel2List = listDropUpdateLevel2.Where(mst => mst.Level2 == maxLevel2);
+                var rootMaxLevel2 = childMaxLevel2List.FirstOrDefault(mst => mst.Level3 == 0);
+                var childMaxLevel2ExceptRootMaxList = childMaxLevel2List.Where(c => c != rootMaxLevel2);
+                var listDropUpdateLevel2ExceptLevelMax = listDropUpdateLevel2.Where(mst => !childMaxLevel2List.Contains(mst)).ToList();
                 var listDragItem = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
                 foreach (var item in listDragItem)
                 {
@@ -1173,8 +1177,29 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     item.UpdateId = userId;
                     item.IsDeleted = DeleteTypes.Deleted;
                 }
-                //LevelDown(2, userId, listDropUpdateLevel2);
-                SaveLevelDown(2, userId, listDropUpdateLevel2);
+                LevelDown(2, userId, listDropUpdateLevel2ExceptLevelMax);
+                foreach (var item in listDropUpdateLevel2ExceptLevelMax)
+                {
+                    item.IsDeleted = DeleteTypes.Deleted;
+                }
+                if (rootMaxLevel2 != null)
+                {
+                    SaveLevelDown(2, userId, new List<SetMst> { rootMaxLevel2 });
+                    foreach (var item in childMaxLevel2ExceptRootMaxList)
+                    {
+                        item.Level2 = rootMaxLevel2.Level2;
+                    }
+                }
+                TrackingDataContext.SaveChanges();
+                foreach (var item in listDragItem)
+                {
+                    item.IsDeleted = DeleteTypes.None;
+                }
+                foreach (var item in listDropUpdateLevel2ExceptLevelMax)
+                {
+                    item.IsDeleted = DeleteTypes.None;
+                }
+                TrackingDataContext.SaveChanges();
             }
             else
             {
