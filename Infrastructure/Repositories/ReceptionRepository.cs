@@ -479,9 +479,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily, int isDeleted = 2)
+        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily, int isDeleted = 2, bool searchSameVisit = false)
         {
-            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue, isGetFamily, isDeleted);
+            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue, isGetFamily, isDeleted, searchSameVisit);
         }
 
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
@@ -611,7 +611,7 @@ namespace Infrastructure.Repositories
             return raininNos.Count == raiinInfCount;
         }
 
-        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue, bool isGetFamily, int isDeleted)
+        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue, bool isGetFamily, int isDeleted, bool searchSameVisit)
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
@@ -643,9 +643,13 @@ namespace Infrastructure.Repositories
             {
                 filteredRaiinInfs = filteredRaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sinDate);
             }
-            if (raiinNo != CommonConstants.InvalidId)
+            if (raiinNo != CommonConstants.InvalidId && !searchSameVisit)
             {
-                filteredRaiinInfs = filteredRaiinInfs.Where(x => x.OyaRaiinNo == raiinNo);
+                filteredRaiinInfs = filteredRaiinInfs.Where(x => x.RaiinNo == raiinNo);
+            }
+            if (searchSameVisit && ptId != CommonConstants.InvalidId)
+            {
+                filteredRaiinInfs = filteredRaiinInfs.Where(item => item.PtId == ptId);
             }
 
             var filteredPtInfs = ptInfs;
