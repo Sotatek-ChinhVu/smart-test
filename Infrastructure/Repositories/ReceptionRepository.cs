@@ -180,6 +180,7 @@ namespace Infrastructure.Repositories
 
         public bool Update(ReceptionSaveDto dto, int hpId, int userId)
         {
+            bool resetOyaRaiinNo = false;
             var raiinInf = TrackingDataContext.RaiinInfs
                 .FirstOrDefault(r => r.HpId == hpId
                     && r.PtId == dto.Reception.PtId
@@ -192,6 +193,10 @@ namespace Infrastructure.Repositories
             }
 
             UpdateRaiinInfIfChanged(raiinInf, new ReceptionModel(dto.Reception));
+            if (resetOyaRaiinNo)
+            {
+                ResetOyaRaiinNo(hpId, userId, raiinInf.PtId, raiinInf.RaiinNo);
+            }
             UpsertRaiinCmtInf(raiinInf, dto.ReceptionComment);
             SaveRaiinKbnInfs(raiinInf, dto.KubunInfs);
             // Update insurances and diseases
@@ -216,7 +221,15 @@ namespace Infrastructure.Repositories
                     entity.SanteiKbn != model.SanteiKbn ||
                     entity.HokenPid != model.HokenPid)
                 {
-                    entity.OyaRaiinNo = model.OyaRaiinNo;
+                    if (model.OyaRaiinNo == 0)
+                    {
+                        resetOyaRaiinNo = true;
+                        entity.OyaRaiinNo = entity.RaiinNo;
+                    }
+                    else
+                    {
+                        entity.OyaRaiinNo = model.OyaRaiinNo;
+                    }
                     entity.KaId = model.KaId;
                     entity.UketukeSbt = model.UketukeSbt;
                     entity.UketukeNo = model.UketukeNo;
@@ -227,6 +240,26 @@ namespace Infrastructure.Repositories
                     entity.SanteiKbn = model.SanteiKbn;
                     entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     entity.UpdateId = userId;
+                }
+            }
+
+            void ResetOyaRaiinNo(int hpId, int userId, long ptId, long raiinNo)
+            {
+                var raiinListSameVisit = TrackingDataContext.RaiinInfs.Where(item => item.RaiinNo != raiinNo
+                                                                                     && item.OyaRaiinNo == raiinNo
+                                                                                     && item.PtId == ptId
+                                                                                     && item.HpId == hpId
+                                                                                     && item.IsDeleted == 0
+                                                                      ).ToList();
+                var newOyaRaiinNo = raiinListSameVisit.FirstOrDefault()?.OyaRaiinNo ?? 0;
+                if (raiinListSameVisit.Any() && newOyaRaiinNo > 0)
+                {
+                    foreach (var raiinInf in raiinListSameVisit)
+                    {
+                        raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        raiinInf.UpdateId = userId;
+                        raiinInf.OyaRaiinNo = newOyaRaiinNo;
+                    }
                 }
             }
 
