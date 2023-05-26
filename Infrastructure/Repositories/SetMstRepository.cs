@@ -1038,14 +1038,12 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             else if (dragItem.Level1 < dropItem.Level1)
             {
                 var levelDrop = dropItem.Level1;
-                var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dragItem.Level1 && mst.Level1 <= dropItem.Level1).ToList();
+                var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dragItem.Level1 && mst.Level1 <= dropItem.Level1 && mst != dropItem).ToList();
                 LevelUp(1, userId, listUpdateLevel1);
+                LevelUp(1, userId, new List<SetMst> { dropItem });
 
                 foreach (var item in listDragItem)
                 {
-                    var setMst = 
-                            
-                        );
                     item.Level1 = levelDrop;
                     item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
@@ -1556,11 +1554,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         var levelMax = GetMaxLevel(copyItem.HpId, copyItem.SetKbn, copyItem.SetKbnEdaNo, copyItem.GenerationId, levelPaste >= 1 ? pasteItem?.Level1 ?? 0 : 0, levelPaste >= 2 ? pasteItem?.Level2 ?? 0 : 0, levelPaste >= 3 ? pasteItem?.Level3 ?? 0 : 0, pasteItem == null);
 
         ReSetLevelForItem(levelMax, copyItem, pasteItem, listPasteItems);
-    }
-
-    private SetMst ResetNewMst(SetMst setMst)
-    {
-        return new SetMst;
     }
     #endregion
 
