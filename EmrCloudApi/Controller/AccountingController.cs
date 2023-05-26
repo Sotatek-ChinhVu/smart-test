@@ -131,7 +131,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetMeiHoGai)]
         public ActionResult<Response<GetMeiHoGaiResponse>> GetList([FromQuery] GetMeiHoGaiRequest request)
         {
-            var input = new GetMeiHoGaiInputData(HpId, request.PtId, request.SinDate, request.RaiinNos);
+            var input = new GetMeiHoGaiInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
 
             var presenter = new GetMeiHoGaiPresenter();
