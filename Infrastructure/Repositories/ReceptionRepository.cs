@@ -645,7 +645,7 @@ namespace Infrastructure.Repositories
             }
             if (raiinNo != CommonConstants.InvalidId)
             {
-                filteredRaiinInfs = filteredRaiinInfs.Where(x => x.RaiinNo == raiinNo);
+                filteredRaiinInfs = filteredRaiinInfs.Where(x => x.OyaRaiinNo == raiinNo);
             }
 
             var filteredPtInfs = ptInfs;
