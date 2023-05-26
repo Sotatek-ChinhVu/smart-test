@@ -1026,24 +1026,27 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             if (dragItem.Level1 > dropItem.Level1)
             {
                 var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dropItem.Level1 && mst.Level1 < dragItem.Level1).ToList();
-                //LevelDown(1, userId, listUpdateLevel1);
-                SaveLevelDown(1, userId, listUpdateLevel1);
-
                 foreach (var item in listDragItem)
                 {
                     item.Level1 = dropItem.Level1 + 1;
                     item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
                 }
+                //LevelDown(1, userId, listUpdateLevel1);
+                SaveLevelDown(1, userId, listUpdateLevel1);
             }
             else if (dragItem.Level1 < dropItem.Level1)
             {
+                var levelDrop = dropItem.Level1;
                 var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dragItem.Level1 && mst.Level1 <= dropItem.Level1).ToList();
                 LevelUp(1, userId, listUpdateLevel1);
 
                 foreach (var item in listDragItem)
                 {
-                    item.Level1 = dropItem.Level1 + 1;
+                    var setMst = 
+                            
+                        );
+                    item.Level1 = levelDrop;
                     item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
                 }
@@ -1068,8 +1071,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 return false;
             }
             var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
-            //LevelDown(3, userId, listUpdateLevel3);
-            SaveLevelDown(3, userId, listUpdateLevel3);
+          
 
             var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dragItem.Level1).ToList();
             LevelUp(1, userId, listUpdateLevel1);
@@ -1077,6 +1079,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             dragItem.Level1 = dropItem.Level1;
             dragItem.Level2 = dropItem.Level2;
             dragItem.Level3 = 1;
+
+            //LevelDown(3, userId, listUpdateLevel3);
+            SaveLevelDown(3, userId, listUpdateLevel3);
         }
         // if drop item is level 3 return false
         else if (dropItem.Level3 > 0)
@@ -1095,9 +1100,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             if (dragItem.Level1 == dropItem.Level1)
             {
                 var listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > 0 && mst.Level2 < dragItem.Level2).ToList();
-                //LevelDown(2, userId, listDropUpdateLevel2);
-                SaveLevelDown(2, userId, listDropUpdateLevel2);
-
                 var listDragItem = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
                 foreach (var item in listDragItem)
                 {
@@ -1105,6 +1107,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
                 }
+
+                //LevelDown(2, userId, listDropUpdateLevel2);
+                SaveLevelDown(2, userId, listDropUpdateLevel2);
             }
             else
             {
@@ -1135,8 +1140,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 if (dragItem.Level2 > dropItem.Level2)
                 {
                     var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dropItem.Level2 && mst.Level2 < dragItem.Level2).ToList();
-                    //LevelDown(2, userId, listUpdateLevel2);
-                    SaveLevelDown(3, userId, listUpdateLevel2);
 
                     foreach (var item in listDragUpdateLevel2)
                     {
@@ -1144,6 +1147,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
                     }
+                    //LevelDown(2, userId, listUpdateLevel2);
+                    SaveLevelDown(3, userId, listUpdateLevel2);
                 }
                 else if (dragItem.Level2 < dropItem.Level2)
                 {
@@ -1378,6 +1383,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         flag = true;
                         LevelDown(3, userId, listUpdate);
                         TrackingDataContext.SaveChanges();
+                        break;
                     }
                     catch (Exception tryEx)
                     {
@@ -1550,6 +1556,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         var levelMax = GetMaxLevel(copyItem.HpId, copyItem.SetKbn, copyItem.SetKbnEdaNo, copyItem.GenerationId, levelPaste >= 1 ? pasteItem?.Level1 ?? 0 : 0, levelPaste >= 2 ? pasteItem?.Level2 ?? 0 : 0, levelPaste >= 3 ? pasteItem?.Level3 ?? 0 : 0, pasteItem == null);
 
         ReSetLevelForItem(levelMax, copyItem, pasteItem, listPasteItems);
+    }
+
+    private SetMst ResetNewMst(SetMst setMst)
+    {
+        return new SetMst;
     }
     #endregion
 
