@@ -7,7 +7,6 @@ using EmrCloudApi.Responses.RaiinListSetting;
 using UseCase.RaiinListSetting.GetDocCategory;
 using EmrCloudApi.Presenters.RaiinListSetting;
 using UseCase.RaiinListSetting.GetRaiiinListSetting;
-using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {
@@ -31,11 +30,10 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetDocCategoryRaiinResponse>>(presenter.Result);
         }
 
-        [AllowAnonymous]
         [HttpGet(ApiPath.GetList + "RaiiinListSetting")]
         public ActionResult<Response<GetRaiiinListSettingResponse>> RaiiinListSetting()
         {
-            var input = new GetRaiiinListSettingInputData(1);
+            var input = new GetRaiiinListSettingInputData(HpId);
             var output = _bus.Handle(input);
             var presenter = new GetRaiiinListSettingPresenter();
             presenter.Complete(output);
