@@ -518,14 +518,16 @@ namespace EmrCloudApi.Controllers
                                                                 family.Biko,
                                                                 family.SortNo,
                                                                 family.IsDeleted,
-                                                                family.PtFamilyRekiList.Select(reki => new FamilyRekiItem(
-                                                                                                           reki.Id,
-                                                                                                           reki.ByomeiCd,
-                                                                                                           reki.Byomei,
-                                                                                                           reki.Cmt,
-                                                                                                           reki.SortNo,
-                                                                                                           reki.IsDeleted))
-                                                                                       .ToList()))
+                                                                family.PtFamilyRekiList
+                                                                      .Select(reki => new FamilyRekiItem(
+                                                                                          reki.Id,
+                                                                                          reki.ByomeiCd,
+                                                                                          reki.Byomei,
+                                                                                          reki.Cmt,
+                                                                                          reki.SortNo,
+                                                                                          reki.IsDeleted))
+                                                                      .ToList(),
+                                                                 family.IsRevertItem))
                                           .ToList();
             return result;
         }

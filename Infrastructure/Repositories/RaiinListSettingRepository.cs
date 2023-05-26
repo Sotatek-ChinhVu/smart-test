@@ -12,6 +12,13 @@ namespace Infrastructure.Repositories
     {
         public RaiinListSettingRepository(ITenantProvider tenantProvider) : base(tenantProvider) { }
 
+        public List<FilingCategoryModel> GetFilingcategoryCollection(int hpId)
+        {
+            return NoTrackingDataContext.FilingCategoryMst.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None)
+                        .OrderBy(f => f.SortNo)
+                        .Select(x=> new FilingCategoryModel(x.HpId, x.SortNo, x.CategoryCd, x.CategoryName ?? string.Empty, x.DspKanzok)).ToList();
+        }
+
         public List<RaiinListMstModel> GetRaiiinListSetting(int hpId)
         {
             var list = NoTrackingDataContext.RaiinListMsts.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None).ToList();
