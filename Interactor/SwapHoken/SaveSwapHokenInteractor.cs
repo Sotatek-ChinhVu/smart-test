@@ -71,7 +71,6 @@ namespace Interactor.SwapHoken
                             return new SaveSwapHokenOutputData(SaveSwapHokenStatus.InvalidIsShowConversionCondition, message, TypeMessage.TypeMessageWarning, new List<int>());
                         }
                     }
-                    inputData.SetEndDate(99999999);
                     sBuff = "すべて";
                 }
                 else
@@ -84,7 +83,12 @@ namespace Interactor.SwapHoken
                     }
                 }
 
-                if(!inputData.ConfirmSwapHoken)
+                if(inputData.EndDate == 0)
+                {
+                    inputData.SetEndDate(99999999);
+                }
+
+                if (!inputData.ConfirmSwapHoken)
                 {
                     // 確認ﾒｯｾｰｼﾞ
                     message = "次の条件で保険変換を実行しますか？" + Environment.NewLine
