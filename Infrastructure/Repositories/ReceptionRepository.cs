@@ -819,7 +819,7 @@ namespace Infrastructure.Repositories
             {
                 var kanaName = model.KanaName?.Replace("　", " ") ?? "";
                 var list = models
-                    .Where(vs => vs.KanaName?.Replace("　", " ") == kanaName && vs.PtId != model.PtId);
+                    .Where(vs => vs.KanaName?.Replace("　", " ") == kanaName && vs.PtId != model.PtId && model.PtNum != vs.PtNum);
                 if (!string.IsNullOrWhiteSpace(kanaName) && list != null && list.Count() > 0)
                 {
                     model.IsNameDuplicate = true;
