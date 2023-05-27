@@ -28,7 +28,7 @@ namespace Infrastructure.Repositories
                     .ToList();
 
             int prefNo = 0;
-            var hpInf = NoTrackingDataContext.HpInfs.FirstOrDefault(x => x.HpId == hpId);
+            var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
             if (hpInf != null)
             {
                 prefNo = hpInf.PrefNo;
@@ -89,7 +89,7 @@ namespace Infrastructure.Repositories
                                                                         hoken.ReceFutanRound,
                                                                         hoken.ReceZeroKisai,
                                                                         hoken.ReceSpKbn,
-                                                                        r.RoudouCd ?? string.Empty,
+                                                                        r.RoudouName ?? string.Empty,
                                                                         hoken.PrefNo,
                                                                         hoken.SortNo,
                                                                         hoken.SeikyuYm,

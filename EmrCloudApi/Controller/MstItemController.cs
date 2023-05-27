@@ -33,6 +33,7 @@ using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
+using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
@@ -348,6 +349,20 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTenMstListByItemTypePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenMstListByItemTypeResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SearchTenMstItem)]
+        public ActionResult<Response<SearchTenMstItemResponse>> SearchTenMstItem([FromBody] SearchTenMstItemRequest request)
+        {
+            var input = new SearchTenMstItemInputData(HpId, request.PageIndex, request.PageCount, request.Keyword, request.PointFrom,
+                request.PointTo, request.KouiKbn, request.OriKouiKbn, request.KouiKbns, request.IncludeRosai, request.IncludeMisai,
+                request.SinDate, request.ItemCodeStartWith, request.IsIncludeUsage, request.OnlyUsage, request.YJCode, request.IsMasterSearch,
+                request.IsExpiredSearchIfNoData, request.IsAllowSearchDeletedItem, request.IsExpired, request.IsDeleted, request.DrugKbns,
+                request.IsSearchSanteiItem, request.IsSearchKenSaItem, request.ItemFilter, request.IsSearch831SuffixOnly, request.IsSearchSuggestion);
+            var output = _bus.Handle(input);
+            var presenter = new SearchTenMstItemPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
     }
 }
