@@ -13,7 +13,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Infrastructure.Repositories
@@ -685,16 +684,7 @@ namespace Infrastructure.Repositories
             bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter,
             bool isSearch831SuffixOnly, bool isSearchSuggestion)
         {
-            string kanaKeyword = keyword;
-            if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
-            {
-                var inputKeyword = keyword;
-                kanaKeyword = CIUtil.ToHalfsize(keyword);
-                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
-                    kanaKeyword = inputKeyword;
-            }
-
-            string sBigKeyword = kanaKeyword.ToUpper()
+            string sBigKeyword = keyword.ToUpper()
                                         .Replace("ｧ", "ｱ")
                                         .Replace("ｨ", "ｲ")
                                         .Replace("ｩ", "ｳ")
@@ -708,8 +698,8 @@ namespace Infrastructure.Repositories
             var queryResult = NoTrackingDataContext.TenMsts
                     .Where(t =>
                         t.ItemCd.StartsWith(keyword)
-                        || t.SanteiItemCd.StartsWith(keyword)
-                        || t.KanaName1.ToUpper()
+                        || !string.IsNullOrEmpty(t.SanteiItemCd) && t.SanteiItemCd.StartsWith(keyword)
+                        || !string.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
                           .Replace("ｧ", "ｱ")
                           .Replace("ｨ", "ｲ")
                           .Replace("ｩ", "ｳ")
@@ -719,7 +709,7 @@ namespace Infrastructure.Repositories
                           .Replace("ｭ", "ﾕ")
                           .Replace("ｮ", "ﾖ")
                           .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
-                        || t.KanaName2.ToUpper()
+                        || !string.IsNullOrEmpty(t.KanaName2) && t.KanaName2.ToUpper()
                           .Replace("ｧ", "ｱ")
                           .Replace("ｨ", "ｲ")
                           .Replace("ｩ", "ｳ")
@@ -729,7 +719,7 @@ namespace Infrastructure.Repositories
                           .Replace("ｭ", "ﾕ")
                           .Replace("ｮ", "ﾖ")
                           .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
-                        || t.KanaName3.ToUpper()
+                        || !string.IsNullOrEmpty(t.KanaName3) && t.KanaName3.ToUpper()
                           .Replace("ｧ", "ｱ")
                           .Replace("ｨ", "ｲ")
                           .Replace("ｩ", "ｳ")
@@ -739,7 +729,7 @@ namespace Infrastructure.Repositories
                           .Replace("ｭ", "ﾕ")
                           .Replace("ｮ", "ﾖ")
                           .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
-                        || t.KanaName4.ToUpper()
+                        || !string.IsNullOrEmpty(t.KanaName4) && t.KanaName4.ToUpper()
                           .Replace("ｧ", "ｱ")
                           .Replace("ｨ", "ｲ")
                           .Replace("ｩ", "ｳ")
@@ -749,7 +739,7 @@ namespace Infrastructure.Repositories
                           .Replace("ｭ", "ﾕ")
                           .Replace("ｮ", "ﾖ")
                           .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
-                        || t.KanaName5.ToUpper()
+                        || !string.IsNullOrEmpty(t.KanaName5) && t.KanaName5.ToUpper()
                           .Replace("ｧ", "ｱ")
                           .Replace("ｨ", "ｲ")
                           .Replace("ｩ", "ｳ")
@@ -759,7 +749,7 @@ namespace Infrastructure.Repositories
                           .Replace("ｭ", "ﾕ")
                           .Replace("ｮ", "ﾖ")
                           .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
-                        || t.KanaName6.ToUpper()
+                        || !string.IsNullOrEmpty(t.KanaName6) && t.KanaName6.ToUpper()
                           .Replace("ｧ", "ｱ")
                           .Replace("ｨ", "ｲ")
                           .Replace("ｩ", "ｳ")
@@ -769,7 +759,7 @@ namespace Infrastructure.Repositories
                           .Replace("ｭ", "ﾕ")
                           .Replace("ｮ", "ﾖ")
                           .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
-                        || t.KanaName7.ToUpper()
+                        || !string.IsNullOrEmpty(t.KanaName7) && t.KanaName7.ToUpper()
                           .Replace("ｧ", "ｱ")
                           .Replace("ｨ", "ｲ")
                           .Replace("ｩ", "ｳ")
@@ -779,7 +769,7 @@ namespace Infrastructure.Repositories
                           .Replace("ｭ", "ﾕ")
                           .Replace("ｮ", "ﾖ")
                           .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
-                        || t.Name.Contains(keyword));
+                        || !string.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword));
 
             if (isAllowSearchDeletedItem)
             {
