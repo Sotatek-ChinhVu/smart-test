@@ -71,7 +71,7 @@ public class P40KoukiSeikyuCoReportService : IP40KoukiSeikyuCoReportService
         _hpId = hpId;
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
-        if(seikyuYm >= 202106)
+        if (seikyuYm >= 202106)
         {
             _formFileName = "p40KoukiSeikyu_2106.rse";
         }
@@ -181,19 +181,28 @@ public class P40KoukiSeikyuCoReportService : IP40KoukiSeikyuCoReportService
 
                 countData wrkData = new countData();
 
-                if (wrkReces.Count >= 1 && pageIndex == 0)
+                if (wrkReces.Count >= 1)
                 {
+                    pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                    Dictionary<string, string> fieldDataPerPage = _singleFieldDataM.ContainsKey(pageIndex) ? _singleFieldDataM[pageIndex] : new();
+
                     //法別番号
-                    SetFieldData("fixedHoubetu", fixedHoubetu[0]);
+                    fieldDataPerPage.Add("fixedHoubetu", fixedHoubetu[0]);
                     //件数
                     wrkData.Count = wrkReces.Count;
-                    SetFieldData("fixedCount", wrkData.Count.ToString());
+                    fieldDataPerPage.Add("fixedCount", wrkData.Count.ToString());
                     //日数
                     wrkData.Nissu = wrkReces.Sum(r => r.KohiReceNissu(fixedHoubetu[0]));
-                    SetFieldData("fixedNissu", wrkData.Nissu.ToString());
+                    fieldDataPerPage.Add("fixedNissu", wrkData.Nissu.ToString());
                     //点数
                     wrkData.Tensu = wrkReces.Sum(r => r.KohiReceTensu(fixedHoubetu[0]));
-                    SetFieldData("fixedTensu", wrkData.Tensu.ToString());
+                    fieldDataPerPage.Add("fixedTensu", wrkData.Tensu.ToString());
+
+                    if (!_singleFieldDataM.ContainsKey(pageIndex))
+                    {
+                        _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+                    }
+
                 }
             }
 
@@ -210,7 +219,7 @@ public class P40KoukiSeikyuCoReportService : IP40KoukiSeikyuCoReportService
 
             //集計
             for (short rowNo = 0; rowNo < maxKohiRow; rowNo++)
-            {  
+            {
                 var wrkReces = curReceInfs.Where(r => r.IsHeiyo && r.IsKohi(kohiHoubetus[kohiIndex])).ToList();
 
                 //法別番号
