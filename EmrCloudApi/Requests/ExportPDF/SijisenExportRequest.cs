@@ -2,6 +2,8 @@
 {
     public class SijisenExportRequest
     {
+        public int HpId { get; set; }
+
         public int FormType { get; set; }
 
         public long PtId { get; set; }
