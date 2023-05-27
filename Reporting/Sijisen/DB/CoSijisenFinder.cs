@@ -1,21 +1,19 @@
 ﻿using Domain.Constant;
 using Entity.Tenant;
 using Helper.Constants;
+using Infrastructure.Base;
+using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using PostgreDataContext;
 using Reporting.Sijisen.Model;
 
 namespace Reporting.Sijisen.DB
 {
-    public class CoSijisenFinder
+    public class CoSijisenFinder : RepositoryBase, ICoSijisenFinder
     {
-        private int HpId = Session.HospitalID;
-        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-
-        public CoSijisenFinder(TenantNoTrackingDataContext tenantNoTrackingDataContext)
+        public CoSijisenFinder(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantNoTrackingDataContext;
         }
-
         /// <summary>
         /// 患者情報を取得する
         /// </summary>
@@ -25,12 +23,13 @@ namespace Reporting.Sijisen.DB
         /// <returns>患者情報</returns>
         public CoPtInfModel FindPtInf(int hpId, long ptId, int sinDate)
         {
-            var ptInfs = _tenantNoTrackingDataContext.PtInfs.Where(p =>
+
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(p =>
                      p.HpId == hpId &&
                      p.PtId == ptId
-                );
+            );
 
-            var ptCmts = _tenantNoTrackingDataContext.PtCmtInfs.Where(p =>
+            var ptCmts = NoTrackingDataContext.PtCmtInfs.Where(p =>
                     p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.IsDeleted == DeleteStatus.None
@@ -53,7 +52,7 @@ namespace Reporting.Sijisen.DB
 
             var entities = join.AsEnumerable().Select(
                 data =>
-                    new CoPtInfModel(data.ptInf, sinDate, data.ptCmtJoin, new(), new(), new())
+                    new CoPtInfModel(data.ptInf, sinDate, data.ptCmtJoin, null, null, null)
                 )
                 .ToList();
 
@@ -72,7 +71,7 @@ namespace Reporting.Sijisen.DB
                     ));
             });
 
-            return results.FirstOrDefault() ?? new();
+            return results.FirstOrDefault();
         }
         /// <summary>
         /// 患者薬剤アレルギー情報を取得する
@@ -82,7 +81,7 @@ namespace Reporting.Sijisen.DB
         /// <returns></returns>
         private List<CoPtAlrgyDrugModel> FindPtAlrgyDrug(int hpId, long ptId, int sinDate)
         {
-            var ptAlrgyDrugs = _tenantNoTrackingDataContext.PtAlrgyDrugs.Where(p =>
+            var ptAlrgyDrugs = NoTrackingDataContext.PtAlrgyDrugs.Where(p =>
                     p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.StartDate <= sinDate &&
@@ -110,14 +109,14 @@ namespace Reporting.Sijisen.DB
         /// <returns></returns>
         private List<CoPtAlrgyFoodModel> FindPtAlrgyFood(int hpId, long ptId, int sinDate)
         {
-            var ptAlrgyFoods = _tenantNoTrackingDataContext.PtAlrgyFoods.Where(p =>
+            var ptAlrgyFoods = NoTrackingDataContext.PtAlrgyFoods.Where(p =>
                     p.HpId == hpId &&
                     p.PtId == ptId &&
-            p.StartDate <= sinDate &&
+                    p.StartDate <= sinDate &&
                     (p.EndDate >= sinDate || p.EndDate == 0) &&
                     p.IsDeleted == DeleteStatus.None
                 );
-            var foodAlrgyKbns = _tenantNoTrackingDataContext.M12FoodAlrgyKbn;
+            var foodAlrgyKbns = NoTrackingDataContext.M12FoodAlrgyKbn;
 
             var join = (
 
@@ -159,7 +158,7 @@ namespace Reporting.Sijisen.DB
         /// <returns></returns>
         private List<CoPtAlrgyElseModel> FindPtAlrgyElse(int hpId, long ptId, int sinDate)
         {
-            var ptAlrgyElses = _tenantNoTrackingDataContext.PtAlrgyElses.Where(p =>
+            var ptAlrgyElses = NoTrackingDataContext.PtAlrgyElses.Where(p =>
                     p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.StartDate <= sinDate &&
@@ -192,22 +191,22 @@ namespace Reporting.Sijisen.DB
         /// </returns>
         public CoRaiinInfModel FindRaiinInfData(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            var kaMsts = _tenantNoTrackingDataContext.KaMsts.Where(o =>
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(o =>
                 o.HpId == hpId &&
                 o.IsDeleted == DeleteStatus.None);
-            var userMsts = _tenantNoTrackingDataContext.UserMsts.Where(o =>
+            var userMsts = NoTrackingDataContext.UserMsts.Where(o =>
                 o.HpId == hpId &&
                 o.IsDeleted == DeleteStatus.None);
-            var uketukeSbtMsts = _tenantNoTrackingDataContext.UketukeSbtMsts.Where(o =>
+            var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(o =>
                 o.HpId == hpId &&
                 o.IsDeleted == DeleteStatus.None);
-            var raiinCmtInfs = _tenantNoTrackingDataContext.RaiinCmtInfs.Where(o =>
-            o.HpId == hpId &&
-            o.PtId == ptId &&
+            var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(o =>
+                o.HpId == hpId &&
+                o.PtId == ptId &&
                 o.CmtKbn == 1 &&
                 o.RaiinNo == raiinNo
                 );
-            var raiinInfs = _tenantNoTrackingDataContext.RaiinInfs.Where(p =>
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p =>
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.SinDate == sinDate &&
@@ -239,7 +238,7 @@ namespace Reporting.Sijisen.DB
                     raiinInf.SinDate == sinDate &&
                     raiinInf.IsDeleted == DeleteStatus.None
                 orderby
-                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring((raiinInf.SinStartTime ?? string.Empty).Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
+                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring(raiinInf.SinStartTime.Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
                 select new
                 {
                     raiinInf,
@@ -256,14 +255,14 @@ namespace Reporting.Sijisen.DB
                 )
                 .ToList();
 
-            List<CoRaiinInfModel> results = new();
+            List<CoRaiinInfModel> results = new List<CoRaiinInfModel>();
 
             entities?.ForEach(entity =>
             {
                 results.Add(new CoRaiinInfModel(entity.RaiinInf, entity.KaMst, entity.UserMst, entity.UketukeSbtMst, entity.RaiinCmtInf));
             });
 
-            return results.FirstOrDefault() ?? new();
+            return results.FirstOrDefault();
         }
 
         /// <summary>
@@ -279,22 +278,22 @@ namespace Reporting.Sijisen.DB
         /// </returns>
         public List<CoRaiinInfModel> FindOtherRaiinInfData(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            var kaMsts = _tenantNoTrackingDataContext.KaMsts.Where(o =>
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(o =>
                 o.HpId == hpId &&
                 o.IsDeleted == DeleteStatus.None);
-            var userMsts = _tenantNoTrackingDataContext.UserMsts.Where(o =>
+            var userMsts = NoTrackingDataContext.UserMsts.Where(o =>
                 o.HpId == hpId &&
                 o.IsDeleted == DeleteStatus.None);
-            var uketukeSbtMsts = _tenantNoTrackingDataContext.UketukeSbtMsts.Where(o =>
+            var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(o =>
                 o.HpId == hpId &&
                 o.IsDeleted == DeleteStatus.None);
-            var raiinCmtInfs = _tenantNoTrackingDataContext.RaiinCmtInfs.Where(o =>
-            o.HpId == hpId &&
-            o.PtId == ptId &&
+            var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(o =>
+                o.HpId == hpId &&
+                o.PtId == ptId &&
                 o.CmtKbn == 1 &&
                 o.RaiinNo != raiinNo
                 );
-            var raiinInfs = _tenantNoTrackingDataContext.RaiinInfs.Where(p =>
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p =>
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.SinDate == sinDate &&
@@ -326,7 +325,7 @@ namespace Reporting.Sijisen.DB
                     raiinInf.SinDate == sinDate &&
                     raiinInf.IsDeleted == DeleteStatus.None
                 orderby
-                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring((raiinInf.SinStartTime ?? string.Empty).Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
+                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring(raiinInf.SinStartTime.Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
                 select new
                 {
                     raiinInf,
@@ -365,7 +364,7 @@ namespace Reporting.Sijisen.DB
         /// </returns>
         public List<CoOdrInfModel> FindOdrInf(int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns)
         {
-            var odrInfs = _tenantNoTrackingDataContext.OdrInfs.Where(o =>
+            var odrInfs = NoTrackingDataContext.OdrInfs.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
                 o.SinDate == sinDate &&
@@ -421,7 +420,7 @@ namespace Reporting.Sijisen.DB
         /// <returns></returns>
         public List<CoOdrInfDetailModel> FindOdrInfDetail(int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns)
         {
-            var odrInfs = _tenantNoTrackingDataContext.OdrInfs.Where(o =>
+            var odrInfs = NoTrackingDataContext.OdrInfs.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
                 o.SinDate == sinDate &&
@@ -437,23 +436,23 @@ namespace Reporting.Sijisen.DB
             }
             odrInfs = odrInfs.Except(notAndConditions);
 
-            var odrInfDetails = _tenantNoTrackingDataContext.OdrInfDetails.Where(o =>
-            o.HpId == hpId &&
+            var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(o =>
+                o.HpId == hpId &&
                 o.PtId == ptId &&
                 o.SinDate == sinDate);
-            var tenMsts = _tenantNoTrackingDataContext.TenMsts.Where(t =>
-            t.HpId == hpId &&
-            t.StartDate <= sinDate &&
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t =>
+                t.HpId == hpId &&
+                t.StartDate <= sinDate &&
                 (t.EndDate >= sinDate || t.EndDate == 12341234));
-            var kensaMsts = _tenantNoTrackingDataContext.KensaMsts.Where(k =>
-            k.HpId == hpId &&
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(k =>
+                    k.HpId == hpId &&
                     k.IsDelete == DeleteStatus.None
                 );
-            var materialMsts = _tenantNoTrackingDataContext.MaterialMsts.Where(m =>
+            var materialMsts = NoTrackingDataContext.MaterialMsts.Where(m =>
                     m.HpId == hpId
                 );
-            var containerMsts = _tenantNoTrackingDataContext.ContainerMsts.Where(c =>
-                    c.HpId == HpId
+            var containerMsts = NoTrackingDataContext.ContainerMsts.Where(c =>
+                    c.HpId == hpId
                 );
 
             var joinQuery = (
@@ -462,7 +461,7 @@ namespace Reporting.Sijisen.DB
                     new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                     new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
                 join tenMst in tenMsts on
-                    new { odrInfDetail.HpId, ItemCd = odrInfDetail.ItemCd == null ? string.Empty : odrInfDetail.ItemCd.Trim() } equals
+                    new { odrInfDetail.HpId, ItemCd = odrInfDetail.ItemCd.Trim() } equals
                     new { tenMst.HpId, tenMst.ItemCd } into oJoin
                 from oj in oJoin.DefaultIfEmpty()
                 join kensaMst in kensaMsts on
@@ -535,7 +534,7 @@ namespace Reporting.Sijisen.DB
         /// </returns>
         public List<CoRsvkrtOdrInfModel> FindRsvKrtOdrInf(int hpId, long ptId, int rsvDate, List<(int from, int to)> odrKouiKbns)
         {
-            var rsvKrtOdrInfs = _tenantNoTrackingDataContext.RsvkrtOdrInfs.Where(o =>
+            var rsvKrtOdrInfs = NoTrackingDataContext.RsvkrtOdrInfs.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
                 (o.RsvDate == rsvDate || o.RsvDate == 99999999) &&
@@ -591,7 +590,7 @@ namespace Reporting.Sijisen.DB
         /// <returns></returns>
         public List<CoRsvkrtOdrInfDetailModel> FindRsvKrtOdrInfDetail(int hpId, long ptId, int rsvDate, List<(int from, int to)> odrKouiKbns)
         {
-            var rsvKrtOdrInfs = _tenantNoTrackingDataContext.RsvkrtOdrInfs.Where(o =>
+            var rsvKrtOdrInfs = NoTrackingDataContext.RsvkrtOdrInfs.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
                 (o.RsvDate == rsvDate || o.RsvDate == 99999999) &&
@@ -608,23 +607,23 @@ namespace Reporting.Sijisen.DB
             rsvKrtOdrInfs = rsvKrtOdrInfs.Except(notAndConditions);
 
 
-            var rsvKrtOdrInfDetails = _tenantNoTrackingDataContext.RsvkrtOdrInfDetails.Where(o =>
-            o.HpId == hpId &&
-            o.PtId == ptId &&
+            var rsvKrtOdrInfDetails = NoTrackingDataContext.RsvkrtOdrInfDetails.Where(o =>
+                o.HpId == hpId &&
+                o.PtId == ptId &&
                 (o.RsvDate == rsvDate || o.RsvDate == 99999999));
-            var tenMsts = _tenantNoTrackingDataContext.TenMsts.Where(t =>
-            t.HpId == hpId &&
-            t.StartDate <= rsvDate &&
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t =>
+                t.HpId == hpId &&
+                t.StartDate <= rsvDate &&
                 (t.EndDate >= rsvDate || t.EndDate == 12341234));
-            var kensaMsts = _tenantNoTrackingDataContext.KensaMsts.Where(k =>
-            k.HpId == hpId &&
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(k =>
+                    k.HpId == hpId &&
                     k.IsDelete == DeleteStatus.None
                 );
-            var materialMsts = _tenantNoTrackingDataContext.MaterialMsts.Where(m =>
-            m.HpId == hpId
+            var materialMsts = NoTrackingDataContext.MaterialMsts.Where(m =>
+                    m.HpId == hpId
                 );
-            var containerMsts = _tenantNoTrackingDataContext.ContainerMsts.Where(c =>
-                    c.HpId == HpId
+            var containerMsts = NoTrackingDataContext.ContainerMsts.Where(c =>
+                    c.HpId == hpId
                 );
 
             var joinQuery = (
@@ -633,7 +632,7 @@ namespace Reporting.Sijisen.DB
                     new { rsvKrtOdrInf.HpId, rsvKrtOdrInf.PtId, rsvKrtOdrInf.RsvkrtNo, rsvKrtOdrInf.RpNo, rsvKrtOdrInf.RpEdaNo } equals
                     new { rsvKrtOdrInfDetail.HpId, rsvKrtOdrInfDetail.PtId, rsvKrtOdrInfDetail.RsvkrtNo, rsvKrtOdrInfDetail.RpNo, rsvKrtOdrInfDetail.RpEdaNo }
                 join tenMst in tenMsts on
-                    new { rsvKrtOdrInfDetail.HpId, ItemCd = rsvKrtOdrInfDetail.ItemCd == null ? string.Empty : rsvKrtOdrInfDetail.ItemCd.Trim() } equals
+                    new { rsvKrtOdrInfDetail.HpId, ItemCd = rsvKrtOdrInfDetail.ItemCd.Trim() } equals
                     new { tenMst.HpId, tenMst.ItemCd } into oJoin
                 from oj in oJoin.DefaultIfEmpty()
                 join kensaMst in kensaMsts on
@@ -704,15 +703,15 @@ namespace Reporting.Sijisen.DB
         /// <returns></returns>
         public List<CoRaiinKbnInfModel> FindRaiinKbnInf(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            var raiinKbnInfs = _tenantNoTrackingDataContext.RaiinKbnInfs.Where(p =>
+            var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(p =>
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.SinDate == sinDate &&
-            p.RaiinNo == raiinNo &&
-            p.IsDelete == DeleteStatus.None
-                );
+                p.RaiinNo == raiinNo &&
+                p.IsDelete == DeleteStatus.None
+            );
 
-            var raiinKbnDtls = _tenantNoTrackingDataContext.RaiinKbnDetails.Where(p =>
+            var raiinKbnDtls = NoTrackingDataContext.RaiinKbnDetails.Where(p =>
                 p.HpId == hpId &&
                 p.IsDeleted == DeleteStatus.None
                 );
@@ -765,7 +764,7 @@ namespace Reporting.Sijisen.DB
         /// <returns></returns>
         public List<CoRaiinKbnMstModel> FindRaiinKbnMst(int hpId)
         {
-            var raiinKbnMsts = _tenantNoTrackingDataContext.RaiinKbnMsts.Where(p =>
+            var raiinKbnMsts = NoTrackingDataContext.RaiinKbnMsts.Where(p =>
                 p.HpId == hpId &&
                 p.IsDeleted == DeleteStatus.None
             ).ToList();
@@ -793,7 +792,7 @@ namespace Reporting.Sijisen.DB
         {
             int ret = 0;
 
-            var raiinInf = _tenantNoTrackingDataContext.RaiinInfs.Where(p =>
+            var raiinInf = NoTrackingDataContext.RaiinInfs.Where(p =>
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.Status >= 5 &&

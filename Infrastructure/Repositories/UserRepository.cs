@@ -3,6 +3,7 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constant;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -127,8 +128,9 @@ namespace Infrastructure.Repositories
 
         public UserMstModel? GetByLoginId(string loginId)
         {
+            var timeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
             var entity = NoTrackingDataContext.UserMsts
-                .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
+                .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
             return entity is null ? null : ToModel(entity);
         }
 
