@@ -181,7 +181,7 @@ public class P40KoukiSeikyuCoReportService : IP40KoukiSeikyuCoReportService
 
                 countData wrkData = new countData();
 
-                if (wrkReces.Count >= 1)
+                if (wrkReces.Count >= 1 && pageIndex == 0)
                 {
                     //法別番号
                     SetFieldData("fixedHoubetu", fixedHoubetu[0]);
