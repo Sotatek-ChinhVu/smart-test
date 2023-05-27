@@ -57,7 +57,7 @@ namespace Interactor.Accounting
                 var debitBalance = listAllSyunoSeikyu.Sum(item => item.SeikyuGaku -
                                                   item.SyunoNyukinModels.Sum(itemNyukin =>
                                                       itemNyukin.NyukinGaku + itemNyukin.AdjustFutan));
-                var accDue = (int)_systemConfRepository.GetSettingValue(3020, 0, 0);
+                var accDue = (int)_systemConfRepository.GetSettingValue(3020, 0, 1);
 
                 if (accDue == 0)
                 {

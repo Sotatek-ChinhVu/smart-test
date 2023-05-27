@@ -3,6 +3,8 @@ using Reporting.CommonMasters.Enums;
 using Reporting.Karte3.DB;
 using Reporting.Karte3.Model;
 using Reporting.Mappers.Common;
+using Reporting.ReadRseReportFile.Model;
+using Reporting.ReadRseReportFile.Service;
 using static Reporting.Karte3.Enum.CoKarte3Column;
 
 namespace Reporting.Karte3.Service
@@ -18,6 +20,7 @@ namespace Reporting.Karte3.Service
         /// Finder
         /// </summary>
         private readonly ICoKarte3Finder _finder;
+        private readonly IReadRseReportFileService _readRseReportFileService;
         /// <summary>
         /// CoReport Model
         /// </summary>
@@ -66,9 +69,10 @@ namespace Reporting.Karte3.Service
         #endregion
 
         #region Constructor and Init
-        public Karte3CoReportService(ICoKarte3Finder finder)
+        public Karte3CoReportService(ICoKarte3Finder finder, IReadRseReportFileService readRseReportFileService)
         {
             _finder = finder;
+            _readRseReportFileService = readRseReportFileService;
         }
         #endregion
 
@@ -82,6 +86,7 @@ namespace Reporting.Karte3.Service
         private int _endSinYm;
         private bool _includeHoken;
         private bool _includeJihi;
+        private int _dataColCount;
 
         private bool _hasNextPage;
         private int _currentPage;
@@ -396,7 +401,7 @@ namespace Reporting.Karte3.Service
                     (long startX, long startY, long endX, long endY) = CoRep.GetListRowBounds("lsData", i);
 
                     // 塗りつぶしをクリアする
-                    for (short j = 0; j < CoRep.GetListColCount("lsData"); j++)
+                    for (short j = 0; j < _dataColCount; j++)
                     {
                         CoRep.ListFillPattern("lsData", j, i, Hos.CnDraw.Constants.ConFillPattern.None);
                     }
@@ -417,7 +422,7 @@ namespace Reporting.Karte3.Service
                         }
 
                         // 塗りつぶし
-                        for (short j = 0; j < CoRep.GetListColCount("lsData"); j++)
+                        for (short j = 0; j < _dataColCount; j++)
                         {
                             CoRep.ListFillPattern("lsData", j, i, Hos.CnDraw.Constants.ConFillPattern.Pattern6);
                             CoRep.ListBackColor("lsData", j, i, System.Drawing.Color.LightGray);
@@ -558,6 +563,18 @@ namespace Reporting.Karte3.Service
             }
         }
 
+        private void GetRowCount()
+        {
+            List<ObjectCalculate> fieldInputList = new();
+
+            fieldInputList.Add(new ObjectCalculate("lsData", (int)CalculateTypeEnum.GetListColCount));
+            fieldInputList.Add(new ObjectCalculate("lsData", (int)CalculateTypeEnum.GetListRowCount));
+
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Karte3, "fmKarte3.rse", fieldInputList);
+            var javaOutputData = _readRseReportFileService.ReadFileRse(data);
+            _dataColCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsData" && item.typeInt == (int)CalculateTypeEnum.GetListColCount)?.result ?? 0;
+            _dataRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsData" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
+        }
         #endregion
     }
 }
