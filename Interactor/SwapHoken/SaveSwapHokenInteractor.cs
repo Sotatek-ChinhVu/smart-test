@@ -29,7 +29,7 @@ namespace Interactor.SwapHoken
                     message = string.Format(ErrorMessage.MessageType_mSel01010, new string[] { "変換元保険" });
                     return new SaveSwapHokenOutputData(SaveSwapHokenStatus.SourceInsuranceHasNotSelected, message, TypeMessage.TypeMessageError, new List<int>());
                 }
-                    
+
                 if (inputData.HokenIdAfter <= 0)
                 {
                     message = string.Format(ErrorMessage.MessageType_mSel01010, new string[] { "変換先保険" });
@@ -58,16 +58,17 @@ namespace Interactor.SwapHoken
 
                 if (string.IsNullOrEmpty(sBuff))
                 {
-                    if(!inputData.ConfirmInvalidIsShowConversionCondition)
+                    if (!inputData.ConfirmInvalidIsShowConversionCondition)
                     {
                         if (!inputData.IsHokenPatternUsed) //IsShowConversionCondition
                         {
-                            message = "すべての期間が対象になります。保険変換を実行しますか？";
+                            message = "すべての期間が対象になります。" + Environment.NewLine + "保険変換を実行しますか？";
+
                             return new SaveSwapHokenOutputData(SaveSwapHokenStatus.InvalidIsShowConversionCondition, message, TypeMessage.TypeMessageWarning, new List<int>());
                         }
                         else
                         {
-                            message = "対象期間が指定されていないため、すべての期間が対象になります。保険変換を実行しますか？";
+                            message = "対象期間が指定されていないため、すべての期間が対象になります。" + Environment.NewLine + "保険変換を実行しますか？";
                             return new SaveSwapHokenOutputData(SaveSwapHokenStatus.InvalidIsShowConversionCondition, message, TypeMessage.TypeMessageWarning, new List<int>());
                         }
                     }
@@ -79,11 +80,11 @@ namespace Interactor.SwapHoken
                     if (count == 0)
                     {
                         message = string.Format("変換元の保険は{0}に一度も使用されていないため、実行できません。", CIUtil.SDateToShowSDate(inputData.StartDate) + " ～ " + CIUtil.SDateToShowSDate(inputData.EndDate));
-                        return new SaveSwapHokenOutputData(SaveSwapHokenStatus.CantExecCauseNotValidDate, message , TypeMessage.TypeMessageError, new List<int>());
+                        return new SaveSwapHokenOutputData(SaveSwapHokenStatus.CantExecCauseNotValidDate, message, TypeMessage.TypeMessageError, new List<int>());
                     }
                 }
 
-                if(inputData.EndDate == 0)
+                if (inputData.EndDate == 0)
                 {
                     inputData.SetEndDate(99999999);
                 }
