@@ -71,7 +71,7 @@ public class P40KoukiSeikyuCoReportService : IP40KoukiSeikyuCoReportService
         _hpId = hpId;
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
-        if(seikyuYm > 202106)
+        if(seikyuYm >= 202106)
         {
             _formFileName = "p40KoukiSeikyu_2106.rse";
         }
