@@ -100,7 +100,7 @@ namespace Infrastructure.Repositories
                                                         d.tenItem != null ? (d.tenItem.Name ?? string.Empty) : string.Empty,
                                                         d.drugInf != null ? (d.drugInf.GenericName ?? string.Empty) : string.Empty,
                                                         d.drugInf != null ? (d.drugInf.Unit ?? string.Empty) : string.Empty,
-                                                        d.drugInf != null ? (d.drugInf.Marketer ?? string.Empty) : string.Empty,
+                                                        d.drugInf != null ? (d.drugInf.Maker ?? string.Empty) : string.Empty,
                                                         d.drugInf != null ? (d.drugInf.Vender ?? string.Empty) : string.Empty,
                                                         d.tenItem != null ? d.tenItem.KohatuKbn : 0,
                                                         d.tenItem != null ? d.tenItem.Ten : 0,

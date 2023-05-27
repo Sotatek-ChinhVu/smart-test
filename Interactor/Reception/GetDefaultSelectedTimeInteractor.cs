@@ -190,13 +190,39 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         if (currentTimeKbn == 0)
         {
             jikanKbn = currentTimeKbn;
+
+            return new DefaultSelectedTimeModel(
+                        timeKbnName,
+                        CIUtil.TimeToShowTime(uketukeTime),
+                        startTime,
+                        endTime,
+                        currentTimeKbn,
+                        beforeTimeKbn,
+                        isPatientChildren,
+                        isShowPopup,
+                        jikanKbn,
+                        timeKbnForChild);
         };
         if (timeKbnForChild > 0 &&
           (timeKbnForChild == JikanConst.YakanKotoku && currentTimeKbn == JikanConst.Yasou) ||
           (timeKbnForChild == JikanConst.SinyaKotoku && currentTimeKbn == JikanConst.Sinya))
         {
             jikanKbn = timeKbnForChild;
+
+            return new DefaultSelectedTimeModel(
+                        timeKbnName,
+                        CIUtil.TimeToShowTime(uketukeTime),
+                        startTime,
+                        endTime,
+                        currentTimeKbn,
+                        beforeTimeKbn,
+                        isPatientChildren,
+                        isShowPopup,
+                        jikanKbn,
+                        timeKbnForChild);
         }
+
+        jikanKbn = currentTimeKbn;
 
         return new DefaultSelectedTimeModel(
                         timeKbnName,
@@ -211,7 +237,6 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
                         timeKbnForChild);
 
     }
-
 
     private bool IsPatientChildren(int hpId, int birthDay, int sinDate)
     {
