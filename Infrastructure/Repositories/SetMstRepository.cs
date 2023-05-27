@@ -301,6 +301,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     {
                         flag = true;
                         RetrySaveSetMst(setMst);
+                        break;
                     }
                     catch (Exception tryEx)
                     {
@@ -312,11 +313,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                 //RetrySaveSetMst(setMst);
                                 continue;
                             }
-                        Console.WriteLine(tryEx.Message);
                         break;
                     }
                     count++;
-                    break;
                 }
             }
             Console.WriteLine(ex.Message);
@@ -688,10 +687,12 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
                                         TrackingDataContext.SaveChanges();
                                         transaction.Commit();
+                                        break;
                                     }
                                     catch (Exception tryEx)
                                     {
                                         flag = false;
+                                        transaction.Rollback();
                                         innerException = tryEx.InnerException?.ToString() ?? string.Empty;
                                         if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
                                         {
@@ -701,9 +702,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                             //transaction.Commit();
                                             continue;
                                         }
-                                        Console.WriteLine(tryEx.Message);
                                         break;
                                     }
+                                    count++;
                                 }
                             }
                             if (!flag)
@@ -1206,19 +1207,58 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 var listDrag = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
 
                 var listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList() ?? new();
+                var maxLevel2 = listDropUpdateLevel2.Count == 0 ? 0 : listDropUpdateLevel2.Max(l => l.Level2);
+                var maxDropUpdateLevel2 = listDropUpdateLevel2.Where(m => m.Level2 == maxLevel2).ToList();
+                var rootMaxDropUpdateLevel2 = maxDropUpdateLevel2.FirstOrDefault(m => m.Level3 == 0);
+                var listDropUpdateLevel2ExceptMaxLevel = listDropUpdateLevel2.Where(l => !maxDropUpdateLevel2.Contains(l)).ToList();
                 //LevelDown(2, userId, listDropUpdateLevel2);
-                SaveLevelDown(2, userId, listDropUpdateLevel2);
-
-                var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
-                LevelUp(2, userId, listDragUpdateLevel2);
-
                 foreach (var item in listDrag)
                 {
                     item.Level1 = dropItem.Level1;
                     item.Level2 = 1;
                     item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
+                    item.IsDeleted = DeleteTypes.Deleted;
                 }
+                LevelDown(2, userId, listDropUpdateLevel2ExceptMaxLevel);
+
+                foreach (var item in listDropUpdateLevel2ExceptMaxLevel)
+                {
+                    item.IsDeleted = DeleteTypes.Deleted;
+                }
+                if (rootMaxDropUpdateLevel2 != null)
+                {
+                    SaveLevelDown(2, userId, new List<SetMst> { rootMaxDropUpdateLevel2 });
+                    foreach (var item in maxDropUpdateLevel2.Where(m => m != rootMaxDropUpdateLevel2).ToList())
+                    {
+                        item.Level2 = rootMaxDropUpdateLevel2.Level2;
+                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        item.UpdateId = userId;
+                    }
+                }
+                var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
+                LevelUp(2, userId, listDragUpdateLevel2);
+                foreach (var item in listDragUpdateLevel2)
+                {
+                    item.IsDeleted = DeleteTypes.Deleted;
+                }
+                TrackingDataContext.SaveChanges();
+                foreach (var item in listDrag)
+                {
+                    item.IsDeleted = DeleteTypes.None;
+                }
+
+                foreach (var item in listDragUpdateLevel2)
+                {
+                    item.IsDeleted = DeleteTypes.None;
+                }
+
+                foreach (var item in listDropUpdateLevel2ExceptMaxLevel)
+                {
+                    item.IsDeleted = DeleteTypes.None;
+                }
+
+                TrackingDataContext.SaveChanges();
             }
         }
         // if dropItem is level2
@@ -1236,21 +1276,52 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         item.Level2 = dropItem.Level2 + 1;
                         item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
+                        item.IsDeleted = DeleteTypes.Deleted;
                     }
                     //LevelDown(2, userId, listUpdateLevel2);
-                    SaveLevelDown(3, userId, listUpdateLevel2);
+                    LevelDown(3, userId, listUpdateLevel2);
+                    foreach (var item in listUpdateLevel2)
+                    {
+                        item.IsDeleted = DeleteTypes.Deleted;
+                    }
+                    TrackingDataContext.SaveChanges();
+                    foreach (var item in listDragUpdateLevel2)
+                    {
+                        item.IsDeleted = DeleteTypes.None;
+                    }
+                    foreach (var item in listUpdateLevel2)
+                    {
+                        item.IsDeleted = DeleteTypes.None;
+                    }
+                    TrackingDataContext.SaveChanges();
                 }
                 else if (dragItem.Level2 < dropItem.Level2)
                 {
                     var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dragItem.Level2 && mst.Level2 <= dropItem.Level2).ToList();
                     LevelUp(2, userId, listUpdateLevel2);
-
+                    foreach (var item in listUpdateLevel2)
+                    {
+                        item.IsDeleted = DeleteTypes.Deleted;
+                    }
                     foreach (var item in listDragUpdateLevel2)
                     {
-                        item.Level2 = dropItem.Level2 + 1;
+                        item.Level2 = dropItem.Level2;
                         item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
+                        item.IsDeleted = DeleteTypes.Deleted;
                     }
+                    TrackingDataContext.SaveChanges();
+
+                    foreach (var item in listUpdateLevel2)
+                    {
+                        item.IsDeleted = DeleteTypes.None;
+                    }
+                    foreach (var item in listDragUpdateLevel2)
+                    {
+                        item.IsDeleted = DeleteTypes.None;
+                    }
+
+                    TrackingDataContext.SaveChanges();
                 }
                 else
                 {
@@ -1264,17 +1335,46 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     return false;
                 }
                 var listUpdateLevel3 = listSetMsts?.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList() ?? new();
+                var maxUpdateLevel3 = listUpdateLevel3.OrderByDescending(mst => mst.Level3).FirstOrDefault();
+                var listUpdateLevel3ExceptMaxLevel = listUpdateLevel3.Where(mst => mst != maxUpdateLevel3).ToList();
                 //LevelDown(3, userId, listUpdateLevel3);
-                SaveLevelDown(3, userId, listUpdateLevel3);
-
+                LevelDown(3, userId, listUpdateLevel3ExceptMaxLevel);
+                foreach (var item in listUpdateLevel3ExceptMaxLevel)
+                {
+                    item.IsDeleted = DeleteTypes.Deleted;
+                }
                 var listDragUpdateLevel2 = listSetMsts?.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
                 LevelUp(2, userId, listDragUpdateLevel2);
-
+                foreach (var item in listDragUpdateLevel2)
+                {
+                    item.IsDeleted = DeleteTypes.Deleted;
+                }
                 dragItem.Level1 = dropItem.Level1;
                 dragItem.Level2 = dropItem.Level2;
                 dragItem.Level3 = 1;
                 dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dragItem.UpdateId = userId;
+                dragItem.IsDeleted = DeleteTypes.Deleted;
+                if (maxUpdateLevel3 != null)
+                {
+                    SaveLevelDown(3, userId, new List<SetMst> { maxUpdateLevel3 });
+                }
+                else
+                {
+                    TrackingDataContext.SaveChanges();
+                }
+
+                foreach (var item in listUpdateLevel3ExceptMaxLevel)
+                {
+                    item.IsDeleted = DeleteTypes.None;
+                }
+
+                foreach (var item in listDragUpdateLevel2)
+                {
+                    item.IsDeleted = DeleteTypes.None;
+                }
+                dragItem.IsDeleted = DeleteTypes.None;
+                TrackingDataContext.SaveChanges();
             }
         }
         // if dropItem is level3 => return false
@@ -1485,9 +1585,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             //LevelDown(3, userId, listUpdate);
                             //TrackingDataContext.SaveChanges();
                         }
-                        Console.WriteLine(tryEx.Message);
                         break;
                     }
+                    count++;
                 }
             }
             if (!flag)
