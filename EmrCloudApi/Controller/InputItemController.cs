@@ -86,7 +86,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetYohoSetMstByItemCd)]
         public ActionResult<Response<GetYohoSetMstByItemCdResponse>> GetYohoSetMstByItemCd([FromQuery] GetYohoSetMstByItemCdRequest request)
         {
-            var input = new GetYohoMstByItemCdInputData(HpId, request.ItemCd, request.StartDate);
+            var input = new GetYohoMstByItemCdInputData(HpId, UserId, request.ItemCd, request.StartDate);
             var output = _bus.Handle(input);
             var presenter = new GetYohoMstByItemCdPresenter();
             presenter.Complete(output);
