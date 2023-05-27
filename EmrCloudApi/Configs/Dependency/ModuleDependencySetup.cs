@@ -570,6 +570,7 @@ using UseCase.RaiinListSetting.GetDocCategory;
 using Interactor.RaiinListSetting;
 using Domain.Models.RaiinListSetting;
 using UseCase.RaiinListSetting.GetFilingcategory;
+using Reporting.Sijisen.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -703,6 +704,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoKoukiSeikyuFinder, CoKoukiSeikyuFinder>();
             services.AddTransient<IP28KoukiSeikyuCoReportService, P28KoukiSeikyuCoReportService>();
             services.AddTransient<IP29KoukiSeikyuCoReportService, P29KoukiSeikyuCoReportService>();
+            services.AddTransient<ICoSijisenFinder, CoSijisenFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
