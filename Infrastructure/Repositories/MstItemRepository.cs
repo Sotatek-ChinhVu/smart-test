@@ -13,6 +13,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Infrastructure.Repositories
@@ -693,57 +694,92 @@ namespace Infrastructure.Repositories
                     kanaKeyword = inputKeyword;
             }
 
-            var replaceDictBigKeyWord = new Dictionary<char, char>
-                                        {
-                                            { 'ｧ', 'ｱ' },
-                                            { 'ｨ', 'ｲ' },
-                                            { 'ｩ', 'ｳ' },
-                                            { 'ｪ', 'ｴ' },
-                                            { 'ｫ', 'ｵ' },
-                                            { 'ｬ', 'ﾔ' },
-                                            { 'ｭ', 'ﾕ' },
-                                            { 'ｮ', 'ﾖ' },
-                                            { 'ｯ', 'ﾂ' }
-                                        };
-
-            var replaceDictSmallKeyWord = new Dictionary<char, char>
-                                        {
-                                            {'ｱ', 'ｧ' },
-                                            {'ｲ', 'ｨ' },
-                                            {'ｳ', 'ｩ' },
-                                            {'ｴ', 'ｪ' },
-                                            {'ｵ', 'ｫ' },
-                                            {'ﾔ', 'ｬ' },
-                                            {'ﾕ', 'ｭ' },
-                                            {'ﾖ', 'ｮ' },
-                                            {'ﾂ', 'ｯ' }
-                                        };
-
-            string sBigKeyword = kanaKeyword.ToUpper();
-            string sSmallKeyword = kanaKeyword.ToUpper();
-
-            foreach (var item in replaceDictBigKeyWord)
-            {
-                sBigKeyword = sBigKeyword.Replace(item.Key, item.Value);
-            }
-
-            foreach (var item in replaceDictSmallKeyWord)
-            {
-                sSmallKeyword = sSmallKeyword.Replace(item.Key, item.Value);
-            }
+            string sBigKeyword = kanaKeyword.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ");
 
             var queryResult = NoTrackingDataContext.TenMsts
-                .Where(t =>
-                    t.ItemCd.StartsWith(keyword)
-                    || !string.IsNullOrEmpty(t.SanteiItemCd) && t.SanteiItemCd.StartsWith(keyword)
-                    || !string.IsNullOrEmpty(t.KanaName1) && (t.KanaName1.ToUpper().StartsWith(sBigKeyword) || t.KanaName1.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName2) && (t.KanaName2.ToUpper().StartsWith(sBigKeyword) || t.KanaName2.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName3) && (t.KanaName3.ToUpper().StartsWith(sBigKeyword) || t.KanaName3.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName4) && (t.KanaName4.ToUpper().StartsWith(sBigKeyword) || t.KanaName4.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName5) && (t.KanaName5.ToUpper().StartsWith(sBigKeyword) || t.KanaName5.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName6) && (t.KanaName6.ToUpper().StartsWith(sBigKeyword) || t.KanaName6.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName7) && (t.KanaName7.ToUpper().StartsWith(sBigKeyword) || t.KanaName7.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword));
+                    .Where(t =>
+                        t.ItemCd.StartsWith(keyword)
+                        || t.SanteiItemCd.StartsWith(keyword)
+                        || t.KanaName1.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName2.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName3.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName4.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName5.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName6.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.KanaName7.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || t.Name.Contains(keyword));
 
             if (isAllowSearchDeletedItem)
             {
