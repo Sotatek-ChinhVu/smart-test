@@ -817,9 +817,16 @@ namespace Infrastructure.Repositories
 
             foreach (var model in models)
             {
-                if (models.Any(m => m.KanaName == model.KanaName && m != model))
+                var kanaName = model.KanaName?.Replace("　", " ") ?? "";
+                var list = models
+                    .Where(vs => vs.KanaName?.Replace("　", " ") == kanaName && vs.PtId != model.PtId);
+                if (!string.IsNullOrWhiteSpace(kanaName) && list != null && list.Count() > 0)
                 {
                     model.IsNameDuplicate = true;
+                }
+                else
+                {
+                    model.IsNameDuplicate = false;
                 }
             }
 
