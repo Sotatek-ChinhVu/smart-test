@@ -1128,10 +1128,38 @@ namespace Infrastructure.Repositories
                                          KensaMst = kensaMst
                                      };
 
-            var totalCount = queryJoinWithKensa.Count();
+            var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.StartDate <= sTDDate && u.EndDate >= sTDDate);
+            var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.StartDate <= sTDDate && u.EndDate >= sTDDate);
+
+            var ipnMinYakka = NoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= sTDDate &&
+                   p.EndDate >= sTDDate);
+            //&&
+            //p.IpnNameCd == ipnNameCd);
+
+            var joinedQuery = from q in queryJoinWithKensa
+                              join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
+                              from ipnExclude in ipnExcludes.DefaultIfEmpty()
+                              join ipnItem in ipnKasanExcludeItem on q.TenMst.ItemCd equals ipnItem.ItemCd into ipnExcludesItems
+                              from ipnExcludesItem in ipnExcludesItems.DefaultIfEmpty()
+                              join yakka in ipnMinYakka on q.TenMst.IpnNameCd equals yakka.IpnNameCd into ipnYakkas
+                              from ipnYakka in ipnYakkas.DefaultIfEmpty()
+                              select new
+                              {
+                                  q.TenMst,
+                                  q.KouiName,
+                                  q.YakkaSyusaiItem,
+                                  q.tenKN,
+                                  KensaMst = q.KensaMst,
+                                  IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
+                                  Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
+                              };
+
+            var totalCount = joinedQuery.Count();
             if (isSearchSuggestion)
             {
-                queryJoinWithKensa = queryJoinWithKensa
+                joinedQuery = joinedQuery
                                       .OrderByDescending(item => item.TenMst.IsAdopted)
                                       .ThenBy(item => item.TenMst.KanaName1)
                                       .ThenBy(item => item.TenMst.Name)
@@ -1140,13 +1168,13 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                queryJoinWithKensa = queryJoinWithKensa.OrderBy(item => item.TenMst.KanaName1)
+                joinedQuery = joinedQuery.OrderBy(item => item.TenMst.KanaName1)
                                      .ThenBy(item => item.TenMst.Name)
                                      .Skip((pageIndex - 1) * pageCount)
                                      .Take(pageCount);
             }
 
-            var tenMstModels = queryJoinWithKensa.Select(item => new TenItemModel(
+            var tenMstModels = joinedQuery.Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
                                                            item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,
@@ -1191,7 +1219,10 @@ namespace Infrastructure.Repositories
                                                            string.Empty,
                                                            item.TenMst?.IsDeleted ?? 0,
                                                            item.TenMst?.HandanGrpKbn ?? 0,
-                                                           item.KensaMst == null
+                                                           item.KensaMst == null,
+                                                           item.Yakka == null ? 0 : item.Yakka ?? 0,
+                                                           0,
+                                                           item.IsGetYakkaPrice
                                                             )).ToList();
 
             if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
