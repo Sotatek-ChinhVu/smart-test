@@ -2659,7 +2659,7 @@ namespace Infrastructure.Repositories
         {
             List<(int, OrdInfModel)> result = new();
             var currentListOrder = odrInfs.Where(o => o.Id >= 0).ToList();
-            var addingOdrList = odrInfs.Where(o => o.Id == -1).ToList();
+            var addingOdrList = odrInfs.Where(o => o.Id == -1 && o.OrdInfDetails.Count > 0).ToList();
             int odrInfIndex = 0, odrInfDetailIndex = 0;
             List<string> ipnNameCds = new List<string>();
             List<string> itemCds = new List<string>();
@@ -2993,6 +2993,14 @@ namespace Infrastructure.Repositories
                 }
 
                 odrInfIndex++;
+            }
+
+            foreach (var item in result)
+            {
+                if (item.Item1 >= 0 && item.Item2.OrdInfDetails.Count == 0)
+                {
+                    item.Item2.Delete();
+                }
             }
 
             return result;

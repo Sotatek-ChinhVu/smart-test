@@ -10,4 +10,5 @@ public class GetReceptionListRequest
     public long PtId { get; set; } = CommonConstants.InvalidId;
     public bool IsGetFamily { get; set; } = false;
     public int IsDeleted { get; set; }
+    public bool SearchSameVisit { get; set; } = false;
 }

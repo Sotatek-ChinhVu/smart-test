@@ -42,7 +42,8 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
                                                                  && item.PtId == ptId
                                                                  && docCategoryCdList.Contains(item.CategoryCd))
                                                      .OrderByDescending(x => x.SinDate)
-                                                     .ThenBy(x => x.UpdateDate)
+                                                     .ThenByDescending(x => x.UpdateDate)
+                                                     .ThenBy(x => x.DspFileName)
                                                      .ToList();
         return listDocDB.Select(item => ConvertToDocInfModel(item, listDocCategory)).ToList();
     }
