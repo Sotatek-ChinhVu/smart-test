@@ -1132,11 +1132,9 @@ namespace Infrastructure.Repositories
             var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.StartDate <= sTDDate && u.EndDate >= sTDDate);
 
             var ipnMinYakka = NoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
-                   p.HpId == hpId &&
-                   p.StartDate <= sTDDate &&
-                   p.EndDate >= sTDDate);
-            //&&
-            //p.IpnNameCd == ipnNameCd);
+                                                                           p.HpId == hpId &&
+                                                                           p.StartDate <= sTDDate &&
+                                                                           p.EndDate >= sTDDate);
 
             var joinedQuery = from q in queryJoinWithKensa
                               join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
@@ -1236,8 +1234,6 @@ namespace Infrastructure.Repositories
                 tenMstModels = tenMstModels.GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate)?.FirstOrDefault() ?? new()).ToList();
                 totalCount = tenMstModels.Count();
             }
-
-
 
             return (tenMstModels, totalCount);
         }
