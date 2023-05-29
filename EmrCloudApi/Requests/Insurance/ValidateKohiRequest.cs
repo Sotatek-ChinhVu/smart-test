@@ -24,10 +24,32 @@
 
         public int SelectedKohiHokenNo { get; set; }
 
-        public int SelectedKohiHokenEdraNo { get; set; }
-
         public bool SelectedKohiIsAddNew { get; set; }
 
-        public bool SelectedHokenPatternIsExpirated { get; private set; }
+        public bool SelectedHokenPatternIsExpirated { get; set; }
+
+        #region info hokenMst
+        public int KohiMasterIsFutansyaNoCheck { get; set; }
+
+        public int KohiMasterIsJyukyusyaNoCheck { get; set; }
+
+        public int KohiMasterIsTokusyuNoCheck { get; set; }
+
+        public int KohiMasterStartDate { get; set; }
+
+        public int KohiMasterEndDate { get; set; }
+
+        public string KohiMasterDisplayTextMaster { get; set; } = string.Empty;
+
+        public int KohiMasterJyukyuCheckDigit { get; set; }
+
+        public int KohiMasterCheckDigit { get; set; }
+
+        public string KohiMasterHoubetu { get; set; } = string.Empty;
+
+        public int KohiMasterAgeStart { get; set; }
+
+        public int KohiMasterAgeEnd { get; set; }
+        #endregion
     }
 }
