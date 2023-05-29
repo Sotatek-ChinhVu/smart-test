@@ -20,11 +20,13 @@ namespace Reporting.ReceiptPrint.Service
         private readonly IP11KokhoSokatuCoReportService _p11KokhoSokatuCoReportService;
         private readonly IP28KoukiSeikyuCoReportService _p28KoukiSeikyuCoReportService;
         private readonly IP29KoukiSeikyuCoReportService _p29KoukiSeikyuCoReportService;
+        private readonly IP44KoukiSeikyuCoReportService _p44KoukiSeikyuCoReportService;
 
         public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService
             , IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService
             , IP28KoukiSeikyuCoReportService p28KoukiSeikyuCoReportService
             , IP29KoukiSeikyuCoReportService p29KoukiSeikyuCoReportService
+            , IP44KoukiSeikyuCoReportService p44KoukiSeikyuCoReportService
 
                                   )
         {
@@ -32,6 +34,7 @@ namespace Reporting.ReceiptPrint.Service
             _p11KokhoSokatuCoReportService = p11KokhoSokatuCoReportService;
             _p28KoukiSeikyuCoReportService = p28KoukiSeikyuCoReportService;
             _p29KoukiSeikyuCoReportService = p29KoukiSeikyuCoReportService;
+            _p44KoukiSeikyuCoReportService = p44KoukiSeikyuCoReportService;
         }
 
         public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId)
@@ -45,12 +48,15 @@ namespace Reporting.ReceiptPrint.Service
             else if (prefNo == 11 && reportId == 102 && reportEdaNo == 0)
             {
                 return _p11KokhoSokatuCoReportService.GetP11KokhoSokatuReportingData(hpId, seikyuYm, seikyuType);
-            }else if (prefNo == 28 && reportId == 104 && reportEdaNo == 0)
+            } else if (prefNo == 28 && reportId == 104 && reportEdaNo == 0)
             {
                 return _p28KoukiSeikyuCoReportService.GetP28KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
-            }else if (prefNo == 29 && reportId == 104 && reportEdaNo == 0)
+            } else if (prefNo == 29 && reportId == 104 && reportEdaNo == 0)
             {
                 return _p29KoukiSeikyuCoReportService.GetP29KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
+            } else if (prefNo == 44 && reportId == 104 && reportEdaNo == 0)
+            {
+                return _p44KoukiSeikyuCoReportService.GetP28KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
             }
 
             return new();
