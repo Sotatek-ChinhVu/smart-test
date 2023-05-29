@@ -52,7 +52,6 @@ namespace Infrastructure.Repositories
             var OtcMains = NoTrackingDataContext.M38OtcMain.AsQueryable();
             var UsageCodes = NoTrackingDataContext.M56UsageCode.AsQueryable();
             var OtcClassCodes = NoTrackingDataContext.M38ClassCode.AsQueryable();
-            var checkSerialNum = int.TryParse(searchValue, out int serialNum);
             var query = from main in OtcMains.AsEnumerable()
                         join classcode in OtcClassCodes on main.ClassCd equals classcode.ClassCd into classLeft
                         from clas in classLeft.DefaultIfEmpty()
@@ -62,11 +61,10 @@ namespace Infrastructure.Repositories
                         from form in formLeft.DefaultIfEmpty()
                         join usagecode in UsageCodes on main.YohoCd equals usagecode.YohoCd into usageLeft
                         from usage in usageLeft.DefaultIfEmpty()
-                        where ((main.TradeKana ?? string.Empty).Contains(searchValue)
+                        where ((main.TradeKana ?? string.Empty).StartsWith(searchValue)
                                 || (main.TradeName ?? string.Empty).Contains(searchValue)
-                                || (maker.MakerKana ?? string.Empty).Contains(searchValue)
+                                || (maker.MakerKana ?? string.Empty).StartsWith(searchValue)
                                 || (maker.MakerName ?? string.Empty).Contains(searchValue)
-                                || (checkSerialNum && main.SerialNum == serialNum)
                                 )
                         select new OtcItemModel(
                             main.SerialNum,
