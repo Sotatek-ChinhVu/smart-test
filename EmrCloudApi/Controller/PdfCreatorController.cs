@@ -78,7 +78,7 @@ public class PdfCreatorController : ControllerBase
         {
             odrKouiKbns.Add(new(item.From, item.To));
         }
-        var sijisenData = _reportService.GetSijisenReportingData(request.FormType, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, request.PrintNoOdr);
+        var sijisenData = _reportService.GetSijisenReportingData(request.HpId, request.FormType, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, request.PrintNoOdr);
         return await RenderPdf(sijisenData, ReportType.Common);
     }
 
