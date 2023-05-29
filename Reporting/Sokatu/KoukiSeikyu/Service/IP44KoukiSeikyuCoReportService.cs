@@ -5,6 +5,6 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
 {
     public interface IP44KoukiSeikyuCoReportService
     {
-        CommonReportingRequestModel GetP28KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType);
+        CommonReportingRequestModel GetP44KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType);
     }
 }

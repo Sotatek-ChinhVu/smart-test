@@ -58,7 +58,7 @@ public class P44KoukiSeikyuCoReportService : IP44KoukiSeikyuCoReportService
     }
 
     #endregion
-    public CommonReportingRequestModel GetP28KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
+    public CommonReportingRequestModel GetP44KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
         _hpId = hpId;
         _seikyuYm = seikyuYm;

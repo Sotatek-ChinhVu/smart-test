@@ -56,7 +56,7 @@ namespace Reporting.ReceiptPrint.Service
                 return _p29KoukiSeikyuCoReportService.GetP29KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
             } else if (prefNo == 44 && reportId == 104 && reportEdaNo == 0)
             {
-                return _p44KoukiSeikyuCoReportService.GetP28KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
+                return _p44KoukiSeikyuCoReportService.GetP44KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
             }
 
             return new();
