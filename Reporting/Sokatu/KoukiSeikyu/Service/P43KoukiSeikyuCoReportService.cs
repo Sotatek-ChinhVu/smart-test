@@ -82,7 +82,6 @@ public class P43KoukiSeikyuCoReportService : IP43KoukiSeikyuCoReportService
             {
                 UpdateDrawForm();
                 _currentPage++;
-                _hasNextPage = false;
             }
         }
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
