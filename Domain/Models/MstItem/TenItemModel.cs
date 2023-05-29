@@ -55,7 +55,7 @@ namespace Domain.Models.MstItem
             IsKensaMstEmpty = isKensaMstEmpty;
         }
 
-        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted, int handanGrpKbn, bool isKensaMstEmpty, double yakka, int syohoKbn, bool isGetPriceInYakka)
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted, int handanGrpKbn, bool isKensaMstEmpty, double yakka,  bool isGetPriceInYakka)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -103,7 +103,6 @@ namespace Domain.Models.MstItem
             HandanGrpKbn = handanGrpKbn;
             IsKensaMstEmpty = isKensaMstEmpty;
             Yakka = yakka;
-            SyohoKbn = syohoKbn;
             IsGetPriceInYakka = isGetPriceInYakka;
         }
 
@@ -351,8 +350,6 @@ namespace Domain.Models.MstItem
         public bool IsKensaMstEmpty { get; private set; }
 
         public double Yakka { get; private set; }
-
-        public int SyohoKbn { get; private set; }
 
         public bool IsGetPriceInYakka { get; private set; }
 

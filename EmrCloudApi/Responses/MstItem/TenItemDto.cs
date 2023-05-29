@@ -54,7 +54,6 @@ namespace EmrCloudApi.Responses.MstItem
             IsKensaMstEmpty = model.IsKensaMstEmpty;
             HandanGrpKbn = model.HandanGrpKbn;
             Yakka = model.Yakka;
-            SyohoKbn = model.SyohoKbn;
             IsGetPriceInYakka = model.IsGetPriceInYakka;
         }
 
@@ -203,8 +202,6 @@ namespace EmrCloudApi.Responses.MstItem
         public bool IsKensaMstEmpty { get; private set; }
 
         public double Yakka { get; private set; }
-
-        public int SyohoKbn { get; private set; }
 
         public bool IsGetPriceInYakka { get; private set; }
     }

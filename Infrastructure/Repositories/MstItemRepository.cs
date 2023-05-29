@@ -1219,7 +1219,6 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.HandanGrpKbn ?? 0,
                                                            item.KensaMst == null,
                                                            item.Yakka == null ? 0 : item.Yakka ?? 0,
-                                                           0,
                                                            item.IsGetYakkaPrice
                                                             )).ToList();
 
