@@ -575,6 +575,8 @@ using UseCase.RaiinListSetting.GetFilingcategory;
 using Reporting.Sokatu.AfterCareSeikyu.Service;
 using Reporting.Sokatu.AfterCareSeikyu.DB;
 using Reporting.Sijisen.DB;
+using Reporting.Sokatu.Syaho.Service;
+using Reporting.Sokatu.Syaho.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -713,6 +715,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP29KoukiSeikyuCoReportService, P29KoukiSeikyuCoReportService>();
             services.AddTransient<IAfterCareSeikyuCoReportService, AfterCareSeikyuCoReportService>();
             services.AddTransient<ICoSijisenFinder, CoSijisenFinder>();
+            services.AddTransient<ISyahoCoReportService, SyahoCoReportService>();
+            services.AddTransient<ICoSyahoFinder, CoSyahoFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
