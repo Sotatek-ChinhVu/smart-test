@@ -30,11 +30,6 @@ namespace Infrastructure.Repositories
             {
                 var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.RaiinNo == raiinNo && item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == 0);
 
-                if (oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
-                {
-                    return new List<ReceptionDto>();
-                }
-
                 listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(
                   item => item.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate && item.IsDeleted == 0).ToList();
             }
