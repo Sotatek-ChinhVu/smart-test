@@ -608,6 +608,14 @@ namespace Infrastructure.Repositories
             var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
             var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
 
+            var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.StartDate <= sinDate && u.EndDate >= sinDate);
+            var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.StartDate <= sinDate && u.EndDate >= sinDate);
+
+            var ipnMinYakka = NoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
+                                                                           p.HpId == hpId &&
+                                                                           p.StartDate <= sinDate &&
+                                                                           p.EndDate >= sinDate);
+
             var queryJoinWithKensaIpnName = from q in queryFinal
                                             join k in kensaMstList
                                             on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
@@ -615,7 +623,21 @@ namespace Infrastructure.Repositories
                                             join i in ipnNameMstList
                                             on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
                                             from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
-                                            select new { q.TenMst, q.tenKN, KensaMst = kensaMst, IpnName = ipnNameMst?.IpnName ?? string.Empty };
+                                            join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
+                                            from ipnExclude in ipnExcludes.DefaultIfEmpty()
+                                            join ipnItem in ipnKasanExcludeItem on q.TenMst.ItemCd equals ipnItem.ItemCd into ipnExcludesItems
+                                            from ipnExcludesItem in ipnExcludesItems.DefaultIfEmpty()
+                                            join yakka in ipnMinYakka on q.TenMst.IpnNameCd equals yakka.IpnNameCd into ipnYakkas
+                                            from ipnYakka in ipnYakkas.DefaultIfEmpty()
+                                            select new
+                                            {
+                                                q.TenMst,
+                                                q.tenKN,
+                                                KensaMst = kensaMst,
+                                                IpnName = ipnNameMst?.IpnName ?? string.Empty,
+                                                IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
+                                                Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
+                                            };
             var totalCount = queryJoinWithKensaIpnName.Count(item => item.TenMst != null);
 
             var listTenMst = queryJoinWithKensaIpnName.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
@@ -672,7 +694,9 @@ namespace Infrastructure.Repositories
                                                            item.IpnName,
                                                            item.TenMst?.IsDeleted ?? 0,
                                                            item.TenMst?.HandanGrpKbn ?? 0,
-                                                           item.KensaMst == null
+                                                           item.KensaMst == null,
+                                                           item.Yakka == null ? 0 : item.Yakka ?? 0,
+                                                           item.IsGetYakkaPrice
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
