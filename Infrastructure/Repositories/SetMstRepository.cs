@@ -310,12 +310,12 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
                             if (HandleException(ex) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
                             {
+                                count++;
                                 //RetrySaveSetMst(setMst);
                                 continue;
                             }
                         break;
                     }
-                    count++;
                 }
             }
             Console.WriteLine(ex.Message);
@@ -729,11 +729,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
                                             //TrackingDataContext.SaveChanges();
                                             //transaction.Commit();
+                                            count++;
                                             continue;
                                         }
                                         break;
                                     }
-                                    count++;
                                 }
                             }
                             if (!flag)
@@ -1805,13 +1805,13 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         innerException = tryEx.InnerException?.ToString() ?? string.Empty;
                         if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
                         {
+                            count++;
                             continue;
                             //LevelDown(3, userId, listUpdate);
                             //TrackingDataContext.SaveChanges();
                         }
                         break;
                     }
-                    count++;
                 }
             }
             if (!flag)
