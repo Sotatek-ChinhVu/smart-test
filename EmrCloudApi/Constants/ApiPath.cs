@@ -100,6 +100,7 @@
         public const string ReceTarget = "ReceTarget";
         public const string DrugNoteSeal = "DrugNoteSeal";
         public const string Yakutai = "Yakutai";
+        public const string AccountingCard = "AccountingCard";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
