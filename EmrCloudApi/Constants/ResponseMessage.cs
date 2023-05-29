@@ -932,14 +932,14 @@
         // Family
         public static readonly string InvalidPtIdOrFamilyPtId = "予期しないエラーが発生しました。";
         public static readonly string InvalidFamilyId = "予期しないエラーが発生しました。";
-        public static readonly string InvalidZokugaraCd = "既に登録されています";
+        public static readonly string InvalidZokugaraCd = "続柄が重複しています。";
         public static readonly string InvalidFamilyBirthday = "予期しないエラーが発生しました。";
         public static readonly string InvalidFamilyIsSeparated = "予期しないエラーが発生しました。";
         public static readonly string InvalidFamilyBiko = "備考は120文字以内に入力してください。";
         public static readonly string InvalidFamilyRekiId = "予期しないエラーが発生しました。";
         public static readonly string InvalidByomeiCd = "検索対象が見つかりません。\n・あいまい検索する場合は、全角文字で入力してください。";
         public static readonly string InvalidFamilyCmt = "病名の備考は100文字以内に入力してください。";
-        public static readonly string DuplicateFamily = "既に登録されています";
+        public static readonly string DuplicateFamily = "続柄が重複しています。";
         public static readonly string InvalidNameMaxLength = "氏名は100文字以内に入力してください。";
         public static readonly string InvalidKanaNameMaxLength = "氏名は100文字以内に入力してください。";
         public static readonly string FamilyNotAllow = "患者番号が重複しています。";
