@@ -62,7 +62,7 @@ public class ValidateFamilyList : IValidateFamilyList
         // validate familyId
         var listFamilyId = listFamily.Where(item => item.FamilyId > 0).Select(item => item.FamilyId).Distinct().ToList();
         var onlyFamlilyList = _familyRepository.GetListByPtId(hpId, ptId);
-        if (onlyFamlilyList.Exists(item => item.FamilyPtId == ptId) || listFamily.Exists(item => item.FamilyPtId == ptId))
+        if (onlyFamlilyList.Exists(item => item.FamilyPtId == ptId) || listFamily.Exists(item => item.FamilyPtId == ptId && !item.IsRevertItem))
         {
             return ValidateFamilyListStatus.FamilyNotAllow;
         }
@@ -93,7 +93,8 @@ public class ValidateFamilyList : IValidateFamilyList
                     item.Biko,
                     item.SortNo,
                     false,
-                    new()
+                    new(),
+                    false
                 ));
         }
 

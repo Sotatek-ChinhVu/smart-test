@@ -86,7 +86,7 @@ public class RsvInfRepository : RepositoryBase, IRsvInfRepository
                         UserMst = listTanto.FirstOrDefault(),
                         raiinCmtInf = listRaiinCmt.FirstOrDefault()
                     };
-        result = query.Select(u => new Tuple<long, int, string, string, string, string, string>(u.RaiinInf.RaiinNo, u.RaiinInf.SinDate, u.RaiinInf.UketukeTime ?? string.Empty, u.KaMst.KaSname ?? string.Empty, u.RaiinInf.YoyakuTime ?? string.Empty, u.UserMst.Sname ?? string.Empty, u.raiinCmtInf.Text ?? string.Empty)).OrderBy(r => r.Item2).ToList();
+        result = query.Select(u => new Tuple<long, int, string, string, string, string, string>(u.RaiinInf.RaiinNo, u.RaiinInf.SinDate, u.RaiinInf.UketukeTime ?? string.Empty, u.KaMst?.KaSname ?? string.Empty, u.RaiinInf.YoyakuTime ?? string.Empty, u.UserMst?.Sname ?? string.Empty, u.raiinCmtInf?.Text ?? string.Empty)).OrderBy(r => r.Item2).ToList();
         return result;
     }
 

@@ -53,6 +53,8 @@ namespace EmrCloudApi.Responses.MstItem
             IpnName = model.IpnName;
             IsKensaMstEmpty = model.IsKensaMstEmpty;
             HandanGrpKbn = model.HandanGrpKbn;
+            Yakka = model.Yakka;
+            IsGetPriceInYakka = model.IsGetPriceInYakka;
         }
 
         [JsonConstructor]
@@ -199,5 +201,8 @@ namespace EmrCloudApi.Responses.MstItem
 
         public bool IsKensaMstEmpty { get; private set; }
 
+        public double Yakka { get; private set; }
+
+        public bool IsGetPriceInYakka { get; private set; }
     }
 }

@@ -16,4 +16,5 @@ public static class FunctionCodes
     public const string AddLockChanged = "AddLockChanged";
     public const string RemoveLockChanged = "RemoveLockChanged";
     public const string SuperSetChanged = "SuperSetChanged";
+    public const string AccountDueChanged = "AccountDueChanged";
 }

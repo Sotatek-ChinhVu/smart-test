@@ -2659,7 +2659,7 @@ namespace Infrastructure.Repositories
         {
             List<(int, OrdInfModel)> result = new();
             var currentListOrder = odrInfs.Where(o => o.Id >= 0).ToList();
-            var addingOdrList = odrInfs.Where(o => o.Id == -1).ToList();
+            var addingOdrList = odrInfs.Where(o => o.Id == -1 && o.OrdInfDetails.Count > 0).ToList();
             int odrInfIndex = 0, odrInfDetailIndex = 0;
             List<string> ipnNameCds = new List<string>();
             List<string> itemCds = new List<string>();
@@ -2672,8 +2672,8 @@ namespace Infrastructure.Repositories
             var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(i =>
                    i.HpId == hpId &&
                    i.StartDate <= sinDate &&
-                   i.EndDate >= sinDate &&
-                   ipnNameCds.Contains(i.IpnNameCd)).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty));
+                   i.EndDate >= sinDate).AsEnumerable().Where(i =>
+                   ipnNameCds.Contains(i.IpnNameCd)).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty)).ToList();
             var autoSetSyohoKbnKohatuDrug = _systemConf.GetSettingValue(2020, 0, hpId);
             var autoSetSyohoLimitKohatuDrug = _systemConf.GetSettingValue(2020, 1, hpId);
             var autoSetSyohoKbnSenpatuDrug = _systemConf.GetSettingValue(2021, 0, hpId);
@@ -2993,6 +2993,14 @@ namespace Infrastructure.Repositories
                 }
 
                 odrInfIndex++;
+            }
+
+            foreach (var item in result)
+            {
+                if (item.Item1 >= 0 && item.Item2.OrdInfDetails.Count == 0)
+                {
+                    item.Item2.Delete();
+                }
             }
 
             return result;

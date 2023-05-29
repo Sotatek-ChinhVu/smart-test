@@ -78,7 +78,7 @@ public class PdfCreatorController : ControllerBase
         {
             odrKouiKbns.Add(new(item.From, item.To));
         }
-        var sijisenData = _reportService.GetSijisenReportingData(request.FormType, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, request.PrintNoOdr);
+        var sijisenData = _reportService.GetSijisenReportingData(request.HpId, request.FormType, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, request.PrintNoOdr);
         return await RenderPdf(sijisenData, ReportType.Common);
     }
 
@@ -197,6 +197,20 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GetDrugNoteSealPrintData([FromQuery] DrugNoteSealPrintDataRequest request)
     {
         var data = _reportService.GetDrugNoteSealPrintData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.Yakutai)]
+    public async Task<IActionResult> Yakutai([FromQuery] YakutaiRequest request)
+    {
+        var data = _reportService.GetYakutaiReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.AccountingCard)]
+    public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
+    {
+        var data = _reportService.GetAccountingCardReportingData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.IncludeOutDrug);
         return await RenderPdf(data, ReportType.Common);
     }
 

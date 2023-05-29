@@ -543,6 +543,10 @@ namespace Domain.Common
             {
                 return OrdInfValidationStatus.InvalidItemCd;
             }
+            if (odrInfDetail.CmtOpt.Length > 38)
+            {
+                return OrdInfValidationStatus.InvalidCmtOpt;
+            }
             if (odrInfDetail.ItemName.Length > 240)
             {
                 return OrdInfValidationStatus.InvalidItemName;
@@ -570,10 +574,6 @@ namespace Domain.Common
             if (odrInfDetail.CmtName.Length > 240)
             {
                 return OrdInfValidationStatus.InvalidCmtName;
-            }
-            if (odrInfDetail.CmtOpt.Length > 38)
-            {
-                return OrdInfValidationStatus.InvalidCmtOpt;
             }
 
             return OrdInfValidationStatus.Valid;
