@@ -30,11 +30,6 @@ namespace Infrastructure.Repositories
             {
                 var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.RaiinNo == raiinNo && item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == 0);
 
-                if (oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
-                {
-                    return new List<ReceptionDto>();
-                }
-
                 listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(
                   item => item.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate && item.IsDeleted == 0).ToList();
             }
@@ -989,13 +984,9 @@ namespace Infrastructure.Repositories
             {
                 var item = syunoSeikyuModels[i];
 
-                int thisSeikyuGaku = 0;
-                if (item.SyunoNyukinModels.Any())
-                {
-                    thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
-                                     item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+                int thisSeikyuGaku = item.SeikyuGaku - (item.SyunoNyukinModels.Count == 0 ? 0 : item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku)) -
+                                 (item.SyunoNyukinModels.Count == 0 ? 0 :item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan));
 
-                }
                 bool isLastRecord = i == syunoSeikyuModels.Count - 1;
                 if (!isDisCharged)
                 {
