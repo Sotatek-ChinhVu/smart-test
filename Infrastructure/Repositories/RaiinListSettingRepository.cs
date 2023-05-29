@@ -226,6 +226,12 @@ namespace Infrastructure.Repositories
             return new RaiinListKouiModel(raiinListKoui.HpId, raiinListKoui.GrpId, raiinListKoui.KbnCd, raiinListKoui.SeqNo, raiinListKoui.KouiKbnId, raiinListKoui.IsDeleted);
         }
 
+        public bool SaveRaiinListSetting(int hpId, List<RaiinListMstModel> datas, int userId)
+        {
+
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();
