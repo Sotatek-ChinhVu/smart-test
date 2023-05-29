@@ -58,12 +58,11 @@ namespace Infrastructure.Repositories
                                                                                         && r.PtId == ptId
                                                                                         && r.IsDeleted == DeleteTypes.None
                                                                                         && r.RsvkrtKbn == 0);
-
             var groupNextOdr = (
                                     from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable<RsvkrtOdrInf>()
                                     join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
                                                      equals new { rsvkrtMst.HpId, rsvkrtMst.PtId, rsvkrtMst.RsvkrtNo }
-                                    group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo, rsvkrtOdrInf } into g
+                                    group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo } into g
                                     select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, string.Empty, -1, 0)
                                ).ToList();
 
@@ -80,12 +79,12 @@ namespace Infrastructure.Repositories
                                      .ToList();
 
             var nextKarteList = NoTrackingDataContext.RsvkrtKarteInfs
-                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))
+                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && k.KarteKbn == 1)
                 .ToList();
             Console.WriteLine("Get nextKarteList: " + stopwatch.ElapsedMilliseconds);
 
             var historyKarteList = NoTrackingDataContext.KarteInfs
-                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))
+                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && k.KarteKbn == 1)
                 .ToList();
             Console.WriteLine("Get historyKarteList: " + stopwatch.ElapsedMilliseconds);
 
@@ -129,6 +128,7 @@ namespace Infrastructure.Repositories
             foreach (var flowSheetModel in flowSheetModelList)
             {
                 string karteContent = string.Empty;
+
                 if (flowSheetModel.IsNext)
                 {
                     var nextKarte = nextKarteList.FirstOrDefault(n => n.RsvkrtNo == flowSheetModel.RaiinNo);

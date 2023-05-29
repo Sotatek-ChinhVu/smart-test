@@ -10819,12 +10819,13 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.PtFamily", b =>
                 {
-                    b.Property<long>("PtId")
+                    b.Property<long>("FamilyId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("PT_ID");
+                        .HasColumnName("FAMILY_ID")
+                        .HasColumnOrder(1);
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("PtId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("FamilyId"));
 
                     b.Property<string>("Biko")
                         .HasMaxLength(120)
@@ -10847,14 +10848,6 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<long>("FamilyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("FAMILY_ID")
-                        .HasColumnOrder(1);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("FamilyId"));
 
                     b.Property<long>("FamilyPtId")
                         .HasColumnType("bigint")
@@ -10890,6 +10883,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("PARENT_ID");
 
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID");
+
                     b.Property<long>("SeqNo")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
@@ -10924,7 +10921,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(10)")
                         .HasColumnName("ZOKUGARA_CD");
 
-                    b.HasKey("PtId");
+                    b.HasKey("FamilyId");
 
                     b.HasIndex(new[] { "FamilyId", "PtId", "FamilyPtId" }, "PT_FAMILY_IDX01");
 
@@ -11033,10 +11030,10 @@ namespace TenantMigration.Migrations
                         .HasColumnName("GRP_ID")
                         .HasColumnOrder(3);
 
-                    b.Property<string>("GroupCode")
-                        .HasMaxLength(4)
-                        .HasColumnType("character varying(4)")
-                        .HasColumnName("GRP_CODE");
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID")
+                        .HasColumnOrder(2);
 
                     b.Property<long>("SeqNo")
                         .ValueGeneratedOnAdd()
@@ -11059,14 +11056,14 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
 
+                    b.Property<string>("GroupCode")
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)")
+                        .HasColumnName("GRP_CODE");
+
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
-
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("PT_ID")
-                        .HasColumnOrder(2);
 
                     b.Property<int>("SortNo")
                         .HasColumnType("integer")
@@ -11085,7 +11082,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId", "GroupId", "GroupCode", "SeqNo");
+                    b.HasKey("HpId", "GroupId", "PtId", "SeqNo");
 
                     b.HasIndex(new[] { "HpId", "PtId", "GroupId", "IsDeleted" }, "PT_GRP_INF_IDX01");
 
@@ -19961,6 +19958,10 @@ namespace TenantMigration.Migrations
                         .HasColumnName("WEIGHT_KBN");
 
                     b.HasKey("HpId", "SetCd");
+
+                    b.HasIndex("HpId", "SetCd", "SetKbn", "SetKbnEdaNo", "GenerationId", "Level1", "Level2", "Level3")
+                        .IsUnique()
+                        .HasFilter("IsDeleted = 0");
 
                     b.ToTable("SET_MST");
                 });

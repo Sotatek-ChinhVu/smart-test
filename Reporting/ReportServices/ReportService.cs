@@ -101,9 +101,9 @@ public class ReportService : IReportService
     }
 
     //Sijisen
-    public CommonReportingRequestModel GetSijisenReportingData(int formType, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, bool printNoOdr)
+    public CommonReportingRequestModel GetSijisenReportingData(int hpId, int formType, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, bool printNoOdr)
     {
-        return _sijisenReportService.GetSijisenReportingData(formType, ptId, sinDate, raiinNo, odrKouiKbns, printNoOdr);
+        return _sijisenReportService.GetSijisenReportingData(hpId, formType, ptId, sinDate, raiinNo, odrKouiKbns, printNoOdr);
     }
 
     //OrderLabel
