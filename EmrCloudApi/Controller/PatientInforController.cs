@@ -256,8 +256,30 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.ValidateKohi)]
         public ActionResult<Response<ValidateKohiResponse>> ValidateOneKohi([FromBody] ValidateKohiRequest request)
         {
-            var input = new ValidKohiInputData(request.SinDate, request.PtBirthday, request.IsKohiEmptyModel, request.IsSelectedKohiMst, request.SelectedKohiFutansyaNo, request.SelectedKohiJyukyusyaNo,
-                request.SelectedKohiTokusyuNo, request.SelectedKohiStartDate, request.SelectedKohiEndDate, request.SelectedKohiConfirmDate, request.SelectedKohiHokenNo, request.SelectedKohiHokenEdraNo, request.SelectedKohiIsAddNew, request.SelectedHokenPatternIsExpirated);
+            var input = new ValidKohiInputData(request.SinDate, 
+                                               request.PtBirthday, 
+                                               request.IsKohiEmptyModel, 
+                                               request.IsSelectedKohiMst, 
+                                               request.SelectedKohiFutansyaNo, 
+                                               request.SelectedKohiJyukyusyaNo,
+                                               request.SelectedKohiTokusyuNo, 
+                                               request.SelectedKohiStartDate, 
+                                               request.SelectedKohiEndDate,
+                                               request.SelectedKohiConfirmDate,
+                                               request.SelectedKohiHokenNo,
+                                               request.SelectedKohiIsAddNew, 
+                                               request.SelectedHokenPatternIsExpirated,
+                                               request.KohiMasterIsFutansyaNoCheck,
+                                               request.KohiMasterIsJyukyusyaNoCheck,
+                                               request.KohiMasterIsTokusyuNoCheck,
+                                               request.KohiMasterStartDate,
+                                               request.KohiMasterEndDate,
+                                               request.KohiMasterDisplayTextMaster,
+                                               request.KohiMasterJyukyuCheckDigit,
+                                               request.KohiMasterCheckDigit,
+                                               request.KohiMasterHoubetu,
+                                               request.KohiMasterAgeStart,
+                                               request.KohiMasterAgeEnd);
             var output = _bus.Handle(input);
 
             var presenter = new ValidateKohiPresenter();
