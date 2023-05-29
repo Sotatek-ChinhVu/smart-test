@@ -678,72 +678,98 @@ namespace Infrastructure.Repositories
             return (listTenMstModels, totalCount);
         }
 
-        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMasterItem(int hpId, int pageIndex, int pageCount, string keyword, double pointFrom, double pointTo, int kouiKbn, int oriKouiKbn,
+        public (List<TenItemModel> tenItemModels, int totalCount) SearchTenMasterItem(int hpId, int pageIndex, int pageCount, string keyword, double? pointFrom, double? pointTo, int kouiKbn, int oriKouiKbn,
             List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage,
             bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem,
             bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter,
             bool isSearch831SuffixOnly, bool isSearchSuggestion)
         {
-            string kanaKeyword = keyword;
-            if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
-            {
-                var inputKeyword = keyword;
-                kanaKeyword = CIUtil.ToHalfsize(keyword);
-                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
-                    kanaKeyword = inputKeyword;
-            }
-
-            var replaceDictBigKeyWord = new Dictionary<char, char>
-                                        {
-                                            { 'ｧ', 'ｱ' },
-                                            { 'ｨ', 'ｲ' },
-                                            { 'ｩ', 'ｳ' },
-                                            { 'ｪ', 'ｴ' },
-                                            { 'ｫ', 'ｵ' },
-                                            { 'ｬ', 'ﾔ' },
-                                            { 'ｭ', 'ﾕ' },
-                                            { 'ｮ', 'ﾖ' },
-                                            { 'ｯ', 'ﾂ' }
-                                        };
-
-            var replaceDictSmallKeyWord = new Dictionary<char, char>
-                                        {
-                                            {'ｱ', 'ｧ' },
-                                            {'ｲ', 'ｨ' },
-                                            {'ｳ', 'ｩ' },
-                                            {'ｴ', 'ｪ' },
-                                            {'ｵ', 'ｫ' },
-                                            {'ﾔ', 'ｬ' },
-                                            {'ﾕ', 'ｭ' },
-                                            {'ﾖ', 'ｮ' },
-                                            {'ﾂ', 'ｯ' }
-                                        };
-
-            string sBigKeyword = kanaKeyword.ToUpper();
-            string sSmallKeyword = kanaKeyword.ToUpper();
-
-            foreach (var item in replaceDictBigKeyWord)
-            {
-                sBigKeyword = sBigKeyword.Replace(item.Key, item.Value);
-            }
-
-            foreach (var item in replaceDictSmallKeyWord)
-            {
-                sSmallKeyword = sSmallKeyword.Replace(item.Key, item.Value);
-            }
+            string sBigKeyword = keyword.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ");
 
             var queryResult = NoTrackingDataContext.TenMsts
-                .Where(t =>
-                    t.ItemCd.StartsWith(keyword)
-                    || !string.IsNullOrEmpty(t.SanteiItemCd) && t.SanteiItemCd.StartsWith(keyword)
-                    || !string.IsNullOrEmpty(t.KanaName1) && (t.KanaName1.ToUpper().StartsWith(sBigKeyword) || t.KanaName1.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName2) && (t.KanaName2.ToUpper().StartsWith(sBigKeyword) || t.KanaName2.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName3) && (t.KanaName3.ToUpper().StartsWith(sBigKeyword) || t.KanaName3.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName4) && (t.KanaName4.ToUpper().StartsWith(sBigKeyword) || t.KanaName4.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName5) && (t.KanaName5.ToUpper().StartsWith(sBigKeyword) || t.KanaName5.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName6) && (t.KanaName6.ToUpper().StartsWith(sBigKeyword) || t.KanaName6.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.KanaName7) && (t.KanaName7.ToUpper().StartsWith(sBigKeyword) || t.KanaName7.ToUpper().StartsWith(sSmallKeyword))
-                    || !string.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword));
+                    .Where(t =>
+                        t.ItemCd.StartsWith(keyword)
+                        || !string.IsNullOrEmpty(t.SanteiItemCd) && t.SanteiItemCd.StartsWith(keyword)
+                        || !string.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || !string.IsNullOrEmpty(t.KanaName2) && t.KanaName2.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || !string.IsNullOrEmpty(t.KanaName3) && t.KanaName3.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || !string.IsNullOrEmpty(t.KanaName4) && t.KanaName4.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || !string.IsNullOrEmpty(t.KanaName5) && t.KanaName5.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || !string.IsNullOrEmpty(t.KanaName6) && t.KanaName6.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || !string.IsNullOrEmpty(t.KanaName7) && t.KanaName7.ToUpper()
+                          .Replace("ｧ", "ｱ")
+                          .Replace("ｨ", "ｲ")
+                          .Replace("ｩ", "ｳ")
+                          .Replace("ｪ", "ｴ")
+                          .Replace("ｫ", "ｵ")
+                          .Replace("ｬ", "ﾔ")
+                          .Replace("ｭ", "ﾕ")
+                          .Replace("ｮ", "ﾖ")
+                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword)
+                        || !string.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword));
 
             if (isAllowSearchDeletedItem)
             {
@@ -900,7 +926,7 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => kouiKbns.Contains(t.SinKouiKbn));
             }
 
-            if (drugKbns != null)
+            if (drugKbns.Any())
             {
                 queryResult = queryResult.Where(p => drugKbns.Contains(p.DrugKbn));
             }
@@ -926,12 +952,12 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => t.IsAdopted == 1);
             }
 
-            if (pointFrom != -1)
+            if (pointFrom != null)
             {
                 queryResult = queryResult.Where(t => t.Ten >= pointFrom);
             }
 
-            if (pointTo != -1)
+            if (pointTo != null)
             {
                 queryResult = queryResult.Where(t => t.Ten <= pointTo);
             }
@@ -1102,10 +1128,36 @@ namespace Infrastructure.Repositories
                                          KensaMst = kensaMst
                                      };
 
-            var totalCount = queryJoinWithKensa.Count();
+            var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.StartDate <= sTDDate && u.EndDate >= sTDDate);
+            var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.StartDate <= sTDDate && u.EndDate >= sTDDate);
+
+            var ipnMinYakka = NoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
+                                                                           p.HpId == hpId &&
+                                                                           p.StartDate <= sTDDate &&
+                                                                           p.EndDate >= sTDDate);
+
+            var joinedQuery = from q in queryJoinWithKensa
+                              join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
+                              from ipnExclude in ipnExcludes.DefaultIfEmpty()
+                              join ipnItem in ipnKasanExcludeItem on q.TenMst.ItemCd equals ipnItem.ItemCd into ipnExcludesItems
+                              from ipnExcludesItem in ipnExcludesItems.DefaultIfEmpty()
+                              join yakka in ipnMinYakka on q.TenMst.IpnNameCd equals yakka.IpnNameCd into ipnYakkas
+                              from ipnYakka in ipnYakkas.DefaultIfEmpty()
+                              select new
+                              {
+                                  q.TenMst,
+                                  q.KouiName,
+                                  q.YakkaSyusaiItem,
+                                  q.tenKN,
+                                  KensaMst = q.KensaMst,
+                                  IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
+                                  Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
+                              };
+
+            var totalCount = joinedQuery.Count();
             if (isSearchSuggestion)
             {
-                queryJoinWithKensa = queryJoinWithKensa
+                joinedQuery = joinedQuery
                                       .OrderByDescending(item => item.TenMst.IsAdopted)
                                       .ThenBy(item => item.TenMst.KanaName1)
                                       .ThenBy(item => item.TenMst.Name)
@@ -1114,13 +1166,13 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                queryJoinWithKensa = queryJoinWithKensa.OrderBy(item => item.TenMst.KanaName1)
+                joinedQuery = joinedQuery.OrderBy(item => item.TenMst.KanaName1)
                                      .ThenBy(item => item.TenMst.Name)
                                      .Skip((pageIndex - 1) * pageCount)
                                      .Take(pageCount);
             }
 
-            var tenMstModels = queryJoinWithKensa.Select(item => new TenItemModel(
+            var tenMstModels = joinedQuery.Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
                                                            item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,
@@ -1165,7 +1217,9 @@ namespace Infrastructure.Repositories
                                                            string.Empty,
                                                            item.TenMst?.IsDeleted ?? 0,
                                                            item.TenMst?.HandanGrpKbn ?? 0,
-                                                           item.KensaMst == null
+                                                           item.KensaMst == null,
+                                                           item.Yakka == null ? 0 : item.Yakka ?? 0,
+                                                           item.IsGetYakkaPrice
                                                             )).ToList();
 
             if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
@@ -1179,8 +1233,6 @@ namespace Infrastructure.Repositories
                 tenMstModels = tenMstModels.GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate)?.FirstOrDefault() ?? new()).ToList();
                 totalCount = tenMstModels.Count();
             }
-
-
 
             return (tenMstModels, totalCount);
         }
