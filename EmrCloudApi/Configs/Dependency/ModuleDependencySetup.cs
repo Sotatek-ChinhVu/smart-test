@@ -191,6 +191,7 @@ using Reporting.ReceiptPrint.Service;
 using Reporting.ReceTarget.DB;
 using Reporting.ReceTarget.Service;
 using Reporting.ReportServices;
+using Reporting.Sijisen.DB;
 using Reporting.Sijisen.Service;
 using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.KokhoSeikyu.DB;
@@ -246,6 +247,8 @@ using Reporting.Statistics.Sta9000.DB;
 using Reporting.Statistics.Sta9000.Service;
 using Reporting.SyojyoSyoki.DB;
 using Reporting.SyojyoSyoki.Service;
+using Reporting.Yakutai.DB;
+using Reporting.Yakutai.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -441,6 +444,7 @@ using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
 using UseCase.RaiinListSetting.GetDocCategory;
 using UseCase.RaiinListSetting.GetFilingcategory;
+using UseCase.RaiinListSetting.GetRaiiinListSetting;
 using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
@@ -701,6 +705,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoKoukiSeikyuFinder, CoKoukiSeikyuFinder>();
             services.AddTransient<IP28KoukiSeikyuCoReportService, P28KoukiSeikyuCoReportService>();
             services.AddTransient<IP29KoukiSeikyuCoReportService, P29KoukiSeikyuCoReportService>();
+            services.AddTransient<IYakutaiCoReportService, YakutaiCoReportService>();
+            services.AddTransient<ICoYakutaiFinder, CoYakutaiFinder>();
+            services.AddTransient<ICoSijisenFinder, CoSijisenFinder>();
             services.AddTransient<ICoAccountingCardFinder, CoAccountingCardFinder>();
             services.AddTransient<IAccountingCardCoReportService, AccountingCardCoReportService>();
 
@@ -1272,6 +1279,7 @@ namespace EmrCloudApi.Configs.Dependency
             //RaiinListSetting
             busBuilder.RegisterUseCase<GetDocCategoryRaiinInputData, GetDocCategoryRaiinInteractor>();
             busBuilder.RegisterUseCase<GetFilingcategoryInputData, GetFilingcategoryInteractor>();
+            busBuilder.RegisterUseCase<GetRaiiinListSettingInputData, GetRaiiinListSettingInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
