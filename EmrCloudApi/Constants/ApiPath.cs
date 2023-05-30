@@ -37,6 +37,7 @@
         public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
         public const string GetCmtCheckMstList = "GetCmtCheckMstList";
         public const string GetJihiMstList = "GetJihiMstList";
+        public const string SearchTenMstItem = "SearchTenMstItem";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -98,6 +99,8 @@
         public const string MemoMsgPrint = "MemoMsgPrint";
         public const string ReceTarget = "ReceTarget";
         public const string DrugNoteSeal = "DrugNoteSeal";
+        public const string Yakutai = "Yakutai";
+        public const string AccountingCard = "AccountingCard";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -111,6 +114,7 @@
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
+        public const string GetHokenMasterReadOnly = "GetHokenMasterReadOnly";
 
         //Validate Main Insurance
         public const string ValidateMainInsurance = "ValidateMainInsurance";
