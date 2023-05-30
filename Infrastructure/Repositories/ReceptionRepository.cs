@@ -118,7 +118,7 @@ namespace Infrastructure.Repositories
                     TantoId = model.TantoId,
                     SyosaisinKbn = model.SyosaisinKbn,
                     JikanKbn = model.JikanKbn,
-                    CreateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId

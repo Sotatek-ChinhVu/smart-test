@@ -3195,7 +3195,9 @@ namespace Helper.Common
 
         public static DateTime GetJapanDateTimeNow()
         {
-            return DateTime.UtcNow.AddHours(9);
+            DateTimeOffset utcDateTime = DateTimeOffset.UtcNow;
+            TimeSpan offset = TimeSpan.FromHours(9);
+            return utcDateTime.ToOffset(offset).DateTime.ToUniversalTime();
         }
 
         //西暦を表示用西暦(yyyy/mm/dd (ddd))に変換
