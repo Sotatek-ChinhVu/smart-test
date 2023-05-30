@@ -297,7 +297,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         hpId,
                         ptId,
                         sinDate,
-                        0,
+                        inputDatas.IsSagaku ? 1 : 0,
                         ""
                     )));
             }
