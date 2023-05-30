@@ -39,7 +39,10 @@ namespace Interactor.MstItem
 
             try
             {
-                var data = _mstItemRepository.SearchTenMasterItem(
+                var result = (new List<TenItemModel>(), 0);
+                if (!inputData.IsSearchSuggestion)
+                {
+                    result = _mstItemRepository.SearchTenMasterItem(
                     inputData.HpId, inputData.PageIndex, inputData.PageCount, inputData.Keyword, inputData.PointFrom,
                     inputData.PointTo, inputData.KouiKbn, inputData.OriKouiKbn,
                     inputData.KouiKbns, inputData.IncludeRosai, inputData.IncludeMisai,
@@ -48,9 +51,24 @@ namespace Interactor.MstItem
                     inputData.IsExpiredSearchIfNoData, inputData.IsAllowSearchDeletedItem,
                     inputData.IsExpired, inputData.IsDeleted, inputData.DrugKbns,
                     inputData.IsSearchSanteiItem, inputData.IsSearchKenSaItem,
-                    inputData.ItemFilter, inputData.IsSearch831SuffixOnly, inputData.IsSearchSuggestion);
+                    inputData.ItemFilter, inputData.IsSearch831SuffixOnly);
+                }
+                else
+                {
+                    result = _mstItemRepository.SearchSuggestionTenMstItem(
+                    inputData.HpId, inputData.PageIndex, inputData.PageCount, inputData.Keyword, inputData.PointFrom,
+                    inputData.PointTo, inputData.KouiKbn, inputData.OriKouiKbn,
+                    inputData.KouiKbns, inputData.IncludeRosai, inputData.IncludeMisai,
+                    inputData.STDDate, inputData.ItemCodeStartWith, inputData.IsIncludeUsage,
+                    inputData.OnlyUsage, inputData.YJCode, inputData.IsMasterSearch,
+                    inputData.IsExpiredSearchIfNoData, inputData.IsAllowSearchDeletedItem,
+                    inputData.IsExpired, inputData.IsDeleted, inputData.DrugKbns,
+                    inputData.IsSearchSanteiItem, inputData.IsSearchKenSaItem,
+                    inputData.ItemFilter, inputData.IsSearch831SuffixOnly);
+                }
 
-                return new SearchTenMstItemOutputData(data.tenItemModels, data.totalCount, SearchTenMstItemStatus.Successed);
+
+                return new SearchTenMstItemOutputData(result.Item1, result.Item2, SearchTenMstItemStatus.Successed);
             }
             finally
             {
