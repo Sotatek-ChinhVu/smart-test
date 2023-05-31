@@ -5,12 +5,10 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
 using System.Data;
-using System.Linq;
 using System.Text;
 
 namespace Infrastructure.Repositories;
@@ -434,29 +432,35 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     }
 
     [Obsolete]
-    public int PasteSetMst(int hpId, int userId, int generationId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int copySetKbnEdaNo, int copySetKbn, int pasteSetKbnEdaNo, int pasteSetKbn)
+    public List<SetMstModel> PasteSetMst(int hpId, int userId, int generationId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int copySetKbnEdaNo, int copySetKbn, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
+        var setCd = 0;
+        List<SetMstModel> setMstModels = new();
         if (pasteSetKbnEdaNo <= 0 && pasteSetKbn <= 0)
         {
-            return -1;
+            return new();
         }
 
         try
         {
             if (pasteToOtherGroup && setCdCopyItem == 0 && setCdPasteItem == 0)
             {
-                return CopyPasteGroupSetMst(hpId, userId, generationId, copySetKbnEdaNo, copySetKbn, pasteSetKbnEdaNo, pasteSetKbn);
+
+                setCd = CopyPasteGroupSetMst(hpId, userId, generationId, copySetKbnEdaNo, copySetKbn, pasteSetKbnEdaNo, pasteSetKbn);
             }
             else if (setCdCopyItem > 0)
             {
-                return CopyPasteItemSetMst(hpId, userId, setCdCopyItem, setCdPasteItem, pasteToOtherGroup, generationId, pasteSetKbnEdaNo, pasteSetKbn);
+                setCd = CopyPasteItemSetMst(hpId, userId, setCdCopyItem, setCdPasteItem, pasteToOtherGroup, generationId, pasteSetKbnEdaNo, pasteSetKbn);
             }
         }
         finally
         {
-            ReloadCache(1);
+            var setMsts = ReloadCache(1);
+            var rootSet = setMsts.FirstOrDefault(s => s.SetCd == setCd);
+            setMstModels = setMsts.Where(s => s.HpId == rootSet?.HpId && s.SetKbn == rootSet.SetKbn && s.SetKbnEdaNo == rootSet.SetKbnEdaNo && s.GenerationId == rootSet.GenerationId && (rootSet.Level1 == 0 || (rootSet.Level1 > 0 && s.Level1 == rootSet.Level1)) && (rootSet.Level2 == 0 || (rootSet.Level2 > 0 && s.Level2 == rootSet.Level2)) && (rootSet.Level3 == 0 || (rootSet.Level3 > 0 && s.Level3 == rootSet.Level3))).ToList();
         }
-        return -1;
+
+        return setMstModels;
     }
 
     public bool CheckExistSetMstBySetCd(int setCd)

@@ -1,4 +1,5 @@
-﻿using Helper.Constants;
+﻿using Domain.Models.SetMst;
+using Helper.Constants;
 
 namespace EmrCloudApi.Messages;
 
@@ -20,5 +21,5 @@ public class LockMessage
 
 public class SuperSetMessage
 {
-    public List<int> SetCds { get; set; } = new();
+    public List<SetMstModel> SetMstModels { get; set; } = new();
 }
