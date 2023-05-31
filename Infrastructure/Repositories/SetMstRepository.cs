@@ -427,7 +427,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         finally
         {
-            ReloadCache(1);
+            var setMsts = ReloadCache(1);
         }
     }
 

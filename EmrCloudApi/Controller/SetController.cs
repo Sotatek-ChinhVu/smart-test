@@ -67,7 +67,7 @@ public class SetController : AuthorizeControllerBase
         if (output.Status == SaveSetMstStatus.Successed)
         {
             await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetSaveChanged,
-                new SuperSetMessage { SetCds = new List<SetMstModel> { output.setMstModel ?? new() } });
+                new SuperSetMessage { SetMstModels = new List<SetMstModel> { output.setMstModel ?? new() } });
         }
 
         var presenter = new SaveSetMstPresenter();
@@ -85,7 +85,7 @@ public class SetController : AuthorizeControllerBase
         if (output.Status == ReorderSetMstStatus.Successed)
         {
             await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetReorderChanged,
-                new SuperSetMessage { SetCds = new List<int> { request.DragSetCd, request.DropSetCd } });
+                new SuperSetMessage { SetMstModels = new() });
         }
 
         var presenter = new ReorderSetMstPresenter();
