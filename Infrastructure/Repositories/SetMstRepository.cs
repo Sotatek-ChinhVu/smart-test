@@ -5,10 +5,12 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
 using System.Data;
+using System.Linq;
 using System.Text;
 
 namespace Infrastructure.Repositories;
@@ -467,6 +469,28 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         DisposeDataContext();
     }
 
+    public IEnumerable<SetMstModel> GetListFollowSetCd(int hpId, byte type, List<int> setCds)
+    {
+        if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
+        {
+            setMstModelList = ReloadCache(hpId);
+        }
+
+        var result = new List<SetMstModel>();
+        if (type == 1)
+        {
+            result = setMstModelList?.Where(s => setCds.Contains(s.SetCd)).ToList() ?? new();
+        }
+        else
+        {
+            result = setMstModelList?.Where(s => setCds.Contains(s.SetCd)).ToList() ?? new();
+        }
+
+        return result.OrderBy(s => s.Level1)
+         .ThenBy(s => s.Level2)
+         .ThenBy(s => s.Level3)
+         .ToList();
+    }
     #region private method
 
     // GetGenerationId by hpId and sindate

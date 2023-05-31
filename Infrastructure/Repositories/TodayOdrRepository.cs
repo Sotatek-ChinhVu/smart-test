@@ -2672,8 +2672,8 @@ namespace Infrastructure.Repositories
             var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(i =>
                    i.HpId == hpId &&
                    i.StartDate <= sinDate &&
-                   i.EndDate >= sinDate &&
-                   ipnNameCds.Contains(i.IpnNameCd)).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty));
+                   i.EndDate >= sinDate).AsEnumerable().Where(i =>
+                   ipnNameCds.Contains(i.IpnNameCd)).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty)).ToList();
             var autoSetSyohoKbnKohatuDrug = _systemConf.GetSettingValue(2020, 0, hpId);
             var autoSetSyohoLimitKohatuDrug = _systemConf.GetSettingValue(2020, 1, hpId);
             var autoSetSyohoKbnSenpatuDrug = _systemConf.GetSettingValue(2021, 0, hpId);
