@@ -197,6 +197,7 @@ namespace Domain.Models.MstItem
             Kokuji1 = kokuji1;
             Kokuji2 = kokuji2;
             ModeStatus = modeStatus;
+            IpnName = string.Empty;
         }
 
         public TenItemModel()
@@ -232,6 +233,7 @@ namespace Domain.Models.MstItem
             OdrTermVal = 0;
             Kokuji1 = string.Empty;
             Kokuji2 = string.Empty;
+            IpnName  = string.Empty;
         }
 
         public TenItemModel(int hpId, string itemCd, string minAge, string maxAge, string santeiItemCd, int startDate, int endDate)
@@ -255,6 +257,7 @@ namespace Domain.Models.MstItem
             EndDate = endDate;
             Kokuji1 = string.Empty;
             Kokuji2 = string.Empty;
+            IpnName = string.Empty;
         }
 
         public int HpId { get; private set; }
