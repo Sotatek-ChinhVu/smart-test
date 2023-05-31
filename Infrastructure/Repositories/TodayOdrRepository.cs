@@ -3110,13 +3110,13 @@ namespace Infrastructure.Repositories
             var ipnItems = NoTrackingDataContext.IpnNameMsts.Where(i =>
                    i.HpId == hpId &&
                    i.StartDate <= sinDate &&
-                   i.EndDate >= sinDate &&
-                   ipnCds.Contains(i.IpnNameCd)).ToList();
+                   i.EndDate >= sinDate).AsEnumerable().
+                   Where(i => ipnCds.Contains(i.IpnNameCd)).ToList();
 
             var ipnMinYakkaMsts = NoTrackingDataContext.IpnMinYakkaMsts.Where(i =>
                i.HpId == hpId &&
                i.StartDate <= sinDate &&
-               i.EndDate >= sinDate &&
+               i.EndDate >= sinDate).AsEnumerable().Where(i =>
                ipnCds.Contains(i.IpnNameCd)).ToList();
 
             var itemCds = expiredItems.Values.Select(e => e.ItemCd).Distinct().ToList();

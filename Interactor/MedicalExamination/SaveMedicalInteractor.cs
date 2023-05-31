@@ -635,6 +635,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 for (int index = 0; index < inputDataList.Count; index++)
                 {
                     var item = inputDataList[index];
+                    if (item.IsDeleted != 0)
+                    {
+                        continue;
+                    }
 
                     if (item.Id > 0)
                     {
