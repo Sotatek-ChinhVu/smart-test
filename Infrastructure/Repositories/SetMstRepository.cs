@@ -431,6 +431,38 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
     }
 
+    private List<SetMstModel> GetDataAfterDragDrop(List<SetMst> setMsts, SetMst dragItem, SetMst dropItem)
+    {
+        List<SetMstModel> setMstModels = new();
+        //Load drag level1
+        if (dragItem.Level1 > 0 && dragItem.Level2 == 0 && dragItem.Level3 == 0)
+        {
+            if (dropItem.Level1 > 0 && dropItem.Level2 == 0 && dropItem.Level3 == 0)
+            {
+                if (dragItem.Level1 > dropItem.Level1)
+                {
+                    setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.SetKbnEdaNo && s.Level1 > dropItem.Level1 && s.Level1 <= dragItem.Level1).Select(s => ConvertEntityToModel(s)).ToList();
+                }
+                else
+                {
+                    setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.SetKbnEdaNo && s.Level1 >= dragItem.Level1 && s.Level1 <= dropItem.Level1).Select(s => ConvertEntityToModel(s)).ToList();
+                }
+            }
+            else if (dropItem.Level1 > 0 && dropItem.Level2 > 0 && dropItem.Level3 == 0)
+            {
+                setMstModels = setMsts.Where(s => s.HpId == dropItem.HpId && s.SetKbn == dropItem.SetKbn && s.SetKbnEdaNo == dropItem.SetKbnEdaNo && s.GenerationId == dropItem.SetKbnEdaNo && s.Level1 == dropItem.Level1 && s.Level2 == dropItem.Level2).Select(s => ConvertEntityToModel(s)).ToList();
+            }
+        }
+        else if (dragItem.Level1 > 0 && dragItem.Level2 > 0 && dragItem.Level3 == 0)
+        {
+            if (dropItem.Level1 > 0 && dropItem.Level2 == 0 && dropItem.Level3 == 0)
+            {
+
+            }
+        }
+        return new();
+    }
+
     [Obsolete]
     public List<SetMstModel> PasteSetMst(int hpId, int userId, int generationId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int copySetKbnEdaNo, int copySetKbn, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
@@ -1998,6 +2030,25 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         var levelMax = GetMaxLevel(copyItem.HpId, copyItem.SetKbn, copyItem.SetKbnEdaNo, copyItem.GenerationId, levelPaste >= 1 ? pasteItem?.Level1 ?? 0 : 0, levelPaste >= 2 ? pasteItem?.Level2 ?? 0 : 0, levelPaste >= 3 ? pasteItem?.Level3 ?? 0 : 0, pasteItem == null);
 
         ReSetLevelForItem(levelMax, copyItem, pasteItem, listPasteItems);
+    }
+
+    private SetMstModel ConvertEntityToModel(SetMst setMst)
+    {
+        return new SetMstModel(
+                            setMst.HpId,
+                            setMst.SetCd,
+                            setMst.SetKbn,
+                            setMst.SetKbnEdaNo,
+                            setMst.GenerationId,
+                            setMst.Level1,
+                            setMst.Level2,
+                            setMst.Level3,
+                            setMst.SetName ?? string.Empty,
+                            setMst.WeightKbn,
+                            setMst.Color,
+                            setMst.IsDeleted,
+                            setMst.IsGroup
+                        );
     }
     #endregion
 
