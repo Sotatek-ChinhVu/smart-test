@@ -27,9 +27,10 @@ public class ReorderSetMstInteractor : IReorderSetMstInputPort
         }
         try
         {
-            if (_setMstRepository.ReorderSetMst(reorderSetMstInputData.UserId, reorderSetMstInputData.HpId, reorderSetMstInputData.DragSetCd, reorderSetMstInputData.DropSetCd))
+            var result = _setMstRepository.ReorderSetMst(reorderSetMstInputData.UserId, reorderSetMstInputData.HpId, reorderSetMstInputData.DragSetCd, reorderSetMstInputData.DropSetCd);
+            if (result.status)
             {
-                return new ReorderSetMstOutputData(ReorderSetMstStatus.Successed);
+                return new ReorderSetMstOutputData(result.setMstModels, ReorderSetMstStatus.Successed);
             }
             return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
         }
