@@ -346,7 +346,7 @@ namespace Domain.Models.MstItem
 
         public int ModeStatus { get; private set; }
 
-        public string IpnName { get; private set; }
+        public string IpnName { get; private set; } = string.Empty;
 
         public int IsDeleted { get; private set; }
 
