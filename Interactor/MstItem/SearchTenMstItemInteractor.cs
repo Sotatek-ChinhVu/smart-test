@@ -56,17 +56,12 @@ namespace Interactor.MstItem
                 else
                 {
                     result = _mstItemRepository.SearchSuggestionTenMstItem(
-                    inputData.HpId, inputData.PageIndex, inputData.PageCount, inputData.Keyword, inputData.PointFrom,
-                    inputData.PointTo, inputData.KouiKbn, inputData.OriKouiKbn,
-                    inputData.KouiKbns, inputData.IncludeRosai, inputData.IncludeMisai,
-                    inputData.STDDate, inputData.ItemCodeStartWith, inputData.IsIncludeUsage,
-                    inputData.OnlyUsage, inputData.YJCode, inputData.IsMasterSearch,
-                    inputData.IsExpiredSearchIfNoData, inputData.IsAllowSearchDeletedItem,
-                    inputData.IsExpired, inputData.IsDeleted, inputData.DrugKbns,
-                    inputData.IsSearchSanteiItem, inputData.IsSearchKenSaItem,
+                    inputData.HpId, inputData.PageIndex, inputData.PageCount, inputData.Keyword,
+                    inputData.KouiKbn, inputData.OriKouiKbn, inputData.KouiKbns,
+                    inputData.IncludeMisai, inputData.STDDate, inputData.ItemCodeStartWith,
+                    inputData.IsIncludeUsage, inputData.IsDeleted, inputData.DrugKbns,
                     inputData.ItemFilter, inputData.IsSearch831SuffixOnly);
                 }
-
 
                 return new SearchTenMstItemOutputData(result.Item1, result.Item2, SearchTenMstItemStatus.Successed);
             }
