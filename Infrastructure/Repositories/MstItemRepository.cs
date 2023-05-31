@@ -5005,6 +5005,10 @@ namespace Infrastructure.Repositories
                                                          (itemFilter.Contains(ItemTypeEnums.COCommentItem) ? (t.ItemCd.StartsWith("CO")) : false));
             }
 
+            if (!includeMisai)
+            {
+                queryResult = queryResult.Where(t => t.IsAdopted == 1);
+            }
 
             queryResult = queryResult.Where(t => t.IsNosearch == 0);
 
