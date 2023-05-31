@@ -62,13 +62,16 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
         {
             var status = UpdateStaticCell(input);
 
-            //Run Calculate with cell status
-            if (input.CellName.ToLower() == "status")
+            if (status == UpdateReceptionStaticCellStatus.RaiinInfUpdated)
             {
-                Task.Run(() =>
+                //Run Calculate with cell status
+                if (input.CellName.ToLower() == "status")
                 {
-                    _calculateRepository.RunCalculate(new RecaculationInputDto(input.HpId, input.PtId, input.SinDate, 0, ""));
-                });
+                    Task.Run(() =>
+                    {
+                        _calculateRepository.RunCalculate(new RecaculationInputDto(input.HpId, input.PtId, input.SinDate, 0, ""));
+                    });
+                }
             }
 
             return new UpdateReceptionStaticCellOutputData(status);
