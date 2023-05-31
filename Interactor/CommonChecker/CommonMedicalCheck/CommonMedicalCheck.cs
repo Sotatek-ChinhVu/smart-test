@@ -580,7 +580,6 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
         return listErrorInfoModel;
     }
-    #endregion
 
     private void GetItemCdError(List<UnitCheckInfoModel> listErrorInfo)
     {
@@ -718,6 +717,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         _usageDosageDictionary = usageDosageList.Any() ? _realtimeOrderErrorFinder.GetUsageDosageDic(usageDosageList) : new();
         _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(itemNameByItemCodeList, _sinday) : new();
     }
+
+    #endregion
 
     #region ProcessDataForDrugAllergy
     private List<ErrorInfoModel> ProcessDataForDrugAllergy(List<DrugAllergyResultModel> allergyInfo)
