@@ -306,6 +306,29 @@ public class DocumentController : AuthorizeControllerBase
             {
                 listData[i].Text = listData[i].Text.Replace(preCharParam + param.Parameter + subCharParam, param.Value);
             }
+            else
+            {
+                string firstText = listData[i].Text;
+                string firstChar = firstText.Length > 0 ? firstText.Substring(firstText.Length - 1, 1) : string.Empty;
+
+                if (firstChar == string.Empty)
+                {
+                    continue;
+                }
+                string secondChar = listData.Count > i + 1 ? listData[i + 1].Text : string.Empty;
+
+                string thirdText = listData.Count > i + 2 ? listData[i + 2].Text : string.Empty;
+                string thirdChar = thirdText.Length > 0 ? thirdText.Substring(0, 1) : string.Empty;
+
+                string charReplace = firstChar + secondChar + thirdChar;
+                if (charReplace.Equals(preCharParam + param.Parameter + subCharParam))
+                {
+                    listData[i].Text = listData[i].Text.Replace(firstChar, param.Value);
+                    listData[i + 1].Text = listData[i + 1].Text.Replace(secondChar, string.Empty);
+                    listData[i + 2].Text = listData[i + 2].Text.Replace(thirdChar, string.Empty);
+                }
+            }
+
         }
     }
 
