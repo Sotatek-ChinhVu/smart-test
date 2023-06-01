@@ -210,13 +210,21 @@ namespace Interactor.MedicalExamination
                 }
             });
 
-            _header1Infos.AddRange(from item in header1Property
-                                   where header1InfoDic.ContainsKey(item.AsString())
-                                   select header1InfoDic[item.AsString()]);
+            foreach (var item in header1Property)
+            {
+                if (header1InfoDic.ContainsKey(item.AsString()))
+                {
+                    _header1Infos.Add(header1InfoDic[item.AsString()]);
+                }
+            }
 
-            _header2Infos.AddRange(from item in header2Property
-                                   where header2InfoDic.ContainsKey(item.AsString())
-                                   select header2InfoDic[item.AsString()]);
+            foreach (var item in header2Property)
+            {
+                if (header2InfoDic.ContainsKey(item.AsString()))
+                {
+                    _header2Infos.Add(header2InfoDic[item.AsString()]);
+                }
+            }
 
             foreach (UserConfModel userConfigurationModel in listUserconfig)
             {
