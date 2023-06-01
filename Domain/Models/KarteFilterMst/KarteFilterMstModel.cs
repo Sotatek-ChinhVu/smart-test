@@ -113,8 +113,8 @@ public class KarteFilterMstModel
         get
         {
             if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return true;
-            var allDepartmentSetting = KarteFilterDetailModel.ListHokenId.Where(h => h == 1)?.FirstOrDefault();
-            return allDepartmentSetting != null;
+
+            return KarteFilterDetailModel.ListHokenId.Contains(1);
         }
     }
     public bool IsJihi
