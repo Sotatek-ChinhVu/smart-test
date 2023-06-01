@@ -573,7 +573,15 @@ namespace Domain.Models.InsuranceInfor
         {
             if (!IsEmptyHoken && HokenInf.HokenMstFutanRate != 0)
             {
-                int rateMst1 = HokenInf.HokenMstFutanRate;
+                int rateMst1;
+                if (HokenInf.HokenMstFutanKbn == 0)
+                {
+                    rateMst1 = 0;
+                }
+                else
+                {
+                    rateMst1 = HokenInf.HokenMstFutanRate;
+                }
                 int rateMst2 = 0;
                 if (HokenKbn == 1 || HokenKbn == 2)
                 {
@@ -589,6 +597,10 @@ namespace Domain.Models.InsuranceInfor
                             || (new List<int>() { 26, 27, 28 }.Contains(HokenInf.KogakuKbn)))
                         {
                             return 30;
+                        }
+                        else if (HokenInf.KogakuKbn == 41 && SinDate >= KaiseiDate.d20221001)
+                        {
+                            return 20;
                         }
                         else
                         {
