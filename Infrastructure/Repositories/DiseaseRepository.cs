@@ -293,7 +293,7 @@ namespace Infrastructure.Repositories
                         ptByomei.TogetuByomei,
                         0
                         );
-                ptDiseaseModel = ptDiseaseModel.ChangeCreateUserUpdateDate(createName, updateName, ptByomei.CreateDate);
+                ptDiseaseModel = ptDiseaseModel.ChangeCreateUserUpdateDate(createName, updateName, ptByomei.CreateDate, ptByomei.UpdateDate);
                 result.Add(ptDiseaseModel);
             }
             return result;

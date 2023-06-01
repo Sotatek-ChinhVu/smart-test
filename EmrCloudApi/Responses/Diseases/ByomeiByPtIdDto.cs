@@ -28,6 +28,7 @@ public class ByomeiByPtIdDto
         IsNodspKarte = model.IsNodspKarte;
         PrefixSuffixList = model.PrefixSuffixList;
         CreateDate = model.CreateDate;
+        UpdateDate = model.UpdateDate;
     }
 
     public long SeqNo { get; private set; }
@@ -69,6 +70,8 @@ public class ByomeiByPtIdDto
     public List<PrefixSuffixModel> PrefixSuffixList { get; private set; }
 
     public string CreateDate { get; private set; }
+
+    public string UpdateDate { get; private set; }
 
     public string StartDateDisplay
     {

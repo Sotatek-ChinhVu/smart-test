@@ -55,6 +55,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(string byomeiCd, string byomei, int sikkanKbn)
@@ -89,6 +90,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int hpId, long ptId, long seqNo, string byomeiCd, int sortNo,
@@ -136,6 +138,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel()
@@ -170,6 +173,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn)
@@ -204,6 +208,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, string byomeiCd)
@@ -238,6 +243,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, string byomeiCd, string byomei)
@@ -273,6 +279,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn)
@@ -307,6 +314,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn, string icd1012013)
@@ -341,6 +349,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn, string icd1012013, int nanbyoCd)
@@ -375,6 +384,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList)
@@ -400,6 +410,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(string itemCd, string byomeiCd, string byomei, int sikkanCd, bool isAdopted, int nanbyoCd)
@@ -420,6 +431,7 @@ namespace Domain.Models.Diseases
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
             CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, int isNodspRece, int tenkiKbn, List<PrefixSuffixModel> prefixList)
@@ -446,14 +458,16 @@ namespace Domain.Models.Diseases
             ItemCd = string.Empty;
             CreateUser = string.Empty;
             UpdateUser = string.Empty;
-            CreateDate =string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
-        public PtDiseaseModel ChangeCreateUserUpdateDate(string createUser, string updateUser, DateTime createDate)
+        public PtDiseaseModel ChangeCreateUserUpdateDate(string createUser, string updateUser, DateTime createDate, DateTime updateDate)
         {
             CreateUser = createUser;
             UpdateUser = updateUser;
             CreateDate = createDate == DateTime.MinValue ? string.Empty : CIUtil.GetCIDateTimeStr(createDate);
+            UpdateDate = updateDate == DateTime.MinValue ? string.Empty : CIUtil.GetCIDateTimeStr(updateDate);
             return this;
         }
 
@@ -647,6 +661,8 @@ namespace Domain.Models.Diseases
         public string CreateUser { get; private set; }
 
         public string CreateDate { get; private set; }
+
+        public string UpdateDate { get; private set; }
 
         public string UpdateUser { get; private set; }
 
