@@ -147,7 +147,7 @@ namespace Infrastructure.Repositories
         {
             var monshinInf = TrackingDataContext.MonshinInfo.FirstOrDefault(x =>
                                                                x.HpId == monshin.HpId && x.PtId == monshin.PtId &&
-                                                               x.RaiinNo == monshin.RaiinNo && x.SeqNo == monshin.SeqNo && x.GetKbn == 0);
+                                                               x.RaiinNo == monshin.RaiinNo && x.SeqNo == monshin.SeqNo && x.GetKbn == 0 && x.IsDeleted == 0);
 
             if (monshinInf == null) return true;
 

@@ -8,6 +8,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.InsuranceMst.DeleteHokenMaster;
+using UseCase.InsuranceMst.GetHokenMasterReadOnly;
 using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
 using UseCase.InsuranceMst.GetMasterDetails;
 using UseCase.InsuranceMst.GetSelectMaintenance;
@@ -138,6 +139,16 @@ namespace EmrCloudApi.Controller
                                                             UserId);
             var output = _bus.Handle(input);
             var presenter = new SaveOrdInsuranceMstPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetHokenMasterReadOnly)]
+        public ActionResult<Response<GetInfoCloneInsuranceMstResponse>> GetHokenMasterReadOnly([FromQuery] GetHokenMasterReadOnlyRequest request)
+        {
+            var input = new GetHokenMasterReadOnlyInputData(HpId, request.HokenNo, request.HokenEdaNo, request.PrefNo, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetHokenMasterReadOnlyPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }

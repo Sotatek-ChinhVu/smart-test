@@ -2672,8 +2672,8 @@ namespace Infrastructure.Repositories
             var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(i =>
                    i.HpId == hpId &&
                    i.StartDate <= sinDate &&
-                   i.EndDate >= sinDate &&
-                   ipnNameCds.Contains(i.IpnNameCd)).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty));
+                   i.EndDate >= sinDate).AsEnumerable().Where(i =>
+                   ipnNameCds.Contains(i.IpnNameCd)).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty)).ToList();
             var autoSetSyohoKbnKohatuDrug = _systemConf.GetSettingValue(2020, 0, hpId);
             var autoSetSyohoLimitKohatuDrug = _systemConf.GetSettingValue(2020, 1, hpId);
             var autoSetSyohoKbnSenpatuDrug = _systemConf.GetSettingValue(2021, 0, hpId);
@@ -3110,13 +3110,13 @@ namespace Infrastructure.Repositories
             var ipnItems = NoTrackingDataContext.IpnNameMsts.Where(i =>
                    i.HpId == hpId &&
                    i.StartDate <= sinDate &&
-                   i.EndDate >= sinDate &&
-                   ipnCds.Contains(i.IpnNameCd)).ToList();
+                   i.EndDate >= sinDate).AsEnumerable().
+                   Where(i => ipnCds.Contains(i.IpnNameCd)).ToList();
 
             var ipnMinYakkaMsts = NoTrackingDataContext.IpnMinYakkaMsts.Where(i =>
                i.HpId == hpId &&
                i.StartDate <= sinDate &&
-               i.EndDate >= sinDate &&
+               i.EndDate >= sinDate).AsEnumerable().Where(i =>
                ipnCds.Contains(i.IpnNameCd)).ToList();
 
             var itemCds = expiredItems.Values.Select(e => e.ItemCd).Distinct().ToList();
