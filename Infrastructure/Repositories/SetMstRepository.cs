@@ -794,9 +794,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             TrackingDataContext.SetMsts.Add(rootSet);
                             TrackingDataContext.SaveChanges();
                             setCd = rootSet.SetCd;
-                            //Get max level1
-                            var levelMax = GetMaxLevel(rootSet.HpId, rootSet.SetKbn, rootSet.SetKbnEdaNo, rootSet.GenerationId, rootSet.Level1, 0, 0);
-                            var setLevel = Int32.MaxValue - listCopyItems.Count;
                             // Convert SetMst copy to SetMst paste
                             foreach (var item in listCopyItems)
                             {
@@ -808,9 +805,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                 setMst.CreateId = userId;
                                 setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                 setMst.UpdateId = userId;
-                                setMst.Level1 = setLevel++;
-                                setMst.Level2 = setLevel++;
-                                setMst.Level3 = setLevel++;
                                 setMst.IsDeleted = DeleteTypes.Deleted;
                                 listPasteItems.Add(setMst);
                             }
