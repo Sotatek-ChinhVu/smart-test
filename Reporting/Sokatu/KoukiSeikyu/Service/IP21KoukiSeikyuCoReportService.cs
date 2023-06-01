@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Reporting.Mappers.Common;
+using Reporting.Structs;
 
 namespace Reporting.Sokatu.KoukiSeikyu.Service
 {
-    public class IP21KoukiSeikyuCoReportService
+    public interface IP21KoukiSeikyuCoReportService
     {
+        CommonReportingRequestModel GetP21KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType);
     }
 }
