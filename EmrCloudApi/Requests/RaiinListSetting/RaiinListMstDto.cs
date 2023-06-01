@@ -24,7 +24,7 @@
 
     public class RaiinListDetailDto
     {
-        public RaiinListDetailDto(int grpId, int kbnCd, int sortNo, string kbnName, string colorCd, int isDeleted, List<RaiinListDocDto> raiinListDoc, List<RaiinListItemDto> raiinListItem, List<RaiinListFileDto> raiinListFile, KouiKbnCollectionDto kouCollection)
+        public RaiinListDetailDto(int grpId, int kbnCd, int sortNo, string kbnName, string colorCd, int isDeleted, bool isOnlySwapSortNo, List<RaiinListDocDto> raiinListDoc, List<RaiinListItemDto> raiinListItem, List<RaiinListFileDto> raiinListFile, KouiKbnCollectionDto kouCollection)
         {
             GrpId = grpId;
             KbnCd = kbnCd;
@@ -32,6 +32,7 @@
             KbnName = kbnName;
             ColorCd = colorCd;
             IsDeleted = isDeleted;
+            IsOnlySwapSortNo = isOnlySwapSortNo;
             RaiinListDoc = raiinListDoc;
             RaiinListItem = raiinListItem;
             RaiinListFile = raiinListFile;
@@ -50,6 +51,8 @@
 
         public int IsDeleted { get; private set; }
 
+        public bool IsOnlySwapSortNo { get; private set; }
+
         public List<RaiinListDocDto> RaiinListDoc { get; private set; }
 
         public List<RaiinListItemDto> RaiinListItem { get; private set; }
@@ -62,7 +65,7 @@
 
     public class RaiinListDocDto
     {
-        public RaiinListDocDto(int hpId, int grpId, int kbnCd, long seqNo, int categoryCd, string categoryName, int isDeleted, bool isModify)
+        public RaiinListDocDto(int hpId, int grpId, int kbnCd, long seqNo, int categoryCd, string categoryName, int isDeleted)
         {
             HpId = hpId;
             GrpId = grpId;
@@ -71,7 +74,6 @@
             CategoryCd = categoryCd;
             CategoryName = categoryName;
             IsDeleted = isDeleted;
-            IsModify = isModify;
         }
 
         public int HpId { get; private set; }
@@ -90,13 +92,11 @@
         public string CategoryName { get; private set; }
 
         public int IsDeleted { get; private set; }
-
-        public bool IsModify { get; private set; }
     }
 
     public class RaiinListItemDto
     {
-        public RaiinListItemDto(int hpId, int grpId, int kbnCd, string itemCd, long seqNo, string inputName, int isExclude, bool isAddNew, int isDeleted, bool isModify)
+        public RaiinListItemDto(int hpId, int grpId, int kbnCd, string itemCd, long seqNo, string inputName, int isExclude, bool isAddNew, int isDeleted)
         {
             HpId = hpId;
             GrpId = grpId;
@@ -107,7 +107,6 @@
             IsExclude = isExclude;
             IsAddNew = isAddNew;
             IsDeleted = isDeleted;
-            IsModify = isModify;
         }
 
         public int HpId { get; private set; }
@@ -127,13 +126,11 @@
         public bool IsAddNew { get; private set; }
 
         public int IsDeleted { get; private set; }
-
-        public bool IsModify { get; private set; }
     }
 
     public class RaiinListFileDto
     {
-        public RaiinListFileDto(int hpId, int grpId, int kbnCd, int categoryCd, string categoryName, long seqNo, int isDeleted, bool isModify)
+        public RaiinListFileDto(int hpId, int grpId, int kbnCd, int categoryCd, string categoryName, long seqNo, int isDeleted)
         {
             HpId = hpId;
             GrpId = grpId;
@@ -142,7 +139,6 @@
             CategoryName = categoryName;
             SeqNo = seqNo;
             IsDeleted = isDeleted;
-            IsModify = isModify;
         }
 
         public int HpId { get; private set; }
@@ -162,8 +158,6 @@
         public long SeqNo { get; private set; }
 
         public int IsDeleted { get; private set; }
-
-        public bool IsModify { get; private set; }
     }
 
     public class KouiKbnCollectionDto

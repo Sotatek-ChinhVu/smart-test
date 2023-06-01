@@ -172,8 +172,7 @@ namespace Infrastructure.Repositories
                                                                                 x.TenMst == null ? string.Empty : x.TenMst.Name ?? string.Empty,
                                                                                 x.RaiinkbItem.IsExclude,
                                                                                 false,
-                                                                                x.RaiinkbItem.IsDeleted,
-                                                                                false
+                                                                                x.RaiinkbItem.IsDeleted
                                                                                 )).ToList();
         }
         public List<RaiinListDocModel> GetRaiinListDocCollection(int hpId)
@@ -192,8 +191,7 @@ namespace Infrastructure.Repositories
                                                                                x.RaiinListDoc.SeqNo,
                                                                                x.RaiinListDoc.CategoryCd,
                                                                                x.DocCategory == null ? string.Empty : x.DocCategory.CategoryName ?? string.Empty,
-                                                                               x.RaiinListDoc.IsDeleted,
-                                                                               false)).ToList();
+                                                                               x.RaiinListDoc.IsDeleted)).ToList();
         }
         public List<RaiinListFileModel> GetRaiinListFileCollection(int hpId)
         {
@@ -211,8 +209,7 @@ namespace Infrastructure.Repositories
                                                                                 x.RaiinListFile.CategoryCd,
                                                                                 x.FilingCategory == null ? string.Empty : x.FilingCategory.CategoryName ?? string.Empty,
                                                                                 x.RaiinListFile.SeqNo,
-                                                                                x.RaiinListFile.IsDeleted,
-                                                                                false)).ToList();
+                                                                                x.RaiinListFile.IsDeleted)).ToList();
         }
 
         private RaiinListKouiModel CreateRaiinListKouiModel(int hpId, List<RaiinListKoui> raiinListKouiCollection, int kouiKbnId, int grpId, int KbnCd)
@@ -1254,7 +1251,7 @@ namespace Infrastructure.Repositories
                                         x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                         x.UpdateId = userId;
                                     });
-                                    itemDeleteList.AddRange(deleteListItems.Select(x=> new RaiinListItemModel(x.HpId, x.GrpId, x.KbnCd, x.ItemCd ?? string.Empty, x.SeqNo, string.Empty, x.IsExclude, false, x.IsDeleted, false)));
+                                    itemDeleteList.AddRange(deleteListItems.Select(x=> new RaiinListItemModel(x.HpId, x.GrpId, x.KbnCd, x.ItemCd ?? string.Empty, x.SeqNo, string.Empty, x.IsExclude, false, x.IsDeleted)));
 
                                     var deleteListDocs = databaseRaiinListDocs.Where(x => x.GrpId == mstInDb.GrpId).ToList();
                                     deleteListDocs.ForEach(x =>
@@ -1263,7 +1260,7 @@ namespace Infrastructure.Repositories
                                         x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                         x.UpdateId = userId;
                                     });
-                                    docDeleteList.AddRange(deleteListDocs.Select(x=> new RaiinListDocModel(x.HpId, x.GrpId, x.KbnCd, x.SeqNo, x.CategoryCd, string.Empty, x.IsDeleted, false)));
+                                    docDeleteList.AddRange(deleteListDocs.Select(x=> new RaiinListDocModel(x.HpId, x.GrpId, x.KbnCd, x.SeqNo, x.CategoryCd, string.Empty, x.IsDeleted)));
 
                                     var deleteListFiles = databaseRaiinListFiles.Where(x => x.GrpId == mstInDb.GrpId).ToList();
                                     deleteListFiles.ForEach(x =>
@@ -1272,7 +1269,7 @@ namespace Infrastructure.Repositories
                                         x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                         x.UpdateId = userId;
                                     });
-                                    fileDeleteList.AddRange(deleteListFiles.Select(x=> new RaiinListFileModel(x.HpId, x.GrpId, x.KbnCd, x.CategoryCd, string.Empty, x.SeqNo, x.IsDeleted, false)));
+                                    fileDeleteList.AddRange(deleteListFiles.Select(x=> new RaiinListFileModel(x.HpId, x.GrpId, x.KbnCd, x.CategoryCd, string.Empty, x.SeqNo, x.IsDeleted)));
 
                                     var deleteListKoui = databaseRaiinListKoui.Where(x => x.GrpId == mstInDb.GrpId).ToList();
                                     deleteListKoui.ForEach(x =>
@@ -1307,7 +1304,7 @@ namespace Infrastructure.Repositories
                                                 x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                                 x.UpdateId = userId;
                                             });
-                                            itemDeleteList.AddRange(deleteListItems.Select(x => new RaiinListItemModel(x.HpId, x.GrpId, x.KbnCd, x.ItemCd ?? string.Empty, x.SeqNo, string.Empty, x.IsExclude, false, x.IsDeleted, false)));
+                                            itemDeleteList.AddRange(deleteListItems.Select(x => new RaiinListItemModel(x.HpId, x.GrpId, x.KbnCd, x.ItemCd ?? string.Empty, x.SeqNo, string.Empty, x.IsExclude, false, x.IsDeleted)));
 
                                             var deleteListDocs = databaseRaiinListDocs.Where(x => x.GrpId == detailDeleteExistInDb.GrpId && x.KbnCd == detailDeleteExistInDb.KbnCd).ToList();
                                             deleteListDocs.ForEach(x =>
@@ -1316,7 +1313,7 @@ namespace Infrastructure.Repositories
                                                 x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                                 x.UpdateId = userId;
                                             });
-                                            docDeleteList.AddRange(deleteListDocs.Select(x => new RaiinListDocModel(x.HpId, x.GrpId, x.KbnCd, x.SeqNo, x.CategoryCd, string.Empty, x.IsDeleted, false)));
+                                            docDeleteList.AddRange(deleteListDocs.Select(x => new RaiinListDocModel(x.HpId, x.GrpId, x.KbnCd, x.SeqNo, x.CategoryCd, string.Empty, x.IsDeleted)));
 
                                             var deleteListFiles = databaseRaiinListFiles.Where(x => x.GrpId == detailDeleteExistInDb.GrpId && x.KbnCd == detailDeleteExistInDb.KbnCd).ToList();
                                             deleteListFiles.ForEach(x =>
@@ -1325,7 +1322,7 @@ namespace Infrastructure.Repositories
                                                 x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                                 x.UpdateId = userId;
                                             });
-                                            fileDeleteList.AddRange(deleteListFiles.Select(x => new RaiinListFileModel(x.HpId, x.GrpId, x.KbnCd, x.CategoryCd, string.Empty, x.SeqNo, x.IsDeleted, false)));
+                                            fileDeleteList.AddRange(deleteListFiles.Select(x => new RaiinListFileModel(x.HpId, x.GrpId, x.KbnCd, x.CategoryCd, string.Empty, x.SeqNo, x.IsDeleted)));
 
                                             var deleteListKoui = databaseRaiinListKoui.Where(x => x.GrpId == detailDeleteExistInDb.GrpId && x.KbnCd == detailDeleteExistInDb.KbnCd).ToList();
                                             deleteListKoui.ForEach(x =>
@@ -1574,9 +1571,9 @@ namespace Infrastructure.Repositories
                                                                                 .FirstOrDefault();
                             if (detailModel == null) continue;
                             kouiDeleteList.Add(new RaiinListKouiModel(hpId, deleteDetailModel.GrpId, detailModel.KbnCd, 0 , 0, 0));
-                            itemDeleteList.Add(new RaiinListItemModel(hpId, deleteDetailModel.GrpId, detailModel.KbnCd, string.Empty, 0, string.Empty,0 , false, 0 , false));
-                            docDeleteList.Add(new RaiinListDocModel(hpId, deleteDetailModel.GrpId, detailModel.KbnCd,0, 0, string.Empty, 0, false));
-                            fileDeleteList.Add(new RaiinListFileModel(hpId, deleteDetailModel.GrpId, deleteDetailModel.KbnCd, 0, string.Empty, 0, 0, false));
+                            itemDeleteList.Add(new RaiinListItemModel(hpId, deleteDetailModel.GrpId, detailModel.KbnCd, string.Empty, 0, string.Empty,0 , false, 0));
+                            docDeleteList.Add(new RaiinListDocModel(hpId, deleteDetailModel.GrpId, detailModel.KbnCd,0, 0, string.Empty, 0));
+                            fileDeleteList.Add(new RaiinListFileModel(hpId, deleteDetailModel.GrpId, deleteDetailModel.KbnCd, 0, string.Empty, 0, 0));
                         }
 
                         foreach (var kouiModel in kouiDeleteList)
@@ -1611,8 +1608,7 @@ namespace Infrastructure.Repositories
                                                                                                                  string.Empty,
                                                                                                                  0,
                                                                                                                  false,
-                                                                                                                 0,
-                                                                                                                 false)).ToList();
+                                                                                                                 0)).ToList();
                             if (raiinListItem != null && raiinListItem.Count() > 0)
                             {
                                 itemAddList.AddRange(raiinListItem);
@@ -1630,8 +1626,7 @@ namespace Infrastructure.Repositories
                                                                                                                                                         x.SeqNo,
                                                                                                                                                         x.CategoryCd,
                                                                                                                                                         string.Empty,
-                                                                                                                                                        0,
-                                                                                                                                                        false)).ToList();
+                                                                                                                                                        0)).ToList();
                             if (raiinListDoc != null && raiinListDoc.Count() > 0)
                             {
                                 docAddList.AddRange(raiinListDoc);
@@ -1649,8 +1644,7 @@ namespace Infrastructure.Repositories
                                                                                                                                                         x.CategoryCd,
                                                                                                                                                         string.Empty,
                                                                                                                                                         x.SeqNo,
-                                                                                                                                                        x.IsDeleted,
-                                                                                                                                                        false)).ToList();
+                                                                                                                                                        x.IsDeleted)).ToList();
                             if (raiinListFile != null && raiinListFile.Count() > 0)
                             {
                                 fileAddList.AddRange(raiinListFile);
@@ -1661,7 +1655,6 @@ namespace Infrastructure.Repositories
                         kouiAddList.AddRange(kouiAdds);
                         if (kouiAddList.Any())
                         {
-
                             var groupKoui = kouiAddList.GroupBy(item => new { item.GrpId, item.KbnCd })
                                                        .Select(item => new { item.Key.GrpId, item.Key.KbnCd, ListKoui = item.Select(x => x.KouiKbnId) })
                                                        .ToList();

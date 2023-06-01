@@ -13,9 +13,6 @@ using EmrCloudApi.Requests.RaiinListSetting;
 using Helper.Mapping;
 using Domain.Models.RaiinListMst;
 using Domain.Models.RaiinListSetting;
-using Helper.Extension;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {
@@ -39,7 +36,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetDocCategoryRaiinResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.GetList + "GetFilingcategory")]
+        [HttpGet(ApiPath.GetList + "Filingcategory")]
         public ActionResult<Response<GetFilingcategoryResponse>> GetFilingcategory()
         {
             var input = new GetFilingcategoryInputData(HpId);
@@ -49,7 +46,6 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetFilingcategoryResponse>>(presenter.Result);
         }
 
-        [AllowAnonymous]
         [HttpGet(ApiPath.GetList + "RaiinListSetting")]
         public ActionResult<Response<GetRaiiinListSettingResponse>> GetRaiinListSetting()
         {
@@ -60,7 +56,6 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetRaiiinListSettingResponse>>(presenter.Result);
         }
 
-        [AllowAnonymous]
         [HttpPost(ApiPath.Save + "RaiinListSetting")]
         public ActionResult<Response<SaveRaiinListSettingResponse>> SaveRaiinListSetting([FromBody] SaveRaiinListSettingRequest request)
         {
@@ -75,14 +70,14 @@ namespace EmrCloudApi.Controller
                                                                                                                           d.KbnName,
                                                                                                                           d.ColorCd,
                                                                                                                           d.IsDeleted,
+                                                                                                                          d.IsOnlySwapSortNo,
                                                                                                                           d.RaiinListDoc.Select(doc => new RaiinListDocModel(doc.HpId,
                                                                                                                                                                              doc.GrpId,
                                                                                                                                                                              doc.KbnCd,
                                                                                                                                                                              doc.SeqNo,
                                                                                                                                                                              doc.CategoryCd,
                                                                                                                                                                              doc.CategoryName,
-                                                                                                                                                                             doc.IsDeleted,
-                                                                                                                                                                             doc.IsModify)).ToList(),
+                                                                                                                                                                             doc.IsDeleted)).ToList(),
                                                                                                                           d.RaiinListItem.Select(item => new RaiinListItemModel(item.HpId,
                                                                                                                                                                                 item.GrpId,
                                                                                                                                                                                 item.KbnCd,
@@ -91,16 +86,14 @@ namespace EmrCloudApi.Controller
                                                                                                                                                                                 item.InputName,
                                                                                                                                                                                 item.IsExclude,
                                                                                                                                                                                 item.IsAddNew,
-                                                                                                                                                                                item.IsDeleted,
-                                                                                                                                                                                item.IsModify)).ToList(),
+                                                                                                                                                                                item.IsDeleted)).ToList(),
                                                                                                                           d.RaiinListFile.Select(file => new RaiinListFileModel(file.HpId,
                                                                                                                                                                                 file.GrpId,
                                                                                                                                                                                 file.KbnCd,
                                                                                                                                                                                 file.CategoryCd,
                                                                                                                                                                                 file.CategoryName,
                                                                                                                                                                                 file.SeqNo,
-                                                                                                                                                                                file.IsDeleted,
-                                                                                                                                                                                file.IsModify)).ToList(),
+                                                                                                                                                                                file.IsDeleted)).ToList(),
                                                                                                                           new KouiKbnCollectionModel(Mapper.Map(d.KouCollection.IKanModel, new RaiinListKouiModel()),
                                                                                                                                                      Mapper.Map(d.KouCollection.ZaitakuModel, new RaiinListKouiModel()),
                                                                                                                                                      Mapper.Map(d.KouCollection.NaifukuModel, new RaiinListKouiModel()),
@@ -126,7 +119,7 @@ namespace EmrCloudApi.Controller
 
                                                               )).ToList();
 
-            var input = new SaveRaiinListSettingInputData(1, inputModel ,2);
+            var input = new SaveRaiinListSettingInputData(HpId, inputModel , UserId);
             var output = _bus.Handle(input);
             var presenter = new SaveRaiinListSettingPresenter();
             presenter.Complete(output);
