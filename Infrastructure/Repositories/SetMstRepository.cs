@@ -559,7 +559,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             }
         }
 
-        return new();
+        return setMstModels;
     }
 
     [Obsolete]
