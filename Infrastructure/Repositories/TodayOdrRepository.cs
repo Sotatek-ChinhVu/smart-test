@@ -599,7 +599,7 @@ namespace Infrastructure.Repositories
                     var ordInfo = TrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.Id == item.Id && o.RaiinNo == item.RaiinNo && o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo);
                     if (ordInfo != null)
                     {
-                        ordInfo.IsDeleted = status == RaiinState.Reservation ?   DeleteTypes.Confirm :  item.IsDeleted;
+                        ordInfo.IsDeleted = status == RaiinState.Reservation ? DeleteTypes.Confirm : item.IsDeleted;
                         ordInfo.UpdateId = userId;
                         ordInfo.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
@@ -1888,6 +1888,11 @@ namespace Infrastructure.Repositories
                     bool existItem = false;
                     foreach (var todayOrd in todayOrds)
                     {
+                        if (todayOrd.IsDeleted == 0)
+                        {
+                            continue;
+                        }
+
                         foreach (var todayOdrDetail in todayOrd.OrdInfDetails)
                         {
                             if (excludeItems.Exists(p => p.ItemCd == todayOdrDetail.ItemCd)) continue;
@@ -1912,6 +1917,11 @@ namespace Infrastructure.Repositories
                     existItem = false;
                     foreach (var todayOrd in todayOrds)
                     {
+                        if (todayOrd.IsDeleted == 1)
+                        {
+                            continue;
+                        }
+
                         foreach (var todayOdr in todayOrd.OrdInfDetails)
                         {
                             if (excludeItems.Exists(p => p.ItemCd == todayOdr.ItemCd)) continue;
@@ -1932,7 +1942,7 @@ namespace Infrastructure.Repositories
                 }
                 if (settingRaiinKbnCd != 0 && raiinKbn.RaiinKbnInfModel.KbnCd == 0)
                 {
-                    raiinKbn.RaiinKbnInfModel.ChangeKbnCd(settingRaiinKbnCd);
+                     raiinKbn.RaiinKbnInfModel.ChangeKbnCd(settingRaiinKbnCd);
                 }
             }
 
