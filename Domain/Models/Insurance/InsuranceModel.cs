@@ -445,7 +445,7 @@ namespace Domain.Models.InsuranceInfor
                     case 12:
                     case 13:
                     case 14:
-                        if (!IsEmptyHoken && HokenInf.HokenMstFutanRate != 0)
+                        if (!IsEmptyHoken && HokenInf.HokenMst != null)
                         {
                             resultRate += HokenInf.HokenMstFutanRate + "%";
                         }
