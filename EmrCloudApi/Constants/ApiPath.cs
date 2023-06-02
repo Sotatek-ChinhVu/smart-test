@@ -341,5 +341,8 @@
 
         //Holiday
         public const string SaveHolidayMst = "SaveHolidayMst";
+
+        //NextOrder
+        public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
     }
 }
