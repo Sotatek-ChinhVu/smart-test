@@ -340,6 +340,7 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.ExtendTtl;
+using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
 using UseCase.MainMenu.GetStatisticMenu;
 using UseCase.MainMenu.SaveStatisticMenu;
@@ -1263,6 +1264,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckLockInputData, CheckLockInteractor>();
             busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
+            busBuilder.RegisterUseCase<GetLockInfoInputData, GetLockInfoInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
