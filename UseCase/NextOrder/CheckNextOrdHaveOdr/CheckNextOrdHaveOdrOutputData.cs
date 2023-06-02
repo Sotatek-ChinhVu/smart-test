@@ -1,8 +1,4 @@
 ﻿using UseCase.Core.Sync.Core;
-using static Helper.Constants.KarteConst;
-using static Helper.Constants.NextOrderConst;
-using static Helper.Constants.OrderInfConst;
-using static Helper.Constants.RsvkrtByomeiConst;
 
 namespace UseCase.NextOrder.CheckNextOrdHaveOdr
 {
