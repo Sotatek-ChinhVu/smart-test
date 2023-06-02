@@ -445,20 +445,16 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         {
             if (dragItem.Level2 == 0)
             {
-                setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 > 0 && s.Level1 <= dragItem.Level1).ToList();
+                setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 > 0).ToList();
             }
             else if (dragItem.Level2 > 0 && dragItem.Level3 == 0)
             {
-                var setMstDrags = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 > dragItem.Level2).ToList();
                 var setMstDrops = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.SetKbnEdaNo && s.Level1 > 0).ToList();
-                setMstModels.AddRange(setMstDrags);
                 setMstModels.AddRange(setMstDrops);
             }
             else if (dragItem.Level2 > 0 && dragItem.Level3 > 0)
             {
-                var setMstDrags = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 == dragItem.Level2 && s.Level3 > dragItem.Level3).ToList();
                 var setMstDrops = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.SetKbnEdaNo && s.Level1 > 0).ToList();
-                setMstModels.AddRange(setMstDrags);
                 setMstModels.AddRange(setMstDrops);
             }
         }
@@ -470,16 +466,16 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 if (dragItem.Level1 > dropItem.Level1)
                 {
-                    setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 > dropItem.Level1 && s.Level1 <= dragItem.Level1).ToList();
+                    setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 > 0).ToList();
                 }
                 else
                 {
-                    setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 >= dragItem.Level1 && s.Level1 <= dropItem.Level1).ToList();
+                    setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 > 0).ToList();
                 }
             }
             else if (dropItem.Level1 > 0 && dropItem.Level2 > 0 && dropItem.Level3 == 0)
             {
-                setMstModels = setMsts.Where(s => s.HpId == dropItem.HpId && s.SetKbn == dropItem.SetKbn && s.SetKbnEdaNo == dropItem.SetKbnEdaNo && s.GenerationId == dropItem.GenerationId && s.Level1 == dropItem.Level1 && s.Level2 == dropItem.Level2).ToList();
+                setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 > 0).ToList();
             }
         }
         else if (dragItem.Level1 > 0 && dragItem.Level2 > 0 && dragItem.Level3 == 0)
@@ -488,11 +484,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 if (dropItem.Level1 == dragItem.Level1)
                 {
-                    setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 > 0 && s.Level2 <= dragItem.Level2).ToList();
+                    setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 == dragItem.Level2).ToList();
                 }
                 else
                 {
-                    var setMstDrags = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 > dragItem.Level2).ToList();
+                    var setMstDrags = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && dragItem.Level2 > 0).ToList();
                     var setMstDrops = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.SetKbnEdaNo && s.Level1 == dropItem.Level1 && s.Level2 > 0).ToList();
                     setMstModels.AddRange(setMstDrags);
                     setMstModels.AddRange(setMstDrops);
@@ -502,19 +498,19 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 if (dragItem.Level1 == dropItem.Level1)
                 {
-                    if (dragItem.Level1 > dropItem.Level1)
+                    if (dragItem.Level2 > dropItem.Level2)
                     {
-                        setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 > 0 && s.Level2 <= dragItem.Level2 && s.Level2 > dropItem.Level2).ToList();
+                        setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 > 0).ToList();
                     }
                     else
                     {
-                        setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 > 0 && s.Level2 >= dragItem.Level2 && s.Level2 <= dropItem.Level2).ToList();
+                        setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 > 0).ToList();
                     }
                 }
                 else
                 {
                     var setMstDrops = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dropItem.Level1 && s.Level2 == dropItem.Level2 && s.Level3 > 0).ToList();
-                    var setMstDrags = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 > dragItem.Level2).ToList();
+                    var setMstDrags = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 > 0).ToList();
                     setMstModels.AddRange(setMstDrags);
                     setMstModels.AddRange(setMstDrops);
                 }
@@ -525,7 +521,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             if (dropItem.Level1 > 0 && dropItem.Level2 == 0 && dropItem.Level3 == 0)
             {
                 var setMstDrops = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dropItem.Level1 && s.Level2 > 0).ToList();
-                var setMstDrags = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 == dragItem.Level2 && s.Level3 > dragItem.Level3).ToList();
+                var setMstDrags = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 == dragItem.Level2 && s.Level3 > 0).ToList();
                 setMstModels.AddRange(setMstDrags);
                 setMstModels.AddRange(setMstDrops);
             }
@@ -538,7 +534,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 else
                 {
                     var setMstDrops = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dropItem.Level1 && s.Level2 == dropItem.Level2 && s.Level3 > 0).ToList();
-                    var setMstDrags = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 == dragItem.Level2 && s.Level3 > dragItem.Level3).ToList();
+                    var setMstDrags = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 == dragItem.Level2 && s.Level3 > 0).ToList();
                     setMstModels.AddRange(setMstDrags);
                     setMstModels.AddRange(setMstDrops);
                 }
@@ -549,11 +545,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 {
                     if (dropItem.Level3 > dragItem.Level3)
                     {
-                        setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 == dragItem.Level2 && s.Level3 >= dragItem.Level3 && s.Level3 <= dropItem.Level3).ToList();
+                        setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 == dragItem.Level2 && s.Level3 > 0).ToList();
                     }
                     else
                     {
-                        setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 == dragItem.Level2 && s.Level3 <= dragItem.Level3 && s.Level3 > dropItem.Level3).ToList();
+                        setMstModels = setMsts.Where(s => s.HpId == dragItem.HpId && s.SetKbn == dragItem.SetKbn && s.SetKbnEdaNo == dragItem.SetKbnEdaNo && s.GenerationId == dragItem.GenerationId && s.Level1 == dragItem.Level1 && s.Level2 == dragItem.Level2 && s.Level3 > 0).ToList();
                     }
                 }
             }
