@@ -15,10 +15,12 @@ public class GetAllByomeiByPtIdInteractor : IGetAllByomeiByPtIdInputPort
     {
         try
         {
+            int pageIndex = inputData.PageIndex <= 0 ? 1 : inputData.PageIndex;
+            int pageSize = inputData.PageSize <= 0 ? 1 : inputData.PageSize;
             var ptDiseaseListModel = _diseaseRepository.GetAllByomeiByPtId(inputData.HpId,
                                                                            inputData.PtId,
-                                                                           inputData.PageIndex,
-                                                                           inputData.PageSize);
+                                                                           pageIndex,
+                                                                           pageSize);
             return new GetAllByomeiByPtIdOutputData(ptDiseaseListModel, GetAllByomeiByPtIdStatus.Success);
         }
         finally
