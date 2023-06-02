@@ -1917,7 +1917,7 @@ namespace Infrastructure.Repositories
                     existItem = false;
                     foreach (var todayOrd in todayOrds)
                     {
-                        if (todayOrd.IsDeleted == 1)
+                        if (todayOrd.IsDeleted == 1 || todayOrd.IsDeleted == 2)
                         {
                             continue;
                         }
