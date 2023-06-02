@@ -9,7 +9,7 @@ namespace Domain.Models.Reception
 
         bool Update(ReceptionSaveDto dto, int hpId, int userId);
 
-        ReceptionModel Get(long raiinNo, bool flag);
+        ReceptionModel Get(long raiinNo, bool flag = false);
 
         List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily, int isDeleted = 2, bool searchSameVisit = false);
 
