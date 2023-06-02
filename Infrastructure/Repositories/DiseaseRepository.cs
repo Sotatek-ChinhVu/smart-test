@@ -235,6 +235,70 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public List<PtDiseaseModel> GetAllByomeiByPtId(int hpId, long ptId, int pageIndex, int pageSize)
+        {
+            var ptByomeiList = NoTrackingDataContext.PtByomeis.Where(p => p.HpId == hpId &&
+                                                                          p.PtId == ptId)
+                                                              .OrderByDescending(p => p.UpdateDate)
+                                                              .ThenByDescending(p => p.Id)
+                                                              .Skip((pageIndex - 1) * pageSize)
+                                                              .Take(pageSize)
+                                                              .ToList();
+
+            var userIdList = ptByomeiList.Select(item => item.CreateId).ToList();
+            userIdList.AddRange(ptByomeiList.Select(item => item.UpdateId).ToList());
+            userIdList = userIdList.Distinct().ToList();
+
+            var byomeiCdList = ptByomeiList.Select(item => item.ByomeiCd).Distinct().ToList();
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(item => byomeiCdList.Contains(item.ByomeiCd)).ToList();
+
+            var userMstList = NoTrackingDataContext.UserMsts.Where(item => item.HpId == hpId
+                                                                           && userIdList.Contains(item.UserId)
+                                                                           && item.IsDeleted == 0)
+                                                            .ToList();
+
+            List<PtDiseaseModel> result = new();
+            foreach (var ptByomei in ptByomeiList)
+            {
+                string createName = userMstList.FirstOrDefault(item => item.UserId == ptByomei.CreateId)?.Sname ?? string.Empty;
+                string updateName = userMstList.FirstOrDefault(item => item.UserId == ptByomei.UpdateId)?.Sname ?? string.Empty;
+                string byomeiName = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd)?.Byomei ?? ptByomei.Byomei ?? string.Empty;
+
+                var ptDiseaseModel = new PtDiseaseModel(
+                        ptByomei.HpId,
+                        ptByomei.PtId,
+                        ptByomei.SeqNo,
+                        ptByomei.ByomeiCd ?? string.Empty,
+                        ptByomei.SortNo,
+                        SyusyokuCdToList(ptByomei),
+                        byomeiName,
+                        ptByomei.StartDate,
+                        ptByomei.TenkiKbn,
+                        ptByomei.TenkiDate,
+                        ptByomei.SyubyoKbn,
+                        ptByomei.SikkanKbn,
+                        ptByomei.NanByoCd,
+                        ptByomei.IsNodspRece,
+                        ptByomei.IsNodspKarte,
+                        ptByomei.IsDeleted,
+                        ptByomei.Id,
+                        ptByomei.IsImportant,
+                        0,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        ptByomei.HokenPid,
+                        ptByomei.HosokuCmt ?? string.Empty,
+                        ptByomei.TogetuByomei,
+                        0
+                        );
+                ptDiseaseModel = ptDiseaseModel.ChangeCreateUserUpdateDate(createName, updateName, ptByomei.CreateDate, ptByomei.UpdateDate);
+                result.Add(ptDiseaseModel);
+            }
+            return result;
+        }
+
         public List<ByomeiSetMstModel> GetDataTreeSetByomei(int hpId, int sinDate)
         {
             var genarationMst = NoTrackingDataContext.ByomeiSetGenerationMsts

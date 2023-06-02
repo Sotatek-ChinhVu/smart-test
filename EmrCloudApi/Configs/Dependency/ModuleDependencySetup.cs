@@ -270,6 +270,7 @@ using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
 using UseCase.CommonChecker;
 using UseCase.Core.Builder;
+using UseCase.Diseases.GetAllByomeiByPtId;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.GetSetByomeiTree;
 using UseCase.Diseases.Upsert;
@@ -834,6 +835,7 @@ namespace EmrCloudApi.Configs.Dependency
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
             busBuilder.RegisterUseCase<ValidationPtDiseaseListInputData, ValidationPtDiseaseListInteractor>();
+            busBuilder.RegisterUseCase<GetAllByomeiByPtIdInputData, GetAllByomeiByPtIdInteractor>();
 
             //Order Info
             busBuilder.RegisterUseCase<GetOrdInfListTreeInputData, GetOrdInfListTreeInteractor>();
