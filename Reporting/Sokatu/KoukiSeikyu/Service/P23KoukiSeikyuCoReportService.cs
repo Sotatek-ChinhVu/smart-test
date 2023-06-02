@@ -89,6 +89,8 @@ public class P23KoukiSeikyuCoReportService : IP23KoukiSeikyuCoReportService
     #region Private function
     private bool UpdateDrawForm()
     {
+        _hasNextPage = false;
+
         #region SubMethod
 
         #region Header
@@ -96,7 +98,6 @@ public class P23KoukiSeikyuCoReportService : IP23KoukiSeikyuCoReportService
         {
             Dictionary<string, string> fieldDataPerPage = new();
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-
             //医療機関コード
             SetFieldData("hpCode", hpInf.HpCd);
             //医療機関情報
@@ -155,7 +156,7 @@ public class P23KoukiSeikyuCoReportService : IP23KoukiSeikyuCoReportService
                     listDataPerPage.Add(new("count", 0, rowNo, wrkData.Count.ToString()));
                     //日数
                     wrkData.Nissu = wrkReces.Sum(r => r.HokenNissu);
-                    listDataPerPage.Add(new("nissu", 0, rowNo, wrkData.Nissu.ToString()));
+                    listDataPerPage.Add(new ("nissu", 0, rowNo, wrkData.Nissu.ToString()));
                     //点数
                     wrkData.Tensu = wrkReces.Sum(r => r.Tensu);
                     listDataPerPage.Add(new("tensu", 0, rowNo, wrkData.Tensu.ToString()));
@@ -168,7 +169,7 @@ public class P23KoukiSeikyuCoReportService : IP23KoukiSeikyuCoReportService
             //公費
             int kohiCount = curReceInfs.Where(r => r.IsHeiyo).ToList().Count;
             SetFieldData("kohiCount", kohiCount.ToString());
-
+            _listTextData.Add(pageIndex, listDataPerPage);
             return 1;
         }
         #endregion
