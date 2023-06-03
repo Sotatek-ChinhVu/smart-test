@@ -365,19 +365,19 @@ namespace Infrastructure.Repositories
             int sinDate = ordInfs[0].SinDate;
 
             // Get Raiin List Inf
-            var raiinListInfs = NoTrackingDataContext.RaiinListInfs.Where(item => item.HpId == hpId
+            var raiinListInfs = TrackingDataContext.RaiinListInfs.Where(item => item.HpId == hpId
                                                                 && item.RaiinNo == raiinNo
                                                                 && item.PtId == ptId
                                                                 && item.SinDate == sinDate).ToList();
 
             // Get KouiKbnMst
-            var kouiKbnMst = NoTrackingDataContext.KouiKbnMsts.ToList();
+            var kouiKbnMst = TrackingDataContext.KouiKbnMsts.ToList();
 
             // Get Raiin List
-            var raiinListMstList = NoTrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListDetailList = NoTrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListKouiList = NoTrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListItemList = NoTrackingDataContext.RaiinListItems.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListMstList = TrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListDetailList = TrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListKouiList = TrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListItemList = TrackingDataContext.RaiinListItems.Where(item => item.IsDeleted == 0).ToList();
 
             // Filter GrpId
             // Get all raiin list master contain item and koui
