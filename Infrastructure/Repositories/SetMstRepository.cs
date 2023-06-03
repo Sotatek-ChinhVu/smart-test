@@ -1470,6 +1470,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 else if (dragItem.Level2 < dropItem.Level2)
                 {
                     var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dragItem.Level2 && mst.Level2 <= dropItem.Level2).ToList();
+                    var dropLevel = dropItem.Level2;
                     LevelUp(2, userId, listUpdateLevel2);
                     foreach (var item in listUpdateLevel2)
                     {
@@ -1477,7 +1478,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     }
                     foreach (var item in listDragUpdateLevel2)
                     {
-                        item.Level2 = dropItem.Level2;
+                        item.Level2 = dropLevel;
                         item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
                         item.IsDeleted = DeleteTypes.Deleted;
