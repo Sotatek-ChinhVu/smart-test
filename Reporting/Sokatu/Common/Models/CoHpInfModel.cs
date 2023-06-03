@@ -12,6 +12,11 @@ namespace Reporting.Sokatu.Common.Models
             HpInf = hpInf;
         }
 
+        public CoHpInfModel()
+        {
+            HpInf = new();
+        }
+
         public string HpCd
         {
             get => HpInf == null ? "" : HpInf.HpCd.PadLeft(7, '0');
