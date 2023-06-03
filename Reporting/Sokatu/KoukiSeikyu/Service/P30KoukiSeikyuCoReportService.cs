@@ -92,6 +92,8 @@ public class P30KoukiSeikyuCoReportService : IP30KoukiSeikyuCoReportService
         #region Header
         void UpdateFormHeader()
         {
+            Dictionary<string, string> fieldDataPerPage = new();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             //医療機関コード
             SetFieldData("hpCode", hpInf.ReceHpCd);
             //医療機関情報
@@ -114,7 +116,8 @@ public class P30KoukiSeikyuCoReportService : IP30KoukiSeikyuCoReportService
             SetFieldData("reportMonth", wrkYmd.Month.ToString());
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //保険者（都道府県番号のみ）
-            SetFieldData("hokensyaNo", _currentHokensyaNo.Substring(2, 2));
+            fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.Substring(2, 2));
+            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
         }
         #endregion
 
