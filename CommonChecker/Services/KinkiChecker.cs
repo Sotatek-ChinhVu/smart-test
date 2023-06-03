@@ -44,7 +44,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             {
                 var item = checkedResult[i];
                 var listDuplicate = checkedResult.Where(c => item.AYjCd == c.BYjCd && item.AYjCd == c.BYjCd).ToList();
-                for (int j = 0; j < listDuplicate.Count(); j++)
+                for (int j = 0; j < listDuplicate.Count; j++)
                 {
                     checkedResult.Remove(listDuplicate[j]);
                 }

@@ -17,6 +17,7 @@ using Helper.Extension;
 using System.Text;
 using UseCase.MedicalExamination.SummaryInf;
 using SpecialNotePatienInfDomain = Domain.Models.SpecialNote.PatientInfo;
+using System.Linq;
 
 namespace Interactor.MedicalExamination
 {
@@ -45,8 +46,8 @@ namespace Interactor.MedicalExamination
         private readonly IRsvInfRepository _rsvInfRepository;
         private readonly ISummaryInfRepository _summaryInfRepository;
         private Dictionary<string, string> _relationship = new();
-        private List<SummaryInfItem> _header1Infos = new();
-        private List<SummaryInfItem> _header2Infos = new();
+        private readonly List<SummaryInfItem> _header1Infos = new();
+        private readonly List<SummaryInfItem> _header2Infos = new();
         private List<SummaryInfItem> _notifications = new();
         private List<PopUpNotificationItem> _notificationPopUps = new();
         private List<UserConfModel> _listNotifiProperty = new List<UserConfModel>();
@@ -135,12 +136,12 @@ namespace Interactor.MedicalExamination
 
         private void SetForeground(UserConfModel userConfigurationModel, List<SummaryInfItem> listHeader1InfoModels, List<SummaryInfItem> listHeader2InfoModels)
         {
-            var ptHeaderInfoModel = listHeader1InfoModels.Where(u => u.GrpItemCd == userConfigurationModel.GrpItemCd).FirstOrDefault() != null ?
-                                                  listHeader1InfoModels.Where(u => u.GrpItemCd == userConfigurationModel.GrpItemCd).FirstOrDefault() :
-                                                  listHeader2InfoModels.Where(u => u.GrpItemCd == userConfigurationModel.GrpItemCd).FirstOrDefault();
+            var ptHeaderInfoModel = listHeader1InfoModels.FirstOrDefault(u => u.GrpItemCd == userConfigurationModel.GrpItemCd) != null ?
+                                    listHeader1InfoModels.FirstOrDefault(u => u.GrpItemCd == userConfigurationModel.GrpItemCd) :
+                                    listHeader2InfoModels.FirstOrDefault(u => u.GrpItemCd == userConfigurationModel.GrpItemCd);
             if (ptHeaderInfoModel != null)
             {
-                ptHeaderInfoModel = ptHeaderInfoModel.ChangePropertyColor(userConfigurationModel.Param);
+                ptHeaderInfoModel.ChangePropertyColor(userConfigurationModel.Param);
             }
         }
 
@@ -153,18 +154,20 @@ namespace Interactor.MedicalExamination
         /// <param name="infoType"></param>
         private void FormatData(int hpId, long ptId, int sinDate, int userId, long raiinNo, InfoType infoType)
         {
-            var newTempListNotification = new List<SummaryInfItem>();
+            Dictionary<string, SummaryInfItem> header1InfoDic = new();
+            Dictionary<string, SummaryInfItem> header2InfoDic = new();
+            List<SummaryInfItem> newTempListNotification = new();
             string header1Property = string.Empty;
             string header2Property = string.Empty;
-            var listUserconfig = new List<UserConfModel>();
+            List<UserConfModel> listUserconfig = new();
 
             if (infoType == InfoType.PtHeaderInfo)
             {
                 header1Property = _userConfRepository.GetSettingParam(hpId, userId, 910, defaultValue: "234");
                 header2Property = _userConfRepository.GetSettingParam(hpId, userId, 911, defaultValue: "567");
                 listUserconfig = _userConfRepository.GetList(hpId, userId, new List<int> { 912 }).ToList();
-                _notifications = GetNotification(hpId, ptId, sinDate, userId);
-                _notificationPopUps = GetPopUpNotification(hpId, userId, _notifications);
+                //_notifications = GetNotification(hpId, ptId, sinDate, userId);
+                //_notificationPopUps = GetPopUpNotification(hpId, userId, _notifications);
             }
             else if (infoType == InfoType.SumaryInfo)
             {
@@ -175,21 +178,21 @@ namespace Interactor.MedicalExamination
             var objKey = new object();
             Parallel.ForEach(header1Property, propertyCd =>
             {
-                var ptHeaderInfoModel = GetSummaryInfo(hpId, ptId, sinDate, propertyCd.AsString(), 1, raiinNo, infoType);
+                var ptHeaderInfoModel = GetSummaryInfo(hpId, ptId, sinDate, propertyCd.AsString(), raiinNo, infoType);
                 if (!string.IsNullOrEmpty(ptHeaderInfoModel.HeaderInfo))
                 {
                     if (infoType == InfoType.PtHeaderInfo || infoType == InfoType.SumaryInfo)
                     {
                         lock (objKey)
                         {
-                            _header1Infos.Add(ptHeaderInfoModel);
+                            header1InfoDic.Add(propertyCd.AsString(), ptHeaderInfoModel);
                         }
                     }
                     else
                     {
                         lock (objKey)
                         {
-                            _header2Infos.Add(ptHeaderInfoModel);
+                            header2InfoDic.Add(propertyCd.AsString(), ptHeaderInfoModel);
                         }
                     }
                 }
@@ -197,15 +200,31 @@ namespace Interactor.MedicalExamination
 
             Parallel.ForEach(header2Property, propertyCd =>
             {
-                var ptHeaderInfoModel = GetSummaryInfo(hpId, ptId, sinDate, propertyCd.AsString(), 2, raiinNo, infoType);
+                var ptHeaderInfoModel = GetSummaryInfo(hpId, ptId, sinDate, propertyCd.AsString(), raiinNo, infoType);
                 if (!string.IsNullOrEmpty(ptHeaderInfoModel.HeaderInfo))
                 {
                     lock (objKey)
                     {
-                        _header2Infos.Add(ptHeaderInfoModel);
+                        header2InfoDic.Add(propertyCd.AsString(), ptHeaderInfoModel);
                     }
                 }
             });
+
+            foreach (var item in header1Property)
+            {
+                if (header1InfoDic.ContainsKey(item.AsString()))
+                {
+                    _header1Infos.Add(header1InfoDic[item.AsString()]);
+                }
+            }
+
+            foreach (var item in header2Property)
+            {
+                if (header2InfoDic.ContainsKey(item.AsString()))
+                {
+                    _header2Infos.Add(header2InfoDic[item.AsString()]);
+                }
+            }
 
             foreach (UserConfModel userConfigurationModel in listUserconfig)
             {
@@ -214,7 +233,7 @@ namespace Interactor.MedicalExamination
 
             Parallel.ForEach(_notifications, item =>
             {
-                var userConfNoti = _listNotifiProperty.Where(u => u.GrpItemCd == item.GrpItemCd).FirstOrDefault();
+                var userConfNoti = _listNotifiProperty.FirstOrDefault(u => u.GrpItemCd == item.GrpItemCd);
                 if (userConfNoti != null && userConfNoti.Val == 1)
                 {
                     var newItem = item.ChangeHeader(item.HeaderName.Replace("】", "あり】"), string.Empty);
@@ -268,7 +287,6 @@ namespace Interactor.MedicalExamination
             return listNotificationPopup;
         }
 
-
         private List<SummaryInfItem> GetNotification(int hpId, long ptId, int sinDate, int userId)
         {
             List<SummaryInfItem> listNotification = GetNotificationContent(hpId, ptId, userId, sinDate);
@@ -284,7 +302,6 @@ namespace Interactor.MedicalExamination
             }
             return listNotification;
         }
-
 
         private List<SummaryInfItem> GetNotificationContent(int hpId, long ptId, int userId, int sinDate)
         {
@@ -395,7 +412,7 @@ namespace Interactor.MedicalExamination
 
                 if (!string.IsNullOrEmpty(headerInfo))
                 {
-                    var colorTextNotifi = _userConfRepository.GetListUserConf(hpId, userId, 917).Where(x => x.GrpItemCd == userConfNoti.GrpItemCd).FirstOrDefault();
+                    var colorTextNotifi = _userConfRepository.GetListUserConf(hpId, userId, 917).FirstOrDefault(x => x.GrpItemCd == userConfNoti.GrpItemCd);
                     if (colorTextNotifi != null)
                     {
                         propertyColor = colorTextNotifi.Param;
@@ -404,14 +421,13 @@ namespace Interactor.MedicalExamination
                     spaceHeaderName = 5.0;
                     spaceHeaderInfo = 30.0;
                     var splitHeaderInf = headerInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    var result = new SummaryInfItem(headerInfo, headerName, propertyColor, spaceHeaderName, spaceHeaderInfo, summaryInfItem.HeaderNameSize, grpItemCd, summaryInfItem.Text, splitHeaderInf);
                     return summaryInfItem;
                 }
             }
             return null;
         }
 
-        private SummaryInfItem GetSummaryInfo(int hpId, long ptId, int sinDate, string propertyCd, int headerType, long raiinNo, InfoType infoType = InfoType.PtHeaderInfo)
+        private SummaryInfItem GetSummaryInfo(int hpId, long ptId, int sinDate, string propertyCd, long raiinNo, InfoType infoType = InfoType.PtHeaderInfo)
         {
             SummaryInfItem summaryInfItem = new SummaryInfItem();
             GetData(hpId, ptId, sinDate, propertyCd, ref summaryInfItem);
@@ -502,7 +518,7 @@ namespace Interactor.MedicalExamination
                     break;
                 case "6":
                     //出産予定
-                    summaryInfItem = GetReproductionInfo(ptId, sinDate);
+                    summaryInfItem = GetReproductionInfo(ptId, hpId);
                     break;
                 case "7":
                     //予約情報
@@ -535,9 +551,9 @@ namespace Interactor.MedicalExamination
             string headerName = "■身体情報";
             List<KensaInfDetailModel> listKensaInfDetailModel = _specialNotePatientInfPhysicalRepository.GetListKensaInfDetailModel(hpId, ptId, sinDate);
             long maxSortNo = listKensaInfDetailModel.Max(u => u.SortNo);
-            KensaInfDetailModel heightModel = listKensaInfDetailModel.Where(u => u.KensaItemCd == IraiCodeConstant.HEIGHT_CODE).FirstOrDefault() ?? new();
-            KensaInfDetailModel weightModel = listKensaInfDetailModel.Where(u => u.KensaItemCd == IraiCodeConstant.WEIGHT_CODE).FirstOrDefault() ?? new();
-            KensaInfDetailModel bmiModel = listKensaInfDetailModel.Where(u => u.KensaItemCd == IraiCodeConstant.BMI_CODE).FirstOrDefault() ?? new();
+            KensaInfDetailModel heightModel = listKensaInfDetailModel.FirstOrDefault(u => u.KensaItemCd == IraiCodeConstant.HEIGHT_CODE) ?? new();
+            KensaInfDetailModel weightModel = listKensaInfDetailModel.FirstOrDefault(u => u.KensaItemCd == IraiCodeConstant.WEIGHT_CODE) ?? new();
+            KensaInfDetailModel bmiModel = listKensaInfDetailModel.FirstOrDefault(u => u.KensaItemCd == IraiCodeConstant.BMI_CODE) ?? new();
             var newlistKensaInfDetailModel = new List<KensaInfDetailModel>();
             newlistKensaInfDetailModel.AddRange(listKensaInfDetailModel.Where(u => u != bmiModel));
 
@@ -576,6 +592,10 @@ namespace Interactor.MedicalExamination
                 }
             }
             newlistKensaInfDetailModel = newlistKensaInfDetailModel.OrderBy(u => u.SortNo).ToList();
+
+            StringBuilder headerInfStringBuilder = new();
+            headerInfStringBuilder.Append(headerInf);
+
             foreach (var kensaDetailModel in newlistKensaInfDetailModel)
             {
                 string sSate = CIUtil.SDateToShowSDate(kensaDetailModel.IraiDate);
@@ -593,9 +613,10 @@ namespace Interactor.MedicalExamination
                 }
                 if (!string.IsNullOrEmpty(kensaDetailModel.ResultVal))
                 {
-                    headerInf += (string.IsNullOrEmpty(kensaName) ? string.Empty : kensaName + ":" + space) + kensaDetailModel.ResultVal + kensaDetailModel.Unit + space + (string.IsNullOrEmpty(sSate) ? string.Empty : "(" + sSate + ")") + space + "/";
+                    headerInfStringBuilder.Append((string.IsNullOrEmpty(kensaName) ? string.Empty : kensaName + ":" + space) + kensaDetailModel.ResultVal + kensaDetailModel.Unit + space + (string.IsNullOrEmpty(sSate) ? string.Empty : "(" + sSate + ")") + space + "/");
                 }
             }
+            headerInf = headerInfStringBuilder.ToString();
             headerInf = headerInf.TrimEnd('/') ?? string.Empty;
 
             var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -762,20 +783,22 @@ namespace Interactor.MedicalExamination
         {
             int grpItemCd = 5;
             string headerName = "◆算定情報";
-            string headerInf = "";
+            StringBuilder headerInf = new();
             List<SanteiInfModel> listSanteiInfModels = _santeiInfRepository.GetCalculationInfo(hpId, ptId, sinDate);
             if (listSanteiInfModels.Count > 0)
             {
                 listSanteiInfModels = listSanteiInfModels.Where(u => u.DayCount > u.AlertDays).ToList();
                 foreach (var santeiInfomationModel in listSanteiInfModels)
                 {
-                    headerInf += santeiInfomationModel.ItemName?.Trim() + "(" + santeiInfomationModel.KisanType + " " + CIUtil.SDateToShowSDate(santeiInfomationModel.LastOdrDate) + "～　" + santeiInfomationModel.DayCountDisplay + ")" + Environment.NewLine;
+                    headerInf.Append(santeiInfomationModel.ItemName?.Trim() + "(" + santeiInfomationModel.KisanType + " " + CIUtil.SDateToShowSDate(santeiInfomationModel.LastOdrDate) + "～　" + santeiInfomationModel.DayCountDisplay + ")" + Environment.NewLine);
                 }
 
-                headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
-                var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                var stringHeaderInf = headerInf.ToString();
 
-                var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
+                stringHeaderInf = stringHeaderInf.TrimEnd(Environment.NewLine.ToCharArray());
+                var splitHeaderInf = stringHeaderInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                var summaryInfItem = new SummaryInfItem(stringHeaderInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
                 return summaryInfItem;
             }
@@ -783,14 +806,14 @@ namespace Interactor.MedicalExamination
             return new SummaryInfItem();
         }
 
-        private SummaryInfItem GetReproductionInfo(long ptId, int sinDate)
+        private SummaryInfItem GetReproductionInfo(long ptId, int hpId)
         {
             int grpItemCd = 6;
             string headerName = "■出産予定";
             StringBuilder headerInf = new StringBuilder();
-            List<PtPregnancyModel> listPtPregnancyModels = new List<PtPregnancyModel>();
+            List<PtPregnancyModel> listPtPregnancyModels;
 
-            listPtPregnancyModels = _specialNotePatientInfReproductionRepository.GetPregnancyList(ptId, sinDate);
+            listPtPregnancyModels = _specialNotePatientInfReproductionRepository.GetPregnancyList(ptId, hpId);
 
             if (listPtPregnancyModels.Count > 0)
             {
@@ -801,7 +824,7 @@ namespace Interactor.MedicalExamination
                         return string.Empty;
                     }
                     return CIUtil.SDateToShowSDate(CIUtil.DateTimeToInt((DateTime)dateTime));
-                };
+                }
 
                 PtPregnancyModel ptPregnancyModel = listPtPregnancyModels.FirstOrDefault() ?? new();
                 if (ptPregnancyModel.PeriodDate != 0)
@@ -842,10 +865,9 @@ namespace Interactor.MedicalExamination
 
         private SummaryInfItem GetReservationInf(int hpId, long ptId, int sinDate)
         {
-            int today = DateTime.Now.ToString("yyyyMMdd").AsInteger();
             int grpItemCd = 7;
             string headerName = "■予約情報";
-            string headerInf = "";
+            StringBuilder headerInf = new();
             var listRsvInfModel = _rsvInfRepository.GetList(hpId, ptId, sinDate);
 
             if (listRsvInfModel.Count > 0)
@@ -858,26 +880,23 @@ namespace Interactor.MedicalExamination
                         //formart for RsvInf
                         string startTime = rsvInfModel.StartTime > 0 ? space + CIUtil.TimeToShowTime(rsvInfModel.StartTime) + space : space;
                         string rsvFrameName = string.IsNullOrEmpty(rsvInfModel.RsvFrameName) ? string.Empty : "[" + rsvInfModel.RsvFrameName + "]";
-                        headerInf += CIUtil.SDateToShowSDate2(rsvInfModel.SinDate) + startTime + rsvInfModel.RsvGrpName + space + rsvFrameName + Environment.NewLine;
+                        headerInf.Append(CIUtil.SDateToShowSDate2(rsvInfModel.SinDate) + startTime + rsvInfModel.RsvGrpName + space + rsvFrameName + Environment.NewLine);
                     }
                     else
                     {
                         //formart for raiinInf
                         string kaName = string.IsNullOrEmpty(rsvInfModel.KaSName) ? space : space + "[" + rsvInfModel.KaSName + "]" + space;
-                        headerInf += CIUtil.SDateToShowSDate2(rsvInfModel.SinDate) + space
-                                                        + FormatTime(rsvInfModel.YoyakuTime)
-                                                        + kaName
-                                                        + rsvInfModel.TantoName + space
-                                                        + (!string.IsNullOrEmpty(rsvInfModel.RaiinCmt) ? "(" + rsvInfModel.RaiinCmt + ")" : string.Empty)
-                                                        + Environment.NewLine;
+                        headerInf.Append(CIUtil.SDateToShowSDate2(rsvInfModel.SinDate) + space + FormatTime(rsvInfModel.YoyakuTime) + kaName + rsvInfModel.TantoName + space + (!string.IsNullOrEmpty(rsvInfModel.RaiinCmt) ? "(" + rsvInfModel.RaiinCmt + ")" : string.Empty) + Environment.NewLine);
                     }
                 }
             }
 
-            headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
-            var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var stringHeaderInf = headerInf.ToString();
 
-            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
+            stringHeaderInf = stringHeaderInf.TrimEnd(Environment.NewLine.ToCharArray());
+            var splitHeaderInf = stringHeaderInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            var summaryInfItem = new SummaryInfItem(stringHeaderInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
@@ -923,7 +942,7 @@ namespace Interactor.MedicalExamination
             int grpItemCd = 10;
             string headerName = "◆保険情報";
             var ptHoken = _insuranceRepository.GetInsuranceListById(hpId, ptId, sinDate);
-            var ptHokenInfs = ptHoken.ListInsurance;
+            var ptHokenInfs = ptHoken.ListInsurance.Where(item => item.IsDeleted == 0 && item.StartDate <= sinDate && sinDate <= item.EndDate).ToList();
             if (ptHokenInfs.Count == 0) return new SummaryInfItem();
             StringBuilder futanInfo = new StringBuilder();
             StringBuilder kohiInf = new StringBuilder();
@@ -1100,23 +1119,23 @@ namespace Interactor.MedicalExamination
             var ptFamilyList = _familyRepository.GetFamilyListByPtId(hpId, ptId, sinDate);
             if (ptFamilyList != null)
             {
-                string headerInfo = string.Empty;
+                StringBuilder headerInfo = new();
                 foreach (var ptFamilyModel in ptFamilyList)
                 {
-                    SetDiseaseName(ptFamilyModel);
-                    if (!string.IsNullOrWhiteSpace(ptFamilyModel.DiseaseName))
+                    var diseaseName = SetDiseaseName(ptFamilyModel);
+                    if (!string.IsNullOrWhiteSpace(diseaseName))
                     {
-                        if (!string.IsNullOrEmpty(headerInfo))
+                        if (headerInfo.Length > 0)
                         {
-                            headerInfo += Environment.NewLine;
+                            headerInfo.Append(Environment.NewLine);
                         }
-                        headerInfo += $"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){ptFamilyModel.DiseaseName}";
+                        headerInfo.Append($"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){ptFamilyModel.DiseaseName}");
                     }
                 }
 
-                if (!string.IsNullOrEmpty(headerInfo))
+                if (headerInfo.Length > 0)
                 {
-                    headerInf = headerInfo;
+                    headerInf = headerInfo.ToString();
                 }
             }
 
@@ -1204,9 +1223,9 @@ namespace Interactor.MedicalExamination
             return result;
         }
 
-        public void SetDiseaseName(FamilyModel ptFamilyModel)
+        public string SetDiseaseName(FamilyModel ptFamilyModel)
         {
-            string diseaseName = string.Empty;
+            StringBuilder diseaseName = new();
             if (ptFamilyModel.ListPtFamilyRekis != null && ptFamilyModel.ListPtFamilyRekis.Count > 0)
             {
                 foreach (PtFamilyRekiModel ptByomeiMode in ptFamilyModel.ListPtFamilyRekis)
@@ -1215,31 +1234,13 @@ namespace Interactor.MedicalExamination
                     {
                         if (!string.IsNullOrEmpty(ptFamilyModel.DiseaseName))
                         {
-                            diseaseName += "・";
+                            diseaseName.Append("・");
                         }
-                        diseaseName += ptByomeiMode.Byomei;
+                        diseaseName.Append(ptByomeiMode.Byomei);
                     }
                 }
             }
-            ptFamilyModel = new FamilyModel(
-                    ptFamilyModel.FamilyId,
-                    ptFamilyModel.PtId,
-                    ptFamilyModel.SeqNo,
-                    ptFamilyModel.ZokugaraCd,
-                    ptFamilyModel.FamilyPtId,
-                    ptFamilyModel.FamilyPtNum,
-                    ptFamilyModel.Name,
-                    ptFamilyModel.KanaName,
-                    ptFamilyModel.Sex,
-                    ptFamilyModel.Birthday,
-                    ptFamilyModel.Age,
-                    ptFamilyModel.IsDead,
-                    ptFamilyModel.IsSeparated,
-                    ptFamilyModel.Biko,
-                    ptFamilyModel.SortNo,
-                    ptFamilyModel.ListPtFamilyRekis ?? new(),
-                    diseaseName
-                );
+            return diseaseName.ToString();
         }
     }
 }
