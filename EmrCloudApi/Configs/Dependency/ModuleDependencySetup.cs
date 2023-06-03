@@ -588,6 +588,9 @@ using UseCase.RaiinListSetting.GetDocCategory;
 using Interactor.RaiinListSetting;
 using Domain.Models.RaiinListSetting;
 using UseCase.RaiinListSetting.GetFilingcategory;
+using Reporting.Sokatu.AfterCareSeikyu.Service;
+using Reporting.Sokatu.AfterCareSeikyu.DB;
+using Reporting.Sijisen.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -721,10 +724,12 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHikariDiskCoReportService, HikariDiskCoReportService>();
             services.AddTransient<ICoHikariDiskFinder, CoHikariDiskFinder>();
             services.AddTransient<ICoKoukiSeikyuFinder, CoKoukiSeikyuFinder>();
+            services.AddTransient<ICoAfterCareSeikyuFinder, CoAfterCareSeikyuFinder>();
             services.AddTransient<IP28KoukiSeikyuCoReportService, P28KoukiSeikyuCoReportService>();
             services.AddTransient<IP29KoukiSeikyuCoReportService, P29KoukiSeikyuCoReportService>();
             services.AddTransient<IYakutaiCoReportService, YakutaiCoReportService>();
             services.AddTransient<ICoYakutaiFinder, CoYakutaiFinder>();
+            services.AddTransient<IAfterCareSeikyuCoReportService, AfterCareSeikyuCoReportService>();
             services.AddTransient<ICoSijisenFinder, CoSijisenFinder>();
             services.AddTransient<ICoAccountingCardFinder, CoAccountingCardFinder>();
             services.AddTransient<IAccountingCardCoReportService, AccountingCardCoReportService>();

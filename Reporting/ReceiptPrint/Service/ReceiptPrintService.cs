@@ -1,4 +1,5 @@
 ﻿using Reporting.Mappers.Common;
+using Reporting.Sokatu.AfterCareSeikyu.Service;
 using Reporting.Sokatu.HikariDisk.Service;
 using Reporting.Sokatu.KokhoSokatu.Service;
 using Reporting.Sokatu.KoukiSeikyu.Service;
@@ -22,14 +23,16 @@ public class ReceiptPrintService : IReceiptPrintService
     private readonly IHikariDiskCoReportService _hikariDiskCoReportService;
     private readonly IP28KoukiSeikyuCoReportService _p28KoukiSeikyuCoReportService;
     private readonly IP29KoukiSeikyuCoReportService _p29KoukiSeikyuCoReportService;
+    private readonly IAfterCareSeikyuCoReportService _afterCareSeikyuCoReportService;
 
-    public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService, IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService, IHikariDiskCoReportService hikariDiskCoReportService, IP28KoukiSeikyuCoReportService p28KoukiSeikyuCoReportService, IP29KoukiSeikyuCoReportService p29KoukiSeikyuCoReportService)
+    public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService, IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService, IHikariDiskCoReportService hikariDiskCoReportService, IP28KoukiSeikyuCoReportService p28KoukiSeikyuCoReportService, IP29KoukiSeikyuCoReportService p29KoukiSeikyuCoReportService, IAfterCareSeikyuCoReportService afterCareSeikyuCoReportService)
     {
         _p28KokhoSokatuCoReportService = p28KokhoSokatuCoReportService;
         _p11KokhoSokatuCoReportService = p11KokhoSokatuCoReportService;
         _hikariDiskCoReportService = hikariDiskCoReportService;
         _p28KoukiSeikyuCoReportService = p28KoukiSeikyuCoReportService;
         _p29KoukiSeikyuCoReportService = p29KoukiSeikyuCoReportService;
+        _afterCareSeikyuCoReportService = afterCareSeikyuCoReportService;
     }
 
     public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt)
@@ -57,7 +60,10 @@ public class ReceiptPrintService : IReceiptPrintService
             int hokenKbn = 1;
             return _hikariDiskCoReportService.GetHikariDiskPrintData(hpId, seikyuYm, hokenKbn, diskKind, diskCnt);
         }
-
+        else if (reportId == 4 && reportEdaNo == 0)
+        {
+            return _afterCareSeikyuCoReportService.GetAfterCareSeikyuPrintData(hpId, seikyuYm, GetSeikyuType(dataKbn));
+        }
         return new();
     }
 
@@ -97,5 +103,12 @@ public class ReceiptPrintService : IReceiptPrintService
         }
 
         return new SeikyuType(_isNormal, _isPaper, _isDelay, _isHenrei, _isOnline);
+    }
+
+    public enum TargetReceipt
+    {
+        All = 1,//すべて
+        DenshiSeikyu = 2, //電子請求
+        KamiSeikyu = 3, //紙請求
     }
 }
