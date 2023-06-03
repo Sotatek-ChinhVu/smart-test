@@ -158,7 +158,7 @@ namespace Interactor.PatientInfor
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.IsDead`"), SavePatientInforValidationCode.InvalidIsDead, TypeMessage.TypeMessageError));
 
-            if (model.Patient.IsDead == 1 && model.Patient.DeathDate == 0)
+            if (model.Patient.IsDead == 0 && model.Patient.DeathDate > 0)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.DeathDate`"), SavePatientInforValidationCode.InvalidDeathDate, TypeMessage.TypeMessageError));
 
             if (model.Patient.HomePost != null && model.Patient.HomePost.Length > 7)

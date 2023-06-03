@@ -17,9 +17,9 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public ReceptionModel Get(long raiinNo)
+        public ReceptionModel Get(long raiinNo, bool flag)
         {
-            var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
+            var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo && (!flag || r.IsDeleted == 0));
             var raiinCommentInf = NoTrackingDataContext.RaiinCmtInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
 
             return new ReceptionModel
@@ -118,7 +118,7 @@ namespace Infrastructure.Repositories
                     TantoId = model.TantoId,
                     SyosaisinKbn = model.SyosaisinKbn,
                     JikanKbn = model.JikanKbn,
-                    CreateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId

@@ -200,6 +200,20 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common);
     }
 
+    [HttpGet(ApiPath.Yakutai)]
+    public async Task<IActionResult> Yakutai([FromQuery] YakutaiRequest request)
+    {
+        var data = _reportService.GetYakutaiReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.AccountingCard)]
+    public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
+    {
+        var data = _reportService.GetAccountingCardReportingData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.IncludeOutDrug);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
     [HttpGet("ExportKarte2")]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {

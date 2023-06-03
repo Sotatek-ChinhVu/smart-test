@@ -21,7 +21,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
             TOdrInf checkingOrder = unitCheckerResult.CheckingData;
 
-            List<InvalidDataOrder> checkedResult = new List<InvalidDataOrder>();
+            List<InvalidDataOrder> checkedResult = new();
             foreach (var detail in checkingOrder.OrdInfDetails)
             {
                 if (string.IsNullOrEmpty(detail.ItemCd))
@@ -49,17 +49,14 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                         checkedResult.Add(error);
                     }
                 }
-                else if ((detail.SinKouiKbn == 95 || detail.SinKouiKbn == 96) && checkingOrder.SanteiKbn != 2)
+                else if ((detail.SinKouiKbn == 95 || detail.SinKouiKbn == 96) && checkingOrder.SanteiKbn != 2 && detail.Suryo.ToString().Length > 9)
                 {
-                    if (detail.Suryo.ToString().Length > 9)
+                    InvalidDataOrder error = new InvalidDataOrder()
                     {
-                        InvalidDataOrder error = new InvalidDataOrder()
-                        {
-                            ErrorType = ErrorType.QuantityLimit,
-                            ItemName = detail.DisplayItemName
-                        };
-                        checkedResult.Add(error);
-                    }
+                        ErrorType = ErrorType.QuantityLimit,
+                        ItemName = detail.DisplayItemName
+                    };
+                    checkedResult.Add(error);
                 }
             }
 
@@ -78,17 +75,14 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 else
                 {
                     //Check Bukantu items
-                    var bunkatuItem = checkingOrder.OrdInfDetails.Where(item => item.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu).FirstOrDefault();
-                    if (bunkatuItem != null)
+                    var bunkatuItem = checkingOrder.OrdInfDetails.FirstOrDefault(item => item.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu);
+                    if (bunkatuItem != null && usage.Suryo != bunkatuItem.Suryo)
                     {
-                        if (usage.Suryo != bunkatuItem.Suryo)
+                        InvalidDataOrder error = new InvalidDataOrder()
                         {
-                            InvalidDataOrder error = new InvalidDataOrder()
-                            {
-                                ErrorType = ErrorType.BukantuItem,
-                            };
-                            checkedResult.Add(error);
-                        }
+                            ErrorType = ErrorType.BukantuItem,
+                        };
+                        checkedResult.Add(error);
                     }
                 }
             }

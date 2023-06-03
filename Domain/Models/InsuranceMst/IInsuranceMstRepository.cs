@@ -31,5 +31,7 @@ namespace Domain.Models.InsuranceMst
         List<IsKantokuCdValidModel> GetIsKantokuCdValidList(int hpId, List<IsKantokuCdValidModel> kantokuCdValidList);
 
         bool SaveOrdInsuranceMst(List<HokenMstModel> insuranceChangeOdrs, int hpId, int userId);
+
+        HokenMstModel GetHokenMasterReadOnly(int hpId, int hokenNo, int hokenEdaNo, int prefNo, int sinDate);
     }
 }
