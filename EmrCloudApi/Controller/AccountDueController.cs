@@ -39,7 +39,7 @@ public class AccountDueController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveList)]
     public async Task<ActionResult<Response<SaveAccountDueListResponse>>> SaveList([FromBody] SaveAccountDueListRequest request)
     {
-        var input = new SaveAccountDueListInputData(HpId, request.UserId, request.PtId, request.SinDate, ConvertToListSyunoNyukinInputItem(request));
+        var input = new SaveAccountDueListInputData(HpId, request.UserId, request.PtId, request.SinDate, request.KaikeiTime, ConvertToListSyunoNyukinInputItem(request));
         var output = _bus.Handle(input);
 
         if (output.Status == SaveAccountDueListStatus.Successed)
