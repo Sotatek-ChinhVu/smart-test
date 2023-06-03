@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
             SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId, status);
             if (karteInfModel.PtId > 0 && karteInfModel.HpId > 0 && karteInfModel.RaiinNo > 0 && karteInfModel.SinDate > 0)
             {
-                UpsertKarteInfs(karteInfModel, userId);
+                UpsertKarteInfs(karteInfModel, userId, status);
             }
 
             SaveRaiinListInf(odrInfs, userId);
@@ -681,7 +681,7 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        ordInf.IsDeleted = DeleteTypes.Deleted;
+                        ordInf.IsDeleted = status == RaiinState.Reservation ? DeleteTypes.Confirm : DeleteTypes.Deleted;
                         ordInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         ordInf.UpdateId = userId;
                         var ordInfEntity = new OdrInf
@@ -758,7 +758,7 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
         }
 
-        private void UpsertKarteInfs(KarteInfModel karte, int userId)
+        private void UpsertKarteInfs(KarteInfModel karte, int userId, byte status)
         {
             int hpId = karte.HpId;
             long ptId = karte.PtId;
@@ -807,8 +807,7 @@ namespace Infrastructure.Repositories
                 {
                     if (karte.Text != karteMst.Text && Encoding.UTF8.GetBytes(karte.RichText) != karteMst.RichText)
                     {
-                        karteMst.IsDeleted = DeleteTypes.Deleted;
-
+                        karteMst.IsDeleted = status == RaiinState.Reservation ? DeleteTypes.Confirm : DeleteTypes.Deleted;
                         var karteEntity = new KarteInf
                         {
                             HpId = karte.HpId,

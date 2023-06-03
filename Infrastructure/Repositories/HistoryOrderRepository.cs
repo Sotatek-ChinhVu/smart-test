@@ -530,13 +530,13 @@ namespace Infrastructure.Repositories
             {
                 karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None);
             }
+            else if (isDeleted == 1)
+            {
+                karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm);
+            }
             else if (isDeleted == 2)
             {
                 karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
-            }
-            else
-            {
-                karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm);
             }
 
             if (karteInfEntities == null)
