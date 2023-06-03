@@ -9,6 +9,7 @@ using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
 using System.Text;
@@ -770,6 +771,12 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 if (0 <= item.Level && item.Level <= 4)
                 {
                     StringBuilder comment = new();
+
+                    int level = (error.YjCd == error.AllergyYjCd) ? 0 : item.Level;
+                    levelInfo.BackgroundCode = LevelConfig.DrugAllegySource[level][0];
+                    levelInfo.BorderBrushCode = LevelConfig.DrugAllegySource[level][1];
+                    levelInfo.Title = LevelConfig.DrugAllegySource[level][2];
+
                     if (item.YjCd == item.AllergyYjCd)
                     {
                         comment.Append("※アレルギー登録薬です。" + Environment.NewLine + Environment.NewLine);
@@ -885,6 +892,12 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     };
                     _listLevelInfo.Add(levelInfo);
                 }
+                if (1 <= level && level <= 3)
+                {
+                    levelInfo.BackgroundCode = LevelConfig.FoodAllegySource[level][0];
+                    levelInfo.BorderBrushCode = LevelConfig.FoodAllegySource[level][1];
+                    levelInfo.Title = LevelConfig.FoodAllegySource[level][2];
+                }
                 levelInfo.Comment += item.AttentionCmt + Environment.NewLine + item.WorkingMechanism + Environment.NewLine + Environment.NewLine;
             }
             tempModel.ListLevelInfo.AddRange(_listLevelInfo);
@@ -940,6 +953,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     _listLevelInfo.Add(levelInfo);
                 }
 
+                levelInfo.BackgroundCode = LevelConfig.AgeSource[level][0];
+                levelInfo.BorderBrushCode = LevelConfig.AgeSource[level][1];
+                levelInfo.Title = LevelConfig.AgeSource[level][2];
                 levelInfo.Comment += attention + Environment.NewLine + item.WorkingMechanism + Environment.NewLine + Environment.NewLine;
             }
 
@@ -1013,6 +1029,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     _listLevelInfoModel.Add(LevelInfoModel);
                 }
 
+                LevelInfoModel.BackgroundCode = LevelConfig.DiseaseSource[level][0];
+                LevelInfoModel.BorderBrushCode = LevelConfig.DiseaseSource[level][1];
+                LevelInfoModel.Title = LevelConfig.DiseaseSource[level][2];
                 LevelInfoModel.Comment += _realtimeOrderErrorFinder.FindDiseaseComment(item.CmtCd) + Environment.NewLine + _realtimeOrderErrorFinder.FindDiseaseComment(item.KijyoCd) + Environment.NewLine + Environment.NewLine;
             }
 
@@ -1167,6 +1186,10 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 };
                 listLevelInfoModel.Add(LevelInfoModel);
 
+                LevelInfoModel.BackgroundCode = LevelConfig.KinkiCommonSource[l.Level][0];
+                LevelInfoModel.BorderBrushCode = LevelConfig.KinkiCommonSource[l.Level][1];
+                LevelInfoModel.Title = LevelConfig.KinkiCommonSource[l.Level][2];
+
                 var listItemAsLevel = listDetail.Where(d => l.Level <= d.Level)
                                                 .OrderBy(d => d.Level)
                                                 .ToList();
@@ -1250,6 +1273,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     FirstItemName = itemAName,
                     SecondItemName = itemBName,
                     Level = 1,
+                    BackgroundCode = LevelConfig.KinkiCommonSource[1][0],
+                    BorderBrushCode = LevelConfig.KinkiCommonSource[1][1],
+                    Title = LevelConfig.KinkiCommonSource[1][2],
                     Comment = "ユーザー設定"
                 }
             };
@@ -1339,6 +1365,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             LevelInfoModel LevelInfoModel = new LevelInfoModel()
             {
                 Title = levelTitle,
+                BorderBrushCode = "#ff66b3",
+                BackgroundCode = "#ff9fcf",
                 FirstItemName = itemName,
                 Comment = comment
             };
@@ -1376,6 +1404,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             LevelInfoModel LevelInfoModel = new LevelInfoModel()
             {
+                BackgroundCode = LevelConfig.DuplicationCommonSource[duplicationError.Level][0],
+                BorderBrushCode = LevelConfig.DuplicationCommonSource[duplicationError.Level][1],
+                Title = LevelConfig.DuplicationCommonSource[duplicationError.Level][2],
                 FirstItemName = itemName,
                 SecondItemName = duplicationError.IsComponentDuplicated || duplicationError.IsIppanCdDuplicated ? duplicatedItemName : string.Empty
             };
