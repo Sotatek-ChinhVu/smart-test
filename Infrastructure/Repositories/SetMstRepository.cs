@@ -86,11 +86,35 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
             foreach (var searchItem in searchItemList)
             {
-                var setCdRootLevel1 = setMstModelList.First(item => item.Level1 == searchItem.Level1
-                                                                    && item.Level2 == 0).SetCd;
-                setCdList.Add(setCdRootLevel1);
+                // if item is level 1
+                if (searchItem.Level2 == 0)
+                {
+                    var setCdChildren = setMstModelList.Where(item => item.Level1 == searchItem.Level1)
+                                                       .Select(item => item.SetCd)
+                                                       .ToList();
+                    setCdList.AddRange(setCdChildren);
+                }
+
+                // if item is level 2
+                if (searchItem.Level2 > 0 && searchItem.Level3 == 0)
+                {
+                    var setCdRootLevel1 = setMstModelList.First(item => item.Level1 == searchItem.Level1
+                                                                        && item.Level2 == 0).SetCd;
+                    setCdList.Add(setCdRootLevel1);
+                    var setCdChildrenLevel3 = setMstModelList.Where(item => item.Level1 == searchItem.Level1
+                                                                            && item.Level2 == searchItem.Level2)
+                                                             .Select(item => item.SetCd)
+                                                             .ToList();
+                    setCdList.AddRange(setCdChildrenLevel3);
+                }
+
+                // if item is level 3
                 if (searchItem.Level3 > 0)
                 {
+                    var setCdRootLevel1 = setMstModelList.First(item => item.Level1 == searchItem.Level1
+                                                                        && item.Level2 == 0).SetCd;
+                    setCdList.Add(setCdRootLevel1);
+
                     var setCdRootLevel2 = setMstModelList.First(item => item.Level1 == searchItem.Level1
                                                                         && item.Level2 > 0
                                                                         && item.Level3 == 0).SetCd;
