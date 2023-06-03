@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<ReceptionSameVisitModel> GetReceptionSameVisit(int hpId, long ptId, int sinDate)
         {
-            var listDataRaiinInf = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.IsDeleted == DeleteTypes.None).ToList();
+            var listDataRaiinInf = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.IsDeleted == DeleteTypes.None).OrderBy(p => p.OyaRaiinNo).ToList();
 
             var _doctors = NoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
 

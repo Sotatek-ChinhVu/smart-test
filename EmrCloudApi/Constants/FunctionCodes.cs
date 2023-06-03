@@ -15,5 +15,8 @@ public static class FunctionCodes
     public const string MedicalChanged = "MedicalChanged";
     public const string AddLockChanged = "AddLockChanged";
     public const string RemoveLockChanged = "RemoveLockChanged";
-    public const string SuperSetChanged = "SuperSetChanged";
+    public const string SupserSetSaveChanged = "SupserSetSaveChanged";
+    public const string SupserSetReorderChanged = "SupserSetReorderChanged";
+    public const string SuperCopyPasteChanged = "SuperCopyPasteChanged";
+    public const string AccountDueChanged = "AccountDueChanged";
 }
