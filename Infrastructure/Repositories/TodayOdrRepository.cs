@@ -124,8 +124,8 @@ namespace Infrastructure.Repositories
                 raiinInf.TantoId = tantoId;
                 raiinInf.KaId = kaId;
                 raiinInf.UketukeTime = string.IsNullOrEmpty(preProcess.uketukeTime) ? raiinInf.UketukeTime : preProcess.uketukeTime;
-                raiinInf.SinEndTime = string.IsNullOrEmpty(preProcess.sinEndTime) ? raiinInf.SinEndTime : preProcess.sinEndTime;
-                raiinInf.SinStartTime = string.IsNullOrEmpty(preProcess.sinStartTime) ? raiinInf.SinStartTime : preProcess.sinStartTime;
+                raiinInf.SinEndTime = sinEndTime;
+                raiinInf.SinStartTime = sinStartTime;
                 raiinInf.UpdateId = userId;
                 raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 TrackingDataContext.SaveChanges();
