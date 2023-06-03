@@ -26,6 +26,7 @@ using UseCase.MedicalExamination.GetKensaAuditTrailLog;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
 using UseCase.MedicalExamination.GetOrderSheetGroup;
+using UseCase.MedicalExamination.GetSinkouCountInMonth;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.SummaryInf;
@@ -458,6 +459,7 @@ namespace EmrCloudApi.Controllers
                     request.KarteItem.IsDeleted,
                     request.KarteItem.RichText),
                 UserId,
+                request.IsSagaku,
                 new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems),
                 familyList,
                 request.NextOrderItems,
@@ -518,14 +520,16 @@ namespace EmrCloudApi.Controllers
                                                                 family.Biko,
                                                                 family.SortNo,
                                                                 family.IsDeleted,
-                                                                family.PtFamilyRekiList.Select(reki => new FamilyRekiItem(
-                                                                                                           reki.Id,
-                                                                                                           reki.ByomeiCd,
-                                                                                                           reki.Byomei,
-                                                                                                           reki.Cmt,
-                                                                                                           reki.SortNo,
-                                                                                                           reki.IsDeleted))
-                                                                                       .ToList()))
+                                                                family.PtFamilyRekiList
+                                                                      .Select(reki => new FamilyRekiItem(
+                                                                                          reki.Id,
+                                                                                          reki.ByomeiCd,
+                                                                                          reki.Byomei,
+                                                                                          reki.Cmt,
+                                                                                          reki.SortNo,
+                                                                                          reki.IsDeleted))
+                                                                      .ToList(),
+                                                                 family.IsRevertItem))
                                           .ToList();
             return result;
         }
@@ -601,6 +605,16 @@ namespace EmrCloudApi.Controllers
             var presenter = new GetContainerMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetContainerMstResponse>>(presenter.Result);
+        }   
+        
+        [HttpGet(ApiPath.GetSinkouCountInMonth)]
+        public ActionResult<Response<GetSinkouCountInMonthResponse>> GetSinkouCountInMonth([FromQuery] GetSinkouCountInMonthRequest request)
+        {
+            var input = new GetSinkouCountInMonthInputData(HpId, request.SinDate, request.ItemCd, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetSinKouCountInMonthPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetSinkouCountInMonthResponse>>(presenter.Result);
         }
     }
 }
