@@ -5,7 +5,7 @@ namespace UseCase.MstItem.SearchTenMstItem
 {
     public class SearchTenMstItemInputData : IInputData<SearchTenMstItemOutputData>
     {
-        public SearchTenMstItemInputData(int hpId, int pageIndex, int pageCount, string keyword, double pointFrom, double pointTo, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem, bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly, bool isSearchSuggestion)
+        public SearchTenMstItemInputData(int hpId, int pageIndex, int pageCount, string keyword, double? pointFrom, double? pointTo, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem, bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly, bool isSearchSuggestion)
         {
             HpId = hpId;
             PageIndex = pageIndex;
@@ -40,8 +40,8 @@ namespace UseCase.MstItem.SearchTenMstItem
         public int PageIndex { get; private set; }
         public int PageCount { get; private set; }
         public string Keyword { get; private set; }
-        public double PointFrom { get; private set; }
-        public double PointTo { get; private set; }
+        public double? PointFrom { get; private set; }
+        public double? PointTo { get; private set; }
         public int KouiKbn { get; private set; }
         public int OriKouiKbn { get; private set; }
         public List<int> KouiKbns { get; private set; }
