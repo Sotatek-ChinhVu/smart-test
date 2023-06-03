@@ -5,12 +5,10 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
 using System.Data;
-using System.Linq;
 using System.Text;
 
 namespace Infrastructure.Repositories;
@@ -61,57 +59,70 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             setMstModelList = ReloadCache(hpId);
         }
 
-        var result = new List<SetMstModel>();
+        List<SetMstModel> result;
         if (string.IsNullOrEmpty(textSearch))
         {
             result = setMstModelList!
-         .Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo - 1 && s.IsDeleted == 0).ToList();
+                    .Where(s => s.HpId == hpId
+                                && s.GenerationId == generationId
+                                && s.SetKbn == setKbn
+                                && s.SetKbnEdaNo == setKbnEdaNo - 1
+                                && s.IsDeleted == 0)
+                    .ToList();
         }
         else
         {
-            var searchItems = setMstModelList!
-          .Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo - 1 && s.IsDeleted == 0 && (string.IsNullOrEmpty(textSearch) || (s.SetName != null && s.SetName.Contains(textSearch)))).ToList();
-            var filters = searchItems.Where(s => s.Level3 == 0).ToList();
-            foreach (var filter in filters)
-            {
-                if (filter.Level2 > 0)
-                    searchItems.RemoveAll(s => s.Level1 == filter.Level1 && s.Level2 == filter.Level2 && s.Level3 > 0);
-                else
-                    searchItems.RemoveAll(s => s.Level1 == filter.Level1 && s.Level2 > 0);
-            }
+            setMstModelList = setMstModelList!.Where(item => item.HpId == hpId
+                                                             && item.GenerationId == generationId
+                                                             && item.SetKbn == setKbn
+                                                             && item.SetKbnEdaNo == setKbnEdaNo - 1
+                                                             && item.IsDeleted == 0);
+            var searchItemList = setMstModelList!
+                                 .Where(item => string.IsNullOrEmpty(textSearch)
+                                                || (item.SetName != null && item.SetName.Contains(textSearch)))
+                                 .ToList();
 
-            foreach (var searchItem in searchItems)
+            var setCdList = searchItemList.Select(item => item.SetCd).ToList();
+
+            foreach (var searchItem in searchItemList)
             {
-                if (searchItem.Level2 == 0 && searchItem.Level3 == 0)
+                // if item is level 1
+                if (searchItem.Level2 == 0)
                 {
-                    var resultItem = setMstModelList!.Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1);
-                    result.AddRange(resultItem);
+                    var setCdChildren = setMstModelList.Where(item => item.Level1 == searchItem.Level1)
+                                                       .Select(item => item.SetCd)
+                                                       .ToList();
+                    setCdList.AddRange(setCdChildren);
                 }
-                else if (searchItem.Level3 == 0)
+
+                // if item is level 2
+                if (searchItem.Level2 > 0 && searchItem.Level3 == 0)
                 {
-                    var resultItem = setMstModelList!.Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == searchItem.Level2);
-                    var rootItem = setMstModelList!.FirstOrDefault(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == 0 && s.Level3 == 0);
-                    if (rootItem != null)
-                    {
-                        result.Add(rootItem);
-                    }
-                    result.AddRange(resultItem);
+                    var setCdRootLevel1 = setMstModelList.First(item => item.Level1 == searchItem.Level1
+                                                                        && item.Level2 == 0).SetCd;
+                    setCdList.Add(setCdRootLevel1);
+                    var setCdChildrenLevel3 = setMstModelList.Where(item => item.Level1 == searchItem.Level1
+                                                                            && item.Level2 == searchItem.Level2)
+                                                             .Select(item => item.SetCd)
+                                                             .ToList();
+                    setCdList.AddRange(setCdChildrenLevel3);
                 }
-                else
+
+                // if item is level 3
+                if (searchItem.Level3 > 0)
                 {
-                    var level2RootItem = setMstModelList!.FirstOrDefault(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == searchItem.Level2 && s.Level3 == 0);
-                    var rootItem = setMstModelList!.FirstOrDefault(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == 0 && s.Level3 == 0);
-                    if (rootItem != null)
-                    {
-                        result.Add(rootItem);
-                    }
-                    if (level2RootItem != null)
-                    {
-                        result.Add(level2RootItem);
-                    }
-                    result.Add(searchItem);
+                    var setCdRootLevel1 = setMstModelList.First(item => item.Level1 == searchItem.Level1
+                                                                        && item.Level2 == 0).SetCd;
+                    setCdList.Add(setCdRootLevel1);
+
+                    var setCdRootLevel2 = setMstModelList.First(item => item.Level1 == searchItem.Level1
+                                                                        && item.Level2 > 0
+                                                                        && item.Level3 == 0).SetCd;
+                    setCdList.Add(setCdRootLevel2);
                 }
             }
+            setCdList = setCdList.Distinct().ToList();
+            result = setMstModelList.Where(item => setCdList.Contains(item.SetCd)).ToList();
         }
 
         return result.OrderBy(s => s.Level1)
@@ -348,20 +359,26 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     }
 
     [Obsolete]
-    public bool ReorderSetMst(int userId, int hpId, int setCdDragItem, int setCdDropItem)
+    public (bool status, List<SetMstModel> setMstModels) ReorderSetMst(int userId, int hpId, int setCdDragItem, int setCdDropItem)
     {
+        SetMst? dragItem = null;
+        SetMst? dropItem = null;
+        int? originDragLevel1 = null;
+        int? originDropLevel1 = null;
+        List<SetMstModel> setMstModels = new();
+        bool status = false;
         try
         {
             var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
-            return executionStrategy.Execute(
+            status = executionStrategy.Execute(
                 () =>
                 {
                     using var transaction = TrackingDataContext.Database.BeginTransaction();
                     try
                     {
                         bool status = false;
-                        var dragItem = TrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDragItem && mst.HpId == hpId);
-                        var dropItem = TrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDropItem && mst.HpId == hpId);
+                        dragItem = TrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDragItem && mst.HpId == hpId);
+                        dropItem = TrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDropItem && mst.HpId == hpId);
 
                         // if dragItem is not exist
                         if (dragItem == null)
@@ -369,11 +386,15 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             transaction.Rollback();
                             return false;
                         }
+
                         // if dropItem input is not exist
                         else if (dropItem == null && setCdDropItem != 0)
                         {
                             return false;
                         }
+
+                        originDragLevel1 = dragItem.Level1;
+                        originDropLevel1 = dropItem?.Level1;
 
                         // Get all SetMst with dragItem SetKbn and dragItem SetKbnEdaNo
                         var listSetMsts = TrackingDataContext.SetMsts.Where(mst => mst.SetKbn == dragItem.SetKbn && mst.SetKbnEdaNo == dragItem.SetKbnEdaNo && mst.HpId == dragItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1 && mst.GenerationId == dragItem.GenerationId).ToList();
@@ -429,34 +450,77 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         finally
         {
-            ReloadCache(1);
+            var setMsts = ReloadCache(1);
+            setMstModels = GetDataAfterDragDrop(setMsts, dragItem ?? new(), dropItem ?? new(), originDragLevel1 ?? 0, originDropLevel1 ?? 0);
         }
+        return (status, setMstModels);
+    }
+
+    private List<SetMstModel> GetDataAfterDragDrop(IEnumerable<SetMstModel> setMsts, SetMst dragItem, SetMst dropItem, int originDragLevel1, int originDropLevel1)
+    {
+        List<SetMstModel> result = new();
+        var setKbn = dragItem.SetKbn;
+        var setKbnEdaNo = dragItem.SetKbnEdaNo;
+        var generationId = dragItem.GenerationId;
+
+        setMsts = setMsts.Where(item => item.SetKbn == setKbn && item.SetKbnEdaNo == setKbnEdaNo && item.GenerationId == generationId);
+
+        if (originDropLevel1 != 0)
+        {
+            if (originDragLevel1 != originDropLevel1 && dragItem.Level2 == 0 && dropItem.Level2 == 0)
+            {
+                if (originDragLevel1 > originDropLevel1)
+                {
+                    result = setMsts.Where(item => originDropLevel1 <= item.Level1 && item.Level1 <= originDragLevel1).ToList();
+                }
+                if (originDragLevel1 < originDropLevel1)
+                {
+                    result = setMsts.Where(item => originDragLevel1 <= item.Level1 && item.Level1 <= originDropLevel1).ToList();
+                }
+            }
+            else
+            {
+                result = setMsts.Where(item => originDragLevel1 == item.Level1 || originDropLevel1 == item.Level1).ToList();
+            }
+        }
+        else
+        {
+            result = setMsts.ToList();
+        }
+
+        return result;
     }
 
     [Obsolete]
-    public int PasteSetMst(int hpId, int userId, int generationId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int copySetKbnEdaNo, int copySetKbn, int pasteSetKbnEdaNo, int pasteSetKbn)
+    public List<SetMstModel> PasteSetMst(int hpId, int userId, int generationId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int copySetKbnEdaNo, int copySetKbn, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
+        var setCd = 0;
+        List<SetMstModel> setMstModels = new();
         if (pasteSetKbnEdaNo <= 0 && pasteSetKbn <= 0)
         {
-            return -1;
+            return new();
         }
 
         try
         {
             if (pasteToOtherGroup && setCdCopyItem == 0 && setCdPasteItem == 0)
             {
-                return CopyPasteGroupSetMst(hpId, userId, generationId, copySetKbnEdaNo, copySetKbn, pasteSetKbnEdaNo, pasteSetKbn);
+
+                setCd = CopyPasteGroupSetMst(hpId, userId, generationId, copySetKbnEdaNo, copySetKbn, pasteSetKbnEdaNo, pasteSetKbn);
             }
             else if (setCdCopyItem > 0)
             {
-                return CopyPasteItemSetMst(hpId, userId, setCdCopyItem, setCdPasteItem, pasteToOtherGroup, generationId, pasteSetKbnEdaNo, pasteSetKbn);
+                setCd = CopyPasteItemSetMst(hpId, userId, setCdCopyItem, setCdPasteItem, pasteToOtherGroup, generationId, pasteSetKbnEdaNo, pasteSetKbn);
             }
         }
         finally
         {
-            ReloadCache(1);
+            var setMsts = ReloadCache(1);
+            var rootSet = setMsts.FirstOrDefault(s => s.SetCd == setCd);
+            setMstModels = setMsts.Where(s => s.HpId == rootSet?.HpId && s.SetKbn == rootSet.SetKbn && s.SetKbnEdaNo == rootSet.SetKbnEdaNo && s.GenerationId == rootSet.GenerationId && (rootSet.Level1 == 0 || (rootSet.Level1 > 0 && s.Level1 == rootSet.Level1)) && (rootSet.Level2 == 0 || (rootSet.Level2 > 0 && s.Level2 == rootSet.Level2)) && (rootSet.Level3 == 0 || (rootSet.Level3 > 0 && s.Level3 == rootSet.Level3))).ToList();
         }
-        return -1;
+
+        return setMstModels;
     }
 
     public bool CheckExistSetMstBySetCd(int setCd)
@@ -1339,6 +1403,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 else if (dragItem.Level2 < dropItem.Level2)
                 {
                     var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dragItem.Level2 && mst.Level2 <= dropItem.Level2).ToList();
+                    var dropLevel = dropItem.Level2;
                     LevelUp(2, userId, listUpdateLevel2);
                     foreach (var item in listUpdateLevel2)
                     {
@@ -1346,7 +1411,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     }
                     foreach (var item in listDragUpdateLevel2)
                     {
-                        item.Level2 = dropItem.Level2;
+                        item.Level2 = dropLevel;
                         item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
                         item.IsDeleted = DeleteTypes.Deleted;
@@ -1989,6 +2054,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
         ReSetLevelForItem(levelMax, copyItem, pasteItem, listPasteItems);
     }
+
     #endregion
 
     #region Catch Exception
