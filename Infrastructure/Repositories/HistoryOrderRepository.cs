@@ -44,10 +44,10 @@ namespace Infrastructure.Repositories
             .Where(item => item.HpId == hpId && item.UserId == userId && item.FilterId == filterId)
             .ToList();
 
-            var isBookMarkChecked = filterDetailList.FirstOrDefault(detail => detail.FilterId == filterId && detail.FilterItemCd == 1) != null;
-            var listHokenId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 3).Select(item => item.FilterEdaNo).ToList();
-            var listKaId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 4).Select(item => item.FilterEdaNo).ToList();
-            var listUserId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 2).Select(item => item.FilterEdaNo).ToList();
+            var isBookMarkChecked = filterDetailList.FirstOrDefault(detail => detail.FilterId == filterId && detail.FilterItemCd == 1 && detail.FilterEdaNo == 0 && detail.Val == 1) != null;
+            var listHokenId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 3 && detail.Val == 1).Select(item => item.FilterEdaNo).ToList();
+            var listKaId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 4 &&  detail.Val == 1).Select(item => item.FilterEdaNo).ToList();
+            var listUserId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 2 && detail.Val == 1).Select(item => item.FilterEdaNo).ToList();
 
             var detailModel = new KarteFilterDetailModel(hpId, userId, filterId, isBookMarkChecked, listHokenId, listKaId, listUserId);
 
@@ -655,7 +655,7 @@ namespace Infrastructure.Repositories
         {
             var result = NoTrackingDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo)).ToList();
             var userIds = result.Select(r => r.UpdateId).Distinct().ToList();
-            var userMsts = NoTrackingDataContext.UserMsts.Where(u => userIds.Contains(u.UpdateId)).ToList();
+            var userMsts = NoTrackingDataContext.UserMsts.Where(u => userIds.Contains(u.UserId)).ToList();
             return result.AsEnumerable().Select(
                     r => new ApproveInfModel(
                             r.Id,
@@ -675,7 +675,7 @@ namespace Infrastructure.Repositories
             string result = string.Empty;
             string info = string.Empty;
 
-            string docName = userMsts.FirstOrDefault(u => u.Id == updateId)?.Sname ?? string.Empty;
+            string docName = userMsts.FirstOrDefault(u => u.UserId == updateId)?.Sname ?? string.Empty;
             if (!string.IsNullOrEmpty(docName))
             {
                 info += docName;

@@ -12,16 +12,21 @@ namespace Reporting.Sokatu.Common.Models
             HpInf = hpInf;
         }
 
+        public CoHpInfModel()
+        {
+            HpInf = new();
+        }
+
         public string HpCd
         {
-            get => HpInf == null ? "" : HpInf.HpCd.PadLeft(7, '0');
+            get => HpInf == null ? "" : HpInf.HpCd ?? string.Empty.PadLeft(7, '0');
         }
 
         public string ReceHpCd
         {
             get
             {
-                string wrkCd = HpInf == null ? "" : HpInf.HpCd.PadLeft(7, '0');
+                string wrkCd = HpInf == null ? "" : HpInf.HpCd ?? string.Empty.PadLeft(7, '0');
 
                 if (new int[] { 2, 12, 13, 17, 18, 25, 32, 35, 41, 43, 44, 46 }.Contains(HpInf.PrefNo))
                 {
@@ -53,12 +58,12 @@ namespace Reporting.Sokatu.Common.Models
 
         public string ReceHpName
         {
-            get => HpInf.ReceHpName;
+            get => HpInf.ReceHpName ?? string.Empty;
         }
 
         public string KaisetuName
         {
-            get => HpInf.KaisetuName;
+            get => HpInf.KaisetuName ?? string.Empty;
         }
 
         public int PrefNo
@@ -84,17 +89,17 @@ namespace Reporting.Sokatu.Common.Models
 
         public string Address1
         {
-            get => HpInf.Address1;
+            get => HpInf.Address1 ?? string.Empty;
         }
 
         public string Address2
         {
-            get => HpInf.Address2;
+            get => HpInf.Address2 ?? string.Empty;
         }
 
         public string Tel
         {
-            get => HpInf.Tel;
+            get => HpInf.Tel ?? string.Empty;
         }
     }
 }
