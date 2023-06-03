@@ -85,7 +85,7 @@ public class SetController : AuthorizeControllerBase
         if (output.Status == ReorderSetMstStatus.Successed)
         {
             await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetReorderChanged,
-                new SuperSetMessage { SetMstModels = output.setMstModels });
+                new SuperSetMessage { ReorderSetMstModels = output.setMstModels ?? new() });
         }
 
         var presenter = new ReorderSetMstPresenter();

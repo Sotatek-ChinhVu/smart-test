@@ -1,20 +1,20 @@
-﻿using Domain.Models.SetMst;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
+using UseCase.SetMst.GetList;
 
 namespace UseCase.SetMst.ReorderSetMst;
 
 public class ReorderSetMstOutputData : IOutputData
 {
-    public List<SetMstModel> setMstModels { get; set; }
+    public List<GetSetMstListOutputItem>? setMstModels { get; set; }
     public ReorderSetMstStatus Status { get; private set; }
 
     public ReorderSetMstOutputData(ReorderSetMstStatus status)
     {
         Status = status;
-        setMstModels = new List<SetMstModel>();
+        setMstModels = new();
     }
 
-    public ReorderSetMstOutputData(List<SetMstModel> setMstModels, ReorderSetMstStatus status)
+    public ReorderSetMstOutputData(List<GetSetMstListOutputItem>? setMstModels, ReorderSetMstStatus status)
     {
         this.setMstModels = setMstModels;
         Status = status;
