@@ -59,57 +59,46 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             setMstModelList = ReloadCache(hpId);
         }
 
-        var result = new List<SetMstModel>();
+        List<SetMstModel> result;
         if (string.IsNullOrEmpty(textSearch))
         {
             result = setMstModelList!
-         .Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo - 1 && s.IsDeleted == 0).ToList();
+                    .Where(s => s.HpId == hpId
+                                && s.GenerationId == generationId
+                                && s.SetKbn == setKbn
+                                && s.SetKbnEdaNo == setKbnEdaNo - 1
+                                && s.IsDeleted == 0)
+                    .ToList();
         }
         else
         {
-            var searchItems = setMstModelList!
-          .Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo - 1 && s.IsDeleted == 0 && (string.IsNullOrEmpty(textSearch) || (s.SetName != null && s.SetName.Contains(textSearch)))).ToList();
-            var filters = searchItems.Where(s => s.Level3 == 0).ToList();
-            foreach (var filter in filters)
-            {
-                if (filter.Level2 > 0)
-                    searchItems.RemoveAll(s => s.Level1 == filter.Level1 && s.Level2 == filter.Level2 && s.Level3 > 0);
-                else
-                    searchItems.RemoveAll(s => s.Level1 == filter.Level1 && s.Level2 > 0);
-            }
+            setMstModelList = setMstModelList!.Where(item => item.HpId == hpId
+                                                             && item.GenerationId == generationId
+                                                             && item.SetKbn == setKbn
+                                                             && item.SetKbnEdaNo == setKbnEdaNo - 1
+                                                             && item.IsDeleted == 0);
+            var searchItemList = setMstModelList!
+                                 .Where(item => string.IsNullOrEmpty(textSearch)
+                                                || (item.SetName != null && item.SetName.Contains(textSearch)))
+                                 .ToList();
 
-            foreach (var searchItem in searchItems)
+            var setCdList = searchItemList.Select(item => item.SetCd).ToList();
+
+            foreach (var searchItem in searchItemList)
             {
-                if (searchItem.Level2 == 0 && searchItem.Level3 == 0)
+                var setCdRootLevel1 = setMstModelList.First(item => item.Level1 == searchItem.Level1
+                                                                    && item.Level2 == 0).SetCd;
+                setCdList.Add(setCdRootLevel1);
+                if (searchItem.Level3 > 0)
                 {
-                    var resultItem = setMstModelList!.Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1);
-                    result.AddRange(resultItem);
-                }
-                else if (searchItem.Level3 == 0)
-                {
-                    var resultItem = setMstModelList!.Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == searchItem.Level2);
-                    var rootItem = setMstModelList!.FirstOrDefault(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == 0 && s.Level3 == 0);
-                    if (rootItem != null)
-                    {
-                        result.Add(rootItem);
-                    }
-                    result.AddRange(resultItem);
-                }
-                else
-                {
-                    var level2RootItem = setMstModelList!.FirstOrDefault(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == searchItem.Level2 && s.Level3 == 0);
-                    var rootItem = setMstModelList!.FirstOrDefault(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == 0 && s.Level3 == 0);
-                    if (rootItem != null)
-                    {
-                        result.Add(rootItem);
-                    }
-                    if (level2RootItem != null)
-                    {
-                        result.Add(level2RootItem);
-                    }
-                    result.Add(searchItem);
+                    var setCdRootLevel2 = setMstModelList.First(item => item.Level1 == searchItem.Level1
+                                                                        && item.Level2 > 0
+                                                                        && item.Level3 == 0).SetCd;
+                    setCdList.Add(setCdRootLevel2);
                 }
             }
+            setCdList = setCdList.Distinct().ToList();
+            result = setMstModelList.Where(item => setCdList.Contains(item.SetCd)).ToList();
         }
 
         return result.OrderBy(s => s.Level1)
@@ -2041,24 +2030,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         ReSetLevelForItem(levelMax, copyItem, pasteItem, listPasteItems);
     }
 
-    private SetMstModel ConvertEntityToModel(SetMst setMst)
-    {
-        return new SetMstModel(
-                            setMst.HpId,
-                            setMst.SetCd,
-                            setMst.SetKbn,
-                            setMst.SetKbnEdaNo,
-                            setMst.GenerationId,
-                            setMst.Level1,
-                            setMst.Level2,
-                            setMst.Level3,
-                            setMst.SetName ?? string.Empty,
-                            setMst.WeightKbn,
-                            setMst.Color,
-                            setMst.IsDeleted,
-                            setMst.IsGroup
-                        );
-    }
     #endregion
 
     #region Catch Exception
