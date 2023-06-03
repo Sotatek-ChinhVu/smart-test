@@ -1,13 +1,82 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommonCheckers.OrderRealtimeChecker.Models;
 
 namespace CloudUnitTest.CommonChecker.Services
 {
+
+
     public class AgeCheckerTest : BaseUT
     {
+        [Test]
+        public void HandleCheckOrderList_InvalidSettingLevel_ReturnsOriginalResult()
+        {
+            // Arrange
+            var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>();
+            unitCheckerForOrderListResult.CheckingOrderList = new List<TOdrInf>();
 
-    }
-}
+            var orderListHandler = new OrderListHandler();
+
+            // Act
+            var result = orderListHandler.HandleCheckOrderList(unitCheckerForOrderListResult);
+
+            // Assert
+            Assert.AreEqual(unitCheckerForOrderListResult, result);
+        }
+
+        [Test]
+        public void HandleCheckOrderList_ValidSettingLevel_ReturnsUpdatedResult()
+        {
+            // Arrange
+            var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>();
+            unitCheckerForOrderListResult.CheckingOrderList = new List<TOdrInf> { new TOdrInf() };
+
+            var orderListHandler = new OrderListHandler();
+            orderListHandler.GetSettingLevel = () => 5;
+
+            var result = orderListHandler.HandleCheckOrderList(unitCheckerForOrderListResult);
+
+            Assert.IsNotNull(result.ErrorInfo);
+            Assert.IsNotNull(result.ErrorOrderList);
+        }
+
+        [Test]
+        public void GetErrorOrderList_WithErrors_ReturnsCorrectErrorOrderList()
+        {
+            // Arrange
+            var checkingOrderList = new List<TOdrInf>
+        {
+            new TOdrInf
+            {
+                OdrInfDetailModelsIgnoreEmpty = new List<OdrInfDetailModel>
+                {
+                    new OdrInfDetailModel { ItemCd = "Item1" },
+                    new OdrInfDetailModel { ItemCd = "Item2" },
+                }
+            },
+            new TOdrInf
+            {
+                OdrInfDetailModelsIgnoreEmpty = new List<OdrInfDetailModel>
+                {
+                    new OdrInfDetailModel { ItemCd = "Item3" },
+                    new OdrInfDetailModel { ItemCd = "Item4" },
+                }
+            }
+        };
+
+            var checkedResultList = new List<AgeResultModel>
+        {
+            new AgeResultModel { ItemCd = "Item2" },
+            new AgeResultModel { ItemCd = "Item4" }
+        };
+
+            var orderListHandler = new OrderListHandler();
+
+            // Act
+            var result = orderListHandler.GetErrorOrderList(checkingOrderList, checkedResultList);
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+            // Perform assertions on the result as per your requirements
+            // For example, you can assert that the error order list contains the expected order items
+            Assert.IsTrue(result.Any(o => o.OdrInfDetailModelsIgnoreEmpty.Any(d => d.ItemCd == "Item2")));
+            Assert.IsTrue(result.Any(o => o.OdrInfDetailModelsIgnoreEmpty.Any(d => d.ItemCd == "Item4")));
+        }
