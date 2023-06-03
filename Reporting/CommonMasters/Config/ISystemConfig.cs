@@ -73,4 +73,5 @@ public interface ISystemConfig
     string YakutaiGaiyoPaperSmallPrinter();
     string YakutaiGaiyoPaperNormalPrinter();
     string YakutaiGaiyoPaperBigPrinter();
+    int HikariDiskIsTotalCnt();
 }
