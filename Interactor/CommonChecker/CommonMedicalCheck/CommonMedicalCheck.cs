@@ -1300,6 +1300,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             errorInfoModel.ThridCellContent = itemName;
             errorInfoModel.FourthCellContent = dayLimit.UsingDay.AsString() + "日";
             errorInfoModel.SuggestedContent = "／" + dayLimit.LimitDay.AsString() + "日";
+            errorInfoModel.HighlightColorCode = "#f12c47";
 
             LevelInfoModel LevelInfoModel = new LevelInfoModel()
             {
@@ -1332,24 +1333,31 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             {
                 case DosageLabelChecking.OneMin:
                     levelTitle = "一回量／最小値";
+                    errorInfoModel.HighlightColorCode = "#0000ff";
                     break;
                 case DosageLabelChecking.OneMax:
                     levelTitle = "一回量／最大値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.OneLimit:
                     levelTitle = "一回量／上限値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.DayMin:
                     levelTitle = "一日量／最小値";
+                    errorInfoModel.HighlightColorCode = "#0000ff";
                     break;
                 case DosageLabelChecking.DayMax:
                     levelTitle = "一日量／最大値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.DayLimit:
                     levelTitle = "一日量／上限値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.TermLimit:
                     levelTitle = "期間上限";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
             }
             string comment = string.Empty;
