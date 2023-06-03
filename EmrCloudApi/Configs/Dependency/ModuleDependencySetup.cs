@@ -577,6 +577,22 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.Receipt.ValidateCreateUKEFile;
+using Interactor.PatientInfor.SortPatientCommon;
+using Reporting.DrugNoteSeal.Service;
+using Reporting.DrugNoteSeal.DB;
+using Reporting.Sokatu.HikariDisk.DB;
+using Reporting.Sokatu.HikariDisk.Service;
+using Reporting.Sokatu.KoukiSeikyu.DB;
+using UseCase.RaiinListSetting.GetDocCategory;
+using Interactor.RaiinListSetting;
+using Domain.Models.RaiinListSetting;
+using UseCase.RaiinListSetting.GetFilingcategory;
+using Reporting.Sokatu.AfterCareSeikyu.Service;
+using Reporting.Sokatu.AfterCareSeikyu.DB;
+using Reporting.Sijisen.DB;
+using Reporting.Sokatu.Syaho.Service;
+using Reporting.Sokatu.Syaho.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -707,12 +723,18 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoReceTargetFinder, CoReceTargetFinder>();
             services.AddTransient<IDrugNoteSealCoReportService, DrugNoteSealCoReportService>();
             services.AddTransient<ICoDrugNoteSealFinder, CoDrugNoteSealFinder>();
+            services.AddTransient<IHikariDiskCoReportService, HikariDiskCoReportService>();
+            services.AddTransient<ICoHikariDiskFinder, CoHikariDiskFinder>();
             services.AddTransient<ICoKoukiSeikyuFinder, CoKoukiSeikyuFinder>();
+            services.AddTransient<ICoAfterCareSeikyuFinder, CoAfterCareSeikyuFinder>();
             services.AddTransient<IP28KoukiSeikyuCoReportService, P28KoukiSeikyuCoReportService>();
             services.AddTransient<IP29KoukiSeikyuCoReportService, P29KoukiSeikyuCoReportService>();
             services.AddTransient<IYakutaiCoReportService, YakutaiCoReportService>();
             services.AddTransient<ICoYakutaiFinder, CoYakutaiFinder>();
+            services.AddTransient<IAfterCareSeikyuCoReportService, AfterCareSeikyuCoReportService>();
             services.AddTransient<ICoSijisenFinder, CoSijisenFinder>();
+            services.AddTransient<ISyahoCoReportService, SyahoCoReportService>();
+            services.AddTransient<ICoSyahoFinder, CoSyahoFinder>();
             services.AddTransient<ICoAccountingCardFinder, CoAccountingCardFinder>();
             services.AddTransient<IAccountingCardCoReportService, AccountingCardCoReportService>();
 
