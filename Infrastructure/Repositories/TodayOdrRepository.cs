@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
             SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId, status);
             if (karteInfModel.PtId > 0 && karteInfModel.HpId > 0 && karteInfModel.RaiinNo > 0 && karteInfModel.SinDate > 0)
             {
-                UpsertKarteInfs(karteInfModel, userId);
+                UpsertKarteInfs(karteInfModel, userId, status);
             }
 
             SaveRaiinListInf(odrInfs, userId);
@@ -365,19 +365,19 @@ namespace Infrastructure.Repositories
             int sinDate = ordInfs[0].SinDate;
 
             // Get Raiin List Inf
-            var raiinListInfs = NoTrackingDataContext.RaiinListInfs.Where(item => item.HpId == hpId
+            var raiinListInfs = TrackingDataContext.RaiinListInfs.Where(item => item.HpId == hpId
                                                                 && item.RaiinNo == raiinNo
                                                                 && item.PtId == ptId
                                                                 && item.SinDate == sinDate).ToList();
 
             // Get KouiKbnMst
-            var kouiKbnMst = NoTrackingDataContext.KouiKbnMsts.ToList();
+            var kouiKbnMst = TrackingDataContext.KouiKbnMsts.ToList();
 
             // Get Raiin List
-            var raiinListMstList = NoTrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListDetailList = NoTrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListKouiList = NoTrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListItemList = NoTrackingDataContext.RaiinListItems.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListMstList = TrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListDetailList = TrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListKouiList = TrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListItemList = TrackingDataContext.RaiinListItems.Where(item => item.IsDeleted == 0).ToList();
 
             // Filter GrpId
             // Get all raiin list master contain item and koui
@@ -491,7 +491,7 @@ namespace Infrastructure.Repositories
                         List<RaiinListItem> itemCdList = raiinListItems.FindAll(item => item.ItemCd == itemCd);
                         foreach (RaiinListItem raiinListItem in itemCdList)
                         {
-                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN) ?? new RaiinListInf();
+                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN);
                             if (raiinListInf == null)
                             {
                                 // Check contains with grpId
@@ -509,7 +509,7 @@ namespace Infrastructure.Repositories
                                         SinDate = sinDate,
                                         GrpId = raiinListItem.GrpId,
                                         KbnCd = raiinListItem.KbnCd,
-                                        UpdateDate = DateTime.Now,
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                         UpdateId = userId,
                                         RaiinListKbn = RaiinListKbnConstants.ITEM_KBN
                                     };
@@ -524,7 +524,7 @@ namespace Infrastructure.Repositories
                                 if (originSortNo == null || originSortNo > newSortNo)
                                 {
                                     raiinListInf.KbnCd = raiinListItem.KbnCd;
-                                    raiinListInf.UpdateDate = DateTime.Now;
+                                    raiinListInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                     raiinListInf.UpdateId = userId;
                                 }
                             }
@@ -540,7 +540,7 @@ namespace Infrastructure.Repositories
                         List<RaiinListKoui> kouiItemList = raiinListKouis.FindAll(item => item.KouiKbnId == kouiMst.KouiKbnId);
                         foreach (RaiinListKoui kouiItem in kouiItemList)
                         {
-                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == kouiItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN) ?? new RaiinListInf();
+                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == kouiItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN);
                             if (raiinListInf == null)
                             {
                                 // Check contains with grpId
@@ -558,7 +558,7 @@ namespace Infrastructure.Repositories
                                         SinDate = sinDate,
                                         GrpId = kouiItem.GrpId,
                                         KbnCd = kouiItem.KbnCd,
-                                        UpdateDate = DateTime.Now,
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                         UpdateId = userId,
                                         RaiinListKbn = RaiinListKbnConstants.KOUI_KBN
                                     };
@@ -584,8 +584,8 @@ namespace Infrastructure.Repositories
             if (raiinListInfList.Count > 0 || IsDeleteExecute)
             {
                 TrackingDataContext.RaiinListInfs.AddRange(raiinListInfList);
-                TrackingDataContext.SaveChanges();
             }
+            TrackingDataContext.SaveChanges();
         }
 
         private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs, int userId, int status)
@@ -681,7 +681,7 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        ordInf.IsDeleted = DeleteTypes.Deleted;
+                        ordInf.IsDeleted = status == RaiinState.Reservation ? DeleteTypes.Confirm : DeleteTypes.Deleted;
                         ordInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         ordInf.UpdateId = userId;
                         var ordInfEntity = new OdrInf
@@ -758,7 +758,7 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
         }
 
-        private void UpsertKarteInfs(KarteInfModel karte, int userId)
+        private void UpsertKarteInfs(KarteInfModel karte, int userId, byte status)
         {
             int hpId = karte.HpId;
             long ptId = karte.PtId;
@@ -807,8 +807,7 @@ namespace Infrastructure.Repositories
                 {
                     if (karte.Text != karteMst.Text && Encoding.UTF8.GetBytes(karte.RichText) != karteMst.RichText)
                     {
-                        karteMst.IsDeleted = DeleteTypes.Deleted;
-
+                        karteMst.IsDeleted = status == RaiinState.Reservation ? DeleteTypes.Confirm : DeleteTypes.Deleted;
                         var karteEntity = new KarteInf
                         {
                             HpId = karte.HpId,

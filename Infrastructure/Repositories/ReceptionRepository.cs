@@ -17,9 +17,9 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public ReceptionModel Get(long raiinNo)
+        public ReceptionModel Get(long raiinNo, bool flag)
         {
-            var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
+            var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo && (!flag || r.IsDeleted == 0));
             var raiinCommentInf = NoTrackingDataContext.RaiinCmtInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
 
             return new ReceptionModel

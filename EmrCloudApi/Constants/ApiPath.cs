@@ -322,6 +322,7 @@
         public const string RemoveLock = "RemoveLock";
         public const string RemoveAllLock = "RemoveAllLock";
         public const string ExtendTtl = "ExtendTtl";
+        public const string GetLockInfo = "GetLockInfo";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
@@ -341,5 +342,8 @@
 
         //Holiday
         public const string SaveHolidayMst = "SaveHolidayMst";
+
+        //NextOrder
+        public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
     }
 }

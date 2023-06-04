@@ -530,13 +530,13 @@ namespace Infrastructure.Repositories
             {
                 karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None);
             }
+            else if (isDeleted == 1)
+            {
+                karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm);
+            }
             else if (isDeleted == 2)
             {
                 karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
-            }
-            else
-            {
-                karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm);
             }
 
             if (karteInfEntities == null)
@@ -655,7 +655,7 @@ namespace Infrastructure.Repositories
         {
             var result = NoTrackingDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo)).ToList();
             var userIds = result.Select(r => r.UpdateId).Distinct().ToList();
-            var userMsts = NoTrackingDataContext.UserMsts.Where(u => userIds.Contains(u.UpdateId)).ToList();
+            var userMsts = NoTrackingDataContext.UserMsts.Where(u => userIds.Contains(u.UserId)).ToList();
             return result.AsEnumerable().Select(
                     r => new ApproveInfModel(
                             r.Id,
@@ -675,7 +675,7 @@ namespace Infrastructure.Repositories
             string result = string.Empty;
             string info = string.Empty;
 
-            string docName = userMsts.FirstOrDefault(u => u.Id == updateId)?.Sname ?? string.Empty;
+            string docName = userMsts.FirstOrDefault(u => u.UserId == updateId)?.Sname ?? string.Empty;
             if (!string.IsNullOrEmpty(docName))
             {
                 info += docName;

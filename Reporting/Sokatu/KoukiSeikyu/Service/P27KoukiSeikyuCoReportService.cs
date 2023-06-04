@@ -65,7 +65,7 @@ public class P27KoukiSeikyuCoReportService : IP27KoukiSeikyuCoReportService
     }
     #endregion
 
-    public CommonReportingRequestModel GetP27KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
+    public CommonReportingRequestModel GetP27KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, PrefKbn prefKbn)
     {
         _hpId = hpId;
         _seikyuYm = seikyuYm;
@@ -256,7 +256,7 @@ public class P27KoukiSeikyuCoReportService : IP27KoukiSeikyuCoReportService
     private bool GetData()
     {
         hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
-        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefIn, MyPrefNo, HokensyaNoKbn.NoSum);
+        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, prefKbn, MyPrefNo, HokensyaNoKbn.NoSum);
         //保険者番号の指定がある場合は絞り込み
         var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
