@@ -491,7 +491,7 @@ namespace Infrastructure.Repositories
                         List<RaiinListItem> itemCdList = raiinListItems.FindAll(item => item.ItemCd == itemCd);
                         foreach (RaiinListItem raiinListItem in itemCdList)
                         {
-                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN) ?? new RaiinListInf();
+                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN);
                             if (raiinListInf == null)
                             {
                                 // Check contains with grpId
@@ -509,7 +509,7 @@ namespace Infrastructure.Repositories
                                         SinDate = sinDate,
                                         GrpId = raiinListItem.GrpId,
                                         KbnCd = raiinListItem.KbnCd,
-                                        UpdateDate = DateTime.Now,
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                         UpdateId = userId,
                                         RaiinListKbn = RaiinListKbnConstants.ITEM_KBN
                                     };
@@ -524,7 +524,7 @@ namespace Infrastructure.Repositories
                                 if (originSortNo == null || originSortNo > newSortNo)
                                 {
                                     raiinListInf.KbnCd = raiinListItem.KbnCd;
-                                    raiinListInf.UpdateDate = DateTime.Now;
+                                    raiinListInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                     raiinListInf.UpdateId = userId;
                                 }
                             }
@@ -540,7 +540,7 @@ namespace Infrastructure.Repositories
                         List<RaiinListKoui> kouiItemList = raiinListKouis.FindAll(item => item.KouiKbnId == kouiMst.KouiKbnId);
                         foreach (RaiinListKoui kouiItem in kouiItemList)
                         {
-                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == kouiItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN) ?? new RaiinListInf();
+                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == kouiItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN);
                             if (raiinListInf == null)
                             {
                                 // Check contains with grpId
@@ -558,7 +558,7 @@ namespace Infrastructure.Repositories
                                         SinDate = sinDate,
                                         GrpId = kouiItem.GrpId,
                                         KbnCd = kouiItem.KbnCd,
-                                        UpdateDate = DateTime.Now,
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                         UpdateId = userId,
                                         RaiinListKbn = RaiinListKbnConstants.KOUI_KBN
                                     };
@@ -584,8 +584,8 @@ namespace Infrastructure.Repositories
             if (raiinListInfList.Count > 0 || IsDeleteExecute)
             {
                 TrackingDataContext.RaiinListInfs.AddRange(raiinListInfList);
-                TrackingDataContext.SaveChanges();
             }
+            TrackingDataContext.SaveChanges();
         }
 
         private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs, int userId, int status)
