@@ -43,7 +43,7 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, bool> _visibleFieldData;
     private readonly IReadRseReportFileService _readRseReportFileService;
-    private const string _formFileName = "p29KoukiSeikyu.rse";
+    private string _formFileName = "p29KoukiSeikyu.rse";
     #endregion
 
     public P29KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder finder, IReadRseReportFileService readRseReportFileService)
@@ -62,6 +62,10 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
         var getData = GetData();
+        if (_seikyuYm >= 202210)
+        {
+            _formFileName = "p29KoukiSeikyu_2210.rse";
+        }
         for (int zaiFlg = 0; zaiFlg <= 1; zaiFlg++)
         {
             printZaiiso = zaiFlg == 1;
