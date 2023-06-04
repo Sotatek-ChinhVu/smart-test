@@ -29,4 +29,6 @@ public class FamilyRequestItem
     public bool IsDeleted { get; set; }
 
     public List<FamilyRekiRequestItem> PtFamilyRekiList { get; set; } = new();
+
+    public bool IsRevertItem { get; set; } = false;
 }

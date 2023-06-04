@@ -1424,7 +1424,7 @@ namespace Infrastructure.Repositories
                                     x.FileName ?? string.Empty,
                                     nullMemory,
                                     x.IsDeleted,
-                                    x.UpdateDate.ToString("yyyy/MM/dd HH:mm") + " 更新")).ToList();
+                                    x.UpdateDate.ToString("yyyy/MM/dd HH:mm"))).ToList();
             }
             else
             {
