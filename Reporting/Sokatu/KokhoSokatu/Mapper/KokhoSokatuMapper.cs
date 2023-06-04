@@ -4,42 +4,36 @@ namespace Reporting.Sokatu.KokhoSokatu.Mapper
 {
     public class KokhoSokatuMapper : CommonReportingRequest
     {
+        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
         private readonly Dictionary<string, string> _singleFieldData;
-        private readonly List<Dictionary<string, CellModel>> _tableFieldData;
+        private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, string> _extralData;
-        private readonly Dictionary<string, string> _fileNamePageMap;
-        private readonly int _reportType;
-        private readonly string _rowCountFieldName;
         private readonly string _formFileName;
+        private readonly Dictionary<string, bool> _visibleFieldData;
 
-        public KokhoSokatuMapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, Dictionary<string, string> extralData, Dictionary<string, string> fileNamePageMap, string rowCountFieldName, int reportType)
+        public KokhoSokatuMapper(Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
         {
-            _singleFieldData = singleFieldData;
-            _tableFieldData = tableFieldData;
+            _singleFieldDataM = singleFieldDataM;
+            _listTextData = listTextData;
             _extralData = extralData;
-            _fileNamePageMap = fileNamePageMap;
-            _rowCountFieldName = rowCountFieldName;
-            _reportType = reportType;
+            _formFileName = formFileName;
+            _singleFieldData = singleFieldData;
+            _visibleFieldData = visibleFieldData;
         }
 
         public override int GetReportType()
         {
-            return _reportType;
+            return (int)CoReportType.KokhoSokatu;
         }
 
         public override string GetRowCountFieldName()
         {
-            return _rowCountFieldName;
-        }
-
-        public override Dictionary<string, string> GetSingleFieldData()
-        {
-            return _singleFieldData;
+            return string.Empty;
         }
 
         public override List<Dictionary<string, CellModel>> GetTableFieldData()
         {
-            return _tableFieldData;
+            return new();
         }
 
         public override Dictionary<string, string> GetExtralData()
@@ -47,9 +41,14 @@ namespace Reporting.Sokatu.KokhoSokatu.Mapper
             return _extralData;
         }
 
-        public override Dictionary<string, bool> GetVisibleFieldData()
+        public override string GetJobName()
         {
-            return new();
+            return string.Empty;
+        }
+
+        public override Dictionary<string, string> GetSingleFieldData()
+        {
+            return _singleFieldData;
         }
 
         public override Dictionary<string, bool> GetWrapFieldData()
@@ -57,9 +56,27 @@ namespace Reporting.Sokatu.KokhoSokatu.Mapper
             return new();
         }
 
+        public override Dictionary<int, List<ListTextObject>> GetListTextData()
+        {
+            return _listTextData;
+        }
+
+        public override Dictionary<int, Dictionary<string, string>> GetSetFieldData()
+        {
+            return _singleFieldDataM;
+        }
         public override Dictionary<string, string> GetFileNamePageMap()
         {
-            return _fileNamePageMap;
+            var fileName = new Dictionary<string, string>
+        {
+            { "1", _formFileName }
+        };
+            return fileName;
+        }
+
+        public override Dictionary<string, bool> GetVisibleFieldData()
+        {
+            return _visibleFieldData;
         }
     }
 }

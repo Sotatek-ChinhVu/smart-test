@@ -10,10 +10,12 @@ namespace UseCase.Reception.Get
     public class GetReceptionInputData : IInputData<GetReceptionOutputData>
     {
         public long RaiinNo { get; private set; }
+        public bool Flag { get; private set; }
 
-        public GetReceptionInputData(long raiinNo)
+        public GetReceptionInputData(long raiinNo, bool flag)
         {
             RaiinNo = raiinNo;
+            Flag = flag;
         }
     }
 }

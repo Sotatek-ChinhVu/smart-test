@@ -360,8 +360,8 @@ public class AccountingCoReportService : IAccountingCoReportService
         var raiinInfModelPayList = _finder.GetOyaRaiinInfList(hpId, raiinNoPayList, ptId);
 
         List<long> oyaRaiinList;
-        if (isCalculateProcess && ((printType == 0 && _systemConfig.PrintReceiptPay0Yen() == 0)
-                               || (printType == 1 && _systemConfig.PrintDetailPay0Yen() == 0)))
+        if (isCalculateProcess && ((printTypeInput == 0 && _systemConfig.PrintReceiptPay0Yen() == 0)
+                               || (printTypeInput == 1 && _systemConfig.PrintDetailPay0Yen() == 0)))
         {
             oyaRaiinList = raiinInfModelPayList.GroupBy(item => item.OyaRaiinNo).Select(item => item.Key).ToList();
         }
@@ -380,7 +380,8 @@ public class AccountingCoReportService : IAccountingCoReportService
                 startDateInput,
                 endDateInput,
                 listRaiinNoPrint.Select(item => item.RaiinNo).ToList(),
-                printType: printTypeInput));
+                printType: printTypeInput
+                ));
         }
         return GetAccountingReportingData(hpId, coAccountingParamModels);
     }
@@ -468,7 +469,6 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void PrintOut()
     {
-        GetParamFromRseFile();
         if (mode == PrintMode.SinglePrint)
         {
             PrintOutSingle();
@@ -577,6 +577,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         {
             return;
         }
+        GetParamFromRseFile();
 
         _sinmeiListPropertysPage1 = new List<(string field, int charCount, int rowCount)>();
         _sinmeiListPropertysPage2 = new List<(string field, int charCount, int rowCount)>();
@@ -604,6 +605,7 @@ public class AccountingCoReportService : IAccountingCoReportService
     private void PrintOutList()
     {
         coModelList = GetDataList(hpId, startDate, endDate, ptConditions, grpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
+        GetParamFromRseFile();
         var objectList = JavaOutputData.objectNames;
         if (objectList.Contains("lsPtNum_1"))
         {
@@ -679,6 +681,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                     continue;
                 }
 
+                GetParamFromRseFile();
                 _sinmeiListPropertysPage1 = new List<(string field, int charCount, int rowCount)>();
                 _sinmeiListPropertysPage2 = new List<(string field, int charCount, int rowCount)>();
 
@@ -704,17 +707,30 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
     }
 
+
+    private bool hasNextPage;
+    private int currentPage = 1;
     private void UpdateDrawForm()
     {
+        hasNextPage = true;
+        currentPage = 1;
         if (mode == PrintMode.SinglePrint)
         {
-            UpdateDrawFormSingle();
+            while (hasNextPage)
+            {
+                UpdateDrawFormSingle();
+                currentPage++;
+            }
         }
         else
         {
             foreach (var item in @params)
             {
-                UpdateDrawFormSingle();
+                while (hasNextPage)
+                {
+                    UpdateDrawFormSingle();
+                    currentPage++;
+                }
             }
         }
     }
@@ -1072,13 +1088,11 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void UpdateDrawFormSingle()
     {
-        SingleFieldDataResult = new();
-        ListTextModelResult = new();
-        sinmeiPrintDataModels = new();
         // 下位互換
         bool backword = _systemConfig.AccountingUseBackwardFields() == 1;
 
         UpdateFormHeader();
+        UpdateFormBody();
 
         #region SubMethod
         // ヘッダー 
@@ -2714,6 +2728,82 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 領収証定型文
             _printTeikeibun();
         }
+
+        // 本体
+        void UpdateFormBody()
+        {
+            if (sinmeiPrintDataModels == null || sinmeiPrintDataModels.Count == 0)
+            {
+                hasNextPage = false;
+                return;
+            }
+
+            List<(string field, int charCount, int rowCount)> sinmeiListPropertys =
+                _sinmeiListPropertysPage1;
+
+            int sinmeiListIndex = 0;
+
+            if (currentPage > 1)
+            {
+                // 2ページ目以降の場合
+                sinmeiListPropertys = _sinmeiListPropertysPage2;
+            }
+
+            if (!sinmeiListPropertys.Any() || sinmeiListPropertys[0].rowCount <= 0)
+            {
+                if (currentPage == 1 && _sinmeiListPropertysPage2 != null && _sinmeiListPropertysPage2.Any() && sinmeiListPropertys[0].rowCount > 0)
+                {
+                    // 1ページ目で、2ページ目以降にリストが存在する場合は、_hasNextPageはtrueのままにする
+                    return;
+                }
+                else
+                {
+                    // リストのプロパティがない場合はreturn
+                    hasNextPage = false;
+                    return;
+                }
+            }
+
+            if (currentPage > 1)
+            {
+                // 2ページ目以降の場合、1ページ目に出力した行数と、2ページ名以降に出力した行数を求める
+                sinmeiListIndex += _sinmeiListPropertysPage1.Sum(p => p.rowCount);
+                sinmeiListIndex += (currentPage - 2) * sinmeiListPropertys.Sum(p => p.rowCount);
+            }
+
+            for (int listIndex = 0; listIndex < sinmeiListPropertys.Count; listIndex++)
+            {
+
+                int sinmeiRowCount = sinmeiListPropertys[listIndex].rowCount;
+                string field = sinmeiListPropertys[listIndex].field;
+
+                for (short i = 0; i < sinmeiRowCount; i++)
+                {
+                    ListText("lsSinKoui_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].KouiNm);
+                    ListText("lsSinMei_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].MeiData);
+                    ListText("lsSinSuuryo_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Suuryo);
+                    ListText("lsSinTani_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Tani);
+                    ListText("lsSinTensu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Tensu);
+                    ListText("lsSinTotalTen_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].TotalTensu);
+                    ListText("lsSinKaisu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Kaisu);
+                    ListText("lsSinKaisuTani_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].KaisuTani);
+                    ListText("lsSinTensuKaisu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].TenKai);
+
+                    sinmeiListIndex++;
+                    if (sinmeiListIndex >= sinmeiPrintDataModels.Count)
+                    {
+                        hasNextPage = false;
+                        break;
+                    }
+                }
+
+                if (!hasNextPage)
+                {
+                    break;
+                }
+            }
+        }
+
         accountingOutputModelList.Add(new AccountingOutputModel(
                                           SingleFieldDataResult,
                                           ListTextModelResult,
