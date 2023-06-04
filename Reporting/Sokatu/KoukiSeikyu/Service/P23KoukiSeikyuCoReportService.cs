@@ -49,7 +49,7 @@ public class P23KoukiSeikyuCoReportService : IP23KoukiSeikyuCoReportService
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, bool> _visibleFieldData;
-    private const string _formFileName = "p23KoukiSeikyu.rse";
+    private string _formFileName = "p23KoukiSeikyu.rse";
 
     #region Constructor and Init
     public P23KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder kokhoFinder)
@@ -69,6 +69,10 @@ public class P23KoukiSeikyuCoReportService : IP23KoukiSeikyuCoReportService
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
         var getData = GetData();
+        if (_seikyuYm >= 202210) 
+        {
+            _formFileName = "p23KoukiSeikyu_2210.rse";
+        }
 
         foreach (string currentNo in hokensyaNos)
         {
