@@ -48,7 +48,7 @@ public class P30KoukiSeikyuCoReportService : IP30KoukiSeikyuCoReportService
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, bool> _visibleFieldData;
-    private const string _formFileName = "p30KoukiSeikyu.rse";
+    private string _formFileName = "p30KoukiSeikyu.rse";
 
     public P30KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder kokhoFinder)
     {
