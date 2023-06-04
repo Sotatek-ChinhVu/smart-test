@@ -1,17 +1,23 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Models;
+﻿using CommonChecker.Models.OrdInf;
+using CommonChecker.Models.OrdInfDetailModel;
+using CommonCheckers.OrderRealtimeChecker.Enums;
+using CommonCheckers.OrderRealtimeChecker.Models;
+using Entity.Tenant;
 
 namespace CloudUnitTest.CommonChecker.Services
 {
-
-
     public class AgeCheckerTest : BaseUT
     {
         [Test]
         public void HandleCheckOrderList_InvalidSettingLevel_ReturnsOriginalResult()
         {
+            var odrInf = new List<OrdInfoModel>();
+            int sinDay = 20230603;
+            int ptId = 1231;
+            bool isDataOfDb = false;
             // Arrange
-            var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>();
-            unitCheckerForOrderListResult.CheckingOrderList = new List<TOdrInf>();
+            var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(RealtimeCheckerType.Age, odrInf, sinDay, 1231, new(new(), new(), new()), new(), new(), isDataOfDb);
+            unitCheckerForOrderListResult.CheckingOrderList = new List<OrdInfoModel>();
 
             var orderListHandler = new OrderListHandler();
 
@@ -80,3 +86,5 @@ namespace CloudUnitTest.CommonChecker.Services
             Assert.IsTrue(result.Any(o => o.OdrInfDetailModelsIgnoreEmpty.Any(d => d.ItemCd == "Item2")));
             Assert.IsTrue(result.Any(o => o.OdrInfDetailModelsIgnoreEmpty.Any(d => d.ItemCd == "Item4")));
         }
+    }
+}

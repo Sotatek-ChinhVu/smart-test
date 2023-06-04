@@ -2,6 +2,7 @@
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using Domain.Models.Diseases;
 using Domain.Models.Family;
+using Domain.Models.RaiinKubunMst;
 using SpecialNoteFull = Domain.Models.SpecialNote.SpecialNoteModel;
 
 namespace CommonCheckers.OrderRealtimeChecker.Models
@@ -44,5 +45,11 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
             FamilyModels = familyModels;
             IsDataOfDb = isDataOfDb;
         }
+
+        public UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> ChangeCheckingOrderList(List<TOdrInf> odrInfs)
+        {
+            CheckingOrderList = odrInfs;
+            return this;
+        } 
     }
 }
