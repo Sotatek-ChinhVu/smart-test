@@ -71,6 +71,11 @@ public class P27KoukiSeikyuCoReportService : IP27KoukiSeikyuCoReportService
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
         var getData = GetData();
+        if (_seikyuYm >= 202210)
+        {
+            _formFileName = "p27KoukiSeikyu_2210.rse";
+        }
+
         if (prefKbn == PrefKbn.PrefOut)
         {
             _formFileName = "p27KoukiSeikyuOut.rse";
