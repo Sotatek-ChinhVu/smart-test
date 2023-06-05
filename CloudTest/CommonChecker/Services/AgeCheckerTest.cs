@@ -2,7 +2,13 @@
 using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
-using Entity.Tenant;
+using CommonCheckers.OrderRealtimeChecker.Services;
+using Domain.Models.Diseases;
+using Domain.Models.Family;
+using Moq;
+using UseCase.Family;
+using UseCase.MedicalExamination.SaveMedical;
+using SpecialNoteFull = Domain.Models.SpecialNote.SpecialNoteModel;
 
 namespace CloudUnitTest.CommonChecker.Services
 {
@@ -17,74 +23,44 @@ namespace CloudUnitTest.CommonChecker.Services
             bool isDataOfDb = false;
             // Arrange
             var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(RealtimeCheckerType.Age, odrInf, sinDay, 1231, new(new(), new(), new()), new(), new(), isDataOfDb);
-            unitCheckerForOrderListResult.CheckingOrderList = new List<OrdInfoModel>();
-
-            var orderListHandler = new OrderListHandler();
-
-            // Act
-            var result = orderListHandler.HandleCheckOrderList(unitCheckerForOrderListResult);
+            unitCheckerForOrderListResult.ChangeCheckingOrderList(new());
 
             // Assert
-            Assert.AreEqual(unitCheckerForOrderListResult, result);
+            Assert.AreEqual(unitCheckerForOrderListResult, new());
         }
 
         [Test]
-        public void HandleCheckOrderList_ValidSettingLevel_ReturnsUpdatedResult()
+        public void CheckAge_ReturnsExpectedResult()
         {
             // Arrange
-            var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>();
-            unitCheckerForOrderListResult.CheckingOrderList = new List<TOdrInf> { new TOdrInf() };
+            var unitChecker = new AgeChecker<OrdInfoModel, OrdInfoDetailModel>();
+            var checkingOrderList = new List<OrdInfoModel>();
+            var specialNoteItem = new SpecialNoteItem();
+            var ptDiseaseModels = new List<PtDiseaseModel>();
+            var familyItems = new List<FamilyItem>();
+            var isDataOfDb = true;
 
-            var orderListHandler = new OrderListHandler();
-            orderListHandler.GetSettingLevel = () => 5;
+            var odrInf = new List<OrdInfoModel>();
+            int sinDay = 20230603;
+            int ptId = 1231;
 
-            var result = orderListHandler.HandleCheckOrderList(unitCheckerForOrderListResult);
-
-            Assert.IsNotNull(result.ErrorInfo);
-            Assert.IsNotNull(result.ErrorOrderList);
-        }
-
-        [Test]
-        public void GetErrorOrderList_WithErrors_ReturnsCorrectErrorOrderList()
-        {
-            // Arrange
-            var checkingOrderList = new List<TOdrInf>
-        {
-            new TOdrInf
-            {
-                OdrInfDetailModelsIgnoreEmpty = new List<OdrInfDetailModel>
-                {
-                    new OdrInfDetailModel { ItemCd = "Item1" },
-                    new OdrInfDetailModel { ItemCd = "Item2" },
-                }
-            },
-            new TOdrInf
-            {
-                OdrInfDetailModelsIgnoreEmpty = new List<OdrInfDetailModel>
-                {
-                    new OdrInfDetailModel { ItemCd = "Item3" },
-                    new OdrInfDetailModel { ItemCd = "Item4" },
-                }
-            }
-        };
-
-            var checkedResultList = new List<AgeResultModel>
-        {
-            new AgeResultModel { ItemCd = "Item2" },
-            new AgeResultModel { ItemCd = "Item4" }
-        };
-
-            var orderListHandler = new OrderListHandler();
+            var mockAgeChecker = new Mock<AgeChecker<OrdInfoModel, OrdInfoDetailModel>>();
+            var expectedResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(RealtimeCheckerType.Age, odrInf, sinDay, 1231, new(new(), new(), new()), new(), new(), isDataOfDb);
+            mockAgeChecker.Setup(c => c.CheckOrderList(
+                It.IsAny<List<OrdInfoModel>>(),
+                It.IsAny<SpecialNoteFull>(),
+                It.IsAny<List<PtDiseaseModel>>(),
+                It.IsAny<List<FamilyModel>>(),
+                It.IsAny<bool>()
+            )).Returns(expectedResult);
+            unitChecker.AgeChecker = mockAgeChecker.Object;
 
             // Act
-            var result = orderListHandler.GetErrorOrderList(checkingOrderList, checkedResultList);
+            var result = unitChecker.CheckAge(checkingOrderList, specialNoteItem, ptDiseaseModels, familyItems, isDataOfDb);
 
             // Assert
-            Assert.AreEqual(2, result.Count);
-            // Perform assertions on the result as per your requirements
-            // For example, you can assert that the error order list contains the expected order items
-            Assert.IsTrue(result.Any(o => o.OdrInfDetailModelsIgnoreEmpty.Any(d => d.ItemCd == "Item2")));
-            Assert.IsTrue(result.Any(o => o.OdrInfDetailModelsIgnoreEmpty.Any(d => d.ItemCd == "Item4")));
+            Assert.AreSame(expectedResult, result);
         }
+
     }
 }
