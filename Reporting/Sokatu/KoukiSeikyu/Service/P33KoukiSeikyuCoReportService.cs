@@ -14,7 +14,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service;
 public class P33KoukiSeikyuCoReportService : IP33KoukiSeikyuCoReportService
 {
     #region Constant
-    private const int MyPrefNo = 33;
+    private const int myPrefNo = 33;
     #endregion
 
     #region Private properties
@@ -182,7 +182,7 @@ public class P33KoukiSeikyuCoReportService : IP33KoukiSeikyuCoReportService
                 //法別番号
                 listDataPerPage.Add(new("kohiHoubetu", 0, rowNo, kohiHoubetus.Any() ? kohiHoubetus[kohiIndex] : string.Empty));
                 //公費名称
-                listDataPerPage.Add(new("kohiName", 0, rowNo, SokatuUtil.GetKohiName(kohiHoubetuMsts, MyPrefNo, kohiHoubetus.Any() ? kohiHoubetus[kohiIndex] : string.Empty)));
+                listDataPerPage.Add(new("kohiName", 0, rowNo, SokatuUtil.GetKohiName(kohiHoubetuMsts, myPrefNo, kohiHoubetus.Any() ? kohiHoubetus[kohiIndex] : string.Empty)));
 
                 countData wrkData = new countData();
                 //件数
@@ -219,7 +219,7 @@ public class P33KoukiSeikyuCoReportService : IP33KoukiSeikyuCoReportService
     private bool GetData()
     {
         hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
-        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.SumAll);
+        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
         //保険者番号の指定がある場合は絞り込み
         var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();

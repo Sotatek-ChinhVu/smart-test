@@ -55,7 +55,7 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
                                                                     s.ColumnName ?? string.Empty,
                                                                     s.KbnCd,
                                                                     s.SortKbn))
-                                                                    .ToList()
+                                                                    .OrderBy(s => s.Priority).ToList()
                                     )).OrderBy( x => x.SortNo).ToList();
     }
 
