@@ -389,7 +389,9 @@ namespace Infrastructure.Repositories
                     // Update PtHokenCheck
                     foreach (var update in listHokenCheckUpdateInput)
                     {
-                        var checkDatetimeInput = DateTime.ParseExact(update.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
+                        var checkDatetimeInput = DateTime.ParseExact(update.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+                        var utcCheckDateTime = DateTime.SpecifyKind(checkDatetimeInput, DateTimeKind.Utc);
+
                         var hokenCheckItem = listUpdateItemDB.FirstOrDefault(item => item.SeqNo == update.SeqNo);
                         if (hokenCheckItem != null)
                         {
@@ -405,7 +407,7 @@ namespace Infrastructure.Repositories
                             if (!hokenCheckItem.CheckDate.ToString("yyyyMMdd").Equals(update.SinDate.ToString())
                                 && !listCheckTime.Select(item => item.CheckDate.ToString("yyyyMMdd")).ToList().Contains(update.SinDate.ToString()))
                             {
-                                hokenCheckItem.CheckDate = checkDatetimeInput;
+                                hokenCheckItem.CheckDate = utcCheckDateTime;
                                 var removeItem = listCheckTime.FirstOrDefault(item => item.SeqNo == update.SeqNo);
                                 if (removeItem != null)
                                 {
@@ -434,7 +436,9 @@ namespace Infrastructure.Repositories
                     // Add new PtHokenCheck
                     foreach (var item in listHokenCheckInsertInput)
                     {
-                        var checkDatetime = DateTime.ParseExact(item.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
+                        var checkDatetime = DateTime.ParseExact(item.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+                        var utcCheckDateTime = DateTime.SpecifyKind(checkDatetime, DateTimeKind.Utc);
+
                         if (listCheckTime == null || !listCheckTime.Select(item => item.CheckDate.ToString("yyyyMMdd")).ToList().Contains(item.SinDate.ToString()))
                         {
                             listHokenCheckAddNew.Add(new PtHokenCheck
@@ -443,7 +447,7 @@ namespace Infrastructure.Repositories
                                 PtID = ptId,
                                 HokenGrp = hokenGrp,
                                 HokenId = insuranceItem.HokenId,
-                                CheckDate = checkDatetime,
+                                CheckDate = utcCheckDateTime,
                                 CheckCmt = item.Comment,
                                 CheckId = userId,
                                 CreateDate = CIUtil.GetJapanDateTimeNow(),
