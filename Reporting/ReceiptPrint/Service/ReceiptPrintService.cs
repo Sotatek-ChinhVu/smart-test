@@ -26,8 +26,9 @@ public class ReceiptPrintService : IReceiptPrintService
     private readonly IP29KoukiSeikyuCoReportService _p29KoukiSeikyuCoReportService;
     private readonly IAfterCareSeikyuCoReportService _afterCareSeikyuCoReportService;
     private readonly ISyahoCoReportService _syahoCoReportService;
+    private readonly IP33KoukiSeikyuCoReportService _p33KoukiSeikyuCoReportService;
 
-    public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService, IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService, IHikariDiskCoReportService hikariDiskCoReportService, IP28KoukiSeikyuCoReportService p28KoukiSeikyuCoReportService, IP29KoukiSeikyuCoReportService p29KoukiSeikyuCoReportService, IAfterCareSeikyuCoReportService afterCareSeikyuCoReportService, ISyahoCoReportService syahoCoReportService)
+    public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService, IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService, IHikariDiskCoReportService hikariDiskCoReportService, IP28KoukiSeikyuCoReportService p28KoukiSeikyuCoReportService, IP29KoukiSeikyuCoReportService p29KoukiSeikyuCoReportService, IAfterCareSeikyuCoReportService afterCareSeikyuCoReportService, ISyahoCoReportService syahoCoReportService, IP33KoukiSeikyuCoReportService p33KoukiSeikyuCoReportService)
     {
         _p28KokhoSokatuCoReportService = p28KokhoSokatuCoReportService;
         _p11KokhoSokatuCoReportService = p11KokhoSokatuCoReportService;
@@ -36,6 +37,7 @@ public class ReceiptPrintService : IReceiptPrintService
         _p29KoukiSeikyuCoReportService = p29KoukiSeikyuCoReportService;
         _afterCareSeikyuCoReportService = afterCareSeikyuCoReportService;
         _syahoCoReportService = syahoCoReportService;
+        _p33KoukiSeikyuCoReportService = p33KoukiSeikyuCoReportService;
     }
 
     public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt)
@@ -70,6 +72,10 @@ public class ReceiptPrintService : IReceiptPrintService
         else if (reportId == 101 && reportEdaNo == 0)
         {
             return _syahoCoReportService.GetSyahoPrintData(hpId, seikyuYm, GetSeikyuType(dataKbn));
+        }
+        else if (reportId == 104 && reportEdaNo == 0)
+        {
+            return _p33KoukiSeikyuCoReportService.GetP33KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
         }
         return new();
     }
