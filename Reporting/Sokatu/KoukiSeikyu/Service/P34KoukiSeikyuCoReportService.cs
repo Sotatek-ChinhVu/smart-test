@@ -17,7 +17,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service;
 public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
 {
     #region Constant
-    private const int MyPrefNo = 34;
+    private const int myPrefNo = 34;
 
     private List<string> fixedHoubetuP1 = new List<string> { "19", "91", "92", "93" };
     private List<string> fixedHoubetuP3 = new List<string> { "10", "11" };
@@ -363,7 +363,7 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
     private bool GetData()
     {
         hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
-        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.NoSum);
+        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.NoSum);
         //保険者番号の指定がある場合は絞り込み
         var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
