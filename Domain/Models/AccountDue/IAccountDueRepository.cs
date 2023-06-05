@@ -6,7 +6,7 @@ public interface IAccountDueRepository : IRepositoryBase
 {
     List<AccountDueModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked);
 
-    bool SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues);
+    bool SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues, string kaikeiTime);
 
     List<SyunoSeikyuModel> GetListSyunoSeikyuModel(List<long> listRaiinNo);
 

@@ -5,7 +5,6 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.MaxMoney;
-using Helper.Constants;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Domain.Models.PatientInfor
@@ -39,6 +38,8 @@ namespace Domain.Models.PatientInfor
         List<DefHokenNoModel> GetDefHokenNoModels(int hpId, string futansyaNo);
 
         List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted);
+
+        PtKyuseiInfModel GetDocumentKyuSeiInf(int hpId, long ptId, int sinDay);
 
         bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels, int hpId, int userId);
 
