@@ -9,8 +9,10 @@ using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using System.Text;
 using UseCase.Family;
 using UseCase.MedicalExamination.SaveMedical;
 using SpecialNoteFull = Domain.Models.SpecialNote.SpecialNoteModel;
@@ -26,7 +28,21 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     private int _hpID;
     private long _ptID;
     private int _sinday;
-    private bool _termLimitCheckingOnly;
+    private readonly bool _termLimitCheckingOnly;
+    private Dictionary<string, string> _itemNameDictionary;
+    private Dictionary<string, string> _componentNameDictionary;
+    private Dictionary<string, string> _analogueNameDictionary;
+    private Dictionary<string, string> _drvalrgyNameDictionary;
+    private Dictionary<string, string> _foodNameDictionary;
+    private Dictionary<string, string> _diseaseNameDictionary;
+    private Dictionary<string, string> _kinkiCommentDictionary;
+    private Dictionary<string, string> _kijyoCommentDictionary;
+    private Dictionary<string, string> _oTCItemNameDictionary;
+    private Dictionary<string, string> _oTCComponentInfoDictionary;
+    private Dictionary<string, string> _supplementComponentInfoDictionary;
+    private Dictionary<string, string> _suppleItemNameDictionary;
+    private Dictionary<string, string> _usageDosageDictionary;
+    private Dictionary<string, string> _itemNameByItemCodeDictionary;
     private readonly IRealtimeOrderErrorFinder _realtimeOrderErrorFinder;
 
     private readonly double _currentHeight = 0;
@@ -38,8 +54,21 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     {
         _tenantProvider = tenantProvider;
         _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
+        _itemNameDictionary = new();
+        _componentNameDictionary = new();
+        _analogueNameDictionary = new();
+        _drvalrgyNameDictionary = new();
+        _foodNameDictionary = new();
+        _diseaseNameDictionary = new();
+        _kinkiCommentDictionary = new();
+        _kijyoCommentDictionary = new();
+        _oTCItemNameDictionary = new();
+        _oTCComponentInfoDictionary = new();
+        _supplementComponentInfoDictionary = new();
+        _suppleItemNameDictionary = new();
+        _usageDosageDictionary = new();
+        _itemNameByItemCodeDictionary = new();
     }
-
 
     public void InitUnitCheck(UnitChecker<OrdInfoModel, OrdInfoDetailModel> unitChecker)
     {
@@ -473,7 +502,10 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         _hpID = hpId;
         _ptID = ptId;
         _sinday = sinday;
-        List<ErrorInfoModel> listErrorInfoModel = new List<ErrorInfoModel>();
+
+        GetItemCdError(listErrorInfo);
+
+        List<ErrorInfoModel> listErrorInfoModel = new();
         listErrorInfo.ForEach((errorInfo) =>
         {
             switch (errorInfo.CheckerType)
@@ -549,6 +581,144 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
         return listErrorInfoModel;
     }
+
+    private void GetItemCdError(List<UnitCheckInfoModel> listErrorInfo)
+    {
+        List<string> itemNameList = new();
+        List<string> componentNameList = new();
+        List<string> analogueNameList = new();
+        List<string> drvalrgyNameList = new();
+        List<string> foodNameList = new();
+        List<string> diseaseNameList = new();
+        List<string> kinkiCommentList = new();
+        List<string> kijyoCommentList = new();
+        List<string> oTCItemNameList = new();
+        List<string> oTCComponentInfoList = new();
+        List<string> supplementComponentInfoList = new();
+        List<string> suppleItemNameList = new();
+        List<string> usageDosageList = new();
+        List<string> itemNameByItemCodeList = new();
+        listErrorInfo.ForEach((errorInfo) =>
+        {
+            switch (errorInfo.CheckerType)
+            {
+                case RealtimeCheckerType.DrugAllergy:
+                    List<DrugAllergyResultModel>? drugAllergyInfo = errorInfo.ErrorInfo as List<DrugAllergyResultModel>;
+                    if (drugAllergyInfo != null)
+                    {
+                        itemNameByItemCodeList.AddRange(drugAllergyInfo.Select(item => item.ItemCd));
+                        itemNameList.AddRange(drugAllergyInfo.Select(item => item.YjCd));
+                        itemNameList.AddRange(drugAllergyInfo.Select(item => item.AllergyYjCd));
+                        componentNameList.AddRange(drugAllergyInfo.Select(item => item.SeibunCd));
+                        componentNameList.AddRange(drugAllergyInfo.Select(item => item.AllergySeibunCd));
+                        analogueNameList.AddRange(drugAllergyInfo.Select(item => item.Tag));
+                        drvalrgyNameList.AddRange(drugAllergyInfo.Select(item => item.Tag));
+                    }
+                    break;
+                case RealtimeCheckerType.FoodAllergy:
+                    List<FoodAllergyResultModel>? foodAllergyInfo = errorInfo.ErrorInfo as List<FoodAllergyResultModel>;
+                    if (foodAllergyInfo != null)
+                    {
+                        itemNameList.AddRange(foodAllergyInfo.Select(item => item.YjCd));
+                        foodNameList.AddRange(foodAllergyInfo.Select(item => item.AlrgyKbn));
+                    }
+                    break;
+                case RealtimeCheckerType.Age:
+                    List<AgeResultModel>? ageErrorInfo = errorInfo.ErrorInfo as List<AgeResultModel>;
+                    if (ageErrorInfo != null)
+                    {
+                        itemNameList.AddRange(ageErrorInfo.Select(item => item.YjCd));
+                    }
+                    break;
+                case RealtimeCheckerType.Disease:
+                    List<DiseaseResultModel>? diseaseErrorInfo = errorInfo.ErrorInfo as List<DiseaseResultModel>;
+                    if (diseaseErrorInfo != null)
+                    {
+                        itemNameList.AddRange(diseaseErrorInfo.Select(item => item.YjCd));
+                        diseaseNameList.AddRange(diseaseErrorInfo.Select(item => item.ByotaiCd));
+                    }
+                    break;
+                case RealtimeCheckerType.Kinki:
+                case RealtimeCheckerType.KinkiTain:
+                case RealtimeCheckerType.KinkiOTC:
+                case RealtimeCheckerType.KinkiSupplement:
+                    List<KinkiResultModel>? kinkiErrorInfo = errorInfo.ErrorInfo as List<KinkiResultModel>;
+                    if (kinkiErrorInfo != null)
+                    {
+                        itemNameList.AddRange(kinkiErrorInfo.Select(item => item.AYjCd));
+                        itemNameList.AddRange(kinkiErrorInfo.Select(item => item.BYjCd));
+                        kinkiCommentList.AddRange(kinkiErrorInfo.Select(item => item.CommentCode));
+                        kijyoCommentList.AddRange(kinkiErrorInfo.Select(item => item.SayokijyoCode));
+                        oTCItemNameList.AddRange(kinkiErrorInfo.Select(item => item.BYjCd));
+                        oTCComponentInfoList.AddRange(kinkiErrorInfo.Select(item => item.SeibunCd));
+                        supplementComponentInfoList.AddRange(kinkiErrorInfo.Select(item => item.SeibunCd));
+                        suppleItemNameList.AddRange(kinkiErrorInfo.Select(item => item.SeibunCd));
+                    }
+                    break;
+                case RealtimeCheckerType.KinkiUser:
+                    List<KinkiResultModel>? kinkiUserErrorInfo = errorInfo.ErrorInfo as List<KinkiResultModel>;
+                    if (kinkiUserErrorInfo != null)
+                    {
+                        itemNameList.AddRange(kinkiUserErrorInfo.Select(item => item.AYjCd));
+                        itemNameList.AddRange(kinkiUserErrorInfo.Select(item => item.BYjCd));
+                    }
+                    break;
+                case RealtimeCheckerType.Days:
+                    List<DayLimitResultModel>? dayLimitErrorInfo = errorInfo.ErrorInfo as List<DayLimitResultModel>;
+                    if (dayLimitErrorInfo != null)
+                    {
+                        itemNameList.AddRange(dayLimitErrorInfo.Select(item => item.YjCd));
+                    }
+                    break;
+                case RealtimeCheckerType.Dosage:
+                    List<DosageResultModel>? dosageErrorInfo = errorInfo.ErrorInfo as List<DosageResultModel>;
+                    if (dosageErrorInfo != null)
+                    {
+                        itemNameList.AddRange(dosageErrorInfo.Select(item => item.YjCd));
+                        usageDosageList.AddRange(dosageErrorInfo.Select(item => item.YjCd));
+                    }
+                    break;
+                case RealtimeCheckerType.Duplication:
+                    List<DuplicationResultModel>? duplicationErrorInfo = errorInfo.ErrorInfo as List<DuplicationResultModel>;
+                    if (duplicationErrorInfo != null)
+                    {
+                        itemNameByItemCodeList.AddRange(duplicationErrorInfo.Select(item => item.ItemCd));
+                        itemNameByItemCodeList.AddRange(duplicationErrorInfo.Select(item => item.DuplicatedItemCd));
+                    }
+                    break;
+            }
+        });
+        itemNameList = itemNameList.Distinct().ToList();
+        componentNameList = componentNameList.Distinct().ToList();
+        analogueNameList = analogueNameList.Distinct().ToList();
+        drvalrgyNameList = drvalrgyNameList.Distinct().ToList();
+        foodNameList = foodNameList.Distinct().ToList();
+        diseaseNameList = diseaseNameList.Distinct().ToList();
+        kinkiCommentList = kinkiCommentList.Distinct().ToList();
+        kijyoCommentList = kijyoCommentList.Distinct().ToList();
+        oTCItemNameList = oTCItemNameList.Distinct().ToList();
+        oTCComponentInfoList = oTCComponentInfoList.Distinct().ToList();
+        supplementComponentInfoList = supplementComponentInfoList.Distinct().ToList();
+        suppleItemNameList = suppleItemNameList.Distinct().ToList();
+        usageDosageList = usageDosageList.Distinct().ToList();
+        itemNameByItemCodeList = itemNameByItemCodeList.Distinct().ToList();
+
+        _itemNameDictionary = itemNameList.Any() ? _realtimeOrderErrorFinder.FindItemNameDic(itemNameList, _sinday) : new();
+        _componentNameDictionary = componentNameList.Any() ? _realtimeOrderErrorFinder.FindComponentNameDic(componentNameList) : new();
+        _analogueNameDictionary = analogueNameList.Any() ? _realtimeOrderErrorFinder.FindAnalogueNameDic(analogueNameList) : new();
+        _drvalrgyNameDictionary = drvalrgyNameList.Any() ? _realtimeOrderErrorFinder.FindDrvalrgyNameDic(drvalrgyNameList) : new();
+        _foodNameDictionary = foodNameList.Any() ? _realtimeOrderErrorFinder.FindFoodNameDic(foodNameList) : new();
+        _diseaseNameDictionary = diseaseNameList.Any() ? _realtimeOrderErrorFinder.FindDiseaseNameDic(diseaseNameList) : new();
+        _kinkiCommentDictionary = kinkiCommentList.Any() ? _realtimeOrderErrorFinder.FindKinkiCommentDic(kinkiCommentList) : new();
+        _kijyoCommentDictionary = kijyoCommentList.Any() ? _realtimeOrderErrorFinder.FindKijyoCommentDic(kijyoCommentList) : new();
+        _oTCItemNameDictionary = oTCItemNameList.Any() ? _realtimeOrderErrorFinder.FindOTCItemNameDic(oTCItemNameList) : new();
+        _oTCComponentInfoDictionary = oTCComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetOTCComponentInfoDic(oTCComponentInfoList) : new();
+        _supplementComponentInfoDictionary = supplementComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetSupplementComponentInfoDic(supplementComponentInfoList) : new();
+        _suppleItemNameDictionary = suppleItemNameList.Any() ? _realtimeOrderErrorFinder.FindSuppleItemNameDic(suppleItemNameList) : new();
+        _usageDosageDictionary = usageDosageList.Any() ? _realtimeOrderErrorFinder.GetUsageDosageDic(usageDosageList) : new();
+        _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(itemNameByItemCodeList, _sinday) : new();
+    }
+
     #endregion
 
     #region ProcessDataForDrugAllergy
@@ -574,8 +744,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 .Where(a => a.YjCd == error.YjCd && a.AllergyYjCd == error.AllergyYjCd)
                 .OrderByDescending(a => a.Level)
                 .ToList();
-            string itemName = _realtimeOrderErrorFinder.FindItemName(error.YjCd, _sinday);
-            string allergyItemName = _realtimeOrderErrorFinder.FindItemName(error.AllergyYjCd, _sinday);
+            string itemName = _itemNameDictionary.ContainsKey(error.YjCd) ? _itemNameDictionary[error.YjCd] : string.Empty;
+            string allergyItemName = _itemNameDictionary.ContainsKey(error.AllergyYjCd) ? _itemNameDictionary[error.AllergyYjCd] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
                 FirstCellContent = "アレルギー",
@@ -583,10 +753,10 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 FourthCellContent = allergyItemName
             };
 
-            List<LevelInfoModel> _listLevelInfo = new List<LevelInfoModel>();
+            List<LevelInfoModel> _listLevelInfo = new();
             foreach (var item in tempData)
             {
-                LevelInfoModel? levelInfo = _listLevelInfo.Where(c => c.Level == item.Level).FirstOrDefault();
+                LevelInfoModel? levelInfo = _listLevelInfo.FirstOrDefault(c => c.Level == item.Level);
                 if (levelInfo == null)
                 {
                     levelInfo = new LevelInfoModel()
@@ -600,37 +770,43 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
                 if (0 <= item.Level && item.Level <= 4)
                 {
+                    StringBuilder comment = new();
+
                     int level = (error.YjCd == error.AllergyYjCd) ? 0 : item.Level;
+                    levelInfo.BackgroundCode = LevelConfig.DrugAllegySource[level][0];
+                    levelInfo.BorderBrushCode = LevelConfig.DrugAllegySource[level][1];
+                    levelInfo.Title = LevelConfig.DrugAllegySource[level][2];
 
                     if (item.YjCd == item.AllergyYjCd)
                     {
-                        levelInfo.Comment += "※アレルギー登録薬です。" + Environment.NewLine + Environment.NewLine;
+                        comment.Append("※アレルギー登録薬です。" + Environment.NewLine + Environment.NewLine);
                     }
                     else
                     {
                         switch (item.Level)
                         {
                             case 1:
-                                string componentName1 = _realtimeOrderErrorFinder.FindComponentName(item.SeibunCd);
-                                levelInfo.Comment += string.Format(_commentLevel1Template, allergyItemName, componentName1) + Environment.NewLine + Environment.NewLine;
+                                string componentName1 = _componentNameDictionary.ContainsKey(item.SeibunCd) ? _componentNameDictionary[item.SeibunCd] : string.Empty;
+                                comment.Append(string.Format(_commentLevel1Template, allergyItemName, componentName1) + Environment.NewLine + Environment.NewLine);
                                 break;
                             case 2:
-                                string componentName2 = _realtimeOrderErrorFinder.FindComponentName(item.SeibunCd);
+                                string componentName2 = _componentNameDictionary.ContainsKey(item.SeibunCd) ? _componentNameDictionary[item.SeibunCd] : string.Empty;
                                 string allergyComponentName2 = _realtimeOrderErrorFinder.FindComponentName(item.AllergySeibunCd);
-                                levelInfo.Comment += string.Format(_commentLevel2Template, itemName, componentName2, allergyItemName, allergyComponentName2, componentName2) + Environment.NewLine + Environment.NewLine;
+                                comment.Append(string.Format(_commentLevel2Template, itemName, componentName2, allergyItemName, allergyComponentName2, componentName2) + Environment.NewLine + Environment.NewLine);
                                 break;
                             case 3:
-                                string componentName3 = _realtimeOrderErrorFinder.FindComponentName(item.SeibunCd);
-                                string allergyComponentName3 = _realtimeOrderErrorFinder.FindComponentName(item.AllergySeibunCd);
-                                string analogueName = _realtimeOrderErrorFinder.FindAnalogueName(item.Tag);
-                                levelInfo.Comment += string.Format(_commentLevel3Template, itemName, componentName3, allergyItemName, allergyComponentName3, analogueName) + Environment.NewLine + Environment.NewLine;
+                                string componentName3 = _componentNameDictionary.ContainsKey(item.SeibunCd) ? _componentNameDictionary[item.SeibunCd] : string.Empty;
+                                string allergyComponentName3 = _componentNameDictionary.ContainsKey(item.AllergySeibunCd) ? _componentNameDictionary[item.AllergySeibunCd] : string.Empty;
+                                string analogueName = _analogueNameDictionary.ContainsKey(item.Tag) ? _analogueNameDictionary[item.Tag] : string.Empty;
+                                comment.Append(string.Format(_commentLevel3Template, itemName, componentName3, allergyItemName, allergyComponentName3, analogueName) + Environment.NewLine + Environment.NewLine);
                                 break;
                             case 4:
-                                string drvalrgyName = _realtimeOrderErrorFinder.FindDrvalrgyName(item.Tag);
-                                levelInfo.Comment += string.Format(_commentLevel4Template, itemName, allergyItemName, drvalrgyName) + Environment.NewLine + Environment.NewLine;
+                                string drvalrgyName = _drvalrgyNameDictionary.ContainsKey(item.Tag) ? _drvalrgyNameDictionary[item.Tag] : string.Empty;
+                                comment.Append(string.Format(_commentLevel4Template, itemName, allergyItemName, drvalrgyName) + Environment.NewLine + Environment.NewLine);
                                 break;
                         }
                     }
+                    levelInfo.Comment = comment.ToString();
                 }
             }
             tempModel.ListLevelInfo.AddRange(_listLevelInfo);
@@ -645,10 +821,10 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #region ProcessDataForDrugAllergyWithNoMasterData
     private List<ErrorInfoModel> ProcessDataForDrugAllergyWithNoMasterData(List<DrugAllergyResultModel> allergyInfo)
     {
-        List<ErrorInfoModel> result = new List<ErrorInfoModel>();
+        List<ErrorInfoModel> result = new();
         allergyInfo.ForEach((a) =>
         {
-            string itemName = _realtimeOrderErrorFinder.FindItemNameByItemCode(a.ItemCd, _sinday);
+            string itemName = _itemNameByItemCodeDictionary.ContainsKey(a.ItemCd) ? _itemNameByItemCodeDictionary[a.ItemCd] : string.Empty;
             ErrorInfoModel info = new ErrorInfoModel()
             {
                 Id = a.Id,
@@ -656,14 +832,16 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 ThridCellContent = itemName,
                 FourthCellContent = itemName
             };
-            List<LevelInfoModel> _listLevelInfo = new List<LevelInfoModel>();
-            _listLevelInfo.Add(new LevelInfoModel()
+            List<LevelInfoModel> _listLevelInfo = new()
             {
-                FirstItemName = itemName,
-                SecondItemName = itemName,
-                Level = a.Level,
-                Comment = "※アレルギー登録薬です。"
-            });
+                new LevelInfoModel()
+                {
+                    FirstItemName = itemName,
+                    SecondItemName = itemName,
+                    Level = a.Level,
+                    Comment = "※アレルギー登録薬です。"
+                }
+            };
             info.ListLevelInfo.AddRange(_listLevelInfo);
             result.Add(info);
         });
@@ -689,8 +867,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 .Where(a => a.YjCd == error.YjCd && a.AlrgyKbn == error.AlrgyKbn)
                 .OrderByDescending(a => a.TenpuLevel)
                 .ToList();
-            string itemName = _realtimeOrderErrorFinder.FindItemName(error.YjCd, _sinday);
-            string foodName = _realtimeOrderErrorFinder.FindFoodName(error.AlrgyKbn);
+            string itemName = _itemNameDictionary.ContainsKey(error.YjCd) ? _itemNameDictionary[error.YjCd] : string.Empty;
+            string foodName = _foodNameDictionary.ContainsKey(error.AlrgyKbn) ? _foodNameDictionary[error.AlrgyKbn] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
                 Id = error.Id,
@@ -699,11 +877,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 FourthCellContent = foodName
             };
 
-            List<LevelInfoModel> _listLevelInfo = new List<LevelInfoModel>();
+            List<LevelInfoModel> _listLevelInfo = new();
             foreach (var item in tempData)
             {
                 int level = item.TenpuLevel.AsInteger();
-                LevelInfoModel? levelInfo = _listLevelInfo.Where(c => c.Level == level).FirstOrDefault();
+                LevelInfoModel? levelInfo = _listLevelInfo.FirstOrDefault(c => c.Level == level);
                 if (levelInfo == null)
                 {
                     levelInfo = new LevelInfoModel()
@@ -713,6 +891,12 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                         Level = level
                     };
                     _listLevelInfo.Add(levelInfo);
+                }
+                if (1 <= level && level <= 3)
+                {
+                    levelInfo.BackgroundCode = LevelConfig.FoodAllegySource[level][0];
+                    levelInfo.BorderBrushCode = LevelConfig.FoodAllegySource[level][1];
+                    levelInfo.Title = LevelConfig.FoodAllegySource[level][2];
                 }
                 levelInfo.Comment += item.AttentionCmt + Environment.NewLine + item.WorkingMechanism + Environment.NewLine + Environment.NewLine;
             }
@@ -742,7 +926,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 .Where(a => a.YjCd == error.YjCd)
                 .OrderByDescending(a => a.TenpuLevel)
                 .ToList();
-            string itemName = _realtimeOrderErrorFinder.FindItemName(error.YjCd, _sinday);
+            string itemName = _itemNameDictionary.ContainsKey(error.YjCd) ? _itemNameDictionary[error.YjCd] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
                 Id = error.Id,
@@ -757,7 +941,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             {
                 int level = item.TenpuLevel.AsInteger();
                 string attention = _realtimeOrderErrorFinder.FindAgeComment(item.AttentionCmtCd);
-                LevelInfoModel? levelInfo = _listLevelInfo.Where(c => c.Level == level).FirstOrDefault();
+                LevelInfoModel? levelInfo = _listLevelInfo.FirstOrDefault(c => c.Level == level);
                 if (levelInfo == null)
                 {
                     levelInfo = new LevelInfoModel()
@@ -769,6 +953,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     _listLevelInfo.Add(levelInfo);
                 }
 
+                levelInfo.BackgroundCode = LevelConfig.AgeSource[level][0];
+                levelInfo.BorderBrushCode = LevelConfig.AgeSource[level][1];
+                levelInfo.Title = LevelConfig.AgeSource[level][2];
                 levelInfo.Comment += attention + Environment.NewLine + item.WorkingMechanism + Environment.NewLine + Environment.NewLine;
             }
 
@@ -815,8 +1002,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     ).ToList();
 
 
-            string itemName = _realtimeOrderErrorFinder.FindItemName(drugDiseaseCode.YjCd, _sinday);
-            string diseaseName = _realtimeOrderErrorFinder.FindDiseaseName(drugDiseaseCode.ByotaiCd);
+            string itemName = _itemNameDictionary.ContainsKey(drugDiseaseCode.YjCd) ? _itemNameDictionary[drugDiseaseCode.YjCd] : string.Empty;
+            string diseaseName = _diseaseNameDictionary.ContainsKey(drugDiseaseCode.ByotaiCd) ? _diseaseNameDictionary[drugDiseaseCode.ByotaiCd] : string.Empty;
 
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
@@ -830,7 +1017,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             foreach (var item in listFilteredData)
             {
                 int level = item.TenpuLevel;
-                LevelInfoModel? LevelInfoModel = _listLevelInfoModel.Where(c => c.Level == level).FirstOrDefault();
+                LevelInfoModel? LevelInfoModel = _listLevelInfoModel.FirstOrDefault(c => c.Level == level);
                 if (LevelInfoModel == null)
                 {
                     LevelInfoModel = new LevelInfoModel()
@@ -842,6 +1029,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     _listLevelInfoModel.Add(LevelInfoModel);
                 }
 
+                LevelInfoModel.BackgroundCode = LevelConfig.DiseaseSource[level][0];
+                LevelInfoModel.BorderBrushCode = LevelConfig.DiseaseSource[level][1];
+                LevelInfoModel.Title = LevelConfig.DiseaseSource[level][2];
                 LevelInfoModel.Comment += _realtimeOrderErrorFinder.FindDiseaseComment(item.CmtCd) + Environment.NewLine + _realtimeOrderErrorFinder.FindDiseaseComment(item.KijyoCd) + Environment.NewLine + Environment.NewLine;
             }
 
@@ -876,9 +1066,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             {
                 case RealtimeCheckerType.Kinki:
                 case RealtimeCheckerType.KinkiTain:
-                    return _realtimeOrderErrorFinder.FindItemName(code, _sinday);
+                    return _itemNameDictionary.ContainsKey(code) ? _itemNameDictionary[code] : string.Empty;
                 case RealtimeCheckerType.KinkiOTC:
-                    return _realtimeOrderErrorFinder.FindOTCItemName(code.AsInteger());
+                    return _oTCItemNameDictionary.ContainsKey(code) ? _oTCItemNameDictionary[code] : string.Empty;
                 default:
                     return string.Empty;
             }
@@ -891,7 +1081,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                              group a by new { a.AYjCd, a.BYjCd, a.ItemCd, a.KinkiItemCd, a.Id }
                                    into gcs
                              select new { gcs.Key.AYjCd, gcs.Key.BYjCd, gcs.Key.ItemCd, gcs.Key.KinkiItemCd, gcs.Key.Id }
-                                   ).ToList();
+                            ).ToList();
 
         for (int x = 0; x < listKinkiCode.Count; x++)
         {
@@ -908,14 +1098,14 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             if (listFilteredData.Count == 0) continue;
 
-            string itemAName = _realtimeOrderErrorFinder.FindItemName(kikinCode.AYjCd, _sinday);
+            string itemAName = _itemNameDictionary.ContainsKey(kikinCode.AYjCd) ? _itemNameDictionary[kikinCode.AYjCd] : string.Empty;
             string itemBName = string.Empty;
 
             if (checkingType == RealtimeCheckerType.KinkiSupplement)
             {
                 string seibunCd = listFilteredData.First().SeibunCd;
                 string indexWord = listFilteredData.First().IndexWord;
-                string seibunName = _realtimeOrderErrorFinder.FindSuppleItemName(seibunCd);
+                string seibunName = _suppleItemNameDictionary.ContainsKey(seibunCd) ? _suppleItemNameDictionary[seibunCd] : string.Empty;
 
                 if (indexWord != seibunName)
                 {
@@ -942,14 +1132,14 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             };
             result.Add(tempModel);
 
-            List<KinkiErrorDetail> listDetail = new List<KinkiErrorDetail>();
+            List<KinkiErrorDetail> listDetail = new();
             listFilteredData.ForEach((f) =>
             {
-                KinkiErrorDetail kinkiErrorDetail = new KinkiErrorDetail()
+                KinkiErrorDetail kinkiErrorDetail = new()
                 {
                     Level = f.Kyodo.AsInteger(),
-                    CommentContent = _realtimeOrderErrorFinder.FindKinkiComment(f.CommentCode).Trim(),
-                    SayokijyoContent = _realtimeOrderErrorFinder.FindKijyoComment(f.SayokijyoCode).Trim()
+                    CommentContent = (_kinkiCommentDictionary.ContainsKey(f.CommentCode) ? _kinkiCommentDictionary[f.CommentCode] : string.Empty).Trim(),
+                    SayokijyoContent = (_kijyoCommentDictionary.ContainsKey(f.SayokijyoCode) ? _kijyoCommentDictionary[f.SayokijyoCode] : string.Empty).Trim()
                 };
                 if (f.IsNeedToReplace)
                 {
@@ -961,12 +1151,12 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 string stringToReplace = string.Empty;
                 if (checkingType == RealtimeCheckerType.KinkiOTC)
                 {
-                    string otcComponentInfo = _realtimeOrderErrorFinder.GetOTCComponentInfo(f.SeibunCd);
+                    string otcComponentInfo = _oTCComponentInfoDictionary.ContainsKey(f.SeibunCd) ? _oTCComponentInfoDictionary[f.SeibunCd] : string.Empty;
                     stringToReplace = f.Sbt == 1 ? "の含有成分「" + otcComponentInfo + "」" : "の添加物「" + otcComponentInfo + "」";
                 }
                 else if (checkingType == RealtimeCheckerType.KinkiSupplement)
                 {
-                    string supplementComponentInfo = _realtimeOrderErrorFinder.GetSupplementComponentInfo(f.SeibunCd);
+                    string supplementComponentInfo = _supplementComponentInfoDictionary.ContainsKey(f.SeibunCd) ? _supplementComponentInfoDictionary[f.SeibunCd] : string.Empty;
                     stringToReplace = "の成分「" + supplementComponentInfo + "」";
 
                 }
@@ -995,6 +1185,10 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     Level = l.Level
                 };
                 listLevelInfoModel.Add(LevelInfoModel);
+
+                LevelInfoModel.BackgroundCode = LevelConfig.KinkiCommonSource[l.Level][0];
+                LevelInfoModel.BorderBrushCode = LevelConfig.KinkiCommonSource[l.Level][1];
+                LevelInfoModel.Title = LevelConfig.KinkiCommonSource[l.Level][2];
 
                 var listItemAsLevel = listDetail.Where(d => l.Level <= d.Level)
                                                 .OrderBy(d => d.Level)
@@ -1060,8 +1254,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<ErrorInfoModel> result = new List<ErrorInfoModel>();
         kinkiErrorInfo.ForEach((k) =>
         {
-            string itemAName = _realtimeOrderErrorFinder.FindItemName(k.AYjCd, _sinday);
-            string itemBName = _realtimeOrderErrorFinder.FindItemName(k.BYjCd, _sinday);
+            string itemAName = _itemNameDictionary.ContainsKey(k.AYjCd) ? _itemNameDictionary[k.AYjCd] : string.Empty;
+            string itemBName = _itemNameDictionary.ContainsKey(k.BYjCd) ? _itemNameDictionary[k.BYjCd] : string.Empty;
 
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
@@ -1079,6 +1273,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     FirstItemName = itemAName,
                     SecondItemName = itemBName,
                     Level = 1,
+                    BackgroundCode = LevelConfig.KinkiCommonSource[1][0],
+                    BorderBrushCode = LevelConfig.KinkiCommonSource[1][1],
+                    Title = LevelConfig.KinkiCommonSource[1][2],
                     Comment = "ユーザー設定"
                 }
             };
@@ -1091,10 +1288,10 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #region ProcessDataForDayLimit
     private List<ErrorInfoModel> ProcessDataForDayLimit(List<DayLimitResultModel> dayLimitError)
     {
-        List<ErrorInfoModel> result = new List<ErrorInfoModel>();
+        List<ErrorInfoModel> result = new();
         foreach (DayLimitResultModel dayLimit in dayLimitError)
         {
-            string itemName = _realtimeOrderErrorFinder.FindItemName(dayLimit.YjCd, _sinday);
+            string itemName = _itemNameDictionary.ContainsKey(dayLimit.YjCd) ? _itemNameDictionary[dayLimit.YjCd] : string.Empty;
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
             errorInfoModel.Id = dayLimit.Id;
@@ -1103,6 +1300,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             errorInfoModel.ThridCellContent = itemName;
             errorInfoModel.FourthCellContent = dayLimit.UsingDay.AsString() + "日";
             errorInfoModel.SuggestedContent = "／" + dayLimit.LimitDay.AsString() + "日";
+            errorInfoModel.HighlightColorCode = "#f12c47";
 
             LevelInfoModel LevelInfoModel = new LevelInfoModel()
             {
@@ -1123,7 +1321,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
-            string itemName = _realtimeOrderErrorFinder.FindItemName(dosage.YjCd, _sinday);
+            string itemName = _itemNameDictionary.ContainsKey(dosage.YjCd) ? _itemNameDictionary[dosage.YjCd] : string.Empty;
             errorInfoModel.Id = dosage.Id;
             errorInfoModel.FirstCellContent = "投与量";
             errorInfoModel.ThridCellContent = itemName;
@@ -1135,24 +1333,31 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             {
                 case DosageLabelChecking.OneMin:
                     levelTitle = "一回量／最小値";
+                    errorInfoModel.HighlightColorCode = "#0000ff";
                     break;
                 case DosageLabelChecking.OneMax:
                     levelTitle = "一回量／最大値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.OneLimit:
                     levelTitle = "一回量／上限値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.DayMin:
                     levelTitle = "一日量／最小値";
+                    errorInfoModel.HighlightColorCode = "#0000ff";
                     break;
                 case DosageLabelChecking.DayMax:
                     levelTitle = "一日量／最大値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.DayLimit:
                     levelTitle = "一日量／上限値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.TermLimit:
                     levelTitle = "期間上限";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
             }
             string comment = string.Empty;
@@ -1162,12 +1367,14 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             }
             else
             {
-                comment = _realtimeOrderErrorFinder.GetUsageDosage(dosage.YjCd);
+                comment = _usageDosageDictionary.ContainsKey(dosage.YjCd) ? _usageDosageDictionary[dosage.YjCd] : string.Empty;
             }
 
             LevelInfoModel LevelInfoModel = new LevelInfoModel()
             {
                 Title = levelTitle,
+                BorderBrushCode = "#ff66b3",
+                BackgroundCode = "#ff9fcf",
                 FirstItemName = itemName,
                 Comment = comment
             };
@@ -1180,11 +1387,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #region ProcessDataForDuplication
     private List<ErrorInfoModel> ProcessDataForDuplication(List<DuplicationResultModel> listDuplicationError)
     {
-        List<ErrorInfoModel> result = new List<ErrorInfoModel>();
+        List<ErrorInfoModel> result = new();
         foreach (DuplicationResultModel duplicationError in listDuplicationError)
         {
-            string itemName = _realtimeOrderErrorFinder.FindItemNameByItemCode(duplicationError.ItemCd, _sinday);
-            string duplicatedItemName = _realtimeOrderErrorFinder.FindItemNameByItemCode(duplicationError.DuplicatedItemCd, _sinday);
+            string itemName = _itemNameByItemCodeDictionary.ContainsKey(duplicationError.ItemCd) ? _itemNameByItemCodeDictionary[duplicationError.ItemCd] : string.Empty;
+            string duplicatedItemName = _itemNameByItemCodeDictionary.ContainsKey(duplicationError.DuplicatedItemCd) ? _itemNameByItemCodeDictionary[duplicationError.DuplicatedItemCd] : string.Empty;
 
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
@@ -1205,6 +1412,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             LevelInfoModel LevelInfoModel = new LevelInfoModel()
             {
+                BackgroundCode = LevelConfig.DuplicationCommonSource[duplicationError.Level][0],
+                BorderBrushCode = LevelConfig.DuplicationCommonSource[duplicationError.Level][1],
+                Title = LevelConfig.DuplicationCommonSource[duplicationError.Level][2],
                 FirstItemName = itemName,
                 SecondItemName = duplicationError.IsComponentDuplicated || duplicationError.IsIppanCdDuplicated ? duplicatedItemName : string.Empty
             };
@@ -1215,35 +1425,37 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             }
             else if (duplicationError.IsComponentDuplicated)
             {
+                StringBuilder comment = new();
                 switch (duplicationError.Level)
                 {
                     case 1:
                         string componentName1 = _realtimeOrderErrorFinder.FindComponentName(duplicationError.SeibunCd);
-                        LevelInfoModel.Comment += string.Format(_duplicatedComponentTemplate, itemName, duplicatedItemName, componentName1) + Environment.NewLine + Environment.NewLine;
+                        comment.Append(string.Format(_duplicatedComponentTemplate, itemName, duplicatedItemName, componentName1) + Environment.NewLine + Environment.NewLine);
                         break;
                     case 2:
                         string componentName2 = _realtimeOrderErrorFinder.FindComponentName(duplicationError.SeibunCd);
                         string allergyComponentName2 = _realtimeOrderErrorFinder.FindComponentName(duplicationError.AllergySeibunCd);
-                        LevelInfoModel.Comment += string.Format(_proDrupTemplate, itemName, componentName2, duplicatedItemName, allergyComponentName2, componentName2) + Environment.NewLine + Environment.NewLine;
+                        comment.Append(string.Format(_proDrupTemplate, itemName, componentName2, duplicatedItemName, allergyComponentName2, componentName2) + Environment.NewLine + Environment.NewLine);
                         break;
                     case 3:
                         string componentName3 = _realtimeOrderErrorFinder.FindComponentName(duplicationError.SeibunCd);
                         string allergyComponentName3 = _realtimeOrderErrorFinder.FindComponentName(duplicationError.AllergySeibunCd);
                         string analogueName = _realtimeOrderErrorFinder.FindAnalogueName(duplicationError.Tag);
-                        LevelInfoModel.Comment += string.Format(_sameComponentTemplate, itemName, componentName3, duplicatedItemName, allergyComponentName3, analogueName) + Environment.NewLine + Environment.NewLine;
+                        comment.Append(string.Format(_sameComponentTemplate, itemName, componentName3, duplicatedItemName, allergyComponentName3, analogueName) + Environment.NewLine + Environment.NewLine);
                         break;
                     case 4:
                         string className = _realtimeOrderErrorFinder.FindClassName(duplicationError.Tag);
-                        LevelInfoModel.Comment += string.Format(_duplicatedClassTemplate, itemName, duplicatedItemName, className) + Environment.NewLine + Environment.NewLine;
+                        comment.Append(string.Format(_duplicatedClassTemplate, itemName, duplicatedItemName, className) + Environment.NewLine + Environment.NewLine);
                         break;
                 }
+                LevelInfoModel.Comment += comment.ToString();
             }
             else
             {
                 LevelInfoModel.Comment = "同一薬剤（" + itemName + "）が処方されています。";
             }
 
-            errorInfoModel.ListLevelInfo = new List<LevelInfoModel>() { LevelInfoModel };
+            errorInfoModel.ListLevelInfo = new() { LevelInfoModel };
         }
         return result;
     }
@@ -1252,17 +1464,16 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #region RemoveDuplicatedErrorInfo
     private List<KinkiResultModel> RemoveDuplicatedErrorInfo(List<KinkiResultModel> originList)
     {
-        List<KinkiResultModel> subResult = new List<KinkiResultModel>();
+        List<KinkiResultModel> subResult = new();
         originList.ForEach(k =>
         {
-            var tempError = subResult.Where(a => a.AYjCd == k.AYjCd &&
+            var tempError = subResult.FirstOrDefault(a => a.AYjCd == k.AYjCd &&
                                                  a.BYjCd == k.BYjCd &&
                                                  a.CommentCode == k.CommentCode &&
                                                  a.SayokijyoCode == k.SayokijyoCode &&
                                                  a.Kyodo == k.Kyodo &&
                                                  a.IsNeedToReplace == k.IsNeedToReplace &&
-                                                 a.IndexWord == k.IndexWord)
-            .FirstOrDefault();
+                                                 a.IndexWord == k.IndexWord);
 
             if (tempError == null)
             {

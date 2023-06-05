@@ -16,5 +16,7 @@ namespace Domain.Models.Diseases
         List<ByomeiSetMstModel> GetDataTreeSetByomei(int hpId, int sinDate);
 
         List<PtDiseaseModel> GetTekiouByomeiByOrder(int hpId, List<string> itemCds);
+
+        List<PtDiseaseModel> GetAllByomeiByPtId(int hpId, long ptId, int pageIndex, int pageSize);
     }
 }

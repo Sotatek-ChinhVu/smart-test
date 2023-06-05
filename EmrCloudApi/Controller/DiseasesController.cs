@@ -7,6 +7,7 @@ using EmrCloudApi.Responses.Diseases;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Diseases.GetAllByomeiByPtId;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.GetSetByomeiTree;
 using UseCase.Diseases.Upsert;
@@ -33,6 +34,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetPtDiseaseListResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetAllByomeiByPtId)]
+        public ActionResult<Response<GetAllByomeiByPtIdResponse>> GetAllByomeiByPtId([FromQuery] GetAllByomeiByPtIdRequest request)
+        {
+            var input = new GetAllByomeiByPtIdInputData(HpId, request.PtId, request.PageIndex, request.PageSize);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetAllByomeiByPtIdPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetAllByomeiByPtIdResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.Upsert)]

@@ -10,7 +10,7 @@ namespace UseCase.MedicalExamination.SaveMedical;
 
 public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
 {
-    public SaveMedicalInputData(int hpId, long ptId, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, FileItemInputItem fileItem, List<FamilyItem> listFamily, List<NextOrderItem> nextOrderItems, SpecialNoteItem specialNoteItem, List<UpsertPtDiseaseListInputItem> upsertPtDiseaseListInputItems, List<UpsertFlowSheetItemInputData> flowSheetItems, MonshinInforModel monshins)
+    public SaveMedicalInputData(int hpId, long ptId, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, bool isSagaku, FileItemInputItem fileItem, List<FamilyItem> listFamily, List<NextOrderItem> nextOrderItems, SpecialNoteItem specialNoteItem, List<UpsertPtDiseaseListInputItem> upsertPtDiseaseListInputItems, List<UpsertFlowSheetItemInputData> flowSheetItems, MonshinInforModel monshins)
     {
         HpId = hpId;
         PtId = ptId;
@@ -27,6 +27,7 @@ public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
         SinEndTime = sinEndTime;
         Status = status;
         UserId = userId;
+        IsSagaku = isSagaku;
         FileItem = fileItem;
         FamilyList = listFamily;
         NextOrderItems = nextOrderItems;
@@ -61,6 +62,8 @@ public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
     public byte Status { get; private set; }
 
     public int UserId { get; private set; }
+
+    public bool IsSagaku { get; private set; }
 
     public List<OdrInfItemInputData> OdrItems { get; private set; }
 
