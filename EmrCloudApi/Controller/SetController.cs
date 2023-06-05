@@ -103,7 +103,7 @@ public class SetController : AuthorizeControllerBase
         if (output.Status == CopyPasteSetMstStatus.Successed)
         {
             await _webSocketService.SendMessageAsync(FunctionCodes.SuperCopyPasteChanged,
-                new SuperSetMessage { SetMstModels = output.SetMstModels });
+                new SuperSetMessage { ReorderSetMstModels = output.SetMstModels ?? new() });
         }
 
         var presenter = new CopyPasteSetMstPresenter();
