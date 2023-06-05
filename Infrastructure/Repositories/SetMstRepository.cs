@@ -765,7 +765,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             }
                         }
                         AddNewItemToSave(userId, listCopySetCds, dictionarySetMstMap);
-
+                        TrackingDataContext.SaveChanges();
                         // Set level for item
                         try
                         {
