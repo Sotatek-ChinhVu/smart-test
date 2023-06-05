@@ -290,6 +290,9 @@ namespace EmrCloudApi.Presenters.NextOrder
                             case OrderInfConst.OrdInfValidationStatus.InvalidHasUsage:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.ErrorHasUsage, string.Empty));
                                 break;
+                            case OrderInfConst.OrdInfValidationStatus.InvalidBunkatuNoInput:
+                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MNoInputData, string.Empty));
+                                break;
                             default:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, "-1", "-1", string.Empty, string.Empty));
                                 break;

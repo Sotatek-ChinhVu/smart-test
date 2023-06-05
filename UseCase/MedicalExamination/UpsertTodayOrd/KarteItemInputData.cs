@@ -1,7 +1,10 @@
-﻿namespace UseCase.MedicalExamination.UpsertTodayOrd
+﻿using System.Text.Json.Serialization;
+
+namespace UseCase.MedicalExamination.UpsertTodayOrd
 {
     public class KarteItemInputData
     {
+        [JsonConstructor]
         public KarteItemInputData(int hpId, long raiinNo, long ptId, int sinDate, string text, int isDeleted, string richText)
         {
             HpId = hpId;

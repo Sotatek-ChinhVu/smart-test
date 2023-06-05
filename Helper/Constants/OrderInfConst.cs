@@ -93,6 +93,7 @@
             InvalidKokuji2,
             InvalidHasDrug,
             InvalidHasUsage,
+            InvalidBunkatuNoInput,
             Valid
         };
 

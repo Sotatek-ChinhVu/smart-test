@@ -99,6 +99,8 @@
         public const string MemoMsgPrint = "MemoMsgPrint";
         public const string ReceTarget = "ReceTarget";
         public const string DrugNoteSeal = "DrugNoteSeal";
+        public const string Yakutai = "Yakutai";
+        public const string AccountingCard = "AccountingCard";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -109,9 +111,11 @@
         public const string GetPatientInfoBetweenTimesList = "GetPatientInfoBetweenTimesList";
         public const string SearchPatientInfoByPtNum = "SearchPatientInfoByPtNum";
         public const string GetTokkiMstList = "GetTokkiMstList";
+        public const string DeletePatientInfo = "DeletePatientInfo";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
+        public const string GetHokenMasterReadOnly = "GetHokenMasterReadOnly";
 
         //Validate Main Insurance
         public const string ValidateMainInsurance = "ValidateMainInsurance";
@@ -200,6 +204,7 @@
         public const string CheckTrialAccounting = "CheckTrialAccounting";
         public const string GetKensaAuditTrailLog = "GetKensaAuditTrailLog";
         public const string GetContainerMst = "GetContainerMst";
+        public const string GetSinkouCountInMonth = "GetSinkouCountInMonth";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -281,6 +286,7 @@
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
+        public const string GetAllByomeiByPtId = "GetAllByomeiByPtId";
 
         //System Conf
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";
@@ -317,6 +323,7 @@
         public const string RemoveLock = "RemoveLock";
         public const string RemoveAllLock = "RemoveAllLock";
         public const string ExtendTtl = "ExtendTtl";
+        public const string GetLockInfo = "GetLockInfo";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
@@ -336,5 +343,8 @@
 
         //Holiday
         public const string SaveHolidayMst = "SaveHolidayMst";
+
+        //NextOrder
+        public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
     }
 }
