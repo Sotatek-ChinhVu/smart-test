@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.SetMst;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.SetMst;
 using EmrCloudApi.Realtime;
@@ -65,8 +66,8 @@ public class SetController : AuthorizeControllerBase
 
         if (output.Status == SaveSetMstStatus.Successed)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.SuperSetChanged,
-                new SuperSetMessage { SetCds = new List<int> { output.setMstModel?.SetCd ?? 0 } });
+            await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetSaveChanged,
+                new SuperSetMessage { SetMstModels = new List<SetMstModel> { output.setMstModel ?? new() } });
         }
 
         var presenter = new SaveSetMstPresenter();
@@ -83,8 +84,8 @@ public class SetController : AuthorizeControllerBase
 
         if (output.Status == ReorderSetMstStatus.Successed)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.SuperSetChanged,
-                new SuperSetMessage { SetCds = new List<int> { request.DragSetCd, request.DropSetCd } });
+            await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetReorderChanged,
+                new SuperSetMessage { ReorderSetMstModels = output.setMstModels ?? new() });
         }
 
         var presenter = new ReorderSetMstPresenter();
@@ -101,8 +102,8 @@ public class SetController : AuthorizeControllerBase
 
         if (output.Status == CopyPasteSetMstStatus.Successed)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.SuperSetChanged,
-                new SuperSetMessage { SetCds = new List<int> { output.NewSetCd} });
+            await _webSocketService.SendMessageAsync(FunctionCodes.SuperCopyPasteChanged,
+                new SuperSetMessage { SetMstModels = output.SetMstModels });
         }
 
         var presenter = new CopyPasteSetMstPresenter();

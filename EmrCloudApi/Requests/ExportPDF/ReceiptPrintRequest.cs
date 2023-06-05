@@ -19,5 +19,9 @@
         public int SinYm { get; set; }
 
         public int HokenId { get; set; }
+
+        public int DiskKind { get; set; }
+
+        public int DiskCnt { get; set; }
     }
 }

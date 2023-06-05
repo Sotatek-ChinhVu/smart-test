@@ -48,6 +48,7 @@ namespace Interactor.SetMst
                 _setRepository.ReleaseResource();
             }
         }
+
         private List<GetSetMstListOutputItem> BuildTreeSetKbn(IEnumerable<SetMstModel>? datas)
         {
             List<GetSetMstListOutputItem> result = new List<GetSetMstListOutputItem>();
