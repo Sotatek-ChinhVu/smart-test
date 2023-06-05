@@ -1,5 +1,5 @@
-﻿using Domain.Models.SetMst;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
+using UseCase.SetMst.GetList;
 
 namespace UseCase.SetMst.CopyPasteSetMst;
 
@@ -7,7 +7,7 @@ public class CopyPasteSetMstOutputData : IOutputData
 {
     public CopyPasteSetMstStatus Status { get; private set; }
 
-    public List<SetMstModel> SetMstModels { get; private set; }
+    public List<GetSetMstListOutputItem>? SetMstModels { get; private set; }
 
     public CopyPasteSetMstOutputData(CopyPasteSetMstStatus status)
     {
@@ -15,7 +15,7 @@ public class CopyPasteSetMstOutputData : IOutputData
         SetMstModels = new();
     }
 
-    public CopyPasteSetMstOutputData(List<SetMstModel> setMstModels, CopyPasteSetMstStatus status)
+    public CopyPasteSetMstOutputData(List<GetSetMstListOutputItem>? setMstModels, CopyPasteSetMstStatus status)
     {
         Status = status;
         SetMstModels = setMstModels;

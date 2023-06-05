@@ -1,5 +1,7 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.Accounting;
+using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Accounting;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Accounting;
@@ -24,10 +26,12 @@ namespace EmrCloudApi.Controller
     public class AccountingController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
+        private readonly IWebSocketService _webSocketService;
 
-        public AccountingController(UseCaseBus bus, IUserService userService) : base(userService)
+        public AccountingController(UseCaseBus bus, IUserService userService, IWebSocketService webSocketService) : base(userService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
         }
 
         [HttpGet(ApiPath.GetList)]
@@ -79,11 +83,17 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.SaveAccounting)]
-        public ActionResult<Response<SaveAccountingResponse>> SaveList([FromBody] SaveAccountingRequest request)
+        public async Task<ActionResult<Response<SaveAccountingResponse>>> SaveList([FromBody] SaveAccountingRequest request)
         {
             var input = new SaveAccountingInputData(HpId, request.PtId, UserId, request.SinDate, request.RaiinNo,
-                request.SumAdjust, request.ThisWari, request.Credit, request.PayType, request.Comment, request.IsDisCharged);
+                request.SumAdjust, request.ThisWari, request.Credit, request.PayType, request.Comment, request.IsDisCharged, request.KaikeiTime);
             var output = _bus.Handle(input);
+
+            if (output.Status == SaveAccountingStatus.Success)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.AccountDueChanged,
+                    new CommonMessage { PtId = input.PtId, SinDate = input.SinDate, RaiinNo = 0 });
+            }
 
             var presenter = new SaveAccountingPresenter();
             presenter.Complete(output);

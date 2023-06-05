@@ -19,4 +19,5 @@ public static class FunctionCodes
     public const string SupserSetReorderChanged = "SupserSetReorderChanged";
     public const string SuperCopyPasteChanged = "SuperCopyPasteChanged";
     public const string AccountDueChanged = "AccountDueChanged";
+    public const string DeletePtInfChanged = "DeletePtInfChanged";
 }
