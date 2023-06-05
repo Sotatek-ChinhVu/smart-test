@@ -20,6 +20,7 @@ public class CommonReportingRequest : ICommonReportingRequest
                 VisibleFieldList = GetVisibleFieldData(),
                 WrapFieldList = GetWrapFieldData(),
                 RowCountFieldName = GetRowCountFieldName(),
+                VisibleAtPrint = GetVisibleAtPrint(),
             }
         };
         return result;
@@ -48,6 +49,11 @@ public class CommonReportingRequest : ICommonReportingRequest
     public virtual Dictionary<string, bool> GetVisibleFieldData()
     {
         throw new NotImplementedException();
+    }
+
+    public virtual Dictionary<string, bool> GetVisibleAtPrint()
+    {
+        return new();
     }
 
     public virtual Dictionary<string, string> GetSystemConfigList()
