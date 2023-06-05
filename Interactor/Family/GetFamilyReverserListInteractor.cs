@@ -78,11 +78,11 @@ public class GetFamilyReverserListInteractor : IGetFamilyReverserListInputPort
             {
                 continue;
             }
-            if (item.Sex == 1)
+            if (item.Sex == 2)
             {
                 zokugaraCd = RelationshipReverserMDic[zokugaraCd];
             }
-            else if (item.Sex == 2)
+            else if (item.Sex == 1)
             {
                 zokugaraCd = RelationshipReverserFDic[zokugaraCd];
             }

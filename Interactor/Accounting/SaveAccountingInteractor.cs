@@ -65,7 +65,7 @@ namespace Interactor.Accounting
                 }
 
                 var save = _accountingRepository.SaveAccounting(listAllSyunoSeikyu, listSyunoSeikyu, inputData.HpId, inputData.PtId, inputData.UserId, accDue, inputData.SumAdjust, inputData.ThisWari, inputData.Credit,
-                                                                inputData.PayType, inputData.Comment, inputData.IsDisCharged);
+                                                                inputData.PayType, inputData.Comment, inputData.IsDisCharged, inputData.KaikeiTime);
                 if (save)
                 {
                     return new SaveAccountingOutputData(SaveAccountingStatus.Success);

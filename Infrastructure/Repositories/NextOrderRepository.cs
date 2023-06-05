@@ -1,4 +1,5 @@
-﻿using Domain.Models.NextOrder;
+﻿using Domain.Constant;
+using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.RaiinKubunMst;
 using Entity.Tenant;
@@ -1088,6 +1089,31 @@ namespace Infrastructure.Repositories
                 }
             }
         }
+
+        public bool CheckNextOrdHaveOdr(int hpId, long ptId, int sinDate)
+        {
+            var allRsvkrtMstQuery = NoTrackingDataContext.RsvkrtMsts
+                .Where(mst => mst.HpId == hpId && mst.PtId == ptId && mst.IsDeleted == 0 && mst.RsvkrtKbn == 0 && (mst.RsvDate == sinDate || mst.RsvDate == 99999999));
+
+            IQueryable<RsvkrtOdrInf> allRsvkrtOdrInfQuery;
+            allRsvkrtOdrInfQuery = NoTrackingDataContext.RsvkrtOdrInfs
+                .Where(o => o.HpId == hpId &&
+                                        o.PtId == ptId &&
+                                        (o.RsvDate == sinDate || o.RsvDate == 99999999) &&
+                                        o.OdrKouiKbn >= 13 &&
+                                        o.IsDeleted == DeleteStatus.None);
+
+            var queryRsvkrtMsts = from mst in allRsvkrtMstQuery
+                                  join odr in allRsvkrtOdrInfQuery on mst.RsvkrtNo equals odr.RsvkrtNo into odrs
+                                  orderby mst.RsvDate descending
+                                  select new
+                                  {
+                                      Mst = mst,
+                                      Odrs = odrs,
+                                  };
+            return queryRsvkrtMsts.AsEnumerable().Count(x => x != null && x.Odrs.Any(o => o != null && o.IsDeleted == 0)) > 0;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();
