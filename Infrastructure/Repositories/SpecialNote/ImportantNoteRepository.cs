@@ -1,5 +1,6 @@
 ﻿using Domain.Models.SpecialNote.ImportantNote;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -29,9 +30,9 @@ namespace Infrastructure.Repositories.SpecialNote
                         StartDate = item.StartDate,
                         EndDate = item.EndDate,
                         Cmt = item.Cmt,
-                        CreateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,
-                        UpdateDate = DateTime.UtcNow,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId
                     }
                );

@@ -201,7 +201,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
                 GrpCd = ADOPTED_CONFIRM_CD,
                 UserId = userId,
                 CreateId = userId,
-                CreateDate = DateTime.Now
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
             };
             TrackingDataContext.UserConfs.Add(userConfig);
         }
