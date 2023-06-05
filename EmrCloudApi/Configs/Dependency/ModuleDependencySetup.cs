@@ -739,6 +739,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoAccountingCardFinder, CoAccountingCardFinder>();
             services.AddTransient<IAccountingCardCoReportService, AccountingCardCoReportService>();
             services.AddTransient<IP33KoukiSeikyuCoReportService, P33KoukiSeikyuCoReportService>();
+            services.AddTransient<IP34KoukiSeikyuCoReportService, P34KoukiSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
