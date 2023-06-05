@@ -118,7 +118,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
         return result;
     }
 
-    public bool SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues)
+    public bool SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues, string kaikeiTime)
     {
         var listRaiinNo = listAccountDues.Select(item => item.RaiinNo).ToList();
         var raiinLists = TrackingDataContext.RaiinInfs
@@ -150,7 +150,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
             foreach (var model in listAccountDues)
             {
                 // Update raiin status
-                UpdateStatusRaiin(userId, dateTimeNow, model, raiinLists);
+                UpdateStatusRaiin(userId, dateTimeNow, model, raiinLists, kaikeiTime);
 
                 // Update left table SyunoSeikyu
                 UpdateStatusSyunoSeikyu(userId, dateTimeNow, model, seikyuLists);
@@ -168,7 +168,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
         }
     }
 
-    private void UpdateStatusRaiin(int userId, DateTime dateTimeNow, AccountDueModel model, List<RaiinInf> raiinLists)
+    private void UpdateStatusRaiin(int userId, DateTime dateTimeNow, AccountDueModel model, List<RaiinInf> raiinLists, string kaikeiTime)
     {
         var raiin = raiinLists.FirstOrDefault(item => item.RaiinNo == model.RaiinNo);
         int tempStatus = model.NyukinKbn == 0 ? RaiinState.Waiting : RaiinState.Settled;
@@ -177,7 +177,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
             if (tempStatus != raiin.Status)
             {
                 raiin.Status = tempStatus;
-                raiin.KaikeiTime = CIUtil.DateTimeToTime(dateTimeNow);
+                raiin.KaikeiTime = kaikeiTime;
                 raiin.UpdateDate = dateTimeNow;
                 raiin.UpdateId = userId;
             }
