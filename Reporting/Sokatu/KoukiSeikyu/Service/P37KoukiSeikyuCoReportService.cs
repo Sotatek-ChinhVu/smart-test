@@ -17,7 +17,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service;
 public class P37KoukiSeikyuCoReportService : IP37KoukiSeikyuCoReportService
 {
     #region Constant
-    private const int MyPrefNo = 37;
+    private const int myPrefNo = 37;
     #endregion
 
     #region 
@@ -232,7 +232,7 @@ public class P37KoukiSeikyuCoReportService : IP37KoukiSeikyuCoReportService
     private bool GetData()
     {
         hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
-        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.SumAll);
+        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
         //保険者番号の指定がある場合は絞り込み
         var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
