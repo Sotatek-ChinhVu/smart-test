@@ -58,11 +58,13 @@ public interface IReportService
 
     CommonReportingRequestModel GetMemoMsgReportingData(string reportName, string title, List<string> listMessage);
 
-    CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId);
+    CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt);
 
     CommonReportingRequestModel GetReceTargetPrint(int hpId, int seikyuYm);
 
     CommonReportingRequestModel GetDrugNoteSealPrintData(int hpId, long ptId, int sinDate, long raiinNo);
 
     CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, int raiinNo);
+
+    CommonReportingRequestModel GetAccountingCardReportingData(int hpId, long ptId, int sinYm, int hokenId, bool includeOutDrug);
 }

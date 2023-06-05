@@ -66,10 +66,10 @@ public class ValidateFamilyList : IValidateFamilyList
         {
             return ValidateFamilyListStatus.FamilyNotAllow;
         }
-        else if (onlyFamlilyList.Count(item => listFamilyId.Contains(item.FamilyId)) != listFamilyId.Count)
-        {
-            return ValidateFamilyListStatus.InvalidFamilyId;
-        }
+        // anh.vu3 todo //else if (onlyFamlilyList.Count(item => listFamilyId.Contains(item.FamilyId)) != listFamilyId.Count)
+        //{
+        //    return ValidateFamilyListStatus.InvalidFamilyId;
+        //}
 
         // add item to family if don't exist in input list
         var familyIdNotExistDB = onlyFamlilyList.Select(item => item.FamilyId).Distinct()
@@ -167,12 +167,12 @@ public class ValidateFamilyList : IValidateFamilyList
 
     private ValidateFamilyListStatus ValidateFamilyRekiListInputItem(int hpId, List<FamilyRekiItem> familyRekiList)
     {
-        // validate familyRekiId
-        var listFamilyRekiId = familyRekiList.Where(item => item.Id > 0).Select(item => item.Id).Distinct().ToList();
-        if (!_familyRepository.CheckExistFamilyRekiList(hpId, listFamilyRekiId))
-        {
-            return ValidateFamilyListStatus.InvalidFamilyRekiId;
-        }
+        // anh.vu3 todo // validate familyRekiId
+        //var listFamilyRekiId = familyRekiList.Where(item => item.Id > 0).Select(item => item.Id).Distinct().ToList();
+        //if (!_familyRepository.CheckExistFamilyRekiList(hpId, listFamilyRekiId))
+        //{
+        //    return ValidateFamilyListStatus.InvalidFamilyRekiId;
+        //}
 
         // validate byomei
         var byomeiCdList = familyRekiList.Select(item => item.ByomeiCd).Distinct().ToList();

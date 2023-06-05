@@ -175,7 +175,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPrint)]
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
-        var data = _reportService.GetReceiptPrint(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
+        var data = _reportService.GetReceiptPrint(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt);
         return await RenderPdf(data, ReportType.Common);
     }
 
@@ -204,6 +204,13 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> Yakutai([FromQuery] YakutaiRequest request)
     {
         var data = _reportService.GetYakutaiReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.AccountingCard)]
+    public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
+    {
+        var data = _reportService.GetAccountingCardReportingData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.IncludeOutDrug);
         return await RenderPdf(data, ReportType.Common);
     }
 

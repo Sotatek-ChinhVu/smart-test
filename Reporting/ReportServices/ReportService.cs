@@ -1,6 +1,7 @@
 ﻿using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.Accounting.Service;
+using Reporting.AccountingCard.Service;
 using Reporting.Byomei.Service;
 using Reporting.CommonMasters.Enums;
 using Reporting.DailyStatic.Service;
@@ -54,8 +55,9 @@ public class ReportService : IReportService
     private readonly IReceTargetCoReportService _receTargetCoReportService;
     private readonly IDrugNoteSealCoReportService _drugNoteSealCoReportService;
     private readonly IYakutaiCoReportService _yakutaiCoReportService;
+    private readonly IAccountingCardCoReportService _accountingCardCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -78,6 +80,7 @@ public class ReportService : IReportService
         _receTargetCoReportService = receTargetCoReportService;
         _drugNoteSealCoReportService = drugNoteSealCoReportService;
         _yakutaiCoReportService = yakutaiCoReportService;
+        _accountingCardCoReportService = accountingCardCoReportService;
     }
 
 
@@ -253,9 +256,9 @@ public class ReportService : IReportService
         return _kensaIraiCoReportService.GetKensalraiData(hpId, systemDate, fromDate, toDate, centerCd);
     }
 
-    public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId)
+    public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt)
     {
-        return _receiptPrintService.GetReceiptPrint(hpId, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId);
+        return _receiptPrintService.GetReceiptPrint(hpId, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt);
     }
 
     public CommonReportingRequestModel GetMemoMsgReportingData(string reportName, string title, List<string> listMessage)
@@ -276,5 +279,10 @@ public class ReportService : IReportService
     public CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, int raiinNo)
     {
         return _yakutaiCoReportService.GetYakutaiReportingData(hpId, ptId, sinDate, raiinNo);
+    }
+
+    public CommonReportingRequestModel GetAccountingCardReportingData(int hpId, long ptId, int sinYm, int hokenId, bool includeOutDrug)
+    {
+        return _accountingCardCoReportService.GetAccountingCardReportingData(hpId, ptId, sinYm, hokenId, includeOutDrug);
     }
 }

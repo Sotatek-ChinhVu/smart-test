@@ -13,6 +13,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -85,7 +86,6 @@ namespace Infrastructure.Repositories
                          SortData(ptInfWithLastVisitDate.AsEnumerable(), sortData, pageIndex, pageSize);
             return result;
         }
-
 
         public PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo)
         {
@@ -986,6 +986,25 @@ namespace Infrastructure.Repositories
                     x.IsDeleted))
                 .ToList();
             return listPtKyusei;
+        }
+
+        public PtKyuseiInfModel GetDocumentKyuSeiInf(int hpId, long ptId, int sinDay)
+        {
+            var ptKyusei = NoTrackingDataContext.PtKyuseis.Where(item => item.HpId == hpId
+                                                                         && item.PtId == ptId
+                                                                         && item.EndDate < sinDay
+                                                                         && item.IsDeleted != 1
+                                                           ).OrderByDescending(item => item.EndDate)
+                                                           .FirstOrDefault() ?? new PtKyusei();
+
+            return new PtKyuseiInfModel(
+                       ptKyusei.HpId,
+                       ptKyusei.PtId,
+                       ptKyusei.SeqNo,
+                       ptKyusei.KanaName ?? string.Empty,
+                       ptKyusei.Name ?? string.Empty,
+                       ptKyusei.EndDate,
+                       ptKyusei.IsDeleted);
         }
 
         public bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels, int hpId, int userId)

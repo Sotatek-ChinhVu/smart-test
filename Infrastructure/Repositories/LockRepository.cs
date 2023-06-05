@@ -1,7 +1,5 @@
 ﻿using Domain.Models.Lock;
-using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -147,7 +145,7 @@ namespace Infrastructure.Repositories
             }
             TrackingDataContext.LockInfs.Remove(lockInf);
             TrackingDataContext.SaveChanges();
-            return true; 
+            return true;
         }
 
         public bool RemoveAllLock(int hpId, int userId)
@@ -181,6 +179,40 @@ namespace Infrastructure.Repositories
             lockInf.LockDate = CIUtil.GetJapanDateTimeNow();
             TrackingDataContext.SaveChanges();
             return true;
+        }
+
+        public List<LockModel> GetLockInfo(int hpId, long ptId, List<string> lisFunctionCD_B, int sinDate_B, long raiinNo)
+        {
+            var query =
+            (
+                    from lockInf in NoTrackingDataContext.LockInfs.Where(i => i.HpId == hpId && i.PtId == ptId)
+                    join lockMst in NoTrackingDataContext.LockMsts.Where(m => lisFunctionCD_B.Contains(m.FunctionCdB) && m.IsInvalid == 0)
+            on lockInf.FunctionCd equals lockMst.FunctionCdA
+                    join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted != 1 && u.StartDate <= sinDate_B && sinDate_B <= u.EndDate)
+            on lockInf.UserId equals userMst.UserId
+                    join functionMst in NoTrackingDataContext.FunctionMsts.AsQueryable()
+                    on lockInf.FunctionCd equals functionMst.FunctionCd
+                    where lockInf.RaiinNo == 0 || lockInf.RaiinNo == raiinNo
+                    orderby lockMst.LockLevel, lockMst.LockRange
+                    select new
+                    {
+                        lockInf,
+                        lockMst,
+                        userMst,
+                        functionMst
+                    }
+            )
+            .AsEnumerable().ToList();
+
+            var result = query.Select(x => new LockModel(
+                                                        x.lockInf.UserId,
+                                                        x.userMst.Name ?? string.Empty,
+                                                        x.lockInf.LockDate,
+                                                        x.functionMst.FunctionName ?? string.Empty,
+                                                        x.lockInf.FunctionCd,
+                                                        x.lockMst.LockLevel,
+                                                        x.lockMst.LockRange)).ToList();
+            return result;
         }
     }
 }
