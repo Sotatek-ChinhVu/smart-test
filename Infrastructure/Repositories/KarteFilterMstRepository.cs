@@ -253,7 +253,7 @@ public class KarteFilterMstRepository : RepositoryBase, IKarteFilterMstRepositor
             // ListHokenId
             listOldHokenId = listOldHokenId.Where(x => x.FilterId == item.FilterId).ToList();
             TrackingDataContext.KarteFilterDetails.RemoveRange(listOldHokenId);
-            if (item.KarteFilterDetailModel.ListUserId.Any())
+            if (item.KarteFilterDetailModel.ListHokenId.Any())
             {
                 foreach (var id in item.KarteFilterDetailModel.ListHokenId.Distinct())
                 {

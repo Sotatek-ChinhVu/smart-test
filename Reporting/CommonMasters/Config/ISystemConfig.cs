@@ -50,4 +50,28 @@ public interface ISystemConfig
     string PlanetUserName();
     string PlanetPassword();
     int PlanetType();
+    int YakutaiTaniDsp();
+    int YakutaiOnceAmount();
+    string YakutaiFukuyojiIppokaItemCd();
+    int YakutaiPrintUnit();
+    int YakutaiPaperSize();
+    int YakutaiNaifukuPaperSmallMinValue();
+    int YakutaiNaifukuPaperNormalMinValue();
+    int YakutaiNaifukuPaperBigMinValue();
+    int YakutaiTonpukuPaperSmallMinValue();
+    int YakutaiTonpukuPaperNormalMinValue();
+    int YakutaiTonpukuPaperBigMinValue();
+    int YakutaiGaiyoPaperSmallMinValue();
+    int YakutaiGaiyoPaperNormalMinValue();
+    int YakutaiGaiyoPaperBigMinValue();
+    string YakutaiNaifukuPaperSmallPrinter();
+    string YakutaiNaifukuPaperNormalPrinter();
+    string YakutaiNaifukuPaperBigPrinter();
+    string YakutaiTonpukuPaperSmallPrinter();
+    string YakutaiTonpukuPaperNormalPrinter();
+    string YakutaiTonpukuPaperBigPrinter();
+    string YakutaiGaiyoPaperSmallPrinter();
+    string YakutaiGaiyoPaperNormalPrinter();
+    string YakutaiGaiyoPaperBigPrinter();
+    int HikariDiskIsTotalCnt();
 }

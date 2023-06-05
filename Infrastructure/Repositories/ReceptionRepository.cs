@@ -17,9 +17,9 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public ReceptionModel Get(long raiinNo)
+        public ReceptionModel Get(long raiinNo, bool flag)
         {
-            var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
+            var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo && (!flag || r.IsDeleted == 0));
             var raiinCommentInf = NoTrackingDataContext.RaiinCmtInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
 
             return new ReceptionModel
@@ -118,7 +118,7 @@ namespace Infrastructure.Repositories
                     TantoId = model.TantoId,
                     SyosaisinKbn = model.SyosaisinKbn,
                     JikanKbn = model.JikanKbn,
-                    CreateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId
@@ -180,6 +180,7 @@ namespace Infrastructure.Repositories
 
         public bool Update(ReceptionSaveDto dto, int hpId, int userId)
         {
+            bool resetOyaRaiinNo = false;
             var raiinInf = TrackingDataContext.RaiinInfs
                 .FirstOrDefault(r => r.HpId == hpId
                     && r.PtId == dto.Reception.PtId
@@ -192,6 +193,10 @@ namespace Infrastructure.Repositories
             }
 
             UpdateRaiinInfIfChanged(raiinInf, new ReceptionModel(dto.Reception));
+            if (resetOyaRaiinNo)
+            {
+                ResetOyaRaiinNo(hpId, userId, raiinInf.PtId, raiinInf.RaiinNo);
+            }
             UpsertRaiinCmtInf(raiinInf, dto.ReceptionComment);
             SaveRaiinKbnInfs(raiinInf, dto.KubunInfs);
             // Update insurances and diseases
@@ -216,7 +221,15 @@ namespace Infrastructure.Repositories
                     entity.SanteiKbn != model.SanteiKbn ||
                     entity.HokenPid != model.HokenPid)
                 {
-                    entity.OyaRaiinNo = model.OyaRaiinNo;
+                    if (model.OyaRaiinNo == 0)
+                    {
+                        resetOyaRaiinNo = true;
+                        entity.OyaRaiinNo = entity.RaiinNo;
+                    }
+                    else
+                    {
+                        entity.OyaRaiinNo = model.OyaRaiinNo;
+                    }
                     entity.KaId = model.KaId;
                     entity.UketukeSbt = model.UketukeSbt;
                     entity.UketukeNo = model.UketukeNo;
@@ -227,6 +240,26 @@ namespace Infrastructure.Repositories
                     entity.SanteiKbn = model.SanteiKbn;
                     entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     entity.UpdateId = userId;
+                }
+            }
+
+            void ResetOyaRaiinNo(int hpId, int userId, long ptId, long raiinNo)
+            {
+                var raiinListSameVisit = TrackingDataContext.RaiinInfs.Where(item => item.RaiinNo != raiinNo
+                                                                                     && item.OyaRaiinNo == raiinNo
+                                                                                     && item.PtId == ptId
+                                                                                     && item.HpId == hpId
+                                                                                     && item.IsDeleted == 0
+                                                                      ).ToList();
+                var newOyaRaiinNo = raiinListSameVisit.FirstOrDefault()?.RaiinNo ?? 0;
+                if (raiinListSameVisit.Any() && newOyaRaiinNo > 0)
+                {
+                    foreach (var raiinInf in raiinListSameVisit)
+                    {
+                        raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        raiinInf.UpdateId = userId;
+                        raiinInf.OyaRaiinNo = newOyaRaiinNo;
+                    }
                 }
             }
 
@@ -446,9 +479,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily, int isDeleted = 2)
+        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily, int isDeleted = 2, bool searchSameVisit = false)
         {
-            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue, isGetFamily, isDeleted);
+            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue, isGetFamily, isDeleted, searchSameVisit);
         }
 
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
@@ -578,7 +611,7 @@ namespace Infrastructure.Repositories
             return raininNos.Count == raiinInfCount;
         }
 
-        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue, bool isGetFamily, int isDeleted)
+        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue, bool isGetFamily, int isDeleted, bool searchSameVisit)
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
@@ -610,9 +643,13 @@ namespace Infrastructure.Repositories
             {
                 filteredRaiinInfs = filteredRaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sinDate);
             }
-            if (raiinNo != CommonConstants.InvalidId)
+            if (raiinNo != CommonConstants.InvalidId && !searchSameVisit)
             {
                 filteredRaiinInfs = filteredRaiinInfs.Where(x => x.RaiinNo == raiinNo);
+            }
+            if (searchSameVisit && ptId != CommonConstants.InvalidId)
+            {
+                filteredRaiinInfs = filteredRaiinInfs.Where(item => item.PtId == ptId);
             }
 
             var filteredPtInfs = ptInfs;
@@ -777,6 +814,21 @@ namespace Infrastructure.Repositories
                 r.ptKohi4?.HokenSbtKbn ?? CommonConstants.InvalidId,
                 r.ptKohi4?.Houbetu ?? string.Empty
             )).ToList();
+
+            foreach (var model in models)
+            {
+                var kanaName = model.KanaName?.Replace("　", " ") ?? "";
+                var list = models
+                    .Where(vs => vs.KanaName?.Replace("　", " ") == kanaName && vs.PtId != model.PtId && model.PtNum != vs.PtNum);
+                if (!string.IsNullOrWhiteSpace(kanaName) && list != null && list.Count() > 0)
+                {
+                    model.IsNameDuplicate = true;
+                }
+                else
+                {
+                    model.IsNameDuplicate = false;
+                }
+            }
 
             return models;
         }

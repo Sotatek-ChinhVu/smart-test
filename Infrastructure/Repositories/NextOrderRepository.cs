@@ -1,4 +1,5 @@
-﻿using Domain.Models.NextOrder;
+﻿using Domain.Constant;
+using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.RaiinKubunMst;
 using Entity.Tenant;
@@ -136,7 +137,7 @@ namespace Infrastructure.Repositories
                         rsvkrtNo = oldNextOrder.RsvkrtNo;
                         UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
                         UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
-                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo);
+                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
                     }
                     else
                     {
@@ -146,7 +147,7 @@ namespace Infrastructure.Repositories
                         rsvkrtNo = nextOrderEntity.RsvkrtNo;
                         UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
                         UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
-                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo);
+                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
                     }
                     SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
                 }
@@ -156,7 +157,7 @@ namespace Infrastructure.Repositories
             return rsvkrtNo;
         }
 
-        private void UpsertOrderInf(int userId, long maxRpNo, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels, long rsvkrtNo = 0)
+        private void UpsertOrderInf(int userId, long maxRpNo, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels, long rsvkrtNo = 0, int rsvDate = 0)
         {
             var oldOrderInfs = TrackingDataContext.RsvkrtOdrInfs.Where(o => o.HpId == rsvkrtOrderInfModels.Select(o => o.HpId).Distinct().FirstOrDefault() && o.PtId == rsvkrtOrderInfModels.Select(o => o.PtId).Distinct().FirstOrDefault() && o.RsvkrtNo == rsvkrtNo && o.IsDeleted == DeleteTypes.None);
 
@@ -179,6 +180,7 @@ namespace Infrastructure.Repositories
                         oldOrderInf.IsDeleted = DeleteTypes.Deleted;
                         oldOrderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         oldOrderInf.CreateId = userId;
+                        orderInf.ChangeDate(rsvDate);
                         var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, oldOrderInf.RpNo, orderInf, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1);
                         TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
                         var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(oldOrderInf.RpNo, od, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1));
@@ -187,6 +189,7 @@ namespace Infrastructure.Repositories
                     else
                     {
                         maxRpNo++;
+                        orderInf.ChangeDate(rsvDate);
                         var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, maxRpNo, orderInf, rsvkrtNo);
                         TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
                         var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInfEntity.RpNo, od, rsvkrtNo));
@@ -246,12 +249,17 @@ namespace Infrastructure.Repositories
 
         private void UpsertByomei(int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
         {
-            var allOldByomeis = NoTrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.HpId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && o.RsvkrtNo == rsvkrtNo).ToList();
+            var allOldByomeis = TrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.HpId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && o.RsvkrtNo == rsvkrtNo).ToList();
             var oldByomeis = allOldByomeis.Where(o => o.IsDeleted == DeleteTypes.None);
             var maxSeqNo = allOldByomeis.Count > 0 ? allOldByomeis.Max(a => a.SeqNo) : 0;
             foreach (var byomei in byomeis)
             {
-                var oldByomei = oldByomeis.FirstOrDefault(o => o.HpId == byomei.HpId && o.PtId == byomei.PtId && o.RsvkrtNo == rsvkrtNo && o.IsDeleted == DeleteTypes.None);
+                var oldByomei = oldByomeis.FirstOrDefault(item => item.HpId == byomei.HpId
+                                                                  && item.PtId == byomei.PtId
+                                                                  && item.RsvkrtNo == rsvkrtNo
+                                                                  && item.IsDeleted == DeleteTypes.None
+                                                                  && item.SeqNo == byomei.SeqNo);
+
                 if (byomei.IsDeleted == DeleteTypes.Deleted)
                 {
                     if (oldByomei != null)
@@ -265,7 +273,6 @@ namespace Infrastructure.Repositories
                 {
                     if (oldByomei != null)
                     {
-                        oldByomei.SeqNo = byomei.SeqNo;
                         oldByomei.ByomeiCd = byomei.ByomeiCd;
                         oldByomei.SyusyokuCd1 = byomei.PrefixSuffixList.FirstOrDefault()?.Code ?? string.Empty;
                         oldByomei.SyusyokuCd2 = byomei.PrefixSuffixList.Skip(1).FirstOrDefault()?.Code ?? string.Empty;
@@ -306,8 +313,6 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
-
-            //TrackingDataContext.SaveChanges();
         }
 
         private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei, List<ByomeiMst> byomeiMsts)
@@ -1084,6 +1089,31 @@ namespace Infrastructure.Repositories
                 }
             }
         }
+
+        public bool CheckNextOrdHaveOdr(int hpId, long ptId, int sinDate)
+        {
+            var allRsvkrtMstQuery = NoTrackingDataContext.RsvkrtMsts
+                .Where(mst => mst.HpId == hpId && mst.PtId == ptId && mst.IsDeleted == 0 && mst.RsvkrtKbn == 0 && (mst.RsvDate == sinDate || mst.RsvDate == 99999999));
+
+            IQueryable<RsvkrtOdrInf> allRsvkrtOdrInfQuery;
+            allRsvkrtOdrInfQuery = NoTrackingDataContext.RsvkrtOdrInfs
+                .Where(o => o.HpId == hpId &&
+                                        o.PtId == ptId &&
+                                        (o.RsvDate == sinDate || o.RsvDate == 99999999) &&
+                                        o.OdrKouiKbn >= 13 &&
+                                        o.IsDeleted == DeleteStatus.None);
+
+            var queryRsvkrtMsts = from mst in allRsvkrtMstQuery
+                                  join odr in allRsvkrtOdrInfQuery on mst.RsvkrtNo equals odr.RsvkrtNo into odrs
+                                  orderby mst.RsvDate descending
+                                  select new
+                                  {
+                                      Mst = mst,
+                                      Odrs = odrs,
+                                  };
+            return queryRsvkrtMsts.AsEnumerable().Count(x => x != null && x.Odrs.Any(o => o != null && o.IsDeleted == 0)) > 0;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();

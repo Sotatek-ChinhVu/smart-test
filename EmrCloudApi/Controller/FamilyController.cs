@@ -122,7 +122,8 @@ public class FamilyController : AuthorizeControllerBase
                                                                                                        reki.Cmt,
                                                                                                        reki.SortNo,
                                                                                                        reki.IsDeleted))
-                                                                                   .ToList()))
+                                                                                   .ToList(),
+                                                            family.IsRevertItem))
                                       .ToList();
         return result;
     }
