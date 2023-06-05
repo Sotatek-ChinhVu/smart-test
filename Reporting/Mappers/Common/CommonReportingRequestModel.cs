@@ -77,6 +77,9 @@ namespace Reporting.Mappers.Common
         [JsonPropertyName("visibleFieldList")]
         public Dictionary<string, bool> VisibleFieldList { get; set; } = new Dictionary<string, bool>();
 
+        [JsonPropertyName("visibleAtPrint")]
+        public Dictionary<string, bool> VisibleAtPrint { get; set; } = new Dictionary<string, bool>();
+
         [JsonPropertyName("wrapFieldList")]
         public Dictionary<string, bool> WrapFieldList { get; set; } = new Dictionary<string, bool>();
     }
