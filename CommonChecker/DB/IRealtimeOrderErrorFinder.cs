@@ -2,42 +2,70 @@
 {
     public interface IRealtimeOrderErrorFinder
     {
-        public bool IsNoMasterData();
+        bool IsNoMasterData();
 
-        public string FindItemName(string yjCd, int sinday);
+        string FindItemName(string yjCd, int sinday);
 
-        public string FindComponentName(string conponentCode);
+        Dictionary<string, string> FindItemNameDic(List<string> yjCdList, int sinday);
 
-        public string FindAnalogueName(string analogueCode);
+        string FindComponentName(string conponentCode);
 
-        public string FindDrvalrgyName(string drvalrgyCode);
+        Dictionary<string, string> FindComponentNameDic(List<string> conponentCodeList);
 
-        public string FindItemNameByItemCode(string itemCd, int sinday);
+        string FindAnalogueName(string analogueCode);
 
-        public string FindFoodName(string foodCode);
+        Dictionary<string, string> FindAnalogueNameDic(List<string> analogueCodeList);
 
-        public string FindAgeComment(string commentCode);
+        string FindDrvalrgyName(string drvalrgyCode);
 
-        public string FindDiseaseName(string byotaiCd);
+        Dictionary<string, string> FindDrvalrgyNameDic(List<string> drvalrgyCodeList);
 
-        public string FindDiseaseComment(string commentCode);
+        string FindItemNameByItemCode(string itemCd, int sinday);
 
-        public string FindOTCItemName(int serialNum);
+        Dictionary<string, string> FindItemNameByItemCodeDic(List<string> itemCdList, int sinday);
 
-        public string FindKinkiComment(string commentCode);
+        string FindFoodName(string foodCode);
 
-        public string FindKijyoComment(string commentCode);
+        Dictionary<string, string> FindFoodNameDic(List<string> foodCodeList);
 
-        public string FindSuppleItemName(string seibunCd);
+        string FindAgeComment(string commentCode);
 
-        public string GetOTCComponentInfo(string seibunCd);
+        string FindDiseaseName(string byotaiCd);
 
-        public string GetSupplementComponentInfo(string seibunCd);
+        Dictionary<string, string> FindDiseaseNameDic(List<string> byotaiCdList);
 
-        public string FindClassName(string classCd);
+        string FindDiseaseComment(string commentCode);
 
-        public string FindIppanNameByIppanCode(string ippanCode);
+        string FindOTCItemName(int serialNum);
 
-        public string GetUsageDosage(string yjCd);
+        Dictionary<string, string> FindOTCItemNameDic(List<string> serialNumList);
+
+        string FindKinkiComment(string commentCode);
+
+        Dictionary<string, string> FindKinkiCommentDic(List<string> commentCodeList);
+
+        string FindKijyoComment(string commentCode);
+
+        Dictionary<string, string> FindKijyoCommentDic(List<string> commentCodeList);
+
+        string FindSuppleItemName(string seibunCd);
+
+        Dictionary<string, string> FindSuppleItemNameDic(List<string> seibunCdList);
+
+        string GetOTCComponentInfo(string seibunCd);
+
+        Dictionary<string, string> GetOTCComponentInfoDic(List<string> seibunCdList);
+
+        string GetSupplementComponentInfo(string seibunCd);
+
+        Dictionary<string, string> GetSupplementComponentInfoDic(List<string> seibunCdList);
+
+        string FindClassName(string classCd);
+
+        string FindIppanNameByIppanCode(string ippanCode);
+
+        string GetUsageDosage(string yjCd);
+
+        Dictionary<string, string> GetUsageDosageDic(List<string> yjCdList);
     }
 }
