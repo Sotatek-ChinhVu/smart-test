@@ -56,7 +56,7 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
                                                                     s.KbnCd,
                                                                     s.SortKbn))
                                                                     .ToList()
-                                    )).OrderBy( x => x.SortNo).ToList();
+                                    )).OrderBy( x => x.ColumnSortInfos.OrderBy(x => x.Priority)).ToList();
     }
 
     public int GetTantoId(long ptId, int sinDate, long raiinNo)

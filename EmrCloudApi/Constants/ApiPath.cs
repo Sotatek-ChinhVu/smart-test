@@ -111,6 +111,7 @@
         public const string GetPatientInfoBetweenTimesList = "GetPatientInfoBetweenTimesList";
         public const string SearchPatientInfoByPtNum = "SearchPatientInfoByPtNum";
         public const string GetTokkiMstList = "GetTokkiMstList";
+        public const string DeletePatientInfo = "DeletePatientInfo";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
