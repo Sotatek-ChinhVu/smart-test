@@ -131,7 +131,46 @@ public class InitKbnSettingTest : BaseUT
         {
             return false;
         }
-
+        else if (raiinKbnDetailModel.HpId == raiinKbnDetail.HpId)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.GrpCd == raiinKbnDetail.GrpCd)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.KbnCd == raiinKbnDetail.KbnCd)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.SortNo == raiinKbnDetail.SortNo)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.KbnName == raiinKbnDetail.KbnName)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.ColorCd == raiinKbnDetail.ColorCd)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.IsConfirmed == raiinKbnDetail.IsConfirmed)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.IsAuto == raiinKbnDetail.IsAuto)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.IsAutoDelete == raiinKbnDetail.IsAutoDelete)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.IsDeleted == raiinKbnDetail.IsDeleted)
+        {
+            return false;
+        }
         return true;
     }
 }
