@@ -593,6 +593,7 @@ using Reporting.Sokatu.AfterCareSeikyu.DB;
 using Reporting.Sijisen.DB;
 using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.Syaho.DB;
+using Interactor.SetMst.CommonSuperSet;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -836,6 +837,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoKensaIraiFinder, CoKensaIraiFinder>();
             services.AddTransient<ISortPatientCommon, SortPatientCommon>();
             services.AddTransient<IRaiinListSettingRepository, RaiinListSettingRepository>();
+            services.AddTransient<ICommonSuperSet, CommonSuperSet>();
         }
 
         private void SetupUseCase(IServiceCollection services)
