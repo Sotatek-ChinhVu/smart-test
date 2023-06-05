@@ -3,7 +3,9 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
+using Domain.Models.PtGroupMst;
 using EmrCloudApi.Constants;
+using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.CalculationInf;
 using EmrCloudApi.Presenters.GroupInf;
 using EmrCloudApi.Presenters.HokenMst;
@@ -11,18 +13,21 @@ using EmrCloudApi.Presenters.Insurance;
 using EmrCloudApi.Presenters.InsuranceList;
 using EmrCloudApi.Presenters.InsuranceMst;
 using EmrCloudApi.Presenters.KohiHokenMst;
+using EmrCloudApi.Presenters.MaxMoney;
 using EmrCloudApi.Presenters.PatientInfor;
 using EmrCloudApi.Presenters.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Presenters.PatientInfor.PtKyusei;
 using EmrCloudApi.Presenters.PatientInformation;
 using EmrCloudApi.Presenters.PtGroupMst;
 using EmrCloudApi.Presenters.SwapHoken;
+using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.CalculationInf;
 using EmrCloudApi.Requests.GroupInf;
 using EmrCloudApi.Requests.HokenMst;
 using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Requests.InsuranceMst;
 using EmrCloudApi.Requests.KohiHokenMst;
+using EmrCloudApi.Requests.MaxMoney;
 using EmrCloudApi.Requests.PatientInfor;
 using EmrCloudApi.Requests.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Requests.PatientInfor.PtKyuseiInf;
@@ -35,6 +40,7 @@ using EmrCloudApi.Responses.HokenMst;
 using EmrCloudApi.Responses.Insurance;
 using EmrCloudApi.Responses.InsuranceMst;
 using EmrCloudApi.Responses.KohiHokenMst;
+using EmrCloudApi.Responses.MaxMoney;
 using EmrCloudApi.Responses.PatientInfor;
 using EmrCloudApi.Responses.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Responses.PatientInfor.PtKyuseiInf;
@@ -42,7 +48,14 @@ using EmrCloudApi.Responses.PatientInformaiton;
 using EmrCloudApi.Responses.PtGroupMst;
 using EmrCloudApi.Responses.SwapHoken;
 using EmrCloudApi.Services;
+using EmrCloudApi.Tenant.Presenters.PatientInfor;
+using EmrCloudApi.Tenant.Requests.PatientInfor;
+using EmrCloudApi.Tenant.Responses.PatientInfor;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Text;
 using UseCase.CalculationInf;
 using UseCase.Core.Sync;
 using UseCase.GroupInf.GetList;
@@ -59,43 +72,30 @@ using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.GetHokenSyaMst;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.KohiHokenMst.Get;
+using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
+using UseCase.PatientInfor.GetListPatient;
+using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
+using UseCase.PatientInfor.GetTokiMstList;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.Save;
 using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
+using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
+using UseCase.PtGroupMst.CheckAllowDelete;
+using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.SearchHokensyaMst.Get;
-using UseCase.SwapHoken.Save;
-using EmrCloudApi.Tenant.Responses.PatientInfor;
-using EmrCloudApi.Tenant.Requests.PatientInfor;
-using UseCase.PatientInfor.GetListPatient;
-using EmrCloudApi.Tenant.Presenters.PatientInfor;
-using Domain.Models.PtGroupMst;
-using EmrCloudApi.Responses.MaxMoney;
-using EmrCloudApi.Requests.MaxMoney;
-using UseCase.MaxMoney.GetMaxMoneyByPtId;
-using EmrCloudApi.Presenters.MaxMoney;
-using UseCase.SwapHoken.Validate;
-using EmrCloudApi.Realtime;
-using EmrCloudApi.Messages;
-using UseCase.PtGroupMst.GetGroupNameMst;
-using UseCase.PtGroupMst.CheckAllowDelete;
-using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
-using Newtonsoft.Json;
-using UseCase.PatientInfor.SearchPatientInfoByPtNum;
-using UseCase.PatientInfor.GetTokiMstList;
-using Helper.Messaging.Data;
-using System.Text;
-using Helper.Messaging;
 using UseCase.SwapHoken.Calculation;
+using UseCase.SwapHoken.Save;
+using UseCase.SwapHoken.Validate;
 
 namespace EmrCloudApi.Controller
 {
@@ -256,18 +256,18 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.ValidateKohi)]
         public ActionResult<Response<ValidateKohiResponse>> ValidateOneKohi([FromBody] ValidateKohiRequest request)
         {
-            var input = new ValidKohiInputData(request.SinDate, 
-                                               request.PtBirthday, 
-                                               request.IsKohiEmptyModel, 
-                                               request.IsSelectedKohiMst, 
-                                               request.SelectedKohiFutansyaNo, 
+            var input = new ValidKohiInputData(request.SinDate,
+                                               request.PtBirthday,
+                                               request.IsKohiEmptyModel,
+                                               request.IsSelectedKohiMst,
+                                               request.SelectedKohiFutansyaNo,
                                                request.SelectedKohiJyukyusyaNo,
-                                               request.SelectedKohiTokusyuNo, 
-                                               request.SelectedKohiStartDate, 
+                                               request.SelectedKohiTokusyuNo,
+                                               request.SelectedKohiStartDate,
                                                request.SelectedKohiEndDate,
                                                request.SelectedKohiConfirmDate,
                                                request.SelectedKohiHokenNo,
-                                               request.SelectedKohiIsAddNew, 
+                                               request.SelectedKohiIsAddNew,
                                                request.SelectedHokenPatternIsExpirated,
                                                request.KohiMasterIsFutansyaNoCheck,
                                                request.KohiMasterIsJyukyusyaNoCheck,
@@ -636,11 +636,18 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SavePatientInfoResponse>>(presenter.Result);
         }
 
-        [HttpPost("DeletePatientInfo")]
-        public ActionResult<Response<DeletePatientInfoResponse>> DeletePatientInfo([FromBody] DeletePatientInfoRequest request)
+        [HttpPost(ApiPath.DeletePatientInfo)]
+        public async Task<ActionResult<Response<DeletePatientInfoResponse>>> DeletePatientInfo([FromBody] DeletePatientInfoRequest request)
         {
             var input = new DeletePatientInfoInputData(HpId, request.PtId, UserId);
             var output = _bus.Handle(input);
+
+            if (output.Status == DeletePatientInfoStatus.Successful)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.DeletePtInfChanged,
+                    new CommonMessage { PtId = input.PtId, SinDate = 0, RaiinNo = 0 });
+            }
+
             var presenter = new DeletePatientInfoPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<DeletePatientInfoResponse>>(presenter.Result);

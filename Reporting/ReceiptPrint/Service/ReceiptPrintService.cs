@@ -26,8 +26,12 @@ public class ReceiptPrintService : IReceiptPrintService
     private readonly IP29KoukiSeikyuCoReportService _p29KoukiSeikyuCoReportService;
     private readonly IAfterCareSeikyuCoReportService _afterCareSeikyuCoReportService;
     private readonly ISyahoCoReportService _syahoCoReportService;
+    private readonly IP33KoukiSeikyuCoReportService _p33KoukiSeikyuCoReportService;
+    private readonly IP34KoukiSeikyuCoReportService _p34KoukiSeikyuCoReportService;
+    private readonly IP35KoukiSeikyuCoReportService _p35KoukiSeikyuCoReportService;
     private readonly IP44KoukiSeikyuCoReportService _p44KoukiSeikyuCoReportService;
 
+    public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService, IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService, IHikariDiskCoReportService hikariDiskCoReportService, IP28KoukiSeikyuCoReportService p28KoukiSeikyuCoReportService, IP29KoukiSeikyuCoReportService p29KoukiSeikyuCoReportService, IAfterCareSeikyuCoReportService afterCareSeikyuCoReportService, ISyahoCoReportService syahoCoReportService, IP33KoukiSeikyuCoReportService p33KoukiSeikyuCoReportService, IP34KoukiSeikyuCoReportService p34KoukiSeikyuCoReportService, IP35KoukiSeikyuCoReportService p35KoukiSeikyuCoReportService)
     public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService, IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService, IHikariDiskCoReportService hikariDiskCoReportService, IP28KoukiSeikyuCoReportService p28KoukiSeikyuCoReportService, IP29KoukiSeikyuCoReportService p29KoukiSeikyuCoReportService, IAfterCareSeikyuCoReportService afterCareSeikyuCoReportService, ISyahoCoReportService syahoCoReportService, IP44KoukiSeikyuCoReportService p44KoukiSeikyuCoReportService)
     {
         _p28KokhoSokatuCoReportService = p28KokhoSokatuCoReportService;
@@ -37,6 +41,9 @@ public class ReceiptPrintService : IReceiptPrintService
         _p29KoukiSeikyuCoReportService = p29KoukiSeikyuCoReportService;
         _afterCareSeikyuCoReportService = afterCareSeikyuCoReportService;
         _syahoCoReportService = syahoCoReportService;
+        _p33KoukiSeikyuCoReportService = p33KoukiSeikyuCoReportService;
+        _p34KoukiSeikyuCoReportService = p34KoukiSeikyuCoReportService;
+        _p35KoukiSeikyuCoReportService = p35KoukiSeikyuCoReportService;
         _p44KoukiSeikyuCoReportService = p44KoukiSeikyuCoReportService;
     }
 
@@ -72,6 +79,18 @@ public class ReceiptPrintService : IReceiptPrintService
         else if (reportId == 101 && reportEdaNo == 0)
         {
             return _syahoCoReportService.GetSyahoPrintData(hpId, seikyuYm, GetSeikyuType(dataKbn));
+        }
+        else if (reportId == 104 && reportEdaNo == 0)
+        {
+            return _p33KoukiSeikyuCoReportService.GetP33KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
+        }
+        else if (reportId == 104 && reportEdaNo == 0)
+        {
+            return _p34KoukiSeikyuCoReportService.GetP34KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
+        }
+        else if (reportId == 104 && reportEdaNo == 0)
+        {
+            return _p35KoukiSeikyuCoReportService.GetP35KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
         }
         else if (reportId == 104 && reportEdaNo == 0)
         {
