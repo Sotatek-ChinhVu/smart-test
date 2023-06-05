@@ -1,5 +1,5 @@
 ﻿using Domain.Models.SetMst;
-using Helper.Constants;
+using Interactor.SetMst.CommonSuperSet;
 using UseCase.SetMst.ReorderSetMst;
 
 namespace Interactor.SetMst;
@@ -7,9 +7,11 @@ namespace Interactor.SetMst;
 public class ReorderSetMstInteractor : IReorderSetMstInputPort
 {
     private readonly ISetMstRepository _setMstRepository;
-    public ReorderSetMstInteractor(ISetMstRepository setMstRepository)
+    private readonly ICommonSuperSet _commonSuperSet;
+    public ReorderSetMstInteractor(ISetMstRepository setMstRepository, ICommonSuperSet commonSuperSet)
     {
         _setMstRepository = setMstRepository;
+        _commonSuperSet = commonSuperSet;
     }
     public ReorderSetMstOutputData Handle(ReorderSetMstInputData reorderSetMstInputData)
     {
@@ -27,9 +29,10 @@ public class ReorderSetMstInteractor : IReorderSetMstInputPort
         }
         try
         {
-            if (_setMstRepository.ReorderSetMst(reorderSetMstInputData.UserId, reorderSetMstInputData.HpId, reorderSetMstInputData.DragSetCd, reorderSetMstInputData.DropSetCd))
+            var result = _setMstRepository.ReorderSetMst(reorderSetMstInputData.UserId, reorderSetMstInputData.HpId, reorderSetMstInputData.DragSetCd, reorderSetMstInputData.DropSetCd);
+            if (result.status)
             {
-                return new ReorderSetMstOutputData(ReorderSetMstStatus.Successed);
+                return new ReorderSetMstOutputData(_commonSuperSet.BuildTreeSetKbn(result.setMstModels), ReorderSetMstStatus.Successed);
             }
             return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
         }

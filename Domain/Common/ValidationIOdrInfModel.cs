@@ -415,6 +415,12 @@ namespace Domain.Common
                 var bunkatuItem = odrInf.OrdInfDetails?.FirstOrDefault(i => i.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu);
                 if (bunkatuItem != null)
                 {
+                    if (string.IsNullOrEmpty(bunkatuItem?.Bunkatu))
+                    {
+                        var bunkatuIndex = odrInf.OrdInfDetails?.FindIndex(od => od == bunkatuItem) ?? 0;
+                        return new(bunkatuIndex.ToString(), OrdInfValidationStatus.InvalidBunkatuNoInput);
+                    }
+
                     var usageItem = odrInf.OrdInfDetails?.FirstOrDefault(item => item.IsStandardUsage);
 
                     if (usageItem == null)
@@ -425,12 +431,12 @@ namespace Domain.Common
                     }
 
                     var sumBukatu = odrInf.SumBunkatu(bunkatuItem?.Bunkatu ?? string.Empty);
-
+                    
                     if (usageItem.Suryo != sumBukatu)
                     {
-                        var usageIndex = odrInf.OrdInfDetails?.FindIndex(od => od == usageItem) ?? 0;
+                        var bunkatuIndex = odrInf.OrdInfDetails?.FindIndex(od => od == bunkatuItem) ?? 0;
 
-                        return new(usageIndex.ToString(), OrdInfValidationStatus.InvalidSumBunkatuDifferentSuryo);
+                        return new(bunkatuIndex.ToString(), OrdInfValidationStatus.InvalidSumBunkatuDifferentSuryo);
                     }
                 }
             }
