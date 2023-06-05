@@ -1,11 +1,7 @@
 ﻿using CloudUnitTest.SampleData;
 using Domain.Models.Santei;
 using Entity.Tenant;
-using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Moq;
-using PostgreDataContext;
 
 namespace CloudUnitTest.Repository.Santei;
 
