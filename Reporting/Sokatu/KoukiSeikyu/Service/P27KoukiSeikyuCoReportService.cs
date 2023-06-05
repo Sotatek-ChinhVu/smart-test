@@ -39,7 +39,7 @@ public class P27KoukiSeikyuCoReportService : IP27KoukiSeikyuCoReportService
     private int _hpId;
     private int _seikyuYm;
     private SeikyuType _seikyuType;
-    private PrefKbn prefKbn;
+    private PrefKbn _prefKbn;
     private List<string> printHokensyaNos;
     #endregion
 
@@ -70,6 +70,7 @@ public class P27KoukiSeikyuCoReportService : IP27KoukiSeikyuCoReportService
         _hpId = hpId;
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
+        _prefKbn = prefKbn;
         var getData = GetData();
         if (_seikyuYm >= 202210)
         {
@@ -129,7 +130,7 @@ public class P27KoukiSeikyuCoReportService : IP27KoukiSeikyuCoReportService
             SetFieldData("reportMonth", wrkYmd.Month.ToString());
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //保険者
-            if (prefKbn == PrefKbn.PrefOut)
+            if (_prefKbn == PrefKbn.PrefOut)
             {
                 SetFieldData("hokensyaName", hokensyaNames.Find(h => h.HokensyaNo == _currentHokensyaNo)?.Name ?? "");
                 fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.ToString());
@@ -187,7 +188,7 @@ public class P27KoukiSeikyuCoReportService : IP27KoukiSeikyuCoReportService
                 int menjyoCnt = curReceInfs.Where(r => new int[] { GenmenKbn.Gengaku, GenmenKbn.Menjyo, GenmenKbn.Yuyo }.Contains(r.GenmenKbn)).Count();
                 SetFieldData("menjyoCnt", menjyoCnt.ToString());
 
-                if (prefKbn == PrefKbn.PrefIn)
+                if (_prefKbn == PrefKbn.PrefIn)
                 {
                     //「他」欄
                     int prefOutKohiCnt = curReceInfs.Where(r => r.IsPrefOutKohi).Count();
@@ -256,7 +257,7 @@ public class P27KoukiSeikyuCoReportService : IP27KoukiSeikyuCoReportService
     private bool GetData()
     {
         hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
-        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, prefKbn, MyPrefNo, HokensyaNoKbn.NoSum);
+        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, _prefKbn, MyPrefNo, HokensyaNoKbn.NoSum);
         //保険者番号の指定がある場合は絞り込み
         var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
