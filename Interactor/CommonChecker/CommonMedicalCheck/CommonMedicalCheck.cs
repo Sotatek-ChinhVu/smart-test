@@ -336,7 +336,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckAge(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckAge(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> ageChecker =
            new AgeChecker<OrdInfoModel, OrdInfoDetailModel>()
