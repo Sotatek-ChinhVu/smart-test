@@ -52,7 +52,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setMstModelList;
     }
 
-    public IEnumerable<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, int generationId, string textSearch)
+    public List<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, int generationId, string textSearch)
     {
         if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
         {
@@ -495,7 +495,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     public List<SetMstModel> PasteSetMst(int hpId, int userId, int generationId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int copySetKbnEdaNo, int copySetKbn, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
         var setCd = 0;
-        List<SetMstModel> setMstModels = new();
+        List<SetMstModel> setMstModels;
         if (pasteSetKbnEdaNo <= 0 && pasteSetKbn <= 0)
         {
             return new();
@@ -517,7 +517,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         {
             var setMsts = ReloadCache(1);
             var rootSet = setMsts.FirstOrDefault(s => s.SetCd == setCd);
-            setMstModels = setMsts.Where(s => s.HpId == rootSet?.HpId && s.SetKbn == rootSet.SetKbn && s.SetKbnEdaNo == rootSet.SetKbnEdaNo && s.GenerationId == rootSet.GenerationId && (rootSet.Level1 == 0 || (rootSet.Level1 > 0 && s.Level1 == rootSet.Level1)) && (rootSet.Level2 == 0 || (rootSet.Level2 > 0 && s.Level2 == rootSet.Level2)) && (rootSet.Level3 == 0 || (rootSet.Level3 > 0 && s.Level3 == rootSet.Level3))).ToList();
+            setMstModels = setMsts.Where(s => s.HpId == rootSet?.HpId && s.SetKbn == rootSet.SetKbn && s.SetKbnEdaNo == rootSet.SetKbnEdaNo && s.GenerationId == rootSet.GenerationId && (rootSet.Level1 == 0 || (rootSet.Level1 > 0 && s.Level1 == rootSet.Level1))).ToList();
         }
 
         return setMstModels;
@@ -765,7 +765,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             }
                         }
                         AddNewItemToSave(userId, listCopySetCds, dictionarySetMstMap);
-
+                        TrackingDataContext.SaveChanges();
                         // Set level for item
                         try
                         {
