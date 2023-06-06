@@ -12,7 +12,7 @@ public static class ReadDataInitKbnSetting
         var rootPath = Environment.CurrentDirectory;
         rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
 
-        string fileName = Path.Combine(rootPath, "SampleData", "DataInitKbnSetting1.xlsx");
+        string fileName = Path.Combine(rootPath, "SampleData", "DataInitKbnSetting.xlsx");
         var raiinKbnMstList = new List<RaiinKbnMst>();
         using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
         {
