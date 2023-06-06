@@ -72,10 +72,15 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
         var getData = GetData();
         hasNextPage = true;
 
-        while (getData && hasNextPage)
+        for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
         {
-            UpdateDrawForm();
-            currentPage++;
+            curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
+            if (curReceInfs.Count() == 0) continue;
+            while (getData && hasNextPage)
+            {
+                UpdateDrawForm(prefCnt);
+                currentPage++;
+            }
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
@@ -83,7 +88,7 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
         return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
     #region Private function
-    private bool UpdateDrawForm()
+    private bool UpdateDrawForm(int prefCnt)
     {
         #region SubMethod
 
@@ -169,7 +174,6 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
                 kokhoIndex++;
                 if (kokhoIndex >= kokhoNos.Count)
                 {
-                    _listTextData.Add(pageIndex, listDataPerPage);
                     kokhoNextPage = false;
                     break;
                 }
@@ -191,7 +195,6 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
 
             if (kokhoNos.Count == 0 && koukiNos.Count == 0)
             {
-                _listTextData.Add(pageIndex, listDataPerPage);
                 hasNextPage = false;
                 return 1;
             }
@@ -226,7 +229,8 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
                         koukiSubTotals[rowNo].Count += wrkData.Count;
                         //点数
                         wrkData.Tensu = wrkReces.Sum(r => r.Tensu);
-                        listDataPerPage.Add(new(string.Format("koukiTensu{0}", colNo), 0, rowNo, wrkData.Tensu.ToString()));
+                            listDataPerPage.Add(new(string.Format("koukiTensu{0}", colNo), 0, rowNo, wrkData.Tensu.ToString()));
+
                         koukiSubTotals[rowNo].Tensu += wrkData.Tensu;
                     }
                 }
@@ -234,7 +238,6 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
                 koukiIndex++;
                 if (koukiIndex >= koukiNos.Count)
                 {
-                    _listTextData.Add(pageIndex, listDataPerPage);
                     koukiNextPage = false;
                     break;
                 }
@@ -248,15 +251,23 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
 
             if (!kokhoNextPage && !koukiNextPage)
             {
-                SetFieldData("kokhoTotalCount", curReceInfs.Count(r => r.IsNrAll || r.IsRetAll).ToString());
-                SetFieldData("kokhoTotalTensu", curReceInfs.Where(r => r.IsNrAll).Sum(r => r.Tensu).ToString());
-                SetFieldData("koukiTotalCount", curReceInfs.Count(r => r.IsKoukiAll).ToString());
-                SetFieldData("koukiTotalTensu", curReceInfs.Where(r => r.IsKoukiAll).Sum(r => r.Tensu).ToString());
+                pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                Dictionary<string, string> fieldDataPerPage = _singleFieldDataM.ContainsKey(pageIndex) ? _singleFieldDataM[pageIndex] : new();
 
+                fieldDataPerPage.Add("kokhoTotalCount", curReceInfs.Count(r => r.IsNrAll || r.IsRetAll).ToString());
+                fieldDataPerPage.Add("kokhoTotalTensu", curReceInfs.Where(r => r.IsNrAll).Sum(r => r.Tensu).ToString());
+                fieldDataPerPage.Add("koukiTotalCount", curReceInfs.Count(r => r.IsKoukiAll).ToString());
+                fieldDataPerPage.Add("koukiTotalTensu", curReceInfs.Where(r => r.IsKoukiAll).Sum(r => r.Tensu).ToString());
+
+                if (!_singleFieldDataM.ContainsKey(pageIndex))
+                {
+                    _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+                }
                 hasNextPage = false;
             }
             #endregion
             _listTextData.Add(pageIndex, listDataPerPage);
+
             return 1;
         }
         #endregion
