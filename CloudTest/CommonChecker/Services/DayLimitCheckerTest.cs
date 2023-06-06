@@ -67,13 +67,17 @@ namespace CloudUnitTest.CommonChecker.Services
             Assert.True(!result.ErrorOrderList.Any());
         }
 
+        /// <summary>
+        ///Test Order with IsDrugUsage is false
+        ///YohoKbn <= 0 and ItemCd != ItemCdConst.TouyakuChozaiNaiTon || ItemCd != ItemCdConst.TouyakuChozaiGai  -> !IsDrugUsage
+        /// </summary>
         [Test]
-        public void CheckDayLitmit_003_WhenCheckingOderWithOdrKouiKbnIs21()
+        public void CheckDayLitmit_003_WhenCheckingOderWithOdrHasIsDrugUsageIsFalse()
         {
             //Setup
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
-                new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+                new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 0, "", "", "", 1),
             };
 
             var odrInfoModel = new List<OrdInfoModel>();
