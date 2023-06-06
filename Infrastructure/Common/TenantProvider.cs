@@ -35,7 +35,7 @@ namespace Infrastructure.CommonDB
             }
 
             var domainList = _configuration.GetSection("DomainList");
-            if (domainList == null || domainList.Key.Contains(clientDomain))
+            if (domainList == null || !domainList.Key.Contains(clientDomain))
             {
                 return dbSample;
             }
