@@ -21,7 +21,26 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-            return _configuration["TenantDbSample"] ?? string.Empty;
+            string dbSample = _configuration["TenantDbSample"] ?? string.Empty;
+            var headers = _httpContextAccessor.HttpContext.Request.Headers;
+            if (headers == null || !headers.ContainsKey("domain"))
+            {
+                return dbSample;
+            }
+
+            string? clientDomain = headers["domain"];
+            if (string.IsNullOrEmpty(clientDomain))
+            {
+                return dbSample;
+            }
+
+            var domainList = _configuration.GetSection("DomainList");
+            if (domainList == null || domainList.Key.Contains(clientDomain))
+            {
+                return dbSample;
+            }
+            string result = domainList[clientDomain] ?? string.Empty;
+            return result;
         }
 
         public string GetClinicID()
