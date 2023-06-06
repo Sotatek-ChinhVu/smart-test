@@ -68,5 +68,11 @@ namespace CloudUnitTest.CommonChecker.Services
             if (systemConf != null) systemConf.Val = temp;
             tenantTracking.SaveChanges();
         }
+
+        [Test]
+        public void CheckDiseaseChecker_002_ErrorList()
+        {
+
+        }
     }
 }

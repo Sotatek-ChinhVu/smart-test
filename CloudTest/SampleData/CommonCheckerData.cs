@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Entity.Tenant;
+using Moq;
 
 namespace CloudUnitTest.SampleData
 {
@@ -210,24 +211,23 @@ namespace CloudUnitTest.SampleData
             return ptByomeis;
         }
 
-        public static List<SystemConf> ReadSystemConf()
+        public static List<TenMst> ReadTenMst()
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
 
             string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
-            var systemConfs = new List<SystemConf>();
+            var tenMsts = new List<TenMst>();
             using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
             {
-
                 var workbookPart = spreadsheetDocument.WorkbookPart;
-                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "SYSTEM_CONF").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "TEN_MST").WorksheetPart?.Worksheet.Elements<SheetData>().First();
                 string text;
                 if (sheetData != null)
                 {
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
-                        var systemConf = new SystemConf();
+                        var tenMst = new TenMst();
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -242,56 +242,212 @@ namespace CloudUnitTest.SampleData
                             {
                                 case "A":
                                     int.TryParse(text, out int hpId);
-                                    systemConf.HpId = hpId;
+                                    tenMst.HpId = hpId;
                                     break;
                                 case "B":
-                                    int.TryParse(text, out int ptId);
-                                    systemConf.GrpCd = ptId;
+                                    tenMst.ItemCd = text;
                                     break;
                                 case "C":
-                                    int.TryParse(text, out int seqNo);
-                                    systemConf.GrpEdaNo = seqNo;
+                                    int.TryParse(text, out int startDate);
+                                    tenMst.StartDate = startDate;
                                     break;
                                 case "D":
-                                    int.TryParse(text, out int val);
-                                    systemConf.Val = val;
+                                    int.TryParse(text, out int endDate);
+                                    tenMst.EndDate = endDate;
                                     break;
                                 case "E":
-                                    systemConf.Param = text;
+                                    tenMst.MasterSbt = text;
                                     break;
                                 case "F":
-                                    systemConf.Biko = text;
+                                    int.TryParse(text, out int sinKouiKbn);
+                                    tenMst.SinKouiKbn = sinKouiKbn;
                                     break;
                                 case "G":
-                                    systemConf.CreateDate = DateTime.Now;
+                                    tenMst.Name = text;
+                                    break;
+                                case "Q":
+                                    int.TryParse(text, out int tenId);
+                                    tenMst.TenId = tenId;
+                                    break;
+                                case "R":
+                                    double.TryParse(text, out double ten);
+                                    tenMst.Ten = ten;
+                                    break;
+                                case "W":
+                                    int.TryParse(text, out int odrTermVal);
+                                    tenMst.OdrTermVal = odrTermVal;
+                                    break;
+                                case "X":
+                                    int.TryParse(text, out int defaultVal);
+                                    tenMst.DefaultVal = defaultVal;
+                                    break;
+                                case "Z":
+                                    int.TryParse(text, out int isAdopted);
+                                    tenMst.IsAdopted = isAdopted;
+                                    break;
+                                case "AA":
+                                    int.TryParse(text, out int koukiKbn);
+                                    tenMst.KoukiKbn = koukiKbn;
+                                    break;
+                                case "AB":
+                                    int.TryParse(text, out int hokatuKensa);
+                                    tenMst.HokatuKensa = hokatuKensa;
+                                    break;
+                                case "AC":
+                                    int.TryParse(text, out int byomeiKbn);
+                                    tenMst.ByomeiKbn = byomeiKbn;
+                                    break;
+                                case "AD":
+                                    int.TryParse(text, out int igakukanri);
+                                    tenMst.Igakukanri = igakukanri;
+                                    break;
+                                case "AE":
+                                    int.TryParse(text, out int jitudayCount);
+                                    tenMst.JitudayCount = jitudayCount;
+                                    break;
+                                case "AF":
+                                    int.TryParse(text, out int jituday);
+                                    tenMst.Jituday = jituday;
+                                    break;
+                                case "AG":
+                                    int.TryParse(text, out int dayCount);
+                                    tenMst.DayCount = dayCount;
+                                    break;
+                                case "AH":
+                                    int.TryParse(text, out int drugKanrenKbn);
+                                    tenMst.DrugKanrenKbn = drugKanrenKbn;
+                                    break;
+                                case "AI":
+                                    int.TryParse(text, out int kizamiId);
+                                    tenMst.KizamiId = kizamiId;
+                                    break;
+                                case "AJ":
+                                    int.TryParse(text, out int kizamiMin);
+                                    tenMst.KizamiMin = kizamiMin;
+                                    break;
+                                case "AK":
+                                    int.TryParse(text, out int kizamiMax);
+                                    tenMst.KizamiMax = kizamiMax;
+                                    break;
+                                case "AL":
+                                    int.TryParse(text, out int kizamiVal);
+                                    tenMst.KizamiVal = kizamiVal;
+                                    break;
+                                case "AM":
+                                    int.TryParse(text, out int kizamiTen);
+                                    tenMst.KizamiTen = kizamiTen;
+                                    break;
+                                case "AN":
+                                    int.TryParse(text, out int kizamiErr);
+                                    tenMst.KizamiErr = kizamiErr;
+                                    break;
+                                case "AO":
+                                    int.TryParse(text, out int maxCount);
+                                    tenMst.MaxCount = maxCount;
+                                    break;
+                                case "AP":
+                                    int.TryParse(text, out int maxCountErr);
+                                    tenMst.MaxCountErr = maxCountErr;
+                                    break;
+                                case "AQ":
+                                    tenMst.TyuCd = text;
+                                    break;
+                                case "AQ":
+                                    int.TryParse(text, out int tyuCd);
+                                    tenMst.TyuCd = tyuCd;
+                                    break
+                                default:
+                                    break;
+                            }
+                        }
+                        tenMsts.Add(tenMst);
+                    }
+                }
+            }
+
+            return tenMsts;
+        }
+
+        public static List<DrugDayLimit> ReadDrugDayLimit()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var drugDayLimits = new List<DrugDayLimit>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "TEN_MST").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var drugDay = new DrugDayLimit();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "B":
+                                    int.TryParse(text, out int hpId);
+                                    drugDay.HpId = hpId;
+                                    break;
+                                case "C":
+                                    drugDay.ItemCd = text;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int seqNo);
+                                    drugDay.SeqNo = seqNo;
+                                    break;
+                                case "E":
+                                    int.TryParse(text, out int limitDay);
+                                    drugDay.LimitDay = limitDay;
+                                    break;
+                                case "F":
+                                    int.TryParse(text, out int isDeleted);
+                                    drugDay.IsDeleted = isDeleted;
+                                    break;
+                                case "G":
+                                    drugDay.CreateDate = DateTime.UtcNow;
                                     break;
                                 case "H":
                                     int.TryParse(text, out int createId);
-                                    systemConf.CreateId = createId;
-                                    break;
-                                case "I":
-                                    systemConf.CreateMachine = text;
+                                    drugDay.CreateId = createId;
                                     break;
                                 case "J":
-                                    systemConf.UpdateDate = DateTime.Now;
+                                    drugDay.UpdateDate = DateTime.UtcNow;
                                     break;
                                 case "K":
                                     int.TryParse(text, out int updateId);
-                                    systemConf.UpdateId = updateId;
+                                    drugDay.UpdateId = updateId;
                                     break;
-                                case "L":
-                                    systemConf.UpdateMachine = text;
+                                case "M":
+                                    int.TryParse(text, out int startDate);
+                                    drugDay.StartDate = startDate;
+                                    break;
+                                case "N":
+                                    int.TryParse(text, out int endDate);
+                                    drugDay.EndDate = endDate;
                                     break;
                                 default:
                                     break;
                             }
                         }
-                        systemConfs.Add(systemConf);
+                        drugDayLimits.Add(drugDay);
                     }
                 }
             }
 
-            return systemConfs;
+            return drugDayLimits;
         }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
