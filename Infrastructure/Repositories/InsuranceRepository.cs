@@ -294,13 +294,16 @@ namespace Infrastructure.Repositories
             var dataHokenPatterList = NoTrackingDataContext.PtHokenPatterns.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == DeleteTypes.None).OrderByDescending(x => x.HokenPid);
             var dataKohi = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteStatus.None);
             var dataHokenInf = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None);
-            var dataHokenCheck = NoTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None);
-            var dataPtInf = NoTrackingDataContext.PtInfs.Where(pt => pt.HpId == hpId && pt.PtId == ptId && pt.IsDelete == DeleteStatus.None);
+
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId);
+            int birthDayPt = 0;
+            if (ptInf != null)
+                birthDayPt = ptInf.Birthday;
 
             var joinQuery = from ptHokenPattern in dataHokenPatterList
                             join ptHokenInf in dataHokenInf on
                                 new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenId } equals
-                                new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } //into ptHokenInfs from ptHokenInf in ptHokenInfs.DefaultIfEmpty()
+                                new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } 
                             join ptKohi1 in dataKohi on
                                 new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi1Id } equals
                                 new { ptKohi1.HpId, ptKohi1.PtId, Kohi1Id = ptKohi1.HokenId } into datakohi1
@@ -317,7 +320,6 @@ namespace Infrastructure.Repositories
                                 new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi4Id } equals
                                 new { ptKohi4.HpId, ptKohi4.PtId, Kohi4Id = ptKohi4.HokenId } into datakohi4
                             from ptKohi4 in datakohi4.DefaultIfEmpty()
-                            from ptInf in dataPtInf
                             select new
                             {
                                 ptHokenPattern.HpId,
@@ -329,55 +331,13 @@ namespace Infrastructure.Repositories
                                 ptHokenPattern.HokenSbtCd,
                                 ptHokenPattern.HokenPid,
                                 ptHokenPattern.HokenKbn,
-                                ptHokenInf = ptHokenInf,
-                                ptHokenInf.HokensyaNo,
-                                ptHokenInf.Kigo,
-                                ptHokenInf.Bango,
-                                ptHokenInf.EdaNo,
-                                ptHokenInf.HonkeKbn,
                                 ptHokenPattern.StartDate,
                                 ptHokenPattern.EndDate,
-                                ptHokenInf.SikakuDate,
-                                ptHokenInf.KofuDate,
                                 ptKohi1,
                                 ptKohi2,
                                 ptKohi3,
                                 ptKohi4,
-                                ptHokenInf.KogakuKbn,
-                                ptHokenInf.TasukaiYm,
-                                ptHokenInf.TokureiYm1,
-                                ptHokenInf.TokureiYm2,
-                                ptHokenInf.GenmenKbn,
-                                ptHokenInf.GenmenRate,
-                                ptHokenInf.GenmenGaku,
-                                ptHokenInf.SyokumuKbn,
-                                ptHokenInf.KeizokuKbn,
-                                ptHokenInf.Tokki1,
-                                ptHokenInf.Tokki2,
-                                ptHokenInf.Tokki3,
-                                ptHokenInf.Tokki4,
-                                ptHokenInf.Tokki5,
-                                ptHokenInf.RousaiKofuNo,
-                                ptHokenInf.RousaiRoudouCd,
-                                ptHokenInf.RousaiSaigaiKbn,
-                                ptHokenInf.RousaiKantokuCd,
-                                ptHokenInf.RousaiSyobyoDate,
-                                ptHokenInf.RyoyoStartDate,
-                                ptHokenInf.RyoyoEndDate,
-                                ptHokenInf.RousaiSyobyoCd,
-                                ptHokenInf.RousaiJigyosyoName,
-                                ptHokenInf.RousaiPrefName,
-                                ptHokenInf.RousaiCityName,
-                                ptHokenInf.RousaiReceCount,
-                                ptHokenInf.JibaiHokenName,
-                                ptHokenInf.JibaiHokenTanto,
-                                ptHokenInf.JibaiHokenTel,
-                                ptHokenInf.JibaiJyusyouDate,
-                                ptInf.Birthday,
                                 ptHokenPattern.HokenMemo,
-                                HobetuHokenInf = ptHokenInf.Houbetu,
-                                HokenInfStartDate = ptHokenInf.StartDate,
-                                HokenInfEndDate = ptHokenInf.EndDate,
                                 HokenInfIsDeleted = ptHokenInf.IsDeleted,
                                 PatternIsDeleted = ptHokenPattern.IsDeleted
                             };
@@ -397,7 +357,7 @@ namespace Infrastructure.Repositories
                 listInsurance.Add(new InsuranceModel(
                     item.HpId,
                     item.PtId,
-                    item.Birthday,
+                    birthDayPt,
                     item.SeqNo,
                     item.HokenSbtCd,
                     item.HokenPid,
