@@ -225,7 +225,19 @@ public class CommonGetListParam : ICommonGetListParam
                     }
                 }
 
-                replaceModel.RousaiRoudouHokenNo = hokenInf.RousaiKofuNo;
+                if (hokenInf.HokenKbn == 11)
+                {
+                    replaceModel.RousaiRoudouHokenNo = hokenInf.RousaiKofuNo;
+                }
+                else if (hokenInf.HokenKbn == 12)
+                {
+                    replaceModel.RousaiNenkinNo = hokenInf.RousaiKofuNo;
+                }
+                else
+                {
+                    replaceModel.RousaiKenkoKanriNo = hokenInf.RousaiKofuNo;
+                }
+
                 replaceModel.RousaiJigyouName = hokenInf.RousaiJigyosyoName;
                 replaceModel.RousaiJigyuoAddress = hokenInf.RousaiPrefName + hokenInf.RousaiCityName;
                 replaceModel.RousaiShyobyoDateWest = CIUtil.SDateToShowSDate(hokenInf.RousaiSyobyoDate);
