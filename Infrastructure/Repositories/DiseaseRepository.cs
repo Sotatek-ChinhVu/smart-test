@@ -377,13 +377,14 @@ namespace Infrastructure.Repositories
                         if (IsModified(ptByomei, inputData))
                         {
                             TrackingDataContext.PtByomeis.Add(byomei);
-
                             ptByomei.IsDeleted = DeleteTypes.Deleted;
                             ptByomei.UpdateId = userId;
                             ptByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         }
-
-                        ptByomei.SortNo = inputData.SortNo;
+                        else
+                        {
+                            ptByomei.SortNo = inputData.SortNo;
+                        }
                     }
                     else
                     {
