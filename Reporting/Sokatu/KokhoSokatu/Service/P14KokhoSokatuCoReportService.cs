@@ -11,7 +11,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service;
 public class P14KokhoSokatuCoReportService : IP14KokhoSokatuCoReportService
 {
     #region Constant
-    private const int MyPrefNo = 14;
+    private const int myPrefNo = 14;
     #endregion
 
     #region Private properties
@@ -38,7 +38,9 @@ public class P14KokhoSokatuCoReportService : IP14KokhoSokatuCoReportService
     /// <summary>
     /// OutPut Data
     /// </summary>
-    private string _formFileName = "p14KokhoSokatuP1.rse";
+    private const string _formFileName1 = "p14KokhoSokatuP1.rse";
+    private const string _formFileName2 = "p14KokhoSokatuP2.rse";
+    private const string _formFileName3 = "p14KokhoSokatuP3.rse";
     private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
@@ -70,20 +72,11 @@ public class P14KokhoSokatuCoReportService : IP14KokhoSokatuCoReportService
         {
             UpdateDrawForm();
             currentPage++;
-            switch (currentPage)
-            {
-                case 2:
-                    _formFileName = "p14KokhoSokatuP2.rse";
-                    break;
-                case 3:
-                    _formFileName = "p14KokhoSokatuP3.rse";
-                    break;
-            }
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new P14KokhoSokatuCoReportServiceMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName1, _formFileName2, _formFileName3, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function
@@ -110,7 +103,7 @@ public class P14KokhoSokatuCoReportService : IP14KokhoSokatuCoReportService
         #region Body
         int UpdateFormBody()
         {
-            List<ListTextObject> listDataPerPage = new();
+             List<ListTextObject> listDataPerPage = new();
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
 
             const int maxRow = 3;
@@ -129,7 +122,10 @@ public class P14KokhoSokatuCoReportService : IP14KokhoSokatuCoReportService
                 countData wrkData = new countData();
                 //保険者数
                 int seikyuCount = wrkReces.GroupBy(r => r.HokensyaNo).Count();
-                SetFieldData("seikyuCount", seikyuCount.ToString());
+                if (rowNo == 2)
+                {
+                    SetFieldData("seikyuCount", seikyuCount.ToString());
+                }
                 //件数
                 wrkData.Count = wrkReces.Count;
                 listDataPerPage.Add(new("count", 0, rowNo, wrkData.Count.ToString()));
@@ -154,7 +150,7 @@ public class P14KokhoSokatuCoReportService : IP14KokhoSokatuCoReportService
     private bool GetData()
     {
         hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
-        receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.All, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.SumAll);
+        receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.All, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
 
         return (receInfs?.Count ?? 0) > 0;
     }
