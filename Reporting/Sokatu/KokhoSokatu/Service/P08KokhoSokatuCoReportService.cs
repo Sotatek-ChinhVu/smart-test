@@ -61,13 +61,12 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
 
     public CommonReportingRequestModel GetP08KokhoSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        hpId = hpId;
-        seikyuYm = seikyuYm;
-        seikyuType = seikyuType;
-        hasNextPage = true;
+        this.hpId = hpId;
+        this.seikyuYm = seikyuYm;
+        this.seikyuType = seikyuType;
         currentPage = 1;
-
         var getData = GetData();
+        hasNextPage = true;
 
         while (getData && hasNextPage)
         {
@@ -84,7 +83,6 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
     private bool UpdateDrawForm()
     {
         hasNextPage = false;
-
         #region SubMethod
 
         #region Header
@@ -187,11 +185,10 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
                 //点数                   
                 listDataPerPage.Add(new("tensu", 0, rowNo, wrkData.Tensu.ToString()));
             }
-
+            _listTextData.Add(pageIndex, listDataPerPage);
             return 1;
         }
         #endregion
-
         #endregion
 
         if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
@@ -204,8 +201,8 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
 
     private bool GetData()
     {
-        hpInf = kokhoFinder.GetHpInf(hpId, seikyuYm);
-        receInfs = kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.All, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.SumAll);
+        hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
+        receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.All, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
         return (receInfs?.Count ?? 0) > 0;
     }
 
