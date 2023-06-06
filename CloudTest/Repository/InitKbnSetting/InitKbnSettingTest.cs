@@ -25,6 +25,7 @@ public class InitKbnSettingTest : BaseUT
         var raiinKbnInflList = ReadDataInitKbnSetting.ReadRaiinKbnInf();
         tenant.RaiinKbnInfs.AddRange(raiinKbnInflList);
 
+        tenant.SaveChanges();
         #endregion
 
         // Arrange
@@ -53,9 +54,104 @@ public class InitKbnSettingTest : BaseUT
         }
     }
 
+    [Test]
+    public void GetRaiinKouiKbns_TestSuccess()
+    {
+        #region Fetch data
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+
+        // RaiinKbnKoui
+        var raiinKbnKouiList = ReadDataInitKbnSetting.ReadRaiinKbnKoui();
+        tenant.RaiinKbnKouis.AddRange(raiinKbnKouiList);
+
+        // KouiKbnMst
+        var kouiKbnMstlList = ReadDataInitKbnSetting.ReadKouiKbnMst();
+        tenant.KouiKbnMsts.AddRange(kouiKbnMstlList);
+
+        tenant.SaveChanges();
+        #endregion
+
+        // Arrange
+        RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
+
+        // Act
+        var resultQuery = raiinKubunMstRepository.GetRaiinKouiKbns(1);
+
+        // Assert
+        try
+        {
+            Assert.True(CompareListRaiinKouiKbn(resultQuery, raiinKbnKouiList, kouiKbnMstlList));
+        }
+        finally
+        {
+            #region Remove Data Fetch
+            raiinKubunMstRepository.ReleaseResource();
+            tenant.RaiinKbnKouis.RemoveRange(raiinKbnKouiList);
+            tenant.KouiKbnMsts.RemoveRange(kouiKbnMstlList);
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    [Test]
+    public void GetRaiinKbnItems_TestSuccess()
+    {
+        #region Fetch data
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+
+        // RaiinKbItem
+        var raiinKbnItemList = ReadDataInitKbnSetting.ReadRaiinKbnItem();
+        tenant.RaiinKbItems.AddRange(raiinKbnItemList);
+
+        tenant.SaveChanges();
+        #endregion
+
+        // Arrange
+        RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
+
+        // Act
+        var resultQuery = raiinKubunMstRepository.GetRaiinKbnItems(1);
+
+        // Assert
+        try
+        {
+            Assert.True(CompareListRaiinKbnItem(resultQuery, raiinKbnItemList));
+        }
+        finally
+        {
+            #region Remove Data Fetch
+            raiinKubunMstRepository.ReleaseResource();
+            tenant.RaiinKbItems.RemoveRange(raiinKbnItemList);
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
+    #region private function
+    private bool CompareListRaiinKbnItem(List<RaiinKbnItemModel> resultQuery, List<RaiinKbItem> raiinKbnItemList)
+    {
+        int id = raiinKbnItemList.FirstOrDefault()?.GrpCd ?? 0;
+        var result = resultQuery.FirstOrDefault(item => item.GrpCd == id);
+        if (result == null)
+        {
+            return false;
+        }
+        var raiinKbnItem = raiinKbnItemList.FirstOrDefault();
+        if (raiinKbnItem==null)
+        {
+            return false;
+        }
+        if (result.HpId != raiinKbnItem.HpId)
+        {
+            return false;
+        }
+        return true;
+    }
+
     private bool CompareListRaiinKubunMst(long ptId, long raiinNo, int sinDate, List<RaiinKbnModel> resultQuery, List<RaiinKbnMst> raiinKbnMstList, List<RaiinKbnDetail> raiinKbnDetailList, List<RaiinKbnInf> raiinKbnInflList)
     {
-        var result = resultQuery.FirstOrDefault();
+        int id = raiinKbnMstList.FirstOrDefault()?.GrpCd ?? 0;
+        var result = resultQuery.FirstOrDefault(item => item.GrpCd == id);
         if (result == null)
         {
             return false;
@@ -131,46 +227,65 @@ public class InitKbnSettingTest : BaseUT
         {
             return false;
         }
-        else if (raiinKbnDetailModel.HpId == raiinKbnDetail.HpId)
+        else if (raiinKbnDetailModel.HpId != raiinKbnDetail.HpId)
         {
             return false;
         }
-        else if (raiinKbnDetailModel.GrpCd == raiinKbnDetail.GrpCd)
+        else if (raiinKbnDetailModel.GrpCd != raiinKbnDetail.GrpCd)
         {
             return false;
         }
-        else if (raiinKbnDetailModel.KbnCd == raiinKbnDetail.KbnCd)
+        else if (raiinKbnDetailModel.KbnCd != raiinKbnDetail.KbnCd)
         {
             return false;
         }
-        else if (raiinKbnDetailModel.SortNo == raiinKbnDetail.SortNo)
+        else if (raiinKbnDetailModel.SortNo != raiinKbnDetail.SortNo)
         {
             return false;
         }
-        else if (raiinKbnDetailModel.KbnName == raiinKbnDetail.KbnName)
+        else if (raiinKbnDetailModel.KbnName != raiinKbnDetail.KbnName)
         {
             return false;
         }
-        else if (raiinKbnDetailModel.ColorCd == raiinKbnDetail.ColorCd)
+        else if (raiinKbnDetailModel.ColorCd != raiinKbnDetail.ColorCd)
         {
             return false;
         }
-        else if (raiinKbnDetailModel.IsConfirmed == raiinKbnDetail.IsConfirmed)
+        else if (raiinKbnDetailModel.IsConfirmed != raiinKbnDetail.IsConfirmed)
         {
             return false;
         }
-        else if (raiinKbnDetailModel.IsAuto == raiinKbnDetail.IsAuto)
+        else if (raiinKbnDetailModel.IsAuto != raiinKbnDetail.IsAuto)
         {
             return false;
         }
-        else if (raiinKbnDetailModel.IsAutoDelete == raiinKbnDetail.IsAutoDelete)
+        else if (raiinKbnDetailModel.IsAutoDelete != raiinKbnDetail.IsAutoDelete)
         {
             return false;
         }
-        else if (raiinKbnDetailModel.IsDeleted == raiinKbnDetail.IsDeleted)
+        else if (raiinKbnDetailModel.IsDeleted != raiinKbnDetail.IsDeleted)
         {
             return false;
         }
         return true;
     }
+
+    private bool CompareListRaiinKouiKbn(List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> resultQuery, List<RaiinKbnKoui> raiinKbnKouiList, List<KouiKbnMst> kouiKbnMstlList)
+    {
+        int grpId = raiinKbnKouiList.FirstOrDefault()?.GrpId ?? 0;
+        int kbnCd = raiinKbnKouiList.FirstOrDefault()?.KbnCd ?? 0;
+        int kouiKbn1 = kouiKbnMstlList.FirstOrDefault()?.KouiKbn1 ?? 0;
+        int kouiKbn2 = kouiKbnMstlList.FirstOrDefault()?.KouiKbn2 ?? 0;
+        var result = resultQuery.FirstOrDefault(item => item.grpId == grpId
+                                                        && item.kbnCd == kbnCd
+                                                        && item.kouiKbn1 == kouiKbn1
+                                                        && item.kouiKbn2 == kouiKbn2);
+        if (result.grpId != grpId)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    #endregion
 }

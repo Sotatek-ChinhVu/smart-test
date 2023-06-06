@@ -141,6 +141,10 @@ public static class ReadDataInitKbnSetting
                         }
                         numberCell++;
                     }
+                    if (raiinKbnDetail.GrpCd == 0 && raiinKbnDetail.HpId == 0)
+                    {
+                        break;
+                    }
                     raiinKbnDetailList.Add(raiinKbnDetail);
                 }
             }
@@ -215,11 +219,234 @@ public static class ReadDataInitKbnSetting
                         }
                         numberCell++;
                     }
+                    if (raiinKbnInf.HpId == 0 && raiinKbnInf.PtId == 0)
+                    {
+                        break;
+                    }
                     raiinKbnInfList.Add(raiinKbnInf);
                 }
             }
         }
         return raiinKbnInfList;
+    }
+
+    public static List<RaiinKbnKoui> ReadRaiinKbnKoui()
+    {
+        var rootPath = Environment.CurrentDirectory;
+        rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+        string fileName = Path.Combine(rootPath, "SampleData", "DataInitKbnSetting.xlsx");
+        var raiinKbnInfList = new List<RaiinKbnKoui>();
+        using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+        {
+            var workbookPart = spreadsheetDocument.WorkbookPart;
+            var sheetData = GetworksheetBySheetName(spreadsheetDocument, "RAIIN_KBN_KOUI").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+            string text;
+            if (sheetData != null)
+            {
+                foreach (var r in sheetData.Elements<Row>().Skip(1))
+                {
+                    var raiinKbnKoui = new RaiinKbnKoui();
+                    raiinKbnKoui.CreateId = 1;
+                    raiinKbnKoui.CreateDate = DateTime.UtcNow;
+                    raiinKbnKoui.UpdateId = 1;
+                    raiinKbnKoui.UpdateDate = DateTime.UtcNow;
+                    raiinKbnKoui.IsDeleted = 0;
+                    var numberCell = 1;
+                    foreach (var c in r.Elements<Cell>())
+                    {
+                        text = c.CellValue?.Text ?? string.Empty;
+                        if (c.DataType != null && c.DataType == CellValues.SharedString)
+                        {
+                            var stringId = Convert.ToInt32(c.InnerText);
+                            text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                        }
+                        var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                        switch (columnName)
+                        {
+                            case "A":
+                                int.TryParse(text, out int hpId);
+                                raiinKbnKoui.HpId = hpId;
+                                break;
+                            case "B":
+                                int.TryParse(text, out int grpId);
+                                raiinKbnKoui.GrpId = grpId;
+                                break;
+                            case "C":
+                                int.TryParse(text, out int kbnCd);
+                                raiinKbnKoui.KbnCd = kbnCd;
+                                break;
+                            case "D":
+                                int.TryParse(text, out int seqNo);
+                                raiinKbnKoui.SeqNo = seqNo;
+                                break;
+                            case "E":
+                                int.TryParse(text, out int kouiKbnId);
+                                raiinKbnKoui.KouiKbnId = kouiKbnId;
+                                break;
+                            default:
+                                break;
+                        }
+                        numberCell++;
+                    }
+                    if (raiinKbnKoui.HpId == 0 && raiinKbnKoui.GrpId == 0)
+                    {
+                        break;
+                    }
+                    raiinKbnInfList.Add(raiinKbnKoui);
+                }
+            }
+        }
+        return raiinKbnInfList;
+    }
+
+    public static List<KouiKbnMst> ReadKouiKbnMst()
+    {
+        var rootPath = Environment.CurrentDirectory;
+        rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+        string fileName = Path.Combine(rootPath, "SampleData", "DataInitKbnSetting.xlsx");
+        var kouiKbnMstList = new List<KouiKbnMst>();
+        using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+        {
+            var workbookPart = spreadsheetDocument.WorkbookPart;
+            var sheetData = GetworksheetBySheetName(spreadsheetDocument, "KOUI_KBN_MST").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+            string text;
+            if (sheetData != null)
+            {
+                foreach (var r in sheetData.Elements<Row>().Skip(1))
+                {
+                    var kouiKbnMst = new KouiKbnMst();
+                    kouiKbnMst.CreateId = 1;
+                    kouiKbnMst.CreateDate = DateTime.UtcNow;
+                    var numberCell = 1;
+                    foreach (var c in r.Elements<Cell>())
+                    {
+                        text = c.CellValue?.Text ?? string.Empty;
+                        if (c.DataType != null && c.DataType == CellValues.SharedString)
+                        {
+                            var stringId = Convert.ToInt32(c.InnerText);
+                            text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                        }
+                        var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                        switch (columnName)
+                        {
+                            case "A":
+                                int.TryParse(text, out int hpId);
+                                kouiKbnMst.HpId = hpId;
+                                break;
+                            case "B":
+                                int.TryParse(text, out int kouiKbnId);
+                                kouiKbnMst.KouiKbnId = kouiKbnId;
+                                break;
+                            case "C":
+                                int.TryParse(text, out int sortNo);
+                                kouiKbnMst.SortNo = sortNo;
+                                break;
+                            case "D":
+                                int.TryParse(text, out int kouiKbn1);
+                                kouiKbnMst.KouiKbn1 = kouiKbn1;
+                                break;
+                            case "E":
+                                int.TryParse(text, out int kouiKbn2);
+                                kouiKbnMst.KouiKbn2 = kouiKbn2;
+                                break;
+                            case "F":
+                                kouiKbnMst.KouiGrpName = text;
+                                break;
+                            case "G":
+                                kouiKbnMst.KouiName = text;
+                                break;
+                            default:
+                                break;
+                        }
+                        numberCell++;
+                    }
+                    if (kouiKbnMst.HpId == 0 && kouiKbnMst.KouiKbnId == 0)
+                    {
+                        break;
+                    }
+                    kouiKbnMstList.Add(kouiKbnMst);
+                }
+            }
+        }
+        return kouiKbnMstList;
+    }
+    
+    public static List<RaiinKbItem> ReadRaiinKbnItem()
+    {
+        var rootPath = Environment.CurrentDirectory;
+        rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+        string fileName = Path.Combine(rootPath, "SampleData", "DataInitKbnSetting.xlsx");
+        var raiinKbItemList = new List<RaiinKbItem>();
+        using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+        {
+            var workbookPart = spreadsheetDocument.WorkbookPart;
+            var sheetData = GetworksheetBySheetName(spreadsheetDocument, "RAIIN_KBN_ITEM").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+            string text;
+            if (sheetData != null)
+            {
+                foreach (var r in sheetData.Elements<Row>().Skip(1))
+                {
+                    var raiinKbItem = new RaiinKbItem();
+                    raiinKbItem.CreateId = 1;
+                    raiinKbItem.CreateDate = DateTime.UtcNow;
+                    raiinKbItem.UpdateId = 1;
+                    raiinKbItem.UpdateDate = DateTime.UtcNow;
+                    var numberCell = 1;
+                    foreach (var c in r.Elements<Cell>())
+                    {
+                        text = c.CellValue?.Text ?? string.Empty;
+                        if (c.DataType != null && c.DataType == CellValues.SharedString)
+                        {
+                            var stringId = Convert.ToInt32(c.InnerText);
+                            text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                        }
+                        var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                        switch (columnName)
+                        {
+                            case "A":
+                                int.TryParse(text, out int hpId);
+                                raiinKbItem.HpId = hpId;
+                                break;
+                            case "B":
+                                int.TryParse(text, out int grpCd);
+                                raiinKbItem.GrpCd = grpCd;
+                                break;
+                            case "C":
+                                int.TryParse(text, out int kbnCd);
+                                raiinKbItem.KbnCd = kbnCd;
+                                break;
+                            case "D":
+                                int.TryParse(text, out int seqNo);
+                                raiinKbItem.SeqNo = seqNo;
+                                break;
+                            case "E":
+                                raiinKbItem.ItemCd = text;
+                                break;
+                            case "F":
+                                int.TryParse(text, out int isExclude);
+                                raiinKbItem.IsExclude = isExclude;
+                                break;
+                            case "G":
+                                int.TryParse(text, out int sortNo);
+                                raiinKbItem.SortNo = sortNo;
+                                break;
+                            default:
+                                break;
+                        }
+                        numberCell++;
+                    }
+                    if (raiinKbItem.HpId == 0 && raiinKbItem.KouiKbnId == 0)
+                    {
+                        break;
+                    }
+                    raiinKbItemList.Add(raiinKbItem);
+                }
+            }
+        }
+        return raiinKbItemList;
     }
 
     private static string GetColumnName(string text)
