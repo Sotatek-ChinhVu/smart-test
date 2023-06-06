@@ -352,10 +352,116 @@ namespace CloudUnitTest.SampleData
                                 case "AQ":
                                     tenMst.TyuCd = text;
                                     break;
-                                case "AQ":
-                                    int.TryParse(text, out int tyuCd);
-                                    tenMst.TyuCd = tyuCd;
-                                    break
+                                case "AR":
+                                    tenMst.TyuSeq = text;
+                                    break;
+                                case "AS":
+                                    int.TryParse(text, out int tusokuAge);
+                                    tenMst.TusokuAge = tusokuAge;
+                                    break;
+                                case "AT":
+                                    tenMst.MinAge = text;
+                                    break;
+                                case "AU":
+                                    tenMst.MaxAge = text;
+                                    break;
+                                case "AV":
+                                    int.TryParse(text, out int timeKasanKbn);
+                                    tenMst.TimeKasanKbn = timeKasanKbn;
+                                    break;
+                                case "AW":
+                                    int.TryParse(text, out int futekiKbn);
+                                    tenMst.FutekiKbn = futekiKbn;
+                                    break;
+                                case "AX":
+                                    int.TryParse(text, out int futekiSisetuKbn);
+                                    tenMst.FutekiSisetuKbn = futekiSisetuKbn;
+                                    break;
+                                case "AY":
+                                    int.TryParse(text, out int syotiNyuyojiKbn);
+                                    tenMst.SyotiNyuyojiKbn= syotiNyuyojiKbn;
+                                    break;
+                                case "AZ":
+                                    int.TryParse(text, out int lowWeightKbn);
+                                    tenMst.LowWeightKbn = lowWeightKbn;
+                                    break;
+                                case "BA":
+                                    int.TryParse(text, out int handanKbn);
+                                    tenMst.HandanKbn = handanKbn;
+                                    break;
+                                case "BB":
+                                    int.TryParse(text, out int handanGrpKbn);
+                                    tenMst.HandanGrpKbn = handanGrpKbn;
+                                    break;
+                                case "BC":
+                                    int.TryParse(text, out int TeigenKbn);
+                                    tenMst.TeigenKbn= TeigenKbn;
+                                    break;
+                                case "BD":
+                                    int.TryParse(text, out int sekituiKbn);
+                                    tenMst.SekituiKbn = sekituiKbn;
+                                    break;
+                                case "BE":
+                                    int.TryParse(text, out int KeibuKbn);
+                                    tenMst.KeibuKbn = KeibuKbn;
+                                    break;
+                                case "BF":
+                                    int.TryParse(text, out int AutoHougouKbn);
+                                    tenMst.AutoHougouKbn= AutoHougouKbn;
+                                    break;
+                                case "BG":
+                                    int.TryParse(text, out int GairaiKanriKbn);
+                                    tenMst.GairaiKanriKbn = GairaiKanriKbn;
+                                    break;
+                                case "BH":
+                                    int.TryParse(text, out int TusokuTargetKbn);
+                                    tenMst.TusokuTargetKbn= TusokuTargetKbn;
+                                    break;
+                                case "BI":
+                                    int.TryParse(text, out int HokatuKbn);
+                                    tenMst.HokatuKbn= HokatuKbn;
+                                    break;
+                                case "BJ":
+                                    int.TryParse(text, out int TyoonpaNaisiKbn);
+                                    tenMst.TyoonpaNaisiKbn= TyoonpaNaisiKbn;
+                                    break;
+                                case "BK":
+                                    int.TryParse(text, out int AutoFungoKbn);
+                                    tenMst.AutoFungoKbn= AutoFungoKbn;
+                                    break;
+                                case "BL":
+                                    int.TryParse(text, out int TyoonpaGyokoKbn);
+                                    tenMst.TyoonpaGyokoKbn= TyoonpaGyokoKbn;
+                                    break;
+                                case "BM":
+                                    int.TryParse(text, out int GazoKasan);
+                                    tenMst.GazoKasan= GazoKasan;
+                                    break;
+                                case "BN":
+                                    int.TryParse(text, out int KansatuKbn);
+                                    tenMst.KansatuKbn= KansatuKbn;
+                                    break;
+                                case "BO":
+                                    int.TryParse(text, out int MasuiKbn);
+                                    tenMst.MasuiKbn= MasuiKbn;
+                                    break;
+                                case "BP":
+                                    int.TryParse(text, out int FukubikuNaisiKasan);
+                                    tenMst.FukubikuNaisiKasan= FukubikuNaisiKasan;
+                                    break;
+                                case "BQ":
+                                    int.TryParse(text, out int FukubikuKotunanKasan);
+                                    tenMst.FukubikuKotunanKasan= FukubikuKotunanKasan;
+                                    break;
+                                case "BR":
+                                    int.TryParse(text, out int MasuiKasan) ;
+                                    tenMst.MasuiKasan= MasuiKasan;
+                                    break;
+                                case "BS":
+                                    int.TryParse(text, out int MoniterKasan);
+                                    tenMst.MoniterKasan= MoniterKasan;
+                                    break;
+                                
                                 default:
                                     break;
                             }
@@ -378,7 +484,7 @@ namespace CloudUnitTest.SampleData
             using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
             {
                 var workbookPart = spreadsheetDocument.WorkbookPart;
-                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "TEN_MST").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "DRUG_DAY_LIMIT").WorksheetPart?.Worksheet.Elements<SheetData>().First();
                 string text;
                 if (sheetData != null)
                 {
@@ -448,6 +554,64 @@ namespace CloudUnitTest.SampleData
             }
 
             return drugDayLimits;
+        }
+
+        public static List<M10DayLimit> ReadM10DayLimit()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m10DayLimits = new List<M10DayLimit>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M10_DAY_LIMIT").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m10Day = new M10DayLimit();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m10Day.YjCd = text;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int seqNo);
+                                    m10Day.SeqNo = seqNo;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int LimitDay);
+                                    m10Day.LimitDay = LimitDay;
+                                    break;
+                                case "D":
+                                    m10Day.StDate = text;
+                                    break;
+                                case "E":
+                                    m10Day.EdDate = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m10DayLimits.Add(m10Day);
+                    }
+                }
+            }
+
+            return m10DayLimits;
         }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)

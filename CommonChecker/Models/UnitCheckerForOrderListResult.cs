@@ -45,9 +45,5 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
             FamilyModels = familyModels;
             IsDataOfDb = isDataOfDb;
         }
-
-        public UnitCheckerForOrderListResult()
-        {
-        } 
     }
 }
