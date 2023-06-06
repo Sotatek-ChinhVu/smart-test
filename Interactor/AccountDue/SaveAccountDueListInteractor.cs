@@ -61,7 +61,8 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
                                                     inputData.PtId,
                                                     inputData.UserId,
                                                     inputData.SinDate,
-                                                    listAccountDueModel
+                                                    listAccountDueModel,
+                                                    inputData.KaikeiTime
                                                 );
             if (result)
             {
