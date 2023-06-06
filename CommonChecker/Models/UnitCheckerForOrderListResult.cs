@@ -46,10 +46,8 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
             IsDataOfDb = isDataOfDb;
         }
 
-        public UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> ChangeCheckingOrderList(List<TOdrInf> odrInfs)
+        public UnitCheckerForOrderListResult()
         {
-            CheckingOrderList = odrInfs;
-            return this;
         } 
     }
 }
