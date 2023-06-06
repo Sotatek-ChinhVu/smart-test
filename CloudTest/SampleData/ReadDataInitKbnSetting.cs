@@ -12,7 +12,7 @@ public static class ReadDataInitKbnSetting
         var rootPath = Environment.CurrentDirectory;
         rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
 
-        string fileName = Path.Combine(rootPath, "SampleData", "DataInitKbnSetting.xlsx");
+        string fileName = Path.Combine(rootPath, "SampleData", "DataInitKbnSetting1.xlsx");
         var raiinKbnMstList = new List<RaiinKbnMst>();
         using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
         {
@@ -238,9 +238,10 @@ public static class ReadDataInitKbnSetting
     private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
     {
         var workbookPart = spreadsheetDocument.WorkbookPart;
-        StringValue relationshipId = workbookPart?.Workbook.Descendants<Sheet>().FirstOrDefault(s => s.Name != null && s.Equals(sheetName))?.Id ?? string.Empty;
+        var temp = workbookPart?.Workbook.Descendants<Sheet>();
+        StringValue relationshipId = workbookPart?.Workbook.Descendants<Sheet>().FirstOrDefault(s => s.Name != null && s.Name.Equals(sheetName))?.Id ?? string.Empty;
 
-        var worksheet = workbookPart != null ? ((WorksheetPart)workbookPart.GetPartById(relationshipId.Value ?? string.Empty)).Worksheet : new();
+        var worksheet = (workbookPart != null && !string.IsNullOrEmpty(relationshipId.ToString())) ? ((WorksheetPart)workbookPart.GetPartById(relationshipId?.Value ?? string.Empty)).Worksheet : new();
 
         return worksheet;
     }
