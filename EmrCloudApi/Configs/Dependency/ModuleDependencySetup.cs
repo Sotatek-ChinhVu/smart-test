@@ -593,6 +593,7 @@ using Reporting.Sokatu.AfterCareSeikyu.DB;
 using Reporting.Sijisen.DB;
 using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.Syaho.DB;
+using Interactor.SetMst.CommonSuperSet;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -737,6 +738,17 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoSyahoFinder, CoSyahoFinder>();
             services.AddTransient<ICoAccountingCardFinder, CoAccountingCardFinder>();
             services.AddTransient<IAccountingCardCoReportService, AccountingCardCoReportService>();
+            services.AddTransient<IP33KoukiSeikyuCoReportService, P33KoukiSeikyuCoReportService>();
+            services.AddTransient<IP34KoukiSeikyuCoReportService, P34KoukiSeikyuCoReportService>();
+            services.AddTransient<IP35KoukiSeikyuCoReportService, P35KoukiSeikyuCoReportService>();
+            services.AddTransient<IP37KoukiSeikyuCoReportService, P37KoukiSeikyuCoReportService>();
+            services.AddTransient<IP40KoukiSeikyuCoReportService, P40KoukiSeikyuCoReportService>();
+            services.AddTransient<IP42KoukiSeikyuCoReportService, P42KoukiSeikyuCoReportService>();
+            services.AddTransient<IP43KoukiSeikyuCoReportService, P43KoukiSeikyuCoReportService>();
+            services.AddTransient<IP45KoukiSeikyuCoReportService, P45KoukiSeikyuCoReportService>();
+            services.AddTransient<IP09KoukiSeikyuCoReportService, P09KoukiSeikyuCoReportService>();
+            services.AddTransient<IP12KoukiSeikyuCoReportService, P12KoukiSeikyuCoReportService>();
+            services.AddTransient<IP13KoukiSeikyuCoReportService, P13KoukiSeikyuCoReportService>();
             services.AddTransient<IP41KoukiSeikyuCoReportService, P41KoukiSeikyuCoReportService>();
 
             //call Calculate API
@@ -837,6 +849,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoKensaIraiFinder, CoKensaIraiFinder>();
             services.AddTransient<ISortPatientCommon, SortPatientCommon>();
             services.AddTransient<IRaiinListSettingRepository, RaiinListSettingRepository>();
+            services.AddTransient<ICommonSuperSet, CommonSuperSet>();
         }
 
         private void SetupUseCase(IServiceCollection services)
