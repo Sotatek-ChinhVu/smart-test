@@ -38,7 +38,6 @@ namespace Reporting.ReportServices;
 
 public class ReportService : IReportService
 {
-    private readonly ISystemConfig _systemConfig;
     private readonly IOrderLabelCoReportService _orderLabelCoReportService;
     private readonly IDrugInfoCoReportService _drugInfoCoReportService;
     private readonly ISijisenReportService _sijisenReportService;
@@ -62,9 +61,8 @@ public class ReportService : IReportService
     private readonly IYakutaiCoReportService _yakutaiCoReportService;
     private readonly IAccountingCardCoReportService _accountingCardCoReportService;
 
-    public ReportService(ISystemConfig systemConfig, IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService)
     {
-        _systemConfig = systemConfig;
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
         _sijisenReportService = sijisenReportService;
@@ -226,15 +224,9 @@ public class ReportService : IReportService
         return _accountingCoReportService.GetAccountingReportingData(hpId, coAccountingParamModels);
     }
 
-    public AccountingResponse GetAccountingData(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, List<CoAccountDueListModel> multiAccountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isRyosyoDetail, int ptRyosyoDetail, bool isPrintMonth)
+    public AccountingResponse GetAccountingData(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, List<CoAccountDueListModel> multiAccountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isRyosyoDetail, int ptRyosyoDetail, bool isPrintMonth, bool ryoshusho, bool meisai)
     {
         List<CoAccountingParamModel> requestAccountting = new();
-        bool ryoshusho = _systemConfig.PrintReceipt() == 1;
-        bool meisai = _systemConfig.PrintDetail() == 1 || ptRyosyoDetail == 1;
-        if (isRyosyoDetail)
-        {
-            meisai = false;
-        }
 
         List<CoAccountDueListModel> nyukinModels = accountDueListModels;
         List<int> months = new();

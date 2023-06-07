@@ -45,7 +45,7 @@ public interface IReportService
 
     AccountingResponse GetAccountingReportingData(int hpId, List<CoAccountingParamModel> coAccountingParamModels);
 
-    AccountingResponse GetAccountingData(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, List<CoAccountDueListModel> multiAccountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isRyosyoDetail, int ptRyosyoDetail, bool isPrintMonth);
+    AccountingResponse GetAccountingData(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, List<CoAccountDueListModel> multiAccountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isRyosyoDetail, int ptRyosyoDetail, bool isPrintMonth, bool ryoshusho, bool meisai);
 
     AccountingResponse GetAccountingReportingData(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false);
 

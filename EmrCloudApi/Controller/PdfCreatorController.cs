@@ -137,7 +137,7 @@ public class PdfCreatorController : ControllerBase
         var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
         var selectedAccountDueListModel = ConvertToCoAccountDueListModel(request.SelectedAccountDueListModel);
 
-        var data = _reportService.GetAccountingData(request.HpId, request.Mode, request.PtId, accountDueListModels, multiAccountDueListModels, selectedAccountDueListModel, request.IsRyosyoDetail, request.PtRyosyoDetail, request.IsPrintMonth);
+        var data = _reportService.GetAccountingData(request.HpId, request.Mode, request.PtId, accountDueListModels, multiAccountDueListModels, selectedAccountDueListModel, request.IsRyosyoDetail, request.PtRyosyoDetail, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
         return await RenderPdf(data, ReportType.Accounting);
     }
 

@@ -23,6 +23,10 @@ public class AccountingCoReportRequest
     public int PtRyosyoDetail { get; set; }
 
     public bool IsPrintMonth { get; set; }
+
+    public bool Ryoshusho { get; set; }
+
+    public bool Meisai { get; set; }
 }
 
 public class CoAccountDueListRequestModel
