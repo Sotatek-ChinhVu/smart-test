@@ -594,6 +594,7 @@ using Reporting.Sijisen.DB;
 using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Interactor.SetMst.CommonSuperSet;
+using Reporting.Sokatu.WelfareSeikyu.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -757,6 +758,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP11KoukiSeikyuCoReportService, P11KoukiSeikyuCoReportService>();
             services.AddTransient<IP14KoukiSeikyuCoReportService, P14KoukiSeikyuCoReportService>();
             services.AddTransient<IP25KokhoSokatuCoReportService, P25KokhoSokatuCoReportService>();
+            services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
+            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

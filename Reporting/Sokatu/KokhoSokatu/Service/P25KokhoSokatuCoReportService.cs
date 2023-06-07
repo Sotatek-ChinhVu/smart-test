@@ -1,12 +1,21 @@
-﻿using Reporting.Mappers.Common;
+﻿using Helper.Common;
+using Helper.Extension;
+using Reporting.CommonMasters.Constants;
+using Reporting.Mappers.Common;
+using Reporting.Sokatu.Common.Models;
+using Reporting.Sokatu.KokhoSokatu.DB;
+using Reporting.Sokatu.KokhoSokatu.Mapper;
+using Reporting.Sokatu.WelfareSeikyu.DB;
+using Reporting.Sokatu.WelfareSeikyu.Models;
+using Reporting.Statistics.Sta2011.Models;
 using Reporting.Structs;
 
 namespace Reporting.Sokatu.KokhoSokatu.Service;
 
 public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
 {
-    /*#region Constant
-    private const int MyPrefNo = 25;
+    #region Constant
+    private const int myPrefNo = 25;
     //県内保険者(固定枠)
     private List<string> prefInHokensyaNo = new List<string> {
             "253013", "250019", "250027", "250035", "250043", "250050", "250068", "250076", "250092", "250100",
@@ -40,195 +49,99 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
     #endregion
 
     #region Constructor and Init
-    public P25KokhoSokatuCoReportService() : base()
+    public P25KokhoSokatuCoReportService(ICoKokhoSokatuFinder kokhoFinder, ICoWelfareSeikyuFinder welfareFinder)
     {
-        dbService = EmrConnectionFactory.StartNew();
-        kokhoFinder = new CoKokhoSokatuFinder(dbService);
-        welfareFinder = new CoWelfareSeikyuFinder(dbService);
-    }
-    #endregion
-
-    #region Override method
-    public override bool UpdateCrForm()
-    {
-        if (receInfs == null) return false;
-        bool hasNextPage;
-        bool bRet = UpdateDrawForm(out hasNextPage);
-        return bRet && hasNextPage;
+        _kokhoFinder = kokhoFinder;
+        _welfareFinder = welfareFinder;
+        _singleFieldDataM = new();
+        _singleFieldData = new();
+        _extralData = new();
+        _listTextData = new();
+        _visibleFieldData = new();
     }
     #endregion
 
     #region Init properties
+    private int hpId;
     private int seikyuYm;
     private SeikyuType seikyuType;
     int diskKind;
     int diskCnt;
+    private bool hasNextPage;
+    private int currentPage;
 
-    public void InitParam(int seikyuYm, SeikyuType seikyuType, int diskKind, int diskCnt)
+    // <summary>
+    /// OutPut Data
+    /// </summary>
+    private const string _formFileName = "p25KokhoSokatu.rse";
+    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<string, string> _singleFieldData;
+    private readonly Dictionary<string, string> _extralData;
+    private readonly Dictionary<int, List<ListTextObject>> _listTextData;
+    private readonly Dictionary<string, bool> _visibleFieldData;
+    #endregion
+
+    public CommonReportingRequestModel GetP25KokhoSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, int diskKind, int diskCnt)
     {
+        this.hpId = hpId;
         this.seikyuYm = seikyuYm;
         this.seikyuType = seikyuType;
         this.diskKind = diskKind;
         this.diskCnt = diskCnt;
+        var getData = GetData();
 
-        Log.WriteLogMsg(
-            ModuleName, this, nameof(printOut),
-            string.Format(
-                "seikyuYm:{0} IsNormal:{1} IsPaper:{2} IsDelay:{3} IsHenrei:{4} IsOnLine:{5} diskKind:{6} diskCnt:{7}",
-                seikyuYm, seikyuType.IsNormal, seikyuType.IsPaper, seikyuType.IsDelay, seikyuType.IsHenrei, seikyuType.IsOnline,
-                diskKind, diskCnt
-            )
-        );
-    }
-    #endregion
+        hasNextPage = true;
+        currentPage = 1;
 
-    #region Printer method
-    private CoOutputMode outputMode;
-    private string printerName;
-    CoFileType outputFileType;
-    string outputDirectory;
-    string outputFileName;
-
-    public void PrintOut(string printerName)
-    {
-        outputMode = CoOutputMode.Print;
-        this.printerName = printerName;
-
-        printOut();
-    }
-
-    public void PrintOut(CoFileType fileType, string outputDirectory, string outputFileName)
-    {
-        outputMode = CoOutputMode.File;
-        outputFileType = fileType;
-        this.outputDirectory = outputDirectory;
-        this.outputFileName = outputFileName;
-
-        printOut();
-    }
-
-    private void printOut()
-    {
-        if (IsPrinterRunning) return;
-
-        //媒体種類を記載するためにデータの有無に関わらず印刷する
-        GetData();
-        IsPrinterRunning = true;
-
-        Task printSokatuTask = Task.Factory.StartNew(() =>
+        while (getData && hasNextPage)
         {
-            string formFile = Paths.P25KOKHOSOKATU_FORM_FILE_NAME;
+            UpdateDrawForm();
+            currentPage++;
+        }
 
-            bool initResult = false;
-            if (outputMode == CoOutputMode.Print)
-            {
-                initResult = CoRep.IniParamPrinter(
-                    Paths.SOKATU_FORM_PATH, formFile,
-                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                    printerName
-                );
-            }
-            else
-            {
-                initResult = CoRep.InitParamDocument(
-                    Paths.SOKATU_FORM_PATH, formFile,
-                    outputDirectory, outputFileName, (Hos.CnDraw.Constants.ConFileType)outputFileType
-                );
-            }
-            if (!initResult) return;
-
-            try
-            {
-                bool isNextPageExits = true;
-                CurrentPage = 1;
-                //印刷
-                while (isNextPageExits)
-                {
-                    isNextPageExits = CoRep.PrintOut();
-                    CurrentPage++;
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.WriteLogError(ModuleName, this, nameof(printOut), ex);
-                PrintExitCode = CoPrintExitCode.EndError;
-                PrintExitMessage = ex.Message;
-            }
-            finally
-            {
-                CoRep.FinishPrint();
-                CurrentPage = 1;
-                IsPrinterRunning = false;
-            }
-        }, TaskCreationOptions.LongRunning);
-        printSokatuTask.ContinueWith((action) =>
-        {
-            printSokatuTask.Dispose();
-            PrintExitCode = CoPrintExitCode.EndSuccess;
-            IsPrinterRunning = false;
-        });
+        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+        _extralData.Add("totalPage", pageIndex.ToString());
+        return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
-    public bool IsPrinting()
+    #region Private function
+    private bool UpdateDrawForm()
     {
-        return IsPrinterRunning;
-    }
-
-    public CoPrintExitCode ExitCode()
-    {
-        return PrintExitCode;
-    }
-
-    public string ExitMessage()
-    {
-        return PrintExitMessage;
-    }
-    #endregion*/
-
-    public CommonReportingRequestModel GetP25KokhoSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, int diskKind, int diskCnt)
-    {
-        throw new NotImplementedException();
-    }
-
-   /* #region Private function
-    private bool UpdateDrawForm(out bool hasNextPage)
-    {
-        bool _hasNextPage = true;
-
         #region SubMethod
 
         #region Header
         int UpdateFormHeader()
         {
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             //医療機関コード
-            CoRep.SetFieldData("hpCode", hpInf.ReceHpCd);
+            SetFieldData("hpCode", hpInf.ReceHpCd);
             //医療機関情報
-            CoRep.SetFieldData("address1", hpInf.Address1);
-            CoRep.SetFieldData("address2", hpInf.Address2);
-            CoRep.SetFieldData("hpName", hpInf.ReceHpName);
-            CoRep.SetFieldData("kaisetuName", hpInf.KaisetuName);
-            CoRep.SetFieldData("hpTel", hpInf.Tel);
+            SetFieldData("address1", hpInf.Address1);
+            SetFieldData("address2", hpInf.Address2);
+            SetFieldData("hpName", hpInf.ReceHpName);
+            SetFieldData("kaisetuName", hpInf.KaisetuName);
+            SetFieldData("hpTel", hpInf.Tel);
             //請求年月
             CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(seikyuYm * 100 + 1);
-            CoRep.SetFieldData("seikyuGengo", wrkYmd.Gengo);
-            CoRep.SetFieldData("seikyuYear", wrkYmd.Year);
-            CoRep.SetFieldData("seikyuMonth", wrkYmd.Month);
+            SetFieldData("seikyuGengo", wrkYmd.Gengo);
+            SetFieldData("seikyuYear", wrkYmd.Year.ToString());
+            SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
                 CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
             );
-            CoRep.SetFieldData("reportGengo", wrkYmd.Gengo);
-            CoRep.SetFieldData("reportYear", wrkYmd.Year);
-            CoRep.SetFieldData("reportMonth", wrkYmd.Month);
-            CoRep.SetFieldData("reportDay", wrkYmd.Day);
+            SetFieldData("reportGengo", wrkYmd.Gengo);
+            SetFieldData("reportYear", wrkYmd.Year.ToString());
+            SetFieldData("reportMonth", wrkYmd.Month.ToString());
+            SetFieldData("reportDay", wrkYmd.Day.ToString());
             //レセプト記載
             if (new int[] { 0, 1, 2 }.Contains(diskKind))
             {
-                CoRep.SetFieldData("receMedia", "〇");
+                SetFieldData("receMedia", "〇");
             }
             else
             {
-                CoRep.SetFieldData("receOnline", "〇");
+                SetFieldData("receOnline", "〇");
             }
 
             return 1;
@@ -238,8 +151,11 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
         #region Body
         int UpdateFormBody()
         {
+            List<ListTextObject> listDataPerPage = new();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+
             #region Body
-            if (CurrentPage == 1)
+            if (currentPage == 1)
             {
                 //1枚目のみ記載する
 
@@ -247,13 +163,13 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
                 for (short rowNo = 0; rowNo < prefInHokensyaNo.Count; rowNo++)
                 {
                     int receCount = receInfs.Where(r => r.HokensyaNo == prefInHokensyaNo[rowNo]).Count();
-                    CoRep.ListText(string.Format("prefInCount{0}", (short)Math.Floor((double)rowNo / 17)), 0, (short)(rowNo % 17), receCount);
+                    listDataPerPage.Add(new(string.Format("prefInCount{0}", (short)Math.Floor((double)rowNo / 17)), 0, (short)(rowNo % 17), receCount.ToString()));
                 }
                 //県外保険者(国保)
                 for (short rowNo = 0; rowNo < prefOutHokensyaNo.Count; rowNo++)
                 {
                     int receCount = receInfs.Where(r => r.HokensyaNo == prefOutHokensyaNo[rowNo]).Count();
-                    CoRep.ListText("prefOutFixedCount", 0, rowNo, receCount);
+                    listDataPerPage.Add(new("prefOutFixedCount", 0, rowNo, receCount.ToString()));
                 }
                 //合計
                 for (short rowNo = 0; rowNo < 4; rowNo++)
@@ -268,23 +184,32 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
                     }
                     if (wrkReces == null) continue;
 
-                    CoRep.ListText("totalCount", 0, rowNo, wrkReces.Count);
+                    listDataPerPage.Add(new("totalCount", 0, rowNo, wrkReces.Count.ToString()));
                 }
                 //磁気媒体種類・枚数
                 if (new int[] { 0, 1, 2 }.Contains(diskKind))
                 {
-                    CoRep.SetFieldData(string.Format("diskKind{0}", diskKind), "〇");
-                    CoRep.SetFieldData("diskCnt", diskCnt);
+                    pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                    Dictionary<string, string> fieldDataPerPage = _singleFieldDataM.ContainsKey(pageIndex) ? _singleFieldDataM[pageIndex] : new();
+
+                    fieldDataPerPage.Add(string.Format("diskKind{0}", diskKind), "〇");
+
+                    if (!_singleFieldDataM.ContainsKey(pageIndex))
+                    {
+                        _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+                    }
+
+                    SetFieldData("diskCnt", diskCnt.ToString());
                 }
                 //福祉医療費請求書                    
-                CoRep.SetFieldData("welfarePaperCnt", Math.Ceiling((double)welfareInfs.Count / 6));
+                SetFieldData("welfarePaperCnt", Math.Ceiling((double)welfareInfs.Count / 6).ToString());
             }
             #endregion
 
             #region 県外保険者
             //県外保険者(国保・固定枠除く)
             const int maxKokhoRow = 4;
-            int kokhoIndex = (CurrentPage - 1) * maxKokhoRow;
+            int kokhoIndex = (currentPage - 1) * maxKokhoRow;
 
             var kokhoNos = receInfs.Where(
                 r => (r.IsNrAll || r.IsRetAll) && !r.IsPrefIn && !prefOutHokensyaNo.Contains(r.HokensyaNo)
@@ -296,11 +221,11 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
                 if (kokhoIndex < kokhoNos.Count)
                 {
                     string hokensyaName = hokensyaNames.Find(h => h.HokensyaNo == kokhoNos[kokhoIndex])?.Name ?? "";
-                    CoRep.ListText("prefOutName", 0, rowNo, hokensyaName == "" ? kokhoNos[kokhoIndex] : hokensyaName);
-                    CoRep.ListText("prefOutNo", 0, rowNo, kokhoNos[kokhoIndex]);
+                    listDataPerPage.Add(new("prefOutName", 0, rowNo, hokensyaName == "" ? kokhoNos[kokhoIndex] : hokensyaName));
+                    listDataPerPage.Add(new("prefOutNo", 0, rowNo, kokhoNos[kokhoIndex]));
 
                     int receCount = receInfs.Where(r => r.HokensyaNo == kokhoNos[kokhoIndex]).Count();
-                    CoRep.ListText("prefOutCount", 0, rowNo, receCount);
+                    listDataPerPage.Add(new("prefOutCount", 0, rowNo, receCount.ToString()));
                 }
 
                 kokhoIndex++;
@@ -313,7 +238,7 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
 
             //県外保険者(後期)
             const int maxKoukiRow = 5;
-            int koukiIndex = (CurrentPage - 1) * maxKoukiRow;
+            int koukiIndex = (currentPage - 1) * maxKoukiRow;
 
             var koukiNos = receInfs.Where(
                 r => r.IsKoukiAll && !r.IsPrefIn
@@ -321,7 +246,7 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
 
             if (kokhoNos.Count == 0 && koukiNos.Count == 0)
             {
-                _hasNextPage = false;
+                hasNextPage = false;
                 return 1;
             }
 
@@ -331,11 +256,11 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
                 if (koukiIndex < koukiNos.Count)
                 {
                     int prefNo = koukiNos[koukiIndex].Substring(koukiNos[koukiIndex].Length - 6, 2).AsInteger();
-                    CoRep.ListText("koukiName", 0, rowNo, PrefCode.PrefName(prefNo));
-                    CoRep.ListText("koukiNo", 0, rowNo, koukiNos[koukiIndex]);
+                    listDataPerPage.Add(new("koukiName", 0, rowNo, PrefCode.PrefName(prefNo)));
+                    listDataPerPage.Add(new("koukiNo", 0, rowNo, koukiNos[koukiIndex].ToString()));
 
                     int receCount = receInfs.Where(r => r.HokensyaNo == koukiNos[koukiIndex]).Count();
-                    CoRep.ListText("koukiCount", 0, rowNo, receCount);
+                    listDataPerPage.Add(new("koukiCount", 0, rowNo, receCount.ToString()));
                 }
 
                 koukiIndex++;
@@ -348,8 +273,9 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
 
             if (!kokhoNextPage && !koukiNextPage)
             {
-                _hasNextPage = false;
+                hasNextPage = false;
             }
+            _listTextData.Add(pageIndex, listDataPerPage);
             #endregion
 
             return 1;
@@ -358,41 +284,37 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
 
         #endregion
 
-        try
+        if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
         {
-            if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-            {
-                hasNextPage = _hasNextPage;
-                return false;
-            }
-        }
-        catch (Exception e)
-        {
-            Log.WriteLogError(ModuleName, this, nameof(UpdateDrawForm), e);
-            hasNextPage = _hasNextPage;
             return false;
         }
-
-        hasNextPage = _hasNextPage;
         return true;
     }
 
     private bool GetData()
     {
-        hpInf = kokhoFinder.GetHpInf(seikyuYm);
-        receInfs = kokhoFinder.GetReceInf(seikyuYm, seikyuType, KokhoKind.All, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.SumAll);
+        hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
+        receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.All, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
         //保険者番号リストを取得
         hokensyaNos = receInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();
         //保険者名を取得
-        hokensyaNames = kokhoFinder.GetHokensyaName(hokensyaNos);
+        hokensyaNames = _kokhoFinder.GetHokensyaName(hpId, hokensyaNos);
 
         //福祉           
         SeikyuType welSeikyutype = new SeikyuType(
             isNormal: true, isPaper: true, isDelay: true, isHenrei: true, isOnline: false
         );
-        welfareInfs = welfareFinder.GetReceInf(seikyuYm, welSeikyutype, kohiHoubetus, FutanCheck.KohiFutan, HokenKbn.Syaho);
+        welfareInfs = _welfareFinder.GetReceInf(hpId, seikyuYm, welSeikyutype, kohiHoubetus, FutanCheck.KohiFutan, HokenKbn.Syaho);
 
         return (receInfs?.Count ?? 0) > 0;
     }
-    #endregion*/
+    private void SetFieldData(string field, string value)
+    {
+        if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
+        {
+            _singleFieldData.Add(field, value);
+        }
+    }
+    #endregion
+
 }

@@ -14,7 +14,7 @@ public interface ICoWelfareSeikyuFinder
     /// <param name="kohiHokenNos">保険番号リスト</param>
     /// <param name="futanCheck">公費負担有無</param>
     /// <returns></returns>
-    List<CoWelfareReceInfModel> GetReceInf(int seikyuYm, SeikyuType seikyuType, List<int> kohiHokenNos, FutanCheck futanCheck, int hokenKbn);
+    List<CoWelfareReceInfModel> GetReceInf(int hpId, int seikyuYm, SeikyuType seikyuType, List<int> kohiHokenNos, FutanCheck futanCheck, int hokenKbn);
 
     /// <summary>
     /// 
@@ -25,13 +25,13 @@ public interface ICoWelfareSeikyuFinder
     /// <param name="isKohiFutan">公費負担有無</param>
     /// <param name="isKohiKisai">true:併用レセの公費を含む</param>
     /// <returns></returns>
-    List<CoWelfareReceInfModel> GetReceInf(int seikyuYm, SeikyuType seikyuType, List<string> kohiHoubetus, FutanCheck futanCheck, int hokenKbn, bool isKohiKisai = false);
+    List<CoWelfareReceInfModel> GetReceInf(int hpId, int seikyuYm, SeikyuType seikyuType, List<string> kohiHoubetus, FutanCheck futanCheck, int hokenKbn, bool isKohiKisai = false);
 
-    CoHpInfModel GetHpInf(int seikyuYm);
+    CoHpInfModel GetHpInf(int hpId, int seikyuYm);
 
-    List<CoHokensyaMstModel> GetHokensyaName(List<string> hokensyaNos);
+    List<CoHokensyaMstModel> GetHokensyaName(int hpId, List<string> hokensyaNos);
 
-    List<CoKohiHoubetuMstModel> GetKohiHoubetuMst(int seikyuYm);
+    List<CoKohiHoubetuMstModel> GetKohiHoubetuMst(int hpId, int seikyuYm);
 
     /// <summary>
     /// 院外処方の有無
@@ -39,5 +39,5 @@ public interface ICoWelfareSeikyuFinder
     /// <param name="ptId"></param>
     /// <param name="sinYm"></param>
     /// <returns></returns>
-    bool IsOutDrugOrder(long ptId, int sinYm);
+    bool IsOutDrugOrder(int hpId, long ptId, int sinYm);
 }
