@@ -6,6 +6,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using static Helper.Constants.UserConst;
 
@@ -354,6 +355,11 @@ namespace Infrastructure.Repositories
             var listUserPermissionOfUserDefault = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == 0).AsEnumerable().Select(u => new UserPermissionModel(u.HpId, u.UserId, u.FunctionCd, u.Permission, true));
 
             return listUserPermission.Union(listUserPermissionOfUserDefault).ToList();
+        }
+
+        public List<JobMstModel> GetListJob(int hpId)
+        {
+            return NoTrackingDataContext.JobMsts.Where(j => j.HpId == hpId && !string.IsNullOrEmpty(j.JobName)).Select(x => new JobMstModel(x.HpId, x.JobCd, x.JobName ?? string.Empty, x.SortNo)).ToList();
         }
 
         public PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode)
