@@ -226,7 +226,7 @@ public class ReportService : IReportService
         return _accountingCoReportService.GetAccountingReportingData(hpId, coAccountingParamModels);
     }
 
-    public AccountingResponse GetAccountingReportingData(int hpId, ConfirmationMode mode, long ptId, int sinDate, List<AccountDueModel> accountDueListModels, List<AccountDueModel> multiAccountDueListModels, AccountDueModel selectedAccountDueListModel, bool isRyosyoDetail, int ptRyosyoDetail, bool isPrintMonth)
+    public AccountingResponse GetAccountingData(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, List<CoAccountDueListModel> multiAccountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isRyosyoDetail, int ptRyosyoDetail, bool isPrintMonth)
     {
         List<CoAccountingParamModel> requestAccountting = new();
         bool ryoshusho = _systemConfig.PrintReceipt() == 1;
@@ -236,42 +236,42 @@ public class ReportService : IReportService
             meisai = false;
         }
 
-        List<AccountDueModel> nyukinModels = accountDueListModels;
-        List<int> months = new List<int>();
+        List<CoAccountDueListModel> nyukinModels = accountDueListModels;
+        List<int> months = new();
         foreach (var model in multiAccountDueListModels)
         {
             selectedAccountDueListModel = model;
-            accountDueListModels = nyukinModels.FindAll(p => p.SeikyuSinDate / 100 == model.SeikyuSinDate / 100);
+            accountDueListModels = nyukinModels.FindAll(p => p.SinDate / 100 == model.SinDate / 100);
             if (isPrintMonth)
             {
-                if (!months.Contains(model.SeikyuSinDate / 100))
+                if (!months.Contains(model.SinDate / 100))
                 {
-                    var printItem = PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SeikyuSinDate, model.OyaRaiinNo, accountDueListModels);
+                    var printItem = PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SinDate, model.OyaRaiinNo, accountDueListModels);
                     requestAccountting.AddRange(printItem);
-                    months.Add(model.SeikyuSinDate / 100);
+                    months.Add(model.SinDate / 100);
                 }
             }
             else
             {
-                var printItem = PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SeikyuSinDate, model.OyaRaiinNo);
+                var printItem = PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SinDate, model.OyaRaiinNo);
                 requestAccountting.AddRange(printItem);
             }
         }
         return _accountingCoReportService.GetAccountingReportingData(hpId, requestAccountting);
     }
 
-    private List<CoAccountingParamModel> PrintWithoutThread(bool ryoshusho, bool meisai, ConfirmationMode mode, long ptId, List<AccountDueModel> accountDueListModels, AccountDueModel selectedAccountDueListModel, bool isPrintMonth, int sinDate, long oyaRaiinNo, List<AccountDueModel>? nyukinModels = null)
+    private List<CoAccountingParamModel> PrintWithoutThread(bool ryoshusho, bool meisai, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isPrintMonth, int sinDate, long oyaRaiinNo, List<CoAccountDueListModel>? nyukinModels = null)
     {
         int GetMaxDateInMonth(int month)
         {
-            var models = accountDueListModels.Where(x => x.Month == month).OrderBy(x => x.SeikyuSinDate);
-            return models.Last().SeikyuSinDate;
+            var models = accountDueListModels.Where(x => x.Month == month).OrderBy(x => x.SinDate);
+            return models.Last().SinDate;
         }
 
         int GetMinDateInMonth(int month)
         {
-            var models = accountDueListModels.Where(x => x.Month == month).OrderBy(x => x.SeikyuSinDate);
-            return models.First().SeikyuSinDate;
+            var models = accountDueListModels.Where(x => x.Month == month).OrderBy(x => x.SinDate);
+            return models.First().SinDate;
         }
 
         List<CoAccountingParamModel> result = new();
@@ -291,12 +291,12 @@ public class ReportService : IReportService
             {
                 if (mode == ConfirmationMode.FromPrintBtn || mode == ConfirmationMode.FromMenu)
                 {
-                    dates.Add((selectedAccountDueListModel.SeikyuSinDate, selectedAccountDueListModel.SeikyuSinDate));
+                    dates.Add((selectedAccountDueListModel.SinDate, selectedAccountDueListModel.SinDate));
                 }
                 else
                 {
                     dates.AddRange(from item in accountDueListModels
-                                   select (item.SeikyuSinDate, item.SeikyuSinDate));
+                                   select (item.SinDate, item.SinDate));
                     dates = dates.Distinct().ToList();
                 }
             }
@@ -339,8 +339,8 @@ public class ReportService : IReportService
                 var raiinNos = accountDueListModels.Where(x => x.OyaRaiinNo == (oyaRaiinNo > 0 ? oyaRaiinNo : selectedAccountDueListModel.OyaRaiinNo)).Select(x => x.RaiinNo).ToList();
                 result.Add(new(
                               ptId,
-                              sinDate > 0 ? sinDate : selectedAccountDueListModel.SeikyuSinDate,
-                              sinDate > 0 ? sinDate : selectedAccountDueListModel.SeikyuSinDate,
+                              sinDate > 0 ? sinDate : selectedAccountDueListModel.SinDate,
+                              sinDate > 0 ? sinDate : selectedAccountDueListModel.SinDate,
                               raiinNos,
                               printType: printType));
             }
@@ -354,12 +354,12 @@ public class ReportService : IReportService
                     List<long> raiinNos = new();
                     if (nyukinModels != null)
                     {
-                        raiinNos = nyukinModels.Where(x => x.SeikyuSinDate >= startDate && x.SeikyuSinDate <= endDate)
+                        raiinNos = nyukinModels.Where(x => x.SinDate >= startDate && x.SinDate <= endDate)
                                                                          .Select(x => x.RaiinNo).ToList();
                     }
                     else
                     {
-                        accountDueListModels.Where(x => x.SeikyuSinDate >= startDate && x.SeikyuSinDate <= endDate)
+                        accountDueListModels.Where(x => x.SinDate >= startDate && x.SinDate <= endDate)
                                                                          .Select(x => x.RaiinNo).ToList();
                     }
                     foreach (var printType in printTypes)
@@ -372,13 +372,13 @@ public class ReportService : IReportService
                     List<(long, List<long>)> raiinNos;
                     if (nyukinModels != null)
                     {
-                        raiinNos = nyukinModels.Where(x => x.SeikyuSinDate >= startDate && x.SeikyuSinDate <= endDate)
+                        raiinNos = nyukinModels.Where(x => x.SinDate >= startDate && x.SinDate <= endDate)
                                                .GroupBy(x => x.OyaRaiinNo)
                                                .Select(x => (x.Key, x.Select(item => item.RaiinNo).ToList())).ToList();
                     }
                     else
                     {
-                        raiinNos = accountDueListModels.Where(x => x.SeikyuSinDate >= startDate && x.SeikyuSinDate <= endDate)
+                        raiinNos = accountDueListModels.Where(x => x.SinDate >= startDate && x.SinDate <= endDate)
                                                        .GroupBy(x => x.OyaRaiinNo)
                                                        .Select(x => (x.Key, x.Select(item => item.RaiinNo).ToList())).ToList();
                     }

@@ -130,6 +130,17 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Accounting);
     }
 
+    [HttpPost(ApiPath.AccountingReport)]
+    public async Task<IActionResult> GenerateAccountingReport([FromBody] AccountingCoReportRequest request)
+    {
+        var accountDueListModels = request.AccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
+        var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
+        var selectedAccountDueListModel = ConvertToCoAccountDueListModel(request.SelectedAccountDueListModel);
+
+        var data = _reportService.GetAccountingData(request.HpId, request.Mode, request.PtId, accountDueListModels, multiAccountDueListModels, selectedAccountDueListModel, request.IsRyosyoDetail, request.PtRyosyoDetail, request.IsPrintMonth);
+        return await RenderPdf(data, ReportType.Accounting);
+    }
+
     [HttpGet(ApiPath.ReceiptReport)]
     public async Task<IActionResult> GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
     {
@@ -300,5 +311,14 @@ public class PdfCreatorController : ControllerBase
                 return File(byteData, "application/pdf");
             }
         }
+    }
+
+    private CoAccountDueListModel ConvertToCoAccountDueListModel(CoAccountDueListRequestModel request)
+    {
+        return new CoAccountDueListModel(
+                   request.SinDate,
+                   request.RaiinNo,
+                   request.OyaRaiinNo
+               );
     }
 }
