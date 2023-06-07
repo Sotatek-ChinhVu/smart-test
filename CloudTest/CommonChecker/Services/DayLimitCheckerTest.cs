@@ -1,7 +1,9 @@
 ﻿using CloudUnitTest.SampleData;
 using CommonChecker.DB;
+using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
+using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
@@ -25,8 +27,10 @@ namespace CloudUnitTest.CommonChecker.Services
                 new OrdInfoDetailModel("id2", 21, "Y101" + "day001", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
             };
 
-            var odrInfoModel = new List<OrdInfoModel>();
-            odrInfoModel.Add(new OrdInfoModel(21, 0, ordInfDetails));
+            var odrInfoModel = new List<OrdInfoModel>()
+            {
+                new OrdInfoModel(21, 0, ordInfDetails),
+            };
 
             var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                     RealtimeCheckerType.Days, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
@@ -206,14 +210,14 @@ namespace CloudUnitTest.CommonChecker.Services
                 new OrdInfoModel(21, 0, ordInfDetails),
             };
             var realtimeCheckerCondition = new RealTimeCheckerCondition(
-                                                isCheckingDuplication:false, 
-                                                isCheckingKinki: false, 
-                                                isCheckingAllergy: false, 
-                                                isCheckingDosage: false, 
-                                                isCheckingDays: true, 
-                                                isCheckingAge: false, 
+                                                isCheckingDuplication: false,
+                                                isCheckingKinki: false,
+                                                isCheckingAllergy: false,
+                                                isCheckingDosage: false,
+                                                isCheckingDays: true,
+                                                isCheckingAge: false,
                                                 isCheckingDisease: false,
-                                                isCheckingInvalidData: false, 
+                                                isCheckingInvalidData: false,
                                                 isCheckingAutoCheck: false);
 
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -251,7 +255,6 @@ namespace CloudUnitTest.CommonChecker.Services
             //Setup Data test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenMsts = CommonCheckerData.ReadTenMst("day006", "day006");
-            var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day006");
             var m10DayLimits = CommonCheckerData.ReadM10DayLimit("day006");
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M10DayLimit.AddRange(m10DayLimits);
@@ -296,7 +299,6 @@ namespace CloudUnitTest.CommonChecker.Services
             //Setup Data test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenMsts = CommonCheckerData.ReadTenMst("day007", "day007");
-            var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day007");
             var m10DayLimits = CommonCheckerData.ReadM10DayLimit("day007");
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M10DayLimit.AddRange(m10DayLimits);
@@ -319,5 +321,104 @@ namespace CloudUnitTest.CommonChecker.Services
             Assert.True(!result.ErrorOrderList.Any());
         }
 
+
+        [Test]
+        public void Test_008_Finder_CheckDayLimit_WithUsingDayLessThanLimitDay_True()
+        {
+            //setup
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext());
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext(); 
+            int hpId = 999;
+            int sinDay = 20230101;
+            double usingDay = 89;
+            var listAddedOrderCodes = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("1234day008", "id1"),
+            };
+
+            var tenMsts = CommonCheckerData.ReadTenMst("day008", "day008");
+            var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day008");
+            var m10DayLimits = CommonCheckerData.ReadM10DayLimit("day008");
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.DrugDayLimits.AddRange(drugDayLimits);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var daylimit = realtimeCheckerFinder.CheckDayLimit(hpId, sinDay, listAddedOrderCodes, usingDay);
+
+            //Clear Data test
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+            tenantTracking.DrugDayLimits.RemoveRange(drugDayLimits);
+            tenantTracking.SaveChanges();
+
+            Assert.True(!daylimit.Any());
+        }
+
+        [Test]
+        public void Test_009_Finder_CheckDayLimit_WithUsingDayEqualThanLimitDay_True()
+        {
+            //setup
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext());
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            int hpId = 999;
+            int sinDay = 20230101;
+            double usingDay = 90;
+            var listAddedOrderCodes = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("1234day009", "id1"),
+            };
+
+            var tenMsts = CommonCheckerData.ReadTenMst("day009", "day009");
+            var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day009");
+            var m10DayLimits = CommonCheckerData.ReadM10DayLimit("day009");
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.DrugDayLimits.AddRange(drugDayLimits);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var daylimit = realtimeCheckerFinder.CheckDayLimit(hpId, sinDay, listAddedOrderCodes, usingDay);
+
+            //Clear Data test
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+            tenantTracking.DrugDayLimits.RemoveRange(drugDayLimits);
+            tenantTracking.SaveChanges();
+
+            Assert.True(!daylimit.Any());
+        }
+
+        [Test]
+        public void Test_010_Finder_CheckDayLimit_WithUsingDayMoreThanLimitDay_True()
+        {
+            //setup
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext());
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            int hpId = 999;
+            int sinDay = 20230101;
+            double usingDay = 91;
+            var listAddedOrderCodes = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("1234day010", "id1"),
+            };
+
+            var tenMsts = CommonCheckerData.ReadTenMst("day010", "day010");
+            var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day010");
+            var m10DayLimits = CommonCheckerData.ReadM10DayLimit("day010");
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.DrugDayLimits.AddRange(drugDayLimits);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var daylimit = realtimeCheckerFinder.CheckDayLimit(hpId, sinDay, listAddedOrderCodes, usingDay);
+
+            //Clear Data test
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+            tenantTracking.DrugDayLimits.RemoveRange(drugDayLimits);
+            tenantTracking.SaveChanges();
+
+            Assert.True(daylimit.Any(x => x.LimitDay == 90 && x.UsingDay == 91));
+        }
     }
 }

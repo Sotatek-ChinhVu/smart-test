@@ -60,13 +60,13 @@ namespace CloudUnitTest.CommonChecker.Services
             }
             tenantTracking.SaveChanges();
 
+            if (systemConf != null) systemConf.Val = temp;
+            tenantTracking.SaveChanges();
+
             //// Act
             var result = diseaseChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
             //// Assert
             Assert.True(result.ErrorOrderList.Count == 0);
-
-            if (systemConf != null) systemConf.Val = temp;
-            tenantTracking.SaveChanges();
         }
 
         [Test]
