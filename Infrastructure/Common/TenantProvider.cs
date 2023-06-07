@@ -37,27 +37,40 @@ namespace Infrastructure.CommonDB
                 return dbSample;
             }
 
-            var domainList = _configuration.GetSection("DomainList");
-            if (domainList == null || !domainList.Key.Contains(clientDomain))
+            if (clientDomain == "smartkarte.sotatek.works")
             {
-                Console.WriteLine("Domain list is incorrect.");
-                Console.WriteLine(clientDomain);
-                if (domainList != null)
-                {
-                    Console.WriteLine("DomainList value: " + domainList.Value);
-                }
-                else
-                {
-                    Console.WriteLine("DomainList is null");
-                }
-                
+                return "host=smartkarte.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
+            }
+            else if (clientDomain == "uat-tenant.smartkarte.org")
+            {
+                return "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
+            }
+            else
+            {
                 return dbSample;
             }
-            
-            string result = domainList[clientDomain] ?? string.Empty;
-            Console.WriteLine("Start to get connection string: " + result);
 
-            return result;
+            //var domainList = _configuration.GetSection("DomainList");
+            //if (domainList == null || !domainList.Key.Contains(clientDomain))
+            //{
+            //    Console.WriteLine("Domain list is incorrect.");
+            //    Console.WriteLine(clientDomain);
+            //    if (domainList != null)
+            //    {
+            //        Console.WriteLine("DomainList value: " + domainList.Value);
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("DomainList is null");
+            //    }
+                
+            //    return dbSample;
+            //}
+            
+            //string result = domainList[clientDomain] ?? string.Empty;
+            //Console.WriteLine("Start to get connection string: " + result);
+
+            //return result;
         }
 
         public string GetClinicID()
