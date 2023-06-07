@@ -43,6 +43,11 @@ public class P26KokhoSokatuInCoReportService : IP26KokhoSokatuInCoReportService
     public P26KokhoSokatuInCoReportService(ICoKokhoSokatuFinder kokhoFinder)
     {
         _kokhoFinder = kokhoFinder;
+        _singleFieldData = new();
+        _singleFieldDataM = new();
+        _extralData = new();
+        _listTextData = new();
+        _visibleFieldData = new();
     }
     #endregion
 
@@ -146,7 +151,6 @@ public class P26KokhoSokatuInCoReportService : IP26KokhoSokatuInCoReportService
                 int chokiCnt = wrkReces.Where(r => r.IsChoki).Count();
                 listDataPerPage.Add(new("chokiCnt", 0, rowNo, chokiCnt.ToString()));
             }
-            _listTextData.Add(pageIndex, listDataPerPage);
 
             //一部負担金減免・猶予
             var menReces = receInfs.Where(r =>
@@ -154,6 +158,7 @@ public class P26KokhoSokatuInCoReportService : IP26KokhoSokatuInCoReportService
             ).ToList();
             SetFieldData("genmenCnt", menReces.Count.ToString());
             SetFieldData("genmenCnt", menReces.Sum(r => r.Tensu).ToString());
+            _listTextData.Add(pageIndex, listDataPerPage);
             #endregion
 
             return 1;
