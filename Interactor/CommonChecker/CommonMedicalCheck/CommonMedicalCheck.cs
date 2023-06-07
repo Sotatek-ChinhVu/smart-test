@@ -11,6 +11,7 @@ using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using System.Reflection;
 using System.Text;
 using UseCase.Family;
 using UseCase.MedicalExamination.SaveMedical;
@@ -1265,7 +1266,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<ErrorInfoModel> result = new();
         foreach (DayLimitResultModel dayLimit in dayLimitError)
         {
-            string itemName = _itemNameDictionary.ContainsKey(dayLimit.YjCd) ? _itemNameDictionary[dayLimit.YjCd] : string.Empty;
+            string itemName = _realtimeOrderErrorFinder.FindItemName(dayLimit.YjCd, _sinday);
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
             errorInfoModel.Id = dayLimit.Id;

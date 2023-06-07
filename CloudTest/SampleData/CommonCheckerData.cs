@@ -211,7 +211,7 @@ namespace CloudUnitTest.SampleData
             return ptByomeis;
         }
 
-        public static List<TenMst> ReadTenMst()
+        public static List<TenMst> ReadTenMst(string itemCd, string yjCd)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -245,7 +245,7 @@ namespace CloudUnitTest.SampleData
                                     tenMst.HpId = hpId;
                                     break;
                                 case "B":
-                                    tenMst.ItemCd = text;
+                                    tenMst.ItemCd = text + itemCd;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int startDate);
@@ -461,7 +461,9 @@ namespace CloudUnitTest.SampleData
                                     int.TryParse(text, out int MoniterKasan);
                                     tenMst.MoniterKasan= MoniterKasan;
                                     break;
-                                
+                                case "DX":
+                                    tenMst.YjCd = text + yjCd;
+                                    break;
                                 default:
                                     break;
                             }
@@ -474,7 +476,7 @@ namespace CloudUnitTest.SampleData
             return tenMsts;
         }
 
-        public static List<DrugDayLimit> ReadDrugDayLimit()
+        public static List<DrugDayLimit> ReadDrugDayLimit(string itemCd)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -508,7 +510,7 @@ namespace CloudUnitTest.SampleData
                                     drugDay.HpId = hpId;
                                     break;
                                 case "C":
-                                    drugDay.ItemCd = text;
+                                    drugDay.ItemCd = text + itemCd;
                                     break;
                                 case "D":
                                     int.TryParse(text, out int seqNo);
@@ -556,7 +558,7 @@ namespace CloudUnitTest.SampleData
             return drugDayLimits;
         }
 
-        public static List<M10DayLimit> ReadM10DayLimit()
+        public static List<M10DayLimit> ReadM10DayLimit(string yjCd)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -586,7 +588,7 @@ namespace CloudUnitTest.SampleData
                             switch (columnName)
                             {
                                 case "A":
-                                    m10Day.YjCd = text;
+                                    m10Day.YjCd = text + yjCd;
                                     break;
                                 case "B":
                                     int.TryParse(text, out int seqNo);
