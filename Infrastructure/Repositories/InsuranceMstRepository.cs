@@ -194,7 +194,7 @@ namespace Infrastructure.Repositories
                                             x.RoudouName ?? string.Empty
                                             )).ToList();
 
-            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, new List<HokenMstModel>(), dataComboboxKantokuMst, byomeiMstAftercares, new List<HokenMstModel>(), dataRoudouMst, allHokenMst);
+            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, dataComboboxKantokuMst, byomeiMstAftercares, dataRoudouMst, allHokenMst);
         }
 
         private List<HokenMstModel> GetHokenMstList(int today, bool isKohi, List<HokenMstModel> allHokenMst)
