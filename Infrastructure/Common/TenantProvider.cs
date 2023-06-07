@@ -39,11 +39,11 @@ namespace Infrastructure.CommonDB
 
             if (clientDomain == "smartkarte.sotatek.works")
             {
-                return "host=smartkarte.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
+                return "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
             }
             else if (clientDomain == "uat-tenant.smartkarte.org")
             {
-                return "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
+                return "host=smartkarte.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
             }
             else
             {
