@@ -44,7 +44,11 @@ namespace Infrastructure.CommonDB
                 Console.WriteLine(clientDomain);
                 if (domainList != null)
                 {
-                    Console.WriteLine(domainList.Value);
+                    Console.WriteLine("DomainList value: " + domainList.Value);
+                }
+                else
+                {
+                    Console.WriteLine("DomainList is null");
                 }
                 
                 return dbSample;
