@@ -21,25 +21,32 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
+            Console.WriteLine("Start to get connection string");
             string dbSample = _configuration["TenantDbSample"] ?? string.Empty;
             var headers = _httpContextAccessor.HttpContext.Request.Headers;
             if (headers == null || !headers.ContainsKey("domain"))
             {
+                Console.WriteLine("Header doesn't contain the domain key.");
                 return dbSample;
             }
 
             string? clientDomain = headers["domain"];
             if (string.IsNullOrEmpty(clientDomain))
             {
+                Console.WriteLine("ClientDomain is empty.");
                 return dbSample;
             }
 
             var domainList = _configuration.GetSection("DomainList");
             if (domainList == null || !domainList.Key.Contains(clientDomain))
             {
+                Console.WriteLine("Domain list is incorrect.");
                 return dbSample;
             }
+            
             string result = domainList[clientDomain] ?? string.Empty;
+            Console.WriteLine("Start to get connection string: " + result);
+
             return result;
         }
 
