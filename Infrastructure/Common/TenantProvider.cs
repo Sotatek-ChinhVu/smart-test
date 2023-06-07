@@ -75,7 +75,18 @@ namespace Infrastructure.CommonDB
 
         public string GetClinicID()
         {
-            return TempIdentity.ClinicID;
+            var headers = _httpContextAccessor.HttpContext.Request.Headers;
+            if (headers == null || !headers.ContainsKey("domain"))
+            {
+                return TempIdentity.ClinicID;
+            }
+
+            string? clientDomain = headers["domain"];
+            if (string.IsNullOrEmpty(clientDomain))
+            {
+                return TempIdentity.ClinicID;
+            }
+            return clientDomain;
         }
 
         private TenantNoTrackingDataContext? _noTrackingDataContext;
