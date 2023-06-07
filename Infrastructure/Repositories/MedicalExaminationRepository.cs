@@ -1145,7 +1145,7 @@ namespace Infrastructure.Repositories
             }
             checkedContent = FormatSanteiMessage(tenMstTeiyoModel.Name ?? string.Empty);
 
-            var checkedOrderTeiyoModel = new CheckedOrderModel(CheckingType.MissingCalculate, santei, checkedContent, tenMstModel?.ItemCd ?? string.Empty, tenMstModel?.SinKouiKbn ?? 0, tenMstModel?.Name ?? string.Empty, 0);
+            var checkedOrderTeiyoModel = new CheckedOrderModel(CheckingType.MissingCalculate, santei, checkedContent, tenMstTeiyoModel?.ItemCd ?? string.Empty, tenMstTeiyoModel?.SinKouiKbn ?? 0, tenMstTeiyoModel?.Name ?? string.Empty, 0);
             checkedOrderModelList.Add(checkedOrderTeiyoModel);
 
             // 当月すでに1回以上算定されている場合、チェックOFFで表示する
@@ -1458,7 +1458,7 @@ namespace Infrastructure.Repositories
             return string.Join(", ", dateInt);
         }
 
-        private List<SinKouiCountModel> GetSinkouCountInMonth(int hpId, long ptId, int sinDate, string itemCd)
+        public List<SinKouiCountModel> GetSinkouCountInMonth(int hpId, long ptId, int sinDate, string itemCd)
         {
             int sinYM = sinDate / 100;
             int sinDay = sinDate - sinYM * 100;

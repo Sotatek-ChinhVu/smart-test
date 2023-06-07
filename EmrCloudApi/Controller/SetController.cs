@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.SetMst;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.SetMst;
 using EmrCloudApi.Realtime;
@@ -66,7 +67,7 @@ public class SetController : AuthorizeControllerBase
         if (output.Status == SaveSetMstStatus.Successed)
         {
             await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetSaveChanged,
-                new SuperSetMessage { SetCds = new List<int> { output.setMstModel?.SetCd ?? 0 } });
+                new SuperSetMessage { SetMstModels = new List<SetMstModel> { output.setMstModel ?? new() } });
         }
 
         var presenter = new SaveSetMstPresenter();
@@ -84,7 +85,7 @@ public class SetController : AuthorizeControllerBase
         if (output.Status == ReorderSetMstStatus.Successed)
         {
             await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetReorderChanged,
-                new SuperSetMessage { SetCds = new List<int> { request.DragSetCd, request.DropSetCd } });
+                new SuperSetMessage { ReorderSetMstModels = output.setMstModels ?? new() });
         }
 
         var presenter = new ReorderSetMstPresenter();
@@ -92,8 +93,6 @@ public class SetController : AuthorizeControllerBase
 
         return new ActionResult<Response<ReorderSetMstResponse>>(presenter.Result);
     }
-
-
 
     [HttpPost(ApiPath.Paste)]
     public async Task<ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
@@ -104,7 +103,7 @@ public class SetController : AuthorizeControllerBase
         if (output.Status == CopyPasteSetMstStatus.Successed)
         {
             await _webSocketService.SendMessageAsync(FunctionCodes.SuperCopyPasteChanged,
-                new SuperSetMessage { SetCds = new List<int> { output.NewSetCd} });
+                new SuperSetMessage { ReorderSetMstModels = output.SetMstModels ?? new() });
         }
 
         var presenter = new CopyPasteSetMstPresenter();

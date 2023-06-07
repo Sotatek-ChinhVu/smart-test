@@ -8,5 +8,7 @@ public class SaveAccountDueListRequest
 
     public int SinDate { get; set; }
 
+    public string KaikeiTime { get; set; } = string.Empty;
+
     public List<AccountDueItem> ListAccountDues { get; set; } = new();
 }

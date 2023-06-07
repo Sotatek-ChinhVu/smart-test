@@ -11,5 +11,6 @@
         public int PayType { get; set; }
         public string Comment { get; set; } = string.Empty;
         public bool IsDisCharged { get; set; }
+        public string KaikeiTime { get; set; } = string.Empty;
     }
 }
