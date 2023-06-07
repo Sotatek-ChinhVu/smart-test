@@ -41,6 +41,12 @@ namespace Infrastructure.CommonDB
             if (domainList == null || !domainList.Key.Contains(clientDomain))
             {
                 Console.WriteLine("Domain list is incorrect.");
+                Console.WriteLine(clientDomain);
+                if (domainList != null)
+                {
+                    Console.WriteLine(domainList.Key.ToString());
+                }
+                
                 return dbSample;
             }
             
