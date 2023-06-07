@@ -57,5 +57,7 @@ namespace Domain.Models.User
         PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode);
 
         List<UserPermissionModel> GetAllPermission(int hpId, int userId);
+
+        List<FunctionMstModel> GetListFunctionPermission();
     }
 }

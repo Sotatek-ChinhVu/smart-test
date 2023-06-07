@@ -6,6 +6,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using static Helper.Constants.UserConst;
 
@@ -380,6 +381,23 @@ namespace Infrastructure.Repositories
                 return GetPermissionTypeByCode(userPermission.Permission);
             }
             return GetDefaultPermission(permisionCode, isDoctor);
+        }
+
+        public List<FunctionMstModel> GetListFunctionPermission()
+        {
+            IQueryable<FunctionMst> listFuncMst = NoTrackingDataContext.FunctionMsts;
+            IQueryable<PermissionMst> listPerMst = NoTrackingDataContext.PermissionMsts;
+            var functionMstQuery = (from funcMst in listFuncMst
+                                   join perMst in listPerMst on funcMst.FunctionCd equals perMst.FunctionCd into listPermission
+                                   select new
+                                   {
+                                       FuncMst = funcMst,
+                                       ListPermission = listPermission,
+                                   }).ToList();
+
+            return functionMstQuery.Where(x => x.ListPermission.Any()).Select(x => new FunctionMstModel(x.FuncMst.FunctionCd,
+                                                                                                        x.FuncMst.FunctionName ?? string.Empty, 
+                                                                                                        x.ListPermission.Select(p => new PermissionMstModel(p.FunctionCd, p.Permission)).ToList())).ToList();
         }
 
         private PermissionType GetPermissionTypeByCode(int code)

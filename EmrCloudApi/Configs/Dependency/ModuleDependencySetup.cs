@@ -594,6 +594,7 @@ using Reporting.Sijisen.DB;
 using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Interactor.SetMst.CommonSuperSet;
+using UseCase.User.GetListFunctionPermission;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -872,6 +873,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckedLockMedicalExaminationInputData, CheckedLockMedicalExaminationInteractor>();
             busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
             busBuilder.RegisterUseCase<GetAllPermissionInputData, GetAllPermissionInteractor>();
+            busBuilder.RegisterUseCase<GetListFunctionPermissionInputData, GetListFunctionPermissionInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
