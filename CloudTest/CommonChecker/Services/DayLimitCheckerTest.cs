@@ -321,7 +321,6 @@ namespace CloudUnitTest.CommonChecker.Services
             Assert.True(!result.ErrorOrderList.Any());
         }
 
-
         [Test]
         public void Test_008_Finder_CheckDayLimit_WithUsingDayLessThanLimitDay_True()
         {

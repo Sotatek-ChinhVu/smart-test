@@ -1,5 +1,7 @@
-﻿using CommonChecker.Models.OrdInf;
+﻿using CommonChecker.Models;
+using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
+using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
@@ -69,10 +71,52 @@ namespace CloudUnitTest.CommonChecker.Services
             Assert.True(result.ErrorOrderList.Count == 0);
         }
 
+        /// <summary>
+        /// Setting Value = 1
+        /// </summary>
         [Test]
-        public void CheckDiseaseChecker_002_ErrorList()
+        public void CheckDiseaseChecker_002_CheckContraindicationForCurrentDisease()
         {
+            //Setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
+            var temp = systemConf?.Val ?? 0;
+            int settingLevel = 1;
+            if (systemConf != null)
+            {
+                systemConf.Val = settingLevel;
+            }
+            else
+            {
+                systemConf = new SystemConf
+                {
+                    HpId = 1,
+                    GrpCd = 2027,
+                    GrpEdaNo = 2,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 2,
+                    UpdateId = 2,
+                    Val = settingLevel
+                };
+                tenantTracking.SystemConfs.Add(systemConf);
+            }
+            tenantTracking.SaveChanges();
 
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext());
+
+            int hpId = 999;
+            long ptId = 1231;
+            var listItemCode = new List<ItemCodeModel>()
+            {
+
+            };
+
+            ///Act
+            var result = realTimeCheckerFinder.CheckContraindicationForCurrentDisease(hpId,ptId, settingLevel);
+
+            if (systemConf != null) systemConf.Val = temp;
+            tenantTracking.SaveChanges();
         }
     }
 }
