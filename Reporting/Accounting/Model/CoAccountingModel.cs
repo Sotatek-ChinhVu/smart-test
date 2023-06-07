@@ -317,9 +317,11 @@ public class CoAccountingModel
         }
     }
 
-    /// <summary>
-    /// 医療機関名
-    /// </summary>
+    public int HpId
+    {
+        get => HpInfModel.HpId;
+    }
+    
     public string HpName
     {
         get => HpInfModel.HpName;
