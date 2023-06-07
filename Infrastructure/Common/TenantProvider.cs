@@ -44,7 +44,7 @@ namespace Infrastructure.CommonDB
                 Console.WriteLine(clientDomain);
                 if (domainList != null)
                 {
-                    Console.WriteLine(domainList.Key.ToString());
+                    Console.WriteLine(domainList.Value);
                 }
                 
                 return dbSample;
