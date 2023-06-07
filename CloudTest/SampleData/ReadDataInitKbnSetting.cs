@@ -438,7 +438,7 @@ public static class ReadDataInitKbnSetting
                         }
                         numberCell++;
                     }
-                    if (raiinKbItem.HpId == 0 && raiinKbItem.KouiKbnId == 0)
+                    if (raiinKbItem.HpId == 0 && raiinKbItem.GrpCd == 0)
                     {
                         break;
                     }
