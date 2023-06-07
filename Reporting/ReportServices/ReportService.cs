@@ -1,8 +1,11 @@
-﻿using Reporting.Accounting.Model;
+﻿using Amazon.Runtime.Internal;
+using Domain.Models.AccountDue;
+using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.Accounting.Service;
 using Reporting.AccountingCard.Service;
 using Reporting.Byomei.Service;
+using Reporting.CommonMasters.Config;
 using Reporting.CommonMasters.Enums;
 using Reporting.DailyStatic.Service;
 using Reporting.DrugInfo.Model;
@@ -29,11 +32,13 @@ using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
+using System.Linq;
 
 namespace Reporting.ReportServices;
 
 public class ReportService : IReportService
 {
+    private readonly ISystemConfig _systemConfig;
     private readonly IOrderLabelCoReportService _orderLabelCoReportService;
     private readonly IDrugInfoCoReportService _drugInfoCoReportService;
     private readonly ISijisenReportService _sijisenReportService;
@@ -57,8 +62,9 @@ public class ReportService : IReportService
     private readonly IYakutaiCoReportService _yakutaiCoReportService;
     private readonly IAccountingCardCoReportService _accountingCardCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService)
+    public ReportService(ISystemConfig systemConfig, IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService)
     {
+        _systemConfig = systemConfig;
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
         _sijisenReportService = sijisenReportService;
@@ -218,6 +224,175 @@ public class ReportService : IReportService
     public AccountingResponse GetAccountingReportingData(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
     {
         return _accountingCoReportService.GetAccountingReportingData(hpId, coAccountingParamModels);
+    }
+
+    public AccountingResponse GetAccountingReportingData(int hpId, ConfirmationMode mode, long ptId, int sinDate, List<AccountDueModel> accountDueListModels, List<AccountDueModel> multiAccountDueListModels, AccountDueModel selectedAccountDueListModel, bool isRyosyoDetail, int ptRyosyoDetail, bool isPrintMonth)
+    {
+        List<CoAccountingParamModel> requestAccountting = new();
+        bool ryoshusho = _systemConfig.PrintReceipt() == 1;
+        bool meisai = _systemConfig.PrintDetail() == 1 || ptRyosyoDetail == 1;
+        if (isRyosyoDetail)
+        {
+            meisai = false;
+        }
+
+        List<AccountDueModel> nyukinModels = accountDueListModels;
+        List<int> months = new List<int>();
+        foreach (var model in multiAccountDueListModels)
+        {
+            selectedAccountDueListModel = model;
+            accountDueListModels = nyukinModels.FindAll(p => p.SeikyuSinDate / 100 == model.SeikyuSinDate / 100);
+            if (isPrintMonth)
+            {
+                if (!months.Contains(model.SeikyuSinDate / 100))
+                {
+                    var printItem = PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SeikyuSinDate, model.OyaRaiinNo, accountDueListModels);
+                    requestAccountting.AddRange(printItem);
+                    months.Add(model.SeikyuSinDate / 100);
+                }
+            }
+            else
+            {
+                var printItem = PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SeikyuSinDate, model.OyaRaiinNo);
+                requestAccountting.AddRange(printItem);
+            }
+        }
+        return _accountingCoReportService.GetAccountingReportingData(hpId, requestAccountting);
+    }
+
+    private List<CoAccountingParamModel> PrintWithoutThread(bool ryoshusho, bool meisai, ConfirmationMode mode, long ptId, List<AccountDueModel> accountDueListModels, AccountDueModel selectedAccountDueListModel, bool isPrintMonth, int sinDate, long oyaRaiinNo, List<AccountDueModel>? nyukinModels = null)
+    {
+        int GetMaxDateInMonth(int month)
+        {
+            var models = accountDueListModels.Where(x => x.Month == month).OrderBy(x => x.SeikyuSinDate);
+            return models.Last().SeikyuSinDate;
+        }
+
+        int GetMinDateInMonth(int month)
+        {
+            var models = accountDueListModels.Where(x => x.Month == month).OrderBy(x => x.SeikyuSinDate);
+            return models.First().SeikyuSinDate;
+        }
+
+        List<CoAccountingParamModel> result = new();
+        List<(int startDate, int endDate)> dates = new();
+        if (accountDueListModels.Count >= 1)
+        {
+            if (isPrintMonth)
+            {
+                var groups = accountDueListModels.GroupBy(x => x.Month);
+                List<int> months = groups.Select(x => x.Key).ToList();
+                foreach (var month in months)
+                {
+                    dates.Add((GetMinDateInMonth(month), GetMaxDateInMonth(month)));
+                }
+            }
+            else
+            {
+                if (mode == ConfirmationMode.FromPrintBtn || mode == ConfirmationMode.FromMenu)
+                {
+                    dates.Add((selectedAccountDueListModel.SeikyuSinDate, selectedAccountDueListModel.SeikyuSinDate));
+                }
+                else
+                {
+                    dates.AddRange(from item in accountDueListModels
+                                   select (item.SeikyuSinDate, item.SeikyuSinDate));
+                    dates = dates.Distinct().ToList();
+                }
+            }
+        }
+
+        List<int> printTypes = new();
+        if (isPrintMonth)
+        {
+            if (ryoshusho)
+            {
+                ///2:月間領収証
+                ///3:月間明細
+                printTypes.Add(2);
+            }
+
+            if (meisai)
+            {
+                printTypes.Add(3);
+            }
+        }
+        else
+        {
+            if (ryoshusho)
+            {
+                ///0:領収証
+                ///1:明細
+                printTypes.Add(0);
+            }
+
+            if (meisai)
+            {
+                printTypes.Add(1);
+            }
+        }
+
+        if (!isPrintMonth && mode == ConfirmationMode.FromPrintBtn || mode == ConfirmationMode.FromMenu)
+        {
+            foreach (var printType in printTypes)
+            {
+                var raiinNos = accountDueListModels.Where(x => x.OyaRaiinNo == (oyaRaiinNo > 0 ? oyaRaiinNo : selectedAccountDueListModel.OyaRaiinNo)).Select(x => x.RaiinNo).ToList();
+                result.Add(new(
+                              ptId,
+                              sinDate > 0 ? sinDate : selectedAccountDueListModel.SeikyuSinDate,
+                              sinDate > 0 ? sinDate : selectedAccountDueListModel.SeikyuSinDate,
+                              raiinNos,
+                              printType: printType));
+            }
+        }
+        else
+        {
+            foreach (var (startDate, endDate) in dates)
+            {
+                if (isPrintMonth)
+                {
+                    List<long> raiinNos = new();
+                    if (nyukinModels != null)
+                    {
+                        raiinNos = nyukinModels.Where(x => x.SeikyuSinDate >= startDate && x.SeikyuSinDate <= endDate)
+                                                                         .Select(x => x.RaiinNo).ToList();
+                    }
+                    else
+                    {
+                        accountDueListModels.Where(x => x.SeikyuSinDate >= startDate && x.SeikyuSinDate <= endDate)
+                                                                         .Select(x => x.RaiinNo).ToList();
+                    }
+                    foreach (var printType in printTypes)
+                    {
+                        result.Add(new(ptId, startDate, endDate, raiinNos, printType: printType));
+                    }
+                }
+                else
+                {
+                    List<(long, List<long>)> raiinNos;
+                    if (nyukinModels != null)
+                    {
+                        raiinNos = nyukinModels.Where(x => x.SeikyuSinDate >= startDate && x.SeikyuSinDate <= endDate)
+                                               .GroupBy(x => x.OyaRaiinNo)
+                                               .Select(x => (x.Key, x.Select(item => item.RaiinNo).ToList())).ToList();
+                    }
+                    else
+                    {
+                        raiinNos = accountDueListModels.Where(x => x.SeikyuSinDate >= startDate && x.SeikyuSinDate <= endDate)
+                                                       .GroupBy(x => x.OyaRaiinNo)
+                                                       .Select(x => (x.Key, x.Select(item => item.RaiinNo).ToList())).ToList();
+                    }
+                    foreach (var printType in printTypes)
+                    {
+                        foreach (var oya in raiinNos)
+                        {
+                            result.Add(new(ptId, startDate, endDate, oya.Item2, printType: printType));
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     /// <summary>

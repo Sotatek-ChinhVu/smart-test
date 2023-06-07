@@ -1,4 +1,5 @@
-﻿using Reporting.Accounting.Model;
+﻿using Domain.Models.AccountDue;
+using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.CommonMasters.Enums;
 using Reporting.DrugInfo.Model;
@@ -43,6 +44,8 @@ public interface IReportService
             int hakkoDay, string memo, string formFileName);
 
     AccountingResponse GetAccountingReportingData(int hpId, List<CoAccountingParamModel> coAccountingParamModels);
+
+    AccountingResponse GetAccountingReportingData(int hpId, ConfirmationMode mode, long ptId, int sinDate, List<AccountDueModel> accountDueListModels, List<AccountDueModel> multiAccountDueListModels, AccountDueModel selectedAccountDueListModel, bool isRyosyoDetail, int ptRyosyoDetail, bool isPrintMonth);
 
     AccountingResponse GetAccountingReportingData(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false);
 
