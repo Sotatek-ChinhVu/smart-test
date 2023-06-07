@@ -201,12 +201,125 @@ public class InitKbnSettingTest : BaseUT
     private bool CompareInitDefaultByNextOrder(List<RaiinKbnModel> resultQuery, List<RaiinKbnModel> raiinKbnModels, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds)
     {
         var grpCd = raiinKbnModels.FirstOrDefault()?.GrpCd ?? 0;
-        var raiinKbnModel = raiinKbnModels.FirstOrDefault();
-        if (raiinKbnModel==null)
+        var raiinKbnModel = raiinKbnModels.FirstOrDefault(item => item.GrpCd == grpCd);
+        if (raiinKbnModel == null)
         {
             return false;
         }
         var resultTest = resultQuery.FirstOrDefault(item => item.GrpCd == grpCd);
+        if (resultTest == null)
+        {
+            return false;
+        }
+        if (resultTest.HpId != 1)
+        {
+            return false;
+        }
+        else if (resultTest.GrpCd != raiinKbnModel.GrpCd)
+        {
+            return false;
+        }
+        else if (resultTest.SortNo != raiinKbnModel.SortNo)
+        {
+            return false;
+        }
+        else if (resultTest.GrpName != raiinKbnModel.GrpName)
+        {
+            return false;
+        }
+        else if (resultTest.IsDeleted != raiinKbnModel.IsDeleted)
+        {
+            return false;
+        }
+
+        var raiinKbnInfModel = resultTest.RaiinKbnInfModel;
+        if (raiinKbnInfModel == null)
+        {
+            return false;
+        }
+        else if (raiinKbnInfModel.HpId != raiinKbnModel.RaiinKbnInfModel.HpId)
+        {
+            return false;
+        }
+        else if (raiinKbnInfModel.PtId != raiinKbnModel.RaiinKbnInfModel.PtId)
+        {
+            return false;
+        }
+        else if (raiinKbnInfModel.SinDate != raiinKbnModel.RaiinKbnInfModel.SinDate)
+        {
+            return false;
+        }
+        else if (raiinKbnInfModel.RaiinNo != raiinKbnModel.RaiinKbnInfModel.RaiinNo)
+        {
+            return false;
+        }
+        else if (raiinKbnInfModel.GrpId != raiinKbnModel.GrpCd)
+        {
+            return false;
+        }
+        else if (raiinKbnInfModel.SeqNo != raiinKbnModel.RaiinKbnInfModel.SeqNo)
+        {
+            return false;
+        }
+        else if (raiinKbnInfModel.KbnCd != raiinKbnModel.RaiinKbnInfModel.KbnCd)
+        {
+            return false;
+        }
+        else if (raiinKbnInfModel.IsDelete != raiinKbnModel.RaiinKbnInfModel.IsDelete)
+        {
+            return false;
+        }
+
+        var raiinKbnDetailModel = resultTest.RaiinKbnDetailModels.FirstOrDefault();
+        if (raiinKbnDetailModel == null)
+        {
+            return false;
+        }
+        var raiinKbnDetail = raiinKbnModel.RaiinKbnDetailModels.FirstOrDefault();
+        if (raiinKbnDetail == null)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.HpId != raiinKbnDetail.HpId)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.GrpCd != raiinKbnDetail.GrpCd)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.KbnCd != raiinKbnDetail.KbnCd)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.SortNo != raiinKbnDetail.SortNo)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.KbnName != raiinKbnDetail.KbnName)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.ColorCd != raiinKbnDetail.ColorCd)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.IsConfirmed != raiinKbnDetail.IsConfirmed)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.IsAuto != raiinKbnDetail.IsAuto)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.IsAutoDelete != raiinKbnDetail.IsAutoDelete)
+        {
+            return false;
+        }
+        else if (raiinKbnDetailModel.IsDeleted != raiinKbnDetail.IsDeleted)
+        {
+            return false;
+        }
         return true;
     }
 
