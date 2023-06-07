@@ -22,13 +22,7 @@ namespace Infrastructure.CommonDB
         public string GetConnectionString()
         {
             string dbSample = _configuration["TenantDbSample"] ?? string.Empty;
-            var headers = _httpContextAccessor.HttpContext.Request.Headers;
-            if (headers == null || !headers.ContainsKey("domain"))
-            {
-                return dbSample;
-            }
-
-            string? clientDomain = headers["domain"];
+            string clientDomain = GetDomainFromHeader();
             if (string.IsNullOrEmpty(clientDomain))
             {
                 return dbSample;
@@ -45,7 +39,20 @@ namespace Infrastructure.CommonDB
 
         public string GetClinicID()
         {
-            return TempIdentity.ClinicID;
+            var domain = GetDomainFromHeader();
+            return string.IsNullOrEmpty(domain) ? TempIdentity.ClinicID : domain;
+        }
+
+        private string GetDomainFromHeader()
+        {
+            var headers = _httpContextAccessor.HttpContext.Request.Headers;
+            if (headers == null || !headers.ContainsKey("domain"))
+            {
+                return string.Empty;
+            }
+            string? clientDomain = headers["domain"];
+
+            return clientDomain ?? string.Empty;
         }
 
         private TenantNoTrackingDataContext? _noTrackingDataContext;
