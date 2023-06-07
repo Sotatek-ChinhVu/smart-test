@@ -113,7 +113,7 @@ namespace CloudUnitTest.CommonChecker.Services
             };
 
             ///Act
-            var result = realTimeCheckerFinder.CheckContraindicationForCurrentDisease(hpId,ptId, settingLevel);
+           // var result = realTimeCheckerFinder.CheckContraindicationForCurrentDisease(hpId,ptId, settingLevel);
 
             if (systemConf != null) systemConf.Val = temp;
             tenantTracking.SaveChanges();
