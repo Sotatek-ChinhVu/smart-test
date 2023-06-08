@@ -112,6 +112,18 @@ namespace EmrCloudApi.Controller
 
             return new ActionResult<Response<GetLockInfoResponse>>(presenter.Result);
         }
+
+        [HttpGet(ApiPath.CheckLockVisiting)]
+        public ActionResult<Response<CheckLockVisitingResponse>> CheckLockVisiting([FromBody] CheckLockVisitingRequest request)
+        {
+            var input = new CheckLockVisitingInputData(HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckLockVisitingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckLockVisitingResponse>>(presenter.Result);
+        }
     }
 
     public class Locker

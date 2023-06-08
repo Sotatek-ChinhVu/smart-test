@@ -214,5 +214,14 @@ namespace Infrastructure.Repositories
                                                         x.lockMst.LockRange)).ToList();
             return result;
         }
+
+        public bool GetVisitingLockStatus(int hpId, long ptId, int sinDate)
+        {
+            return NoTrackingDataContext.LockInfs
+                                        .FirstOrDefault(
+                                        l => l.HpId == hpId &&
+                                        l.SinDate == sinDate &&
+                                        l.PtId == ptId) != null;
+        }
     }
 }
