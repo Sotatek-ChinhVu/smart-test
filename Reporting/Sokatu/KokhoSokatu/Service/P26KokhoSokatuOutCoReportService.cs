@@ -61,7 +61,7 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
         this.hpId = hpId;
         this.seikyuYm = seikyuYm;
         this.seikyuType = seikyuType;
-        currentPage = 1;
+        this.currentPage = 1;
         var getData = GetData();
         hasNextPage = true;
 
@@ -180,6 +180,7 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
             ).ToList();
             SetFieldData("genmenCnt", menReces.Count.ToString());
             SetFieldData("genmenCnt", menReces.Sum(r => r.Tensu).ToString());
+            _listTextData.Add(pageIndex, listDataPerPage);
             #endregion
 
             return 1;

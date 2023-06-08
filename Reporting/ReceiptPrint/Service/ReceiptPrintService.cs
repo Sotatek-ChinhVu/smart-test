@@ -145,7 +145,7 @@ public class ReceiptPrintService : IReceiptPrintService
         {
             return _p08KokhoSokatuCoReportService.GetP08KokhoSokatuReportingData(hpId, seikyuYm, seikyuType);
         }
-        else if (prefNo == 26 && reportId == 102 && reportEdaNo == 1)
+        else if (prefNo == 26 && reportId == 102 && reportEdaNo == 2)
         {
             return _p26KokhoSokatuOutCoReportService.GetP26KokhoSokatuOutReportingData(hpId, seikyuYm, seikyuType);
         }
