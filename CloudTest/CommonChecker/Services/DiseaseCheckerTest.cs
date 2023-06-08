@@ -1,4 +1,5 @@
-﻿using CommonChecker.Models;
+﻿using CloudUnitTest.SampleData;
+using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.DB;
@@ -79,9 +80,9 @@ namespace CloudUnitTest.CommonChecker.Services
         {
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
+            var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 999 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
             var temp = systemConf?.Val ?? 0;
-            int settingLevel = 1;
+            int settingLevel = 3;
             if (systemConf != null)
             {
                 systemConf.Val = settingLevel;
@@ -90,7 +91,7 @@ namespace CloudUnitTest.CommonChecker.Services
             {
                 systemConf = new SystemConf
                 {
-                    HpId = 1,
+                    HpId = 999,
                     GrpCd = 2027,
                     GrpEdaNo = 2,
                     CreateDate = DateTime.UtcNow,
@@ -103,20 +104,40 @@ namespace CloudUnitTest.CommonChecker.Services
             }
             tenantTracking.SaveChanges();
 
+            var tenMsts = CommonCheckerData.ReadTenMst("DIS002", "DIS002");
+            var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("DIS002");
+            var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS002");
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
+            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
+            tenantTracking.SaveChanges();
+
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext());
 
             int hpId = 999;
             long ptId = 1231;
+            int sinDate = 20230101;
             var listItemCode = new List<ItemCodeModel>()
             {
-
+                new ItemCodeModel("620001936", "id1"),
+                new ItemCodeModel("641210022", "id1"),
+                new ItemCodeModel("620525101", "id1"),
+                new ItemCodeModel("620003776", "id1"),
+                new ItemCodeModel("620004717", "id1"),
             };
 
             ///Act
-           // var result = realTimeCheckerFinder.CheckContraindicationForCurrentDisease(hpId,ptId, settingLevel);
+            var result = realTimeCheckerFinder.CheckContraindicationForCurrentDisease(hpId, ptId, settingLevel, sinDate, listItemCode, new(), true);
 
             if (systemConf != null) systemConf.Val = temp;
+
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.M42ContraindiDisCon.RemoveRange(m42DisCon);
+            tenantTracking.M42ContraindiDrugMainEx.RemoveRange(m42DrugMainEx);
             tenantTracking.SaveChanges();
+
+            ///Assert
+            Assert.True(result.Any());
         }
     }
 }

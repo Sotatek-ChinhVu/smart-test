@@ -2,7 +2,6 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Entity.Tenant;
-using Moq;
 
 namespace CloudUnitTest.SampleData
 {
@@ -379,7 +378,7 @@ namespace CloudUnitTest.SampleData
                                     break;
                                 case "AY":
                                     int.TryParse(text, out int syotiNyuyojiKbn);
-                                    tenMst.SyotiNyuyojiKbn= syotiNyuyojiKbn;
+                                    tenMst.SyotiNyuyojiKbn = syotiNyuyojiKbn;
                                     break;
                                 case "AZ":
                                     int.TryParse(text, out int lowWeightKbn);
@@ -395,7 +394,7 @@ namespace CloudUnitTest.SampleData
                                     break;
                                 case "BC":
                                     int.TryParse(text, out int TeigenKbn);
-                                    tenMst.TeigenKbn= TeigenKbn;
+                                    tenMst.TeigenKbn = TeigenKbn;
                                     break;
                                 case "BD":
                                     int.TryParse(text, out int sekituiKbn);
@@ -407,7 +406,7 @@ namespace CloudUnitTest.SampleData
                                     break;
                                 case "BF":
                                     int.TryParse(text, out int AutoHougouKbn);
-                                    tenMst.AutoHougouKbn= AutoHougouKbn;
+                                    tenMst.AutoHougouKbn = AutoHougouKbn;
                                     break;
                                 case "BG":
                                     int.TryParse(text, out int GairaiKanriKbn);
@@ -415,51 +414,51 @@ namespace CloudUnitTest.SampleData
                                     break;
                                 case "BH":
                                     int.TryParse(text, out int TusokuTargetKbn);
-                                    tenMst.TusokuTargetKbn= TusokuTargetKbn;
+                                    tenMst.TusokuTargetKbn = TusokuTargetKbn;
                                     break;
                                 case "BI":
                                     int.TryParse(text, out int HokatuKbn);
-                                    tenMst.HokatuKbn= HokatuKbn;
+                                    tenMst.HokatuKbn = HokatuKbn;
                                     break;
                                 case "BJ":
                                     int.TryParse(text, out int TyoonpaNaisiKbn);
-                                    tenMst.TyoonpaNaisiKbn= TyoonpaNaisiKbn;
+                                    tenMst.TyoonpaNaisiKbn = TyoonpaNaisiKbn;
                                     break;
                                 case "BK":
                                     int.TryParse(text, out int AutoFungoKbn);
-                                    tenMst.AutoFungoKbn= AutoFungoKbn;
+                                    tenMst.AutoFungoKbn = AutoFungoKbn;
                                     break;
                                 case "BL":
                                     int.TryParse(text, out int TyoonpaGyokoKbn);
-                                    tenMst.TyoonpaGyokoKbn= TyoonpaGyokoKbn;
+                                    tenMst.TyoonpaGyokoKbn = TyoonpaGyokoKbn;
                                     break;
                                 case "BM":
                                     int.TryParse(text, out int GazoKasan);
-                                    tenMst.GazoKasan= GazoKasan;
+                                    tenMst.GazoKasan = GazoKasan;
                                     break;
                                 case "BN":
                                     int.TryParse(text, out int KansatuKbn);
-                                    tenMst.KansatuKbn= KansatuKbn;
+                                    tenMst.KansatuKbn = KansatuKbn;
                                     break;
                                 case "BO":
                                     int.TryParse(text, out int MasuiKbn);
-                                    tenMst.MasuiKbn= MasuiKbn;
+                                    tenMst.MasuiKbn = MasuiKbn;
                                     break;
                                 case "BP":
                                     int.TryParse(text, out int FukubikuNaisiKasan);
-                                    tenMst.FukubikuNaisiKasan= FukubikuNaisiKasan;
+                                    tenMst.FukubikuNaisiKasan = FukubikuNaisiKasan;
                                     break;
                                 case "BQ":
                                     int.TryParse(text, out int FukubikuKotunanKasan);
-                                    tenMst.FukubikuKotunanKasan= FukubikuKotunanKasan;
+                                    tenMst.FukubikuKotunanKasan = FukubikuKotunanKasan;
                                     break;
                                 case "BR":
-                                    int.TryParse(text, out int MasuiKasan) ;
-                                    tenMst.MasuiKasan= MasuiKasan;
+                                    int.TryParse(text, out int MasuiKasan);
+                                    tenMst.MasuiKasan = MasuiKasan;
                                     break;
                                 case "BS":
                                     int.TryParse(text, out int MoniterKasan);
-                                    tenMst.MoniterKasan= MoniterKasan;
+                                    tenMst.MoniterKasan = MoniterKasan;
                                     break;
                                 case "DX":
                                     tenMst.YjCd = text + yjCd;
@@ -614,6 +613,133 @@ namespace CloudUnitTest.SampleData
             }
 
             return m10DayLimits;
+        }
+
+        public static List<M42ContraindiDisCon> ReadM42ContaindiDisCon(string byotaiCd)
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m42Contraindis = new List<M42ContraindiDisCon>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M42_CONTRAINDI_DIS_CON").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m42 = new M42ContraindiDisCon();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m42.ByotaiCd = text + byotaiCd;
+                                    break;
+                                case "B":
+                                    m42.StandardByotai = text;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int ByotaiKbn);
+                                    m42.ByotaiKbn = ByotaiKbn;
+                                    break;
+                                case "D":
+                                    m42.Byomei = text;
+                                    break;
+                                case "E":
+                                    m42.Icd10 = text;
+                                    break;
+                                case "F":
+                                    m42.ReceCd = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m42Contraindis.Add(m42);
+                    }
+                }
+            }
+
+            return m42Contraindis;
+        }
+
+        public static List<M42ContraindiDrugMainEx> ReadM42ContaindiDrugMainEx(string key)
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m42Contraindis = new List<M42ContraindiDrugMainEx>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M42_CONTRAINDI_DRUG_MAIN_EX").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m42 = new M42ContraindiDrugMainEx();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m42.YjCd = text + key;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int TenpuLevel);
+                                    m42.TenpuLevel = TenpuLevel;
+                                    break;
+                                case "C":
+                                    m42.ByotaiCd = text + key;
+                                    break;
+                                case "D":
+                                    m42.CmtCd = text;
+                                    break;
+                                case "E":
+                                    int.TryParse(text, out int Stage);
+                                    m42.Stage = Stage;
+                                    break;
+                                case "F":
+                                    m42.KioCd = text;
+                                    break;
+                                case "G":
+                                    m42.FamilyCd = text;
+                                    break;
+                                case "H":
+                                    m42.KijyoCd = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m42Contraindis.Add(m42);
+                    }
+                }
+            }
+
+            return m42Contraindis;
         }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
