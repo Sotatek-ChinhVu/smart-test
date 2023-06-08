@@ -21,8 +21,8 @@ public class UpdateReceptionInteractor : IUpdateReceptionInputPort
         {
             ReceptionSaveDto dto = input.Dto;
 
-            var checkLockMedical = _userRepository.CheckLockMedicalExamination(input.HpId, dto.Reception.PtId, dto.Reception.RaiinNo, dto.Reception.SinDate, input.UserId);
-            if (checkLockMedical)
+            var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(input.HpId, dto.Reception.PtId, dto.Reception.RaiinNo, dto.Reception.SinDate, input.UserId);
+            if (notAllowSave)
             {
                 return new UpdateReceptionOutputData(UpdateReceptionStatus.MedicalScreenLocked);
             }

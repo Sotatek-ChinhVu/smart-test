@@ -18,8 +18,8 @@ namespace Interactor.MedicalExamination
 
         public CalculateOutputData Handle(CalculateInputData inputData)
         {
-            var checkLockMedical = _userRepository.CheckLockMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
-            if (checkLockMedical)
+            var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+            if (notAllowSave)
             {
                 return new CalculateOutputData(inputData.PtId, inputData.SinDate, CalculateStatus.MedicalScreenLocked);
             }

@@ -83,8 +83,8 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     {
         try
         {
-            var checkLockMedical = _userRepository.CheckLockMedicalExamination(inputDatas.HpId, inputDatas.PtId, inputDatas.RaiinNo, inputDatas.SinDate, inputDatas.UserId);
-            if (checkLockMedical)
+            var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputDatas.HpId, inputDatas.PtId, inputDatas.RaiinNo, inputDatas.SinDate, inputDatas.UserId);
+            if (notAllowSave)
             {
                 return new SaveMedicalOutputData(
                        SaveMedicalStatus.MedicalScreenLocked,

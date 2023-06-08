@@ -112,6 +112,8 @@
         public const string SearchPatientInfoByPtNum = "SearchPatientInfoByPtNum";
         public const string GetTokkiMstList = "GetTokkiMstList";
         public const string DeletePatientInfo = "DeletePatientInfo";
+        public const string CheckValidSamePatient = "CheckValidSamePatient";
+        public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";

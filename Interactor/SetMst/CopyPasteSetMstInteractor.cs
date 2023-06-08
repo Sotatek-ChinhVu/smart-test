@@ -20,8 +20,8 @@ public class CopyPasteSetMstInteractor : ICopyPasteSetMstInputPort
 
     public CopyPasteSetMstOutputData Handle(CopyPasteSetMstInputData inputData)
     {
-        var checkLockMedical = _userRepository.CheckLockMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
-        if (checkLockMedical)
+        var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+        if (notAllowSave)
         {
             return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.MedicalScreenLocked);
         }
