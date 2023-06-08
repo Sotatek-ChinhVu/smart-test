@@ -76,6 +76,7 @@ using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.CheckValidSamePatient;
+using UseCase.PatientInfor.CheckAllowDeletePatientInfo;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.GetListPatient;
@@ -976,6 +977,15 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<CheckValidSamePatientResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.CheckAllowDeletePatientInfo)]
+        public ActionResult<Response<CheckAllowDeletePatientInfoResponse>> CheckAllowDeletePatientInfo([FromBody] CheckAllowDeletePatientInfoRequest request)
+        {
+            var input = new CheckAllowDeletePatientInfoInputData(HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new CheckAllowDeletePatientInfoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckAllowDeletePatientInfoResponse>>(presenter.Result);
+        }
 
         private void StopCalculationCaculaleSwapHoken(CalculationSwapHokenMessageStop stopCalcStatus)
         {
