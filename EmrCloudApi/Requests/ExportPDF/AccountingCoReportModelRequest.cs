@@ -2,7 +2,7 @@
 
 namespace EmrCloudApi.Requests.ExportPDF;
 
-public class AccountingCoReportRequest
+public class AccountingCoReportModelRequest
 {
     public int HpId { get; set; }
 
