@@ -114,7 +114,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.CheckLockVisiting)]
-        public ActionResult<Response<CheckLockVisitingResponse>> CheckLockVisiting([FromBody] CheckLockVisitingRequest request)
+        public ActionResult<Response<CheckLockVisitingResponse>> CheckLockVisiting([FromQuery] CheckLockVisitingRequest request)
         {
             var input = new CheckLockVisitingInputData(HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);

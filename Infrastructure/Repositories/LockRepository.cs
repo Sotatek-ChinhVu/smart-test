@@ -221,7 +221,7 @@ namespace Infrastructure.Repositories
                                         .FirstOrDefault(
                                         l => l.HpId == hpId &&
                                         l.SinDate == sinDate &&
-                                        l.PtId == ptId) != null;
+                                        l.PtId == ptId) == null;
         }
     }
 }
