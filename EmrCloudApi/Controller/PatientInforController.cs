@@ -622,7 +622,9 @@ namespace EmrCloudApi.Controller
                  patientInfo.ReactSave,
                  patientInfo.MaxMoneys,
                  insuranceScans,
-                 UserId);
+                 UserId,
+                 HpId
+                 );
             var output = _bus.Handle(input);
 
             if (output.Status == SavePatientInfoStatus.Successful)
