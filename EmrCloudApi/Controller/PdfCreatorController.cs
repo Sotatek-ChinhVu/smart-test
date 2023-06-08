@@ -131,8 +131,9 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.AccountingReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromBody] AccountingCoReportRequest request)
+    public async Task<IActionResult> GenerateAccountingReport([FromBody] string requestStringJson)
     {
+        var request = JsonSerializer.Deserialize<AccountingCoReportRequest>(requestStringJson) ?? new();
         var accountDueListModels = request.AccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
         var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
         var selectedAccountDueListModel = ConvertToCoAccountDueListModel(request.SelectedAccountDueListModel);
