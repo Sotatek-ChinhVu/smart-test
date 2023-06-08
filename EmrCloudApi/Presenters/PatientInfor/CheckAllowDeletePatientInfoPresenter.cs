@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.PatientInfor
         {
             Result.Data = new CheckAllowDeletePatientInfoResponse(outputData.Status);
             Result.Status = (int)outputData.Status;
-            Result.Message = !string.IsNullOrEmpty(outputData.Message) ? GetMessage(outputData.Status) : outputData.Message;
+            Result.Message = string.IsNullOrEmpty(outputData.Message) ? GetMessage(outputData.Status) : outputData.Message;
         }
 
         private string GetMessage(CheckAllowDeletePatientInfoStatus status) => status switch

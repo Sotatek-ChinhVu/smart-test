@@ -490,6 +490,21 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     {
                         result = setMsts.Where(item => originDropLevel1 <= item.Level1).ToList();
                     }
+                    result.Add(new SetMstModel(
+                                   dragItem.HpId,
+                                   dragItem.SetCd,
+                                   dragItem.SetKbn,
+                                   dragItem.SetKbnEdaNo,
+                                   dragItem.GenerationId,
+                                   originDragLevel1,
+                                   dragItem.Level2,
+                                   dragItem.Level3,
+                                   dragItem.SetName ?? string.Empty,
+                                   dragItem.WeightKbn,
+                                   dragItem.Color,
+                                   1,
+                                   dragItem.IsGroup
+                           ));
                 }
             }
             else
