@@ -75,6 +75,7 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
+using UseCase.PatientInfor.CheckValidSamePatient;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.GetListPatient;
@@ -622,7 +623,9 @@ namespace EmrCloudApi.Controller
                  patientInfo.ReactSave,
                  patientInfo.MaxMoneys,
                  insuranceScans,
-                 UserId);
+                 UserId,
+                 HpId
+                 );
             var output = _bus.Handle(input);
 
             if (output.Status == SavePatientInfoStatus.Successful)
@@ -957,6 +960,20 @@ namespace EmrCloudApi.Controller
                 Messenger.Instance.Deregister<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
                 Messenger.Instance.Deregister<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
             }
+        }
+
+        [HttpPost(ApiPath.CheckValidSamePatient)]
+        public ActionResult<Response<CheckValidSamePatientResponse>> CheckValidSamePatient([FromBody] CheckValidSamePatientRequest request)
+        {
+            var input = new CheckValidSamePatientInputData(HpId,
+                                                           request.PtId,
+                                                           request.KanjiName,
+                                                           request.Birthday,
+                                                           request.Sex);
+            var output = _bus.Handle(input);
+            var presenter = new CheckValidSamePatientPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckValidSamePatientResponse>>(presenter.Result);
         }
 
 
