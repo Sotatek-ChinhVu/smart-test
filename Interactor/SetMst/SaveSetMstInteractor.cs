@@ -17,8 +17,8 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
 
     public SaveSetMstOutputData Handle(SaveSetMstInputData inputData)
     {
-        var checkLockMedical = _userRepository.CheckLockMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
-        if (checkLockMedical)
+        var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+        if (notAllowSave)
         {
             return new SaveSetMstOutputData(null, SaveSetMstStatus.MedicalScreenLocked);
         }
