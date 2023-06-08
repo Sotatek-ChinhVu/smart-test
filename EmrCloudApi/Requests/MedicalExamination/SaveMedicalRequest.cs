@@ -36,6 +36,8 @@ public class SaveMedicalRequest
 
     public byte Status { get; set; }
 
+    public bool IsSagaku { get; set; }
+
     public List<OdrInfItem> OdrInfs { get; set; } = new();
 
     public KarteItem KarteItem { get; set; } = new();

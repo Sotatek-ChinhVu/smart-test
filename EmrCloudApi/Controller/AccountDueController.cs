@@ -1,5 +1,7 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.AccountDue;
+using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.AccountDue;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.AccountDue;
@@ -15,9 +17,11 @@ namespace EmrCloudApi.Controller;
 public class AccountDueController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    public AccountDueController(UseCaseBus bus, IUserService userService) : base(userService)
+    private readonly IWebSocketService _webSocketService;
+    public AccountDueController(UseCaseBus bus, IUserService userService, IWebSocketService webSocketService) : base(userService)
     {
         _bus = bus;
+        _webSocketService = webSocketService;
     }
 
     [HttpGet(ApiPath.GetList)]
@@ -33,11 +37,16 @@ public class AccountDueController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.SaveList)]
-    public ActionResult<Response<SaveAccountDueListResponse>> SaveList([FromBody] SaveAccountDueListRequest request)
+    public async Task<ActionResult<Response<SaveAccountDueListResponse>>> SaveList([FromBody] SaveAccountDueListRequest request)
     {
-
-        var input = new SaveAccountDueListInputData(HpId, request.UserId, request.PtId, request.SinDate, ConvertToListSyunoNyukinInputItem(request));
+        var input = new SaveAccountDueListInputData(HpId, request.UserId, request.PtId, request.SinDate, request.KaikeiTime, ConvertToListSyunoNyukinInputItem(request));
         var output = _bus.Handle(input);
+
+        if (output.Status == SaveAccountDueListStatus.Successed)
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.AccountDueChanged,
+                new CommonMessage { PtId = input.PtId, SinDate = input.SinDate, RaiinNo = 0 });
+        }
 
         var presenter = new SaveAccountDueListPresenter();
         presenter.Complete(output);

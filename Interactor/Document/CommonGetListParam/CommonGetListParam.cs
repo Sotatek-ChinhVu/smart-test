@@ -7,6 +7,7 @@ using Domain.Models.RaiinFilterMst;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.User;
+using Entity.Tenant;
 using Helper.Common;
 using UseCase.Document;
 using UseCase.Document.GetListParamTemplate;
@@ -66,6 +67,7 @@ public class CommonGetListParam : ICommonGetListParam
         int lastTimeDate = _raiinFilterMstRepository.GetLastTimeDate(hpId, ptId, sinDate);
         var listKensaInf = _patientInfoRepository.GetListKensaInfModel(hpId, ptId, sinDate);
         var listPtGroup = _groupInfRepository.GetDataGroup(hpId, ptId).ToList();
+        var ptKyusei = _patientInforRepository.GetDocumentKyuSeiInf(hpId, ptId, sinDate);
 
         // hoken
         var hokenPattern = _insuranceRepository.GetInsuranceListById(hpId, ptId, sinDate);
@@ -73,10 +75,12 @@ public class CommonGetListParam : ICommonGetListParam
         var hokenModelToReplace = GetListParamHokenInf(age, hokenPId, hokenPattern, insuranceMstModel);
 
         // Get list param
-        List<ItemGroupParamModel> result = new();
-        result.Add(new ItemGroupParamModel(groupHpInf, GetListParamHpInf(hpInf)));
-        result.Add(new ItemGroupParamModel(groupPtInf, GetListParamPtInf(sinDate, age, lastTimeDate, sumaryContent, ptInf != null ? ptInf : new(), docInf, tantoInf, userLogin, listKensaInf, listPtGroup)));
-        result.Add(new ItemGroupParamModel(groupHokenInf, ReplaceParamHokenAction(hokenModelToReplace)));
+        List<ItemGroupParamModel> result = new()
+        {
+            new ItemGroupParamModel(groupHpInf, GetListParamHpInf(hpInf)),
+            new ItemGroupParamModel(groupPtInf, GetListParamPtInf(sinDate, age, lastTimeDate, sumaryContent, ptInf != null ? ptInf : new(), docInf, tantoInf, userLogin, listKensaInf, listPtGroup, ptKyusei)),
+            new ItemGroupParamModel(groupHokenInf, ReplaceParamHokenAction(hokenModelToReplace))
+        };
         return result;
     }
 
@@ -96,7 +100,7 @@ public class CommonGetListParam : ICommonGetListParam
         return listParam;
     }
 
-    private List<ItemDisplayParamModel> GetListParamPtInf(int sindate, int age, int lastTimeDate, string sumaryContent, PatientInforModel ptInf, UserMstModel docInf, UserMstModel tantoInf, UserMstModel userLogin, List<KensaInfDetailModel> listKensaInf, List<GroupInfModel> listPtGroup)
+    private List<ItemDisplayParamModel> GetListParamPtInf(int sindate, int age, int lastTimeDate, string sumaryContent, PatientInforModel ptInf, UserMstModel docInf, UserMstModel tantoInf, UserMstModel userLogin, List<KensaInfDetailModel> listKensaInf, List<GroupInfModel> listPtGroup, PtKyuseiInfModel ptKyusei)
     {
         List<ItemDisplayParamModel> listParam = new();
 
@@ -119,8 +123,11 @@ public class CommonGetListParam : ICommonGetListParam
         listParam.Add(new ItemDisplayParamModel("患者番号", ptInf.PtNum.ToString()));
         listParam.Add(new ItemDisplayParamModel("氏名", ptInf.Name));
         listParam.Add(new ItemDisplayParamModel("カナ氏名", ptInf.KanaName));
-        listParam.Add(new ItemDisplayParamModel("氏名(旧姓)"));
-        listParam.Add(new ItemDisplayParamModel("カナ氏名(旧姓)"));
+        if (ptKyusei.PtId == ptInf.PtId)
+        {
+            listParam.Add(new ItemDisplayParamModel("カナ氏名(旧姓)", ptKyusei.KanaName));
+            listParam.Add(new ItemDisplayParamModel("氏名(旧姓)", ptKyusei.Name));
+        }
         listParam.Add(new ItemDisplayParamModel("郵便番号", ptInf.HomePost));
         listParam.Add(new ItemDisplayParamModel("住所１", ptInf.HomeAddress1));
         listParam.Add(new ItemDisplayParamModel("住所２", ptInf.HomeAddress2));
@@ -218,7 +225,19 @@ public class CommonGetListParam : ICommonGetListParam
                     }
                 }
 
-                replaceModel.RousaiRoudouHokenNo = hokenInf.RousaiKofuNo;
+                if (hokenInf.HokenKbn == 11)
+                {
+                    replaceModel.RousaiRoudouHokenNo = hokenInf.RousaiKofuNo;
+                }
+                else if (hokenInf.HokenKbn == 12)
+                {
+                    replaceModel.RousaiNenkinNo = hokenInf.RousaiKofuNo;
+                }
+                else
+                {
+                    replaceModel.RousaiKenkoKanriNo = hokenInf.RousaiKofuNo;
+                }
+
                 replaceModel.RousaiJigyouName = hokenInf.RousaiJigyosyoName;
                 replaceModel.RousaiJigyuoAddress = hokenInf.RousaiPrefName + hokenInf.RousaiCityName;
                 replaceModel.RousaiShyobyoDateWest = CIUtil.SDateToShowSDate(hokenInf.RousaiSyobyoDate);

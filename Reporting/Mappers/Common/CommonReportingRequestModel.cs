@@ -37,10 +37,17 @@ namespace Reporting.Mappers.Common
 
     public class CellModel
     {
+        private bool value;
+
         public CellModel(string value)
         {
             Value = value;
             IsUnderline = false;
+        }
+
+        public CellModel(bool value)
+        {
+            this.value = value;
         }
 
         public CellModel(string value, bool isUnderline)
@@ -69,6 +76,9 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("visibleFieldList")]
         public Dictionary<string, bool> VisibleFieldList { get; set; } = new Dictionary<string, bool>();
+
+        [JsonPropertyName("visibleAtPrint")]
+        public Dictionary<string, bool> VisibleAtPrint { get; set; } = new Dictionary<string, bool>();
 
         [JsonPropertyName("wrapFieldList")]
         public Dictionary<string, bool> WrapFieldList { get; set; } = new Dictionary<string, bool>();

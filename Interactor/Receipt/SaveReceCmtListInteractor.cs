@@ -27,7 +27,7 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
     {
         try
         {
-            var listReceCmtDB = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
+            var listReceCmtDB = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId, 0);
             var responseValidate = ValidateInput(inputData, listReceCmtDB);
             if (responseValidate != SaveReceCmtListStatus.ValidateSuccess)
             {
