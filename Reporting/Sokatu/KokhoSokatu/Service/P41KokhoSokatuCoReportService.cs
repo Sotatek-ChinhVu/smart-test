@@ -151,28 +151,36 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
 
                     countData wrkData = new countData();
                     //件数
+                    pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                    Dictionary<string, string> fieldDataPerPage = _singleFieldDataM.ContainsKey(pageIndex) ? _singleFieldDataM[pageIndex] : new();
+
                     wrkData.Count = wrkReces.Count;
-                    SetFieldData(string.Format("totalCount{0}", i), wrkData.Count.ToString());
+                    fieldDataPerPage.Add(string.Format("totalCount{0}", i), wrkData.Count.ToString());
                     //日数
                     wrkData.Nissu = wrkReces.Sum(r => r.HokenNissu);
-                    SetFieldData(string.Format("totalNissu{0}", i), wrkData.Nissu.ToString());
+                    fieldDataPerPage.Add(string.Format("totalNissu{0}", i), wrkData.Nissu.ToString());
                     //点数
                     wrkData.Tensu = wrkReces.Sum(r => r.Tensu);
-                    SetFieldData(string.Format("totalTensu{0}", i), wrkData.Tensu.ToString());
+                    fieldDataPerPage.Add(string.Format("totalTensu{0}", i), wrkData.Tensu.ToString());
 
                     //1件当り点数
                     if (wrkData.Count > 0)
                     {
                         int avgTensu = CIUtil.RoundInt((double)wrkData.Tensu / wrkData.Count, 0);
-                        SetFieldData(string.Format("avgTensu{0}", i), avgTensu.ToString());
+                        fieldDataPerPage.Add(string.Format("avgTensu{0}", i), avgTensu.ToString());
                     }
 
                     //県外総件数
                     wrkData.Count = wrkReces.Where(r => r.IsPrefIn == false).Count();
-                    SetFieldData(string.Format("kengaiTotalCount{0}", i), wrkData.Count.ToString());
+                    fieldDataPerPage.Add(string.Format("kengaiTotalCount{0}", i), wrkData.Count.ToString());
                     //県内総件数
                     wrkData.Count = wrkReces.Where(r => r.IsPrefIn == true).Count();
-                    SetFieldData(string.Format("kennaiTotalCount{0}", i), wrkData.Count.ToString());
+                    fieldDataPerPage.Add(string.Format("kennaiTotalCount{0}", i), wrkData.Count.ToString());
+
+                    if (!_singleFieldDataM.ContainsKey(pageIndex))
+                    {
+                        _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+                    }
                 }
 
             }
