@@ -62,6 +62,8 @@
         public static readonly string ExistedId = "ExistedId";
         public static readonly string InputDataNull = "Input data is null";
         public static readonly string Valid = "Valid";
+        public static readonly string None = "None";
+        public static readonly string Locked = "Locked";
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
@@ -69,6 +71,8 @@
 
         //Patient Infor
         public static readonly string InvalidPtNum = "Invalid PtNum";
+        public static readonly string InvalidKanjiName = "Invalid Kanji Name";
+        public static readonly string InvalidSex = "Invalid sex";
 
         // RousaiJibai
         public static readonly string InvalidHokenKbn = "Invalid HokenKbn";

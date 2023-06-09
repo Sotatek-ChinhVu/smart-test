@@ -1,5 +1,4 @@
-﻿using Domain.Models.Family;
-using Domain.Models.KarteInf;
+﻿using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
 using Domain.Models.User;
 using Entity.Tenant;
@@ -8,11 +7,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using System;
 using System.Text;
-using static Helper.Constants.UserConst;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Infrastructure.Repositories
 {
@@ -193,6 +188,7 @@ namespace Infrastructure.Repositories
         {
             int position = 1;
             var lastSeqNo = GetLastSeqNo(hpId, ptId, raiinNo);
+
             var listOldFile = TrackingDataContext.KarteImgInfs.Where(item =>
                                                item.HpId == hpId
                                                && item.PtId == ptId
@@ -211,23 +207,52 @@ namespace Infrastructure.Repositories
                                                && item.FileName != null
                                                && listFileName.Contains(item.FileName)
                                                ).ToList();
-            foreach (var item in listOldFile)
-            {
-                KarteImgInf newFile;
-                newFile = item;
-                newFile.Id = 0;
-                newFile.SeqNo = lastSeqNo + 1;
-                newFile.Position = position;
-                newFile.KarteKbn = item.KarteKbn;
-                TrackingDataContext.KarteImgInfs.Add(newFile);
-                position++;
-            }
 
-            foreach (var item in listUpdateFiles)
+
+            foreach (var fileName in listFileName)
             {
-                item.RaiinNo = raiinNo;
-                item.SeqNo = lastSeqNo + 1;
-                item.Position = position;
+                var oldItemConvert = listOldFile.FirstOrDefault(item => item.SeqNo == lastSeqNo
+                                                                        && item.RaiinNo == raiinNo
+                                                                        && item.FileName != null
+                                                                        && item.FileName == fileName);
+
+                if (oldItemConvert != null)
+                {
+                    KarteImgInf convertItem;
+                    convertItem = oldItemConvert;
+                    convertItem.Id = 0;
+                    convertItem.SeqNo = lastSeqNo + 1;
+                    convertItem.Position = position;
+                    convertItem.KarteKbn = oldItemConvert.KarteKbn;
+                    TrackingDataContext.KarteImgInfs.Add(convertItem);
+                    position++;
+                    continue;
+                }
+
+                var oldItemUpdateSeqNo = listUpdateFiles.FirstOrDefault(item => item.SeqNo == lastSeqNo
+                                                                                && item.RaiinNo == 0
+                                                                                && item.SeqNo == 0
+                                                                                && item.FileName != null
+                                                                                && item.FileName == fileName);
+                if (oldItemUpdateSeqNo != null)
+                {
+                    oldItemUpdateSeqNo.RaiinNo = raiinNo;
+                    oldItemUpdateSeqNo.SeqNo = lastSeqNo + 1;
+                    oldItemUpdateSeqNo.Position = position;
+                    position++;
+                    continue;
+                }
+
+                KarteImgInf newItem = new();
+                newItem.Id = 0;
+                newItem.HpId = hpId;
+                newItem.PtId = ptId;
+                newItem.RaiinNo = raiinNo;
+                newItem.FileName = fileName;
+                newItem.SeqNo = lastSeqNo + 1;
+                newItem.Position = position;
+                newItem.KarteKbn = 0;
+                TrackingDataContext.KarteImgInfs.Add(newItem);
                 position++;
             }
 

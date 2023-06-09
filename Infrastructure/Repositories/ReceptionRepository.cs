@@ -17,9 +17,9 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public ReceptionModel Get(long raiinNo)
+        public ReceptionModel Get(long raiinNo, bool flag)
         {
-            var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
+            var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo && (!flag || r.IsDeleted == 0));
             var raiinCommentInf = NoTrackingDataContext.RaiinCmtInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
 
             return new ReceptionModel
@@ -366,11 +366,6 @@ namespace Infrastructure.Repositories
                 foreach (var insuranceItem in insurances)
                 {
                     var hokenGrp = insuranceItem.IsHokenGroupKohi ? HokenGroupConstant.HokenGroupKohi : HokenGroupConstant.HokenGroupHokenPattern;
-                    var listCheckTime = oldHokenCheckDB.Where(item =>
-                                                                    item.HokenId == insuranceItem.HokenId
-                                                                    && item.HokenGrp == hokenGrp)
-                                                        .OrderByDescending(item => item.CheckDate)
-                                                        .ToList();
 
                     var listHokenCheckInsertInput = insuranceItem.ConfirmDateList.Where(item => item.SeqNo == 0).ToList();
                     var listHokenCheckUpdateInput = insuranceItem.ConfirmDateList.Where(item => item.SeqNo != 0).ToList();
@@ -389,42 +384,23 @@ namespace Infrastructure.Repositories
                     // Update PtHokenCheck
                     foreach (var update in listHokenCheckUpdateInput)
                     {
-                        var checkDatetimeInput = DateTime.ParseExact(update.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
+                        var checkDatetimeInput = DateTime.ParseExact(update.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+                        var utcCheckDateTime = DateTime.SpecifyKind(checkDatetimeInput, DateTimeKind.Utc);
+
                         var hokenCheckItem = listUpdateItemDB.FirstOrDefault(item => item.SeqNo == update.SeqNo);
                         if (hokenCheckItem != null)
                         {
                             hokenCheckItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             hokenCheckItem.UpdateId = userId;
 
-                            /// <summary>
-                            /// Update check date:
-                            /// If checkDate of item in database is not equal checkDate input,
-                            /// and checkDate input not equal other checkDate in database
-                            /// then update checkDate
-                            /// </summary>
-                            if (!hokenCheckItem.CheckDate.ToString("yyyyMMdd").Equals(update.SinDate.ToString())
-                                && !listCheckTime.Select(item => item.CheckDate.ToString("yyyyMMdd")).ToList().Contains(update.SinDate.ToString()))
-                            {
-                                hokenCheckItem.CheckDate = checkDatetimeInput;
-                                var removeItem = listCheckTime.FirstOrDefault(item => item.SeqNo == update.SeqNo);
-                                if (removeItem != null)
-                                {
-                                    listCheckTime.Remove(removeItem);
-                                }
-                            }
-
                             // update isDelete
                             if (update.IsDelete)
                             {
                                 hokenCheckItem.IsDeleted = 1;
-                                var removeItem = listCheckTime.FirstOrDefault(item => item.SeqNo == update.SeqNo);
-                                if (removeItem != null)
-                                {
-                                    listCheckTime.Remove(removeItem);
-                                }
                             }
                             else
                             {
+                                hokenCheckItem.CheckDate = utcCheckDateTime;
                                 hokenCheckItem.CheckCmt = update.Comment;
                                 hokenCheckItem.CheckId = userId;
                             }
@@ -434,24 +410,23 @@ namespace Infrastructure.Repositories
                     // Add new PtHokenCheck
                     foreach (var item in listHokenCheckInsertInput)
                     {
-                        var checkDatetime = DateTime.ParseExact(item.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
-                        if (listCheckTime == null || !listCheckTime.Select(item => item.CheckDate.ToString("yyyyMMdd")).ToList().Contains(item.SinDate.ToString()))
+                        var checkDatetime = DateTime.ParseExact(item.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+                        var utcCheckDateTime = DateTime.SpecifyKind(checkDatetime, DateTimeKind.Utc);
+
+                        listHokenCheckAddNew.Add(new PtHokenCheck
                         {
-                            listHokenCheckAddNew.Add(new PtHokenCheck
-                            {
-                                HpId = hpId,
-                                PtID = ptId,
-                                HokenGrp = hokenGrp,
-                                HokenId = insuranceItem.HokenId,
-                                CheckDate = checkDatetime,
-                                CheckCmt = item.Comment,
-                                CheckId = userId,
-                                CreateDate = CIUtil.GetJapanDateTimeNow(),
-                                CreateId = userId,
-                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                                UpdateId = userId
-                            });
-                        }
+                            HpId = hpId,
+                            PtID = ptId,
+                            HokenGrp = hokenGrp,
+                            HokenId = insuranceItem.HokenId,
+                            CheckDate = utcCheckDateTime,
+                            CheckCmt = item.Comment,
+                            CheckId = userId,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId
+                        });
                     }
                 }
                 TrackingDataContext.PtHokenChecks.AddRange(listHokenCheckAddNew);

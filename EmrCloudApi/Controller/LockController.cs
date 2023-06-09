@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
+using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
 
 namespace EmrCloudApi.Controller
@@ -98,6 +99,31 @@ namespace EmrCloudApi.Controller
 
         //    return new ActionResult<Response>(presenter.Result);
         //}
+
+
+        [HttpPost(ApiPath.GetLockInfo)]
+        public ActionResult<Response<GetLockInfoResponse>> GetList([FromBody] GetLockInfoRequest request)
+        {
+            var input = new GetLockInfoInputData(HpId, request.PtId, request.ListFunctionCdB, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetLockInfoPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetLockInfoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.CheckLockVisiting)]
+        public ActionResult<Response<CheckLockVisitingResponse>> CheckLockVisiting([FromQuery] CheckLockVisitingRequest request)
+        {
+            var input = new CheckLockVisitingInputData(HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckLockVisitingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckLockVisitingResponse>>(presenter.Result);
+        }
     }
 
     public class Locker

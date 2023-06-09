@@ -6,6 +6,7 @@ using Domain.Models.Insurance;
 using Domain.Models.Ka;
 using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
+using Domain.Models.Lock;
 using Domain.Models.Medical;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
@@ -54,9 +55,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     private readonly IValidateFamilyList _validateFamilyList;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly ICalculateService _calculateService;
+    private readonly ILockRepository _lockRepository;
     private readonly AmazonS3Options _options;
 
-    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList)
+    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ILockRepository lockRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
@@ -74,6 +76,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _karteInfRepository = karteInfRepository;
         _calculateService = calculateService;
         _validateFamilyList = validateFamilyList;
+        _lockRepository = lockRepository;
     }
 
     public SaveMedicalOutputData Handle(SaveMedicalInputData inputDatas)
@@ -297,9 +300,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         hpId,
                         ptId,
                         sinDate,
-                        0,
+                        inputDatas.IsSagaku ? 1 : 0,
                         ""
                     )));
+                _lockRepository.RemoveLock(hpId, FunctionCode.MedicalExaminationCode, ptId, sinDate, raiinNo, inputDatas.UserId);
             }
 
             return check ?
@@ -343,6 +347,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _todayOdrRepository.ReleaseResource();
             _karteInfRepository.ReleaseResource();
             _validateFamilyList.ReleaseResource();
+            _lockRepository.ReleaseResource();
         }
     }
 
@@ -358,6 +363,12 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
         if (saveSuccess)
         {
+            var fileInfUpdateTemp = CopyFileFromDoActionToKarte(ptInf != null ? ptInf.PtNum : 0, listFileName);
+            if (fileInfUpdateTemp.Any())
+            {
+                listUpdates = fileInfUpdateTemp.Select(item => item.Value).ToList();
+            }
+
             _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, listUpdates.Select(item => new FileInfModel(false, item)).ToList(), false);
         }
         else
@@ -368,6 +379,44 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 _amazonS3Service.DeleteObjectAsync(path + item);
             }
         }
+    }
+
+    private Dictionary<string, string> CopyFileFromDoActionToKarte(long ptNum, List<string> listFileDo)
+    {
+        Dictionary<string, string> fileInfUpdateTemp = new();
+
+        var listFolderPath = new List<string>(){
+                                            CommonConstants.Store,
+                                            CommonConstants.Karte
+                                        };
+        string baseAccessUrl = _options.BaseAccessUrl;
+        string host = baseAccessUrl + "/" + _amazonS3Service.GetFolderUploadToPtNum(listFolderPath, ptNum);
+
+        string keyNextPic = "/" + CommonConstants.Store + "/" + CommonConstants.Karte + "/" + CommonConstants.NextPic + "/";
+        string keySetPic = "/" + CommonConstants.Store + "/" + CommonConstants.Karte + "/" + CommonConstants.SetPic + "/";
+
+        foreach (var oldFileLink in listFileDo)
+        {
+            if (!oldFileLink.Contains(baseAccessUrl))
+            {
+                continue;
+            }
+            string oldFileName = Path.GetFileName(oldFileLink);
+            if (oldFileLink.Contains(keyNextPic) || oldFileLink.Contains(keySetPic))
+            {
+                string newFile = host + _amazonS3Service.GetUniqueFileNameKey(oldFileName.Trim());
+                var copySuccess = _amazonS3Service.CopyObjectAsync(oldFileLink.Replace(baseAccessUrl, string.Empty), newFile.Replace(baseAccessUrl, string.Empty)).Result;
+                if (copySuccess)
+                {
+                    fileInfUpdateTemp.Add(oldFileName, newFile);
+                }
+            }
+            else
+            {
+                fileInfUpdateTemp.Add(oldFileName, oldFileName);
+            }
+        }
+        return fileInfUpdateTemp;
     }
 
     private List<OrdInfModel> ConvertInputDataToOrderInfs(int hpId, int sinDate, List<OdrInfItemInputData> inputDataList)

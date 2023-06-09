@@ -1,5 +1,4 @@
-﻿using Domain.Models.KarteInf;
-using Domain.Models.KarteInfs;
+﻿using Domain.Models.KarteInfs;
 using Domain.Models.NextOrder;
 using Domain.Models.PatientInfor;
 using Domain.Models.SuperSetDetail;

@@ -2,7 +2,7 @@
 {
     public class GetSetMstListOutputItem
     {
-        public GetSetMstListOutputItem(int hpId, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int weightKbn, int color, int isGroup, List<GetSetMstListOutputItem> childrens)
+        public GetSetMstListOutputItem(int hpId, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int weightKbn, int color, int isGroup, int isDelete, List<GetSetMstListOutputItem> childrens)
         {
             HpId = hpId;
             SetCd = setCd;
@@ -16,6 +16,7 @@
             WeightKbn = weightKbn;
             Color = color;
             IsGroup = isGroup;
+            IsDelete = isDelete;
             Childrens = childrens;
         }
 
@@ -31,6 +32,7 @@
         public int WeightKbn { get; private set; }
         public int Color { get; private set; }
         public int IsGroup { get; private set; }
+        public int IsDelete { get; private set; }
         public List<GetSetMstListOutputItem> Childrens { get; private set; }
     }
 }

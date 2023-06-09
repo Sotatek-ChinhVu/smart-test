@@ -86,7 +86,6 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-
         public PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo)
         {
 
@@ -988,6 +987,25 @@ namespace Infrastructure.Repositories
             return listPtKyusei;
         }
 
+        public PtKyuseiInfModel GetDocumentKyuSeiInf(int hpId, long ptId, int sinDay)
+        {
+            var ptKyusei = NoTrackingDataContext.PtKyuseis.Where(item => item.HpId == hpId
+                                                                         && item.PtId == ptId
+                                                                         && item.EndDate < sinDay
+                                                                         && item.IsDeleted != 1
+                                                           ).OrderByDescending(item => item.EndDate)
+                                                           .FirstOrDefault() ?? new PtKyusei();
+
+            return new PtKyuseiInfModel(
+                       ptKyusei.HpId,
+                       ptKyusei.PtId,
+                       ptKyusei.SeqNo,
+                       ptKyusei.KanaName ?? string.Empty,
+                       ptKyusei.Name ?? string.Empty,
+                       ptKyusei.EndDate,
+                       ptKyusei.IsDeleted);
+        }
+
         public bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels, int hpId, int userId)
         {
             try
@@ -1078,6 +1096,14 @@ namespace Infrastructure.Repositories
                 var ptExists = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtNum == patientInsert.PtNum && x.HpId == hpId);
                 if (ptExists != null)
                     patientInsert.PtNum = GetAutoPtNum(hpId);
+            }
+            if (patientInsert.DeathDate > 0)
+            {
+                patientInsert.IsDead = 1;
+            }
+            else
+            {
+                patientInsert.IsDead = 0;
             }
             patientInsert.CreateDate = CIUtil.GetJapanDateTimeNow();
             patientInsert.CreateId = userId;
@@ -1335,6 +1361,14 @@ namespace Infrastructure.Repositories
 
             Mapper.Map(ptInf, patientInfo, (source, dest) =>
             {
+                if (dest.DeathDate > 0)
+                {
+                    dest.IsDead = 1;
+                }
+                else
+                {
+                    dest.IsDead = 0;
+                }
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateId = userId;
                 return dest;
@@ -2479,6 +2513,57 @@ namespace Infrastructure.Repositories
                                                                               u.SinDate <= toDate &&
                                                                               u.Status >= raiintStatus &&
                                                                               u.IsDeleted == DeleteTypes.None);
+        }
+
+        public List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex, int birthDay)
+        {
+            kanjiName = kanjiName.Replace("　", " ");
+            return NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId
+                                                        && p.Name != null && p.Name.Replace("　", " ") == kanjiName
+                                                        && p.Sex == sex
+                                                        && p.Birthday == birthDay
+                                                        && p.IsDelete != DeleteTypes.Deleted)
+                                               .Select(x => new PatientInforModel(x.HpId,
+                                                                                  x.PtId,
+                                                                                  x.ReferenceNo,
+                                                                                  x.SeqNo,
+                                                                                  x.PtNum,
+                                                                                  x.KanaName ?? string.Empty,
+                                                                                  x.Name ?? string.Empty,
+                                                                                  x.Sex,
+                                                                                  x.Birthday,
+                                                                                  x.LimitConsFlg,
+                                                                                  x.IsDead,
+                                                                                  x.DeathDate,
+                                                                                  x.HomePost ?? string.Empty,
+                                                                                  x.HomeAddress1 ?? string.Empty,
+                                                                                  x.HomeAddress2 ?? string.Empty,
+                                                                                  x.Tel1 ?? string.Empty,
+                                                                                  x.Tel2 ?? string.Empty,
+                                                                                  x.Mail ?? string.Empty,
+                                                                                  x.Setanusi ?? string.Empty,
+                                                                                  x.Zokugara ?? string.Empty,
+                                                                                  x.Job ?? string.Empty,
+                                                                                  x.RenrakuName ?? string.Empty,
+                                                                                  x.RenrakuPost ?? string.Empty,
+                                                                                  x.RenrakuAddress1 ?? string.Empty,
+                                                                                  x.RenrakuAddress2 ?? string.Empty,
+                                                                                  x.RenrakuTel ?? string.Empty,
+                                                                                  x.RenrakuMemo ?? string.Empty,
+                                                                                  x.OfficeName ?? string.Empty,
+                                                                                  x.OfficePost ?? string.Empty,
+                                                                                  x.OfficeAddress1 ?? string.Empty,
+                                                                                  x.OfficeAddress2 ?? string.Empty,
+                                                                                  x.OfficeTel ?? string.Empty,
+                                                                                  x.OfficeMemo ?? string.Empty,
+                                                                                  x.IsRyosyoDetail,
+                                                                                  x.PrimaryDoctor,
+                                                                                  x.IsTester,
+                                                                                  x.MainHokenPid,
+                                                                                  string.Empty,
+                                                                                  0,
+                                                                                  0,
+                                                                                  0)).ToList();
         }
     }
 }

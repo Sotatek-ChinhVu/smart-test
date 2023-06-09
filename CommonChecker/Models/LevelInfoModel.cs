@@ -2,12 +2,15 @@
 {
     public class LevelInfoModel
     {
-
         public string Title { get; set; } = string.Empty;
+
+        public string BackgroundCode { get; set; } = "#FFFFFF";
+
+        public string BorderBrushCode { get; set; } = "#999999";
 
         public string FirstItemName { get; set; } = string.Empty;
 
-        public string SecondItemName { get; set; } = string.Empty; 
+        public string SecondItemName { get; set; } = string.Empty;
 
         public string Comment { get; set; } = string.Empty;
 

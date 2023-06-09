@@ -111,6 +111,9 @@
         public const string GetPatientInfoBetweenTimesList = "GetPatientInfoBetweenTimesList";
         public const string SearchPatientInfoByPtNum = "SearchPatientInfoByPtNum";
         public const string GetTokkiMstList = "GetTokkiMstList";
+        public const string DeletePatientInfo = "DeletePatientInfo";
+        public const string CheckValidSamePatient = "CheckValidSamePatient";
+        public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -203,6 +206,7 @@
         public const string CheckTrialAccounting = "CheckTrialAccounting";
         public const string GetKensaAuditTrailLog = "GetKensaAuditTrailLog";
         public const string GetContainerMst = "GetContainerMst";
+        public const string GetSinkouCountInMonth = "GetSinkouCountInMonth";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -284,6 +288,7 @@
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
+        public const string GetAllByomeiByPtId = "GetAllByomeiByPtId";
 
         //System Conf
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";
@@ -320,6 +325,8 @@
         public const string RemoveLock = "RemoveLock";
         public const string RemoveAllLock = "RemoveAllLock";
         public const string ExtendTtl = "ExtendTtl";
+        public const string GetLockInfo = "GetLockInfo";
+        public const string CheckLockVisiting = "CheckLockVisiting";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
@@ -339,5 +346,8 @@
 
         //Holiday
         public const string SaveHolidayMst = "SaveHolidayMst";
+
+        //NextOrder
+        public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
     }
 }
