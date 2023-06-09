@@ -18,6 +18,6 @@ namespace Domain.Models.Lock
 
         List<LockModel> GetLockInfo(int hpId, long ptId, List<string> lisFunctionCd_B, int sinDate_B, long raiinNo);
 
-        bool GetVisitingLockStatus(int hpId, long ptId, int sinDate);
+        bool GetVisitingLockStatus(int hpId, long ptId, int sinDate, string functionCode);
     }
 }

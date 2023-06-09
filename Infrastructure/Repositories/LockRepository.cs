@@ -215,13 +215,15 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public bool GetVisitingLockStatus(int hpId, long ptId, int sinDate)
+        public bool GetVisitingLockStatus(int hpId, long ptId, int sinDate, string functionCode)
         {
             return NoTrackingDataContext.LockInfs
                                         .FirstOrDefault(
                                         l => l.HpId == hpId &&
                                         l.SinDate == sinDate &&
-                                        l.PtId == ptId) == null;
+                                        l.PtId == ptId &&
+                                        l.FunctionCd == functionCode
+                                        ) == null;
         }
     }
 }
