@@ -14,7 +14,7 @@ namespace Interactor.Lock
         {
             try
             {
-                var status = _lockRepository.GetVisitingLockStatus(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.FunctionCode);
+                var status = _lockRepository.GetVisitingLockStatus(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.FunctionCode);
                 if (!status)
                 {
                     return new CheckLockVisitingOutputData(CheckLockVisitingStatus.Locked);
