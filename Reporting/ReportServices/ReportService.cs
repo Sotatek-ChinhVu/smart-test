@@ -83,8 +83,6 @@ public class ReportService : IReportService
         _accountingCardCoReportService = accountingCardCoReportService;
     }
 
-
-
     //Byomei
     public CommonReportingRequestModel GetByomeiReportingData(long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds)
     {
@@ -92,7 +90,7 @@ public class ReportService : IReportService
     }
 
     //Karte1
-    public Karte1Mapper GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
+    public CommonReportingRequestModel GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
     {
         return _karte1Service.GetKarte1ReportingData(hpId, ptId, sinDate, hokenPid, tenkiByomei, syuByomei);
     }

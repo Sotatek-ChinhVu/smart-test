@@ -34,7 +34,7 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GenerateKarte1Report([FromQuery] Karte1ExportRequest request)
     {
         var karte1Data = _reportService.GetKarte1ReportingData(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
-        return await RenderPdf(karte1Data, ReportType.Karte1);
+        return await RenderPdf(karte1Data, ReportType.Common);
     }
 
     [HttpGet(ApiPath.ExportNameLabel)]
