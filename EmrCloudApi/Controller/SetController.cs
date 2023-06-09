@@ -150,7 +150,7 @@ public class SetController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetSuperSetDetailForTodayOrder)]
     public ActionResult<Response<GetSuperSetDetailToDoTodayOrderResponse>> GetSuperSetDetailForTodayOrder([FromQuery] GetSuperSetDetailToDoTodayOrderRequest request)
     {
-        var input = new GetSuperSetDetailToDoTodayOrderInputData(request.HpId, UserId, request.SetCd, request.SinDate);
+        var input = new GetSuperSetDetailToDoTodayOrderInputData(HpId, UserId, request.SetCd, request.SinDate);
         var output = _bus.Handle(input);
 
         var presenter = new GetSuperSetDetailToDoTodayOrderPresenter();
