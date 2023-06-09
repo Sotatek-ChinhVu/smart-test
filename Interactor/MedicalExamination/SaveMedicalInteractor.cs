@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Domain.Models.Diseases;
+﻿using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.FlowSheet;
 using Domain.Models.HpInf;
@@ -7,6 +6,7 @@ using Domain.Models.Insurance;
 using Domain.Models.Ka;
 using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
+using Domain.Models.Lock;
 using Domain.Models.Medical;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
@@ -18,7 +18,6 @@ using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
-using Entity.Tenant;
 using Helper.Constants;
 using Helper.Enum;
 using Infrastructure.Interfaces;
@@ -27,7 +26,6 @@ using Interactor.CalculateService;
 using Interactor.Family.ValidateFamilyList;
 using Interactor.NextOrder;
 using Microsoft.Extensions.Options;
-using System;
 using UseCase.Accounting.Recaculate;
 using UseCase.Diseases.Upsert;
 using UseCase.Family;
@@ -57,9 +55,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     private readonly IValidateFamilyList _validateFamilyList;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly ICalculateService _calculateService;
+    private readonly ILockRepository _lockRepository;
     private readonly AmazonS3Options _options;
 
-    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList)
+    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ILockRepository lockRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
@@ -77,6 +76,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _karteInfRepository = karteInfRepository;
         _calculateService = calculateService;
         _validateFamilyList = validateFamilyList;
+        _lockRepository = lockRepository;
     }
 
     public SaveMedicalOutputData Handle(SaveMedicalInputData inputDatas)
@@ -303,6 +303,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         inputDatas.IsSagaku ? 1 : 0,
                         ""
                     )));
+                _lockRepository.RemoveLock(hpId, FunctionCode.MedicalExaminationCode, ptId, sinDate, raiinNo, inputDatas.UserId);
             }
 
             return check ?
@@ -346,6 +347,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _todayOdrRepository.ReleaseResource();
             _karteInfRepository.ReleaseResource();
             _validateFamilyList.ReleaseResource();
+            _lockRepository.ReleaseResource();
         }
     }
 

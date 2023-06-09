@@ -101,6 +101,7 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
     #region Private function
     private bool UpdateDrawForm()
     {
+        bool _hasNextPage = true;
         #region SubMethod
 
         #region Header
@@ -163,7 +164,7 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
                 wrkData.Futan = wrkReces.Sum(r => r.HokenReceFutan);
                 listDataPerPage.Add(new("futan", 0, rowNo, wrkData.Futan.ToString()));
             }
-
+            _listTextData.Add(pageIndex, listDataPerPage);
             return 1;
         }
         #endregion
@@ -205,7 +206,8 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
             var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), excludeHoubetu);
             if (kohiHoubetus.Count == 0 || kohiHoubetus.Count <= kohiIndex)
             {
-                hasNextPage = false;
+                //_listTextData.Add(pageIndex, listDataPerPage);
+                _hasNextPage = false;
                 return 1;
             }
 
@@ -234,7 +236,7 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
                 kohiIndex++;
                 if (kohiIndex >= kohiHoubetus.Count)
                 {
-                    hasNextPage = false;
+                    _hasNextPage = false;
                     break;
                 }
             }
@@ -252,16 +254,19 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
             case 1:
                 if (UpdateFormHeader() < 0 || UpdateFormBodyP1() < 0)
                 {
+                    hasNextPage = _hasNextPage;
                     return false;
                 }
                 break;
             default:
                 if (UpdateFormHeader() < 0 || UpdateFormBodyP2() < 0)
                 {
+                    hasNextPage = _hasNextPage;
                     return false;
                 }
                 break;
         }
+        hasNextPage = _hasNextPage;
         return true;
     }
 
