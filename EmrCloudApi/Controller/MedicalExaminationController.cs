@@ -339,7 +339,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.OrderRealtimeChecker)]
         public ActionResult<Response<OrderRealtimeCheckerResponse>> OrderRealtimeChecker([FromBody] OrderRealtimeCheckerRequest request)
         {
-            var input = new GetOrderCheckerInputData(request.PtId, request.HpId, request.SinDay, request.CurrentListOdr, request.ListCheckingOrder, request.SpecialNoteItem, request.PtDiseaseModels, request.FamilyItems, request.IsDataOfDb, request.RealTimeCheckerCondition);
+            var input = new GetOrderCheckerInputData(request.PtId, HpId, request.SinDay, request.CurrentListOdr, request.ListCheckingOrder, request.SpecialNoteItem, request.PtDiseaseModels, request.FamilyItems, request.IsDataOfDb, request.RealTimeCheckerCondition);
             var output = _bus.Handle(input);
             var presenter = new OrderRealtimeCheckerPresenter();
             presenter.Complete(output);
@@ -600,7 +600,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.GetContainerMst)]
         public ActionResult<Response<GetContainerMstResponse>> GetContainerMst([FromBody] GetContainerMstRequest request)
         {
-            var input = new GetContainerMstInputData(request.HpId, request.SinDate, request.DefaultChecked, request.OdrInfItems);
+            var input = new GetContainerMstInputData(HpId, request.SinDate, request.DefaultChecked, request.OdrInfItems);
             var output = _bus.Handle(input);
             var presenter = new GetContainerMstPresenter();
             presenter.Complete(output);
