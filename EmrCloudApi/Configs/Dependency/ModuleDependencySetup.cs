@@ -586,6 +586,24 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.Receipt.ValidateCreateUKEFile;
+using Interactor.PatientInfor.SortPatientCommon;
+using Reporting.DrugNoteSeal.Service;
+using Reporting.DrugNoteSeal.DB;
+using Reporting.Sokatu.HikariDisk.DB;
+using Reporting.Sokatu.HikariDisk.Service;
+using Reporting.Sokatu.KoukiSeikyu.DB;
+using UseCase.RaiinListSetting.GetDocCategory;
+using Interactor.RaiinListSetting;
+using Domain.Models.RaiinListSetting;
+using UseCase.RaiinListSetting.GetFilingcategory;
+using Reporting.Sokatu.AfterCareSeikyu.Service;
+using Reporting.Sokatu.AfterCareSeikyu.DB;
+using Reporting.Sijisen.DB;
+using Reporting.Sokatu.Syaho.Service;
+using Reporting.Sokatu.Syaho.DB;
+using Interactor.SetMst.CommonSuperSet;
+using Reporting.Sokatu.WelfareSeikyu.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -750,6 +768,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KoukiSeikyuCoReportService, P14KoukiSeikyuCoReportService>();
             services.AddTransient<IP17KoukiSeikyuCoReportService, P17KoukiSeikyuCoReportService>();
             services.AddTransient<IP20KoukiSeikyuCoReportService, P20KoukiSeikyuCoReportService>();
+            services.AddTransient<IP25KokhoSokatuCoReportService, P25KokhoSokatuCoReportService>();
+            services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
+            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

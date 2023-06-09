@@ -4,7 +4,7 @@ namespace Reporting.Accounting.Model.Output;
 
 public class AccountingResponse
 {
-    public AccountingResponse(string fileName, int mode, Dictionary<string, string> systemConfigList, List<AccountingOutputModel> accountingReportingRequestItems)
+    public AccountingResponse(string fileName, int mode, Dictionary<string, string> systemConfigList, Dictionary<int, List<AccountingOutputModel>> accountingReportingRequestItems)
     {
         FileName = fileName;
         Mode = mode;
@@ -22,5 +22,5 @@ public class AccountingResponse
     public Dictionary<string, string> SystemConfigList { get; set; }
 
     [JsonPropertyName("accountingReportingRequestItems")]
-    public List<AccountingOutputModel> AccountingReportingRequestItems { get; set; }
+    public Dictionary<int, List<AccountingOutputModel>> AccountingReportingRequestItems { get; set; }
 }
