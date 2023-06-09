@@ -10,6 +10,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Collections.Generic;
 
 namespace Infrastructure.Repositories
 {
@@ -241,7 +242,6 @@ namespace Infrastructure.Repositories
             IQueryable<RaiinListDoc> databaseRaiinListDocs = TrackingDataContext.RaiinListDocs.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None);
             IQueryable<RaiinListFile> databaseRaiinListFiles = TrackingDataContext.RaiinListFile.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None);
             IQueryable<RaiinListKoui> databaseRaiinListKoui = TrackingDataContext.RaiinListKouis.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None);
-
 
             List<RaiinListDetailModel> detailDeletedList = new List<RaiinListDetailModel>();
             List<RaiinListDetailModel> detailDeletedCurrentList = new List<RaiinListDetailModel>();
@@ -1122,6 +1122,204 @@ namespace Infrastructure.Repositories
                 }
             }
 
+            void ExceuteCommandRawAddModel()
+            {
+                // Add by koui
+                kouiAddList.AddRange(kouiAdds);
+                if (kouiAddList.Any())
+                {
+                    var groupKoui = kouiAddList.GroupBy(item => new { item.GrpId, item.KbnCd })
+                                               .Select(item => new { item.Key.GrpId, item.Key.KbnCd, ListKoui = item.Select(x => x.KouiKbnId) })
+                                               .ToList();
+
+                    foreach (var koui in groupKoui)
+                    {
+                        var kouiList = NoTrackingDataContext.KouiKbnMsts.Where(item => koui.ListKoui.Contains(item.KouiKbnId)).Select(item => item.KouiKbn1).ToList();
+                        if (kouiList == null || !kouiList.Any()) continue;
+                        string kouiInCondition = string.Join(",", kouiList);
+                        string addByKouiQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
+                                           + " ("
+                                           + " SELECT \"HP_ID\", \"PT_ID\", \"SIN_DATE\", \"RAIIN_NO\""
+                                           + $" , {koui.GrpId}, {koui.KbnCd}, current_timestamp, {Session.UserID}, '',{RaiinListKbnConstants.KOUI_KBN}"
+                                           + " FROM \"public\".\"ODR_INF\""
+                                           + " WHERE \"HP_ID\" = 1 AND \"IS_DELETED\" = 0"
+                                           + $" AND \"ODR_KOUI_KBN\" IN ({kouiInCondition})"
+                                           + " GROUP BY \"HP_ID\", \"SIN_DATE\", \"RAIIN_NO\", \"PT_ID\" "
+                                           + " )  ON CONFLICT DO NOTHING;";
+                        TrackingDataContext.Database.ExecuteSqlRaw(addByKouiQuery);
+                        TrackingDataContext.SaveChanges();
+                    }
+                }
+
+                //// Add by item
+                itemAddList.AddRange(itemAdds);
+                if (itemAddList.Any())
+                {
+                    var groupItem = itemAddList.GroupBy(item => new { item.GrpId, item.KbnCd })
+                                               .Select(item => new { item.Key.GrpId, item.Key.KbnCd, ListItem = item.Select(x => string.Format("'{0}'", x.ItemCd)) })
+                                               .ToList();
+                    foreach (var item in groupItem)
+                    {
+                        string itemInCondition = string.Join(",", item.ListItem);
+                        string addByItemQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
+                                           + " ("
+                                           + " SELECT ODR.\"HP_ID\", ODR.\"PT_ID\", ODR.\"SIN_DATE\", ODR.\"RAIIN_NO\""
+                                           + $" , {item.GrpId}, {item.KbnCd}, current_timestamp, {Session.UserID}, '',{RaiinListKbnConstants.ITEM_KBN}"
+                                           + " FROM \"public\".\"ODR_INF\" ODR"
+                                           + " JOIN \"public\".\"ODR_INF_DETAIL\" DETAIL"
+                                           + " ON ODR.\"RAIIN_NO\"  = DETAIL.\"RAIIN_NO\"  "
+                                           + " AND ODR.\"RP_NO\" = DETAIL.\"RP_NO\" and ODR.\"RP_EDA_NO\" = DETAIL.\"RP_EDA_NO\" "
+                                           + " WHERE ODR.\"HP_ID\" = 1 AND ODR.\"IS_DELETED\" = 0"
+                                           + $" AND DETAIL.\"ITEM_CD\" IN ({itemInCondition})"
+                                           + " GROUP BY ODR.\"HP_ID\", ODR.\"SIN_DATE\", ODR.\"RAIIN_NO\", ODR.\"PT_ID\" "
+                                           + " )  ON CONFLICT DO NOTHING;";
+                        TrackingDataContext.Database.ExecuteSqlRaw(addByItemQuery);
+                        TrackingDataContext.SaveChanges();
+                    }
+                }
+
+                // Add by doc
+                docAddList.AddRange(docAdds);
+                if (docAddList.Any())
+                {
+                    var groupDoc = docAddList.GroupBy(item => new { item.GrpId, item.KbnCd })
+                                               .Select(item => new { item.Key.GrpId, item.Key.KbnCd, ListCategory = item.Select(x => x.CategoryCd) })
+                                               .ToList();
+                    foreach (var doc in groupDoc)
+                    {
+                        string docInCondition = string.Join(",", doc.ListCategory);
+                        string addByDocQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
+                                            + " ("
+                                            + " SELECT DOC.\"HP_ID\", DOC.\"PT_ID\", DOC.\"SIN_DATE\", DOC.\"RAIIN_NO\""
+                                            + $" , {doc.GrpId}, {doc.KbnCd}, current_timestamp, {Session.UserID}, '',{RaiinListKbnConstants.DOCUMENT_KBN}"
+                                            + " FROM \"public\".\"DOC_INF\" DOC"
+                                            + " WHERE DOC.\"HP_ID\" = 1 AND DOC.\"IS_DELETED\" = 0"
+                                            + $" AND DOC.\"CATEGORY_CD\" IN ({docInCondition})"
+                                            + " GROUP BY DOC.\"HP_ID\", DOC.\"SIN_DATE\", DOC.\"RAIIN_NO\", DOC.\"PT_ID\" "
+                                            + " )  ON CONFLICT DO NOTHING;";
+                        TrackingDataContext.Database.ExecuteSqlRaw(addByDocQuery);
+                        TrackingDataContext.SaveChanges();
+                    }
+                }
+
+                // Add by file
+                fileAddList.AddRange(fileAdds);
+                if (fileAddList.Any())
+                {
+                    var groupFile = fileAddList.GroupBy(item => new { item.GrpId, item.KbnCd })
+                                               .Select(item => new { item.Key.GrpId, item.Key.KbnCd, ListCategory = item.Select(x => x.CategoryCd) })
+                                               .ToList();
+                    foreach (var file in groupFile)
+                    {
+                        string fileInCondition = string.Join(",", file.ListCategory);
+                        string addByFileQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
+                                            + " ("
+                                            + " SELECT FILE.\"HP_ID\", FILE.\"PT_ID\", FILE.\"GET_DATE\""
+                                            + $", 0, {file.GrpId}, {file.KbnCd}, current_timestamp, {Session.UserID}, '',{RaiinListKbnConstants.FILE_KBN}"
+                                            + " FROM \"public\".\"FILING_INF\" FILE"
+                                            + " WHERE FILE.\"HP_ID\" = 1 AND FILE.\"IS_DELETED\" = 0"
+                                            + $" AND FILE.\"CATEGORY_CD\" IN ({fileInCondition})"
+                                            + " GROUP BY FILE.\"HP_ID\", FILE.\"GET_DATE\", FILE.\"PT_ID\" "
+                                            + " )  ON CONFLICT DO NOTHING;";
+                        TrackingDataContext.Database.ExecuteSqlRaw(addByFileQuery);
+                        TrackingDataContext.SaveChanges();
+                    }
+                }
+            }
+
+            void ReCalculationAfterDelete()
+            {
+                // Recalculated after delete
+                foreach (var deleteDetailModel in detailDeletedCurrentList)
+                {
+                    var detailModel = NoTrackingDataContext.RaiinListDetails.Where(detail => detail.HpId == hpId
+                                                                                              && detail.GrpId == deleteDetailModel.GrpId
+                                                                                              && detail.IsDeleted == 0)
+                                                                        .OrderBy(detail => detail.SortNo)
+                                                                        .FirstOrDefault();
+                    if (detailModel == null) continue;
+                    kouiDeleteList.Add(new RaiinListKouiModel(hpId, deleteDetailModel.GrpId, detailModel.KbnCd, 0, 0, 0));
+                    itemDeleteList.Add(new RaiinListItemModel(hpId, deleteDetailModel.GrpId, detailModel.KbnCd, string.Empty, 0, string.Empty, 0, false, 0));
+                    docDeleteList.Add(new RaiinListDocModel(hpId, deleteDetailModel.GrpId, detailModel.KbnCd, 0, 0, string.Empty, 0));
+                    fileDeleteList.Add(new RaiinListFileModel(hpId, deleteDetailModel.GrpId, deleteDetailModel.KbnCd, 0, string.Empty, 0, 0));
+                }
+
+                foreach (var kouiModel in kouiDeleteList)
+                {
+                    var raiinListKoui = NoTrackingDataContext.RaiinListKouis.Where(item => item.HpId == kouiModel.HpId
+                                                                                      && item.GrpId == kouiModel.GrpId
+                                                                                      && item.KbnCd == kouiModel.KbnCd
+                                                                                      && item.IsDeleted == 0)
+                                                                     .Select(x => new RaiinListKouiModel(x.HpId,
+                                                                                                         x.GrpId,
+                                                                                                         x.KbnCd,
+                                                                                                         x.SeqNo,
+                                                                                                         x.KouiKbnId,
+                                                                                                         x.IsDeleted)).ToList();
+                    if (raiinListKoui != null && raiinListKoui.Count() > 0)
+                    {
+                        kouiAddList.AddRange(raiinListKoui);
+                    }
+                }
+
+                foreach (var itemModel in itemDeleteList)
+                {
+                    var raiinListItem = NoTrackingDataContext.RaiinListItems.Where(item => item.HpId == itemModel.HpId
+                                                                                      && item.GrpId == itemModel.GrpId
+                                                                                      && item.KbnCd == itemModel.KbnCd
+                                                                                      && item.IsDeleted == 0)
+                                                                     .Select(x => new RaiinListItemModel(x.HpId,
+                                                                                                         x.GrpId,
+                                                                                                         x.KbnCd,
+                                                                                                         x.ItemCd ?? string.Empty,
+                                                                                                         x.SeqNo,
+                                                                                                         string.Empty,
+                                                                                                         0,
+                                                                                                         false,
+                                                                                                         0)).ToList();
+                    if (raiinListItem != null && raiinListItem.Count() > 0)
+                    {
+                        itemAddList.AddRange(raiinListItem);
+                    }
+                }
+
+                foreach (var docModel in docDeleteList)
+                {
+                    var raiinListDoc = NoTrackingDataContext.RaiinListDocs.Where(item => item.HpId == docModel.HpId
+                                                                                      && item.GrpId == docModel.GrpId
+                                                                                      && item.KbnCd == docModel.KbnCd
+                                                                                      && item.IsDeleted == 0).Select(x => new RaiinListDocModel(x.HpId,
+                                                                                                                                                x.GrpId,
+                                                                                                                                                x.KbnCd,
+                                                                                                                                                x.SeqNo,
+                                                                                                                                                x.CategoryCd,
+                                                                                                                                                string.Empty,
+                                                                                                                                                0)).ToList();
+                    if (raiinListDoc != null && raiinListDoc.Count() > 0)
+                    {
+                        docAddList.AddRange(raiinListDoc);
+                    }
+                }
+
+                foreach (var fileModel in fileDeleteList)
+                {
+                    var raiinListFile = NoTrackingDataContext.RaiinListFile.Where(item => item.HpId == fileModel.HpId
+                                                                                      && item.GrpId == fileModel.GrpId
+                                                                                      && item.KbnCd == fileModel.KbnCd
+                                                                                      && item.IsDeleted == 0).Select(x => new RaiinListFileModel(x.HpId,
+                                                                                                                                                x.GrpId,
+                                                                                                                                                x.KbnCd,
+                                                                                                                                                x.CategoryCd,
+                                                                                                                                                string.Empty,
+                                                                                                                                                x.SeqNo,
+                                                                                                                                                x.IsDeleted)).ToList();
+                    if (raiinListFile != null && raiinListFile.Count() > 0)
+                    {
+                        fileAddList.AddRange(raiinListFile);
+                    }
+                }
+            }
+
             IExecutionStrategy strategy = TrackingDataContext.Database.CreateExecutionStrategy();
             strategy.Execute(() =>
             {
@@ -1529,7 +1727,6 @@ namespace Infrastructure.Repositories
                         }
                         TrackingDataContext.SaveChanges();
 
-
                         // Delete by all detail
                         string queryDelete = "DELETE FROM \"public\".\"RAIIN_LIST_INF\" WHERE FALSE";
                         detailDeletedList.AddRange(detailDeleteds);
@@ -1561,197 +1758,8 @@ namespace Infrastructure.Repositories
                         TrackingDataContext.Database.ExecuteSqlRaw(queryDelete);
                         TrackingDataContext.SaveChanges();
 
-                        // Recalculated after delete
-                        foreach (var deleteDetailModel in detailDeletedCurrentList)
-                        {
-                            var detailModel = NoTrackingDataContext.RaiinListDetails.Where(detail => detail.HpId == hpId
-                                                                                                      && detail.GrpId == deleteDetailModel.GrpId
-                                                                                                      && detail.IsDeleted == 0)
-                                                                                .OrderBy(detail => detail.SortNo)
-                                                                                .FirstOrDefault();
-                            if (detailModel == null) continue;
-                            kouiDeleteList.Add(new RaiinListKouiModel(hpId, deleteDetailModel.GrpId, detailModel.KbnCd, 0 , 0, 0));
-                            itemDeleteList.Add(new RaiinListItemModel(hpId, deleteDetailModel.GrpId, detailModel.KbnCd, string.Empty, 0, string.Empty,0 , false, 0));
-                            docDeleteList.Add(new RaiinListDocModel(hpId, deleteDetailModel.GrpId, detailModel.KbnCd,0, 0, string.Empty, 0));
-                            fileDeleteList.Add(new RaiinListFileModel(hpId, deleteDetailModel.GrpId, deleteDetailModel.KbnCd, 0, string.Empty, 0, 0));
-                        }
-
-                        foreach (var kouiModel in kouiDeleteList)
-                        {
-                            var raiinListKoui = NoTrackingDataContext.RaiinListKouis.Where(item => item.HpId == kouiModel.HpId
-                                                                                              && item.GrpId == kouiModel.GrpId
-                                                                                              && item.KbnCd == kouiModel.KbnCd
-                                                                                              && item.IsDeleted == 0)
-                                                                             .Select(x => new RaiinListKouiModel(x.HpId,
-                                                                                                                 x.GrpId,
-                                                                                                                 x.KbnCd,
-                                                                                                                 x.SeqNo,
-                                                                                                                 x.KouiKbnId,
-                                                                                                                 x.IsDeleted)).ToList();
-                            if (raiinListKoui != null && raiinListKoui.Count() > 0)
-                            {
-                                kouiAddList.AddRange(raiinListKoui);
-                            }
-                        }
-
-                        foreach (var itemModel in itemDeleteList)
-                        {
-                            var raiinListItem = NoTrackingDataContext.RaiinListItems.Where(item => item.HpId == itemModel.HpId
-                                                                                              && item.GrpId == itemModel.GrpId
-                                                                                              && item.KbnCd == itemModel.KbnCd
-                                                                                              && item.IsDeleted == 0)
-                                                                             .Select(x => new RaiinListItemModel(x.HpId,
-                                                                                                                 x.GrpId,
-                                                                                                                 x.KbnCd,
-                                                                                                                 x.ItemCd ?? string.Empty,
-                                                                                                                 x.SeqNo,
-                                                                                                                 string.Empty,
-                                                                                                                 0,
-                                                                                                                 false,
-                                                                                                                 0)).ToList();
-                            if (raiinListItem != null && raiinListItem.Count() > 0)
-                            {
-                                itemAddList.AddRange(raiinListItem);
-                            }
-                        }
-
-                        foreach (var docModel in docDeleteList)
-                        {
-                            var raiinListDoc = NoTrackingDataContext.RaiinListDocs.Where(item => item.HpId == docModel.HpId
-                                                                                              && item.GrpId == docModel.GrpId
-                                                                                              && item.KbnCd == docModel.KbnCd
-                                                                                              && item.IsDeleted == 0).Select(x => new RaiinListDocModel(x.HpId,
-                                                                                                                                                        x.GrpId,
-                                                                                                                                                        x.KbnCd,
-                                                                                                                                                        x.SeqNo,
-                                                                                                                                                        x.CategoryCd,
-                                                                                                                                                        string.Empty,
-                                                                                                                                                        0)).ToList();
-                            if (raiinListDoc != null && raiinListDoc.Count() > 0)
-                            {
-                                docAddList.AddRange(raiinListDoc);
-                            }
-                        }
-
-                        foreach (var fileModel in fileDeleteList)
-                        {
-                            var raiinListFile = NoTrackingDataContext.RaiinListFile.Where(item => item.HpId == fileModel.HpId
-                                                                                              && item.GrpId == fileModel.GrpId
-                                                                                              && item.KbnCd == fileModel.KbnCd
-                                                                                              && item.IsDeleted == 0).Select(x => new RaiinListFileModel(x.HpId,
-                                                                                                                                                        x.GrpId,
-                                                                                                                                                        x.KbnCd,
-                                                                                                                                                        x.CategoryCd,
-                                                                                                                                                        string.Empty,
-                                                                                                                                                        x.SeqNo,
-                                                                                                                                                        x.IsDeleted)).ToList();
-                            if (raiinListFile != null && raiinListFile.Count() > 0)
-                            {
-                                fileAddList.AddRange(raiinListFile);
-                            }
-                        }
-
-                        // Add by koui
-                        kouiAddList.AddRange(kouiAdds);
-                        if (kouiAddList.Any())
-                        {
-                            var groupKoui = kouiAddList.GroupBy(item => new { item.GrpId, item.KbnCd })
-                                                       .Select(item => new { item.Key.GrpId, item.Key.KbnCd, ListKoui = item.Select(x => x.KouiKbnId) })
-                                                       .ToList();
-
-                            foreach (var koui in groupKoui)
-                            {
-                                var kouiList = NoTrackingDataContext.KouiKbnMsts.Where(item => koui.ListKoui.Contains(item.KouiKbnId)).Select(item => item.KouiKbn1).ToList();
-                                if (kouiList == null || !kouiList.Any()) continue;
-                                string kouiInCondition = string.Join(",", kouiList);
-                                string addByKouiQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
-                                                   + " ("
-                                                   + " SELECT \"HP_ID\", \"PT_ID\", \"SIN_DATE\", \"RAIIN_NO\""
-                                                   + $" , {koui.GrpId}, {koui.KbnCd}, current_timestamp, {Session.UserID}, '',{RaiinListKbnConstants.KOUI_KBN}"
-                                                   + " FROM \"public\".\"ODR_INF\""
-                                                   + " WHERE \"HP_ID\" = 1 AND \"IS_DELETED\" = 0"
-                                                   + $" AND \"ODR_KOUI_KBN\" IN ({kouiInCondition})"
-                                                   + " GROUP BY \"HP_ID\", \"SIN_DATE\", \"RAIIN_NO\", \"PT_ID\" "
-                                                   + " )  ON CONFLICT DO NOTHING;";
-                                TrackingDataContext.Database.ExecuteSqlRaw(addByKouiQuery);
-                                TrackingDataContext.SaveChanges();
-                            }
-                        }
-
-                        //// Add by item
-                        itemAddList.AddRange(itemAdds);
-                        if (itemAddList.Any())
-                        {
-                            var groupItem = itemAddList.GroupBy(item => new { item.GrpId, item.KbnCd })
-                                                       .Select(item => new { item.Key.GrpId, item.Key.KbnCd, ListItem = item.Select(x => string.Format("'{0}'", x.ItemCd)) })
-                                                       .ToList();
-                            foreach (var item in groupItem)
-                            {
-                                string itemInCondition = string.Join(",", item.ListItem);
-                                string addByItemQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
-                                                   + " ("
-                                                   + " SELECT ODR.\"HP_ID\", ODR.\"PT_ID\", ODR.\"SIN_DATE\", ODR.\"RAIIN_NO\""
-                                                   + $" , {item.GrpId}, {item.KbnCd}, current_timestamp, {Session.UserID}, '',{RaiinListKbnConstants.ITEM_KBN}"
-                                                   + " FROM \"public\".\"ODR_INF\" ODR"
-                                                   + " JOIN \"public\".\"ODR_INF_DETAIL\" DETAIL"
-                                                   + " ON ODR.\"RAIIN_NO\"  = DETAIL.\"RAIIN_NO\"  "
-                                                   + " AND ODR.\"RP_NO\" = DETAIL.\"RP_NO\" and ODR.\"RP_EDA_NO\" = DETAIL.\"RP_EDA_NO\" "
-                                                   + " WHERE ODR.\"HP_ID\" = 1 AND ODR.\"IS_DELETED\" = 0"
-                                                   + $" AND DETAIL.\"ITEM_CD\" IN ({itemInCondition})"
-                                                   + " GROUP BY ODR.\"HP_ID\", ODR.\"SIN_DATE\", ODR.\"RAIIN_NO\", ODR.\"PT_ID\" "
-                                                   + " )  ON CONFLICT DO NOTHING;";
-                                TrackingDataContext.Database.ExecuteSqlRaw(addByItemQuery);
-                                TrackingDataContext.SaveChanges();
-                            }
-                        }
-
-                        // Add by doc
-                        docAddList.AddRange(docAdds);
-                        if (docAddList.Any())
-                        {
-                            var groupDoc = docAddList.GroupBy(item => new { item.GrpId, item.KbnCd })
-                                                       .Select(item => new { item.Key.GrpId, item.Key.KbnCd, ListCategory = item.Select(x => x.CategoryCd) })
-                                                       .ToList();
-                            foreach (var doc in groupDoc)
-                            {
-                                string docInCondition = string.Join(",", doc.ListCategory);
-                                string addByDocQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
-                                                    + " ("
-                                                    + " SELECT DOC.\"HP_ID\", DOC.\"PT_ID\", DOC.\"SIN_DATE\", DOC.\"RAIIN_NO\""
-                                                    + $" , {doc.GrpId}, {doc.KbnCd}, current_timestamp, {Session.UserID}, '',{RaiinListKbnConstants.DOCUMENT_KBN}"
-                                                    + " FROM \"public\".\"DOC_INF\" DOC"
-                                                    + " WHERE DOC.\"HP_ID\" = 1 AND DOC.\"IS_DELETED\" = 0"
-                                                    + $" AND DOC.\"CATEGORY_CD\" IN ({docInCondition})"
-                                                    + " GROUP BY DOC.\"HP_ID\", DOC.\"SIN_DATE\", DOC.\"RAIIN_NO\", DOC.\"PT_ID\" "
-                                                    + " )  ON CONFLICT DO NOTHING;";
-                                TrackingDataContext.Database.ExecuteSqlRaw(addByDocQuery);
-                                TrackingDataContext.SaveChanges();
-                            }
-                        }
-
-                        // Add by file
-                        fileAddList.AddRange(fileAdds);
-                        if (fileAddList.Any())
-                        {
-                            var groupFile = fileAddList.GroupBy(item => new { item.GrpId, item.KbnCd })
-                                                       .Select(item => new { item.Key.GrpId, item.Key.KbnCd, ListCategory = item.Select(x => x.CategoryCd) })
-                                                       .ToList();
-                            foreach (var file in groupFile)
-                            {
-                                string fileInCondition = string.Join(",", file.ListCategory);
-                                string addByFileQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
-                                                    + " ("
-                                                    + " SELECT FILE.\"HP_ID\", FILE.\"PT_ID\", FILE.\"GET_DATE\""
-                                                    + $", 0, {file.GrpId}, {file.KbnCd}, current_timestamp, {Session.UserID}, '',{RaiinListKbnConstants.FILE_KBN}"
-                                                    + " FROM \"public\".\"FILING_INF\" FILE"
-                                                    + " WHERE FILE.\"HP_ID\" = 1 AND FILE.\"IS_DELETED\" = 0"
-                                                    + $" AND FILE.\"CATEGORY_CD\" IN ({fileInCondition})"
-                                                    + " GROUP BY FILE.\"HP_ID\", FILE.\"GET_DATE\", FILE.\"PT_ID\" "
-                                                    + " )  ON CONFLICT DO NOTHING;";
-                                TrackingDataContext.Database.ExecuteSqlRaw(addByFileQuery);
-                                TrackingDataContext.SaveChanges();
-                            }
-                        }
+                        ReCalculationAfterDelete();
+                        ExceuteCommandRawAddModel();
 
                         // Commit transaction if all commands succeed, transaction will auto-rollback
                         // when disposed if either commands fails
