@@ -27,6 +27,7 @@ public class CommonSuperSet : ICommonSuperSet
                 item.WeightKbn,
                 item.Color,
                 item.IsGroup,
+                item.IsDeleted,
                 datas?.Where(c => c.Level1 == item.Level1 && c.Level2 != 0 && c.Level3 == 0)?
                         .Select(c => new GetSetMstListOutputItem(
                             c.HpId,
@@ -41,6 +42,7 @@ public class CommonSuperSet : ICommonSuperSet
                             c.WeightKbn,
                             c.Color,
                             c.IsGroup,
+                            c.IsDeleted,
                             datas.Where(m => m.Level3 != 0 && m.Level1 == item.Level1 && m.Level2 == c.Level2)?
                                 .Select(c => new GetSetMstListOutputItem(
                                     c.HpId,
@@ -55,6 +57,7 @@ public class CommonSuperSet : ICommonSuperSet
                                     c.WeightKbn,
                                     c.Color,
                                     c.IsGroup,
+                                    c.IsDeleted,
                                     new List<GetSetMstListOutputItem>() ?? new List<GetSetMstListOutputItem>()
                                 )).OrderBy(s => s.Level1).ThenBy(s => s.Level2).ThenBy(s => s.Level3).ToList() ?? new List<GetSetMstListOutputItem>()
                         )).OrderBy(s => s.Level1).ThenBy(s => s.Level2).ThenBy(s => s.Level3).ToList() ?? new List<GetSetMstListOutputItem>()
