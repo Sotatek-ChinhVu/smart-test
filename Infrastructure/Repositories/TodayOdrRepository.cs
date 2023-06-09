@@ -536,7 +536,7 @@ namespace Infrastructure.Repositories
                     // Add or Update with SinKouiKbn
                     foreach (int koui in currentKouiSet.ToArray())
                     {
-                        var kouiMst = kouiKbnMst?.Find(item => item.KouiKbn1 == koui || item.KouiKbn2 == koui) ?? new KouiKbnMst();
+                        var kouiMst = kouiKbnMst?.Find(item => item.KouiKbn1 == koui || item.KouiKbn2 == koui);
                         if (kouiMst == null) continue;
 
                         List<RaiinListKoui> kouiItemList = raiinListKouis.FindAll(item => item.KouiKbnId == kouiMst.KouiKbnId);

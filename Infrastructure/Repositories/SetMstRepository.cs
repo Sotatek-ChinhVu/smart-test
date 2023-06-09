@@ -484,12 +484,27 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 {
                     if (originDragLevel1 > originDropLevel1)
                     {
-                        result = setMsts.Where(item => originDragLevel1 <= item.Level1).ToList();
+                        result = setMsts.Where(item => originDropLevel1 <= item.Level1).ToList();
                     }
                     if (originDragLevel1 < originDropLevel1)
                     {
-                        result = setMsts.Where(item => originDropLevel1 <= item.Level1).ToList();
+                        result = setMsts.Where(item => originDragLevel1 <= item.Level1).ToList();
                     }
+                    result.Add(new SetMstModel(
+                                   dragItem.HpId,
+                                   dragItem.SetCd,
+                                   dragItem.SetKbn,
+                                   dragItem.SetKbnEdaNo,
+                                   dragItem.GenerationId,
+                                   0,
+                                   0,
+                                   0,
+                                   dragItem.SetName ?? string.Empty,
+                                   dragItem.WeightKbn,
+                                   dragItem.Color,
+                                   1,
+                                   dragItem.IsGroup
+                           ));
                 }
             }
             else
