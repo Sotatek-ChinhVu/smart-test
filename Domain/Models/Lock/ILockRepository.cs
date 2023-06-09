@@ -17,5 +17,7 @@ namespace Domain.Models.Lock
         bool ExtendTtl(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
 
         List<LockModel> GetLockInfo(int hpId, long ptId, List<string> lisFunctionCd_B, int sinDate_B, long raiinNo);
+
+        bool GetVisitingLockStatus(int hpId, long ptId, int sinDate);
     }
 }

@@ -135,6 +135,7 @@ using Interactor.Santei;
 using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
+using Interactor.SetMst.CommonSuperSet;
 using Interactor.SpecialNote;
 using Interactor.StickyNote;
 using Interactor.SuperSetDetail;
@@ -193,12 +194,18 @@ using Reporting.ReceTarget.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.DB;
 using Reporting.Sijisen.Service;
+using Reporting.Sokatu.AfterCareSeikyu.DB;
+using Reporting.Sokatu.AfterCareSeikyu.Service;
 using Reporting.Sokatu.Common.DB;
+using Reporting.Sokatu.HikariDisk.DB;
+using Reporting.Sokatu.HikariDisk.Service;
 using Reporting.Sokatu.KokhoSeikyu.DB;
 using Reporting.Sokatu.KokhoSokatu.DB;
 using Reporting.Sokatu.KokhoSokatu.Service;
 using Reporting.Sokatu.KoukiSeikyu.DB;
 using Reporting.Sokatu.KoukiSeikyu.Service;
+using Reporting.Sokatu.Syaho.DB;
+using Reporting.Sokatu.Syaho.Service;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
@@ -422,6 +429,8 @@ using UseCase.OrdInfs.ValidationInputItem;
 using UseCase.OrdInfs.ValidationTodayOrd;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
+using UseCase.PatientInfor.CheckAllowDeletePatientInfo;
+using UseCase.PatientInfor.CheckValidSamePatient;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.GetListPatient;
@@ -577,24 +586,6 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.Receipt.ValidateCreateUKEFile;
-using Interactor.PatientInfor.SortPatientCommon;
-using Reporting.DrugNoteSeal.Service;
-using Reporting.DrugNoteSeal.DB;
-using Reporting.Sokatu.HikariDisk.DB;
-using Reporting.Sokatu.HikariDisk.Service;
-using Reporting.Sokatu.KoukiSeikyu.DB;
-using UseCase.RaiinListSetting.GetDocCategory;
-using Interactor.RaiinListSetting;
-using Domain.Models.RaiinListSetting;
-using UseCase.RaiinListSetting.GetFilingcategory;
-using Reporting.Sokatu.AfterCareSeikyu.Service;
-using Reporting.Sokatu.AfterCareSeikyu.DB;
-using Reporting.Sijisen.DB;
-using Reporting.Sokatu.Syaho.Service;
-using Reporting.Sokatu.Syaho.DB;
-using Interactor.SetMst.CommonSuperSet;
-using UseCase.PatientInfor.CheckValidSamePatient;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -949,6 +940,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTokkiMstListInputData, GetTokkiMstListInteractor>();
             busBuilder.RegisterUseCase<CalculationSwapHokenInputData, CalculationSwapHokenInteractor>();
             busBuilder.RegisterUseCase<CheckValidSamePatientInputData, CheckValidSamePatientInteractor>();
+            busBuilder.RegisterUseCase<CheckAllowDeletePatientInfoInputData, CheckAllowDeletePatientInfoInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -1317,6 +1309,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
             busBuilder.RegisterUseCase<GetLockInfoInputData, GetLockInfoInteractor>();
+            busBuilder.RegisterUseCase<CheckLockVisitingInputData, CheckLockVisitingInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();

@@ -1347,7 +1347,7 @@ namespace Infrastructure.Repositories
             return tenMstModels;
         }
 
-        public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize)
+        public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize, bool isHasFreeByomei = true)
         {
             var keywordHalfSize = keyword != String.Empty ? CIUtil.ToHalfsize(keyword) : "";
 
@@ -1391,6 +1391,11 @@ namespace Infrastructure.Repositories
                                     item.ByomeiCd.StartsWith(keyword)
                                  );
 
+            if (!isHasFreeByomei)
+            {
+                query = query.Where(item => item.ByomeiCd != "0000999");
+            }
+
             query = query.Where(item => (item.DelDate == 0 || item.DelDate >= sindate) && (isMisaiyou || item.IsAdopted == 1));
 
             query = query.Where(item =>
@@ -1413,6 +1418,7 @@ namespace Infrastructure.Repositories
             }
             return listByomeies;
         }
+
         public List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes)
         {
             var listDatas = NoTrackingDataContext.ByomeiMsts.Where(item => keyCodes.Contains(item.ByomeiCd)).ToList();
@@ -1424,6 +1430,7 @@ namespace Infrastructure.Repositories
             }
             return listByomeies;
         }
+
         public bool UpdateAdoptedByomei(int hpId, string byomeiCd, int userId)
         {
             if (hpId <= 0 || string.IsNullOrEmpty(byomeiCd)) return false;
@@ -1887,6 +1894,26 @@ namespace Infrastructure.Repositories
                     item.ItemCd == inputCodeItem.ItemCd || item.ItemCd == inputCodeItem.SanteiItemCd)
                     .OrderBy(item => item.ItemNo)
                     .ToList();
+                if (listCommentWithCode.Count == 0)
+                {
+                    inputCodeItem.SetData(listCommentWithCode);
+                    continue;
+                }
+
+                if (!isRecalculation)
+                {
+                    var itemNo = listCommentWithCode[0].ItemNo;
+
+                    listCommentWithCode.AddRange(listComment.Where(item =>
+                            item.ItemCd == "199999999" && item.ItemNo == itemNo)
+                        .ToList());
+                }
+
+                listCommentWithCode = listCommentWithCode.OrderBy(item => item.ItemNo)
+                    .ThenBy(item => item.EdaNo)
+                    .ThenBy(item => item.SortNo)
+                    .ToList();
+
                 inputCodeItem.SetData(listCommentWithCode);
             }
 

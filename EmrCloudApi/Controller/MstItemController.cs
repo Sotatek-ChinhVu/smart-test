@@ -121,7 +121,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.DiseaseSearch)]
         public ActionResult<Response<DiseaseSearchResponse>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
         {
-            var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.IsMisaiyou, request.Sindate, request.Keyword, request.PageIndex, request.PageSize);
+            var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.IsMisaiyou, request.Sindate, request.Keyword, request.PageIndex, request.PageSize, request.IsHasFreeByomei);
             var output = _bus.Handle(input);
 
             var presenter = new DiseaseSearchPresenter();
