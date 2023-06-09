@@ -35,7 +35,8 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
     /// <summary>
     /// OutPut Data
     /// </summary>
-    private string _formFileName = "p37KokhoSokatuP1.rse";
+    private const string _formFileName1 = "p37KokhoSokatuP1.rse";
+    private const string _formFileName2 = "p37KokhoSokatuP2.rse";
     private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
@@ -89,16 +90,12 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
             {
                 UpdateDrawForm();
                 currentPage++;
-                if (currentPage == 2)
-                {
-                    _formFileName = "p37KokhoSokatuP2.rse";
-                }
             }
         }  
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new P37KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName1, _formFileName2, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function
