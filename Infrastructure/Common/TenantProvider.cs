@@ -21,72 +21,75 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-            Console.WriteLine("Start to get connection string");
             string dbSample = _configuration["TenantDbSample"] ?? string.Empty;
-            var headers = _httpContextAccessor.HttpContext.Request.Headers;
-            if (headers == null || !headers.ContainsKey("domain"))
-            {
-                Console.WriteLine("Header doesn't contain the domain key.");
-                return dbSample;
-            }
-
-            string? clientDomain = headers["domain"];
+            string clientDomain = GetDomainFromHeader();
+            clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
             {
-                Console.WriteLine("ClientDomain is empty.");
                 return dbSample;
             }
-
-            if (clientDomain == "smartkarte.sotatek.works")
-            {
-                return "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
-            }
-            else if (clientDomain == "uat-tenant.smartkarte.org")
-            {
-                return "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte_new;user id=postgres;password=Emr!23456789";
-            }
-            else
+            var domainList = _configuration.GetSection("DomainList").Path;
+            if (string.IsNullOrEmpty(domainList))
             {
                 return dbSample;
             }
+            var clientDomainInConfig = _configuration[domainList + ":" + clientDomain] ?? string.Empty;
+            if (string.IsNullOrEmpty(clientDomainInConfig))
+            {
+                return dbSample;
+            }
+            string result = clientDomainInConfig ?? string.Empty;
 
-            //var domainList = _configuration.GetSection("DomainList");
-            //if (domainList == null || !domainList.Key.Contains(clientDomain))
-            //{
-            //    Console.WriteLine("Domain list is incorrect.");
-            //    Console.WriteLine(clientDomain);
-            //    if (domainList != null)
-            //    {
-            //        Console.WriteLine("DomainList value: " + domainList.Value);
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine("DomainList is null");
-            //    }
-                
-            //    return dbSample;
-            //}
-            
-            //string result = domainList[clientDomain] ?? string.Empty;
-            //Console.WriteLine("Start to get connection string: " + result);
-
-            //return result;
+            return result;
         }
 
         public string GetClinicID()
         {
+            var domain = GetDomainFromHeader();
+            domain = string.IsNullOrEmpty(domain) ? GetDomainFromQueryString() : domain;
+            return string.IsNullOrEmpty(domain) ? TempIdentity.ClinicID : domain;
+        }
+
+        private string GetDomainFromHeader()
+        {
             var headers = _httpContextAccessor.HttpContext.Request.Headers;
             if (headers == null || !headers.ContainsKey("domain"))
             {
-                return TempIdentity.ClinicID;
+                return string.Empty;
+            }
+            string? clientDomain = headers["domain"];
+
+            return clientDomain ?? string.Empty;
+        }
+
+        private string GetDomainFromQueryString()
+        {
+            var queryString = _httpContextAccessor.HttpContext.Request.QueryString.Value;
+            if (string.IsNullOrEmpty(queryString) || !queryString.Contains("domain"))
+            {
+                return string.Empty;
             }
 
-            string? clientDomain = headers["domain"];
-            if (string.IsNullOrEmpty(clientDomain))
+            var clientDomain = SubStringToGetParam(queryString);
+
+            return clientDomain ?? string.Empty;
+        }
+
+        private string SubStringToGetParam(string queryString)
+        {
+            try
             {
-                return TempIdentity.ClinicID;
+                var indexStart = queryString.IndexOf("domain");
+                var indexSub = indexStart > 0 ? indexStart + 7 : 0;
+                var tempInedexEnd = queryString.IndexOf("&", indexStart);
+                var indexEndSub = indexStart > 0 ? tempInedexEnd == -1 ? queryString.Length : tempInedexEnd : 0;
+                var length = indexEndSub > indexSub ? indexEndSub - indexSub : 0;
+                return queryString.Substring(indexSub, length);
             }
-            return clientDomain;
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         private TenantNoTrackingDataContext? _noTrackingDataContext;
