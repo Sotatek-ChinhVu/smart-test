@@ -43,7 +43,7 @@ namespace Infrastructure.CommonDB
             }
             else if (clientDomain == "uat-tenant.smartkarte.org")
             {
-                return "host=smartkarte.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
+                return "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte_new;user id=postgres;password=Emr!23456789";
             }
             else
             {
