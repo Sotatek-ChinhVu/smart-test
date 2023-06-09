@@ -42,7 +42,8 @@ public class ReorderSetMstInteractor : IReorderSetMstInputPort
             var result = _setMstRepository.ReorderSetMst(inputData.UserId, inputData.HpId, inputData.DragSetCd, inputData.DropSetCd);
             if (result.status)
             {
-                return new ReorderSetMstOutputData(_commonSuperSet.BuildTreeSetKbn(result.setMstModels), ReorderSetMstStatus.Successed);
+                var data = _commonSuperSet.BuildTreeSetKbn(result.setMstModels);
+                return new ReorderSetMstOutputData(data, ReorderSetMstStatus.Successed);
             }
             return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
         }

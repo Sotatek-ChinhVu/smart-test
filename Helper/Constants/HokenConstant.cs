@@ -134,4 +134,16 @@
     {
         public const int BorderVal = 21000;
     }
+
+    /// <summary>
+    /// 請求区分
+    ///  1:月遅れ 2:返戻 3:オンライン返戻
+    /// </summary>
+    public static class SeikyuKbn
+    {
+        public const int Normal = 0;
+        public const int Delay = 1;
+        public const int Henrei = 2;
+        public const int Online = 3;
+    }
 }

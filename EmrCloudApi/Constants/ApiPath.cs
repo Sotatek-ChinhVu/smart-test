@@ -90,6 +90,7 @@
         public const string ReceiptCheck = "ReceiptCheck";
         public const string ReceiptList = "ReceiptList";
         public const string ReceiptReport = "ReceiptReport";
+        public const string AccountingReport = "AccountingReport";
         public const string PeriodReceiptReport = "PeriodReceiptReport";
         public const string StaticReport = "StaticReport";
         public const string PatientManagement = "PatientManagement";
@@ -326,6 +327,7 @@
         public const string RemoveAllLock = "RemoveAllLock";
         public const string ExtendTtl = "ExtendTtl";
         public const string GetLockInfo = "GetLockInfo";
+        public const string CheckLockVisiting = "CheckLockVisiting";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";

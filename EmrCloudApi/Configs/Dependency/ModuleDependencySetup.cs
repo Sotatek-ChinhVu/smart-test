@@ -135,6 +135,7 @@ using Interactor.Santei;
 using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
+using Interactor.SetMst.CommonSuperSet;
 using Interactor.SpecialNote;
 using Interactor.StickyNote;
 using Interactor.SuperSetDetail;
@@ -193,12 +194,18 @@ using Reporting.ReceTarget.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.DB;
 using Reporting.Sijisen.Service;
+using Reporting.Sokatu.AfterCareSeikyu.DB;
+using Reporting.Sokatu.AfterCareSeikyu.Service;
 using Reporting.Sokatu.Common.DB;
+using Reporting.Sokatu.HikariDisk.DB;
+using Reporting.Sokatu.HikariDisk.Service;
 using Reporting.Sokatu.KokhoSeikyu.DB;
 using Reporting.Sokatu.KokhoSokatu.DB;
 using Reporting.Sokatu.KokhoSokatu.Service;
 using Reporting.Sokatu.KoukiSeikyu.DB;
 using Reporting.Sokatu.KoukiSeikyu.Service;
+using Reporting.Sokatu.Syaho.DB;
+using Reporting.Sokatu.Syaho.Service;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
@@ -422,6 +429,8 @@ using UseCase.OrdInfs.ValidationInputItem;
 using UseCase.OrdInfs.ValidationTodayOrd;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
+using UseCase.PatientInfor.CheckAllowDeletePatientInfo;
+using UseCase.PatientInfor.CheckValidSamePatient;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.GetListPatient;
@@ -594,8 +603,7 @@ using Reporting.Sijisen.DB;
 using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Interactor.SetMst.CommonSuperSet;
-using UseCase.PatientInfor.CheckAllowDeletePatientInfo;
-using UseCase.PatientInfor.CheckValidSamePatient;
+using Reporting.Sokatu.WelfareSeikyu.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -760,6 +768,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KoukiSeikyuCoReportService, P14KoukiSeikyuCoReportService>();
             services.AddTransient<IP17KoukiSeikyuCoReportService, P17KoukiSeikyuCoReportService>();
             services.AddTransient<IP20KoukiSeikyuCoReportService, P20KoukiSeikyuCoReportService>();
+            services.AddTransient<IP25KokhoSokatuCoReportService, P25KokhoSokatuCoReportService>();
+            services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
+            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -1319,6 +1331,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
             busBuilder.RegisterUseCase<GetLockInfoInputData, GetLockInfoInteractor>();
+            busBuilder.RegisterUseCase<CheckLockVisitingInputData, CheckLockVisitingInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
