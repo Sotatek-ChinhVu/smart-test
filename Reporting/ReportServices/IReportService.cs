@@ -15,7 +15,7 @@ public interface IReportService
 {
     CommonReportingRequestModel GetNameLabelReportingData(long ptId, string kanjiName, int sinDate);
 
-    Karte1Mapper GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei);
+    CommonReportingRequestModel GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei);
 
     DrugInfoData SetOrderInfo(int hpId, long ptId, int sinDate, long raiinNo);
 
