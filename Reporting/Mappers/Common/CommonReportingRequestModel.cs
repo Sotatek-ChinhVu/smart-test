@@ -33,6 +33,9 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("setFieldData")]
         public Dictionary<int, Dictionary<string, string>> SetFieldData { get; set; } = new();
+
+        [JsonPropertyName("reportConfigPerPage")]
+        public Dictionary<int, ReportConfigModel> ReportConfigPerPage { get; set; } = new();
     }
 
     public class CellModel
