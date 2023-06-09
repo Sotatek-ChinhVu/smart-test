@@ -69,6 +69,8 @@
 
         //Patient Infor
         public static readonly string InvalidPtNum = "Invalid PtNum";
+        public static readonly string InvalidKanjiName = "Invalid Kanji Name";
+        public static readonly string InvalidSex = "Invalid sex";
 
         // RousaiJibai
         public static readonly string InvalidHokenKbn = "Invalid HokenKbn";
