@@ -43,6 +43,18 @@ namespace FindAndReplace
             Console.WriteLine("rangeText 2 " + this.rangeText.ToString().IndexOf(find, searchPosition, comparisonType));
             Console.WriteLine("rangeText 2 " + this.rangeText.ToString().Contains(find).ToString());
 
+            string test1 = "《医療機関住所１》33423423543534";
+            Console.WriteLine("test 1 Constains 1 " + test1.Contains("《医療機関住所１》"));
+            Console.WriteLine("test 2 Constains 2 " + test1.Contains("《医療機関住所1》"));
+
+            string test2 = this.rangeText.ToString();
+            if (find == "《医療機関住所１》" || find == "《医療機関住所1》")
+            {
+                Console.WriteLine("test 3  " + test2.Contains("《医療機関住所１》"));
+                Console.WriteLine("test 4  " + test2.Contains("《医療機関住所1》"));
+
+            }
+
             while ((searchStartIndex = this.rangeText.ToString().IndexOf(find, searchPosition, comparisonType)) != -1)
             {
                 searchEndIndex = searchStartIndex + find.Length - 1;
