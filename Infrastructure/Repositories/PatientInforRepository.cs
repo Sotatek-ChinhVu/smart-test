@@ -1913,8 +1913,10 @@ namespace Infrastructure.Repositories
 
             var raiinList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
                                                                           && item.PtId == ptId
-                                                                          && (item.SinStartTime != string.Empty
-                                                                          || item.SinEndTime != string.Empty)
+                                                                          && item.SinStartTime != null
+                                                                          && item.SinStartTime != string.Empty
+                                                                          && item.SinEndTime != null
+                                                                          && item.SinEndTime != string.Empty
                                                                           && item.Status > 2
                                                                           && item.IsDeleted != DeleteTypes.Deleted)
                                                            .ToList();
