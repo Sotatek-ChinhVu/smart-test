@@ -299,12 +299,12 @@ namespace Infrastructure.Repositories
 
         public bool NotAllowSaveMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, int userId)
         {
-            var lockMedical = CheckLockMedicalExamination(hpId, ptId, raiinNo, sinDate, userId);
-            var userIdLock = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
-                                                                                   && item.PtId == ptId
-                                                                                   && item.FunctionCd == FunctionCode.MedicalExaminationCode
-                                                                                   && item.RaiinNo == raiinNo)?.UserId ?? 0;
-            return !(lockMedical && (userIdLock == userId));
+            var userLock = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                 && item.PtId == ptId
+                                                                                 && item.FunctionCd == FunctionCode.MedicalExaminationCode
+                                                                                 && item.RaiinNo == raiinNo);
+            var allow = userLock == null || userLock.UserId == userId;
+            return !allow;
         }
 
         private Tuple<LockInf, LockMst, UserMst, FunctionMst>? CheckLockInfo(int hpID, long ptID_B, string functionCD_B, long raiinNo_B, long oyaRaiinNo_B, int sinDate_B, int currentUserID)
