@@ -1939,6 +1939,22 @@ namespace Infrastructure.Repositories
         public bool DeletePatientInfo(long ptId, int hpId, int userId)
         {
             var patientInf = TrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptId && x.HpId == hpId && x.IsDelete == DeleteTypes.None);
+
+            var raiinList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                          && item.PtId == ptId
+                                                                          && item.SinStartTime != null
+                                                                          && item.SinStartTime != string.Empty
+                                                                          && item.SinEndTime != null
+                                                                          && item.SinEndTime != string.Empty
+                                                                          && item.Status > 2
+                                                                          && item.IsDeleted != DeleteTypes.Deleted)
+                                                           .ToList();
+
+            if (raiinList.Any())
+            {
+                return false;
+            }
+
             if (patientInf != null)
             {
                 patientInf.IsDelete = DeleteTypes.Deleted;
