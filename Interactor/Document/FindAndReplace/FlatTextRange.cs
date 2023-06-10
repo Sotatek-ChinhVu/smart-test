@@ -37,7 +37,11 @@ namespace FindAndReplace
             int searchStartIndex = -1, searchEndIndex = -1, searchPosition = 0;
 
             Console.WriteLine("rangeText 1 " + this.rangeText.ToString());
+            Console.WriteLine("find " + find);
+            Console.WriteLine("comparisonType " + comparisonType.ToString());
+
             Console.WriteLine("rangeText 2 " + this.rangeText.ToString().IndexOf(find, searchPosition, comparisonType));
+            Console.WriteLine("rangeText 2 " + this.rangeText.ToString().Contains(find).ToString());
 
             while ((searchStartIndex = this.rangeText.ToString().IndexOf(find, searchPosition, comparisonType)) != -1)
             {
