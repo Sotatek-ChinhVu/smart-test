@@ -1,5 +1,6 @@
 ﻿using Amazon.Runtime.Internal;
 using Domain.Models.AccountDue;
+using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.Accounting.Service;
@@ -60,8 +61,9 @@ public class ReportService : IReportService
     private readonly IDrugNoteSealCoReportService _drugNoteSealCoReportService;
     private readonly IYakutaiCoReportService _yakutaiCoReportService;
     private readonly IAccountingCardCoReportService _accountingCardCoReportService;
+    private readonly ICoAccountingFinder _coAccountingFinder;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -85,6 +87,7 @@ public class ReportService : IReportService
         _drugNoteSealCoReportService = drugNoteSealCoReportService;
         _yakutaiCoReportService = yakutaiCoReportService;
         _accountingCardCoReportService = accountingCardCoReportService;
+        _coAccountingFinder = coAccountingFinder;
     }
 
     //Byomei
@@ -222,16 +225,16 @@ public class ReportService : IReportService
         return _accountingCoReportService.GetAccountingReportingData(hpId, coAccountingParamModels);
     }
 
-    public AccountingResponse GetAccountingData(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, List<CoAccountDueListModel> multiAccountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isRyosyoDetail, int ptRyosyoDetail, bool isPrintMonth, bool ryoshusho, bool meisai)
+    public AccountingResponse GetAccountingData(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> multiAccountDueListModels, bool isPrintMonth, bool ryoshusho, bool meisai)
     {
         List<CoAccountingParamModel> requestAccountting = new();
 
-        List<CoAccountDueListModel> nyukinModels = accountDueListModels;
+        List<CoAccountDueListModel> nyukinModels = _coAccountingFinder.GetAccountDueList(hpId, ptId);
         List<int> months = new();
         foreach (var model in multiAccountDueListModels)
         {
-            selectedAccountDueListModel = model;
-            accountDueListModels = nyukinModels.FindAll(p => p.SinDate / 100 == model.SinDate / 100);
+            var selectedAccountDueListModel = model;
+            var accountDueListModels = nyukinModels.FindAll(p => p.SinDate / 100 == model.SinDate / 100);
             if (isPrintMonth)
             {
                 if (!months.Contains(model.SinDate / 100))
