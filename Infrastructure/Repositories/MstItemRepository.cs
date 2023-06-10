@@ -1894,6 +1894,26 @@ namespace Infrastructure.Repositories
                     item.ItemCd == inputCodeItem.ItemCd || item.ItemCd == inputCodeItem.SanteiItemCd)
                     .OrderBy(item => item.ItemNo)
                     .ToList();
+                if (listCommentWithCode.Count == 0)
+                {
+                    inputCodeItem.SetData(listCommentWithCode);
+                    continue;
+                }
+
+                if (!isRecalculation)
+                {
+                    var itemNo = listCommentWithCode[0].ItemNo;
+
+                    listCommentWithCode.AddRange(listComment.Where(item =>
+                            item.ItemCd == "199999999" && item.ItemNo == itemNo)
+                        .ToList());
+                }
+
+                listCommentWithCode = listCommentWithCode.OrderBy(item => item.ItemNo)
+                    .ThenBy(item => item.EdaNo)
+                    .ThenBy(item => item.SortNo)
+                    .ToList();
+
                 inputCodeItem.SetData(listCommentWithCode);
             }
 
