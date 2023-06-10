@@ -564,10 +564,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     public IEnumerable<SetMstModel> GetListFollowSetCd(int hpId, byte type, List<int> setCds)
     {
-        if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
-        {
-            setMstModelList = ReloadCache(hpId);
-        }
+        //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
+        //{
+            var setMstModelList = ReloadCache(hpId);
+        //}
 
         var result = new List<SetMstModel>();
         if (type == 1)
