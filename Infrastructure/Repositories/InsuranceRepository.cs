@@ -514,8 +514,14 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<InsuranceModel> GetListHokenPattern(int hpId, long ptId, int sinDate, bool allowDisplayDeleted, bool isAllHoken = true, bool isHoken = true, bool isJihi = true, bool isRosai = true, bool isJibai = true)
         {
+            int prefCd = 0;
+            var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
+            if (hpInf != null)
+            {
+                prefCd = hpInf.PrefNo;
+            }
 
-            var result = NoTrackingDataContext.PtHokenPatterns.Where
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where
                                 (
                                     p => p.HpId == hpId && p.PtId == ptId && (p.IsDeleted == 0 || allowDisplayDeleted) &&
                                         (
@@ -523,7 +529,14 @@ namespace Infrastructure.Repositories
                                             isHoken && (p.HokenKbn == 1 || p.HokenKbn == 2) ||
                                             isJihi && p.HokenKbn == 0 ||
                                             isRosai && (p.HokenKbn == 11 || p.HokenKbn == 12 || p.HokenKbn == 13) ||
-                                            isJibai && p.HokenKbn == 14));
+                                            isJibai && p.HokenKbn == 14)).ToList();
+            var hokenIds = ptHokenPatterns.Select(p => p.HokenId).Distinct().ToList();
+            var ptKohis = NoTrackingDataContext.PtKohis.Where(k => k.PtId == ptId && k.HpId == hpId).AsEnumerable().Where(k => hokenIds.Contains(k.HokenId));
+
+            foreach (var ptHokenPattern in ptHokenPatterns)
+            {
+                var kohi1 = ptKohis.Where(k => k.HokenId == ptHokenPattern.HokenId);
+            }
 
             return result.Select(r => new InsuranceModel(
                         r.HpId,
