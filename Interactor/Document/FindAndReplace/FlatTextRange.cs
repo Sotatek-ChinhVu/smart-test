@@ -36,40 +36,9 @@ namespace FindAndReplace
         {
             int searchStartIndex = -1, searchEndIndex = -1, searchPosition = 0;
 
-            Console.WriteLine("rangeText 1 " + this.rangeText.ToString());
-            Console.WriteLine("find " + find);
-            Console.WriteLine("comparisonType " + comparisonType.ToString());
-
-            Console.WriteLine("rangeText 2 " + this.rangeText.ToString().IndexOf(find, searchPosition));
-            Console.WriteLine("rangeText 3 " + this.rangeText.ToString().IndexOf(find, searchPosition, comparisonType));
-            Console.WriteLine("rangeText 4 " + this.rangeText.ToString().IndexOf(find, searchPosition, StringComparison.CurrentCulture));
-            Console.WriteLine("rangeText 5 " + this.rangeText.ToString().IndexOf(find, searchPosition, StringComparison.CurrentCultureIgnoreCase));
-            Console.WriteLine("rangeText 6 " + this.rangeText.ToString().IndexOf(find, searchPosition, StringComparison.InvariantCulture));
-            Console.WriteLine("rangeText 7 " + this.rangeText.ToString().IndexOf(find, searchPosition, StringComparison.InvariantCultureIgnoreCase));
-            Console.WriteLine("rangeText 8 " + this.rangeText.ToString().IndexOf(find, searchPosition, StringComparison.Ordinal));
-            Console.WriteLine("rangeText 9 " + this.rangeText.ToString().IndexOf(find, searchPosition, StringComparison.OrdinalIgnoreCase));
-
-            string test1 = "《医療機関住所１》33423423543534";
-            Console.WriteLine("test 1 Constains 1 " + test1.Contains("《医療機関住所１》"));
-            Console.WriteLine("test 2 Constains 2 " + test1.Contains("《医療機関住所1》"));
-
-            string test2 = this.rangeText.ToString();
-            if (find == "《医療機関住所１》" || find == "《医療機関住所1》")
-            {
-                Console.WriteLine("test 3  " + test2.Contains("《医療機関住所１》"));
-                Console.WriteLine("test 4  " + test2.Contains("《医療機関住所1》"));
-
-            }
-
-            Console.WriteLine("test 1 Constains 1 " + test1.Contains("《医療機関住所１》"));
-            Console.WriteLine("test 2 Constains 2 " + test1.Contains("《医療機関住所1》"));
-
-            if (find == "《医療機関住所１》" || find == "《医療機関住所1》")
-            {
-                Console.WriteLine("test 3  " + test2.Contains("《医療機関住所１》"));
-                Console.WriteLine("test 4  " + test2.Contains("《医療機関住所1》"));
-
-            }
+            Console.WriteLine("Test 1 " + this.rangeText.ToString().Normalize(NormalizationForm.FormKD));
+            Console.WriteLine("Test 1 " + find.Normalize(NormalizationForm.FormKD));
+            Console.WriteLine("Test 1 " + this.rangeText.ToString().Normalize(NormalizationForm.FormKD).IndexOf(find.Normalize(NormalizationForm.FormKD), searchPosition, comparisonType));
 
             while ((searchStartIndex = this.rangeText.ToString().Normalize(NormalizationForm.FormKD).IndexOf(find.Normalize(NormalizationForm.FormKD), searchPosition, comparisonType)) != -1)
             {
@@ -78,11 +47,6 @@ namespace FindAndReplace
                 // Find FlatText that contains the beginning of the searched text.
                 LinkedListNode<FlatText> node = this.FindNode(searchStartIndex);
                 FlatText flatText = node.Value;
-
-                Console.WriteLine("flatText " + flatText);
-                Console.WriteLine("searchStartIndex " + searchStartIndex);
-                Console.WriteLine("searchEndIndex " + searchEndIndex);
-                Console.WriteLine("replace" + replace);
 
                 ReplaceText(flatText, searchStartIndex, searchEndIndex, replace);
 
