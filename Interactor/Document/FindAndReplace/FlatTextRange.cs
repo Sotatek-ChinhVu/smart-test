@@ -36,6 +36,9 @@ namespace FindAndReplace
         {
             int searchStartIndex = -1, searchEndIndex = -1, searchPosition = 0;
 
+            Console.WriteLine("rangeText 1" + this.rangeText.ToString());
+            Console.WriteLine("rangeText 2 " + this.rangeText.ToString().IndexOf(find, searchPosition, comparisonType));
+
             while ((searchStartIndex = this.rangeText.ToString().IndexOf(find, searchPosition, comparisonType)) != -1)
             {
                 searchEndIndex = searchStartIndex + find.Length - 1;
@@ -44,8 +47,13 @@ namespace FindAndReplace
                 LinkedListNode<FlatText> node = this.FindNode(searchStartIndex);
                 FlatText flatText = node.Value;
 
+                Console.WriteLine("flatText " + flatText);
+                Console.WriteLine("searchStartIndex" + searchStartIndex);
+                Console.WriteLine("searchEndIndex" + searchEndIndex);
+                Console.WriteLine("replace" + replace);
+
                 ReplaceText(flatText, searchStartIndex, searchEndIndex, replace);
-                
+
                 // Remove next FlatTexts that contain parts of the searched text.
                 this.RemoveNodes(node, searchEndIndex);
 
@@ -99,7 +107,7 @@ namespace FindAndReplace
                 }
             }
         }
-        
+
         private void RemoveNode(LinkedListNode<FlatText> node)
         {
             node.Value.Remove();
