@@ -16,4 +16,5 @@ public enum SaveSetMstStatus : byte
     InvalidWeightKbn = 12,
     InvalidColor = 13,
     InvalidIsDeleted = 14,
+    MedicalScreenLocked = 15,
 }

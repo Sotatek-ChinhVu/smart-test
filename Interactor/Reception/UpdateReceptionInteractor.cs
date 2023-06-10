@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Reception;
+using Domain.Models.User;
 using UseCase.Reception.Update;
 
 namespace Interactor.Reception;
@@ -6,10 +7,12 @@ namespace Interactor.Reception;
 public class UpdateReceptionInteractor : IUpdateReceptionInputPort
 {
     private readonly IReceptionRepository _receptionRepository;
+    private readonly IUserRepository _userRepository;
 
-    public UpdateReceptionInteractor(IReceptionRepository receptionRepository)
+    public UpdateReceptionInteractor(IReceptionRepository receptionRepository, IUserRepository userRepository)
     {
         _receptionRepository = receptionRepository;
+        _userRepository = userRepository;
     }
 
     public UpdateReceptionOutputData Handle(UpdateReceptionInputData input)
@@ -18,7 +21,13 @@ public class UpdateReceptionInteractor : IUpdateReceptionInputPort
         {
             ReceptionSaveDto dto = input.Dto;
 
-            if (dto!.Insurances.Any(i => !i.IsValidData()))
+            var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(input.HpId, dto.Reception.PtId, dto.Reception.RaiinNo, dto.Reception.SinDate, input.UserId);
+            if (notAllowSave)
+            {
+                return new UpdateReceptionOutputData(UpdateReceptionStatus.MedicalScreenLocked);
+            }
+
+            else if (dto!.Insurances.Any(i => !i.IsValidData()))
             {
                 return new UpdateReceptionOutputData(UpdateReceptionStatus.InvalidInsuranceList);
             }

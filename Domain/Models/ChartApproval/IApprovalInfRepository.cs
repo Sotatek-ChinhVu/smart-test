@@ -9,5 +9,7 @@ namespace Domain.Models.ChartApproval
         bool SaveApprovalInfs(List<ApprovalInfModel> approvalInfs, int hpId, int userId);
 
         bool NeedApprovalInf(int hpId, int startDate, int departmentId, int tantoId);
+
+        void UpdateApproveInf(int hpId, long ptId, int sinDate, long raiinNo, int userId);
     }
 }

@@ -68,6 +68,7 @@ public class SaveSuperSetDetailPresenter : ISaveSuperSetDetailOutputPort
         SaveSuperSetDetailStatus.FontColorMaxLength8 => ResponseMessage.FontColorMaxLength8,
         SaveSuperSetDetailStatus.InvalidSetOrderCommentNewline => ResponseMessage.InvalidSetOrderCommentNewline,
         SaveSuperSetDetailStatus.RpNoOrRpEdaNoIsNotExist => ResponseMessage.RpNoOrRpEdaNoIsNotExist,
+        SaveSuperSetDetailStatus.MedicalScreenLocked => ResponseMessage.MedicalScreenLocked,
 
         _ => string.Empty
     };
