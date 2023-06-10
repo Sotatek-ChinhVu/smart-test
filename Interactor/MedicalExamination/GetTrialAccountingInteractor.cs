@@ -2,6 +2,7 @@
 using Domain.Models.CalculateModel;
 using Domain.Models.MstItem;
 using Domain.Models.Reception;
+using Domain.Models.User;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
@@ -16,18 +17,25 @@ namespace Interactor.MedicalExamination
         private readonly ICalculateService _calculateRepository;
         private readonly IReceptionRepository _receptionRepository;
         private readonly IAccountingRepository _accountingRepository;
+        private readonly IUserRepository _userRepository;
 
-        public GetTrialAccountingInteractor(ICalculateService calculateRepository, IReceptionRepository receptionRepository, IAccountingRepository accountingRepository)
+        public GetTrialAccountingInteractor(ICalculateService calculateRepository, IReceptionRepository receptionRepository, IAccountingRepository accountingRepository, IUserRepository userRepository)
         {
             _calculateRepository = calculateRepository;
             _receptionRepository = receptionRepository;
             _accountingRepository = accountingRepository;
+            _userRepository = userRepository;
         }
 
         public GetTrialAccountingOutputData Handle(GetTrialAccountingInputData inputData)
         {
             try
             {
+                var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+                if (notAllowSave)
+                {
+                    return new GetTrialAccountingOutputData(GetTrialAccountingStatus.MedicalScreenLocked);
+                }
                 var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
                 var requestRaiinInf = new ReceptionItem(raiinInf);
                 var runTraialCalculateRequest = new RunTraialCalculateRequest(
