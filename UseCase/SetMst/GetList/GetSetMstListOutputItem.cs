@@ -16,7 +16,7 @@
             WeightKbn = weightKbn;
             Color = color;
             IsGroup = isGroup;
-            IsDelete = isDelete;
+            IsDeleted = isDelete;
             Childrens = childrens;
         }
 
@@ -32,7 +32,7 @@
         public int WeightKbn { get; private set; }
         public int Color { get; private set; }
         public int IsGroup { get; private set; }
-        public int IsDelete { get; private set; }
+        public int IsDeleted { get; private set; }
         public List<GetSetMstListOutputItem> Childrens { get; private set; }
     }
 }
