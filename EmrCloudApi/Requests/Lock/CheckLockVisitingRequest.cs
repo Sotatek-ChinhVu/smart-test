@@ -4,5 +4,6 @@
     {
         public long PtId { get; set; }
         public int SinDate { get; set; }
+        public string FunctionCode { get; set; } = string.Empty;
     }
 }
