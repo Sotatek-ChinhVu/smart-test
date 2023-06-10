@@ -7,8 +7,11 @@ namespace UseCase.SuperSetDetail.SaveSuperSetDetail;
 
 public class SaveSuperSetDetailInputData : IInputData<SaveSuperSetDetailOutputData>
 {
-    public SaveSuperSetDetailInputData(int setCd, int userId, int hpId, List<SaveSetByomeiInputItem> setByomeiModelInputs, SaveSetKarteInputItem saveSetKarteInputItem, List<SaveSetOrderInfInputItem> saveSetOrderInputItems, FileItemInputItem fileItem)
+    public SaveSuperSetDetailInputData(long ptId, long raiinNo, int sinDate, int setCd, int userId, int hpId, List<SaveSetByomeiInputItem> setByomeiModelInputs, SaveSetKarteInputItem saveSetKarteInputItem, List<SaveSetOrderInfInputItem> saveSetOrderInputItems, FileItemInputItem fileItem)
     {
+        PtId = ptId;
+        RaiinNo = raiinNo;
+        SinDate = sinDate;
         SetCd = setCd;
         UserId = userId;
         HpId = hpId;
@@ -17,6 +20,12 @@ public class SaveSuperSetDetailInputData : IInputData<SaveSuperSetDetailOutputDa
         SaveSetOrderInputItems = saveSetOrderInputItems;
         FileItem = fileItem;
     }
+
+    public long PtId { get; private set; }
+
+    public long RaiinNo { get; private set; }
+
+    public int SinDate { get; private set; }
 
     public int SetCd { get; private set; }
 
