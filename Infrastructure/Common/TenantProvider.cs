@@ -50,7 +50,7 @@ namespace Infrastructure.CommonDB
             return string.IsNullOrEmpty(domain) ? TempIdentity.ClinicID : domain;
         }
 
-        private string GetDomainFromHeader()
+        public string GetDomainFromHeader()
         {
             var headers = _httpContextAccessor.HttpContext.Request.Headers;
             if (headers == null || !headers.ContainsKey("domain"))
@@ -62,7 +62,7 @@ namespace Infrastructure.CommonDB
             return clientDomain ?? string.Empty;
         }
 
-        private string GetDomainFromQueryString()
+        public string GetDomainFromQueryString()
         {
             var queryString = _httpContextAccessor.HttpContext.Request.QueryString.Value;
             if (string.IsNullOrEmpty(queryString) || !queryString.Contains("domain"))
@@ -75,7 +75,7 @@ namespace Infrastructure.CommonDB
             return clientDomain ?? string.Empty;
         }
 
-        private string SubStringToGetParam(string queryString)
+        public string SubStringToGetParam(string queryString)
         {
             try
             {
