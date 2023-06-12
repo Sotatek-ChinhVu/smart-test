@@ -36,10 +36,6 @@ namespace FindAndReplace
         {
             int searchStartIndex = -1, searchEndIndex = -1, searchPosition = 0;
 
-            Console.WriteLine("Test 1 " + this.rangeText.ToString().Normalize(NormalizationForm.FormKD));
-            Console.WriteLine("Test 1 " + find.Normalize(NormalizationForm.FormKD));
-            Console.WriteLine("Test 1 " + this.rangeText.ToString().Normalize(NormalizationForm.FormKD).IndexOf(find.Normalize(NormalizationForm.FormKD), searchPosition, comparisonType));
-
             while ((searchStartIndex = this.rangeText.ToString().Normalize(NormalizationForm.FormKD).IndexOf(find.Normalize(NormalizationForm.FormKD), searchPosition, comparisonType)) != -1)
             {
                 searchEndIndex = searchStartIndex + find.Length - 1;
