@@ -1146,6 +1146,10 @@ namespace Infrastructure.Repositories
                                  tenKN
                              };
 
+
+            var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
+            var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
+
             var queryJoinWithKensa = from q in queryFinal
                                      join k in kensaMstQuery
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
@@ -1174,6 +1178,8 @@ namespace Infrastructure.Repositories
                               from ipnExcludesItem in ipnExcludesItems.DefaultIfEmpty()
                               join yakka in ipnMinYakka on q.TenMst.IpnNameCd equals yakka.IpnNameCd into ipnYakkas
                               from ipnYakka in ipnYakkas.DefaultIfEmpty()
+                              join i in ipnNameMstList on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
+                              from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
                               select new
                               {
                                   q.TenMst,
@@ -1181,6 +1187,7 @@ namespace Infrastructure.Repositories
                                   q.YakkaSyusaiItem,
                                   q.tenKN,
                                   KensaMst = q.KensaMst,
+                                  IpnName = ipnNameMst?.IpnName ?? string.Empty,
                                   IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
                                   Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
                               };
@@ -1234,7 +1241,7 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.DefaultVal ?? 0,
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
                                                            item.TenMst?.Kokuji2 ?? string.Empty,
-                                                           string.Empty,
+                                                           item.IpnName,
                                                            item.TenMst?.IsDeleted ?? 0,
                                                            item.TenMst?.HandanGrpKbn ?? 0,
                                                            item.KensaMst == null,
@@ -5101,6 +5108,9 @@ namespace Infrastructure.Repositories
                                  TenKN = tenKN
                              };
 
+            var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
+            var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
+
             var joinedQuery = from q in queryFinal
                               join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
                               from ipnExclude in ipnExcludes.DefaultIfEmpty()
@@ -5108,6 +5118,8 @@ namespace Infrastructure.Repositories
                               from ipnExcludesItem in ipnExcludesItems.DefaultIfEmpty()
                               join yakka in ipnMinYakka on q.TenMst.IpnNameCd equals yakka.IpnNameCd into ipnYakkas
                               from ipnYakka in ipnYakkas.DefaultIfEmpty()
+                              join i in ipnNameMstList on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
+                              from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
                               select new
                               {
                                   q.TenMst,
@@ -5115,6 +5127,7 @@ namespace Infrastructure.Repositories
                                   q.YakkaSyusaiItem,
                                   q.TenKN,
                                   KensaMst = q.KensaMst,
+                                  IpnName = ipnNameMst?.IpnName ?? string.Empty,
                                   IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
                                   Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
                               };
@@ -5165,7 +5178,7 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.DefaultVal ?? 0,
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
                                                            item.TenMst?.Kokuji2 ?? string.Empty,
-                                                           string.Empty,
+                                                           item.IpnName,
                                                            item.TenMst?.IsDeleted ?? 0,
                                                            item.TenMst?.HandanGrpKbn ?? 0,
                                                            item.KensaMst == null,
