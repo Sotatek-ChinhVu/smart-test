@@ -513,8 +513,8 @@ public class AccountingCoReportService : IAccountingCoReportService
             hakkoDay = param.HakkoDate;
             memo = param.Memo;
             printType = param.PrintType;
-            coModel = GetData(hpId, ptId, startDate, endDate);
-            if (coModel.HpId == 0)
+            var checkExist = CheckExistData(hpId, ptId, startDate, endDate);
+            if (!checkExist)
             {
                 continue;
             }
@@ -3710,6 +3710,24 @@ public class AccountingCoReportService : IAccountingCoReportService
             }
         }
         #endregion
+    }
+
+    private bool CheckExistData(int hpId, long ptId, int startDate, int endDate)
+    {
+        int sinDate = endDate;
+
+        List<CoWarningMessage> warningMessages = new();
+
+        List<CoKaikeiInfModel> kaikeiInfModels;
+        if (!nyukinBase)
+        {
+            kaikeiInfModels = _finder.FindKaikeiInf(hpId, ptId, startDate, endDate, raiinNos, hokenId, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn, hokenSeikyu, jihiSeikyu, ref warningMessages);
+        }
+        else
+        {
+            kaikeiInfModels = _finder.FindKaikeiInfNyukinBase(hpId, ptId, startDate, endDate, hokenId, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn, hokenSeikyu, jihiSeikyu, ref warningMessages);
+        }
+        return kaikeiInfModels.Any();
     }
 
     private CoAccountingModel GetData(int hpId, long ptId, int startDate, int endDate)

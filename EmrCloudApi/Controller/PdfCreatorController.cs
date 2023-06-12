@@ -145,17 +145,6 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Accounting);
     }
 
-    [HttpPost(ApiPath.CheckOpenAccountingReport)]
-    public IActionResult CheckOpenReportingForm([FromForm] AccountingReportRequest requestStringJson)
-    {
-        var stringJson = requestStringJson.JsonAccounting;
-        var request = JsonSerializer.Deserialize<AccountingCoReportModelRequest>(stringJson) ?? new();
-        var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
-
-        var data = _reportService.CheckOpenReportingForm(request.HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
-        return Ok(data);
-    }
-
     [HttpGet(ApiPath.ReceiptReport)]
     public async Task<IActionResult> GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
     {

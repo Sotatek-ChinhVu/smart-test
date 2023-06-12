@@ -91,7 +91,6 @@
         public const string ReceiptList = "ReceiptList";
         public const string ReceiptReport = "ReceiptReport";
         public const string AccountingReport = "AccountingReport";
-        public const string CheckOpenAccountingReport = "CheckOpenAccountingReport";
         public const string PeriodReceiptReport = "PeriodReceiptReport";
         public const string StaticReport = "StaticReport";
         public const string PatientManagement = "PatientManagement";
