@@ -226,6 +226,7 @@
         public const string CheckLockMedicalExamination = "CheckLockMedicalExamination";
         public const string GetPermissionByScreen = "GetPermissionByScreen";
         public const string GetAllPermission = "GetAllPermission";
+        public const string GetListUserByCurrentUser = "GetListUserByCurrentUser";
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";

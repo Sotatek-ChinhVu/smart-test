@@ -393,13 +393,13 @@ namespace Infrastructure.Repositories
 
             IQueryable<UserPermission> listUserPermission = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId);
 
-            var queryFinal = from user in listUsers
+            var queryFinal = (from user in listUsers
                              join userPermission in listUserPermission on user.UserId equals userPermission.UserId into listUserPer
                              select new
                              {
                                  User = user,
                                  Permissions = listUserPer
-                             };
+                             }).ToList();
 
             return queryFinal.Select(x => new UserMstModel(x.User.HpId,
                                                           x.User.Id,
