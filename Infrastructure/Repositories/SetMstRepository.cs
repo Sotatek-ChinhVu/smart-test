@@ -72,6 +72,26 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         else
         {
+            string kanaKeyword = textSearch;
+            if (!WanaKana.IsKana(textSearch) && WanaKana.IsRomaji(textSearch))
+            {
+                var inputKeyword = textSearch;
+                kanaKeyword = CIUtil.ToHalfsize(textSearch);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
+            }
+
+            string sBigKeyword = kanaKeyword.ToUpper()
+                                            .Replace("ｧ", "ｱ")
+                                            .Replace("ｨ", "ｲ")
+                                            .Replace("ｩ", "ｳ")
+                                            .Replace("ｪ", "ｴ")
+                                            .Replace("ｫ", "ｵ")
+                                            .Replace("ｬ", "ﾔ")
+                                            .Replace("ｭ", "ﾕ")
+                                            .Replace("ｮ", "ﾖ")
+                                            .Replace("ｯ", "ﾂ");
+
             // Search By SetName
             setMstModelList = setMstModelList!.Where(item => item.HpId == hpId
                                                              && item.GenerationId == generationId
@@ -81,26 +101,58 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
             var searchItemList = setMstModelList!
                                 .Where(item => string.IsNullOrEmpty(textSearch)
-                                               || (item.SetName != null && item.SetName.Contains(textSearch)))
+                                               || (item.SetName != null && item.SetName.Contains(textSearch))
+                                               || (item.SetName != null && item.SetName.ToUpper()
+                                                                                       .Replace("ｧ", "ｱ")
+                                                                                       .Replace("ｨ", "ｲ")
+                                                                                       .Replace("ｩ", "ｳ")
+                                                                                       .Replace("ｪ", "ｴ")
+                                                                                       .Replace("ｫ", "ｵ")
+                                                                                       .Replace("ｬ", "ﾔ")
+                                                                                       .Replace("ｭ", "ﾕ")
+                                                                                       .Replace("ｮ", "ﾖ")
+                                                                                       .Replace("ｯ", "ﾂ")
+                                                                                       .Contains(sBigKeyword)))
                                 .ToList();
 
             var setCdList = searchItemList.Select(item => item.SetCd).ToList();
 
             // SearchBy Order Inf Detail
-            var setCdOrderDetailList = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.HpId == hpId
-                                                                                           && item.ItemName!=null
-                                                                                           && item.ItemName.Contains(textSearch))
-                                                                            .Select(item => item.SetCd)
-                                                                            .Distinct()
-                                                                            .ToList();
+            var setCdOrderDetailList = NoTrackingDataContext.SetOdrInfDetail
+                                       .Where(item => item.HpId == hpId
+                                                      && ((item.ItemName != null && item.ItemName.Contains(textSearch))
+                                                          || (item.ItemName != null && item.ItemName.ToUpper()
+                                                                                                    .Replace("ｧ", "ｱ")
+                                                                                                    .Replace("ｨ", "ｲ")
+                                                                                                    .Replace("ｩ", "ｳ")
+                                                                                                    .Replace("ｪ", "ｴ")
+                                                                                                    .Replace("ｫ", "ｵ")
+                                                                                                    .Replace("ｬ", "ﾔ")
+                                                                                                    .Replace("ｭ", "ﾕ")
+                                                                                                    .Replace("ｮ", "ﾖ")
+                                                                                                    .Replace("ｯ", "ﾂ")
+                                                                                                    .Contains(sBigKeyword))))
+                                       .Select(item => item.SetCd)
+                                       .Distinct()
+                                       .ToList();
 
             var setItemOrderDetailList = setMstModelList!.Where(item => setCdOrderDetailList.Contains(item.SetCd)).ToList();
             searchItemList.AddRange(setItemOrderDetailList);
 
             // SearchBy Karte
             var setCdKarte = NoTrackingDataContext.SetKarteInf.Where(item => item.HpId == hpId
-                                                                             && item.Text != null
-                                                                             && item.Text.Contains(textSearch))
+                                                                             && ((item.Text != null && item.Text.Contains(textSearch)))
+                                                                                  || (item.Text != null && item.Text.ToUpper()
+                                                                                                                    .Replace("ｧ", "ｱ")
+                                                                                                                    .Replace("ｨ", "ｲ")
+                                                                                                                    .Replace("ｩ", "ｳ")
+                                                                                                                    .Replace("ｪ", "ｴ")
+                                                                                                                    .Replace("ｫ", "ｵ")
+                                                                                                                    .Replace("ｬ", "ﾔ")
+                                                                                                                    .Replace("ｭ", "ﾕ")
+                                                                                                                    .Replace("ｮ", "ﾖ")
+                                                                                                                    .Replace("ｯ", "ﾂ")
+                                                                                                                    .Contains(sBigKeyword)))
                                                               .Select(item => item.SetCd)
                                                               .Distinct()
                                                               .ToList();
