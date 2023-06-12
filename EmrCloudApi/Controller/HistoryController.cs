@@ -25,7 +25,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request)
         {
-            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.FilterId, UserId, request.IsShowApproval);
+            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.FilterId, UserId, request.IsShowApproval, request.RaiinNos);
             var output = _bus.Handle(input);
 
             var presenter = new GetMedicalExaminationHistoryPresenter();
@@ -51,7 +51,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.Search)]
         public ActionResult<Response<SearchHistoryResponse>> Search([FromQuery] SearchHistoryRequest request)
         {
-            var input = new SearchHistoryInputData(HpId, UserId, request.PtId, request.SinDate, request.CurrentIndex, request.FilterId, request.IsDeleted, request.KeyWord, request.SearchType, request.IsNext);
+            var input = new SearchHistoryInputData(HpId, UserId, request.PtId, request.SinDate, request.CurrentIndex, request.FilterId, request.IsDeleted, request.KeyWord, request.SearchType, request.IsNext, new());
             var output = _bus.Handle(input);
 
             var presenter = new SearchHistoryPresenter();
@@ -64,7 +64,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetHistoryIndex)]
         public ActionResult<Response<GetHistoryIndexResponse>> GetHistoryIndex([FromQuery] GetHistoryIndexRequest request)
         {
-            var input = new GetHistoryIndexInputData(HpId, UserId, request.PtId, request.FilterId, request.IsDeleted, request.RaiinNo);
+            var input = new GetHistoryIndexInputData(HpId, UserId, request.PtId, request.FilterId, request.IsDeleted, request.RaiinNo, request.RaiinNos);
             var output = _bus.Handle(input);
 
             var presenter = new GetHistoryIndexPresenter();

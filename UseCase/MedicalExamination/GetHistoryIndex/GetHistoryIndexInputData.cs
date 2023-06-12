@@ -4,7 +4,7 @@ namespace UseCase.MedicalExamination.GetHistoryIndex
 {
     public class GetHistoryIndexInputData : IInputData<GetHistoryIndexOutputData>
     {
-        public GetHistoryIndexInputData(int hpId, int userId, long ptId, int filterId, int isDeleted, long raiinNo)
+        public GetHistoryIndexInputData(int hpId, int userId, long ptId, int filterId, int isDeleted, long raiinNo, List<long> raiinNos)
         {
             HpId = hpId;
             UserId = userId;
@@ -12,6 +12,7 @@ namespace UseCase.MedicalExamination.GetHistoryIndex
             FilterId = filterId;
             IsDeleted = isDeleted;
             RaiinNo = raiinNo;
+            RaiinNos = raiinNos;
         }
 
         public int HpId { get; private set; }
@@ -25,5 +26,7 @@ namespace UseCase.MedicalExamination.GetHistoryIndex
         public int IsDeleted { get; private set; }
 
         public long RaiinNo { get; private set; }
+
+        public List<long> RaiinNos { get; private set; } = new();
     }
 }

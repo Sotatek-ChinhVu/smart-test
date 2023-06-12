@@ -4,7 +4,7 @@ namespace UseCase.MedicalExamination.SearchHistory
 {
     public class SearchHistoryInputData : IInputData<SearchHistoryOutputData>
     {
-        public SearchHistoryInputData(int hpId, int userId, long ptId, int sinDate, int currentIndex, int filterId, int isDeleted, string keyWord, int searchType, bool isNext)
+        public SearchHistoryInputData(int hpId, int userId, long ptId, int sinDate, int currentIndex, int filterId, int isDeleted, string keyWord, int searchType, bool isNext, List<long> raiinNos)
         {
             HpId = hpId;
             UserId = userId;
@@ -16,6 +16,7 @@ namespace UseCase.MedicalExamination.SearchHistory
             KeyWord = keyWord;
             SearchType = searchType;
             IsNext = isNext;
+            RaiinNos = raiinNos;
         }
 
         public int HpId { get; private set; }
@@ -37,5 +38,7 @@ namespace UseCase.MedicalExamination.SearchHistory
         public int SearchType { get; private set; }
 
         public bool IsNext { get; private set; }
+
+        public List<long> RaiinNos { get; private set; }
     }
 }
