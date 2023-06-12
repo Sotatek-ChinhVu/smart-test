@@ -20,7 +20,7 @@
 
         public string CurrentItemCd { get; set; } = string.Empty;
 
-        public enum ErrorType { get; set; }
+        public CommonCheckerType ErrorType { get; set; } = CommonCheckerType.None;
 
         public List<LevelInfoModel> ListLevelInfo { get; set; } = new List<LevelInfoModel>();
 

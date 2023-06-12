@@ -1,6 +1,6 @@
 ﻿namespace CommonChecker.Models
 {
-    public enum ErrorTyoe
+    public enum CommonCheckerType
     {
         None = 0,
         AgeChecker,
@@ -12,9 +12,5 @@
         FoodAllergyChecker,
         InvalidDataOrderChecker,
         KinkiChecker,
-        KinkiOTCChecker,
-        KinkiSuppleChecker,
-        KinkiTainChecker,
-        KinkiUserChecker
     }
 }
