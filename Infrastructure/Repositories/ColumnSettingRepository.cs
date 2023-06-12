@@ -48,7 +48,7 @@ public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
     private ColumnSettingModel ToModel(ColumnSetting c)
     {
         return new ColumnSettingModel(c.UserId, c.TableName,
-            c.ColumnName, c.DisplayOrder, c.IsPinned, c.IsHidden, c.Width);
+            c.ColumnName, c.DisplayOrder, c.IsPinned, c.IsHidden, c.Width, c.OrderBy);
     }
 
     private ColumnSetting ToEntity(ColumnSettingModel model)
@@ -61,7 +61,8 @@ public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
             DisplayOrder = model.DisplayOrder,
             IsPinned = model.IsPinned,
             IsHidden = model.IsHidden,
-            Width = model.Width
+            Width = model.Width,
+            OrderBy = model.OrderBy
         };
     }
 

@@ -3,7 +3,7 @@
 public class ColumnSettingModel
 {
     public ColumnSettingModel(int userId, string tableName, string columnName,
-        int displayOrder, bool isPinned, bool isHidden, int width)
+        int displayOrder, bool isPinned, bool isHidden, int width, string orderBy)
     {
         UserId = userId;
         TableName = tableName;
@@ -12,6 +12,7 @@ public class ColumnSettingModel
         IsPinned = isPinned;
         IsHidden = isHidden;
         Width = width;
+        OrderBy = orderBy;
     }
 
     public int UserId { get; private set; }
@@ -27,4 +28,6 @@ public class ColumnSettingModel
     public bool IsHidden { get; private set; }
 
     public int Width { get; private set; }
+
+    public string OrderBy { get; private set; }
 }
