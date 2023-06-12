@@ -30,19 +30,19 @@ namespace Infrastructure.Repositories
                         s.GenerationId
                     )
                   ).ToList();
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetPriority(CacheItemPriority.Normal);
-            _memoryCache.Set(GetCacheKey(), setKbnMstList, cacheEntryOptions);
+            //var cacheEntryOptions = new MemoryCacheEntryOptions()
+            //        .SetPriority(CacheItemPriority.Normal);
+            //_memoryCache.Set(GetCacheKey(), setKbnMstList, cacheEntryOptions);
 
             return setKbnMstList;
         }
 
         public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
         {
-            if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetKbnMstModel>? setKbnMstList))
-            {
-                setKbnMstList = ReloadCache();
-            }
+            //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetKbnMstModel>? setKbnMstList))
+            //{
+            var setKbnMstList = ReloadCache();
+            //}
 
             return setKbnMstList!.Where(s => s.HpId == hpId && s.SetKbn >= setKbnFrom && s.SetKbn <= setKbnTo && s.IsDeleted == 0).OrderBy(s => s.SetKbn).ToList();
         }
@@ -94,10 +94,10 @@ namespace Infrastructure.Repositories
                 }
             }
             var check = TrackingDataContext.SaveChanges() > 0;
-            if (check)
-            {
-                _memoryCache.Remove(GetCacheKey());
-            }
+            //if (check)
+            //{
+            //    _memoryCache.Remove(GetCacheKey());
+            //}
             return check;
         }
 

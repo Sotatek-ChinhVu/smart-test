@@ -1814,7 +1814,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 領収証
     /// </summary>
-    public int PrintReceipt => (int)GetSettingValue(93001, 0);
+    public int PrintReceipt() { return (int)GetSettingValue(93001, 0); }
 
     /// <summary>
     /// 請求額0円領収証

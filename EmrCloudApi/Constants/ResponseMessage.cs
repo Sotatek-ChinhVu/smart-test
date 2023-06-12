@@ -62,6 +62,7 @@
         public static readonly string ExistedId = "ExistedId";
         public static readonly string InputDataNull = "Input data is null";
         public static readonly string Valid = "Valid";
+        public static readonly string MedicalScreenLocked = "Medical Screen Locked!";
         public static readonly string None = "None";
         public static readonly string Locked = "Locked";
 
@@ -880,7 +881,7 @@
         public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
 
         // Document
-        public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
+        public static readonly string InvalidDocumentCategoryCd = "指定されたカテゴリーは存在しないため、変更できません。";
         public static readonly string MoveDocCategoryNotFound = "Invalid Document MoveCategoryCd!";
         public static readonly string InvalidDocumentCategoryName = "Invalid Document CategoryName, CategoryName is required and not duplicate!";
         public static readonly string InvalidMoveInDocCategoryCd = "Invalid Document move in CategoryCd, CategoryCd is required and exist in DB!";

@@ -2,9 +2,8 @@
 {
     public class ReceSeikyuDto
     {
-        public ReceSeikyuDto(int hpId, long ptId, int sinYm, int hokenId, int seqNo, int seikyuYm, int seikyuKbn, int preHokenId, string cmt, bool isModified, int originSeikyuYm, int originSinYm, bool isAddNew, int isDeleted, bool isChecked)
+        public ReceSeikyuDto(long ptId, int sinYm, int hokenId, int seqNo, int seikyuYm, int seikyuKbn, int preHokenId, string cmt, bool isModified, int originSeikyuYm, int originSinYm, bool isAddNew, int isDeleted, bool isChecked)
         {
-            HpId = hpId;
             PtId = ptId;
             SinYm = sinYm;
             HokenId = hokenId;
@@ -20,8 +19,6 @@
             IsDeleted = isDeleted;
             IsChecked = isChecked;
         }
-
-        public int HpId { get; private set; }
 
         public long PtId { get; private set; }
 

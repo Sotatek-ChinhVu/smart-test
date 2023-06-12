@@ -23,23 +23,30 @@ namespace Infrastructure.CommonDB
         {
             string dbSample = _configuration["TenantDbSample"] ?? string.Empty;
             string clientDomain = GetDomainFromHeader();
+            clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
             {
                 return dbSample;
             }
-
-            var domainList = _configuration.GetSection("DomainList");
-            if (domainList == null || !domainList.Key.Contains(clientDomain))
+            var domainList = _configuration.GetSection("DomainList").Path;
+            if (string.IsNullOrEmpty(domainList))
             {
                 return dbSample;
             }
-            string result = domainList[clientDomain] ?? string.Empty;
+            var clientDomainInConfig = _configuration[domainList + ":" + clientDomain] ?? string.Empty;
+            if (string.IsNullOrEmpty(clientDomainInConfig))
+            {
+                return dbSample;
+            }
+            string result = clientDomainInConfig ?? string.Empty;
+
             return result;
         }
 
         public string GetClinicID()
         {
             var domain = GetDomainFromHeader();
+            domain = string.IsNullOrEmpty(domain) ? GetDomainFromQueryString() : domain;
             return string.IsNullOrEmpty(domain) ? TempIdentity.ClinicID : domain;
         }
 
@@ -53,6 +60,36 @@ namespace Infrastructure.CommonDB
             string? clientDomain = headers["domain"];
 
             return clientDomain ?? string.Empty;
+        }
+
+        private string GetDomainFromQueryString()
+        {
+            var queryString = _httpContextAccessor.HttpContext.Request.QueryString.Value;
+            if (string.IsNullOrEmpty(queryString) || !queryString.Contains("domain"))
+            {
+                return string.Empty;
+            }
+
+            var clientDomain = SubStringToGetParam(queryString);
+
+            return clientDomain ?? string.Empty;
+        }
+
+        private string SubStringToGetParam(string queryString)
+        {
+            try
+            {
+                var indexStart = queryString.IndexOf("domain");
+                var indexSub = indexStart > 0 ? indexStart + 7 : 0;
+                var tempInedexEnd = queryString.IndexOf("&", indexStart);
+                var indexEndSub = indexStart > 0 ? tempInedexEnd == -1 ? queryString.Length : tempInedexEnd : 0;
+                var length = indexEndSub > indexSub ? indexEndSub - indexSub : 0;
+                return queryString.Substring(indexSub, length);
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         private TenantNoTrackingDataContext? _noTrackingDataContext;

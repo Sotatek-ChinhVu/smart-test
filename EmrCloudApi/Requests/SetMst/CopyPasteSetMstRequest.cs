@@ -2,6 +2,12 @@
 
 public class CopyPasteSetMstRequest
 {
+    public long PtId { get; set; }
+
+    public long RaiinNo { get; set; }
+
+    public int SinDate { get; set; }
+
     public int GenerationId { get; set; }
 
     public int CopySetCd { get; set; }

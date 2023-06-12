@@ -1,4 +1,5 @@
-﻿using Domain.Models.Diseases;
+﻿using Domain.Models.ChartApproval;
+using Domain.Models.Diseases;
 using Domain.Models.KarteInfs;
 using Domain.Models.MstItem;
 using Domain.Models.NextOrder;
@@ -34,28 +35,51 @@ namespace Infrastructure.Repositories
 
         private const string SUSPECT_FLAG = "の疑い";
         private readonly ISystemConfRepository _systemConf;
+        private readonly IApprovalInfRepository _approvalInfRepository;
 
-        public TodayOdrRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf) : base(tenantProvider)
+        public TodayOdrRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf, IApprovalInfRepository approvalInfRepository) : base(tenantProvider)
         {
             _systemConf = systemConf;
+            _approvalInfRepository = approvalInfRepository;
         }
 
         public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, byte status)
         {
+            bool isUpdateApproveInf = false;
+            var user = NoTrackingDataContext.UserMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                             && item.UserId == userId
+                                                                             && item.StartDate <= sinDate
+                                                                             && item.EndDate >= sinDate
+                                                                             && item.IsDeleted == DeleteTypes.None);
+            if (user != null)
+            {
+                // isDococtor
+                isUpdateApproveInf = user.JobCd == 1;
+            }
+
             if (odrInfs.Count > 0)
             {
+                // order change
                 UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs, userId, status);
+                isUpdateApproveInf = true;
             }
 
             SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId, status);
             if (karteInfModel.PtId > 0 && karteInfModel.HpId > 0 && karteInfModel.RaiinNo > 0 && karteInfModel.SinDate > 0)
             {
+                // karte change
                 UpsertKarteInfs(karteInfModel, userId, status);
+                isUpdateApproveInf = true;
             }
 
             SaveRaiinListInf(odrInfs, userId);
 
             SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, userId);
+
+            if (isUpdateApproveInf)
+            {
+                _approvalInfRepository.UpdateApproveInf(hpId, ptId, sinDate, raiinNo, userId);
+            }
 
             return true;
         }
@@ -124,9 +148,9 @@ namespace Infrastructure.Repositories
                 raiinInf.TantoId = tantoId;
                 raiinInf.KaId = kaId;
                 raiinInf.UketukeTime = string.IsNullOrEmpty(preProcess.uketukeTime) ? raiinInf.UketukeTime : preProcess.uketukeTime;
-                if(string.IsNullOrEmpty(raiinInf.SinEndTime))
+                if (string.IsNullOrEmpty(raiinInf.SinEndTime))
                     raiinInf.SinEndTime = sinEndTime;
-                if(string.IsNullOrEmpty(raiinInf.SinStartTime))
+                if (string.IsNullOrEmpty(raiinInf.SinStartTime))
                     raiinInf.SinStartTime = sinStartTime;
                 raiinInf.UpdateId = userId;
                 raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -1943,7 +1967,7 @@ namespace Infrastructure.Repositories
                 }
                 if (settingRaiinKbnCd != 0 && raiinKbn.RaiinKbnInfModel.KbnCd == 0)
                 {
-                     raiinKbn.RaiinKbnInfModel.ChangeKbnCd(settingRaiinKbnCd);
+                    raiinKbn.RaiinKbnInfModel.ChangeKbnCd(settingRaiinKbnCd);
                 }
             }
 

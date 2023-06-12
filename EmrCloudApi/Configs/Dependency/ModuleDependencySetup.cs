@@ -168,6 +168,7 @@ using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
 using Reporting.DrugNoteSeal.DB;
 using Reporting.DrugNoteSeal.Service;
+using Reporting.Karte1.DB;
 using Reporting.Karte1.Service;
 using Reporting.Kensalrai.DB;
 using Reporting.Kensalrai.Service;
@@ -772,6 +773,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IP12KokhoSokatuCoReportService, P12KokhoSokatuCoReportService>();
             services.AddTransient<IP42KokhoSokatuCoReportService, P42KokhoSokatuCoReportService>();
 
             //call Calculate API
@@ -873,6 +875,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISortPatientCommon, SortPatientCommon>();
             services.AddTransient<IRaiinListSettingRepository, RaiinListSettingRepository>();
             services.AddTransient<ICommonSuperSet, CommonSuperSet>();
+            services.AddTransient<ICoKarte1Finder, CoKarte1Finder>();
         }
 
         private void SetupUseCase(IServiceCollection services)
