@@ -56,7 +56,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     {
         //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
         //{
-            var setMstModelList = ReloadCache(hpId);
+        var setMstModelList = ReloadCache(hpId);
         //}
 
         List<SetMstModel> result;
@@ -72,18 +72,43 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         else
         {
+            // Search By SetName
             setMstModelList = setMstModelList!.Where(item => item.HpId == hpId
                                                              && item.GenerationId == generationId
                                                              && item.SetKbn == setKbn
                                                              && item.SetKbnEdaNo == setKbnEdaNo - 1
                                                              && item.IsDeleted == 0);
+
             var searchItemList = setMstModelList!
-                                 .Where(item => string.IsNullOrEmpty(textSearch)
-                                                || (item.SetName != null && item.SetName.Contains(textSearch)))
-                                 .ToList();
+                                .Where(item => string.IsNullOrEmpty(textSearch)
+                                               || (item.SetName != null && item.SetName.Contains(textSearch)))
+                                .ToList();
 
             var setCdList = searchItemList.Select(item => item.SetCd).ToList();
 
+            // SearchBy Order Inf Detail
+            var setCdOrderDetailList = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.HpId == hpId
+                                                                                           && item.ItemName!=null
+                                                                                           && item.ItemName.Contains(textSearch))
+                                                                            .Select(item => item.SetCd)
+                                                                            .Distinct()
+                                                                            .ToList();
+
+            var setItemOrderDetailList = setMstModelList!.Where(item => setCdOrderDetailList.Contains(item.SetCd)).ToList();
+            searchItemList.AddRange(setItemOrderDetailList);
+
+            // SearchBy Karte
+            var setCdKarte = NoTrackingDataContext.SetKarteInf.Where(item => item.HpId == hpId
+                                                                             && item.Text != null
+                                                                             && item.Text.Contains(textSearch))
+                                                              .Select(item => item.SetCd)
+                                                              .Distinct()
+                                                              .ToList();
+            var setItemKarteList = setMstModelList!.Where(item => setCdKarte.Contains(item.SetCd)).ToList();
+            searchItemList.AddRange(setItemKarteList);
+
+            // Action gen rootSet
+            searchItemList = searchItemList.Distinct().ToList();
             foreach (var searchItem in searchItemList)
             {
                 // if item is level 1
@@ -566,7 +591,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     {
         //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
         //{
-            var setMstModelList = ReloadCache(hpId);
+        var setMstModelList = ReloadCache(hpId);
         //}
 
         var result = new List<SetMstModel>();
