@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.ColumnSetting;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.ColumnSetting;
 using EmrCloudApi.Requests.ColumnSetting;
 using EmrCloudApi.Responses;
@@ -34,10 +35,24 @@ public class ColumnSettingController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveList)]
     public ActionResult<Response<SaveColumnSettingListResponse>> SaveList([FromBody] SaveColumnSettingListRequest req)
     {
-        var input = new SaveColumnSettingListInputData(req.Settings);
+        var input = new SaveColumnSettingListInputData(ConvertToColumnSettingModel(UserId, req));
         var output = _bus.Handle(input);
         var presenter = new SaveColumnSettingListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
+    }
+
+    private List<ColumnSettingModel> ConvertToColumnSettingModel(int userId, SaveColumnSettingListRequest request)
+    {
+        return request.Settings.Select(item => new ColumnSettingModel(
+                                                   userId,
+                                                   item.TableName,
+                                                   item.ColumnName,
+                                                   item.DisplayOrder,
+                                                   item.IsPinned,
+                                                   item.IsHidden,
+                                                   item.Width,
+                                                   item.OrderBy))
+                               .ToList();
     }
 }

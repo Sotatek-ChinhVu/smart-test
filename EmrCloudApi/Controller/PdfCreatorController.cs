@@ -34,7 +34,7 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GenerateKarte1Report([FromQuery] Karte1ExportRequest request)
     {
         var karte1Data = _reportService.GetKarte1ReportingData(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
-        return await RenderPdf(karte1Data, ReportType.Karte1);
+        return await RenderPdf(karte1Data, ReportType.Common);
     }
 
     [HttpGet(ApiPath.ExportNameLabel)]
@@ -131,14 +131,17 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.AccountingReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromBody] AccountingReportRequest requestStringJson)
+    public async Task<IActionResult> GenerateAccountingReport([FromForm] AccountingReportRequest requestStringJson)
     {
-        var request = JsonSerializer.Deserialize<AccountingCoReportModelRequest>(requestStringJson.JsonAccounting) ?? new();
-        var accountDueListModels = request.AccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
+        var stringJson = requestStringJson.JsonAccounting;
+        var request = JsonSerializer.Deserialize<AccountingCoReportModelRequest>(stringJson) ?? new();
         var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
-        var selectedAccountDueListModel = ConvertToCoAccountDueListModel(request.SelectedAccountDueListModel);
 
-        var data = _reportService.GetAccountingData(request.HpId, request.Mode, request.PtId, accountDueListModels, multiAccountDueListModels, selectedAccountDueListModel, request.IsRyosyoDetail, request.PtRyosyoDetail, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
+        //public async Task<IActionResult> GenerateAccountingReport([FromBody] AccountingCoReportModelRequest request)
+        //{
+        //    var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
+
+        var data = _reportService.GetAccountingData(request.HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
         return await RenderPdf(data, ReportType.Accounting);
     }
 
@@ -318,6 +321,7 @@ public class PdfCreatorController : ControllerBase
     {
         return new CoAccountDueListModel(
                    request.SinDate,
+                   0,
                    request.RaiinNo,
                    request.OyaRaiinNo
                );

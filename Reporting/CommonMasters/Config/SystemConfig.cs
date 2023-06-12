@@ -26,15 +26,15 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     {
         lock (_threadsafelock)
         {
-            SystemConf systemConf = new();
+            SystemConf? systemConf = null;
             if (!fromLastestDb)
             {
-                systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo) ?? new();
+                systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
             }
             else
             {
                 systemConf = NoTrackingDataContext.SystemConfs.Where(p =>
-                    p.HpId == Session.HospitalID && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new();
+                    p.HpId == Session.HospitalID && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault();
             }
             return systemConf != null ? systemConf.Val : defaultValue;
         }

@@ -2,21 +2,21 @@
 
 public class CoAccountDueListModel
 {
-    public CoAccountDueListModel(int sinDate, long raiinNo, long oyaRaiinNo)
+    public CoAccountDueListModel(int sinDate, int nyukinKbn, long raiinNo, long oyaRaiinNo)
     {
         SinDate = sinDate;
+        NyukinKbn = nyukinKbn;
         RaiinNo = raiinNo;
         OyaRaiinNo = oyaRaiinNo;
     }
 
     public CoAccountDueListModel()
     {
-        SinDate = 0;
-        RaiinNo = 0;
-        OyaRaiinNo = 0;
     }
 
     public int SinDate { get; private set; }
+
+    public int NyukinKbn { get; private set; }
 
     public long RaiinNo { get; private set; }
 

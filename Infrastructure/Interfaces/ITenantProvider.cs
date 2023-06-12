@@ -28,5 +28,9 @@ namespace Infrastructure.Interfaces
         TenantNoTrackingDataContext CreateNewNoTrackingDataContext();
 
         void DisposeDataContext();
+
+        string GetDomainFromQueryString();
+
+        string GetDomainFromHeader();
     }
 }

@@ -2,6 +2,8 @@
 {
     public class CalculateRequest
     {
+        public long RaiinNo { get; set; }
+
         public bool FromRcCheck { get; set; }
 
         public bool IsSagaku { get; set; }

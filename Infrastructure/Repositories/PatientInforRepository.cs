@@ -869,24 +869,53 @@ namespace Infrastructure.Repositories
                 return new();
             }
 
-            var ptInfWithLastVisitDate =
-            from p in NoTrackingDataContext.PtInfs
-            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(originKeyword) || p.Name.StartsWith(originKeyword)) ||
-                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(halfsizeKeyword) || p.KanaName.StartsWith(halfsizeKeyword)))
-            orderby p.PtNum descending
-            select new PatientInfQueryModel
+            IQueryable<PatientInfQueryModel> ptInfWithLastVisitDate;
+            if (isContainMode)
             {
-                PtInf = p,
-                LastVisitDate = (
-                        from r in NoTrackingDataContext.RaiinInfs
-                        where r.HpId == hpId
-                            && r.PtId == p.PtId
-                            && r.Status >= RaiinState.TempSave
-                            && r.IsDeleted == DeleteTypes.None
-                        orderby r.SinDate descending
-                        select r.SinDate
-                    ).FirstOrDefault()
-            };
+                ptInfWithLastVisitDate = from p in NoTrackingDataContext.PtInfs
+                                         where p.IsDelete == 0
+                                         && ((p.Name != null && p.Name.Contains(originKeyword))
+                                            || (p.KanaName != null && p.KanaName.Contains(originKeyword))
+                                            || (p.Name != null && p.Name.Replace(" ", string.Empty).Replace("　", string.Empty).Contains(originKeyword))
+                                            || (p.KanaName != null && p.KanaName.Replace(" ", string.Empty).Replace("　", string.Empty).Contains(originKeyword)))
+                                         orderby p.PtNum descending
+                                         select new PatientInfQueryModel
+                                         {
+                                             PtInf = p,
+                                             LastVisitDate = (
+                                                     from r in NoTrackingDataContext.RaiinInfs
+                                                     where r.HpId == hpId
+                                                         && r.PtId == p.PtId
+                                                         && r.Status >= RaiinState.TempSave
+                                                         && r.IsDeleted == DeleteTypes.None
+                                                     orderby r.SinDate descending
+                                                     select r.SinDate
+                                                 ).FirstOrDefault()
+                                         };
+            }
+            else
+            {
+                ptInfWithLastVisitDate = from p in NoTrackingDataContext.PtInfs
+                                         where p.IsDelete == 0
+                                         && ((p.Name != null && p.Name.StartsWith(originKeyword))
+                                            || (p.KanaName != null && p.KanaName.StartsWith(originKeyword))
+                                            || (p.Name != null && p.Name.Replace(" ", string.Empty).Replace("　", string.Empty).Contains(originKeyword))
+                                            || (p.KanaName != null && p.KanaName.Replace(" ", string.Empty).Replace("　", string.Empty).Contains(originKeyword)))
+                                         orderby p.PtNum descending
+                                         select new PatientInfQueryModel
+                                         {
+                                             PtInf = p,
+                                             LastVisitDate = (
+                                                     from r in NoTrackingDataContext.RaiinInfs
+                                                     where r.HpId == hpId
+                                                         && r.PtId == p.PtId
+                                                         && r.Status >= RaiinState.TempSave
+                                                         && r.IsDeleted == DeleteTypes.None
+                                                     orderby r.SinDate descending
+                                                     select r.SinDate
+                                                 ).FirstOrDefault()
+                                         };
+            }
 
             bool sortGroup = sortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
             var result = sortGroup
@@ -1910,6 +1939,7 @@ namespace Infrastructure.Repositories
         public bool DeletePatientInfo(long ptId, int hpId, int userId)
         {
             var patientInf = TrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptId && x.HpId == hpId && x.IsDelete == DeleteTypes.None);
+
             if (patientInf != null)
             {
                 patientInf.IsDelete = DeleteTypes.Deleted;
@@ -1994,17 +2024,38 @@ namespace Infrastructure.Repositories
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 });
                 #endregion
+
+                #region RaiinInf
+                var raiinInfList = TrackingDataContext.RaiinInfs.Where(item => item.PtId == ptId
+                                                                               && item.IsDeleted != DeleteTypes.Deleted)
+                                                                .ToList();
+                raiinInfList.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = userId;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                });
+                #endregion
+
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
 
         public bool IsAllowDeletePatient(int hpId, long ptId)
         {
-            var raiinInfCount = NoTrackingDataContext.RaiinInfs
-                .Count(p => p.HpId == hpId && p.PtId == ptId && p.Status >= RaiinState.TempSave);
+            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                  && item.PtId == ptId
+                                                                                  && item.SinStartTime != null
+                                                                                  && item.SinStartTime != string.Empty
+                                                                                  && item.SinEndTime != null
+                                                                                  && item.SinEndTime != string.Empty
+                                                                                  && item.Status > 2
+                                                                                  && item.IsDeleted != DeleteTypes.Deleted);
 
-            if (raiinInfCount > 0)
+            if (raiinInf != null)
+            {
                 return false;
+            }
             return true;
         }
 

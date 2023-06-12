@@ -45,19 +45,19 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     s.IsGroup
                     ))
                 .ToList();
-        var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetPriority(CacheItemPriority.Normal);
-        _memoryCache.Set(GetCacheKey(), setMstModelList, cacheEntryOptions);
+        //var cacheEntryOptions = new MemoryCacheEntryOptions()
+        //        .SetPriority(CacheItemPriority.Normal);
+        //_memoryCache.Set(GetCacheKey(), setMstModelList, cacheEntryOptions);
 
         return setMstModelList;
     }
 
     public List<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, int generationId, string textSearch)
     {
-        if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
-        {
-            setMstModelList = ReloadCache(hpId);
-        }
+        //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
+        //{
+            var setMstModelList = ReloadCache(hpId);
+        //}
 
         List<SetMstModel> result;
         if (string.IsNullOrEmpty(textSearch))
@@ -564,10 +564,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     public IEnumerable<SetMstModel> GetListFollowSetCd(int hpId, byte type, List<int> setCds)
     {
-        if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
-        {
-            setMstModelList = ReloadCache(hpId);
-        }
+        //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
+        //{
+            var setMstModelList = ReloadCache(hpId);
+        //}
 
         var result = new List<SetMstModel>();
         if (type == 1)
