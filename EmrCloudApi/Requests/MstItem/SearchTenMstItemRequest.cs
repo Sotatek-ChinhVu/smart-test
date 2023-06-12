@@ -4,7 +4,6 @@ namespace EmrCloudApi.Requests.MstItem
 {
     public class SearchTenMstItemRequest
     {
-        public int HpId { get; set; }
         public int PageIndex { get; set; }
         public int PageCount { get; set; }
         public string Keyword { get; set; } = string.Empty;

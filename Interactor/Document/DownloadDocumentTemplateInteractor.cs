@@ -1,4 +1,5 @@
 ﻿using FindAndReplace;
+using Helper.Extension;
 using Interactor.Document.CommonGetListParam;
 using UseCase.Document;
 using UseCase.Document.DownloadDocumentTemplate;
@@ -44,6 +45,11 @@ public class DownloadDocumentTemplateInteractor : IDownloadDocumentTemplateInput
             foreach (var param in group.ListParamModel)
             {
                 flatDocument.FindAndReplace("《" + param.Parameter + "》", param.Value);
+                Console.WriteLine("TEST:");
+                Console.WriteLine(param.Parameter);
+                Console.WriteLine(param.Value);
+                Console.WriteLine(flatDocument.AsString());
+                Console.WriteLine("END TEST");
             }
         }
         foreach (var comment in listReplaceComments)

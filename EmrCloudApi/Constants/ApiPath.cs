@@ -350,5 +350,7 @@
 
         //NextOrder
         public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
+
+        public const string Test = "Test";
     }
 }

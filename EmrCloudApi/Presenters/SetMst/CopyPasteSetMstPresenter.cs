@@ -30,6 +30,7 @@ namespace EmrCloudApi.Presenters.SetMst
             CopyPasteSetMstStatus.InvalidPasteSetKbnEdaNo => ResponseMessage.InvalidPasteSetKbnEdaNo,
             CopyPasteSetMstStatus.InvalidCopySetKbn => ResponseMessage.InvalidCopySetKbn,
             CopyPasteSetMstStatus.InvalidCopySetKbnEdaNo => ResponseMessage.InvalidCopySetKbnEdaNo,
+            CopyPasteSetMstStatus.MedicalScreenLocked => ResponseMessage.MedicalScreenLocked,
             _ => string.Empty
         };
     }

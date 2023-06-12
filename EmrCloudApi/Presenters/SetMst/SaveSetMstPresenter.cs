@@ -31,6 +31,7 @@ public class SaveSetMstPresenter : ISaveSetMstOutputPort
         SaveSetMstStatus.InvalidSetName => ResponseMessage.InvalidSetName,
         SaveSetMstStatus.InvalidWeightKbn => ResponseMessage.InvalidWeightKbn,
         SaveSetMstStatus.InvalidColor => ResponseMessage.InvalidColor,
+        SaveSetMstStatus.MedicalScreenLocked => ResponseMessage.MedicalScreenLocked,
         _ => string.Empty
     };
 }

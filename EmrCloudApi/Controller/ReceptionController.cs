@@ -285,5 +285,12 @@ namespace EmrCloudApi.Controller
 
             return Ok(presenter.Result);
         }
+
+        [HttpGet(ApiPath.Test)]
+        public ActionResult<Response<DeleteReceptionResponse>> Test(DeleteReceptionRequest request)
+        {
+            return Ok();
+        }
+
     }
 }
