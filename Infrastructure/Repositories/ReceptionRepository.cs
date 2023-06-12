@@ -242,9 +242,9 @@ namespace Infrastructure.Repositories
                     entity.UpdateId = userId;
                 }
 
-                if (entity.IsYoyaku == 1)
+                if (entity.IsYoyaku == 1 && entity.Status == RaiinState.Reservation)
                 {
-                    if (string.IsNullOrEmpty(entity.UketukeTime))
+                    if (string.IsNullOrEmpty(entity.UketukeTime) || entity.UketukeTime.Equals("0"))
                     {
                         entity.UketukeTime = model.UketukeTime;
                     }
