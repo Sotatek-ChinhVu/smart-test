@@ -706,7 +706,16 @@ namespace Infrastructure.Repositories
             bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter,
             bool isSearch831SuffixOnly)
         {
-            string sBigKeyword = keyword.ToUpper()
+            string kanaKeyword = keyword;
+            if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
+            {
+                var inputKeyword = keyword;
+                kanaKeyword = CIUtil.ToHalfsize(keyword);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
+            }
+
+            string sBigKeyword = kanaKeyword.ToUpper()
                                         .Replace("ｧ", "ｱ")
                                         .Replace("ｨ", "ｲ")
                                         .Replace("ｩ", "ｳ")
@@ -4774,7 +4783,17 @@ namespace Infrastructure.Repositories
             {
                 return new();
             }
-            string sBigKeyword = keyword.ToUpper()
+
+            string kanaKeyword = keyword;
+            if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
+            {
+                var inputKeyword = keyword;
+                kanaKeyword = CIUtil.ToHalfsize(keyword);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
+            }
+
+            string sBigKeyword = kanaKeyword.ToUpper()
               .Replace("ｧ", "ｱ")
               .Replace("ｨ", "ｲ")
               .Replace("ｩ", "ｳ")
