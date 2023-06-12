@@ -471,6 +471,59 @@ public class AccountingCoReportService : IAccountingCoReportService
                   accountingDicResult);
     }
 
+    public bool CheckOpenReportingForm(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
+    {
+        this.hpId = hpId;
+        mode = PrintMode.MultiPrint;
+        @params = coAccountingParamModels;
+        try
+        {
+            GetParamFromRseFile();
+        }
+        catch
+        {
+            return false;
+        }
+        int totalSuccess = 0;
+        foreach (CoAccountingParamModel param in @params)
+        {
+            accountingOutputModelList = new();
+            SingleFieldDataResult = new();
+            ListTextModelResult = new();
+            SystemConfigList = new();
+
+            mode = PrintMode.SinglePrint;
+            ptId = param.PtId;
+            startDate = param.StartDate;
+            endDate = param.EndDate;
+            raiinNos = param.RaiinNos;
+            if (raiinNos == null)
+            {
+                raiinNos = new List<long>();
+            }
+            hokenId = param.HokenId;
+            miseisanKbn = param.MiseisanKbn;
+            saiKbn = param.SaiKbn;
+            misyuKbn = param.MisyuKbn;
+            seikyuKbn = param.SeikyuKbn;
+            hokenKbn = param.HokenKbn;
+            hokenSeikyu = param.HokenSeikyu;
+            jihiSeikyu = param.JihiSeikyu;
+            nyukinBase = param.NyukinBase;
+            hakkoDay = param.HakkoDate;
+            memo = param.Memo;
+            printType = param.PrintType;
+            coModel = GetData(hpId, ptId, startDate, endDate);
+            if (coModel.HpId == 0)
+            {
+                continue;
+            }
+            totalSuccess++;
+        }
+
+        return totalSuccess > 0;
+    }
+
     private void PrintOut()
     {
         if (mode == PrintMode.SinglePrint)
