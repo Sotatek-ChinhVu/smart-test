@@ -20,6 +20,8 @@
 
         public string CurrentItemCd { get; set; } = string.Empty;
 
+        public enum ErrorType { get; set; }
+
         public List<LevelInfoModel> ListLevelInfo { get; set; } = new List<LevelInfoModel>();
 
     }
