@@ -2,6 +2,7 @@
 using Helper.Enum;
 using Interactor.CalculateService;
 using Newtonsoft.Json;
+using System.Net.Http;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
@@ -15,10 +16,12 @@ namespace EmrCloudApi.Services
     {
         private static HttpClient _httpClient = new HttpClient();
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CalculateService(IConfiguration configuration)
+        public CalculateService(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<CalculateResponse> CallCalculate(CalculateApiPath path, object inputData)
@@ -56,8 +59,9 @@ namespace EmrCloudApi.Services
 
             try
             {
+                var httpMessage = new HttpRequestMessage();
+                content.Headers.Add("domain", GetDomainFromHeader());
                 var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
-
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
@@ -220,6 +224,18 @@ namespace EmrCloudApi.Services
                 Console.WriteLine("Function RunCalculateMonth " + ex);
                 return new();
             }
+        }
+
+        private string GetDomainFromHeader()
+        {
+            var headers = _httpContextAccessor?.HttpContext?.Request.Headers;
+            if (headers == null || !headers.ContainsKey("domain"))
+            {
+                return string.Empty;
+            }
+            string? clientDomain = headers["domain"];
+
+            return clientDomain ?? string.Empty;
         }
 
     }
