@@ -61,7 +61,7 @@ public class SetController : AuthorizeControllerBase
     [HttpPost(ApiPath.Save)]
     public async Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
     {
-        var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, HpId, UserId, request.IsGroup);
+        var input = new SaveSetMstInputData(request.PtId, request.RaiinNo, request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, HpId, UserId, request.IsGroup);
         var output = _bus.Handle(input);
 
         if (output.Status == SaveSetMstStatus.Successed)
@@ -79,7 +79,7 @@ public class SetController : AuthorizeControllerBase
     [HttpPost(ApiPath.Reorder)]
     public async Task<ActionResult<Response<ReorderSetMstResponse>>> Reorder([FromBody] ReorderSetMstRequest request)
     {
-        var input = new ReorderSetMstInputData(HpId, request.DragSetCd, request.DropSetCd, UserId);
+        var input = new ReorderSetMstInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.DragSetCd, request.DropSetCd, UserId);
         var output = _bus.Handle(input);
 
         if (output.Status == ReorderSetMstStatus.Successed)
@@ -97,7 +97,7 @@ public class SetController : AuthorizeControllerBase
     [HttpPost(ApiPath.Paste)]
     public async Task<ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
-        var input = new CopyPasteSetMstInputData(HpId, UserId, request.GenerationId, request.CopySetCd, request.PasteSetCd, request.PasteToOtherGroup, request.CopySetKbnEdaNo, request.CopySetKbn, request.PasteSetKbnEdaNo, request.PasteSetKbn);
+        var input = new CopyPasteSetMstInputData(HpId, UserId, request.PtId, request.RaiinNo, request.SinDate, request.GenerationId, request.CopySetCd, request.PasteSetCd, request.PasteToOtherGroup, request.CopySetKbnEdaNo, request.CopySetKbn, request.PasteSetKbnEdaNo, request.PasteSetKbn);
         var output = _bus.Handle(input);
 
         if (output.Status == CopyPasteSetMstStatus.Successed)
@@ -128,6 +128,9 @@ public class SetController : AuthorizeControllerBase
     public ActionResult<Response<SaveSuperSetDetailResponse>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
     {
         var input = new SaveSuperSetDetailInputData(
+                        request.PtId,
+                        request.RaiinNo,
+                        request.SinDate,
                         request.SetCd,
                         UserId,
                         HpId,
@@ -147,7 +150,7 @@ public class SetController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetSuperSetDetailForTodayOrder)]
     public ActionResult<Response<GetSuperSetDetailToDoTodayOrderResponse>> GetSuperSetDetailForTodayOrder([FromQuery] GetSuperSetDetailToDoTodayOrderRequest request)
     {
-        var input = new GetSuperSetDetailToDoTodayOrderInputData(request.HpId, UserId, request.SetCd, request.SinDate);
+        var input = new GetSuperSetDetailToDoTodayOrderInputData(HpId, UserId, request.SetCd, request.SinDate);
         var output = _bus.Handle(input);
 
         var presenter = new GetSuperSetDetailToDoTodayOrderPresenter();

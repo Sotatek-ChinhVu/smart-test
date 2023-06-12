@@ -1,31 +1,30 @@
-﻿using EmrCloudApi.Constants;
+﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Document;
 using EmrCloudApi.Requests.Document;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Services;
+using Interactor.Document.CommonGetListParam;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Document.UploadTemplateToCategory;
+using UseCase.Document;
 using UseCase.Document.CheckExistFileName;
+using UseCase.Document.ConfirmReplaceDocParam;
 using UseCase.Document.DeleteDocCategory;
 using UseCase.Document.DeleteDocInf;
 using UseCase.Document.DeleteDocTemplate;
+using UseCase.Document.DownloadDocumentTemplate;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.GetListDocComment;
+using UseCase.Document.GetListParamTemplate;
 using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
-using UseCase.Document.GetListParamTemplate;
-using Interactor.Document.CommonGetListParam;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
-using System.Net;
-using UseCase.Document;
-using UseCase.Document.DownloadDocumentTemplate;
-using UseCase.Document.GetListDocComment;
-using UseCase.Document.ConfirmReplaceDocParam;
+using UseCase.Document.UploadTemplateToCategory;
 
 namespace EmrCloudApi.Controller;
 
@@ -346,7 +345,9 @@ public class DocumentController : AuthorizeControllerBase
                 {
                     if (workbook.MainDocumentPart != null)
                     {
+                        Console.WriteLine("Test Document " + workbook.MainDocumentPart.Document.InnerText);
                         return workbook.MainDocumentPart.Document.InnerText;
+
                     }
                 }
             }

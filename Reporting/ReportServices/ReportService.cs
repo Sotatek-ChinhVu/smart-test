@@ -1,8 +1,11 @@
-﻿using Reporting.Accounting.Model;
+﻿using Amazon.Runtime.Internal;
+using Domain.Models.AccountDue;
+using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.Accounting.Service;
 using Reporting.AccountingCard.Service;
 using Reporting.Byomei.Service;
+using Reporting.CommonMasters.Config;
 using Reporting.CommonMasters.Enums;
 using Reporting.DailyStatic.Service;
 using Reporting.DrugInfo.Model;
@@ -29,6 +32,7 @@ using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
+using System.Linq;
 
 namespace Reporting.ReportServices;
 
@@ -83,8 +87,6 @@ public class ReportService : IReportService
         _accountingCardCoReportService = accountingCardCoReportService;
     }
 
-
-
     //Byomei
     public CommonReportingRequestModel GetByomeiReportingData(long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds)
     {
@@ -92,7 +94,7 @@ public class ReportService : IReportService
     }
 
     //Karte1
-    public Karte1Mapper GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
+    public CommonReportingRequestModel GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
     {
         return _karte1Service.GetKarte1ReportingData(hpId, ptId, sinDate, hokenPid, tenkiByomei, syuByomei);
     }
@@ -218,6 +220,169 @@ public class ReportService : IReportService
     public AccountingResponse GetAccountingReportingData(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
     {
         return _accountingCoReportService.GetAccountingReportingData(hpId, coAccountingParamModels);
+    }
+
+    public AccountingResponse GetAccountingData(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, List<CoAccountDueListModel> multiAccountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isRyosyoDetail, int ptRyosyoDetail, bool isPrintMonth, bool ryoshusho, bool meisai)
+    {
+        List<CoAccountingParamModel> requestAccountting = new();
+
+        List<CoAccountDueListModel> nyukinModels = accountDueListModels;
+        List<int> months = new();
+        foreach (var model in multiAccountDueListModels)
+        {
+            selectedAccountDueListModel = model;
+            accountDueListModels = nyukinModels.FindAll(p => p.SinDate / 100 == model.SinDate / 100);
+            if (isPrintMonth)
+            {
+                if (!months.Contains(model.SinDate / 100))
+                {
+                    var printItem = PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SinDate, model.OyaRaiinNo, accountDueListModels);
+                    requestAccountting.AddRange(printItem);
+                    months.Add(model.SinDate / 100);
+                }
+            }
+            else
+            {
+                var printItem = PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SinDate, model.OyaRaiinNo);
+                requestAccountting.AddRange(printItem);
+            }
+        }
+        return _accountingCoReportService.GetAccountingReportingData(hpId, requestAccountting);
+    }
+
+    private List<CoAccountingParamModel> PrintWithoutThread(bool ryoshusho, bool meisai, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isPrintMonth, int sinDate, long oyaRaiinNo, List<CoAccountDueListModel>? nyukinModels = null)
+    {
+        int GetMaxDateInMonth(int month)
+        {
+            var models = accountDueListModels.Where(x => x.Month == month).OrderBy(x => x.SinDate);
+            return models.Last().SinDate;
+        }
+
+        int GetMinDateInMonth(int month)
+        {
+            var models = accountDueListModels.Where(x => x.Month == month).OrderBy(x => x.SinDate);
+            return models.First().SinDate;
+        }
+
+        List<CoAccountingParamModel> result = new();
+        List<(int startDate, int endDate)> dates = new();
+        if (accountDueListModels.Count >= 1)
+        {
+            if (isPrintMonth)
+            {
+                var groups = accountDueListModels.GroupBy(x => x.Month);
+                List<int> months = groups.Select(x => x.Key).ToList();
+                foreach (var month in months)
+                {
+                    dates.Add((GetMinDateInMonth(month), GetMaxDateInMonth(month)));
+                }
+            }
+            else
+            {
+                if (mode == ConfirmationMode.FromPrintBtn || mode == ConfirmationMode.FromMenu)
+                {
+                    dates.Add((selectedAccountDueListModel.SinDate, selectedAccountDueListModel.SinDate));
+                }
+                else
+                {
+                    dates.AddRange(from item in accountDueListModels
+                                   select (item.SinDate, item.SinDate));
+                    dates = dates.Distinct().ToList();
+                }
+            }
+        }
+
+        List<int> printTypes = new();
+        if (isPrintMonth)
+        {
+            if (ryoshusho)
+            {
+                ///2:月間領収証
+                ///3:月間明細
+                printTypes.Add(2);
+            }
+
+            if (meisai)
+            {
+                printTypes.Add(3);
+            }
+        }
+        else
+        {
+            if (ryoshusho)
+            {
+                ///0:領収証
+                ///1:明細
+                printTypes.Add(0);
+            }
+
+            if (meisai)
+            {
+                printTypes.Add(1);
+            }
+        }
+
+        if (!isPrintMonth && mode == ConfirmationMode.FromPrintBtn || mode == ConfirmationMode.FromMenu)
+        {
+            foreach (var printType in printTypes)
+            {
+                var raiinNos = accountDueListModels.Where(x => x.OyaRaiinNo == (oyaRaiinNo > 0 ? oyaRaiinNo : selectedAccountDueListModel.OyaRaiinNo)).Select(x => x.RaiinNo).ToList();
+                result.Add(new(
+                              ptId,
+                              sinDate > 0 ? sinDate : selectedAccountDueListModel.SinDate,
+                              sinDate > 0 ? sinDate : selectedAccountDueListModel.SinDate,
+                              raiinNos,
+                              printType: printType));
+            }
+        }
+        else
+        {
+            foreach (var (startDate, endDate) in dates)
+            {
+                if (isPrintMonth)
+                {
+                    List<long> raiinNos = new();
+                    if (nyukinModels != null)
+                    {
+                        raiinNos = nyukinModels.Where(x => x.SinDate >= startDate && x.SinDate <= endDate)
+                                                                         .Select(x => x.RaiinNo).ToList();
+                    }
+                    else
+                    {
+                        accountDueListModels.Where(x => x.SinDate >= startDate && x.SinDate <= endDate)
+                                                                         .Select(x => x.RaiinNo).ToList();
+                    }
+                    foreach (var printType in printTypes)
+                    {
+                        result.Add(new(ptId, startDate, endDate, raiinNos, printType: printType));
+                    }
+                }
+                else
+                {
+                    List<(long, List<long>)> raiinNos;
+                    if (nyukinModels != null)
+                    {
+                        raiinNos = nyukinModels.Where(x => x.SinDate >= startDate && x.SinDate <= endDate)
+                                               .GroupBy(x => x.OyaRaiinNo)
+                                               .Select(x => (x.Key, x.Select(item => item.RaiinNo).ToList())).ToList();
+                    }
+                    else
+                    {
+                        raiinNos = accountDueListModels.Where(x => x.SinDate >= startDate && x.SinDate <= endDate)
+                                                       .GroupBy(x => x.OyaRaiinNo)
+                                                       .Select(x => (x.Key, x.Select(item => item.RaiinNo).ToList())).ToList();
+                    }
+                    foreach (var printType in printTypes)
+                    {
+                        foreach (var oya in raiinNos)
+                        {
+                            result.Add(new(ptId, startDate, endDate, oya.Item2, printType: printType));
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     /// <summary>
