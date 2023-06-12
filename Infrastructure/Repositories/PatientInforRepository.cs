@@ -1940,21 +1940,6 @@ namespace Infrastructure.Repositories
         {
             var patientInf = TrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptId && x.HpId == hpId && x.IsDelete == DeleteTypes.None);
 
-            var raiinList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
-                                                                          && item.PtId == ptId
-                                                                          && item.SinStartTime != null
-                                                                          && item.SinStartTime != string.Empty
-                                                                          && item.SinEndTime != null
-                                                                          && item.SinEndTime != string.Empty
-                                                                          && item.Status > 2
-                                                                          && item.IsDeleted != DeleteTypes.Deleted)
-                                                           .ToList();
-
-            if (raiinList.Any())
-            {
-                return false;
-            }
-
             if (patientInf != null)
             {
                 patientInf.IsDelete = DeleteTypes.Deleted;
@@ -2039,17 +2024,38 @@ namespace Infrastructure.Repositories
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 });
                 #endregion
+
+                #region RaiinInf
+                var raiinInfList = TrackingDataContext.RaiinInfs.Where(item => item.PtId == ptId
+                                                                               && item.IsDeleted != DeleteTypes.Deleted)
+                                                                .ToList();
+                raiinInfList.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = userId;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                });
+                #endregion
+
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
 
         public bool IsAllowDeletePatient(int hpId, long ptId)
         {
-            var raiinInfCount = NoTrackingDataContext.RaiinInfs
-                .Count(p => p.HpId == hpId && p.PtId == ptId && p.Status >= RaiinState.TempSave);
+            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                  && item.PtId == ptId
+                                                                                  && item.SinStartTime != null
+                                                                                  && item.SinStartTime != string.Empty
+                                                                                  && item.SinEndTime != null
+                                                                                  && item.SinEndTime != string.Empty
+                                                                                  && item.Status > 2
+                                                                                  && item.IsDeleted != DeleteTypes.Deleted);
 
-            if (raiinInfCount > 0)
+            if (raiinInf != null)
+            {
                 return false;
+            }
             return true;
         }
 
