@@ -1,5 +1,6 @@
 ﻿using Domain.Models.CalculateModel;
 using Helper.Enum;
+using Infrastructure.Interfaces;
 using Interactor.CalculateService;
 using Newtonsoft.Json;
 using System.Net.Http;
@@ -16,12 +17,12 @@ namespace EmrCloudApi.Services
     {
         private static HttpClient _httpClient = new HttpClient();
         private readonly IConfiguration _configuration;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ITenantProvider _tenantProvider;
 
-        public CalculateService(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public CalculateService(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ITenantProvider tenantProvider)
         {
             _configuration = configuration;
-            _httpContextAccessor = httpContextAccessor;
+            _tenantProvider = tenantProvider;
         }
 
         public async Task<CalculateResponse> CallCalculate(CalculateApiPath path, object inputData)
@@ -60,7 +61,7 @@ namespace EmrCloudApi.Services
             try
             {
                 var httpMessage = new HttpRequestMessage();
-                content.Headers.Add("domain", GetDomainFromHeader());
+                content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
                 var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
                 if (response.IsSuccessStatusCode)
                 {
@@ -225,18 +226,5 @@ namespace EmrCloudApi.Services
                 return new();
             }
         }
-
-        private string GetDomainFromHeader()
-        {
-            var headers = _httpContextAccessor?.HttpContext?.Request.Headers;
-            if (headers == null || !headers.ContainsKey("domain"))
-            {
-                return string.Empty;
-            }
-            string? clientDomain = headers["domain"];
-
-            return clientDomain ?? string.Empty;
-        }
-
     }
 }
