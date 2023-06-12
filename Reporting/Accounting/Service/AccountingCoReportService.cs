@@ -737,7 +737,15 @@ public class AccountingCoReportService : IAccountingCoReportService
                 hakkoDay = param.HakkoDate;
                 memo = param.Memo;
                 printType = param.PrintType;
-                coModel = GetData(hpId, ptId, startDate, endDate);
+                try
+                {
+                    coModel = GetData(hpId, ptId, startDate, endDate);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception GetData RaiiNoList: " + raiinNos);
+                    Console.WriteLine("Exception GetData: " + ex);
+                }
 
                 if (coModel.HpId == 0)
                 {
@@ -764,8 +772,24 @@ public class AccountingCoReportService : IAccountingCoReportService
                 _printoutDateTime = DateTime.Now;
 
                 // 診療明細データを作成する
-                MakeSinMeiPrintData();
-                UpdateDrawForm();
+                try
+                {
+                    MakeSinMeiPrintData();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception MakeSinMeiPrintData: " + ex);
+                }
+
+                try
+                {
+                    UpdateDrawForm();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception UpdateDrawForm: \n" + ex);
+                }
+
                 accountingDicResult.Add(index, accountingOutputModelList);
                 index++;
             }
