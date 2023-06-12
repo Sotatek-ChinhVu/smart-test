@@ -278,7 +278,18 @@ public class ReportService : IReportService
                 requestAccountting.AddRange(printItem);
             }
         }
-        return _accountingCoReportService.GetAccountingReportingData(hpId, requestAccountting);
+
+        AccountingResponse result = null;
+        try
+        {
+            result = _accountingCoReportService.GetAccountingReportingData(hpId, requestAccountting);
+            Console.WriteLine("result AccountingResponse: " + result);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Exception: " + ex);
+        }
+        return result;
     }
 
     private List<CoAccountingParamModel> PrintWithoutThread(bool ryoshusho, bool meisai, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isPrintMonth, int sinDate, long oyaRaiinNo, List<CoAccountDueListModel>? nyukinModels = null)
