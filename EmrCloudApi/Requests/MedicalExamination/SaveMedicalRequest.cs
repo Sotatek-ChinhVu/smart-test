@@ -12,6 +12,10 @@ public class SaveMedicalRequest
     // Upsert medical
     public long PtId { get; set; }
 
+    public long RaiinNo { get; set; }
+
+    public int SinDate { get; set; }
+
     public int SyosaiKbn { get; set; }
 
     public int JikanKbn { get; set; }
