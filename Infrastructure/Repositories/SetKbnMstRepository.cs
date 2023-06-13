@@ -1,10 +1,16 @@
-﻿using Domain.Models.SetKbnMst;
+﻿using Amazon.Runtime.Internal.Util;
+using Domain.Models.MstItem;
+using Domain.Models.SetKbnMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
+using StackExchange.Redis;
+using System.Collections.Generic;
 
 namespace Infrastructure.Repositories
 {
@@ -30,6 +36,12 @@ namespace Infrastructure.Repositories
                         s.GenerationId
                     )
                   ).ToList();
+            var key = GetCacheKey();
+            foreach (var item in setKbnMstList)
+            {
+                SetEachFieldForModel(item, key);
+            }
+
             //var cacheEntryOptions = new MemoryCacheEntryOptions()
             //        .SetPriority(CacheItemPriority.Normal);
             //_memoryCache.Set(GetCacheKey(), setKbnMstList, cacheEntryOptions);
@@ -37,7 +49,48 @@ namespace Infrastructure.Repositories
             return setKbnMstList;
         }
 
-        public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
+        private void SetEachFieldForModel(SetKbnMstModel setKbnMstModel, string key)
+        {
+            key = key + "SuperSet";
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+            cache.StreamAdd(key, nameof(setKbnMstModel.HpId), setKbnMstModel.HpId);
+            cache.StreamAdd(key, nameof(setKbnMstModel.SetKbn), setKbnMstModel.SetKbn);
+            cache.StreamAdd(key, nameof(setKbnMstModel.SetKbnEdaNo), setKbnMstModel.SetKbnEdaNo);
+            cache.StreamAdd(key, nameof(setKbnMstModel.SetKbnName), setKbnMstModel.SetKbnName);
+            cache.StreamAdd(key, nameof(setKbnMstModel.KaCd), setKbnMstModel.KaCd);
+            cache.StreamAdd(key, nameof(setKbnMstModel.DocCd), setKbnMstModel.DocCd);
+            cache.StreamAdd(key, nameof(setKbnMstModel.IsDeleted), setKbnMstModel.IsDeleted);
+            cache.StreamAdd(key, nameof(setKbnMstModel.GenerationId), setKbnMstModel.GenerationId);
+        }
+
+        private IEnumerable<SetKbnMstModel> ReadCache(string key)
+        {
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+            var results = cache.StreamRange(key);
+            IEnumerable<SetKbnMstModel> result = new HashSet<SetKbnMstModel>();
+            foreach (var result in results)
+            {
+                foreach (var value in result.Values)
+                {
+                    var hpId = 0;
+                    var setKbn = 0;
+                    var setKbnEdaNo = 0;
+                    var setKbnName = string.Empty;
+                    var kaCd = 0;
+                    var docCd = 0;
+                    var isDeleted = 0;
+                    var generationId = 0;
+                    if (value.Name == "HpId")
+                    {
+                        hpId
+                    }
+                }
+            }
+        }
+
+
+
+            public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
         {
             //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetKbnMstModel>? setKbnMstList))
             //{
