@@ -57,16 +57,16 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     s.IsGroup
                     ))
                 .ToList();
-
-        foreach (var item in setMstModelList)
+        object objLock = new object();
+        Parallel.ForEach(setMstModelList, item =>
         {
-            SetEachFieldForModel(item);
-        }
+            SetEachFieldForModel(item, objLock);
+        });
 
         return setMstModelList;
     }
 
-    private void SetEachFieldForModel(SetMstModel setKbnMstModel)
+    private void SetEachFieldForModel(SetMstModel setKbnMstModel, object objLock)
     {
         NameValueEntry neHpId = new NameValueEntry(nameof(setKbnMstModel.HpId), setKbnMstModel.HpId);
         NameValueEntry neSetCd = new NameValueEntry(nameof(setKbnMstModel.SetCd), setKbnMstModel.SetCd);
@@ -99,7 +99,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             };
         StreamEntry streamEntry = new StreamEntry(key, nameValueEntries.ToArray());
 
-        _cache.StreamAdd(key, streamEntry.Values);
+        lock (objLock)
+        {
+            _cache.StreamAdd(key, streamEntry.Values);
+        }
     }
 
     private IEnumerable<SetMstModel> ReadCache()
