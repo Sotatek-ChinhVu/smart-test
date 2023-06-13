@@ -57,4 +57,7 @@ public class GetDataPrintKarte2Request
 
     //Order
     public bool IsCheckedHideOrder { get; set; }
+
+    // Other
+    public bool EmptyMode { get; set; }
 }
