@@ -748,6 +748,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string allergyItemName = _itemNameDictionary.ContainsKey(error.AllergyYjCd) ? _itemNameDictionary[error.AllergyYjCd] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.DrugAllergyChecker,
                 Id = error.Id,
                 FirstCellContent = "アレルギー",
                 ThridCellContent = itemName,
@@ -828,6 +829,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string itemName = _itemNameByItemCodeDictionary.ContainsKey(a.ItemCd) ? _itemNameByItemCodeDictionary[a.ItemCd] : string.Empty;
             ErrorInfoModel info = new ErrorInfoModel()
             {
+                ErrorType = CommonCheckerType.DrugAllergyChecker,
                 Id = a.Id,
                 FirstCellContent = "アレルギー",
                 ThridCellContent = itemName,
@@ -872,6 +874,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string foodName = _foodNameDictionary.ContainsKey(error.AlrgyKbn) ? _foodNameDictionary[error.AlrgyKbn] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.FoodAllergyChecker,
                 Id = error.Id,
                 FirstCellContent = "アレルギー",
                 ThridCellContent = itemName,
@@ -930,6 +933,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string itemName = _itemNameDictionary.ContainsKey(error.YjCd) ? _itemNameDictionary[error.YjCd] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.AgeChecker,
                 Id = error.Id,
                 FirstCellContent = "投与年齢",
                 ThridCellContent = itemName,
@@ -1008,6 +1012,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.DiseaseChecker,
                 Id = drugDiseaseCode.Id,
                 FirstCellContent = DiseaseTypeName(drugDiseaseCode.DiseaseType),
                 ThridCellContent = itemName,
@@ -1124,6 +1129,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.KinkiChecker,
                 Id = kikinCode.Id,
                 FirstCellContent = GetCheckingTitle(),
                 ThridCellContent = itemAName,
@@ -1260,6 +1266,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.KinkiChecker,
                 Id = k.Id,
                 FirstCellContent = "相互作用",
                 ThridCellContent = itemAName,
@@ -1295,6 +1302,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string itemName = _itemNameDictionary.ContainsKey(dayLimit.YjCd) ? _itemNameDictionary[dayLimit.YjCd] : string.Empty;
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
+            errorInfoModel.ErrorType = CommonCheckerType.DayLimitChecker;
             errorInfoModel.Id = dayLimit.Id;
             errorInfoModel.FirstCellContent = "投与日数";
             errorInfoModel.SecondCellContent = "ー";
@@ -1323,6 +1331,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
             string itemName = _itemNameDictionary.ContainsKey(dosage.YjCd) ? _itemNameDictionary[dosage.YjCd] : string.Empty;
+            errorInfoModel.ErrorType = CommonCheckerType.DosageChecker;
             errorInfoModel.Id = dosage.Id;
             errorInfoModel.FirstCellContent = "投与量";
             errorInfoModel.ThridCellContent = itemName;
@@ -1396,6 +1405,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
+            errorInfoModel.ErrorType = CommonCheckerType.DuplicationChecker;
             errorInfoModel.Id = duplicationError.Id;
             errorInfoModel.FirstCellContent = duplicationError.IsComponentDuplicated ? "成分重複" : "同一薬剤";
             errorInfoModel.SecondCellContent = "ー";
