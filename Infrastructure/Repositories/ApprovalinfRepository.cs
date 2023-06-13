@@ -182,7 +182,7 @@ namespace Infrastructure.Repositories
                     IsDeleted = 0,
                     SeqNo = seqNo,
                     CreateId = userId,
-                    UpdateId = Session.UserID,
+                    UpdateId = userId,
                     CreateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                 };
