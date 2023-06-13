@@ -17,5 +17,7 @@
         public int SearchType { get; set; }
 
         public bool IsNext { get; set; }
+
+        public List<long> RaiinNos { get; set; } = new();
     }
 }

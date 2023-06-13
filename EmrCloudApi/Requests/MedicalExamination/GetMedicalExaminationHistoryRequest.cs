@@ -10,5 +10,6 @@
         public int UserId { get; set; }
         public long FilterId { get; set; }
         public int IsShowApproval { get; set; }
+        public List<long> RaiinNos { get; set; } = new();
     }
 }

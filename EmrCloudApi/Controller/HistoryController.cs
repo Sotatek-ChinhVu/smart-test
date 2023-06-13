@@ -22,10 +22,10 @@ namespace EmrCloudApi.Controller
             _bus = bus;
         }
 
-        [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request, List<long> raiinNos)
+        [HttpPost(ApiPath.GetList)]
+        public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromBody] GetMedicalExaminationHistoryRequest request)
         {
-            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.FilterId, UserId, request.IsShowApproval, raiinNos);
+            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.FilterId, UserId, request.IsShowApproval, request.RaiinNos);
             var output = _bus.Handle(input);
 
             var presenter = new GetMedicalExaminationHistoryPresenter();
@@ -48,10 +48,10 @@ namespace EmrCloudApi.Controller
             return result;
         }
 
-        [HttpGet(ApiPath.Search)]
-        public ActionResult<Response<SearchHistoryResponse>> Search([FromQuery] SearchHistoryRequest request, List<long> raiinNos)
+        [HttpPost(ApiPath.Search)]
+        public ActionResult<Response<SearchHistoryResponse>> Search([FromBody] SearchHistoryRequest request)
         {
-            var input = new SearchHistoryInputData(HpId, UserId, request.PtId, request.SinDate, request.CurrentIndex, request.FilterId, request.IsDeleted, request.KeyWord, request.SearchType, request.IsNext, raiinNos);
+            var input = new SearchHistoryInputData(HpId, UserId, request.PtId, request.SinDate, request.CurrentIndex, request.FilterId, request.IsDeleted, request.KeyWord, request.SearchType, request.IsNext, request.RaiinNos);
             var output = _bus.Handle(input);
 
             var presenter = new SearchHistoryPresenter();
@@ -61,10 +61,10 @@ namespace EmrCloudApi.Controller
             return result;
         }
 
-        [HttpGet(ApiPath.GetHistoryIndex)]
-        public ActionResult<Response<GetHistoryIndexResponse>> GetHistoryIndex([FromQuery] GetHistoryIndexRequest request, List<long> raiinNos)
+        [HttpPost(ApiPath.GetHistoryIndex)]
+        public ActionResult<Response<GetHistoryIndexResponse>> GetHistoryIndex([FromBody] GetHistoryIndexRequest request)
         {
-            var input = new GetHistoryIndexInputData(HpId, UserId, request.PtId, request.FilterId, request.IsDeleted, request.RaiinNo, raiinNos);
+            var input = new GetHistoryIndexInputData(HpId, UserId, request.PtId, request.FilterId, request.IsDeleted, request.RaiinNo, request.RaiinNos);
             var output = _bus.Handle(input);
 
             var presenter = new GetHistoryIndexPresenter();
