@@ -9,6 +9,4 @@ public class GetHistoryIndexRequest
     public int IsDeleted { get; set; }
 
     public long RaiinNo { get; set; }
-
-    public List<long> RaiinNos { get; set; } = new();
 }

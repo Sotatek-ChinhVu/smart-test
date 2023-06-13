@@ -23,9 +23,9 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request)
+        public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request, List<long> raiinNos)
         {
-            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.FilterId, UserId, request.IsShowApproval, request.RaiinNos);
+            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.FilterId, UserId, request.IsShowApproval, raiinNos);
             var output = _bus.Handle(input);
 
             var presenter = new GetMedicalExaminationHistoryPresenter();
@@ -49,9 +49,9 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.Search)]
-        public ActionResult<Response<SearchHistoryResponse>> Search([FromQuery] SearchHistoryRequest request)
+        public ActionResult<Response<SearchHistoryResponse>> Search([FromQuery] SearchHistoryRequest request, List<long> raiinNos)
         {
-            var input = new SearchHistoryInputData(HpId, UserId, request.PtId, request.SinDate, request.CurrentIndex, request.FilterId, request.IsDeleted, request.KeyWord, request.SearchType, request.IsNext, new());
+            var input = new SearchHistoryInputData(HpId, UserId, request.PtId, request.SinDate, request.CurrentIndex, request.FilterId, request.IsDeleted, request.KeyWord, request.SearchType, request.IsNext, raiinNos);
             var output = _bus.Handle(input);
 
             var presenter = new SearchHistoryPresenter();
@@ -62,9 +62,9 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetHistoryIndex)]
-        public ActionResult<Response<GetHistoryIndexResponse>> GetHistoryIndex([FromQuery] GetHistoryIndexRequest request)
+        public ActionResult<Response<GetHistoryIndexResponse>> GetHistoryIndex([FromQuery] GetHistoryIndexRequest request, List<long> raiinNos)
         {
-            var input = new GetHistoryIndexInputData(HpId, UserId, request.PtId, request.FilterId, request.IsDeleted, request.RaiinNo, request.RaiinNos);
+            var input = new GetHistoryIndexInputData(HpId, UserId, request.PtId, request.FilterId, request.IsDeleted, request.RaiinNo, raiinNos);
             var output = _bus.Handle(input);
 
             var presenter = new GetHistoryIndexPresenter();
