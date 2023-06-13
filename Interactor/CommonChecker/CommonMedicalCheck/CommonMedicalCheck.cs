@@ -732,9 +732,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<ErrorInfoModel> result = new List<ErrorInfoModel>();
 
         var errorGroup = (from a in allergyInfo
-                          group a by new { a.YjCd, a.AllergyYjCd }
+                          group a by new { a.YjCd, a.AllergyYjCd , a.Id}
                           into gcs
-                          select new { gcs.Key.YjCd, gcs.Key.AllergyYjCd }
+                          select new { gcs.Key.YjCd, gcs.Key.AllergyYjCd , gcs.Key.Id}
                           ).ToList();
 
         foreach (var error in errorGroup)
@@ -749,6 +749,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
                 ErrorType = CommonCheckerType.DrugAllergyChecker,
+                Id = error.Id,
                 FirstCellContent = "アレルギー",
                 ThridCellContent = itemName,
                 FourthCellContent = allergyItemName

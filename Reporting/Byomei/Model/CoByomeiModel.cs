@@ -19,13 +19,12 @@ namespace Reporting.Byomei.Model
             {
                 string ret = PtByomei.Byomei ?? string.Empty;
 
-                //ToDo: DuongLe update entity to uncomment below code
-                //if (PtByomei.SyobyoKbn == 1)
-                //{
-                //    ret = "（主）" + ret;
-                //}
+                if (PtByomei.SyubyoKbn == 1)
+                {
+                    ret = "（主）" + ret;
+                }
 
-                if (string.IsNullOrEmpty(PtByomei.HosokuCmt) == false)
+                if (!string.IsNullOrEmpty(PtByomei.HosokuCmt))
                 {
                     ret += "（" + PtByomei.HosokuCmt.Trim() + "）";
                 }
@@ -46,7 +45,7 @@ namespace Reporting.Byomei.Model
         {
             get
             {
-                if (this.PtByomei.TenkiKbn < TenkiKbnConst.Continued) return string.Empty;
+                if (PtByomei.TenkiKbn < TenkiKbnConst.Continued) return string.Empty;
                 return TenkiKbnConst.DisplayedTenkiKbnDict[PtByomei.TenkiKbn];
             }
         }

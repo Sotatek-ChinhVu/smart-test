@@ -91,9 +91,9 @@ public class ReportService : IReportService
     }
 
     //Byomei
-    public CommonReportingRequestModel GetByomeiReportingData(long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds)
+    public CommonReportingRequestModel GetByomeiReportingData(int hpId, long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds)
     {
-        return _byomeiService.GetByomeiReportingData(ptId, fromDay, toDay, tenkiIn, hokenIds);
+        return _byomeiService.GetByomeiReportingData(hpId, ptId, fromDay, toDay, tenkiIn, hokenIds);
     }
 
     //Karte1
@@ -278,7 +278,18 @@ public class ReportService : IReportService
                 requestAccountting.AddRange(printItem);
             }
         }
-        return _accountingCoReportService.GetAccountingReportingData(hpId, requestAccountting);
+
+        AccountingResponse result = null;
+        try
+        {
+            result = _accountingCoReportService.GetAccountingReportingData(hpId, requestAccountting);
+            Console.WriteLine("result AccountingResponse: " + result);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Exception: " + ex);
+        }
+        return result;
     }
 
     private List<CoAccountingParamModel> PrintWithoutThread(bool ryoshusho, bool meisai, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isPrintMonth, int sinDate, long oyaRaiinNo, List<CoAccountDueListModel>? nyukinModels = null)
