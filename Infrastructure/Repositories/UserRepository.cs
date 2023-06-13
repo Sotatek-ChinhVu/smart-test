@@ -166,7 +166,6 @@ namespace Infrastructure.Repositories
                     var userMst = TrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                     if (userMst != null)
                     {
-                        userMst.UserId = inputData.UserId;
                         userMst.JobCd = inputData.JobCd;
                         userMst.ManagerKbn = inputData.ManagerKbn;
                         userMst.KaId = inputData.KaId;
@@ -174,7 +173,6 @@ namespace Infrastructure.Repositories
                         userMst.Name = inputData.Name ?? string.Empty;
                         userMst.Sname = inputData.Sname ?? string.Empty;
                         userMst.DrName = inputData.DrName ?? string.Empty;
-                        userMst.LoginId = inputData.LoginId ?? string.Empty;
                         userMst.LoginPass = inputData.LoginPass ?? string.Empty;
                         userMst.MayakuLicenseNo = inputData.MayakuLicenseNo ?? string.Empty;
                         userMst.StartDate = inputData.StartDate;
