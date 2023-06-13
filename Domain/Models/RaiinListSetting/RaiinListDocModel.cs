@@ -2,7 +2,7 @@
 {
     public class RaiinListDocModel
     {
-        public RaiinListDocModel(int hpId, int grpId, int kbnCd, long seqNo, int categoryCd, string categoryName, int isDeleted, bool isModify)
+        public RaiinListDocModel(int hpId, int grpId, int kbnCd, long seqNo, int categoryCd, string categoryName, int isDeleted)
         {
             HpId = hpId;
             GrpId = grpId;
@@ -11,7 +11,6 @@
             CategoryCd = categoryCd;
             CategoryName = categoryName;
             IsDeleted = isDeleted;
-            IsModify = isModify;
         }
 
         public int HpId { get; private set; }
@@ -30,8 +29,6 @@
         public string CategoryName { get; private set; }
 
         public int IsDeleted { get; private set; }
-
-        public bool IsModify { get; private set; }
 
         public bool CheckDefaultValue()
         {

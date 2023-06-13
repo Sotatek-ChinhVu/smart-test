@@ -1,8 +1,8 @@
-﻿namespace Domain.Models.RaiinListSetting
+﻿namespace EmrCloudApi.Requests.RaiinListSetting
 {
-    public class RaiinListFileModel
+    public class RaiinListFileDto
     {
-        public RaiinListFileModel(int hpId, int grpId, int kbnCd, int categoryCd, string categoryName, long seqNo, int isDeleted)
+        public RaiinListFileDto(int hpId, int grpId, int kbnCd, int categoryCd, string categoryName, long seqNo, int isDeleted)
         {
             HpId = hpId;
             GrpId = grpId;
@@ -30,10 +30,5 @@
         public long SeqNo { get; private set; }
 
         public int IsDeleted { get; private set; }
-
-        public bool CheckDefaultValue()
-        {
-            return HpId == 0 && CategoryCd == 0;
-        }
     }
 }
