@@ -13,7 +13,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -870,24 +869,53 @@ namespace Infrastructure.Repositories
                 return new();
             }
 
-            var ptInfWithLastVisitDate =
-            from p in NoTrackingDataContext.PtInfs
-            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(originKeyword) || p.Name.StartsWith(originKeyword)) ||
-                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(halfsizeKeyword) || p.KanaName.StartsWith(halfsizeKeyword)))
-            orderby p.PtNum descending
-            select new PatientInfQueryModel
+            IQueryable<PatientInfQueryModel> ptInfWithLastVisitDate;
+            if (isContainMode)
             {
-                PtInf = p,
-                LastVisitDate = (
-                        from r in NoTrackingDataContext.RaiinInfs
-                        where r.HpId == hpId
-                            && r.PtId == p.PtId
-                            && r.Status >= RaiinState.TempSave
-                            && r.IsDeleted == DeleteTypes.None
-                        orderby r.SinDate descending
-                        select r.SinDate
-                    ).FirstOrDefault()
-            };
+                ptInfWithLastVisitDate = from p in NoTrackingDataContext.PtInfs
+                                         where p.IsDelete == 0
+                                         && ((p.Name != null && p.Name.Contains(originKeyword))
+                                            || (p.KanaName != null && p.KanaName.Contains(originKeyword))
+                                            || (p.Name != null && p.Name.Replace(" ", string.Empty).Replace("　", string.Empty).Contains(originKeyword))
+                                            || (p.KanaName != null && p.KanaName.Replace(" ", string.Empty).Replace("　", string.Empty).Contains(originKeyword)))
+                                         orderby p.PtNum descending
+                                         select new PatientInfQueryModel
+                                         {
+                                             PtInf = p,
+                                             LastVisitDate = (
+                                                     from r in NoTrackingDataContext.RaiinInfs
+                                                     where r.HpId == hpId
+                                                         && r.PtId == p.PtId
+                                                         && r.Status >= RaiinState.TempSave
+                                                         && r.IsDeleted == DeleteTypes.None
+                                                     orderby r.SinDate descending
+                                                     select r.SinDate
+                                                 ).FirstOrDefault()
+                                         };
+            }
+            else
+            {
+                ptInfWithLastVisitDate = from p in NoTrackingDataContext.PtInfs
+                                         where p.IsDelete == 0
+                                         && ((p.Name != null && p.Name.StartsWith(originKeyword))
+                                            || (p.KanaName != null && p.KanaName.StartsWith(originKeyword))
+                                            || (p.Name != null && p.Name.Replace(" ", string.Empty).Replace("　", string.Empty).Contains(originKeyword))
+                                            || (p.KanaName != null && p.KanaName.Replace(" ", string.Empty).Replace("　", string.Empty).Contains(originKeyword)))
+                                         orderby p.PtNum descending
+                                         select new PatientInfQueryModel
+                                         {
+                                             PtInf = p,
+                                             LastVisitDate = (
+                                                     from r in NoTrackingDataContext.RaiinInfs
+                                                     where r.HpId == hpId
+                                                         && r.PtId == p.PtId
+                                                         && r.Status >= RaiinState.TempSave
+                                                         && r.IsDeleted == DeleteTypes.None
+                                                     orderby r.SinDate descending
+                                                     select r.SinDate
+                                                 ).FirstOrDefault()
+                                         };
+            }
 
             bool sortGroup = sortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
             var result = sortGroup
@@ -1097,6 +1125,14 @@ namespace Infrastructure.Repositories
                 var ptExists = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtNum == patientInsert.PtNum && x.HpId == hpId);
                 if (ptExists != null)
                     patientInsert.PtNum = GetAutoPtNum(hpId);
+            }
+            if (patientInsert.DeathDate > 0)
+            {
+                patientInsert.IsDead = 1;
+            }
+            else
+            {
+                patientInsert.IsDead = 0;
             }
             patientInsert.CreateDate = CIUtil.GetJapanDateTimeNow();
             patientInsert.CreateId = userId;
@@ -1354,6 +1390,14 @@ namespace Infrastructure.Repositories
 
             Mapper.Map(ptInf, patientInfo, (source, dest) =>
             {
+                if (dest.DeathDate > 0)
+                {
+                    dest.IsDead = 1;
+                }
+                else
+                {
+                    dest.IsDead = 0;
+                }
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateId = userId;
                 return dest;
@@ -1895,6 +1939,7 @@ namespace Infrastructure.Repositories
         public bool DeletePatientInfo(long ptId, int hpId, int userId)
         {
             var patientInf = TrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptId && x.HpId == hpId && x.IsDelete == DeleteTypes.None);
+
             if (patientInf != null)
             {
                 patientInf.IsDelete = DeleteTypes.Deleted;
@@ -1979,17 +2024,38 @@ namespace Infrastructure.Repositories
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 });
                 #endregion
+
+                #region RaiinInf
+                var raiinInfList = TrackingDataContext.RaiinInfs.Where(item => item.PtId == ptId
+                                                                               && item.IsDeleted != DeleteTypes.Deleted)
+                                                                .ToList();
+                raiinInfList.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = userId;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                });
+                #endregion
+
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
 
         public bool IsAllowDeletePatient(int hpId, long ptId)
         {
-            var raiinInfCount = NoTrackingDataContext.RaiinInfs
-                .Count(p => p.HpId == hpId && p.PtId == ptId && p.Status >= RaiinState.TempSave);
+            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                  && item.PtId == ptId
+                                                                                  && item.SinStartTime != null
+                                                                                  && item.SinStartTime != string.Empty
+                                                                                  && item.SinEndTime != null
+                                                                                  && item.SinEndTime != string.Empty
+                                                                                  && item.Status > 2
+                                                                                  && item.IsDeleted != DeleteTypes.Deleted);
 
-            if (raiinInfCount > 0)
+            if (raiinInf != null)
+            {
                 return false;
+            }
             return true;
         }
 
@@ -2498,6 +2564,57 @@ namespace Infrastructure.Repositories
                                                                               u.SinDate <= toDate &&
                                                                               u.Status >= raiintStatus &&
                                                                               u.IsDeleted == DeleteTypes.None);
+        }
+
+        public List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex, int birthDay)
+        {
+            kanjiName = kanjiName.Replace("　", " ");
+            return NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId
+                                                        && p.Name != null && p.Name.Replace("　", " ") == kanjiName
+                                                        && p.Sex == sex
+                                                        && p.Birthday == birthDay
+                                                        && p.IsDelete != DeleteTypes.Deleted)
+                                               .Select(x => new PatientInforModel(x.HpId,
+                                                                                  x.PtId,
+                                                                                  x.ReferenceNo,
+                                                                                  x.SeqNo,
+                                                                                  x.PtNum,
+                                                                                  x.KanaName ?? string.Empty,
+                                                                                  x.Name ?? string.Empty,
+                                                                                  x.Sex,
+                                                                                  x.Birthday,
+                                                                                  x.LimitConsFlg,
+                                                                                  x.IsDead,
+                                                                                  x.DeathDate,
+                                                                                  x.HomePost ?? string.Empty,
+                                                                                  x.HomeAddress1 ?? string.Empty,
+                                                                                  x.HomeAddress2 ?? string.Empty,
+                                                                                  x.Tel1 ?? string.Empty,
+                                                                                  x.Tel2 ?? string.Empty,
+                                                                                  x.Mail ?? string.Empty,
+                                                                                  x.Setanusi ?? string.Empty,
+                                                                                  x.Zokugara ?? string.Empty,
+                                                                                  x.Job ?? string.Empty,
+                                                                                  x.RenrakuName ?? string.Empty,
+                                                                                  x.RenrakuPost ?? string.Empty,
+                                                                                  x.RenrakuAddress1 ?? string.Empty,
+                                                                                  x.RenrakuAddress2 ?? string.Empty,
+                                                                                  x.RenrakuTel ?? string.Empty,
+                                                                                  x.RenrakuMemo ?? string.Empty,
+                                                                                  x.OfficeName ?? string.Empty,
+                                                                                  x.OfficePost ?? string.Empty,
+                                                                                  x.OfficeAddress1 ?? string.Empty,
+                                                                                  x.OfficeAddress2 ?? string.Empty,
+                                                                                  x.OfficeTel ?? string.Empty,
+                                                                                  x.OfficeMemo ?? string.Empty,
+                                                                                  x.IsRyosyoDetail,
+                                                                                  x.PrimaryDoctor,
+                                                                                  x.IsTester,
+                                                                                  x.MainHokenPid,
+                                                                                  string.Empty,
+                                                                                  0,
+                                                                                  0,
+                                                                                  0)).ToList();
         }
     }
 }

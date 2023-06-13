@@ -6,15 +6,21 @@ namespace Reporting.Byomei.Model
     public class CoPtByomeiModel
     {
         public PtInf PtInf { get; private set; }
-        public CoPtHokenInfModel PtHokenInfModel { get; private set; }
+        public CoPtHokenInfModel? PtHokenInfModel { get; private set; }
 
-        public CoPtByomeiModel(int fromDate, int toDate, PtInf ptInf, CoPtHokenInfModel ptHokenInfModel, IEnumerable<PtByomei> ptByomeis)
+        public CoPtByomeiModel(int fromDate, int toDate, PtInf PtInf, CoPtHokenInfModel? ptHokenInfModel, IEnumerable<PtByomei> ptByomeis)
         {
-            PtInf = ptInf;
+            this.PtInf = PtInf;
             PtHokenInfModel = ptHokenInfModel;
             ListByomei = ptByomeis.Select(b => new CoByomeiModel(b)).ToList();
             FromDay = fromDate;
             ToDay = toDate;
+        }
+        
+        public CoPtByomeiModel()
+        {
+            PtHokenInfModel = new();
+            ListByomei = new();
         }
 
         public int FromDay { get; set; }

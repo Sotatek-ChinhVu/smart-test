@@ -45,19 +45,19 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     s.IsGroup
                     ))
                 .ToList();
-        var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetPriority(CacheItemPriority.Normal);
-        _memoryCache.Set(GetCacheKey(), setMstModelList, cacheEntryOptions);
+        //var cacheEntryOptions = new MemoryCacheEntryOptions()
+        //        .SetPriority(CacheItemPriority.Normal);
+        //_memoryCache.Set(GetCacheKey(), setMstModelList, cacheEntryOptions);
 
         return setMstModelList;
     }
 
     public List<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, int generationId, string textSearch)
     {
-        if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
-        {
-            setMstModelList = ReloadCache(hpId);
-        }
+        //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
+        //{
+        var setMstModelList = ReloadCache(hpId);
+        //}
 
         List<SetMstModel> result;
         if (string.IsNullOrEmpty(textSearch))
@@ -72,18 +72,95 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         else
         {
+            string kanaKeyword = textSearch;
+            if (!WanaKana.IsKana(textSearch) && WanaKana.IsRomaji(textSearch))
+            {
+                var inputKeyword = textSearch;
+                kanaKeyword = CIUtil.ToHalfsize(textSearch);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
+            }
+
+            string sBigKeyword = kanaKeyword.ToUpper()
+                                            .Replace("ｧ", "ｱ")
+                                            .Replace("ｨ", "ｲ")
+                                            .Replace("ｩ", "ｳ")
+                                            .Replace("ｪ", "ｴ")
+                                            .Replace("ｫ", "ｵ")
+                                            .Replace("ｬ", "ﾔ")
+                                            .Replace("ｭ", "ﾕ")
+                                            .Replace("ｮ", "ﾖ")
+                                            .Replace("ｯ", "ﾂ");
+
+            // Search By SetName
             setMstModelList = setMstModelList!.Where(item => item.HpId == hpId
                                                              && item.GenerationId == generationId
                                                              && item.SetKbn == setKbn
                                                              && item.SetKbnEdaNo == setKbnEdaNo - 1
                                                              && item.IsDeleted == 0);
+
             var searchItemList = setMstModelList!
-                                 .Where(item => string.IsNullOrEmpty(textSearch)
-                                                || (item.SetName != null && item.SetName.Contains(textSearch)))
-                                 .ToList();
+                                .Where(item => string.IsNullOrEmpty(textSearch)
+                                               || (item.SetName != null && item.SetName.Contains(textSearch))
+                                               || (item.SetName != null && item.SetName.ToUpper()
+                                                                                       .Replace("ｧ", "ｱ")
+                                                                                       .Replace("ｨ", "ｲ")
+                                                                                       .Replace("ｩ", "ｳ")
+                                                                                       .Replace("ｪ", "ｴ")
+                                                                                       .Replace("ｫ", "ｵ")
+                                                                                       .Replace("ｬ", "ﾔ")
+                                                                                       .Replace("ｭ", "ﾕ")
+                                                                                       .Replace("ｮ", "ﾖ")
+                                                                                       .Replace("ｯ", "ﾂ")
+                                                                                       .Contains(sBigKeyword)))
+                                .ToList();
 
             var setCdList = searchItemList.Select(item => item.SetCd).ToList();
 
+            // SearchBy Order Inf Detail
+            var setCdOrderDetailList = NoTrackingDataContext.SetOdrInfDetail
+                                       .Where(item => item.HpId == hpId
+                                                      && ((item.ItemName != null && item.ItemName.Contains(textSearch))
+                                                          || (item.ItemName != null && item.ItemName.ToUpper()
+                                                                                                    .Replace("ｧ", "ｱ")
+                                                                                                    .Replace("ｨ", "ｲ")
+                                                                                                    .Replace("ｩ", "ｳ")
+                                                                                                    .Replace("ｪ", "ｴ")
+                                                                                                    .Replace("ｫ", "ｵ")
+                                                                                                    .Replace("ｬ", "ﾔ")
+                                                                                                    .Replace("ｭ", "ﾕ")
+                                                                                                    .Replace("ｮ", "ﾖ")
+                                                                                                    .Replace("ｯ", "ﾂ")
+                                                                                                    .Contains(sBigKeyword))))
+                                       .Select(item => item.SetCd)
+                                       .Distinct()
+                                       .ToList();
+
+            var setItemOrderDetailList = setMstModelList!.Where(item => setCdOrderDetailList.Contains(item.SetCd)).ToList();
+            searchItemList.AddRange(setItemOrderDetailList);
+
+            // SearchBy Karte
+            var setCdKarte = NoTrackingDataContext.SetKarteInf.Where(item => item.HpId == hpId
+                                                                             && ((item.Text != null && item.Text.Contains(textSearch)))
+                                                                                  || (item.Text != null && item.Text.ToUpper()
+                                                                                                                    .Replace("ｧ", "ｱ")
+                                                                                                                    .Replace("ｨ", "ｲ")
+                                                                                                                    .Replace("ｩ", "ｳ")
+                                                                                                                    .Replace("ｪ", "ｴ")
+                                                                                                                    .Replace("ｫ", "ｵ")
+                                                                                                                    .Replace("ｬ", "ﾔ")
+                                                                                                                    .Replace("ｭ", "ﾕ")
+                                                                                                                    .Replace("ｮ", "ﾖ")
+                                                                                                                    .Replace("ｯ", "ﾂ")
+                                                                                                                    .Contains(sBigKeyword)))
+                                                              .Select(item => item.SetCd)
+                                                              .Distinct()
+                                                              .ToList();
+            var setItemKarteList = setMstModelList!.Where(item => setCdKarte.Contains(item.SetCd)).ToList();
+            searchItemList.AddRange(setItemKarteList);
+
+            // Action gen rootSet
+            searchItemList = searchItemList.Distinct().ToList();
             foreach (var searchItem in searchItemList)
             {
                 // if item is level 1
@@ -467,15 +544,44 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
         if (originDropLevel1 != 0)
         {
-            if (originDragLevel1 != originDropLevel1 && dragItem.Level2 == 0 && dropItem.Level2 == 0)
+            if (originDragLevel1 != originDropLevel1)
             {
-                if (originDragLevel1 > originDropLevel1)
+                if (dragItem.Level2 == 0 && dropItem.Level2 == 0)
                 {
-                    result = setMsts.Where(item => originDropLevel1 <= item.Level1 && item.Level1 <= originDragLevel1).ToList();
+                    if (originDragLevel1 > originDropLevel1)
+                    {
+                        result = setMsts.Where(item => originDropLevel1 <= item.Level1 && item.Level1 <= originDragLevel1).ToList();
+                    }
+                    if (originDragLevel1 < originDropLevel1)
+                    {
+                        result = setMsts.Where(item => originDragLevel1 <= item.Level1 && item.Level1 <= originDropLevel1).ToList();
+                    }
                 }
-                if (originDragLevel1 < originDropLevel1)
+                else
                 {
-                    result = setMsts.Where(item => originDragLevel1 <= item.Level1 && item.Level1 <= originDropLevel1).ToList();
+                    if (originDragLevel1 > originDropLevel1)
+                    {
+                        result = setMsts.Where(item => originDropLevel1 <= item.Level1).ToList();
+                    }
+                    if (originDragLevel1 < originDropLevel1)
+                    {
+                        result = setMsts.Where(item => originDragLevel1 <= item.Level1).ToList();
+                    }
+                    result.Add(new SetMstModel(
+                                   dragItem.HpId,
+                                   dragItem.SetCd,
+                                   dragItem.SetKbn,
+                                   dragItem.SetKbnEdaNo,
+                                   dragItem.GenerationId,
+                                   0,
+                                   0,
+                                   0,
+                                   dragItem.SetName ?? string.Empty,
+                                   dragItem.WeightKbn,
+                                   dragItem.Color,
+                                   1,
+                                   dragItem.IsGroup
+                           ));
                 }
             }
             else
@@ -535,10 +641,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     public IEnumerable<SetMstModel> GetListFollowSetCd(int hpId, byte type, List<int> setCds)
     {
-        if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
-        {
-            setMstModelList = ReloadCache(hpId);
-        }
+        //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
+        //{
+        var setMstModelList = ReloadCache(hpId);
+        //}
 
         var result = new List<SetMstModel>();
         if (type == 1)

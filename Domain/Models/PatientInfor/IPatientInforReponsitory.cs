@@ -67,5 +67,7 @@ namespace Domain.Models.PatientInfor
         long GetPtIdFromPtNum(int hpId, long ptNum);
 
         int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus);
+
+        List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex , int birthDay);
     }
 }

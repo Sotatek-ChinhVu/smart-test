@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
+using Domain.Models.Lock;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper;
@@ -16,13 +17,15 @@ namespace Interactor.PatientInfor
     {
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly ISystemConfRepository _systemConfRepository;
+        private readonly ILockRepository _lockRepository;
         private readonly IAmazonS3Service _amazonS3Service;
 
-        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service)
+        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service, ILockRepository lockRepository)
         {
             _patientInforRepository = patientInforRepository;
             _systemConfRepository = systemConfRepository;
             _amazonS3Service = amazonS3Service;
+            _lockRepository = lockRepository;
         }
 
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
@@ -90,7 +93,10 @@ namespace Interactor.PatientInfor
                     result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
 
                 if (result.resultSave)
+                {
+                    _lockRepository.RemoveLock(inputData.HpId, FunctionCode.PatientInfo, result.ptId, 0, 0, inputData.UserId);
                     return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId);
+                }
                 else
                     return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
             }
@@ -102,6 +108,7 @@ namespace Interactor.PatientInfor
             {
                 _patientInforRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
+                _lockRepository.ReleaseResource();
             }
         }
 
@@ -158,8 +165,9 @@ namespace Interactor.PatientInfor
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.IsDead`"), SavePatientInforValidationCode.InvalidIsDead, TypeMessage.TypeMessageError));
 
-            if (model.Patient.IsDead == 0 && model.Patient.DeathDate > 0)
-                resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.DeathDate`"), SavePatientInforValidationCode.InvalidDeathDate, TypeMessage.TypeMessageError));
+            // temp remove not need validate
+            //if (model.Patient.IsDead == 0 && model.Patient.DeathDate > 0)
+            //    resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.DeathDate`"), SavePatientInforValidationCode.InvalidDeathDate, TypeMessage.TypeMessageError));
 
             if (model.Patient.HomePost != null && model.Patient.HomePost.Length > 7)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.HomePost`"), SavePatientInforValidationCode.InvalidHomePost, TypeMessage.TypeMessageError));

@@ -1,15 +1,12 @@
-﻿namespace EmrCloudApi.Requests.ExportPDF
+﻿namespace EmrCloudApi.Requests.ExportPDF;
+
+public class KensalraiRequest : ReportRequestBase
 {
-    public class KensalraiRequest
-    {
-        public int HpId { get; set; }
+    public int SystemDate { get; set; }
 
-        public int SystemDate { get; set; }
+    public int FromDate { get; set; }
 
-        public int FromDate { get; set; }
+    public int ToDate { get; set; }
 
-        public int ToDate { get; set; }
-
-        public string CenterCd { get; set; } = string.Empty;
-    }
+    public string CenterCd { get; set; } = string.Empty;
 }

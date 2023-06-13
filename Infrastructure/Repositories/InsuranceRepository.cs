@@ -514,8 +514,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<InsuranceModel> GetListHokenPattern(int hpId, long ptId, int sinDate, bool allowDisplayDeleted, bool isAllHoken = true, bool isHoken = true, bool isJihi = true, bool isRosai = true, bool isJibai = true)
         {
-
-            var result = NoTrackingDataContext.PtHokenPatterns.Where
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where
                                 (
                                     p => p.HpId == hpId && p.PtId == ptId && (p.IsDeleted == 0 || allowDisplayDeleted) &&
                                         (
@@ -523,24 +522,49 @@ namespace Infrastructure.Repositories
                                             isHoken && (p.HokenKbn == 1 || p.HokenKbn == 2) ||
                                             isJihi && p.HokenKbn == 0 ||
                                             isRosai && (p.HokenKbn == 11 || p.HokenKbn == 12 || p.HokenKbn == 13) ||
-                                            isJibai && p.HokenKbn == 14));
+                                            isJibai && p.HokenKbn == 14)).ToList();
+            var hokenIds = new List<int>();
+            foreach (var ptHokenPattern in ptHokenPatterns)
+            {
+                if (ptHokenPattern.Kohi1Id > 0)
+                    hokenIds.Add(ptHokenPattern.Kohi1Id);
+                if (ptHokenPattern.Kohi2Id > 0)
+                    hokenIds.Add(ptHokenPattern.Kohi2Id);
+                if (ptHokenPattern.Kohi3Id > 0)
+                    hokenIds.Add(ptHokenPattern.Kohi3Id);
+                if (ptHokenPattern.Kohi4Id > 0)
+                    hokenIds.Add(ptHokenPattern.Kohi4Id);
+            }
+            hokenIds = hokenIds.Distinct().ToList();
+            var ptKohis = NoTrackingDataContext.PtKohis.Where(k => k.PtId == ptId && k.HpId == hpId).AsEnumerable().Where(k => hokenIds.Contains(k.HokenId)).ToList();
 
-            return result.Select(r => new InsuranceModel(
-                        r.HpId,
-                        r.PtId,
-                        r.SeqNo,
-                        r.HokenSbtCd,
-                        r.HokenPid,
-                        r.HokenKbn,
-                        r.HokenId,
-                        r.Kohi1Id,
-                        r.Kohi2Id,
-                        r.Kohi3Id,
-                        r.Kohi4Id,
-                        r.StartDate,
-                        r.EndDate,
-                        sinDate
+            PtKohi kohi1 = new PtKohi(), kohi2 = new PtKohi(), kohi3 = new PtKohi(), kohi4 = new PtKohi();
+            var result = new List<InsuranceModel>();
+            foreach (var ptHokenPattern in ptHokenPatterns)
+            {
+                kohi1 = ptKohis?.FirstOrDefault(k => k.HokenId == ptHokenPattern.Kohi1Id && k.IsDeleted == 0) ?? new();
+                kohi2 = ptKohis?.FirstOrDefault(k => k.HokenId == ptHokenPattern.Kohi2Id && k.IsDeleted == 0) ?? new();
+                kohi3 = ptKohis?.FirstOrDefault(k => k.HokenId == ptHokenPattern.Kohi3Id && k.IsDeleted == 0) ?? new();
+                kohi4 = ptKohis?.FirstOrDefault(k => k.HokenId == ptHokenPattern.Kohi4Id && k.IsDeleted == 0) ?? new();
+                result.Add(new InsuranceModel(
+                        ptHokenPattern.HpId,
+                        ptHokenPattern.PtId,
+                        ptHokenPattern.SeqNo,
+                        ptHokenPattern.HokenSbtCd,
+                        ptHokenPattern.HokenPid,
+                        ptHokenPattern.HokenKbn,
+                        ptHokenPattern.HokenId,
+                        ptHokenPattern.StartDate,
+                        ptHokenPattern.EndDate,
+                        sinDate,
+                        ConvertToKohiModel(kohi1),
+                        ConvertToKohiModel(kohi2),
+                        ConvertToKohiModel(kohi3),
+                        ConvertToKohiModel(kohi4)
                         ));
+            }
+
+            return result;
         }
 
         private bool IsReceKisai(HokenMst HokenMasterModel)
@@ -566,6 +590,8 @@ namespace Infrastructure.Repositories
 
         public InsuranceModel GetPtHokenInf(int hpId, int hokenPid, long ptId, int sinDate)
         {
+
+
             var dataHokenPatterList = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None && x.PtId == ptId && x.HpId == hpId && x.HokenPid == hokenPid).OrderByDescending(x => x.HokenPid);
             var dataKohi = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteStatus.None);
             var dataHokenInf = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId);
@@ -1039,6 +1065,13 @@ namespace Infrastructure.Repositories
 
         public List<InsuranceModel> GetInsuranceList(int hpId, long ptId, int sinDate, bool isDeleted = false)
         {
+            int prefCd = 0;
+            var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
+            if (hpInf != null)
+            {
+                prefCd = hpInf.PrefNo;
+            }
+
             PtInf? ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete == 0);
             if (ptInf == null)
             {
@@ -1150,7 +1183,7 @@ namespace Infrastructure.Repositories
             hokenEdaNoList.AddRange(itemList.Select(i => i.ptKohi4 != null ? i.ptKohi4.HokenEdaNo : 0).ToList());
             hokenEdaNoList = hokenEdaNoList.Distinct().ToList();
 
-            List<HokenMst> hokenMstList = NoTrackingDataContext.HokenMsts.Where(h => h.HpId == hpId && hokenNoList.Contains(h.HokenNo) && hokenEdaNoList.Contains(h.HokenEdaNo)).ToList();
+            List<HokenMst> hokenMstList = NoTrackingDataContext.HokenMsts.Where(h => (h.PrefNo == prefCd || h.PrefNo == 0 || h.IsOtherPrefValid == 1) && h.HpId == hpId && hokenNoList.Contains(h.HokenNo) && hokenEdaNoList.Contains(h.HokenEdaNo)).ToList();
             List<PtHokenCheck> ptHokenCheckList = NoTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None).ToList();
 
             List<InsuranceModel> listInsurance = new List<InsuranceModel>();
@@ -1436,6 +1469,17 @@ namespace Infrastructure.Repositories
         {
             var ptHokenInf = NoTrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId && item.HokenId == hokenId && item.PtId == ptId);
             return ptHokenInf?.HokenKbn ?? 0;
+        }
+
+        public KohiInfModel ConvertToKohiModel(PtKohi kohi)
+        {
+            return new KohiInfModel(
+                   kohi.HokenNo,
+                   kohi.HokenId,
+                   kohi.HokenSbtKbn,
+                   kohi.Houbetu ?? string.Empty,
+                   kohi.SeqNo
+                );
         }
     }
 }

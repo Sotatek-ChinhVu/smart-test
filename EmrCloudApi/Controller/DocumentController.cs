@@ -1,31 +1,31 @@
-﻿using EmrCloudApi.Constants;
+﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Document;
 using EmrCloudApi.Requests.Document;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Services;
+using Interactor.Document.CommonGetListParam;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 using UseCase.Core.Sync;
-using UseCase.Document.UploadTemplateToCategory;
+using UseCase.Document;
 using UseCase.Document.CheckExistFileName;
+using UseCase.Document.ConfirmReplaceDocParam;
 using UseCase.Document.DeleteDocCategory;
 using UseCase.Document.DeleteDocInf;
 using UseCase.Document.DeleteDocTemplate;
+using UseCase.Document.DownloadDocumentTemplate;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.GetListDocComment;
+using UseCase.Document.GetListParamTemplate;
 using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
-using UseCase.Document.GetListParamTemplate;
-using Interactor.Document.CommonGetListParam;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
-using System.Net;
-using UseCase.Document;
-using UseCase.Document.DownloadDocumentTemplate;
-using UseCase.Document.GetListDocComment;
-using UseCase.Document.ConfirmReplaceDocParam;
+using UseCase.Document.UploadTemplateToCategory;
 
 namespace EmrCloudApi.Controller;
 
@@ -302,13 +302,13 @@ public class DocumentController : AuthorizeControllerBase
         var listData = textElements.ToList();
         for (int i = 0; i < listData.Count; i++)
         {
-            if (listData[i].Text.Trim().Contains(preCharParam + param.Parameter + subCharParam))
+            if (listData[i].Text.Normalize(NormalizationForm.FormKD).Contains(preCharParam + param.Parameter.Normalize(NormalizationForm.FormKD) + subCharParam))
             {
-                listData[i].Text = listData[i].Text.Replace(preCharParam + param.Parameter + subCharParam, param.Value);
+                listData[i].Text = listData[i].Text.Normalize(NormalizationForm.FormKD).Replace(preCharParam + param.Parameter.Normalize(NormalizationForm.FormKD) + subCharParam, param.Value);
             }
             else
             {
-                string firstText = listData[i].Text;
+                string firstText = listData[i].Text.Normalize(NormalizationForm.FormKD);
                 string firstChar = firstText.Length > 0 ? firstText.Substring(firstText.Length - 1, 1) : string.Empty;
 
                 if (firstChar == string.Empty)
@@ -321,11 +321,11 @@ public class DocumentController : AuthorizeControllerBase
                 string thirdChar = thirdText.Length > 0 ? thirdText.Substring(0, 1) : string.Empty;
 
                 string charReplace = firstChar + secondChar + thirdChar;
-                if (charReplace.Equals(preCharParam + param.Parameter + subCharParam))
+                if (charReplace.Normalize(NormalizationForm.FormKD).Equals(preCharParam + param.Parameter.Normalize(NormalizationForm.FormKD) + subCharParam))
                 {
                     listData[i].Text = listData[i].Text.Replace(firstChar, param.Value);
-                    listData[i + 1].Text = listData[i + 1].Text.Replace(secondChar, string.Empty);
-                    listData[i + 2].Text = listData[i + 2].Text.Replace(thirdChar, string.Empty);
+                    listData[i + 1].Text = listData[i + 1].Text.Normalize(NormalizationForm.FormKD).Replace(secondChar, string.Empty);
+                    listData[i + 2].Text = listData[i + 2].Text.Normalize(NormalizationForm.FormKD).Replace(thirdChar, string.Empty);
                 }
             }
 
@@ -346,7 +346,9 @@ public class DocumentController : AuthorizeControllerBase
                 {
                     if (workbook.MainDocumentPart != null)
                     {
+                        Console.WriteLine("Test Document " + workbook.MainDocumentPart.Document.InnerText);
                         return workbook.MainDocumentPart.Document.InnerText;
+
                     }
                 }
             }

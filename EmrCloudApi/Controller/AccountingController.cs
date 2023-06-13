@@ -37,7 +37,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetAccountingResponse>> GetList([FromQuery] GetAccountingRequest request)
         {
-            var input = new GetAccountingInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var input = new GetAccountingInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
 
             var presenter = new GetAccountingPresenter();
@@ -49,7 +49,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.PaymentMethod)]
         public ActionResult<Response<GetPaymentMethodResponse>> GetList([FromQuery] GetPaymentMethodRequest request)
         {
-            var input = new GetPaymentMethodInputData(request.HpId);
+            var input = new GetPaymentMethodInputData(HpId);
             var output = _bus.Handle(input);
 
             var presenter = new GetPaymentMethodPresenter();
@@ -165,7 +165,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Recaculation)]
         public ActionResult<Response<RecaculationResponse>> ActionResult([FromBody] RecaculationRequest request)
         {
-            var input = new RecaculationInputData(request.HpId, request.RaiinNo, request.PtId, request.SinDate);
+            var input = new RecaculationInputData(HpId, request.RaiinNo, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new RecaculationPresenter();

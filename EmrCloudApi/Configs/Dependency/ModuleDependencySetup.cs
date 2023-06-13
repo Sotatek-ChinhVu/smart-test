@@ -135,6 +135,7 @@ using Interactor.Santei;
 using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
+using Interactor.SetMst.CommonSuperSet;
 using Interactor.SpecialNote;
 using Interactor.StickyNote;
 using Interactor.SuperSetDetail;
@@ -167,6 +168,7 @@ using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
 using Reporting.DrugNoteSeal.DB;
 using Reporting.DrugNoteSeal.Service;
+using Reporting.Karte1.DB;
 using Reporting.Karte1.Service;
 using Reporting.Kensalrai.DB;
 using Reporting.Kensalrai.Service;
@@ -193,12 +195,18 @@ using Reporting.ReceTarget.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.DB;
 using Reporting.Sijisen.Service;
+using Reporting.Sokatu.AfterCareSeikyu.DB;
+using Reporting.Sokatu.AfterCareSeikyu.Service;
 using Reporting.Sokatu.Common.DB;
+using Reporting.Sokatu.HikariDisk.DB;
+using Reporting.Sokatu.HikariDisk.Service;
 using Reporting.Sokatu.KokhoSeikyu.DB;
 using Reporting.Sokatu.KokhoSokatu.DB;
 using Reporting.Sokatu.KokhoSokatu.Service;
 using Reporting.Sokatu.KoukiSeikyu.DB;
 using Reporting.Sokatu.KoukiSeikyu.Service;
+using Reporting.Sokatu.Syaho.DB;
+using Reporting.Sokatu.Syaho.Service;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
@@ -422,6 +430,8 @@ using UseCase.OrdInfs.ValidationInputItem;
 using UseCase.OrdInfs.ValidationTodayOrd;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
+using UseCase.PatientInfor.CheckAllowDeletePatientInfo;
+using UseCase.PatientInfor.CheckValidSamePatient;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.GetListPatient;
@@ -450,6 +460,7 @@ using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
 using UseCase.RaiinListSetting.GetDocCategory;
 using UseCase.RaiinListSetting.GetFilingcategory;
 using UseCase.RaiinListSetting.GetRaiiinListSetting;
+using UseCase.RaiinListSetting.SaveRaiinListSetting;
 using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
@@ -594,6 +605,9 @@ using Reporting.Sijisen.DB;
 using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Interactor.SetMst.CommonSuperSet;
+using Reporting.Sokatu.WelfareSeikyu.DB;
+using Reporting.Byomei.DB;
+using UseCase.User.GetListUserByCurrentUser;
 using UseCase.User.GetListFunctionPermission;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -758,6 +772,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP11KoukiSeikyuCoReportService, P11KoukiSeikyuCoReportService>();
             services.AddTransient<IP14KoukiSeikyuCoReportService, P14KoukiSeikyuCoReportService>();
             services.AddTransient<IP17KoukiSeikyuCoReportService, P17KoukiSeikyuCoReportService>();
+            services.AddTransient<IP20KoukiSeikyuCoReportService, P20KoukiSeikyuCoReportService>();
+            services.AddTransient<IP25KokhoSokatuCoReportService, P25KokhoSokatuCoReportService>();
+            services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
+            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -858,6 +877,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISortPatientCommon, SortPatientCommon>();
             services.AddTransient<IRaiinListSettingRepository, RaiinListSettingRepository>();
             services.AddTransient<ICommonSuperSet, CommonSuperSet>();
+            services.AddTransient<ICoKarte1Finder, CoKarte1Finder>();
+            services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -873,6 +894,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckedLockMedicalExaminationInputData, CheckedLockMedicalExaminationInteractor>();
             busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
             busBuilder.RegisterUseCase<GetAllPermissionInputData, GetAllPermissionInteractor>();
+            busBuilder.RegisterUseCase<GetListUserByCurrentUserInputData, GetListUserByCurrentUserInteractor>();
             busBuilder.RegisterUseCase<GetListFunctionPermissionInputData, GetListFunctionPermissionInteractor>();
 
             //ApprovalInfo
@@ -948,6 +970,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchPatientInfoByPtNumInputData, SearchPatientInfoByPtNumInteractor>();
             busBuilder.RegisterUseCase<GetTokkiMstListInputData, GetTokkiMstListInteractor>();
             busBuilder.RegisterUseCase<CalculationSwapHokenInputData, CalculationSwapHokenInteractor>();
+            busBuilder.RegisterUseCase<CheckValidSamePatientInputData, CheckValidSamePatientInteractor>();
+            busBuilder.RegisterUseCase<CheckAllowDeletePatientInfoInputData, CheckAllowDeletePatientInfoInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -1316,6 +1340,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
             busBuilder.RegisterUseCase<GetLockInfoInputData, GetLockInfoInteractor>();
+            busBuilder.RegisterUseCase<CheckLockVisitingInputData, CheckLockVisitingInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
@@ -1335,6 +1360,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDocCategoryRaiinInputData, GetDocCategoryRaiinInteractor>();
             busBuilder.RegisterUseCase<GetFilingcategoryInputData, GetFilingcategoryInteractor>();
             busBuilder.RegisterUseCase<GetRaiiinListSettingInputData, GetRaiiinListSettingInteractor>();
+            busBuilder.RegisterUseCase<SaveRaiinListSettingInputData, SaveRaiinListSettingInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
