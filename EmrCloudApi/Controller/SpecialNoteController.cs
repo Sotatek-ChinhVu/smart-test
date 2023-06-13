@@ -61,7 +61,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Save)]
         public ActionResult<Response<SaveSpecialNoteResponse>> Save([FromBody] SpecialNoteSaveRequest request)
         {
-            var input = new SaveSpecialNoteInputData(HpId, request.PtId, request.SinDate, request.SummaryTab.Map(), request.ImportantNoteTab.Map(), request.PatientInfoTab.Map(), UserId);
+            var input = new SaveSpecialNoteInputData(HpId, request.PtId, request.SinDate, request.SummaryTab.Map(HpId), request.ImportantNoteTab.Map(HpId), request.PatientInfoTab.Map(HpId), UserId);
             var output = _bus.Handle(input);
 
             var presenter = new SaveSpecialNotePresenter();
