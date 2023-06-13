@@ -241,6 +241,15 @@ namespace Infrastructure.Repositories
                     entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     entity.UpdateId = userId;
                 }
+
+                if (entity.IsYoyaku == 1 && entity.Status == RaiinState.Reservation)
+                {
+                    if (string.IsNullOrEmpty(entity.UketukeTime) || entity.UketukeTime.Equals("0"))
+                    {
+                        entity.UketukeTime = model.UketukeTime;
+                    }
+                    entity.Status = model.Status;
+                }
             }
 
             void ResetOyaRaiinNo(int hpId, int userId, long ptId, long raiinNo)

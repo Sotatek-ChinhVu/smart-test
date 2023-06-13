@@ -79,5 +79,7 @@
         public int PatientInfBirthday { get; set; }
 
         public int PatternHokenKbn { get; set; }
+
+        public bool SelectedHokenInfIsEmptyModel { get; set; }
     }
 }

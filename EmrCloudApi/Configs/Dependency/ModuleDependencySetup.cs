@@ -605,6 +605,7 @@ using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Interactor.SetMst.CommonSuperSet;
 using Reporting.Sokatu.WelfareSeikyu.DB;
+using Reporting.Byomei.DB;
 using UseCase.User.GetListUserByCurrentUser;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -774,7 +775,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
-            services.AddTransient<IP45KokhoSokatuCoReportService, P45KokhoSokatuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -876,6 +876,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinListSettingRepository, RaiinListSettingRepository>();
             services.AddTransient<ICommonSuperSet, CommonSuperSet>();
             services.AddTransient<ICoKarte1Finder, CoKarte1Finder>();
+            services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
         }
 
         private void SetupUseCase(IServiceCollection services)

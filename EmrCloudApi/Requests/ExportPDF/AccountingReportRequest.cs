@@ -2,5 +2,5 @@
 
 public class AccountingReportRequest
 {
-    public string JsonAccounting { get; set; }
+    public string JsonAccounting { get; set; } = string.Empty;
 }
