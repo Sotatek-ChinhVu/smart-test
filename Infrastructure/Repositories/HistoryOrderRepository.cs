@@ -78,14 +78,17 @@ namespace Infrastructure.Repositories
                             hokenPidListByCondition.Contains(r.HokenPid) &&
                             (karteFilter.IsAllDepartment || karteFilter.ListDepartmentCode.Contains(r.KaId)) &&
                             (karteFilter.IsAllDoctor || karteFilter.ListDoctorCode.Contains(r.TantoId)));
-
+            var temp = raiinInfListQueryable.ToList();
             IEnumerable<RaiinInf> raiinInfEnumerable;
             if (karteFilter.OnlyBookmark)
             {
                 raiinInfEnumerable = from raiinInf in raiinInfListQueryable
-                                     join raiinTag in NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && (r.TagNo != 0 || raiinNos.Contains(r.RaiinNo)))
+                                     join raiinTag in NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.TagNo != 0)
                                       on raiinInf.RaiinNo equals raiinTag.RaiinNo
                                      select raiinInf;
+                
+                var raiinInfEnumerableFE = from raiinInf in raiinInfListQueryable where raiinNos.Contains(raiinInf.RaiinNo) select raiinInf;
+                raiinInfEnumerable = raiinInfEnumerable.Union(raiinInfEnumerableFE);
             }
             else
             {
