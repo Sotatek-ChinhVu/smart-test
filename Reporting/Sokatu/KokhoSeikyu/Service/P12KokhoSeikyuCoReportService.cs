@@ -256,7 +256,6 @@ public class P12KokhoSeikyuCoReportService : IP12KokhoSeikyuCoReportService
                 }
             }
             #endregion
-            //_listTextData.Add(pageIndex, listDataPerPage);
             return 1;
         }
         #endregion
