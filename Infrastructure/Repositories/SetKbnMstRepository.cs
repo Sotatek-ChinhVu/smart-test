@@ -1,6 +1,4 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Domain.Models.MstItem;
-using Domain.Models.SetKbnMst;
+﻿using Domain.Models.SetKbnMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -8,11 +6,9 @@ using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System.Data;
-using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -62,15 +58,17 @@ namespace Infrastructure.Repositories
             NameValueEntry neDocCd = new NameValueEntry(nameof(setKbnMstModel.DocCd), setKbnMstModel.DocCd);
             NameValueEntry neIsDeleted = new NameValueEntry(nameof(setKbnMstModel.IsDeleted), setKbnMstModel.IsDeleted);
             NameValueEntry neGenerationId = new NameValueEntry(nameof(setKbnMstModel.GenerationId), setKbnMstModel.GenerationId);
-            List<NameValueEntry> nameValueEntries = new();
-            nameValueEntries.Add(neHpId);
-            nameValueEntries.Add(neSetKbn);
-            nameValueEntries.Add(neSetKbnEdaNo);
-            nameValueEntries.Add(neSetKbnName);
-            nameValueEntries.Add(neKaCd);
-            nameValueEntries.Add(neDocCd);
-            nameValueEntries.Add(neIsDeleted);
-            nameValueEntries.Add(neGenerationId);
+            List<NameValueEntry> nameValueEntries = new()
+            {
+                neHpId,
+                neSetKbn,
+                neSetKbnEdaNo,
+                neSetKbnName,
+                neKaCd,
+                neDocCd,
+                neIsDeleted,
+                neGenerationId
+            };
             StreamEntry streamEntry = new StreamEntry(key, nameValueEntries.ToArray());
 
             _cache.StreamAdd(key, streamEntry.Values);
