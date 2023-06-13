@@ -23,7 +23,7 @@ public class KokhoSeikyuMapper : CommonReportingRequest
 
     public override int GetReportType()
     {
-        return (int)CoReportType.KokhoSokatu;
+        return (int)CoReportType.KokhoSeikyu;
     }
 
     public override string GetRowCountFieldName()
