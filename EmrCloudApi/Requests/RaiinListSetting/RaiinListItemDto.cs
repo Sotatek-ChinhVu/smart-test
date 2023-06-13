@@ -1,8 +1,8 @@
-﻿namespace Domain.Models.RaiinListSetting
+﻿namespace EmrCloudApi.Requests.RaiinListSetting
 {
-    public class RaiinListItemModel
+    public class RaiinListItemDto
     {
-        public RaiinListItemModel(int hpId, int grpId, int kbnCd, string itemCd, long seqNo, string inputName, int isExclude, bool isAddNew, int isDeleted)
+        public RaiinListItemDto(int hpId, int grpId, int kbnCd, string itemCd, long seqNo, string inputName, int isExclude, bool isAddNew, int isDeleted)
         {
             HpId = hpId;
             GrpId = grpId;
@@ -21,7 +21,7 @@
 
         public int KbnCd { get; private set; }
 
-        public string ItemCd{ get; private set; }
+        public string ItemCd { get; private set; }
 
         public long SeqNo { get; private set; }
 
@@ -32,10 +32,5 @@
         public bool IsAddNew { get; private set; }
 
         public int IsDeleted { get; private set; }
-
-        public bool CheckDefaultValue()
-        {
-            return IsAddNew && string.IsNullOrWhiteSpace(ItemCd) && IsExclude == 0;
-        }
     }
 }

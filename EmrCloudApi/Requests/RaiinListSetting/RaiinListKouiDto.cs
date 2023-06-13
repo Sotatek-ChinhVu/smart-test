@@ -1,10 +1,8 @@
-﻿using Helper.Constants;
-
-namespace Domain.Models.RaiinListSetting
+﻿namespace EmrCloudApi.Requests.RaiinListSetting
 {
-    public class RaiinListKouiModel
+    public class RaiinListKouiDto
     {
-        public RaiinListKouiModel(int hpId, int grpId, int kbnCd, long seqNo, int kouiKbnId, int isDeleted)
+        public RaiinListKouiDto(int hpId, int grpId, int kbnCd, long seqNo, int kouiKbnId, int isDeleted)
         {
             HpId = hpId;
             GrpId = grpId;
@@ -13,8 +11,6 @@ namespace Domain.Models.RaiinListSetting
             KouiKbnId = kouiKbnId;
             IsDeleted = isDeleted;
         }
-
-        public RaiinListKouiModel() { }
 
         public int HpId { get; private set; }
 
@@ -27,7 +23,5 @@ namespace Domain.Models.RaiinListSetting
         public int KouiKbnId { get; private set; }
 
         public int IsDeleted { get; private set; }
-
-        public bool IsChecked => IsDeleted == DeleteTypes.None;
     }
 }

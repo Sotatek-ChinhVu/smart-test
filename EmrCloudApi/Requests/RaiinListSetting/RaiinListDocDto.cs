@@ -1,15 +1,15 @@
-﻿namespace Domain.Models.RaiinListSetting
+﻿namespace EmrCloudApi.Requests.RaiinListSetting
 {
-    public class RaiinListFileModel
+    public class RaiinListDocDto
     {
-        public RaiinListFileModel(int hpId, int grpId, int kbnCd, int categoryCd, string categoryName, long seqNo, int isDeleted)
+        public RaiinListDocDto(int hpId, int grpId, int kbnCd, long seqNo, int categoryCd, string categoryName, int isDeleted)
         {
             HpId = hpId;
             GrpId = grpId;
             KbnCd = kbnCd;
+            SeqNo = seqNo;
             CategoryCd = categoryCd;
             CategoryName = categoryName;
-            SeqNo = seqNo;
             IsDeleted = isDeleted;
         }
 
@@ -19,21 +19,15 @@
 
         public int KbnCd { get; private set; }
 
+        public long SeqNo { get; private set; }
+
         public int CategoryCd { get; private set; }
 
         /// <summary>
-        /// FilingCategoryModel?.CategoryName
+        /// Docategory model
         /// </summary>
         public string CategoryName { get; private set; }
 
-
-        public long SeqNo { get; private set; }
-
         public int IsDeleted { get; private set; }
-
-        public bool CheckDefaultValue()
-        {
-            return HpId == 0 && CategoryCd == 0;
-        }
     }
 }
