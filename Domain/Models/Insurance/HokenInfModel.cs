@@ -231,7 +231,7 @@ namespace Domain.Models.Insurance
 
         public HokenMstModel HokenMst { get; private set; }
 
-        public bool IsHaveHokenMst { get => HokenMst != null; }
+        public bool IsHaveHokenMst { get => HokenMst != null && !HokenMst.CheckDefaultValue(); }
 
         public string HokenMstHoubetu => HokenMst != null ? HokenMst.Houbetu : string.Empty;
 

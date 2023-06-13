@@ -24,6 +24,7 @@ namespace EmrCloudApi.Presenters.SetMst
             ReorderSetMstStatus.InvalidDragSetCd => ResponseMessage.InvalidDragSetCd,
             ReorderSetMstStatus.InvalidDropSetCd => ResponseMessage.InvalidDropSetCd,
             ReorderSetMstStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+            ReorderSetMstStatus.MedicalScreenLocked => ResponseMessage.MedicalScreenLocked,
             _ => string.Empty
         };
     }

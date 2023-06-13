@@ -90,6 +90,7 @@
         public const string ReceiptCheck = "ReceiptCheck";
         public const string ReceiptList = "ReceiptList";
         public const string ReceiptReport = "ReceiptReport";
+        public const string AccountingReport = "AccountingReport";
         public const string PeriodReceiptReport = "PeriodReceiptReport";
         public const string StaticReport = "StaticReport";
         public const string PatientManagement = "PatientManagement";
@@ -112,6 +113,8 @@
         public const string SearchPatientInfoByPtNum = "SearchPatientInfoByPtNum";
         public const string GetTokkiMstList = "GetTokkiMstList";
         public const string DeletePatientInfo = "DeletePatientInfo";
+        public const string CheckValidSamePatient = "CheckValidSamePatient";
+        public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -223,6 +226,7 @@
         public const string CheckLockMedicalExamination = "CheckLockMedicalExamination";
         public const string GetPermissionByScreen = "GetPermissionByScreen";
         public const string GetAllPermission = "GetAllPermission";
+        public const string GetListUserByCurrentUser = "GetListUserByCurrentUser";
         public const string GetListJobMst = "GetListJobMst";
 
         //PtGroupMst 
@@ -325,6 +329,7 @@
         public const string RemoveAllLock = "RemoveAllLock";
         public const string ExtendTtl = "ExtendTtl";
         public const string GetLockInfo = "GetLockInfo";
+        public const string CheckLockVisiting = "CheckLockVisiting";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
@@ -347,5 +352,7 @@
 
         //NextOrder
         public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
+
+        public const string Test = "Test";
     }
 }

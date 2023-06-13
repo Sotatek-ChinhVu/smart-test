@@ -1,38 +1,14 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class ReceiptReportRequest
+public class ReceiptReportRequest : ReportRequestBase
 {
-    public ReceiptReportRequest(int hpId, long ptId, int startDate, int endDate, List<long> raiinNos, int hokenId, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn, bool hokenSeikyu, bool jihiSeikyu, bool nyukinBase, int hakkoDay, string memo, int printType, string formFileName)
-    {
-        HpId = hpId;
-        PtId = ptId;
-        StartDate = startDate;
-        EndDate = endDate;
-        RaiinNos = raiinNos;
-        HokenId = hokenId;
-        MiseisanKbn = miseisanKbn;
-        SaiKbn = saiKbn;
-        MisyuKbn = misyuKbn;
-        SeikyuKbn = seikyuKbn;
-        HokenKbn = hokenKbn;
-        HokenSeikyu = hokenSeikyu;
-        JihiSeikyu = jihiSeikyu;
-        NyukinBase = nyukinBase;
-        HakkoDay = hakkoDay;
-        Memo = memo;
-        PrintType = printType;
-        FormFileName = formFileName;
-    }
-
-    public int HpId { get; set; }
-
     public long PtId { get; set; }
 
     public int StartDate { get; set; }
 
     public int EndDate { get; set; }
 
-    public List<long> RaiinNos { get; set; }
+    public List<long> RaiinNos { get; set; } = new();
 
     public int HokenId { get; set; }
 
@@ -54,9 +30,9 @@ public class ReceiptReportRequest
 
     public int HakkoDay { get; set; }
 
-    public string Memo { get; set; }
+    public string Memo { get; set; } = string.Empty;
 
     public int PrintType { get; set; }
 
-    public string FormFileName { get; set; }
+    public string FormFileName { get; set; } = string.Empty;
 }

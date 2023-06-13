@@ -14,6 +14,8 @@ namespace Domain.Models.RaiinListSetting
             IsDeleted = isDeleted;
         }
 
+        public RaiinListKouiModel() { }
+
         public int HpId { get; private set; }
 
         public int GrpId { get; private set; }

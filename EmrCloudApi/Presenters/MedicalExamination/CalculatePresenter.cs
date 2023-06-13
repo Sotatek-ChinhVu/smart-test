@@ -24,6 +24,9 @@ namespace EmrCloudApi.Presenters.MedicalExamination
                 case CalculateStatus.Failed:
                     Result.Message = ResponseMessage.Failed;
                     break;
+                case CalculateStatus.MedicalScreenLocked:
+                    Result.Message = ResponseMessage.MedicalScreenLocked;
+                    break;
             }
         }
     }

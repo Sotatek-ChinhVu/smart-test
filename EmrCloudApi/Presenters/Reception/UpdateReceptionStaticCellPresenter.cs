@@ -26,6 +26,7 @@ public class UpdateReceptionStaticCellPresenter : IUpdateReceptionStaticCellOutp
         UpdateReceptionStaticCellStatus.InvalidSinDate => ResponseMessage.UpdateReceptionStaticCellInvalidSinDate,
         UpdateReceptionStaticCellStatus.InvalidRaiinNo => ResponseMessage.UpdateReceptionStaticCellInvalidRaiinNo,
         UpdateReceptionStaticCellStatus.InvalidPtId => ResponseMessage.UpdateReceptionStaticCellInvalidPtId,
+        UpdateReceptionStaticCellStatus.MedicalScreenLocked => ResponseMessage.MedicalScreenLocked,
         _ => ResponseMessage.UpdateReceptionStaticCellUnknownError
     };
 

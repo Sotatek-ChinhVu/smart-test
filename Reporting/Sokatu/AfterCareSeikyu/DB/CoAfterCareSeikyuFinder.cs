@@ -58,10 +58,10 @@ public class CoAfterCareSeikyuFinder : RepositoryBase, ICoAfterCareSeikyuFinder
 
         //請求区分
         List<int> Codes = new();
-        if (seikyuType.IsNormal) Codes.Add(SeikyuKbn.Normal);
-        if (seikyuType.IsDelay) Codes.Add(SeikyuKbn.Delay);
-        if (seikyuType.IsHenrei) Codes.Add(SeikyuKbn.Henrei);
-        if (seikyuType.IsOnline) Codes.Add(SeikyuKbn.Online);
+        if (seikyuType.IsNormal) Codes.Add(Helper.Constants.SeikyuKbn.Normal);
+        if (seikyuType.IsDelay) Codes.Add(Helper.Constants.SeikyuKbn.Delay);
+        if (seikyuType.IsHenrei) Codes.Add(Helper.Constants.SeikyuKbn.Henrei);
+        if (seikyuType.IsOnline) Codes.Add(Helper.Constants.SeikyuKbn.Online);
 
         if (seikyuType.IsPaper)
         {

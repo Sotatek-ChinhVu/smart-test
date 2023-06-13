@@ -1,7 +1,9 @@
 ﻿using Domain.Models.CalculateModel;
 using Helper.Enum;
+using Infrastructure.Interfaces;
 using Interactor.CalculateService;
 using Newtonsoft.Json;
+using System.Net.Http;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
@@ -15,10 +17,12 @@ namespace EmrCloudApi.Services
     {
         private static HttpClient _httpClient = new HttpClient();
         private readonly IConfiguration _configuration;
+        private readonly ITenantProvider _tenantProvider;
 
-        public CalculateService(IConfiguration configuration)
+        public CalculateService(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ITenantProvider tenantProvider)
         {
             _configuration = configuration;
+            _tenantProvider = tenantProvider;
         }
 
         public async Task<CalculateResponse> CallCalculate(CalculateApiPath path, object inputData)
@@ -56,8 +60,9 @@ namespace EmrCloudApi.Services
 
             try
             {
+                var httpMessage = new HttpRequestMessage();
+                content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
                 var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
-
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
@@ -221,6 +226,5 @@ namespace EmrCloudApi.Services
                 return new();
             }
         }
-
     }
 }

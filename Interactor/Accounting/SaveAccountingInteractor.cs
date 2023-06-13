@@ -1,8 +1,10 @@
 ﻿using Domain.Models.Accounting;
 using Domain.Models.HpInf;
+using Domain.Models.Lock;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Domain.Models.User;
+using Helper.Constants;
 using UseCase.Accounting.SaveAccounting;
 
 namespace Interactor.Accounting
@@ -14,14 +16,16 @@ namespace Interactor.Accounting
         private readonly IUserRepository _userRepository;
         private readonly IHpInfRepository _hpInfRepository;
         private readonly IPatientInforRepository _patientInforRepository;
+        private readonly ILockRepository _lockRepository;
 
-        public SaveAccountingInteractor(IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository)
+        public SaveAccountingInteractor(IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, ILockRepository lockRepository)
         {
             _accountingRepository = accountingRepository;
             _systemConfRepository = systemConfRepository;
             _userRepository = userRepository;
             _hpInfRepository = hpInfRepository;
             _patientInforRepository = patientInforRepository;
+            _lockRepository = lockRepository;
         }
 
         public SaveAccountingOutputData Handle(SaveAccountingInputData inputData)
@@ -68,6 +72,7 @@ namespace Interactor.Accounting
                                                                 inputData.PayType, inputData.Comment, inputData.IsDisCharged, inputData.KaikeiTime);
                 if (save)
                 {
+                    _lockRepository.RemoveLock(inputData.HpId, FunctionCode.Accounting, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.UserId);
                     return new SaveAccountingOutputData(SaveAccountingStatus.Success);
                 }
                 else
@@ -82,6 +87,7 @@ namespace Interactor.Accounting
                 _userRepository.ReleaseResource();
                 _hpInfRepository.ReleaseResource();
                 _patientInforRepository.ReleaseResource();
+                _lockRepository.ReleaseResource();
             }
         }
 

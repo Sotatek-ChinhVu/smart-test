@@ -2,6 +2,10 @@
 
 public class SaveSetMstRequest
 {
+    public long PtId { get; set; }
+
+    public long RaiinNo { get; set; }
+
     public int SinDate { get; set; }
 
     public int SetCd { get; set; } = 0;
