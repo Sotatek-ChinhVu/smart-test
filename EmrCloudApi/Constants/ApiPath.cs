@@ -227,6 +227,7 @@
         public const string GetPermissionByScreen = "GetPermissionByScreen";
         public const string GetAllPermission = "GetAllPermission";
         public const string GetListUserByCurrentUser = "GetListUserByCurrentUser";
+        public const string SaveListUserMst = "SaveListUserMst";
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";

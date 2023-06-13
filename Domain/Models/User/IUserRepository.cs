@@ -26,7 +26,7 @@ namespace Domain.Models.User
 
         int MaxUserId();
 
-        UserMstModel? GetByUserId(int userId);
+        UserMstModel GetByUserId(int userId);
 
         UserMstModel GetByUserId(int userId, int sinDate);
 
@@ -62,6 +62,14 @@ namespace Domain.Models.User
 
         List<UserMstModel> GetUsersByCurrentUser(int hpId, int currentUser);
 
+        bool SaveListUserMst(int hpId, List<UserMstModel> users, int currentUser);
+
         bool GetShowRenkeiCd1ColumnSetting();
+
+        bool UserIdIsExistInDb(int userId);
+
+        List<int> ListDepartmentValid(int hpId);
+
+        List<int> ListJobCdValid(int hpId);
     }
 }

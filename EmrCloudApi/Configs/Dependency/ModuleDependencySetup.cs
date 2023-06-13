@@ -606,6 +606,7 @@ using Reporting.Sokatu.Syaho.DB;
 using Interactor.SetMst.CommonSuperSet;
 using Reporting.Sokatu.WelfareSeikyu.DB;
 using UseCase.User.GetListUserByCurrentUser;
+using UseCase.User.SaveListUserMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -892,6 +893,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
             busBuilder.RegisterUseCase<GetAllPermissionInputData, GetAllPermissionInteractor>();
             busBuilder.RegisterUseCase<GetListUserByCurrentUserInputData, GetListUserByCurrentUserInteractor>();
+            busBuilder.RegisterUseCase<SaveListUserMstInputData, SaveListUserMstInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
