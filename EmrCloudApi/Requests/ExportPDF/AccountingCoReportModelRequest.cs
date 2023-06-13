@@ -1,11 +1,9 @@
-﻿using Reporting.Accounting.Model;
-using Reporting.CommonMasters.Enums;
+﻿using Reporting.CommonMasters.Enums;
 
 namespace EmrCloudApi.Requests.ExportPDF;
 
-public class AccountingCoReportModelRequest
+public class AccountingCoReportModelRequest : ReportRequestBase
 {
-    public int HpId { get; set; }
 
     public ConfirmationMode Mode { get; set; }
 

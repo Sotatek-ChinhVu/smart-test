@@ -91,9 +91,9 @@ public class ReportService : IReportService
     }
 
     //Byomei
-    public CommonReportingRequestModel GetByomeiReportingData(long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds)
+    public CommonReportingRequestModel GetByomeiReportingData(int hpId, long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds)
     {
-        return _byomeiService.GetByomeiReportingData(ptId, fromDay, toDay, tenkiIn, hokenIds);
+        return _byomeiService.GetByomeiReportingData(hpId, ptId, fromDay, toDay, tenkiIn, hokenIds);
     }
 
     //Karte1

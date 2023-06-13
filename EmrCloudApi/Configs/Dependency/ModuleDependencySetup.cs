@@ -460,6 +460,7 @@ using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
 using UseCase.RaiinListSetting.GetDocCategory;
 using UseCase.RaiinListSetting.GetFilingcategory;
 using UseCase.RaiinListSetting.GetRaiiinListSetting;
+using UseCase.RaiinListSetting.SaveRaiinListSetting;
 using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
@@ -605,6 +606,8 @@ using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Interactor.SetMst.CommonSuperSet;
 using Reporting.Sokatu.WelfareSeikyu.DB;
+using Reporting.Byomei.DB;
+using UseCase.User.GetListUserByCurrentUser;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -874,6 +877,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinListSettingRepository, RaiinListSettingRepository>();
             services.AddTransient<ICommonSuperSet, CommonSuperSet>();
             services.AddTransient<ICoKarte1Finder, CoKarte1Finder>();
+            services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -889,6 +893,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckedLockMedicalExaminationInputData, CheckedLockMedicalExaminationInteractor>();
             busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
             busBuilder.RegisterUseCase<GetAllPermissionInputData, GetAllPermissionInteractor>();
+            busBuilder.RegisterUseCase<GetListUserByCurrentUserInputData, GetListUserByCurrentUserInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
@@ -1353,6 +1358,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDocCategoryRaiinInputData, GetDocCategoryRaiinInteractor>();
             busBuilder.RegisterUseCase<GetFilingcategoryInputData, GetFilingcategoryInteractor>();
             busBuilder.RegisterUseCase<GetRaiiinListSettingInputData, GetRaiiinListSettingInteractor>();
+            busBuilder.RegisterUseCase<SaveRaiinListSettingInputData, SaveRaiinListSettingInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

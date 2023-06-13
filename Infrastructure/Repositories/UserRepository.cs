@@ -3,9 +3,9 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constant;
 using Helper.Constants;
-using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using static Helper.Constants.UserConst;
 
@@ -390,6 +390,54 @@ namespace Infrastructure.Repositories
                 return GetPermissionTypeByCode(userPermission.Permission);
             }
             return GetDefaultPermission(permisionCode, isDoctor);
+        }
+
+        public List<UserMstModel> GetUsersByCurrentUser(int hpId, int currentUser)
+        {
+            var infoCurrent = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == currentUser);
+            if (infoCurrent is null) return new List<UserMstModel>();
+
+            IQueryable<UserMst> listUsers = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId &&
+                                                                            u.IsDeleted != 1 &&
+                                                                            u.ManagerKbn <= infoCurrent.ManagerKbn);
+
+            IQueryable<UserPermission> listUserPermission = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId);
+
+            var queryFinal = (from user in listUsers
+                             join userPermission in listUserPermission on user.UserId equals userPermission.UserId into listUserPer
+                             select new
+                             {
+                                 User = user,
+                                 Permissions = listUserPer
+                             }).ToList();
+
+            return queryFinal.Select(x => new UserMstModel(x.User.HpId,
+                                                          x.User.Id,
+                                                          x.User.UserId,
+                                                          x.User.JobCd,
+                                                          x.User.ManagerKbn,
+                                                          x.User.KaId,
+                                                          x.User.Sname ?? string.Empty,
+                                                          x.User.KanaName ?? string.Empty,
+                                                          x.User.Name ?? string.Empty,
+                                                          x.User.Sname ?? string.Empty,
+                                                          x.User.LoginId ?? string.Empty,
+                                                          x.User.LoginPass ?? string.Empty,
+                                                          x.User.MayakuLicenseNo ?? string.Empty,
+                                                          x.User.StartDate,
+                                                          x.User.EndDate,
+                                                          x.User.SortNo,
+                                                          x.User.IsDeleted,
+                                                          x.User.RenkeiCd1 ?? string.Empty,
+                                                          x.User.DrName ?? string.Empty,
+                                                          x.Permissions.Select(p => new UserPermissionModel(p.HpId, p.UserId, p.FunctionCd, p.Permission, false)).ToList()))
+                                                     .OrderBy(item => item.SortNo).ToList();
+        }
+
+        public bool GetShowRenkeiCd1ColumnSetting()
+        {
+            var renkeiMst = NoTrackingDataContext.RenkeiMsts.FirstOrDefault(u => u.RenkeiId == 2016);
+            return renkeiMst != null && renkeiMst.IsInvalid == 0;
         }
 
         private PermissionType GetPermissionTypeByCode(int code)

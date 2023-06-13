@@ -1,9 +1,7 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF
 {
-    public class Sta1001Request
+    public class Sta1001Request : ReportRequestBase
     {
-        public int HpId { get; set; }
-
         public int MenuId { get; set; }
 
         public int DateFrom { get; set; }

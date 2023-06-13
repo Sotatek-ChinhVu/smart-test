@@ -5,12 +5,14 @@ using EmrCloudApi.Requests.User;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.User;
 using EmrCloudApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.Create;
 using UseCase.User.GetAllPermission;
 using UseCase.User.GetList;
+using UseCase.User.GetListUserByCurrentUser;
 using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.UpsertList;
 
@@ -85,15 +87,15 @@ public class UserController : AuthorizeControllerBase
         return new ActionResult<Response<GetPermissionByScreenResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.GetAllPermission)]
-    public ActionResult<Response<GetAllPermissionResponse>> GetAllPermission()
+    [HttpGet(ApiPath.GetListUserByCurrentUser)]
+    public ActionResult<Response<GetListUserByCurrentUserResponse>> GetListUserByCurrentUser()
     {
-        var input = new GetAllPermissionInputData(HpId, UserId);
+        var input = new GetListUserByCurrentUserInputData(HpId, UserId);
         var output = _bus.Handle(input);
-        var presenter = new GetAllPermissionPresenter();
+        var presenter = new GetListUserByCurrentUserPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetAllPermissionResponse>>(presenter.Result);
+        return new ActionResult<Response<GetListUserByCurrentUserResponse>>(presenter.Result);
     }
 
     private static UserMstModel UserInfoRequestToModel(UserInfoRequest userInfoRequest, int HpId)
