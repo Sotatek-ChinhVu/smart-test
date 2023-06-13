@@ -4,22 +4,30 @@ using Domain.Models.SetKbnMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
-using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace Infrastructure.Repositories
 {
     public class SetKbnMstRepository : RepositoryBase, ISetKbnMstRepository
     {
-        private readonly IMemoryCache _memoryCache;
-        public SetKbnMstRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
+        private readonly string key;
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
+        public SetKbnMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
-            _memoryCache = memoryCache;
+            key = GetCacheKey() + "SetKbn";
+            _configuration = configuration;
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            RedisConnectorHelper.RedisHost = connection;
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
 
         private IEnumerable<SetKbnMstModel> ReloadCache()
@@ -36,66 +44,71 @@ namespace Infrastructure.Repositories
                         s.GenerationId
                     )
                   ).ToList();
-            var key = GetCacheKey();
             foreach (var item in setKbnMstList)
             {
-                SetEachFieldForModel(item, key);
+                SetEachFieldForModel(item);
             }
-
-            //var cacheEntryOptions = new MemoryCacheEntryOptions()
-            //        .SetPriority(CacheItemPriority.Normal);
-            //_memoryCache.Set(GetCacheKey(), setKbnMstList, cacheEntryOptions);
 
             return setKbnMstList;
         }
 
-        private void SetEachFieldForModel(SetKbnMstModel setKbnMstModel, string key)
+        private void SetEachFieldForModel(SetKbnMstModel setKbnMstModel)
         {
-            key = key + "SuperSet";
-            var cache = RedisConnectorHelper.Connection.GetDatabase();
-            cache.StreamAdd(key, nameof(setKbnMstModel.HpId), setKbnMstModel.HpId);
-            cache.StreamAdd(key, nameof(setKbnMstModel.SetKbn), setKbnMstModel.SetKbn);
-            cache.StreamAdd(key, nameof(setKbnMstModel.SetKbnEdaNo), setKbnMstModel.SetKbnEdaNo);
-            cache.StreamAdd(key, nameof(setKbnMstModel.SetKbnName), setKbnMstModel.SetKbnName);
-            cache.StreamAdd(key, nameof(setKbnMstModel.KaCd), setKbnMstModel.KaCd);
-            cache.StreamAdd(key, nameof(setKbnMstModel.DocCd), setKbnMstModel.DocCd);
-            cache.StreamAdd(key, nameof(setKbnMstModel.IsDeleted), setKbnMstModel.IsDeleted);
-            cache.StreamAdd(key, nameof(setKbnMstModel.GenerationId), setKbnMstModel.GenerationId);
+            NameValueEntry neHpId = new NameValueEntry(nameof(setKbnMstModel.HpId), setKbnMstModel.HpId);
+            NameValueEntry neSetKbn = new NameValueEntry(nameof(setKbnMstModel.SetKbn), setKbnMstModel.SetKbn);
+            NameValueEntry neSetKbnEdaNo = new NameValueEntry(nameof(setKbnMstModel.SetKbnEdaNo), setKbnMstModel.SetKbnEdaNo);
+            NameValueEntry neSetKbnName = new NameValueEntry(nameof(setKbnMstModel.SetKbnName), setKbnMstModel.SetKbnName);
+            NameValueEntry neKaCd = new NameValueEntry(nameof(setKbnMstModel.KaCd), setKbnMstModel.KaCd);
+            NameValueEntry neDocCd = new NameValueEntry(nameof(setKbnMstModel.DocCd), setKbnMstModel.DocCd);
+            NameValueEntry neIsDeleted = new NameValueEntry(nameof(setKbnMstModel.IsDeleted), setKbnMstModel.IsDeleted);
+            NameValueEntry neGenerationId = new NameValueEntry(nameof(setKbnMstModel.GenerationId), setKbnMstModel.GenerationId);
+            List<NameValueEntry> nameValueEntries = new();
+            nameValueEntries.Add(neHpId);
+            nameValueEntries.Add(neSetKbn);
+            nameValueEntries.Add(neSetKbnEdaNo);
+            nameValueEntries.Add(neSetKbnName);
+            nameValueEntries.Add(neKaCd);
+            nameValueEntries.Add(neDocCd);
+            nameValueEntries.Add(neIsDeleted);
+            nameValueEntries.Add(neGenerationId);
+            StreamEntry streamEntry = new StreamEntry(key, nameValueEntries.ToArray());
+
+            _cache.StreamAdd(key, streamEntry.Values);
         }
 
-        private IEnumerable<SetKbnMstModel> ReadCache(string key)
+        private IEnumerable<SetKbnMstModel> ReadCache()
         {
-            var cache = RedisConnectorHelper.Connection.GetDatabase();
-            var results = cache.StreamRange(key);
-            IEnumerable<SetKbnMstModel> result = new HashSet<SetKbnMstModel>();
+            var results = _cache.StreamRange(key);
+            List<SetKbnMstModel> datas = new();
             foreach (var result in results)
             {
-                foreach (var value in result.Values)
-                {
-                    var hpId = 0;
-                    var setKbn = 0;
-                    var setKbnEdaNo = 0;
-                    var setKbnName = string.Empty;
-                    var kaCd = 0;
-                    var docCd = 0;
-                    var isDeleted = 0;
-                    var generationId = 0;
-                    if (value.Name == "HpId")
-                    {
-                        hpId
-                    }
-                }
+                var values = result.Values.ToList();
+                var hpId = values.FirstOrDefault().Value.AsInteger();
+                var setKbn = values.Skip(1).FirstOrDefault().Value.AsInteger();
+                var setKbnEdaNo = values.Skip(2).FirstOrDefault().Value.AsInteger();
+                var setKbnName = values.Skip(3).FirstOrDefault().Value.AsString();
+                var kaCd = values.Skip(4).FirstOrDefault().Value.AsInteger();
+                var docCd = values.Skip(5).FirstOrDefault().Value.AsInteger();
+                var isDeleted = values.Skip(6).FirstOrDefault().Value.AsInteger();
+                var generationId = values.Skip(7).FirstOrDefault().Value.AsInteger();
+                var data = new SetKbnMstModel(hpId, setKbn, setKbnEdaNo, setKbnName, kaCd, docCd, isDeleted, generationId);
+                datas.Add(data);
             }
+            return datas;
         }
 
 
-
-            public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
+        public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
         {
-            //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetKbnMstModel>? setKbnMstList))
-            //{
-            var setKbnMstList = ReloadCache();
-            //}
+            var setKbnMstList = Enumerable.Empty<SetKbnMstModel>();
+            if (!_cache.KeyExists(key))
+            {
+                setKbnMstList = ReloadCache();
+            }
+            else
+            {
+                setKbnMstList = ReadCache();
+            }
 
             return setKbnMstList!.Where(s => s.HpId == hpId && s.SetKbn >= setKbnFrom && s.SetKbn <= setKbnTo && s.IsDeleted == 0).OrderBy(s => s.SetKbn).ToList();
         }
@@ -147,10 +160,10 @@ namespace Infrastructure.Repositories
                 }
             }
             var check = TrackingDataContext.SaveChanges() > 0;
-            //if (check)
-            //{
-            //    _memoryCache.Remove(GetCacheKey());
-            //}
+            if (check)
+            {
+                _cache.KeyDelete(key);
+            }
             return check;
         }
 

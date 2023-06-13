@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,13 @@ namespace Helper.Redis
 {
     public class RedisConnectorHelper
     {
+        public static string RedisHost = string.Empty;
+
         static RedisConnectorHelper()
         {
             RedisConnectorHelper.lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
             {
-                return ConnectionMultiplexer.Connect("localhost");
+                return ConnectionMultiplexer.Connect(RedisHost);
             });
         }
 
