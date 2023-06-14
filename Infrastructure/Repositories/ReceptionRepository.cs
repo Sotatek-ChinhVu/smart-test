@@ -544,10 +544,10 @@ namespace Infrastructure.Repositories
         {
             var result = NoTrackingDataContext.RaiinInfs
                             .Where(p => p.HpId == hpId &&
-                                                           p.PtId == ptId &&
-                                                           p.IsDeleted == DeleteTypes.None &&
-                                                           p.Status >= RaiinState.TempSave &&
-                                                           (sinDate <= 0 || p.SinDate < sinDate))
+                                        p.PtId == ptId &&
+                                        p.IsDeleted == DeleteTypes.None &&
+                                        p.Status >= RaiinState.TempSave &&
+                                        (sinDate <= 0 || p.SinDate < sinDate))
                             .OrderByDescending(p => p.SinDate)
                             .ThenByDescending(p => p.RaiinNo)
                             .FirstOrDefault();

@@ -608,6 +608,7 @@ using Interactor.SetMst.CommonSuperSet;
 using Reporting.Sokatu.WelfareSeikyu.DB;
 using Reporting.Byomei.DB;
 using UseCase.User.GetListUserByCurrentUser;
+using UseCase.MedicalExamination.GetHeaderVistitDate;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1027,6 +1028,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetContainerMstInputData, GetContainerMstInteractor>();
             busBuilder.RegisterUseCase<GetSinkouCountInMonthInputData, GetSinkouCountInMonthInteractor>();
             busBuilder.RegisterUseCase<CheckNextOrdHaveOdrInputData, CheckNextOrdHaveInteractor>();
+            busBuilder.RegisterUseCase<GetHeaderVistitDateInputData, GetHeaderVistitDateInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

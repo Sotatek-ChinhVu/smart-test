@@ -16,16 +16,16 @@ namespace EmrCloudApi.Requests.SpecialNote
         public List<PtOtherDrugRequest> OtherDrugItems { get; set; } = new List<PtOtherDrugRequest>();
         public List<PtOtcDrugRequest> OtcDrugItems { get; set; } = new List<PtOtcDrugRequest>();
         public List<PtSuppleRequest> SuppleItems { get; set; } = new List<PtSuppleRequest>();
-        public ImportantNoteModel Map()
+        public ImportantNoteModel Map(int hpId)
         {
-            return new ImportantNoteModel(AlrgyFoodItems.Select(x => x.Map()).ToList(),
-                AlrgyElseItems.Select(x => x.Map()).ToList(),
-                AlrgyDrugItems.Select(x => x.Map()).ToList(),
-                KioRekiItems.Select(x => x.Map()).ToList(),
-                InfectionsItems.Select(x => x.Map()).ToList(),
-                OtherDrugItems.Select(x => x.Map()).ToList(),
-                OtcDrugItems.Select(x => x.Map()).ToList(),
-                SuppleItems.Select(x => x.Map()).ToList());
+            return new ImportantNoteModel(AlrgyFoodItems.Select(x => x.Map(hpId)).ToList(),
+                AlrgyElseItems.Select(x => x.Map(hpId)).ToList(),
+                AlrgyDrugItems.Select(x => x.Map(hpId)).ToList(),
+                KioRekiItems.Select(x => x.Map(hpId)).ToList(),
+                InfectionsItems.Select(x => x.Map(hpId)).ToList(),
+                OtherDrugItems.Select(x => x.Map(hpId)).ToList(),
+                OtcDrugItems.Select(x => x.Map(hpId)).ToList(),
+                SuppleItems.Select(x => x.Map(hpId)).ToList());
         }
     }
     public class PtAlrgyFoodRequest
@@ -49,9 +49,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public string Cmt { get; set; } = String.Empty;
 
         public int IsDeleted { get; set; }
-        public PtAlrgyFoodModel Map()
+        public PtAlrgyFoodModel Map(int hpId)
         {
-            return new PtAlrgyFoodModel(HpId, PtId, SeqNo, SortNo, AlrgyKbn, StartDate, EndDate, Cmt, IsDeleted, FoodName);
+            return new PtAlrgyFoodModel(hpId, PtId, SeqNo, SortNo, AlrgyKbn, StartDate, EndDate, Cmt, IsDeleted, FoodName);
         }
     }
     public class PtAlrgyElseRequest
@@ -73,9 +73,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public string Cmt { get; set; } = String.Empty;
 
         public int IsDeleted { get; set; }
-        public PtAlrgyElseModel Map()
+        public PtAlrgyElseModel Map(int hpId)
         {
-            return new PtAlrgyElseModel(HpId, PtId, SeqNo, SortNo, AlrgyName, StartDate, EndDate, Cmt, IsDeleted);
+            return new PtAlrgyElseModel(hpId, PtId, SeqNo, SortNo, AlrgyName, StartDate, EndDate, Cmt, IsDeleted);
         }
     }
     public class PtAlrgyDrugRequest
@@ -99,9 +99,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public string Cmt { get; set; } = String.Empty;
 
         public int IsDeleted { get; set; }
-        public PtAlrgyDrugModel Map()
+        public PtAlrgyDrugModel Map(int hpId)
         {
-            return new PtAlrgyDrugModel(HpId, PtId, SeqNo, SortNo, ItemCd, DrugName, StartDate, EndDate, Cmt, IsDeleted);
+            return new PtAlrgyDrugModel(hpId, PtId, SeqNo, SortNo, ItemCd, DrugName, StartDate, EndDate, Cmt, IsDeleted);
         }
     }
     public class PtKioRekiRequest
@@ -125,9 +125,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public string Cmt { get; set; } = String.Empty;
 
         public int IsDeleted { get; set; }
-        public PtKioRekiModel Map()
+        public PtKioRekiModel Map(int hpId)
         {
-            return new PtKioRekiModel(HpId, PtId, SeqNo, SortNo, ByomeiCd, ByotaiCd, Byomei, StartDate, Cmt, IsDeleted);
+            return new PtKioRekiModel(hpId, PtId, SeqNo, SortNo, ByomeiCd, ByotaiCd, Byomei, StartDate, Cmt, IsDeleted);
         }
     }
     public class PtInfectionRequest
@@ -151,9 +151,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public string Cmt { get; set; } = String.Empty;
 
         public int IsDeleted { get; set; }
-        public PtInfectionModel Map()
+        public PtInfectionModel Map(int hpId)
         {
-            return new PtInfectionModel(HpId, PtId, SeqNo, SortNo, ByomeiCd, ByotaiCd, Byomei, StartDate, Cmt, IsDeleted);
+            return new PtInfectionModel(hpId, PtId, SeqNo, SortNo, ByomeiCd, ByotaiCd, Byomei, StartDate, Cmt, IsDeleted);
         }
     }
     public class PtOtherDrugRequest
@@ -177,9 +177,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public string Cmt { get; set; } = String.Empty;
 
         public int IsDeleted { get; set; }
-        public PtOtherDrugModel Map()
+        public PtOtherDrugModel Map(int hpId)
         {
-            return new PtOtherDrugModel(HpId, PtId, SeqNo, SortNo, ItemCd, DrugName, StartDate, EndDate, Cmt, IsDeleted);
+            return new PtOtherDrugModel(hpId, PtId, SeqNo, SortNo, ItemCd, DrugName, StartDate, EndDate, Cmt, IsDeleted);
         }
     }
     public class PtOtcDrugRequest
@@ -203,9 +203,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public string Cmt { get; set; } = String.Empty;
 
         public int IsDeleted { get; set; }
-        public PtOtcDrugModel Map()
+        public PtOtcDrugModel Map(int hpId)
         {
-            return new PtOtcDrugModel(HpId, PtId, SeqNo, SortNo, SerialNum, TradeName, StartDate, EndDate, Cmt, IsDeleted);
+            return new PtOtcDrugModel(hpId, PtId, SeqNo, SortNo, SerialNum, TradeName, StartDate, EndDate, Cmt, IsDeleted);
         }
     }
     public class PtSuppleRequest
@@ -229,9 +229,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public string Cmt { get; set; } = String.Empty;
 
         public int IsDeleted { get; set; }
-        public PtSuppleModel Map()
+        public PtSuppleModel Map(int hpId)
         {
-            return new PtSuppleModel(HpId, PtId, SeqNo, SortNo, IndexCd, IndexWord, StartDate, EndDate, Cmt, IsDeleted);
+            return new PtSuppleModel(hpId, PtId, SeqNo, SortNo, IndexCd, IndexWord, StartDate, EndDate, Cmt, IsDeleted);
         }
     }
 }
