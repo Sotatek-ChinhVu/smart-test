@@ -68,8 +68,8 @@ namespace Infrastructure.Repositories
         {
             KarteFilterMstModel karteFilter = GetFilter(hpId, userId, filterId);
             List<int> hokenPidListByCondition = GetHokenPidListByCondition(hpId, ptId, isDeleted, karteFilter);
-            var raiinGets = raiinNos.Where(r => r.Item2).Select(r => r.Item1).ToList();
-            var raiinNoAll = raiinNos.Select(r => r.Item1).ToList();
+            var raiinGets = raiinNos.Where(r => r.Item2).Select(r => r.Item1).Distinct().ToList();
+            var raiinNoAll = raiinNos.Select(r => r.Item1).Distinct().ToList();
 
             //Filter RaiinInf by condition.
             IQueryable<RaiinInf> raiinInfListQueryable = NoTrackingDataContext.RaiinInfs
