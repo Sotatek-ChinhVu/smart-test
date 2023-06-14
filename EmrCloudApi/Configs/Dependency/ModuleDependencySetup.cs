@@ -608,6 +608,7 @@ using Interactor.SetMst.CommonSuperSet;
 using Reporting.Sokatu.WelfareSeikyu.DB;
 using Reporting.Byomei.DB;
 using UseCase.User.GetListUserByCurrentUser;
+using Reporting.Sokatu.KokhoSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -776,6 +777,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IP20KokhoSeikyuCoReportService, P20KokhoSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
