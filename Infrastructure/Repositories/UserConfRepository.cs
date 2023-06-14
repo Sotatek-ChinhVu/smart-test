@@ -1,10 +1,15 @@
-﻿using Domain.Models.UserConf;
+﻿using Domain.Models.SetGenerationMst;
+using Domain.Models.UserConf;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
@@ -12,7 +17,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 {
     private const int ADOPTED_CONFIRM_CD = 100005;
     private static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
-    private readonly IMemoryCache _memoryCache;
+    private readonly StackExchange.Redis.IDatabase _cache;
     private List<int> listFunctionButtonCode = new List<int> { 10, 3, 902, 922, 923, 906, 907, 14, 919, 903, 9, 905, 15, 921, 928, 19 };
     private List<int> listSuperSetButtonCode = new List<int> { 301, 302, 303, 304, 305, 306, 307, 308, 309, 310 };
     private List<int> listSuperSetButtonCodeItem = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -25,11 +30,13 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     private const int claimSagakuAtReceTimeGrpCd = 923;
     private const int noteScreenDisplayGrpCd = 919;
     private const int saveCheckGrpCd = 921;
+    private readonly string key;
 
-    public UserConfRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
+    public UserConfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _memoryCache = memoryCache;
+        key = GetCacheKey() + "SetGenerationMst";
         InitConfigDefaultValue();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
     }
 
     public List<UserConfModel> GetList(int userId, int fromGrpCd, int toGrpCd)
@@ -168,12 +175,33 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
                                     .AsEnumerable()
                                     .Select(item => ToModel(item))
                                     .ToList();
-        var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetPriority(CacheItemPriority.Normal);
-        _memoryCache.Set(GetCacheKey(), result, cacheEntryOptions);
+        var json = JsonSerializer.Serialize(result);
+        _cache.StringSet(key, json);
+
         return result;
     }
 
+    private List<UserConfModel> ReadCache()
+    {
+        var results = _cache.StringGet(key);
+        var json = results.AsString();
+        var datas = JsonSerializer.Deserialize<List<UserConfModel>>(json);
+        return datas ?? new();
+    }
+    private List<UserConfModel> GetData(int hpId, int userId, List<int> grpCodes)
+    {
+        var result = new List<UserConfModel>();
+        if (!_cache.KeyDelete(key))
+        {
+            result = ReloadCache(hpId, userId, grpCodes);
+        }
+        else
+        {
+            result = ReadCache();
+        }
+
+        return result;
+    }
 
     public List<UserConfModel> GetListUserConf(int hpId, int userId, int groupCd)
     {

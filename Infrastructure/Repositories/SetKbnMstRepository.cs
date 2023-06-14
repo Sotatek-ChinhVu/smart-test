@@ -40,11 +40,7 @@ namespace Infrastructure.Repositories
                         s.GenerationId
                     )
                   ).ToList();
-            foreach (var item in setKbnMstList)
-            {
-                SetEachFieldForModel(item);
-            }
-
+            
             return setKbnMstList;
         }
 
