@@ -50,7 +50,7 @@ namespace Interactor.Accounting
                     }
 
                     var accDue = 0;
-                    var setting = _systemConfRepository.GetSettingValue(3020, 0, 0) == 1;
+                    var setting = _systemConfRepository.GetSettingValue(3020, 0, inputData.HpId) == 1;
                     if (!setting)
                     {
                         accDue = inputData.DebitBalance;
@@ -90,7 +90,7 @@ namespace Interactor.Accounting
                     }
 
                     var accDue = 0;
-                    var setting = _systemConfRepository.GetSettingValue(3020, 0, 0) == 1;
+                    var setting = _systemConfRepository.GetSettingValue(3020, 0, inputData.HpId) == 1;
                     if (!CheckCredit(accDue, inputData.SumAdjust, inputData.ThisCredit, inputData.Wari))
                     {
                         return new CheckAccountingStatusOutputData(mbClose, validAmount, CheckAccountingStatus.ValidPaymentAmount);
