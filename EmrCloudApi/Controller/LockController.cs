@@ -31,7 +31,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.AddLock)]
         public async Task<ActionResult<Response<LockResponse>>> AddLock([FromQuery] LockRequest request)
         {
-            var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
+            var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, Token);
             var output = _bus.Handle(input);
 
             if (output.Status == AddLockStatus.Successed)
@@ -116,7 +116,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.CheckLockVisiting)]
         public ActionResult<Response<CheckLockVisitingResponse>> CheckLockVisiting([FromQuery] CheckLockVisitingRequest request)
         {
-            var input = new CheckLockVisitingInputData(HpId, UserId, request.PtId, request.SinDate, request.FunctionCode);
+            var input = new CheckLockVisitingInputData(HpId, UserId, request.PtId, request.SinDate, request.FunctionCode, Token);
             var output = _bus.Handle(input);
 
             var presenter = new CheckLockVisitingPresenter();
