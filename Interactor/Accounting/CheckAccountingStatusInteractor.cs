@@ -56,12 +56,12 @@ namespace Interactor.Accounting
                         accDue = inputData.DebitBalance;
                     }
 
-                    if (!CheckCredit(accDue, inputData.SumAdjust, inputData.ThisCredit, inputData.Wari, true))
+                    if (!CheckCredit(accDue, inputData.SumAdjust, inputData.Credit, inputData.Wari, true))
                     {
                         return new CheckAccountingStatusOutputData(mbClose, validAmount, CheckAccountingStatus.ValidPaymentAmount);
                     }
 
-                    var dateNotVerify = VerifyCredit(accDue, inputData.SumAdjust, inputData.ThisCredit, inputData.Wari, syunoSeikyusChecking, allSyunoSeikyusChecking, inputData.IsDisCharge);
+                    var dateNotVerify = VerifyCredit(accDue, inputData.SumAdjust, inputData.Credit, inputData.Wari, syunoSeikyusChecking, allSyunoSeikyusChecking, inputData.IsDisCharge);
                     if (!string.IsNullOrEmpty(dateNotVerify))
                     {
                         var mess = $"{dateNotVerify}{Environment.NewLine}{Environment.NewLine}収納一覧を開いて、請求金額を変更しますか？";
@@ -84,19 +84,19 @@ namespace Interactor.Accounting
                         return new CheckAccountingStatusOutputData(mbOk, billUpdate, CheckAccountingStatus.BillUpdated);
                     }
 
-                    if (inputData.ThisCredit < 0)
+                    if (inputData.Credit < 0)
                     {
                         return new CheckAccountingStatusOutputData(mbClose, validCredit, CheckAccountingStatus.ValidThisCredit);
                     }
 
                     var accDue = 0;
                     var setting = _systemConfRepository.GetSettingValue(3020, 0, inputData.HpId) == 1;
-                    if (!CheckCredit(accDue, inputData.SumAdjust, inputData.ThisCredit, inputData.Wari))
+                    if (!CheckCredit(accDue, inputData.SumAdjust, inputData.Credit, inputData.Wari))
                     {
                         return new CheckAccountingStatusOutputData(mbClose, validAmount, CheckAccountingStatus.ValidPaymentAmount);
                     }
 
-                    var dateNotVerify = VerifyCredit(accDue, inputData.SumAdjust, inputData.ThisCredit, inputData.Wari, syunoSeikyusChecking, allSyunoSeikyusChecking);
+                    var dateNotVerify = VerifyCredit(accDue, inputData.SumAdjust, inputData.Credit, inputData.Wari, syunoSeikyusChecking, allSyunoSeikyusChecking);
                     if (!string.IsNullOrEmpty(dateNotVerify))
                     {
 
