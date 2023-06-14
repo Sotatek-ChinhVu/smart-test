@@ -208,6 +208,7 @@
         public const string GetKensaAuditTrailLog = "GetKensaAuditTrailLog";
         public const string GetContainerMst = "GetContainerMst";
         public const string GetSinkouCountInMonth = "GetSinkouCountInMonth";
+        public const string GetHeaderVistitDate = "GetHeaderVistitDate";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
