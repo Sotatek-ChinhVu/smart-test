@@ -207,7 +207,6 @@ public class P14KokhoSeikyuCoReportService : IP14KokhoSeikyuCoReportService
                 }
                 #endregion
             }
-            _listTextData.Add(pageIndex, listDataPerPage);
 
             #region 公費負担医療（フリー枠）
             const int maxKohiRow = 7;
@@ -216,6 +215,7 @@ public class P14KokhoSeikyuCoReportService : IP14KokhoSeikyuCoReportService
             var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), fixedHoubetus);
             if (kohiHoubetus.Count == 0)
             {
+                _listTextData.Add(pageIndex, listDataPerPage);
                 _hasNextPage = false;
                 return 1;
             }
@@ -247,6 +247,7 @@ public class P14KokhoSeikyuCoReportService : IP14KokhoSeikyuCoReportService
                     break;
                 }
             }
+            _listTextData.Add(pageIndex, listDataPerPage);
             #endregion
             return 1;
         }
