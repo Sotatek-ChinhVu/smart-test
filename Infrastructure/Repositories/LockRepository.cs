@@ -12,7 +12,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId)
+        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token)
         {
             long oyaRaiinNo = 0;
             if (raiinNo > 0)
@@ -35,7 +35,7 @@ namespace Infrastructure.Repositories
 
             string rawSql =
             "INSERT INTO \"LOCK_INF\" (\"FUNCTION_CD\", \"HP_ID\", \"OYA_RAIIN_NO\", \"PT_ID\", \"RAIIN_NO\", \"SIN_DATE\", \"LOCK_DATE\", \"MACHINE\", \"USER_ID\")\r\n      " +
-            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '', {userId}) ON CONFLICT DO NOTHING;";
+            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{token}', {userId}) ON CONFLICT DO NOTHING;";
 
             return TrackingDataContext.Database.ExecuteSqlRaw(rawSql) > 0;
         }
@@ -215,16 +215,16 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public bool GetVisitingLockStatus(int hpId,int userId, long ptId, int sinDate, string functionCode)
+        public bool GetVisitingLockStatus(int hpId,int userId, long ptId, int sinDate, string functionCode, string tokenUser)
         {
-            return NoTrackingDataContext.LockInfs
-                                        .FirstOrDefault(
-                                        l => l.HpId == hpId &&
-                                        l.SinDate == sinDate &&
-                                        l.PtId == ptId &&
-                                        l.FunctionCd == functionCode &&
-                                        l.UserId == userId
-                                        ) == null;
+            var log = NoTrackingDataContext.LockInfs.FirstOrDefault(l => l.HpId == hpId 
+                                                                         &&
+                                                                         ((l.Machine == tokenUser && l.SinDate == sinDate) || (l.Machine != tokenUser))
+                                                                         &&
+                                                                         l.PtId == ptId &&
+                                                                         l.FunctionCd == functionCode &&
+                                                                         l.UserId == userId);
+            return log == null;
         }
     }
 }
