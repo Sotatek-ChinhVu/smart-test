@@ -1263,6 +1263,11 @@ namespace TenantMigration.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("IS_PINNED");
 
+                    b.Property<string>("OrderBy")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("ORDER_BY");
+
                     b.Property<int>("Width")
                         .HasColumnType("integer")
                         .HasColumnName("WIDTH");

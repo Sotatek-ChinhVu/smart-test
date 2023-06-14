@@ -1,9 +1,7 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class PeriodReceiptRequest
+public class PeriodReceiptRequest : ReportRequestBase
 {
-    public int HpId { get; set; }
-
     public int StartDate { get; set; }
 
     public int EndDate { get; set; }

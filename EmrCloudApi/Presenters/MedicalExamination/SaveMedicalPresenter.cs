@@ -23,7 +23,7 @@ public class SaveMedicalPresenter : ISaveMedicalOutputPort
 
         Result = new Response<SaveMedicalResponse>()
         {
-            Message = outputData.Status == SaveMedicalStatus.Successed ? ResponseMessage.Success : ResponseMessage.Failed,
+            Message = GetMessageCommon(outputData.Status),
             Status = (byte)outputData.Status
         };
 
@@ -439,6 +439,14 @@ public class SaveMedicalPresenter : ISaveMedicalOutputPort
           ResponseMessage.MCommonError,
         UpsertPtDiseaseListStatus.Valid =>
   ResponseMessage.Valid,
+        _ => string.Empty
+    };
+
+    private string GetMessageCommon(SaveMedicalStatus status) => status switch
+    {
+        SaveMedicalStatus.Successed => ResponseMessage.Success,
+        SaveMedicalStatus.Failed => ResponseMessage.Failed,
+        SaveMedicalStatus.MedicalScreenLocked => ResponseMessage.MedicalScreenLocked,
         _ => string.Empty
     };
 }

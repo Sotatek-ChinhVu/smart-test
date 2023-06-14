@@ -2,7 +2,6 @@
 {
     public class GetUserConfigParamRequest
     {
-        public int HpId { get; set; }
         public int UserId { get; set; }
         public List<GroupCode> GroupCodes { get; set; } = new();
     }

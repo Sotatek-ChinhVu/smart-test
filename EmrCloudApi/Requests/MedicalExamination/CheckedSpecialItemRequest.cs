@@ -5,8 +5,6 @@ namespace EmrCloudApi.Requests.MedicalExamination
 {
     public class CheckedSpecialItemRequest
     {
-        public int HpId { get; set; }
-
         public int UserId { get; set; }
 
         public long PtId { get; set; }
