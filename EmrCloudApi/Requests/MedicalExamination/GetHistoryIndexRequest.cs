@@ -10,5 +10,5 @@ public class GetHistoryIndexRequest
 
     public long RaiinNo { get; set; }
 
-    public List<long> RaiinNos { get; set; } = new List<long>();
+    public List<RaiinBookmarked> RaiinBookmarked { get; set; } = new();
 }

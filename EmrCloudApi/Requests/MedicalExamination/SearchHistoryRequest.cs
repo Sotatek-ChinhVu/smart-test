@@ -18,6 +18,6 @@
 
         public bool IsNext { get; set; }
 
-        public List<long> RaiinNos { get; set; } = new();
+        public List<RaiinBookmarked> RaiinBookmarked { get; set; } = new();
     }
 }

@@ -25,7 +25,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetList)]
         public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromBody] GetMedicalExaminationHistoryRequest request)
         {
-            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.FilterId, UserId, request.IsShowApproval, request.RaiinNos);
+            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.FilterId, UserId, request.IsShowApproval, request.RaiinBookmarked.Select(r => new Tuple<long, bool>(r.RaiinNo, r.Flag)).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new GetMedicalExaminationHistoryPresenter();
@@ -51,7 +51,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Search)]
         public ActionResult<Response<SearchHistoryResponse>> Search([FromBody] SearchHistoryRequest request)
         {
-            var input = new SearchHistoryInputData(HpId, UserId, request.PtId, request.SinDate, request.CurrentIndex, request.FilterId, request.IsDeleted, request.KeyWord, request.SearchType, request.IsNext, request.RaiinNos);
+            var input = new SearchHistoryInputData(HpId, UserId, request.PtId, request.SinDate, request.CurrentIndex, request.FilterId, request.IsDeleted, request.KeyWord, request.SearchType, request.IsNext, request.RaiinBookmarked.Select(r => new Tuple<long, bool>(r.RaiinNo, r.Flag)).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new SearchHistoryPresenter();
@@ -64,7 +64,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetHistoryIndex)]
         public ActionResult<Response<GetHistoryIndexResponse>> GetHistoryIndex([FromBody] GetHistoryIndexRequest request)
         {
-            var input = new GetHistoryIndexInputData(HpId, UserId, request.PtId, request.FilterId, request.IsDeleted, request.RaiinNo, request.RaiinNos);
+            var input = new GetHistoryIndexInputData(HpId, UserId, request.PtId, request.FilterId, request.IsDeleted, request.RaiinNo, request.RaiinBookmarked.Select(r => new Tuple<long, bool>(r.RaiinNo, r.Flag)).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new GetHistoryIndexPresenter();

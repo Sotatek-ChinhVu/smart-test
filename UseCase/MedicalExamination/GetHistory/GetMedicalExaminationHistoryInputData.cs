@@ -13,9 +13,9 @@ namespace UseCase.MedicalExamination.GetHistory
         public int DeleteConditon { get; private set; }
         public long FilterId { get; private set; }
         public int IsShowApproval { get; private set; }
-        public List<long> RaiinNos { get; private set; }
+        public List<Tuple<long, bool>> RaiinNos { get; private set; }
 
-        public GetMedicalExaminationHistoryInputData(long ptId, int hpId, int sinDate, int offset, int limit, int deleteConditon, long filterId, int userId, int isShowApproval, List<long> raiinNos)
+        public GetMedicalExaminationHistoryInputData(long ptId, int hpId, int sinDate, int offset, int limit, int deleteConditon, long filterId, int userId, int isShowApproval, List<Tuple<long, bool>> raiinNos)
         {
             PtId = ptId;
             HpId = hpId;

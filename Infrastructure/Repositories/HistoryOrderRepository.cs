@@ -64,10 +64,12 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        private IEnumerable<RaiinInf> GenerateRaiinListQuery(int hpId, int userId, long ptId, int filterId, int isDeleted, List<long> raiinNos)
+        private IEnumerable<RaiinInf> GenerateRaiinListQuery(int hpId, int userId, long ptId, int filterId, int isDeleted, List<Tuple<long, bool>> raiinNos)
         {
             KarteFilterMstModel karteFilter = GetFilter(hpId, userId, filterId);
             List<int> hokenPidListByCondition = GetHokenPidListByCondition(hpId, ptId, isDeleted, karteFilter);
+            var raiinGets = raiinNos.Where(r => r.Item2).Select(r => r.Item1).ToList();
+            var raiinNoAll = raiinNos.Select(r => r.Item1).ToList();
 
             //Filter RaiinInf by condition.
             IQueryable<RaiinInf> raiinInfListQueryable = NoTrackingDataContext.RaiinInfs
@@ -83,11 +85,11 @@ namespace Infrastructure.Repositories
             if (karteFilter.OnlyBookmark)
             {
                 raiinInfEnumerable = from raiinInf in raiinInfListQueryable
-                                     join raiinTag in NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.TagNo != 0)
+                                     join raiinTag in NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.TagNo != 0 && !raiinNoAll.Contains(r.RaiinNo) )
                                       on raiinInf.RaiinNo equals raiinTag.RaiinNo
                                      select raiinInf;
                 
-                var raiinInfEnumerableFE = from raiinInf in raiinInfListQueryable where raiinNos.Contains(raiinInf.RaiinNo) select raiinInf;
+                var raiinInfEnumerableFE = from raiinInf in raiinInfListQueryable where raiinGets.Contains(raiinInf.RaiinNo) select raiinInf;
                 raiinInfEnumerable = raiinInfEnumerable.Union(raiinInfEnumerableFE);
             }
             else
@@ -203,7 +205,7 @@ namespace Infrastructure.Repositories
         /// 2: only order
         /// <param name="isDescending"></param>
         /// <returns></returns>
-        public (int, ReceptionModel) Search(int hpId, int userId, long ptId, int sinDate, int currentIndex, int filterId, int isDeleted, string keyWord, int searchType, bool isNext, List<long> raiinNos)
+        public (int, ReceptionModel) Search(int hpId, int userId, long ptId, int sinDate, int currentIndex, int filterId, int isDeleted, string keyWord, int searchType, bool isNext, List<Tuple<long, bool>> raiinNos)
         {
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted, raiinNos);
             List<long> raiinNoList;
@@ -281,7 +283,7 @@ namespace Infrastructure.Repositories
             return GenerateResult(foundRaiinNo);
         }
 
-        public (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int offset, int limit, int filterId, int isDeleted, List<long> raiinNos, int isShowApproval = 0)
+        public (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int offset, int limit, int filterId, int isDeleted, List<Tuple<long, bool>> raiinNos, int isShowApproval = 0)
         {
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted, raiinNos);
             int totalCount = raiinInfEnumerable.Count();
@@ -384,7 +386,7 @@ namespace Infrastructure.Repositories
 
         //flag == 0 : get for accounting
         //flag == 1 : get for one rp in todayorder
-        public List<HistoryOrderModel> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiin, byte flag, List<long> raiinNos)
+        public List<HistoryOrderModel> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiin, byte flag, List<Tuple<long, bool>> raiinNos)
         {
 
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted, raiinNos);
@@ -443,7 +445,7 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.KarteFilterMsts.Any(u => u.HpId == hpId && u.UserId == userId && u.FilterId == filterId && u.IsDeleted == 0);
         }
 
-        public long GetHistoryIndex(int hpId, long ptId, long raiinNo, int userId, int filterId, int isDeleted, List<long> raiinNos)
+        public long GetHistoryIndex(int hpId, long ptId, long raiinNo, int userId, int filterId, int isDeleted, List<Tuple<long, bool>> raiinNos)
         {
             var raiinInfs = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted, raiinNos)
                                                 .OrderByDescending(r => r.SinDate)
