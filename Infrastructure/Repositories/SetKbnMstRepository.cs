@@ -9,6 +9,7 @@ using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System.Data;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
@@ -16,13 +17,9 @@ namespace Infrastructure.Repositories
     {
         private readonly string key;
         private readonly IDatabase _cache;
-        private readonly IConfiguration _configuration;
-        public SetKbnMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
+        public SetKbnMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
             key = GetCacheKey() + "SetKbn";
-            _configuration = configuration;
-            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
-            RedisConnectorHelper.RedisHost = connection;
             _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
 
@@ -40,57 +37,19 @@ namespace Infrastructure.Repositories
                         s.GenerationId
                     )
                   ).ToList();
-            
+            var json = JsonSerializer.Serialize(setKbnMstList);
+            _cache.StringSet(key, json);
+
             return setKbnMstList;
-        }
-
-        private void SetEachFieldForModel(SetKbnMstModel setKbnMstModel)
-        {
-            NameValueEntry neHpId = new NameValueEntry(nameof(setKbnMstModel.HpId), setKbnMstModel.HpId);
-            NameValueEntry neSetKbn = new NameValueEntry(nameof(setKbnMstModel.SetKbn), setKbnMstModel.SetKbn);
-            NameValueEntry neSetKbnEdaNo = new NameValueEntry(nameof(setKbnMstModel.SetKbnEdaNo), setKbnMstModel.SetKbnEdaNo);
-            NameValueEntry neSetKbnName = new NameValueEntry(nameof(setKbnMstModel.SetKbnName), setKbnMstModel.SetKbnName);
-            NameValueEntry neKaCd = new NameValueEntry(nameof(setKbnMstModel.KaCd), setKbnMstModel.KaCd);
-            NameValueEntry neDocCd = new NameValueEntry(nameof(setKbnMstModel.DocCd), setKbnMstModel.DocCd);
-            NameValueEntry neIsDeleted = new NameValueEntry(nameof(setKbnMstModel.IsDeleted), setKbnMstModel.IsDeleted);
-            NameValueEntry neGenerationId = new NameValueEntry(nameof(setKbnMstModel.GenerationId), setKbnMstModel.GenerationId);
-            List<NameValueEntry> nameValueEntries = new()
-            {
-                neHpId,
-                neSetKbn,
-                neSetKbnEdaNo,
-                neSetKbnName,
-                neKaCd,
-                neDocCd,
-                neIsDeleted,
-                neGenerationId
-            };
-            StreamEntry streamEntry = new StreamEntry(key, nameValueEntries.ToArray());
-
-            _cache.StreamAdd(key, streamEntry.Values);
         }
 
         private IEnumerable<SetKbnMstModel> ReadCache()
         {
-            var results = _cache.StreamRange(key);
-            List<SetKbnMstModel> datas = new();
-            foreach (var result in results)
-            {
-                var values = result.Values.ToList();
-                var hpId = values.FirstOrDefault().Value.AsInteger();
-                var setKbn = values.Skip(1).FirstOrDefault().Value.AsInteger();
-                var setKbnEdaNo = values.Skip(2).FirstOrDefault().Value.AsInteger();
-                var setKbnName = values.Skip(3).FirstOrDefault().Value.AsString();
-                var kaCd = values.Skip(4).FirstOrDefault().Value.AsInteger();
-                var docCd = values.Skip(5).FirstOrDefault().Value.AsInteger();
-                var isDeleted = values.Skip(6).FirstOrDefault().Value.AsInteger();
-                var generationId = values.Skip(7).FirstOrDefault().Value.AsInteger();
-                var data = new SetKbnMstModel(hpId, setKbn, setKbnEdaNo, setKbnName, kaCd, docCd, isDeleted, generationId);
-                datas.Add(data);
-            }
-            return datas;
+            var results = _cache.StringGet(key);
+            var json = results.AsString();
+            var datas = JsonSerializer.Deserialize<List<SetKbnMstModel>>(json);
+            return datas ?? new();
         }
-
 
         public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
         {

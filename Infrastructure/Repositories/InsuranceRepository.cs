@@ -13,6 +13,7 @@ namespace Infrastructure.Repositories
 {
     public class InsuranceRepository : RepositoryBase, IInsuranceRepository
     {
+        private readonly IDatabase _cache;
         public InsuranceRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
         }

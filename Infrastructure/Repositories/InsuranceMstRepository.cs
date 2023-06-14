@@ -1,24 +1,34 @@
-﻿using Domain.Models.HokenMst;
-using Domain.Models.InsuranceMst;
+﻿using Domain.Models.InsuranceMst;
+using Domain.Models.SetKbnMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Helper.Mapping;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
     public class InsuranceMstRepository : RepositoryBase, IInsuranceMstRepository
     {
+        private readonly IDatabase _cache;
+        private readonly string key;
         public InsuranceMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
+            key = GetCacheKey() + "InsuranceMst";
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
 
         public InsuranceMstModel GetDataInsuranceMst(int hpId, long ptId, int sinDate)
         {
+            if (_cache.KeyExists(key + ptId + hpId))
+            {
+                ReadCache(ptId, hpId);
+            }
             // data combobox 1 toki
             var TokkiMsts = NoTrackingDataContext.TokkiMsts.Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
                     .OrderBy(entity => entity.HpId)
@@ -194,7 +204,18 @@ namespace Infrastructure.Repositories
                                             x.RoudouName ?? string.Empty
                                             )).ToList();
 
-            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, GetHokenMstList(sinDate, true, prefNo), dataComboboxKantokuMst, byomeiMstAftercares, GetHokenMstList(sinDate, false, prefNo), dataRoudouMst, allHokenMst);
+            var result =  new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, GetHokenMstList(sinDate, true, prefNo), dataComboboxKantokuMst, byomeiMstAftercares, GetHokenMstList(sinDate, false, prefNo), dataRoudouMst, allHokenMst);
+            var json = JsonSerializer.Serialize(result);
+            _cache.StringSet(key + ptId + hpId, json);
+            return result;
+        }
+
+        private IEnumerable<InsuranceMstModel> ReadCache(long ptId, int hpId)
+        {
+            var results = _cache.StringGet(key + ptId + hpId);
+            var json = results.AsString();
+            var datas = JsonSerializer.Deserialize<List<InsuranceMstModel>>(json);
+            return datas ?? new();
         }
 
         private List<HokenMstModel> GetHokenMstList(int today, bool isKohi, int prefNo)
