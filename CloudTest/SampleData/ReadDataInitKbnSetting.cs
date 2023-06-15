@@ -448,6 +448,75 @@ public static class ReadDataInitKbnSetting
         }
         return raiinKbItemList;
     }
+    
+    public static List<RaiinKbnYayoku> ReadRaiinKbnYayoku()
+    {
+        var rootPath = Environment.CurrentDirectory;
+        rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+        string fileName = Path.Combine(rootPath, "SampleData", "DataInitKbnSetting.xlsx");
+        var raiinKbnYayokuList = new List<RaiinKbnYayoku>();
+        using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+        {
+            var workbookPart = spreadsheetDocument.WorkbookPart;
+            var sheetData = GetworksheetBySheetName(spreadsheetDocument, "RAIIN_KBN_YOYAKU").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+            string text;
+            if (sheetData != null)
+            {
+                foreach (var r in sheetData.Elements<Row>().Skip(1))
+                {
+                    var raiinKbItem = new RaiinKbnYayoku();
+                    raiinKbItem.CreateId = 1;
+                    raiinKbItem.CreateDate = DateTime.UtcNow;
+                    raiinKbItem.UpdateId = 1;
+                    raiinKbItem.UpdateDate = DateTime.UtcNow;
+                    var numberCell = 1;
+                    foreach (var c in r.Elements<Cell>())
+                    {
+                        text = c.CellValue?.Text ?? string.Empty;
+                        if (c.DataType != null && c.DataType == CellValues.SharedString)
+                        {
+                            var stringId = Convert.ToInt32(c.InnerText);
+                            text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                        }
+                        var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                        switch (columnName)
+                        {
+                            case "A":
+                                int.TryParse(text, out int hpId);
+                                raiinKbItem.HpId = hpId;
+                                break;
+                            case "B":
+                                int.TryParse(text, out int grpId);
+                                raiinKbItem.GrpId = grpId;
+                                break;
+                            case "C":
+                                int.TryParse(text, out int kbnCd);
+                                raiinKbItem.KbnCd = kbnCd;
+                                break;
+                            case "D":
+                                int.TryParse(text, out int seqNo);
+                                raiinKbItem.SeqNo = seqNo;
+                                break;
+                            case "E":
+                                int.TryParse(text, out int yoyakuCd);
+                                raiinKbItem.YoyakuCd = yoyakuCd;
+                                break;
+                            default:
+                                break;
+                        }
+                        numberCell++;
+                    }
+                    if (raiinKbItem.HpId == 0 && raiinKbItem.GrpId == 0)
+                    {
+                        break;
+                    }
+                    raiinKbnYayokuList.Add(raiinKbItem);
+                }
+            }
+        }
+        return raiinKbnYayokuList;
+    }
 
     private static string GetColumnName(string text)
     {

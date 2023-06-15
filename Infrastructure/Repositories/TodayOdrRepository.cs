@@ -43,6 +43,10 @@ namespace Infrastructure.Repositories
             _approvalInfRepository = approvalInfRepository;
         }
 
+        public TodayOdrRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        {
+        }
+
         public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, byte status)
         {
             bool isUpdateApproveInf = false;

@@ -1,6 +1,9 @@
 ﻿using CloudUnitTest.SampleData;
 using Domain.Models.NextOrder;
+using Domain.Models.OrdInfDetails;
+using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKubunMst;
+using Domain.Models.TodayOdr;
 using Entity.Tenant;
 using Infrastructure.Repositories;
 
@@ -180,7 +183,7 @@ public class InitKbnSettingTest : BaseUT
         // Assert
         try
         {
-            Assert.True(CompareInitDefaultByNextOrder(resultQuery, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds));
+            Assert.True(CompareInitDefault(resultQuery, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds));
         }
         finally
         {
@@ -196,9 +199,240 @@ public class InitKbnSettingTest : BaseUT
             #endregion
         }
     }
+
+    [Test]
+    public void InitDefaultByTodayOrder_TestSuccess()
+    {
+        #region Fetch data
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+
+        // RaiinKbnMst
+        var raiinKbnMstList = ReadDataInitKbnSetting.ReadRaiinKbnMst();
+        tenant.RaiinKbnMsts.AddRange(raiinKbnMstList);
+
+        // RaiinKbnDetail
+        var raiinKbnDetailList = ReadDataInitKbnSetting.ReadRaiinKbnDetail();
+        tenant.RaiinKbnDetails.AddRange(raiinKbnDetailList);
+
+        // RaiinKbnInf
+        var raiinKbnInflList = ReadDataInitKbnSetting.ReadRaiinKbnInf();
+        tenant.RaiinKbnInfs.AddRange(raiinKbnInflList);
+
+        // RaiinKbnKoui
+        var raiinKbnKouiList = ReadDataInitKbnSetting.ReadRaiinKbnKoui();
+        tenant.RaiinKbnKouis.AddRange(raiinKbnKouiList);
+
+        // KouiKbnMst
+        var kouiKbnMstlList = ReadDataInitKbnSetting.ReadKouiKbnMst();
+        tenant.KouiKbnMsts.AddRange(kouiKbnMstlList);
+
+        // RaiinKbItem
+        var raiinKbnItemList = ReadDataInitKbnSetting.ReadRaiinKbnItem();
+        tenant.RaiinKbItems.AddRange(raiinKbnItemList);
+
+        tenant.SaveChanges();
+        #endregion
+
+        // Arrange
+        RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
+        TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
+
+        // Act
+        int hpId = 1;
+        long ptId = 123456789;
+        long raiinNo = 999999999;
+        int sinDate = 22221212;
+
+        var raiinKbnModels = raiinKubunMstRepository.GetRaiinKbns(hpId, ptId, raiinNo, sinDate);
+        var raiinKouiKbns = raiinKubunMstRepository.GetRaiinKouiKbns(hpId);
+        var raiinKbnItemCds = raiinKubunMstRepository.GetRaiinKbnItems(hpId);
+
+        List<OrdInfModel> orderInfItems = new() {
+                    new OrdInfModel(
+                        1,
+                        raiinNo,
+                        99,
+                        99,
+                        ptId,
+                        sinDate,
+                        1,
+                        999,
+                        "",
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        999999999,
+                        new(){
+                            new OrdInfDetailModel(
+                                1,
+                                raiinNo,
+                                99,
+                                99,
+                                99,
+                                ptId,
+                                sinDate,
+                                999,
+                                "613120001",
+                                "",
+                                0,
+                                "",
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                "",
+                                "",
+                                0,
+                                "",
+                                string.Empty,
+                                0,
+                                DateTime.MinValue,
+                                0,
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                0,
+                                string.Empty,
+                                0,
+                                0,
+                                false,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                "",
+                                new List<YohoSetMstModel>(),
+                                0,
+                                0,
+                                "",
+                                "",
+                                "",
+                                "")
+                        },
+                        DateTime.MinValue,
+                        0,
+                        "",
+                        DateTime.MinValue,
+                        0,
+                        "",
+                        string.Empty,
+                        string.Empty
+                    )};
+
+        var resultQuery = todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
+
+        // Assert
+        try
+        {
+            Assert.True(CompareInitDefault(resultQuery, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds));
+        }
+        finally
+        {
+            #region Remove Data Fetch
+            raiinKubunMstRepository.ReleaseResource();
+            tenant.RaiinKbItems.RemoveRange(raiinKbnItemList);
+            tenant.RaiinKbnKouis.RemoveRange(raiinKbnKouiList);
+            tenant.KouiKbnMsts.RemoveRange(kouiKbnMstlList);
+            tenant.RaiinKbnMsts.RemoveRange(raiinKbnMstList);
+            tenant.RaiinKbnDetails.RemoveRange(raiinKbnDetailList);
+            tenant.RaiinKbnInfs.RemoveRange(raiinKbnInflList);
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+    
+    [Test]
+    public void InitDefaultByRsv_TestSuccess()
+    {
+        #region Fetch data
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+
+        // RaiinKbnMst
+        var raiinKbnMstList = ReadDataInitKbnSetting.ReadRaiinKbnMst();
+        tenant.RaiinKbnMsts.AddRange(raiinKbnMstList);
+
+        // RaiinKbnDetail
+        var raiinKbnDetailList = ReadDataInitKbnSetting.ReadRaiinKbnDetail();
+        tenant.RaiinKbnDetails.AddRange(raiinKbnDetailList);
+
+        // RaiinKbnInf
+        var raiinKbnInflList = ReadDataInitKbnSetting.ReadRaiinKbnInf();
+        tenant.RaiinKbnInfs.AddRange(raiinKbnInflList);
+
+        // RaiinKbnKoui
+        var raiinKbnKouiList = ReadDataInitKbnSetting.ReadRaiinKbnKoui();
+        tenant.RaiinKbnKouis.AddRange(raiinKbnKouiList);
+
+        // KouiKbnMst
+        var kouiKbnMstlList = ReadDataInitKbnSetting.ReadKouiKbnMst();
+        tenant.KouiKbnMsts.AddRange(kouiKbnMstlList);
+
+        // RaiinKbItem
+        var raiinKbnItemList = ReadDataInitKbnSetting.ReadRaiinKbnItem();
+        tenant.RaiinKbItems.AddRange(raiinKbnItemList);
+
+        // RaiinKbnYayoku
+        var raiinKbnYayokuList = ReadDataInitKbnSetting.ReadRaiinKbnYayoku();
+        tenant.RaiinKbnYayokus.AddRange(raiinKbnYayokuList);
+
+        tenant.SaveChanges();
+        #endregion
+
+        // Arrange
+        RaiinKubunMstRepository raiinKubunMstRepository = new RaiinKubunMstRepository(TenantProvider);
+
+        // Act
+        int hpId = 1;
+        long ptId = 123456789;
+        long raiinNo = 999999999;
+        int sinDate = 22221212;
+
+        var raiinKbnModels = raiinKubunMstRepository.GetRaiinKbns(hpId, ptId, raiinNo, sinDate);
+        var raiinKouiKbns = raiinKubunMstRepository.GetRaiinKouiKbns(hpId);
+        var raiinKbnItemCds = raiinKubunMstRepository.GetRaiinKbnItems(hpId);
+
+        int frameID = 12345;
+        var resultQuery = raiinKubunMstRepository.InitDefaultByRsv(hpId, frameID, raiinKbnModels);
+
+        // Assert
+        try
+        {
+            Assert.True(CompareInitDefault(resultQuery, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds));
+        }
+        finally
+        {
+            #region Remove Data Fetch
+            raiinKubunMstRepository.ReleaseResource();
+            tenant.RaiinKbItems.RemoveRange(raiinKbnItemList);
+            tenant.RaiinKbnKouis.RemoveRange(raiinKbnKouiList);
+            tenant.KouiKbnMsts.RemoveRange(kouiKbnMstlList);
+            tenant.RaiinKbnMsts.RemoveRange(raiinKbnMstList);
+            tenant.RaiinKbnDetails.RemoveRange(raiinKbnDetailList);
+            tenant.RaiinKbnInfs.RemoveRange(raiinKbnInflList);
+            tenant.RaiinKbnYayokus.RemoveRange(raiinKbnYayokuList);
+            tenant.SaveChanges();
+            #endregion
+        }
+    }
+
     #region private function
 
-    private bool CompareInitDefaultByNextOrder(List<RaiinKbnModel> resultQuery, List<RaiinKbnModel> raiinKbnModels, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds)
+    private bool CompareInitDefault(List<RaiinKbnModel> resultQuery, List<RaiinKbnModel> raiinKbnModels, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds)
     {
         var grpCd = raiinKbnModels.FirstOrDefault()?.GrpCd ?? 0;
         var raiinKbnModel = raiinKbnModels.FirstOrDefault(item => item.GrpCd == grpCd);
