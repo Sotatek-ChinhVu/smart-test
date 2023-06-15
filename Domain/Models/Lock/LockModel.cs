@@ -23,14 +23,14 @@ namespace Domain.Models.Lock
             FunctionCode = string.Empty;
         }
 
-        public LockModel(string functionCode, int userId)
+        public LockModel(string functionCode, int userId, string userName)
         {
             FunctionCode = functionCode;
-            UserName = string.Empty;
+            UserName = userName;
             LockDateTime = DateTime.MinValue;
             FunctionName = string.Empty;
             UserId = userId;
-            LockLevel = functionCode == Helper.Constants.FunctionCode.MedicalExaminationCode ? 2 : 0;
+            LockLevel = 0;
         }
 
         public int UserId { get; private set; }
