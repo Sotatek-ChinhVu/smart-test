@@ -26,9 +26,10 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
     public DrugInfoModel GetBasicInfo(int hpId, long ptId, int orderDate = 0)
     {
         DrugInfoModel info = new DrugInfoModel();
-        info.orderDate = orderDate == 0 ? CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow()) : orderDate;
+        var intOrderDate = orderDate == 0 ? CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow()) : orderDate;
+        info.orderDate = CIUtil.SDateToShowWDate2(intOrderDate);
 
-        var hpInfo = NoTrackingDataContext.HpInfs.Where(p => p.HpId == hpId && p.StartDate <= info.orderDate).OrderByDescending(p => p.StartDate).FirstOrDefault();
+        var hpInfo = NoTrackingDataContext.HpInfs.Where(p => p.HpId == hpId && p.StartDate <= intOrderDate).OrderByDescending(p => p.StartDate).FirstOrDefault();
         if (hpInfo != null)
         {
             info.hpName = hpInfo.HpName ?? string.Empty;
@@ -43,7 +44,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
             info.ptNo = ptInfo.PtNum;
             info.ptName = ptInfo.Name ?? string.Empty;
             info.sex = ptInfo.Sex == 1 ? "M" : "F";
-            info.intAge = (info.orderDate - ptInfo.Birthday) / 10000;
+            info.intAge = (intOrderDate - ptInfo.Birthday) / 10000;
         }
 
         return info;

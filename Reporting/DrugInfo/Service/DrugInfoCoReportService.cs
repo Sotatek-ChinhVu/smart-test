@@ -215,6 +215,17 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
             {
                 SetupUsageComment(orderInfoModel, usage ?? new(), drugInfoModel);
             }
+
+            drugInfoModel.orderDate = basicInfo.orderDate;
+            drugInfoModel.hpName = basicInfo.hpName;
+            drugInfoModel.address1 = basicInfo.address1;
+            drugInfoModel.address2 = basicInfo.address2;
+            drugInfoModel.phone = basicInfo.phone;
+            drugInfoModel.ptNo = basicInfo.ptNo;
+            drugInfoModel.ptName = basicInfo.ptName;
+            drugInfoModel.sex = basicInfo.sex;
+            drugInfoModel.intAge = basicInfo.intAge;
+
             drugInfoList.Add(drugInfoModel);
         }
 
