@@ -26,7 +26,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
     public DrugInfoModel GetBasicInfo(int hpId, long ptId, int orderDate = 0)
     {
         DrugInfoModel info = new DrugInfoModel();
-        info.orderDate = orderDate == 0 ? CIUtil.DateTimeToInt(DateTime.Now) : orderDate;
+        info.orderDate = orderDate == 0 ? CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow()) : orderDate;
 
         var hpInfo = NoTrackingDataContext.HpInfs.Where(p => p.HpId == hpId && p.StartDate <= info.orderDate).OrderByDescending(p => p.StartDate).FirstOrDefault();
         if (hpInfo != null)
@@ -93,7 +93,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
 
     public string GetYJCode(string itemCd)
     {
-        int sinDate = CIUtil.DateTimeToInt(DateTime.Now);
+        int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
         var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
         if (tenMst != null)
         {
@@ -113,7 +113,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
     public TenMstModel GetTenMstModel(string itemCd)
     {
         var tenMstModel = new TenMstModel();
-        int sinDate = CIUtil.DateTimeToInt(DateTime.Now);
+        int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
         var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
         if (tenMst != null)
         {

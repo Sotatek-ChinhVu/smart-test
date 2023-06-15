@@ -431,10 +431,6 @@ namespace PostgreDataContext
 
             modelBuilder.Entity<LockInf>()
            .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter("FunctionCd = \"02000000\"").IsUnique();
-
-            modelBuilder
-                .Entity<LockInf>()
-                .HasQueryFilter(p => p.FunctionCd == "02000000");
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

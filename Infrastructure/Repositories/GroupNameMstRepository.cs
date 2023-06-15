@@ -126,7 +126,7 @@ namespace Infrastructure.Repositories
                     foreach(var itemRemove in itemRemoves)
                     {
                         itemRemove.IsDeleted = DeleteTypes.Deleted;
-                        itemRemove.UpdateDate = DateTime.UtcNow;
+                        itemRemove.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         itemRemove.UpdateId = userId;
                     }
 

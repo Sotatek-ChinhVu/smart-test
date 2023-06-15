@@ -18,6 +18,7 @@ using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Infrastructure.Interfaces;
@@ -257,7 +258,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
             //Special Note
             var summaryTab = inputDatas.SpecialNoteItem.SummaryTab;
-            var summaryInfModel = new SummaryInfModel(summaryTab.Id, summaryTab.HpId, summaryTab.PtId, summaryTab.SeqNo, summaryTab.Text, summaryTab.Rtext, DateTime.UtcNow, DateTime.UtcNow);
+            var summaryInfModel = new SummaryInfModel(summaryTab.Id, summaryTab.HpId, summaryTab.PtId, summaryTab.SeqNo, summaryTab.Text, summaryTab.Rtext, CIUtil.GetJapanDateTimeNow(), CIUtil.GetJapanDateTimeNow());
             var patientInfTab = new PatientInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.PregnancyItems.Select(p => new PtPregnancyModel(
                         p.Id,
                         p.HpId,
@@ -270,7 +271,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         p.OvulationDate,
                         p.OvulationDueDate,
                         p.IsDeleted,
-                        DateTime.UtcNow,
+                        CIUtil.GetJapanDateTimeNow(),
                         inputDatas.UserId,
                         string.Empty,
                         p.SinDate
