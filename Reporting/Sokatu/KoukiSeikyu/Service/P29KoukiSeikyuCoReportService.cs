@@ -37,7 +37,7 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
     #endregion
 
     #region
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM = new Dictionary<int, Dictionary<string, string>>();
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData = new Dictionary<int, Dictionary<string, string>>();
     private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -46,11 +46,10 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
     private const string _formFileName = "p29KoukiSeikyu.rse";
     #endregion
 
-    public P29KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder finder, IReadRseReportFileService readRseReportFileService)
+    public P29KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder finder)
     {
         _kokhofinder = finder;
-        _readRseReportFileService = readRseReportFileService;
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _singleFieldData = new();
         _listTextData = new();
         _extralData = new();
@@ -83,7 +82,7 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
         
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KoukiSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
     private void UpdateDrawForm()
     {
@@ -117,7 +116,7 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
             SetFieldData("hokensyaName", hokensyaNames.Find(h => h.HokensyaNo == _currentHokensyaNo)?.Name ?? "");
             fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.ToString());
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+            _setFieldData.Add(pageIndex, fieldDataPerPage);
             //在医総及び在医総管
             if (printZaiiso)
             {

@@ -38,7 +38,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
         /// <summary>
         /// OutPut Data
         /// </summary>
-        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+        private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<string, string> _extralData;
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -49,7 +49,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
         public P35KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder kokhoFinder)
         {
             _kokhoFinder = kokhoFinder;
-            _singleFieldDataM = new();
+            _setFieldData = new();
             _singleFieldData = new();
             _extralData = new();
             _listTextData = new();
@@ -85,7 +85,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
-            return new KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+            return new KoukiSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
         }
 
         #region Private function
@@ -124,7 +124,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
                 //SetFieldData("hokensyaNo", _currentHokensyaNo.Substring(_currentHokensyaNo.Length - 6, 2));
                 fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.Substring(_currentHokensyaNo.Length - 6, 2));
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+                _setFieldData.Add(pageIndex, fieldDataPerPage);
                 int prefNo = _currentHokensyaNo.Substring(_currentHokensyaNo.Length - 6, 2).AsInteger();
                 SetFieldData("hokensyaPref", PrefCode.PrefName(prefNo));
 

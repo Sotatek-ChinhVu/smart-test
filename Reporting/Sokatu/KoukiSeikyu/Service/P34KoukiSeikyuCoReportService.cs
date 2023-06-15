@@ -50,7 +50,7 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
     /// <summary>
     /// OutPut Data
     /// </summary>
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -60,7 +60,7 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
     public P34KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder kokhoFinder)
     {
         _kokhoFinder = kokhoFinder;
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _singleFieldData = new();
         _extralData = new();
         _listTextData = new();
@@ -92,7 +92,7 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
 
-        return new KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KoukiSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function
@@ -134,7 +134,7 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
             int prefNo = _currentHokensyaNo.Substring(_currentHokensyaNo.Length - 6, 2).AsInteger();
             SetFieldData("hokensyaPref", PrefCode.PrefName(prefNo));
             fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.ToString());
-            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+            _setFieldData.Add(pageIndex, fieldDataPerPage);
             return 1;
         }
         #endregion

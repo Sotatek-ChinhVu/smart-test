@@ -4,7 +4,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
 {
     public class KoukiSeikyuMapper : CommonReportingRequest
     {
-        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+        private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, string> _extralData;
@@ -13,7 +13,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
 
         public KoukiSeikyuMapper(Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
         {
-            _singleFieldDataM = singleFieldDataM;
+            _setFieldData = singleFieldDataM;
             _listTextData = listTextData;
             _extralData = extralData;
             _formFileName = formFileName;
@@ -63,7 +63,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
 
         public override Dictionary<int, Dictionary<string, string>> GetSetFieldData()
         {
-            return _singleFieldDataM;
+            return _setFieldData;
         }
         public override Dictionary<string, string> GetFileNamePageMap()
         {

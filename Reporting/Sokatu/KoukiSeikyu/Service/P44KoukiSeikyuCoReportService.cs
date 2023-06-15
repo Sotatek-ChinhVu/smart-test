@@ -34,7 +34,7 @@ public class P44KoukiSeikyuCoReportService : IP44KoukiSeikyuCoReportService
     /// <summary>
     /// OutPut Data
     /// </summary>
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -51,7 +51,7 @@ public class P44KoukiSeikyuCoReportService : IP44KoukiSeikyuCoReportService
     {
         _kokhoFinder = kokhoFinder;
         _singleFieldData = new();
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _listTextData = new();
         _extralData = new();
         _visibleFieldData = new();
@@ -78,7 +78,7 @@ public class P44KoukiSeikyuCoReportService : IP44KoukiSeikyuCoReportService
         }
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KoukiSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     private bool UpdateDrawForm()
@@ -115,7 +115,7 @@ public class P44KoukiSeikyuCoReportService : IP44KoukiSeikyuCoReportService
             //保険者
             fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.ToString());
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+            _setFieldData.Add(pageIndex, fieldDataPerPage);
 
             return 1;
         }
@@ -178,7 +178,7 @@ public class P44KoukiSeikyuCoReportService : IP44KoukiSeikyuCoReportService
             for (short rowNo = 0; rowNo < maxKohiRow; rowNo++)
             {
                 pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                Dictionary<string, string> fieldDataPerPage = _singleFieldDataM.ContainsKey(pageIndex) ? _singleFieldDataM[pageIndex] : new();
+                Dictionary<string, string> fieldDataPerPage = _setFieldData.ContainsKey(pageIndex) ? _setFieldData[pageIndex] : new();
                 var wrkReces = curReceInfs.Where(r => r.IsHeiyo && r.IsKohi(kohiHoubetus[kohiIndex])).ToList();
 
                 //法別番号
@@ -200,9 +200,9 @@ public class P44KoukiSeikyuCoReportService : IP44KoukiSeikyuCoReportService
                 wrkData.Futan = wrkReces.Sum(r => r.KohiReceFutan(kohiHoubetus[kohiIndex]));
                 listDataPerPage.Add(new("kohiFutan", 0, rowNo, wrkData.Futan.ToString()));
 
-                if (!_singleFieldDataM.ContainsKey(pageIndex))
+                if (!_setFieldData.ContainsKey(pageIndex))
                 {
-                    _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+                    _setFieldData.Add(pageIndex, fieldDataPerPage);
                 }
 
                 kohiIndex++;

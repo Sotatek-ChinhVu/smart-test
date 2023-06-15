@@ -44,7 +44,7 @@ public class P13KoukiSeikyuCoReportService : IP13KoukiSeikyuCoReportService
     /// <summary>
     /// OutPut Data
     /// </summary>
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -56,7 +56,7 @@ public class P13KoukiSeikyuCoReportService : IP13KoukiSeikyuCoReportService
     {
         _kokhoFinder = kokhoFinder;
         _singleFieldData = new();
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _listTextData = new();
         _extralData = new();
         _visibleFieldData = new();
@@ -83,7 +83,7 @@ public class P13KoukiSeikyuCoReportService : IP13KoukiSeikyuCoReportService
         }
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KoukiSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function
@@ -121,7 +121,7 @@ public class P13KoukiSeikyuCoReportService : IP13KoukiSeikyuCoReportService
             //保険者
             fieldDataPerPage.Add("hokensyaNo1", _currentHokensyaNo.Substring(2, 2));
             fieldDataPerPage.Add("hokensyaNo2", _currentHokensyaNo.Substring(7, 1));
-            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+            _setFieldData.Add(pageIndex, fieldDataPerPage);
             //印
             SetVisibleFieldData("inkan", _seikyuYm < KaiseiDate.m202210);
             SetVisibleFieldData("inkanMaru", _seikyuYm < KaiseiDate.m202210);
