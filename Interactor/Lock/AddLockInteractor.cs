@@ -30,7 +30,7 @@ namespace Interactor.Lock
                 else
                 {
                     var lockInfList = _lockRepository.GetLock(hpId, functionCode, ptId, sinDate, raiinNo, userId);
-                    return new AddLockOutputData(AddLockStatus.Existed, lockInfList.FirstOrDefault() ?? new LockModel(functionCode));
+                    return new AddLockOutputData(AddLockStatus.Existed, lockInfList.FirstOrDefault() ?? new LockModel(functionCode, userId));
                 }
             }
             finally
