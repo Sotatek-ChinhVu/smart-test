@@ -11,9 +11,9 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
         private readonly string _formFileName;
         private readonly Dictionary<string, bool> _visibleFieldData;
 
-        public KoukiSeikyuMapper(Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
+        public KoukiSeikyuMapper(Dictionary<int, Dictionary<string, string>> setFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
         {
-            _setFieldData = singleFieldDataM;
+            _setFieldData = setFieldData;
             _listTextData = listTextData;
             _extralData = extralData;
             _formFileName = formFileName;
