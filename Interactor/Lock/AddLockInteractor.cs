@@ -22,7 +22,7 @@ namespace Interactor.Lock
                 int hpId = inputData.HpId;
                 int userId = inputData.UserId;
 
-                bool result = _lockRepository.AddLock(hpId, functionCode, ptId, sinDate, raiinNo, userId);
+                bool result = _lockRepository.AddLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, inputData.Token);
                 if (result)
                 {
                     return new AddLockOutputData(AddLockStatus.Successed, new LockModel());
