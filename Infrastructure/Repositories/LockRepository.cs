@@ -223,5 +223,16 @@ namespace Infrastructure.Repositories
                                                                          && l.UserId == userId);
             return log == null;
         }
+
+        public string GetFunctionNameLock(string functionCode)
+        {
+            string result = string.Empty;
+            var functionItem = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd == functionCode);
+            if (functionItem != null)
+            {
+                result = functionItem.FunctionName ?? string.Empty;
+            }
+            return result;
+        }
     }
 }
