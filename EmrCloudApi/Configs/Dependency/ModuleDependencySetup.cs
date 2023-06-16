@@ -610,6 +610,7 @@ using Reporting.Byomei.DB;
 using UseCase.User.GetListUserByCurrentUser;
 using UseCase.MedicalExamination.GetHeaderVistitDate;
 using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.WelfareSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -779,6 +780,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
             services.AddTransient<IP25KokhoSeikyuCoReportService, P25KokhoSeikyuCoReportService>();
+            services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
