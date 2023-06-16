@@ -2882,6 +2882,7 @@ namespace Helper.Common
 
             try
             {
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 //ISO 2022 Japanese JIS X 0201-1989; Japanese (JIS-Allow 1 byte Kana - SO/SI)
                 Encoding ascii = Encoding.GetEncoding("iso-2022-jp");
                 asciiBytes = ascii.GetBytes(utf16Char.ToString());

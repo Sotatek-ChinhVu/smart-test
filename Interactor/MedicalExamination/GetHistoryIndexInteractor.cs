@@ -36,7 +36,7 @@ namespace Interactor.MedicalExamination
                     return new GetHistoryIndexOutputData(GetHistoryIndexStatus.InvalidIsDeleted, new());
                 }
 
-                var historyIndex = _historyRepository.GetHistoryIndex(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.UserId, inputData.FilterId, inputData.IsDeleted);
+                var historyIndex = _historyRepository.GetHistoryIndex(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.UserId, inputData.FilterId, inputData.IsDeleted, inputData.RaiinNos);
                 return new GetHistoryIndexOutputData(GetHistoryIndexStatus.Successed, historyIndex);
             }
             finally
