@@ -970,7 +970,7 @@
 
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";
-        public static readonly string InvalidThisWari = "Invalid ThisWari";
+        public static readonly string InvalidThisWari = "Invalid ThisWari"; 
         public static readonly string InvalidCredit = "Invalid Credit";
         public static readonly string InvalidPayType = "Invalid PayType";
         public static readonly string InvalidComment = "Invalid Comment";

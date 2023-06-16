@@ -16,16 +16,14 @@ namespace Interactor.Accounting
         private readonly IUserRepository _userRepository;
         private readonly IHpInfRepository _hpInfRepository;
         private readonly IPatientInforRepository _patientInforRepository;
-        private readonly ILockRepository _lockRepository;
 
-        public SaveAccountingInteractor(IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, ILockRepository lockRepository)
+        public SaveAccountingInteractor(IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository)
         {
             _accountingRepository = accountingRepository;
             _systemConfRepository = systemConfRepository;
             _userRepository = userRepository;
             _hpInfRepository = hpInfRepository;
             _patientInforRepository = patientInforRepository;
-            _lockRepository = lockRepository;
         }
 
         public SaveAccountingOutputData Handle(SaveAccountingInputData inputData)
@@ -72,7 +70,6 @@ namespace Interactor.Accounting
                                                                 inputData.PayType, inputData.Comment, inputData.IsDisCharged, inputData.KaikeiTime);
                 if (save)
                 {
-                    _lockRepository.RemoveLock(inputData.HpId, FunctionCode.Accounting, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.UserId);
                     return new SaveAccountingOutputData(SaveAccountingStatus.Success);
                 }
                 else
@@ -87,7 +84,6 @@ namespace Interactor.Accounting
                 _userRepository.ReleaseResource();
                 _hpInfRepository.ReleaseResource();
                 _patientInforRepository.ReleaseResource();
-                _lockRepository.ReleaseResource();
             }
         }
 
