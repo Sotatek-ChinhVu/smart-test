@@ -1,9 +1,7 @@
 ﻿using CloudUnitTest.SampleData;
-using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKubunMst;
-using Domain.Models.TodayOdr;
 using Entity.Tenant;
 using Infrastructure.Repositories;
 
