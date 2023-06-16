@@ -1427,7 +1427,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 BorderBrushCode = LevelConfig.DuplicationCommonSource[duplicationError.Level][1],
                 Title = LevelConfig.DuplicationCommonSource[duplicationError.Level][2],
                 FirstItemName = itemName,
-                SecondItemName = duplicationError.IsComponentDuplicated || duplicationError.IsIppanCdDuplicated ? duplicatedItemName : string.Empty
+                SecondItemName = duplicationError.IsComponentDuplicated || duplicationError.IsIppanCdDuplicated ? duplicatedItemName : string.Empty,
+                Level = duplicationError.Level
             };
 
             if (duplicationError.IsIppanCdDuplicated)
