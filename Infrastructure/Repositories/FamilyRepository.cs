@@ -118,7 +118,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                                             item.Sex,
                                                             item.Birthday,
                                                             item.IsDead,
-                                                            int.Parse(DateTime.UtcNow.ToString("yyyyMMdd"))
+                                                            int.Parse(CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd"))
                                                         )).ToList();
     }
 

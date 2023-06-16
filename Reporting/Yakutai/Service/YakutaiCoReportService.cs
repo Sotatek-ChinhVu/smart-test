@@ -83,7 +83,7 @@ namespace Reporting.Yakutai.Service
             _ptId = ptId;
             _sinDate = sinDate;
             _raiinNo = raiinNo;
-            _printoutDateTime = DateTime.Now;
+            _printoutDateTime = CIUtil.GetJapanDateTimeNow();
             coModels = GetData();
 
             if (coModels == null || coModels.Any() == false)

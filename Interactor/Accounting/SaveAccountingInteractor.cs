@@ -59,7 +59,7 @@ namespace Interactor.Accounting
                 var debitBalance = listAllSyunoSeikyu.Sum(item => item.SeikyuGaku -
                                                   item.SyunoNyukinModels.Sum(itemNyukin =>
                                                       itemNyukin.NyukinGaku + itemNyukin.AdjustFutan));
-                var accDue = (int)_systemConfRepository.GetSettingValue(3020, 0, 0);
+                var accDue = (int)_systemConfRepository.GetSettingValue(3020, 0, inputData.HpId);
 
                 if (accDue == 0)
                 {
@@ -108,10 +108,6 @@ namespace Interactor.Accounting
             else if (inputData.ThisWari < 0)
             {
                 return SaveAccountingStatus.InvalidThisWari;
-            }
-            else if (inputData.Credit < 0)
-            {
-                return SaveAccountingStatus.InvalidCredit;
             }
             else if (inputData.PayType < 0)
             {

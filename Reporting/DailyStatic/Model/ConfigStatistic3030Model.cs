@@ -49,7 +49,7 @@ public class ConfigStatistic3030Model : StatisticModelBase
 
     private void SetTimeDefault()
     {
-        DateTime dateSystem = DateTime.Now.Date;
+        DateTime dateSystem = CIUtil.GetJapanDateTimeNow().Date;
         int dateSystemInt = CIUtil.DateTimeToInt(dateSystem);
 
         StartDateFrom = (dateSystem.Year * 100 + dateSystem.Month) * 100 + 1;

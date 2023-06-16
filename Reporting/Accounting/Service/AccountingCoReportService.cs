@@ -660,7 +660,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             _sinmeiListPropertysPage2.AddRange(_sinmeiListPropertysPage1);
         }
 
-        _printoutDateTime = DateTime.Now;
+        _printoutDateTime = CIUtil.GetJapanDateTimeNow();
 
         // 診療明細データを作成する
         MakeSinMeiPrintData();
@@ -708,7 +708,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         totalPtFutan = 0;
         totalJihiSbtKingakus = new();
 
-        _printoutDateTime = DateTime.Now;
+        _printoutDateTime = CIUtil.GetJapanDateTimeNow();
         UpdateDrawForm();
     }
 
@@ -777,7 +777,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                     _sinmeiListPropertysPage2.AddRange(_sinmeiListPropertysPage1);
                 }
 
-                _printoutDateTime = DateTime.Now;
+                _printoutDateTime = CIUtil.GetJapanDateTimeNow();
 
                 // 診療明細データを作成する
                 try

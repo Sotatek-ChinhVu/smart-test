@@ -3,6 +3,7 @@ using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.Auth;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Auth;
+using Helper.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -87,7 +88,7 @@ public class AuthController : ControllerBase
         var key = Encoding.UTF8.GetBytes(_jwtOptions.Secret);
         var signingKey = new SymmetricSecurityKey(key);
         var token = new JwtSecurityToken(
-            expires: DateTime.UtcNow.AddHours(_jwtOptions.TokenLifetime),
+            expires: CIUtil.GetJapanDateTimeNow().AddHours(_jwtOptions.TokenLifetime),
             claims: claims,
             signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
         );

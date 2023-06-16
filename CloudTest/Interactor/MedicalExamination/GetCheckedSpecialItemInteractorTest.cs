@@ -1243,7 +1243,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
         string tenMstAgeCheck = "B3";
-        var now = DateTime.Now;
+        var now = CIUtil.GetJapanDateTimeNow();
         var year = now.Year - 3;
         int iDays = 28, sinDate = year * 10000 + 1110, iBirthDay1 = year * 10000 + 1009, iBirthDay2 = year * 10000 + 1211, iYear1 = 29, iYear2 = 3, iYear3 = 1;
 
@@ -1269,7 +1269,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
         string tenMstAgeCheck = "B6";
-        var now = DateTime.Now;
+        var now = CIUtil.GetJapanDateTimeNow();
         var year = now.Year - 6;
         int iDays = 28, sinDate = year * 10000 + 1110, iBirthDay1 = year * 10000 + 1009, iBirthDay2 = year * 10000 + 1211, iYear1 = 29, iYear2 = 6, iYear3 = 1;
 
@@ -1295,7 +1295,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
         string tenMstAgeCheck = "BF";
-        var now = DateTime.Now;
+        var now = CIUtil.GetJapanDateTimeNow();
         var year = now.Year - 15;
         int iDays = 28, sinDate = year * 10000 + 1110, iBirthDay1 = year * 10000 + 1009, iBirthDay2 = year * 10000 + 1211, iYear1 = 29, iYear2 = 15, iYear3 = 1;
 
@@ -1321,7 +1321,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
         string tenMstAgeCheck = "BK";
-        var now = DateTime.Now;
+        var now = CIUtil.GetJapanDateTimeNow();
         var year = now.Year - 20;
         int iDays = 28, sinDate = year * 10000 + 1110, iBirthDay1 = year * 10000 + 1009, iBirthDay2 = year * 10000 + 1211, iYear1 = 29, iYear2 = 20, iYear3 = 1;
 
@@ -1369,7 +1369,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
         string tenMstAgeCheck = "MG";
-        var now = DateTime.Now;
+        var now = CIUtil.GetJapanDateTimeNow();
         var year = now.Year - 20;
         int iDays = 28, sinDate = year * 10000 + 1110, iBirthDay1 = (year - 7) * 10000 + 1009, iBirthDay2 = (year + 7) * 10000 + 1211,
            iBirthDay3 = (year - 6) * 10000 + 0301, iBirthDay4 = (year + 6) * 10000 + 0301, iYear = 29;

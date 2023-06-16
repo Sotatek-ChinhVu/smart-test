@@ -94,7 +94,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
 
     public string GetYJCode(string itemCd)
     {
-        int sinDate = CIUtil.DateTimeToInt(DateTime.Now);
+        int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
         var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
         if (tenMst != null)
         {
@@ -114,7 +114,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
     public TenMstModel GetTenMstModel(string itemCd)
     {
         var tenMstModel = new TenMstModel();
-        int sinDate = CIUtil.DateTimeToInt(DateTime.Now);
+        int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
         var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
         if (tenMst != null)
         {
