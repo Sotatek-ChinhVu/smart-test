@@ -10,5 +10,12 @@
         public int UserId { get; set; }
         public long FilterId { get; set; }
         public int IsShowApproval { get; set; }
+        public List<RaiinBookmarked> RaiinBookmarked { get; set; } = new();
+    }
+
+    public class RaiinBookmarked
+    {
+        public long RaiinNo { get; set; }
+        public bool Flag { get; set; }
     }
 }
