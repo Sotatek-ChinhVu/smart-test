@@ -82,7 +82,7 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
                                                                 .FirstOrDefault();
             if (updateTimeZoneDayInf != null)
             {
-                updateTimeZoneDayInf.EndTime = int.Parse(DateTime.Now.ToString("HHmm"));
+                updateTimeZoneDayInf.EndTime = int.Parse(CIUtil.GetJapanDateTimeNow().ToString("HHmm"));
             }
 
             //then add new timeZoneDayInf

@@ -3,6 +3,7 @@ using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Domain.Models.User;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;
@@ -93,7 +94,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
                                 string.Empty,
                                 inputData.FileName,
                                 inputData.DisplayFileName,
-                                DateTime.UtcNow
+                                CIUtil.GetJapanDateTimeNow()
                             );
     }
 

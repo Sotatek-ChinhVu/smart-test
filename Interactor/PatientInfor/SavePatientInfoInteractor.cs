@@ -155,7 +155,7 @@ namespace Interactor.PatientInfor
             }
 
             resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName ?? string.Empty, model.Patient.Name ?? string.Empty, model.Patient.HpId, model.ReactSave));
-            int sinDay = DateTime.Now.ToString("yyyyMMdd").AsInteger();
+            int sinDay = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
             resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, isUpdate, model.Patient.Birthday, sinDay, hpId, model.ReactSave, model.Patient.MainHokenPid));
 
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)

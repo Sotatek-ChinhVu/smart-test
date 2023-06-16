@@ -347,7 +347,7 @@ namespace Infrastructure.Repositories
                         {
                             // Update
                             existingEntity.KbnCd = kbnInfDto.KbnCd;
-                            existingEntity.UpdateDate = DateTime.UtcNow;
+                            existingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             existingEntity.UpdateId = userId;
                         }
                     }

@@ -3,6 +3,7 @@ using Domain.Models.OrdInf;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -169,7 +170,7 @@ namespace Infrastructure.Repositories
                                                                         itemDetail.IpnCd ?? string.Empty,
                                                                         string.Empty,
                                                                         itemDetail.JissiKbn,
-                                                                        DateTime.UtcNow,
+                                                                        CIUtil.GetJapanDateTimeNow(),
                                                                         itemDetail.JissiId,
                                                                         itemDetail.JissiMachine ?? string.Empty,
                                                                         itemDetail.ReqCd ?? string.Empty,

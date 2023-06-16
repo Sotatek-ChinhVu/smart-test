@@ -599,7 +599,7 @@ namespace Infrastructure.Repositories
                                 if (originSortNo == null || originSortNo > newSortNo)
                                 {
                                     raiinListInf.KbnCd = kouiItem.KbnCd;
-                                    raiinListInf.UpdateDate = DateTime.Now;
+                                    raiinListInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                     raiinListInf.UpdateId = userId;
                                 }
                             }

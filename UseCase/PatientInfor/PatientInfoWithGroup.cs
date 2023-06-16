@@ -53,7 +53,7 @@ public class PatientInfoWithGroup
         int rAge = 0;
         int rMonth = 0;
         int rDay = 0;
-        bool isAge = CIUtil.SDateToDecodeAge(intDate, CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyyMMdd")), ref rAge, ref rMonth, ref rDay);
+        bool isAge = CIUtil.SDateToDecodeAge(intDate, CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd")), ref rAge, ref rMonth, ref rDay);
         if (isAge)
         {
             Age = string.Format("{0}歳 {1}ヶ月 {2}日", rAge, rMonth, rDay);
