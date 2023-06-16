@@ -37,7 +37,7 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
             {
                 return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSetCd);
             }
-            else if (inputData.SetCd <= 0)
+            else if (inputData.SinDate <= 0)
             {
                 return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSinDate);
             }

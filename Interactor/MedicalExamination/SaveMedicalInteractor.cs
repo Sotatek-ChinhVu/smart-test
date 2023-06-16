@@ -55,10 +55,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     private readonly IValidateFamilyList _validateFamilyList;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly ICalculateService _calculateService;
-    private readonly ILockRepository _lockRepository;
     private readonly AmazonS3Options _options;
 
-    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ILockRepository lockRepository)
+    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
@@ -76,7 +75,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _karteInfRepository = karteInfRepository;
         _calculateService = calculateService;
         _validateFamilyList = validateFamilyList;
-        _lockRepository = lockRepository;
     }
 
     public SaveMedicalOutputData Handle(SaveMedicalInputData inputDatas)
@@ -320,7 +318,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         inputDatas.IsSagaku ? 1 : 0,
                         ""
                     )));
-                _lockRepository.RemoveLock(hpId, FunctionCode.MedicalExaminationCode, ptId, sinDate, raiinNo, inputDatas.UserId);
             }
 
             return check ?
@@ -364,7 +361,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _todayOdrRepository.ReleaseResource();
             _karteInfRepository.ReleaseResource();
             _validateFamilyList.ReleaseResource();
-            _lockRepository.ReleaseResource();
         }
     }
 
