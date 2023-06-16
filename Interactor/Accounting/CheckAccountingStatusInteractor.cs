@@ -84,6 +84,11 @@ namespace Interactor.Accounting
                         return new CheckAccountingStatusOutputData(mbOk, billUpdate, CheckAccountingStatus.BillUpdated);
                     }
 
+                    if (inputData.Credit < 0)
+                    {
+                        return new CheckAccountingStatusOutputData(mbClose, validCredit, CheckAccountingStatus.ValidThisCredit);
+                    }
+
                     var accDue = 0;
                     var setting = _systemConfRepository.GetSettingValue(3020, 0, inputData.HpId) == 1;
                     if (!CheckCredit(accDue, inputData.SumAdjust, inputData.Credit, inputData.Wari))
