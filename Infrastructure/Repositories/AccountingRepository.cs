@@ -974,7 +974,7 @@ namespace Infrastructure.Repositories
                                        && item.PtId == ptId
                                        && raiinNos.Contains(item.RaiinNo))
                         .ToList();
-
+            thisCredit = accDue == 1 ? 0 : thisCredit;
             int allSeikyuGaku = sumAdjust;
             int adjustFutan = thisWari;
             int nyukinGaku = thisCredit;
@@ -990,13 +990,13 @@ namespace Infrastructure.Repositories
                                  (item.SyunoNyukinModels.Count == 0 ? 0 : item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan));
 
                 bool isLastRecord = i == syunoSeikyuModels.Count - 1;
-                //if (!isDisCharged)
-                //{
-                ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
+                if (!isDisCharged)
+                {
+                    ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
                 out outNyukinKbn, isLastRecord);
-                allSeikyuGaku -= thisSeikyuGaku;
-                //}
-                if (isDisCharged)
+                    allSeikyuGaku -= thisSeikyuGaku;
+                }
+                else
                 {
                     outNyukinKbn = 2;
                 }
