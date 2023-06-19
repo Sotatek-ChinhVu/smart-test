@@ -990,13 +990,13 @@ namespace Infrastructure.Repositories
                                  (item.SyunoNyukinModels.Count == 0 ? 0 : item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan));
 
                 bool isLastRecord = i == syunoSeikyuModels.Count - 1;
-                if (!isDisCharged)
-                {
-                    ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
-                    out outNyukinKbn, isLastRecord);
-                    allSeikyuGaku -= thisSeikyuGaku;
-                }
-                else
+                //if (!isDisCharged)
+                //{
+                ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
+                out outNyukinKbn, isLastRecord);
+                allSeikyuGaku -= thisSeikyuGaku;
+                //}
+                if (isDisCharged)
                 {
                     outNyukinKbn = 2;
                 }
@@ -1122,7 +1122,7 @@ namespace Infrastructure.Repositories
                     UpdateId = userId,
                     NyukinjiTensu = item.SeikyuTensu,
                     NyukinjiDetail = item.SeikyuDetail,
-                    NyukinjiSeikyu = item.SeikyuGaku
+                    NyukinjiSeikyu = item.SeikyuGaku,
                 });
 
                 UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
