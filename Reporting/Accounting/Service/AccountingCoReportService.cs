@@ -313,6 +313,7 @@ public class AccountingCoReportService : IAccountingCoReportService
     /// フォームファイル名
     /// </summary>
     private string formFileName;
+    private string jobName;
     private List<AccountingOutputModel> accountingOutputModelList = new();
     private readonly Dictionary<int, List<AccountingOutputModel>> accountingDicResult = new();
 
@@ -420,6 +421,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         accountingDicResult.Add(1, accountingOutputModelList);
         return new AccountingResponse(
                   this.formFileName,
+                  jobName,
                   mode,
                   SystemConfigList,
                   accountingDicResult);
@@ -453,6 +455,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         accountingDicResult.Add(1, accountingOutputModelList);
         return new AccountingResponse(
                   this.formFileName,
+                  jobName,
                   mode,
                   SystemConfigList,
                   accountingDicResult);
@@ -466,6 +469,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         PrintOut();
         return new AccountingResponse(
                   formFileName,
+                  jobName,
                   mode,
                   SystemConfigList,
                   accountingDicResult);
@@ -574,21 +578,25 @@ public class AccountingCoReportService : IAccountingCoReportService
             {
                 // 領収証
                 formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingFormType());
+                jobName = "領収証";
             }
             else if (printType == 1)
             {
                 // 明細
                 formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingDetailFormType());
+                jobName = "明細書";
             }
             if (printType == 2)
             {
                 // 月間領収証
                 formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingMonthFormType());
+                jobName = "月間領収証";
             }
             else if (printType == 3)
             {
                 // 月間明細
                 formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingDetailMonthFormType());
+                jobName = "月間明細書";
             }
         }
     }
@@ -652,7 +660,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             _sinmeiListPropertysPage2.AddRange(_sinmeiListPropertysPage1);
         }
 
-        _printoutDateTime = DateTime.Now;
+        _printoutDateTime = CIUtil.GetJapanDateTimeNow();
 
         // 診療明細データを作成する
         MakeSinMeiPrintData();
@@ -700,7 +708,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         totalPtFutan = 0;
         totalJihiSbtKingakus = new();
 
-        _printoutDateTime = DateTime.Now;
+        _printoutDateTime = CIUtil.GetJapanDateTimeNow();
         UpdateDrawForm();
     }
 
@@ -769,7 +777,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                     _sinmeiListPropertysPage2.AddRange(_sinmeiListPropertysPage1);
                 }
 
-                _printoutDateTime = DateTime.Now;
+                _printoutDateTime = CIUtil.GetJapanDateTimeNow();
 
                 // 診療明細データを作成する
                 try

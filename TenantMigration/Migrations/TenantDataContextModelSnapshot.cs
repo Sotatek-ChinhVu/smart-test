@@ -7185,6 +7185,10 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "PtId", "FunctionCd", "SinDate", "RaiinNo", "OyaRaiinNo");
 
+                    b.HasIndex("HpId", "PtId", "UserId")
+                        .IsUnique()
+                        .HasFilter("FunctionCd = \"02000000\"");
+
                     b.ToTable("LOCK_INF");
                 });
 

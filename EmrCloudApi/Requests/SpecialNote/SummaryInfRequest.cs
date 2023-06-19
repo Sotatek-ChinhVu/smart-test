@@ -16,9 +16,9 @@ namespace EmrCloudApi.Requests.SpecialNote
 
         public string Rtext { get; set; } = string.Empty;
 
-        public SummaryInfItem Map()
+        public SummaryInfItem Map(int hpId)
         {
-            return new SummaryInfItem(Id, HpId, PtId, SeqNo, Text, Rtext);
+            return new SummaryInfItem(Id, hpId, PtId, SeqNo, Text, Rtext);
         }
     }
 }

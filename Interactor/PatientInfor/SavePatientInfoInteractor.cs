@@ -17,15 +17,13 @@ namespace Interactor.PatientInfor
     {
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly ISystemConfRepository _systemConfRepository;
-        private readonly ILockRepository _lockRepository;
         private readonly IAmazonS3Service _amazonS3Service;
 
-        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service, ILockRepository lockRepository)
+        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service)
         {
             _patientInforRepository = patientInforRepository;
             _systemConfRepository = systemConfRepository;
             _amazonS3Service = amazonS3Service;
-            _lockRepository = lockRepository;
         }
 
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
@@ -94,7 +92,6 @@ namespace Interactor.PatientInfor
 
                 if (result.resultSave)
                 {
-                    _lockRepository.RemoveLock(inputData.HpId, FunctionCode.PatientInfo, result.ptId, 0, 0, inputData.UserId);
                     return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId);
                 }
                 else
@@ -108,7 +105,6 @@ namespace Interactor.PatientInfor
             {
                 _patientInforRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
-                _lockRepository.ReleaseResource();
             }
         }
 
@@ -159,7 +155,7 @@ namespace Interactor.PatientInfor
             }
 
             resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName ?? string.Empty, model.Patient.Name ?? string.Empty, model.Patient.HpId, model.ReactSave));
-            int sinDay = DateTime.Now.ToString("yyyyMMdd").AsInteger();
+            int sinDay = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
             resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, isUpdate, model.Patient.Birthday, sinDay, hpId, model.ReactSave, model.Patient.MainHokenPid));
 
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)

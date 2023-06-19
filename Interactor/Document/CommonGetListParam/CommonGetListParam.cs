@@ -89,9 +89,9 @@ public class CommonGetListParam : ICommonGetListParam
         List<ItemDisplayParamModel> listParam = new();
 
         // HpInf
-        listParam.Add(new ItemDisplayParamModel("作成日(西暦K)", CIUtil.SDateToShowSWDate(int.Parse(DateTime.UtcNow.ToString("yyyMMdd")), 0, 0, 1)));
-        listParam.Add(new ItemDisplayParamModel("作成日(西暦/)", CIUtil.SDateToShowSDate(int.Parse(DateTime.UtcNow.ToString("yyyMMdd")))));
-        listParam.Add(new ItemDisplayParamModel("作成日(和暦K)", CIUtil.SDateToShowWDate2(int.Parse(DateTime.UtcNow.ToString("yyyMMdd")))));
+        listParam.Add(new ItemDisplayParamModel("作成日(西暦K)", CIUtil.SDateToShowSWDate(int.Parse(CIUtil.GetJapanDateTimeNow().ToString("yyyMMdd")), 0, 0, 1)));
+        listParam.Add(new ItemDisplayParamModel("作成日(西暦/)", CIUtil.SDateToShowSDate(int.Parse(CIUtil.GetJapanDateTimeNow().ToString("yyyMMdd")))));
+        listParam.Add(new ItemDisplayParamModel("作成日(和暦K)", CIUtil.SDateToShowWDate2(int.Parse(CIUtil.GetJapanDateTimeNow().ToString("yyyMMdd")))));
         listParam.Add(new ItemDisplayParamModel("医療機関名称", hpInf.HpName));
         listParam.Add(new ItemDisplayParamModel("医療機関住所１", hpInf.Address1));
         listParam.Add(new ItemDisplayParamModel("医療機関住所２", hpInf.Address2));

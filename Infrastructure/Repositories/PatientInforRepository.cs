@@ -702,7 +702,7 @@ namespace Infrastructure.Repositories
 
             int GetBirthDayFromAge(int age)
             {
-                var bithDay = DateTime.Now.AddYears(-age);
+                var bithDay = CIUtil.GetJapanDateTimeNow().AddYears(-age);
                 return CIUtil.ShowSDateToSDate(bithDay.ToString("yyyyMMdd"));
             }
 

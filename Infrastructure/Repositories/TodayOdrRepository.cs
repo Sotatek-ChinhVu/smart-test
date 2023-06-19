@@ -599,7 +599,7 @@ namespace Infrastructure.Repositories
                                 if (originSortNo == null || originSortNo > newSortNo)
                                 {
                                     raiinListInf.KbnCd = kouiItem.KbnCd;
-                                    raiinListInf.UpdateDate = DateTime.Now;
+                                    raiinListInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                     raiinListInf.UpdateId = userId;
                                 }
                             }
@@ -2005,7 +2005,7 @@ namespace Infrastructure.Repositories
                 ipNameCds.AddRange(ordInfDetail.Select(od => od.IpnCd));
             }
             itemCds = itemCds.Distinct().ToList();
-            ipNameCds = itemCds.Distinct().ToList();
+            ipNameCds = ipNameCds.Distinct().ToList();
             var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sinDate && t.EndDate >= sinDate && itemCds.Contains(t.ItemCd)).ToList();
             var kensaItemCds = tenMsts.Select(t => t.KensaItemCd).ToList();
             var kensaItemSeqNos = tenMsts.Select(t => t.KensaItemSeqNo).ToList();

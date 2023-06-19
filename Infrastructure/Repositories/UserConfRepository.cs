@@ -6,14 +6,15 @@ using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using System.Text.Json;
+using StackExchange.Redis;
 
 namespace Infrastructure.Repositories;
 
 public class UserConfRepository : RepositoryBase, IUserConfRepository
 {
     private const int ADOPTED_CONFIRM_CD = 100005;
-    private static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
-    private readonly StackExchange.Redis.IDatabase _cache;
+    private static List<ConfigGroupDefault> configGroupDefault = new();
+    private readonly IDatabase _cache;
     private List<int> listFunctionButtonCode = new List<int> { 10, 3, 902, 922, 923, 906, 907, 14, 919, 903, 9, 905, 15, 921, 928, 19 };
     private List<int> listSuperSetButtonCode = new List<int> { 301, 302, 303, 304, 305, 306, 307, 308, 309, 310 };
     private List<int> listSuperSetButtonCodeItem = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -380,35 +381,25 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 
     private static void AddDefaultValue(int groupCd, int groupItem = 0, int defaultValue = 0)
     {
-        if (ConfigGroupDefault.ContainsKey(groupCd))
-        {
-            var ConfigItemDefault = ConfigGroupDefault[groupCd];
+        var configItemDefault = configGroupDefault.FirstOrDefault(c => c.GroupCd == groupCd && c.GroupItemCd == groupItem);
 
-            if (ConfigItemDefault.ContainsKey(groupItem))
-            {
-                ConfigItemDefault[groupItem] = defaultValue;
-            }
-            else
-            {
-                ConfigItemDefault.Add(groupItem, defaultValue);
-            }
+        if (configItemDefault != null)
+        {
+            configItemDefault.DefaultValue = defaultValue;
         }
         else
         {
-            ConfigGroupDefault.Add(groupCd, new Dictionary<int, int>() { { groupItem, defaultValue } });
+            configGroupDefault.Add(new ConfigGroupDefault { GroupCd = groupCd, GroupItemCd = groupItem, DefaultValue = defaultValue });
         }
     }
 
     public int GetDefaultValue(int groupCd, int groupItemCd = 0)
     {
-        if (ConfigGroupDefault.ContainsKey(groupCd))
+        var configItemDefault = configGroupDefault.FirstOrDefault(c => c.GroupCd == groupCd && c.GroupItemCd == groupItemCd);
+
+        if (configItemDefault != null)
         {
-            var ConfigItemDefault = ConfigGroupDefault[groupCd];
-            if (ConfigItemDefault.ContainsKey(groupItemCd))
-            {
-                return ConfigItemDefault[groupItemCd];
-            }
-            return 0;
+            return configItemDefault.DefaultValue;
         }
         return 0;
     }
@@ -495,4 +486,13 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     {
         DisposeDataContext();
     }
+}
+
+public class ConfigGroupDefault
+{
+    public int GroupCd { get; set; }
+
+    public int GroupItemCd { get; set; }
+
+    public int DefaultValue { get; set; }
 }
