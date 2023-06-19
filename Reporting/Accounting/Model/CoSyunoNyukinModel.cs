@@ -1,9 +1,4 @@
 ﻿using Entity.Tenant;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reporting.Accounting.Model
 {
@@ -100,7 +95,7 @@ namespace Reporting.Accounting.Model
         }
         public string PayMehod
         {
-            get { return PaymentMethod.PayName ?? string.Empty; }
+            get { return PaymentMethod != null ? PaymentMethod.PayName : string.Empty; }
         }
         /// <summary>
         /// 入金日
@@ -137,8 +132,5 @@ namespace Reporting.Accounting.Model
         {
             get { return SyunoNyukin.IsDeleted; }
         }
-
-
-
     }
 }
