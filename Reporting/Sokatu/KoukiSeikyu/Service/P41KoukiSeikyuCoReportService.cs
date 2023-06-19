@@ -52,6 +52,7 @@ public class P41KoukiSeikyuCoReportService : IP41KoukiSeikyuCoReportService
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, bool> _visibleFieldData;
     private const string _formFileName = "p41KoukiSeikyu.rse";
+    private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
 
     #region Constructor and Init
     public P41KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder kokhoFinder)
@@ -86,7 +87,7 @@ public class P41KoukiSeikyuCoReportService : IP41KoukiSeikyuCoReportService
         }
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function

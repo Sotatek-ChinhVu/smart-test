@@ -10,9 +10,11 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
         private readonly Dictionary<string, string> _extralData;
         private readonly string _formFileName;
         private readonly Dictionary<string, bool> _visibleFieldData;
+        private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
 
-        public KoukiSeikyuMapper(Dictionary<int, Dictionary<string, string>> setFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
+        public KoukiSeikyuMapper(Dictionary<int, ReportConfigModel> reportConfigPerPage, Dictionary<int, Dictionary<string, string>> setFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
         {
+            _reportConfigPerPage = reportConfigPerPage;
             _setFieldData = setFieldData;
             _listTextData = listTextData;
             _extralData = extralData;
@@ -77,6 +79,11 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
         public override Dictionary<string, bool> GetVisibleFieldData()
         {
             return _visibleFieldData;
+        }
+
+        public override Dictionary<int, ReportConfigModel> GetReportConfigModelPerPage()
+        {
+            return _reportConfigPerPage; 
         }
     }
 }

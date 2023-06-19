@@ -44,6 +44,7 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
     private readonly Dictionary<string, bool> _visibleFieldData;
     private readonly IReadRseReportFileService _readRseReportFileService;
     private const string _formFileName = "p29KoukiSeikyu.rse";
+    private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
     #endregion
 
     public P29KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder finder)
@@ -82,7 +83,7 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
         
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
     private void UpdateDrawForm()
     {

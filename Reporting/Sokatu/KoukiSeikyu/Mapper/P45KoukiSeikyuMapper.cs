@@ -11,9 +11,11 @@ public class P45KoukiSeikyuMapper : CommonReportingRequest
     private readonly string _formFileNameP1;
     private readonly string _formFileNameP2;
     private readonly Dictionary<string, bool> _visibleFieldData;
+    private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
 
-    public P45KoukiSeikyuMapper(Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileNameP1, string formFileNameP2, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
+    public P45KoukiSeikyuMapper(Dictionary<int, ReportConfigModel> reportConfigPerPage, Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileNameP1, string formFileNameP2, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
     {
+        _reportConfigPerPage = reportConfigPerPage;
         _setFieldData = singleFieldDataM;
         _listTextData = listTextData;
         _extralData = extralData;
@@ -79,5 +81,10 @@ public class P45KoukiSeikyuMapper : CommonReportingRequest
     public override Dictionary<string, bool> GetVisibleFieldData()
     {
         return _visibleFieldData;
+    }
+
+    public override Dictionary<int, ReportConfigModel> GetReportConfigModelPerPage()
+    {
+        return _reportConfigPerPage;
     }
 }
