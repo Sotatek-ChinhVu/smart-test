@@ -65,7 +65,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     {
         var results = _cache.StringGet(key);
         var json = results.AsString();
-        var datas = JsonSerializer.Deserialize<List<SetMstModel>>(json);
+        var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SetMstModel>>(json) : new();
         return datas ?? new();
     }
 

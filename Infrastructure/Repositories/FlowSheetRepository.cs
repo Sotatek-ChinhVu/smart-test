@@ -194,7 +194,7 @@ namespace Infrastructure.Repositories
                             Detail = raiinListDetail.Where(c => c.HpId == mst.HpId && c.GrpId == mst.GrpId).ToList()
                         };
             var raiinListMstModelList = query
-                .Select(data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName ?? string.Empty, data.Mst.SortNo, data.Mst.IsDeleted , data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName ?? string.Empty, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()))
+                .Select(data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName ?? string.Empty, data.Mst.SortNo, data.Mst.IsDeleted, data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName ?? string.Empty, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()))
                 .ToList();
             var json = JsonSerializer.Serialize(raiinListMstModelList);
             _cache.StringSet(RaiinListMstCacheKey, json);
@@ -221,7 +221,7 @@ namespace Infrastructure.Repositories
         {
             var results = _cache.StringGet(RaiinListMstCacheKey);
             var json = results.AsString();
-            var datas = JsonSerializer.Deserialize<List<RaiinListMstModel>>(json);
+            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<RaiinListMstModel>>(json) : new();
             return datas ?? new();
         }
 
@@ -241,10 +241,9 @@ namespace Infrastructure.Repositories
 
         private List<HolidayDto> ReadCacheHolidayMst()
         {
-            var keyHoliday = key + "HolidayMst";
             var results = _cache.StringGet(HolidayMstCacheKey);
             var json = results.AsString();
-            var datas = JsonSerializer.Deserialize<List<HolidayDto>>(json);
+            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<HolidayDto>>(json) : new();
             return datas ?? new();
         }
 

@@ -27,7 +27,7 @@ namespace Infrastructure.Repositories
         {
             if (_cache.KeyExists(key + ptId + hpId))
             {
-                ReadCache(ptId, hpId);
+                return ReadCache(ptId, hpId);
             }
             // data combobox 1 toki
             var TokkiMsts = NoTrackingDataContext.TokkiMsts.Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
@@ -210,11 +210,11 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        private IEnumerable<InsuranceMstModel> ReadCache(long ptId, int hpId)
+        private InsuranceMstModel ReadCache(long ptId, int hpId)
         {
             var results = _cache.StringGet(key + ptId + hpId);
             var json = results.AsString();
-            var datas = JsonSerializer.Deserialize<List<InsuranceMstModel>>(json);
+            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<InsuranceMstModel>(json) : new();
             return datas ?? new();
         }
 

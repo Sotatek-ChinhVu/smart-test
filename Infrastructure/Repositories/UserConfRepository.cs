@@ -179,13 +179,13 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     {
         var results = _cache.StringGet(key + userId + hpId);
         var json = results.AsString();
-        var datas = JsonSerializer.Deserialize<List<UserConf>>(json);
+        var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<UserConf>>(json) : new();
         return datas ?? new();
     }
     private List<UserConf> GetData(int hpId, int userId)
     {
         var result = new List<UserConf>();
-        if (!_cache.KeyDelete(key + userId + hpId))
+        if (!_cache.KeyExists(key + userId + hpId))
         {
             result = ReloadCache(hpId, userId);
         }

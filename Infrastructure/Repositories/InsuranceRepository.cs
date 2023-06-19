@@ -29,7 +29,7 @@ namespace Infrastructure.Repositories
         {
             if (_cache.KeyExists(key + ptId + hpId))
             {
-                ReadCache(ptId, hpId);
+                return ReadCache(ptId, hpId);
             }
             int prefCd = 0;
             var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
@@ -434,11 +434,11 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        private IEnumerable<InsuranceMstModel> ReadCache(long ptId, int hpId)
+        private InsuranceDataModel ReadCache(long ptId, int hpId)
         {
             var results = _cache.StringGet(key + ptId + hpId);
             var json = results.AsString();
-            var datas = JsonSerializer.Deserialize<List<InsuranceMstModel>>(json);
+            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<InsuranceDataModel>(json) : new();
             return datas ?? new();
         }
 

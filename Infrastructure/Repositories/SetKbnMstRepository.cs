@@ -47,7 +47,7 @@ namespace Infrastructure.Repositories
         {
             var results = _cache.StringGet(key);
             var json = results.AsString();
-            var datas = JsonSerializer.Deserialize<List<SetKbnMstModel>>(json);
+            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SetKbnMstModel>>(json) : new();
             return datas ?? new();
         }
 
