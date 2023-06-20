@@ -68,14 +68,6 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
         this.hpId = hpId;
         this.seikyuYm = seikyuYm;
         this.seikyuType = seikyuType;
-        var getData = GetData();
-
-        string _formFileName = "";
-        switch (welfareType)
-        {
-            case 0: _formFileName = "p13WelfareSeikyuGreen.rse"; break; 
-            case 1: _formFileName = "p13WelfareSeikyuBlue.rse"; break;
-        }
 
         switch (welfareType)
         {
@@ -83,6 +75,14 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
             case 0: KohiHoubetus = new List<string> { "82" }; break;
             //難病医療費請求書
             case 1: KohiHoubetus = new List<string> { "83" }; break;
+        }
+        var getData = GetData();
+
+        string _formFileName = "";
+        switch (welfareType)
+        {
+            case 0: _formFileName = "p13WelfareSeikyuGreen.rse"; break; 
+            case 1: _formFileName = "p13WelfareSeikyuBlue.rse"; break;
         }
 
         switch (welfareType)

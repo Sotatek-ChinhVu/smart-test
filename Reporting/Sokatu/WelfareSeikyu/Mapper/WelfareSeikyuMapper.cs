@@ -30,7 +30,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Mapper
 
         public override int GetReportType()
         {
-            return (int)CoReportType.KoukiSeikyu;
+            return (int)CoReportType.WelfareSeikyu;
         }
 
         public override string GetRowCountFieldName()
