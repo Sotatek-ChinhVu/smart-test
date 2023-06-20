@@ -250,7 +250,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             //負担者番号の一覧を取得
             futansyaNos = receInfs.GroupBy(r => r.FutansyaNo(KohiHoubetus)).OrderBy(r => r.Key).Select(r => r.Key).ToList();
 
-            return (receInfs?.Count ?? 0) > 0;
+            return (receInfs?.Count ?? 0) == 0;
         }
 
         private void SetFieldData(string field, string value)
