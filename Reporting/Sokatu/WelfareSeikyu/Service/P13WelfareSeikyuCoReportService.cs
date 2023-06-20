@@ -71,9 +71,9 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
         switch (welfareType)
         {
             //負担医療費請求書
-            case 0: KohiHoubetus = new List<string> { "82" }; break;
+            case 0: kohiHoubetus = new List<string> { "82" }; break;
             //難病医療費請求書
-            case 1: KohiHoubetus = new List<string> { "83" }; break;
+            case 1: kohiHoubetus = new List<string> { "83" }; break;
         }
         var getData = GetData();
 
@@ -165,14 +165,14 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
                 var curReceInf = receInfs[ptIndex];
 
                 //負担者番号
-                if (curReceInf.FutansyaNo(KohiHoubetus) != "")
+                if (curReceInf.FutansyaNo(kohiHoubetus) != "")
                 {
-                    listDataPerPage.Add(new("futansyaNo0", 0, rowNo, curReceInf.FutansyaNo(KohiHoubetus).Substring(0, 2)));
-                    listDataPerPage.Add(new("futansyaNo1", 0, rowNo, curReceInf.FutansyaNo(KohiHoubetus).Substring(4, 4)));
+                    listDataPerPage.Add(new("futansyaNo0", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus).Substring(0, 2)));
+                    listDataPerPage.Add(new("futansyaNo1", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus).Substring(4, 4)));
 
                 }
                 //受給者番号
-                listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, string.Format("{0, 7}", curReceInf.JyukyusyaNo(KohiHoubetus))));
+                listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, string.Format("{0, 7}", curReceInf.JyukyusyaNo(kohiHoubetus))));
                 //保険者番号
                 listDataPerPage.Add(new("hokensyaNo", 0, rowNo, curReceInf.HokensyaNo));
                 //氏名
@@ -184,14 +184,14 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
                 //診療日数
                 listDataPerPage.Add(new("nissu", 0, rowNo, curReceInf.HokenNissu.ToString()));
                 //請求額
-                listDataPerPage.Add(new("seikyu", 0, rowNo, curReceInf.KohiFutan(KohiHoubetus).ToString()));
-                totalSeikyu += curReceInf.KohiFutan(KohiHoubetus);
+                listDataPerPage.Add(new("seikyu", 0, rowNo, curReceInf.KohiFutan(kohiHoubetus).ToString()));
+                totalSeikyu += curReceInf.KohiFutan(kohiHoubetus);
                 //公費分点数
-                listDataPerPage.Add(new("kohiTensu", 0, rowNo, curReceInf.KohiReceTensu(KohiHoubetus).ToString()));
+                listDataPerPage.Add(new("kohiTensu", 0, rowNo, curReceInf.KohiReceTensu(kohiHoubetus).ToString()));
                 if (welfareType == 1)
                 {
                     //一部負担金相当額
-                    listDataPerPage.Add(new("futan", 0, rowNo, curReceInf.KohiReceFutan(KohiHoubetus).ToString()));
+                    listDataPerPage.Add(new("futan", 0, rowNo, curReceInf.KohiReceFutan(kohiHoubetus).ToString()));
                 }
                 //備考
                 if (curReceInf.IsChoki)
@@ -248,7 +248,7 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
     private bool GetData()
     {
         hpInf = _welfareFinder.GetHpInf(hpId, seikyuYm);
-        var wrkReces = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, KohiHoubetus, FutanCheck.KohiFutan, HokenKbn.Kokho);
+        var wrkReces = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, kohiHoubetus, FutanCheck.KohiFutan, HokenKbn.Kokho);
         //都外国保+マル都(82)
         List<string> prefIn = new List<string> { "13", "63" };
         receInfs = wrkReces.Where(r => !prefIn.Contains(r.HokensyaNo.Substring(r.HokensyaNo.Length - 6, 2))).ToList();

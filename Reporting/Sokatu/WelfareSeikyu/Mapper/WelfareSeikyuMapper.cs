@@ -75,9 +75,9 @@ namespace Reporting.Sokatu.WelfareSeikyu.Mapper
         public override Dictionary<string, string> GetFileNamePageMap()
         {
             var fileName = new Dictionary<string, string>
-                            {
+                           {
                                 { "1", _formFileName }
-                            };
+                           };
             return fileName;
         }
 
