@@ -609,6 +609,7 @@ using Reporting.Sokatu.WelfareSeikyu.DB;
 using Reporting.Byomei.DB;
 using UseCase.User.GetListUserByCurrentUser;
 using UseCase.MedicalExamination.GetHeaderVistitDate;
+using Domain.Models.UserToken;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -879,6 +880,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICommonSuperSet, CommonSuperSet>();
             services.AddTransient<ICoKarte1Finder, CoKarte1Finder>();
             services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
+            services.AddTransient<IUserTokenRepository, UserTokenRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
