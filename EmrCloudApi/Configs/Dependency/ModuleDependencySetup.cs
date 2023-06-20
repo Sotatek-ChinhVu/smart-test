@@ -545,7 +545,6 @@ using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemConf.SaveDrugCheckSetting;
 using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
-using UseCase.SystemGenerationConf;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using UseCase.TimeZoneConf.SaveTimeZoneConf;
 using UseCase.Todo.GetListTodoKbn;
@@ -609,6 +608,8 @@ using Reporting.Sokatu.WelfareSeikyu.DB;
 using Reporting.Byomei.DB;
 using UseCase.User.GetListUserByCurrentUser;
 using UseCase.MedicalExamination.GetHeaderVistitDate;
+using UseCase.SystemGenerationConf.Get;
+using UseCase.SystemGenerationConf.GetList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1219,6 +1220,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //System Config Generation 
             busBuilder.RegisterUseCase<GetSystemGenerationConfInputData, GetSystemGenerationConfInteractor>();
+            busBuilder.RegisterUseCase<GetSystemGenerationConfListInputData, GetSystemGenerationConfListInteractor>();
 
             //Next Order
             busBuilder.RegisterUseCase<GetNextOrderListInputData, GetNextOrderListInteractor>();
