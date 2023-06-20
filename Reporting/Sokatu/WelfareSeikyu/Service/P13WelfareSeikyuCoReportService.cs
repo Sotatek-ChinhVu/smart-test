@@ -4,7 +4,6 @@ using Reporting.CommonMasters.Config;
 using Reporting.CommonMasters.Constants;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
-using Reporting.Sokatu.KokhoSokatu.Mapper;
 using Reporting.Sokatu.WelfareSeikyu.DB;
 using Reporting.Sokatu.WelfareSeikyu.Mapper;
 using Reporting.Sokatu.WelfareSeikyu.Models;
@@ -81,7 +80,7 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
         string _formFileName = "";
         switch (welfareType)
         {
-            case 0: _formFileName = "p13WelfareSeikyuGreen.rse"; break; 
+            case 0: _formFileName = "p13WelfareSeikyuGreen.rse"; break;
             case 1: _formFileName = "p13WelfareSeikyuBlue.rse"; break;
         }
 
@@ -164,7 +163,7 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
                     break;
                 }
                 var curReceInf = receInfs[ptIndex];
-                
+
                 //負担者番号
                 if (curReceInf.FutansyaNo(KohiHoubetus) != "")
                 {
@@ -249,12 +248,12 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
     private bool GetData()
     {
         hpInf = _welfareFinder.GetHpInf(hpId, seikyuYm);
-        var wrkReces = _welfareFinder.GetReceInf(hpId,  seikyuYm, seikyuType, KohiHoubetus, FutanCheck.KohiFutan, HokenKbn.Kokho);
+        var wrkReces = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, KohiHoubetus, FutanCheck.KohiFutan, HokenKbn.Kokho);
         //都外国保+マル都(82)
         List<string> prefIn = new List<string> { "13", "63" };
         receInfs = wrkReces.Where(r => !prefIn.Contains(r.HokensyaNo.Substring(r.HokensyaNo.Length - 6, 2))).ToList();
 
-        return (receInfs?.Count ?? 0) == 0;
+        return (receInfs?.Count ?? 0) > 0;
     }
 
     private void SetFieldData(string field, string value)
