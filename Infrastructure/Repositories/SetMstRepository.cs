@@ -100,7 +100,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                                              && item.IsDeleted == 0);
 
             var searchItemList = setMstModelList!
-                                .Where(item => string.IsNullOrEmpty(textSearch)
+                                .Where(item => !string.IsNullOrEmpty(textSearch)
                                                && ((item.SetName != null && item.SetName.Contains(textSearch))
                                                     || (item.SetName != null && item.SetName.ToUpper()
                                                                                             .Replace("ｧ", "ｱ")

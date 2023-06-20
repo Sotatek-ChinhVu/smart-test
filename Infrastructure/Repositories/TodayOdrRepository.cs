@@ -599,7 +599,7 @@ namespace Infrastructure.Repositories
                                 if (originSortNo == null || originSortNo > newSortNo)
                                 {
                                     raiinListInf.KbnCd = kouiItem.KbnCd;
-                                    raiinListInf.UpdateDate = DateTime.Now;
+                                    raiinListInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                     raiinListInf.UpdateId = userId;
                                 }
                             }
@@ -2661,6 +2661,20 @@ namespace Infrastructure.Repositories
                             }
                             else if (totalSanteiCount + detail.Suryo > santeiCntCheck.MaxCnt)
                             {
+                                double suryo = Convert.ToDouble(santeiCntCheck.MaxCnt) - totalSanteiCount;
+                                var totalSanteiCountString = totalSanteiCount.ToString();
+                                int digits = 0;
+                                if (totalSanteiCountString.Contains("."))
+                                {
+                                    int startIndex = totalSanteiCountString.IndexOf(".");
+                                    digits = totalSanteiCountString.Substring(startIndex, totalSanteiCountString.Length - startIndex).Length - 1;
+                                    if (digits < 0)
+                                    {
+                                        digits = 0;
+                                    }
+                                }
+                                suryo = Math.Round(suryo, digits);
+
                                 StringBuilder stringBuilder = new StringBuilder("");
                                 stringBuilder.Append("'");
                                 stringBuilder.Append(detail.DisplayItemName);
@@ -2672,11 +2686,10 @@ namespace Infrastructure.Repositories
                                 stringBuilder.Append("単位を超えます。");
                                 stringBuilder.Append(Environment.NewLine);
                                 stringBuilder.Append("数量を'");
-                                stringBuilder.Append(santeiCntCheck.MaxCnt - totalSanteiCount);
+                                stringBuilder.Append(suryo);
                                 stringBuilder.Append("'に変更しますか？");
 
                                 string msg = stringBuilder.ToString();
-                                var suryo = santeiCntCheck.MaxCnt - totalSanteiCount;
                                 detail.ChangeSuryo(suryo);
                                 result.Add(new(2, msg, odrInfIndex, odrInfDetailIndex, new(), suryo));
                             }

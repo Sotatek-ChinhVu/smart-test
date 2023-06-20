@@ -431,7 +431,7 @@ namespace Domain.Common
                     }
 
                     var sumBukatu = odrInf.SumBunkatu(bunkatuItem?.Bunkatu ?? string.Empty);
-                    
+
                     if (usageItem.Suryo != sumBukatu)
                     {
                         var bunkatuIndex = odrInf.OrdInfDetails?.FindIndex(od => od == bunkatuItem) ?? 0;
@@ -645,9 +645,13 @@ namespace Domain.Common
 
         private static OrdInfValidationStatus ValidateCmtDetail(int sinDate, TOdrInfDetailModel odrInfDetail)
         {
-            if (odrInfDetail.Is840Cmt && odrInfDetail.CmtCol1 > 0 && (string.IsNullOrEmpty(odrInfDetail.CmtOpt) || string.IsNullOrEmpty(odrInfDetail.CmtName)))
+            if (odrInfDetail.Is840Cmt)
             {
-                return OrdInfValidationStatus.InvalidCmt840;
+                string cmtOpt = OdrUtil.GetCmtOpt840(odrInfDetail.CmtOpt);
+                if (odrInfDetail.CmtCol1 > 0 && (string.IsNullOrEmpty(cmtOpt) || string.IsNullOrEmpty(odrInfDetail.CmtName)))
+                {
+                    return OrdInfValidationStatus.InvalidCmt840;
+                }
             }
 
             if (odrInfDetail.Is842Cmt)

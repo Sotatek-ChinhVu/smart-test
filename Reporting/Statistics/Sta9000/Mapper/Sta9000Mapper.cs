@@ -1,4 +1,5 @@
-﻿using Reporting.Mappers.Common;
+﻿using Helper.Common;
+using Reporting.Mappers.Common;
 
 namespace Reporting.Statistics.Sta9000.Mapper;
 
@@ -62,6 +63,6 @@ public class Sta9000Mapper : CommonReportingRequest
 
     public override string GetJobName()
     {
-        return "PatientManagement" + DateTime.Now.ToString("yyyyMMddHHmmss");
+        return "PatientManagement" + CIUtil.GetJapanDateTimeNow().ToString("yyyyMMddHHmmss");
     }
 }

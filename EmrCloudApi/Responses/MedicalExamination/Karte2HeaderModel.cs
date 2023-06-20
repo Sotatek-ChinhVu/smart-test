@@ -14,7 +14,7 @@ public class Karte2HeaderModel
         Name = patientInfo.Name;
         Sex = patientInfo.Sex == 1 ? "（男）" : "（女）";
         Birthday = CIUtil.SDateToShowWDate2(patientInfo.Birthday);
-        CurrentTime = DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm");
+        CurrentTime = CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd HH:mm");
         StartDate = CIUtil.SDateToShowSDate2(startDate);
         EndDate = CIUtil.SDateToShowSDate2(endDate);
     }

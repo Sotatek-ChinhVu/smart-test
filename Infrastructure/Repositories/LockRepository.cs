@@ -1,5 +1,7 @@
 ﻿using Domain.Models.Lock;
+using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -73,7 +75,7 @@ namespace Infrastructure.Repositories
                     on lockInf.RaiinNo equals raiinInf.RaiinNo into rfg
                     from lockedRaiinInf in rfg.DefaultIfEmpty()
                     join lockMst in NoTrackingDataContext.LockMsts.Where(m => m.FunctionCdB == functionCd && m.IsInvalid == 0)
-            on lockInf.FunctionCd equals lockMst.FunctionCdA
+                    on lockInf.FunctionCd equals lockMst.FunctionCdA
                     join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted != 1 && u.StartDate <= sinDate && sinDate <= u.EndDate)
                     on lockInf.UserId equals userMst.UserId into gj
                     from lockedUserInf in gj.DefaultIfEmpty()
@@ -215,16 +217,36 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public bool GetVisitingLockStatus(int hpId,int userId, long ptId, int sinDate, string functionCode, string tokenUser)
+        public bool GetVisitingLockStatus(int hpId, int userId, long ptId, string functionCode)
         {
-            var log = NoTrackingDataContext.LockInfs.FirstOrDefault(l => l.HpId == hpId 
-                                                                         &&
-                                                                         ((l.Machine == tokenUser && l.SinDate == sinDate) || (l.Machine != tokenUser))
-                                                                         &&
-                                                                         l.PtId == ptId &&
-                                                                         l.FunctionCd == functionCode &&
-                                                                         l.UserId == userId);
+            LockInf? log = null;
+            if (functionCode == FunctionCode.MedicalExaminationCode)
+            {
+                log = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && (item.FunctionCd == functionCode
+                                                                                || item.FunctionCd == FunctionCode.SwitchOrderCode)
+                                                                            && item.UserId == userId);
+            }
+            else
+            {
+                log = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && item.FunctionCd == functionCode
+                                                                            && item.UserId == userId);
+            }
             return log == null;
+        }
+
+        public string GetFunctionNameLock(string functionCode)
+        {
+            string result = string.Empty;
+            var functionItem = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd == functionCode);
+            if (functionItem != null)
+            {
+                result = functionItem.FunctionName ?? string.Empty;
+            }
+            return result;
         }
     }
 }

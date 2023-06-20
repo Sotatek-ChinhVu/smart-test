@@ -155,7 +155,7 @@ namespace Infrastructure.Repositories
 
         private List<RaiinListItemModel> GetRaiinListItemCollection(int hpId)
         {
-            int stDate = CIUtil.DateTimeToInt(DateTime.Now);
+            int stDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
 
             var items = NoTrackingDataContext.RaiinListItems.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None);
 
