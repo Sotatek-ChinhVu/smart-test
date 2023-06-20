@@ -879,6 +879,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICommonSuperSet, CommonSuperSet>();
             services.AddTransient<ICoKarte1Finder, CoKarte1Finder>();
             services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
+            services.AddTransient<ICheckOpenReportingService, CheckOpenReportingService>();
         }
 
         private void SetupUseCase(IServiceCollection services)

@@ -500,14 +500,39 @@ public class AccountingCoReportService : IAccountingCoReportService
                   accountingDicResult);
     }
 
+    public bool CheckOpenReportingForm(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false)
+    {
+        List<CoAccountingParamModel> coAccountingParamModels = new();
+        var raiinInfModelList = _finder.GetOyaRaiinInfList(hpId, raiinNoList, ptId);
+        var raiinInfModelPayList = _finder.GetOyaRaiinInfList(hpId, raiinNoPayList, ptId);
+
+        if (printTypeInput == 4)
+        {
+            for (int printTypeCheck = 0; printTypeCheck <= 1; printTypeCheck++)
+            {
+                coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeCheck, raiinInfModelList, raiinInfModelPayList));
+            }
+        }
+        else
+        {
+            coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeInput, raiinInfModelList, raiinInfModelPayList));
+        }
+        return CheckOpenReportingForm(hpId, coAccountingParamModels);
+    }
+
     public bool CheckOpenReportingForm(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
     {
         this.hpId = hpId;
         mode = PrintMode.MultiPrint;
         @params = coAccountingParamModels;
+        var allType = coAccountingParamModels.Select(item => item.PrintType).Distinct().ToList();
         try
         {
-            GetParamFromRseFile();
+            foreach (var type in allType)
+            {
+                this.printType = type;
+                GetParamFromRseFile();
+            }
         }
         catch
         {
