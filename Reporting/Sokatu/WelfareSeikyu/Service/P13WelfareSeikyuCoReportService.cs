@@ -14,7 +14,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service;
 public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
 {
     #region Constant
-    private List<string> KohiHoubetus;
+    private List<string> kohiHoubetus;
     #endregion
 
     #region Private properties
@@ -253,7 +253,7 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
         List<string> prefIn = new List<string> { "13", "63" };
         receInfs = wrkReces.Where(r => !prefIn.Contains(r.HokensyaNo.Substring(r.HokensyaNo.Length - 6, 2))).ToList();
 
-        return (receInfs?.Count ?? 0) > 0;
+        return (receInfs?.Count ?? 0) == 0;
     }
 
     private void SetFieldData(string field, string value)
