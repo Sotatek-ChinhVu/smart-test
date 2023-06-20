@@ -21,4 +21,6 @@ public class ReceiptPrintRequest : ReportRequestBase
     public int DiskKind { get; set; }
 
     public int DiskCnt { get; set; }
+
+    public int WelfareType { get; set; }
 }

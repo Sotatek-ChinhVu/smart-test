@@ -6,6 +6,7 @@ using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
 using EmrCloudApi.Services;
+using Helper.Constants;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
@@ -36,8 +37,9 @@ namespace EmrCloudApi.Controller
 
             if (output.Status == AddLockStatus.Successed)
             {
+                string functionCode = request.FunctionCod == FunctionCode.SwitchOrderCode ? FunctionCode.MedicalExaminationCode : request.FunctionCod;
                 await _webSocketService.SendMessageAsync(FunctionCodes.AddLockChanged,
-                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 1, FunctionCod = request.FunctionCod });
+                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 1, FunctionCod = functionCode });
             }
 
             var presenter = new AddLockPresenter();

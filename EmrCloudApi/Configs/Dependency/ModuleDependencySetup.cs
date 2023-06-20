@@ -610,6 +610,7 @@ using UseCase.User.GetListUserByCurrentUser;
 using UseCase.MedicalExamination.GetHeaderVistitDate;
 using UseCase.SystemGenerationConf.Get;
 using UseCase.SystemGenerationConf.GetList;
+using Reporting.Sokatu.WelfareSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -778,6 +779,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -880,6 +882,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICommonSuperSet, CommonSuperSet>();
             services.AddTransient<ICoKarte1Finder, CoKarte1Finder>();
             services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
+            services.AddTransient<ICheckOpenReportingService, CheckOpenReportingService>();
         }
 
         private void SetupUseCase(IServiceCollection services)
