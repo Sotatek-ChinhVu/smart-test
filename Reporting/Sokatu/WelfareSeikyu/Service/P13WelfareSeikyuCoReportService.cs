@@ -158,7 +158,13 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
+                if (receInfs.Count <= ptIndex)
+                {
+                    _hasNextPage = false;
+                    break;
+                }
                 var curReceInf = receInfs[ptIndex];
+                
                 //負担者番号
                 if (curReceInf.FutansyaNo(KohiHoubetus) != "")
                 {
@@ -248,7 +254,7 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
         List<string> prefIn = new List<string> { "13", "63" };
         receInfs = wrkReces.Where(r => !prefIn.Contains(r.HokensyaNo.Substring(r.HokensyaNo.Length - 6, 2))).ToList();
 
-        return (receInfs?.Count ?? 0) > 0;
+        return (receInfs?.Count ?? 0) == 0;
     }
 
     private void SetFieldData(string field, string value)
