@@ -1,4 +1,4 @@
-﻿namespace UseCase.SystemGenerationConf
+﻿namespace UseCase.SystemGenerationConf.Get
 {
     public enum GetSystemGenerationConfStatus : byte
     {
