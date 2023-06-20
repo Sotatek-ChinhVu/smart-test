@@ -205,6 +205,10 @@ public class ReceiptPrintService : IReceiptPrintService
         {
             return _p13WelfareSeikyuCoReportService.GetP13WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType, welfareType);
         }
+        else if (prefNo == 13 && reportId == 105 && reportEdaNo == 0 && welfareType == 1)
+        {
+            return _p13WelfareSeikyuCoReportService.GetP13WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType, welfareType);
+        }
         return new();
     }
 

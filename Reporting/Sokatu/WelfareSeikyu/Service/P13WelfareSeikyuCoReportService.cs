@@ -159,10 +159,13 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
                 var curReceInf = receInfs[ptIndex];
-
                 //負担者番号
-                listDataPerPage.Add(new("futansyaNo0", 0, rowNo, curReceInf.FutansyaNo(KohiHoubetus).Substring(0, 2)));
-                listDataPerPage.Add(new("futansyaNo1", 0, rowNo, curReceInf.FutansyaNo(KohiHoubetus).Substring(4, 4)));
+                if (curReceInf.FutansyaNo(KohiHoubetus) != "")
+                {
+                    listDataPerPage.Add(new("futansyaNo0", 0, rowNo, curReceInf.FutansyaNo(KohiHoubetus).Substring(0, 2)));
+                    listDataPerPage.Add(new("futansyaNo1", 0, rowNo, curReceInf.FutansyaNo(KohiHoubetus).Substring(4, 4)));
+
+                }
                 //受給者番号
                 listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, string.Format("{0, 7}", curReceInf.JyukyusyaNo(KohiHoubetus))));
                 //保険者番号
