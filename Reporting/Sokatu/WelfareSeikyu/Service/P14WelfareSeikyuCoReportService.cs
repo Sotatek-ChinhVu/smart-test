@@ -12,7 +12,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
     public class P14WelfareSeikyuCoReportService : IP14WelfareSeikyuCoReportService
     {
         #region Constant
-        private List<string> KohiHoubetus;
+        private List<string> kohiHoubetus;
         #endregion
 
         #region Private properties
@@ -68,15 +68,15 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             switch (welfareType)
             {
                 //障害者医療費助成事業請求書
-                case 0: KohiHoubetus = new List<string> { "80" }; break;
+                case 0: kohiHoubetus = new List<string> { "80" }; break;
                 //小児医療費助成事業請求書
-                case 1: KohiHoubetus = new List<string> { "81" }; break;
+                case 1: kohiHoubetus = new List<string> { "81" }; break;
                 //ひとり親家庭等医療費助成事業請求書
-                case 2: KohiHoubetus = new List<string> { "85" }; break;
+                case 2: kohiHoubetus = new List<string> { "85" }; break;
                 //小児ぜん息患者医療費支給事業請求書
-                case 3: KohiHoubetus = new List<string> { "88" }; break;
+                case 3: kohiHoubetus = new List<string> { "88" }; break;
                 //成人ぜん息患者医療費助成事業請求書
-                case 4: KohiHoubetus = new List<string> { "89" }; break;
+                case 4: kohiHoubetus = new List<string> { "89" }; break;
             }
 
             var getData = GetData();
@@ -161,25 +161,25 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                         break;
                     }
                     string futansyaNo = futansyaNos[kohiIndex];
-                    var wrkReces = receInfs.Where(r => r.FutansyaNo(KohiHoubetus) == futansyaNo).ToList();
+                    var wrkReces = receInfs.Where(r => r.FutansyaNo(kohiHoubetus) == futansyaNo).ToList();
 
                     //負担者番号
                     listDataPerPage.Add(new("futansyaNo", 0, rowNo, futansyaNo.Substring(4, 4)));
                     //療養の給付・件数
                     listDataPerPage.Add(new("count", 0, rowNo, wrkReces.Count.ToString()));
                     //療養の給付・点数
-                    listDataPerPage.Add(new("tensu", 0, rowNo, wrkReces.Sum(r => r.KohiReceTensu(KohiHoubetus)).ToString()));
+                    listDataPerPage.Add(new("tensu", 0, rowNo, wrkReces.Sum(r => r.KohiReceTensu(kohiHoubetus)).ToString()));
                     //医療費助成事業一部負担金・件数（償還を除く）
-                    var kohiReces = wrkReces.Where(r => r.KohiHokenNo(KohiHoubetus) != "1800");
-                    listDataPerPage.Add(new("kohiCount", 0, rowNo, kohiReces.Where(r => r.KohiReceFutan(KohiHoubetus) > 0).Count().ToString()));
+                    var kohiReces = wrkReces.Where(r => r.KohiHokenNo(kohiHoubetus) != "1800");
+                    listDataPerPage.Add(new("kohiCount", 0, rowNo, kohiReces.Where(r => r.KohiReceFutan(kohiHoubetus) > 0).Count().ToString()));
                     //医療費助成事業一部負担金・金額
-                    listDataPerPage.Add(new("kohiFutan", 0, rowNo, kohiReces.Sum(r => r.KohiReceFutan(KohiHoubetus)).ToString()));
+                    listDataPerPage.Add(new("kohiFutan", 0, rowNo, kohiReces.Sum(r => r.KohiReceFutan(kohiHoubetus)).ToString()));
                     if (welfareType != 1)
                     {
                         //一部負担金・件数（高額療養費のレセ給付対象額）
-                        listDataPerPage.Add(new("receKyufuCount", 0, rowNo, wrkReces.Where(r => r.KohiReceKyufu(KohiHoubetus) > 0).Count().ToString()));
+                        listDataPerPage.Add(new("receKyufuCount", 0, rowNo, wrkReces.Where(r => r.KohiReceKyufu(kohiHoubetus) > 0).Count().ToString()));
                         //一部負担金・金額
-                        listDataPerPage.Add(new("receKyufu", 0, rowNo, wrkReces.Sum(r => r.KohiReceKyufu(KohiHoubetus)).ToString()));
+                        listDataPerPage.Add(new("receKyufu", 0, rowNo, wrkReces.Sum(r => r.KohiReceKyufu(kohiHoubetus)).ToString()));
                     }
 
                     kohiIndex++;
@@ -196,18 +196,18 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     //療養の給付・件数
                     listDataPerPage.Add(new("count", 0, maxRow, receInfs.Count.ToString()));
                     //療養の給付・点数
-                    listDataPerPage.Add(new("tensu", 0, maxRow, receInfs.Sum(r => r.KohiReceTensu(KohiHoubetus)).ToString()));
+                    listDataPerPage.Add(new("tensu", 0, maxRow, receInfs.Sum(r => r.KohiReceTensu(kohiHoubetus)).ToString()));
                     //医療費助成事業一部負担金・件数（償還を除く）
-                    var kohiReces = receInfs.Where(r => r.KohiHokenNo(KohiHoubetus) != "1800");
-                    listDataPerPage.Add(new("kohiCount", 0, maxRow, kohiReces.Where(r => r.KohiReceFutan(KohiHoubetus) > 0).Count().ToString()));
+                    var kohiReces = receInfs.Where(r => r.KohiHokenNo(kohiHoubetus) != "1800");
+                    listDataPerPage.Add(new("kohiCount", 0, maxRow, kohiReces.Where(r => r.KohiReceFutan(kohiHoubetus) > 0).Count().ToString()));
                     //医療費助成事業一部負担金・金額
-                    listDataPerPage.Add(new("kohiFutan", 0, maxRow, kohiReces.Sum(r => r.KohiReceFutan(KohiHoubetus)).ToString()));
+                    listDataPerPage.Add(new("kohiFutan", 0, maxRow, kohiReces.Sum(r => r.KohiReceFutan(kohiHoubetus)).ToString()));
                     if (welfareType != 1)
                     {
                         //一部負担金・件数（高額療養費のレセ給付対象額）
-                        listDataPerPage.Add(new("receKyufuCount", 0, maxRow, receInfs.Where(r => r.KohiReceKyufu(KohiHoubetus) > 0).Count().ToString()));
+                        listDataPerPage.Add(new("receKyufuCount", 0, maxRow, receInfs.Where(r => r.KohiReceKyufu(kohiHoubetus) > 0).Count().ToString()));
                         //一部負担金・金額
-                        listDataPerPage.Add(new("receKyufu", 0, maxRow, receInfs.Sum(r => r.KohiReceKyufu(KohiHoubetus)).ToString()));
+                        listDataPerPage.Add(new("receKyufu", 0, maxRow, receInfs.Sum(r => r.KohiReceKyufu(kohiHoubetus)).ToString()));
                     }
 
                     //再掲
@@ -249,11 +249,11 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         private bool GetData()
         {
             hpInf = _welfareFinder.GetHpInf(hpId, seikyuYm);
-            var wrkReces = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, KohiHoubetus, FutanCheck.KohiFutan, HokenKbn.Syaho);
+            var wrkReces = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, kohiHoubetus, FutanCheck.KohiFutan, HokenKbn.Syaho);
             //神奈川県用のモデルクラスにコピー
             receInfs = wrkReces.Select(x => new CoP14WelfareReceInfModel(x.ReceInf, x.PtKohi1, x.PtKohi2, x.PtKohi3, x.PtKohi4)).ToList();
             //負担者番号の一覧を取得
-            futansyaNos = receInfs.GroupBy(r => r.FutansyaNo(KohiHoubetus)).OrderBy(r => r.Key).Select(r => r.Key).ToList();
+            futansyaNos = receInfs.GroupBy(r => r.FutansyaNo(kohiHoubetus)).OrderBy(r => r.Key).Select(r => r.Key).ToList();
 
             return (receInfs?.Count ?? 0) > 0;
         }
