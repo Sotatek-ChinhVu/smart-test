@@ -170,8 +170,7 @@ namespace CloudUnitTest.SampleData
                                     ptByomei.IsDeleted = isDeleted;
                                     break;
                                 case "AN":
-
-                                    ptByomei.CreateDate = DateTime.Parse(text);
+                                    ptByomei.CreateDate = DateTime.UtcNow;
                                     break;
                                 case "AO":
                                     int.TryParse(text, out int createId);
@@ -181,7 +180,7 @@ namespace CloudUnitTest.SampleData
                                     ptByomei.CreateMachine = text;
                                     break;
                                 case "AQ":
-                                    ptByomei.UpdateDate = DateTime.Parse(text);
+                                    ptByomei.UpdateDate = DateTime.UtcNow;
                                     break;
                                 case "AR":
                                     int.TryParse(text, out int updateId);
