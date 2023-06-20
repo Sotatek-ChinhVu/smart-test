@@ -155,6 +155,11 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
+                    if (futansyaNos.Count <= kohiIndex)
+                    {
+                        _hasNextPage = false;
+                        break;
+                    }
                     string futansyaNo = futansyaNos[kohiIndex];
                     var wrkReces = receInfs.Where(r => r.FutansyaNo(KohiHoubetus) == futansyaNo).ToList();
 
@@ -250,7 +255,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             //負担者番号の一覧を取得
             futansyaNos = receInfs.GroupBy(r => r.FutansyaNo(KohiHoubetus)).OrderBy(r => r.Key).Select(r => r.Key).ToList();
 
-            return (receInfs?.Count ?? 0) == 0;
+            return (receInfs?.Count ?? 0) > 0;
         }
 
         private void SetFieldData(string field, string value)
