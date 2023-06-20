@@ -145,11 +145,6 @@ namespace Infrastructure.Repositories
             {
                 return true;
             }
-            if (lockInf.FunctionCd == FunctionCode.MedicalExaminationCode)
-            {
-                var lockSwitchOrderList = TrackingDataContext.LockInfs.Where(item => item.HpId == hpId && item.PtId == ptId && item.FunctionCd == FunctionCode.SwitchOrderCode && item.SinDate == sinDate && item.UserId == userId).ToList();
-                TrackingDataContext.LockInfs.RemoveRange(lockSwitchOrderList);
-            }
             TrackingDataContext.LockInfs.Remove(lockInf);
             TrackingDataContext.SaveChanges();
             return true;
