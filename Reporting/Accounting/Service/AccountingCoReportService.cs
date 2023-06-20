@@ -505,9 +505,14 @@ public class AccountingCoReportService : IAccountingCoReportService
         this.hpId = hpId;
         mode = PrintMode.MultiPrint;
         @params = coAccountingParamModels;
+        var allType = coAccountingParamModels.Select(item => item.PrintType).Distinct().ToList();
         try
         {
-            GetParamFromRseFile();
+            foreach (var type in allType)
+            {
+                this.printType = type;
+                GetParamFromRseFile();
+            }
         }
         catch
         {
