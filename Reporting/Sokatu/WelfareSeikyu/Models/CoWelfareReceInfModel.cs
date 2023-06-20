@@ -72,7 +72,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public string HokensyaNo
         {
-            get => ReceInf.HokensyaNo;
+            get => ReceInf.HokensyaNo ?? string.Empty;
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public string Kigo
         {
-            get => PtHokenInf.Kigo;
+            get => PtHokenInf.Kigo ?? string.Empty;
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public string Bango
         {
-            get => PtHokenInf.Bango;
+            get => PtHokenInf.Bango ?? string.Empty;
         }
 
         /// <summary>
@@ -96,13 +96,13 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         /// <param name="kohiHoubetus">法別番号</param>
         /// <returns></returns>
-        public string FutansyaNo(List<string> kohiHoubetus)
+        public string? FutansyaNo(List<string> kohiHoubetus)
         {
             return
-                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1.FutansyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2.FutansyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3.FutansyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4.FutansyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu ?? string.Empty) ? PtKohi1.FutansyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu ?? string.Empty) ? PtKohi2.FutansyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu ?? string.Empty) ? PtKohi3.FutansyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu ?? string.Empty) ? PtKohi4.FutansyaNo :
                 "";
         }
 
