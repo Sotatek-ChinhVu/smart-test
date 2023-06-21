@@ -71,7 +71,7 @@ namespace CloudUnitTest.CommonChecker.Services
         }
 
         [Test]
-        public void DosageChecker_002_CheckDosageFinder()
+        public void DosageChecker_002_CheckDosageFinder_ErrorResult()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -104,6 +104,94 @@ namespace CloudUnitTest.CommonChecker.Services
             //// Act
 
             var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, 0, 0, new(), true);
+
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+
+            //// Assert
+            Assert.True(result.Any() && result[0].ItemCd == "620160501");
+        }
+
+        [Test]
+        public void DosageChecker_003_CheckDosageFinder_ErrorResult_CheckCurrentHeightIsNegative()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.SaveChanges();
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = false;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 0;
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "620160501",
+                    ItemName = "ＰＬ配合顆粒",
+                    SinKouiKbn = 21,
+                    Suryo = 100,
+                    TermVal = 0,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext());
+
+            //// Act
+
+            var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+
+            //// Assert
+            Assert.True(result.Any() && result[0].ItemCd == "620160501");
+        }
+
+        [Test]
+        public void DosageChecker_003_CheckDosageFinder_ErrorResult_CheckCurrentWeightIsNegative()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.SaveChanges();
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = false;
+            var ratioSetting = 9.9;
+            var currentHeight = 0;
+            var currenWeight = -1;
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "620160501",
+                    ItemName = "ＰＬ配合顆粒",
+                    SinKouiKbn = 21,
+                    Suryo = 100,
+                    TermVal = 0,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext());
+
+            //// Act
+
+            var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
             tenantTracking.PtInfs.RemoveRange(ptInfs);
             tenantTracking.SaveChanges();
