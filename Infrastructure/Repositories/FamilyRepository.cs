@@ -65,7 +65,6 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 ListPtFamilyRekiInfo = listPtFamilyRekiInfo
             }
         );
-        var temp1 = query.ToList();
         return query.AsEnumerable().Select(data => new FamilyModel(
                 data.PtFamily.FamilyId,
                 data.PtFamily.PtId,

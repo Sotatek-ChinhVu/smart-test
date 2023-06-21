@@ -48,11 +48,11 @@ namespace Infrastructure.Repositories.SpecialNote
                x.PtId,
                x.SeqNo,
                x.SortNo,
-               x.ItemCd ?? String.Empty,
-               x.DrugName ?? String.Empty,
+               x.ItemCd ?? string.Empty,
+               x.DrugName ?? string.Empty,
                x.StartDate,
                x.EndDate,
-               x.Cmt ?? String.Empty,
+               x.Cmt ?? string.Empty,
                x.IsDeleted
             ));
             return ptAlrgyDrugs.ToList();
@@ -65,11 +65,11 @@ namespace Infrastructure.Repositories.SpecialNote
                x.PtId,
                x.SeqNo,
                x.SortNo,
-               x.ItemCd ?? String.Empty,
-               x.DrugName ?? String.Empty,
+               x.ItemCd ?? string.Empty,
+               x.DrugName ?? string.Empty,
                x.StartDate,
                x.EndDate,
-               x.Cmt ?? String.Empty,
+               x.Cmt ?? string.Empty,
                x.IsDeleted
             ));
             return ptAlrgyDrugs.AsEnumerable().Where(x => x.FullStartDate <= sinDate && sinDate <= x.FullEndDate).OrderBy(x => x.SortNo).ToList();
@@ -82,10 +82,10 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
-                x.AlrgyName ?? String.Empty,
+                x.AlrgyName ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
             return ptAlrgyElses.ToList();
@@ -98,10 +98,10 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
-                x.AlrgyName ?? String.Empty,
+                x.AlrgyName ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
             return ptAlrgyElses.AsEnumerable().Where(x => x.FullStartDate <= sinDate && sinDate <= x.FullEndDate).OrderBy(x => x.SortNo).ToList();
@@ -119,12 +119,12 @@ namespace Infrastructure.Repositories.SpecialNote
                               ale.PtId,
                               ale.SeqNo,
                               ale.SortNo,
-                              ale.AlrgyKbn ?? String.Empty,
+                              ale.AlrgyKbn ?? string.Empty,
                               ale.StartDate,
                               ale.EndDate,
-                              ale.Cmt ?? String.Empty,
+                              ale.Cmt ?? string.Empty,
                               ale.IsDeleted,
-                              mst.FoodName ?? String.Empty
+                              mst.FoodName ?? string.Empty
                         );
 
             return query.ToList();
@@ -142,12 +142,12 @@ namespace Infrastructure.Repositories.SpecialNote
                               ale.PtId,
                               ale.SeqNo,
                               ale.SortNo,
-                              ale.AlrgyKbn ?? String.Empty,
+                              ale.AlrgyKbn ?? string.Empty,
                               ale.StartDate,
                               ale.EndDate,
-                              ale.Cmt ?? String.Empty,
+                              ale.Cmt ?? string.Empty,
                               ale.IsDeleted,
-                              mst.FoodName ?? String.Empty
+                              mst.FoodName ?? string.Empty
                         );
 
             return query.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
@@ -161,11 +161,11 @@ namespace Infrastructure.Repositories.SpecialNote
                x.PtId,
                x.SeqNo,
                x.SortNo,
-               x.ByomeiCd ?? String.Empty,
-               x.ByotaiCd ?? String.Empty,
-               x.Byomei ?? String.Empty,
+               x.ByomeiCd ?? string.Empty,
+               x.ByotaiCd ?? string.Empty,
+               x.Byomei ?? string.Empty,
                x.StartDate,
-               x.Cmt ?? String.Empty,
+               x.Cmt ?? string.Empty,
                x.IsDeleted
             ));
             return ptInfections.ToList();
@@ -178,11 +178,11 @@ namespace Infrastructure.Repositories.SpecialNote
                x.PtId,
                x.SeqNo,
                x.SortNo,
-               x.ByomeiCd ?? String.Empty,
-               x.ByotaiCd ?? String.Empty,
-               x.Byomei ?? String.Empty,
+               x.ByomeiCd ?? string.Empty,
+               x.ByotaiCd ?? string.Empty,
+               x.Byomei ?? string.Empty,
                x.StartDate,
-               x.Cmt ?? String.Empty,
+               x.Cmt ?? string.Empty,
                x.IsDeleted
             ));
 
@@ -197,10 +197,10 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.SeqNo,
                 x.SortNo,
                 x.SerialNum,
-                x.TradeName ?? String.Empty,
+                x.TradeName ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
             return ptOtcDrugs.ToList();
@@ -214,10 +214,10 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.SeqNo,
                 x.SortNo,
                 x.SerialNum,
-                x.TradeName ?? String.Empty,
+                x.TradeName ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
             return ptOtcDrugs.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
@@ -231,11 +231,11 @@ namespace Infrastructure.Repositories.SpecialNote
               x.PtId,
               x.SeqNo,
               x.SortNo,
-              x.ItemCd ?? String.Empty,
-              x.DrugName ?? String.Empty,
+              x.ItemCd ?? string.Empty,
+              x.DrugName ?? string.Empty,
               x.StartDate,
               x.EndDate,
-              x.Cmt ?? String.Empty,
+              x.Cmt ?? string.Empty,
               x.IsDeleted
             ));
             return ptOtherDrugs.ToList();
@@ -248,11 +248,11 @@ namespace Infrastructure.Repositories.SpecialNote
               x.PtId,
               x.SeqNo,
               x.SortNo,
-              x.ItemCd ?? String.Empty,
-              x.DrugName ?? String.Empty,
+              x.ItemCd ?? string.Empty,
+              x.DrugName ?? string.Empty,
               x.StartDate,
               x.EndDate,
-              x.Cmt ?? String.Empty,
+              x.Cmt ?? string.Empty,
               x.IsDeleted
             ));
             return ptOtherDrugs.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).OrderBy(p => p.SortNo).ToList();
@@ -265,14 +265,14 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
-                x.IndexCd ?? String.Empty,
-                x.IndexWord ?? String.Empty,
+                x.IndexCd ?? string.Empty,
+                x.IndexWord ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
-            return ptSupples.ToList();
+            return ptSupples.OrderBy(x => x.SortNo).ToList();
         }
 
         public List<PtSuppleModel> GetSuppleList(long ptId, int sinDate)
@@ -282,14 +282,14 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
-                x.IndexCd ?? String.Empty,
-                x.IndexWord ?? String.Empty,
+                x.IndexCd ?? string.Empty,
+                x.IndexWord ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
-            return ptSupples.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).ToList();
+            return ptSupples.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).OrderBy(x => x.SortNo).ToList();
         }
 
         public void ReleaseResource()
