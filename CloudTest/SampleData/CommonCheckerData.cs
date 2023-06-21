@@ -741,6 +741,118 @@ namespace CloudUnitTest.SampleData
             return m42Contraindis;
         }
 
+        public static List<PtInf> ReadPtInf()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var ptInfs = new List<PtInf>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_INF").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptInf = new PtInf();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    ptInf.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int ptId);
+                                    ptInf.PtId = ptId;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int seqNo);
+                                    ptInf.SeqNo = seqNo;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int ptNum);
+                                    ptInf.PtNum = ptNum;
+                                    break;
+                                case "E":
+                                    ptInf.KanaName = text;
+                                    break;
+                                case "F":
+                                    ptInf.Name = text;
+                                    break;
+                                case "G":
+                                    int.TryParse(text, out int sex);
+                                    ptInf.Sex = sex;
+                                    break;
+                                case "H":
+                                    int.TryParse(text, out int birthday);
+                                    ptInf.Birthday = birthday;
+                                    break;
+                                case "I":
+                                    int.TryParse(text, out int isDead);
+                                    ptInf.IsDead = isDead;
+                                    break;
+                                case "J":
+                                    ptInf.DeathDate = 0;
+                                    break;
+                                case "AF":
+                                    int.TryParse(text, out int isRyosyoDetail);
+                                    ptInf.IsRyosyoDetail = isRyosyoDetail;
+                                    break;
+                                case "AG":
+                                    int.TryParse(text, out int primaryDoctor);
+                                    ptInf.PrimaryDoctor = primaryDoctor;
+                                    break;
+                                case "AH":
+                                    int.TryParse(text, out int isTester);
+                                    ptInf.IsTester = isTester;
+                                    break;
+                                case "AI":
+                                    int.TryParse(text, out int isDelete);
+                                    ptInf.IsDelete = isDelete;
+                                    break;
+                                case "AJ":
+                                    ptInf.CreateDate = DateTime.UtcNow;
+                                    break;
+                                case "AM":
+                                    ptInf.UpdateDate = DateTime.UtcNow;
+                                    break;
+                                case "AP":
+                                    int.TryParse(text, out int mainHokenPid);
+                                    ptInf.MainHokenPid = mainHokenPid;
+                                    break;
+                                case "AQ":
+                                    int.TryParse(text, out int referenceNo);
+                                    ptInf.ReferenceNo = referenceNo;
+                                    break;
+                                case "AR":
+                                    int.TryParse(text, out int limitConsFlg);
+                                    ptInf.LimitConsFlg = limitConsFlg;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        ptInfs.Add(ptInf);
+                    }
+                }
+            }
+
+            return ptInfs;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
