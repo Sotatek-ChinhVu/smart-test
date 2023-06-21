@@ -26,4 +26,9 @@ public class RaiinFilterMstModel
     public int SelectKbn { get; private set; }
     public string Shortcut { get; private set; }
     public List<RaiinFilterSortModel> ColumnSortInfos { get; private set; }
+
+    public void ChangeFilterId(int filterId)
+    {
+        FilterId=filterId;
+    }
 }
