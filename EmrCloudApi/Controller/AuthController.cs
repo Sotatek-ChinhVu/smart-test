@@ -1,17 +1,11 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using Domain.Constant;
-using EmrCloudApi.Configs.Options;
-using EmrCloudApi.Constants;
+﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.Auth;
 using EmrCloudApi.Requests.UserToken;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Auth;
 using EmrCloudApi.Responses.UserToken;
 using EmrCloudApi.Security;
-using Helper.Common;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using UseCase.Core.Sync;
@@ -96,7 +90,6 @@ public class AuthController : ControllerBase
         #endregion
     }
 
-    [AllowAnonymous]
     [HttpPost("RefreshToken")]
     public ActionResult<Response<RefreshTokenResponse>> RefreshAccessToken([FromBody] RefreshTokenRequest request)
     {
@@ -105,18 +98,16 @@ public class AuthController : ControllerBase
             return BadRequest("Invalid access token");
 
         int.TryParse(principal.FindFirstValue(LoginUserConstant.UserId), out int userId);
-        string hpId = principal.FindFirstValue(LoginUserConstant.HpId);
-        string departmentId = principal.FindFirstValue(LoginUserConstant.DepartmentId);
-
         var input = new RefreshTokenByUserInputData(userId, request.RefreshToken, AuthProvider.GeneratorRefreshToken(), DateTime.UtcNow.AddHours(AuthProvider.GetHoursRefreshTokenExpiryTime()));
+        //var input = new RefreshTokenByUserInputData(userId, request.RefreshToken, AuthProvider.GeneratorRefreshToken(), DateTime.UtcNow.AddMinutes(3));
         var output = _bus.Handle(input);
         if(output.Status == RefreshTokenByUserStatus.Successful)
         {
             string newToken = AuthProvider.GenerateAccessToken(new Claim[]
             {
                 new(LoginUserConstant.UserId, userId.ToString()),
-                new(LoginUserConstant.HpId, hpId),
-                new(LoginUserConstant.DepartmentId, departmentId),
+                new(LoginUserConstant.HpId, principal.FindFirstValue(LoginUserConstant.HpId)),
+                new(LoginUserConstant.DepartmentId, principal.FindFirstValue(LoginUserConstant.DepartmentId)),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             });
 

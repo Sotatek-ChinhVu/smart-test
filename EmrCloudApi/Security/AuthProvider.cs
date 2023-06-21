@@ -15,10 +15,15 @@ namespace EmrCloudApi.Security
         private static JwtOptions _settingInfor;
 #       pragma warning restore CS8618 
 
-        public static void SetupAuthentication(this IServiceCollection services, JwtOptions config)
+        /// <summary>
+        /// Initializer Auth
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="config"></param>
+        public static void SetupAuthentication(this IServiceCollection services, ConfigurationManager config)
         {
+            _settingInfor = config.GetSection(JwtOptions.Position).Get<JwtOptions>();
             services.AddTransient<IUserService, UserService>();
-            _settingInfor = config;
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -29,7 +34,8 @@ namespace EmrCloudApi.Security
                 x.SaveToken = false;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ValidateLifetime = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_settingInfor.Secret)),
                     ClockSkew = TimeSpan.Zero
@@ -46,6 +52,11 @@ namespace EmrCloudApi.Security
             });
         }
 
+        /// <summary>
+        /// Create Access Token
+        /// </summary>
+        /// <param name="claims"></param>
+        /// <returns></returns>
         public static string GenerateAccessToken(ICollection<Claim> claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -53,6 +64,7 @@ namespace EmrCloudApi.Security
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
+                //Expires = DateTime.UtcNow.AddMinutes(1),
                 Expires = DateTime.UtcNow.AddHours(_settingInfor.TokenExpires),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -60,7 +72,10 @@ namespace EmrCloudApi.Security
             return tokenHandler.WriteToken(token);
         }
 
-
+        /// <summary>
+        /// Create Refresh Token
+        /// </summary>
+        /// <returns></returns>
         public static string GeneratorRefreshToken()
         {
             var randomNumber = new byte[32];
@@ -71,6 +86,11 @@ namespace EmrCloudApi.Security
             }
         }
 
+        /// <summary>
+        /// Get Info from token is expired time
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public static ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
         {
             var tokenValidationParameters = new TokenValidationParameters
@@ -90,6 +110,10 @@ namespace EmrCloudApi.Security
             return principal;
         }
 
+        /// <summary>
+        /// Get time valid refresh token
+        /// </summary>
+        /// <returns></returns>
         public static int GetHoursRefreshTokenExpiryTime() => _settingInfor.RefreshTokenExpires;
     }
 }

@@ -131,7 +131,7 @@ builder.Services.AddCors(options =>
 });
 
 // Authentication
-builder.Services.SetupAuthentication(builder.Configuration.GetSection(JwtOptions.Position).Get<JwtOptions>());
+builder.Services.SetupAuthentication(builder.Configuration);
 
 //Serilog 
 builder.Host.UseSerilog((ctx, lc) => lc

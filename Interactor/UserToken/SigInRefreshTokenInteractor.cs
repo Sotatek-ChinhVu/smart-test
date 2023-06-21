@@ -3,7 +3,7 @@ using UseCase.UserToken.SiginRefresh;
 
 namespace Interactor.UserToken
 {
-    internal class SigInRefreshTokenInteractor : ISigninRefreshTokenInputPort
+    public class SigInRefreshTokenInteractor : ISigninRefreshTokenInputPort
     {
         private readonly IUserTokenRepository _userTokenRepository;
 

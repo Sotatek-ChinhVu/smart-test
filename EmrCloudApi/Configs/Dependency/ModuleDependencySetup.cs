@@ -610,6 +610,9 @@ using Reporting.Byomei.DB;
 using UseCase.User.GetListUserByCurrentUser;
 using UseCase.MedicalExamination.GetHeaderVistitDate;
 using Domain.Models.UserToken;
+using UseCase.UserToken.SiginRefresh;
+using Interactor.UserToken;
+using UseCase.UserToken.GetInfoRefresh;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -640,7 +643,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
-            services.AddTransient<IUserService, UserService>();
 
             //Cache data
             services.AddScoped<IUserInfoService, UserInfoService>();
@@ -897,6 +899,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
             busBuilder.RegisterUseCase<GetAllPermissionInputData, GetAllPermissionInteractor>();
             busBuilder.RegisterUseCase<GetListUserByCurrentUserInputData, GetListUserByCurrentUserInteractor>();
+            busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
+            busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
