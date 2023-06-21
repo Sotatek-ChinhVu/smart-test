@@ -98,7 +98,7 @@ public class AuthController : ControllerBase
             return BadRequest("Invalid access token");
 
         int.TryParse(principal.FindFirstValue(LoginUserConstant.UserId), out int userId);
-        var input = new RefreshTokenByUserInputData(userId, request.RefreshToken, AuthProvider.GeneratorRefreshToken(), DateTime.UtcNow.AddHours(AuthProvider.GetHoursRefreshTokenExpiryTime()));
+        var input = new RefreshTokenByUserInputData(userId, request.RefreshToken, AuthProvider.GeneratorRefreshToken());
         //var input = new RefreshTokenByUserInputData(userId, request.RefreshToken, AuthProvider.GeneratorRefreshToken(), DateTime.UtcNow.AddMinutes(3));
         var output = _bus.Handle(input);
         if(output.Status == RefreshTokenByUserStatus.Successful)

@@ -19,8 +19,7 @@ namespace Domain.Models.UserToken
         /// <param name="userId"></param>
         /// <param name="refreshToken"> current refresh token</param>
         /// <param name="refreshTokenNew"> new refresh token</param>
-        /// <param name="expirateToken">exp time valid token</param>
         /// <returns></returns>
-        UserTokenModel RefreshTokenByUser(int userId, string refreshToken, string refreshTokenNew, DateTime expirateToken);
+        UserTokenModel RefreshTokenByUser(int userId, string refreshToken, string refreshTokenNew);
     }
 }

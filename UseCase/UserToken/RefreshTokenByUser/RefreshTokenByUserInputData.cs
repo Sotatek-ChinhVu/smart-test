@@ -4,12 +4,11 @@ namespace UseCase.UserToken.GetInfoRefresh
 {
     public class RefreshTokenByUserInputData : IInputData<RefreshTokenByUserOutputData>
     {
-        public RefreshTokenByUserInputData(int userId, string refreshToken, string newRefreshToken, DateTime newRefreshTokenExpTime)
+        public RefreshTokenByUserInputData(int userId, string refreshToken, string newRefreshToken)
         {
             UserId = userId;
             RefreshToken = refreshToken;
             NewRefreshToken = newRefreshToken;
-            NewRefreshTokenExpTime = newRefreshTokenExpTime;
         }
 
         public int UserId { get; private set; }
@@ -17,7 +16,5 @@ namespace UseCase.UserToken.GetInfoRefresh
         public string RefreshToken { get; private set; }
 
         public string NewRefreshToken { get; private set; }
-
-        public DateTime NewRefreshTokenExpTime { get; private set; }
     }
 }
