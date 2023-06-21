@@ -617,7 +617,7 @@ namespace Infrastructure.Repositories
             var kaMsts = NoTrackingDataContext.KaMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
             // Lock (Function lock)
             var lockInfs = NoTrackingDataContext.LockInfs.Where(x =>
-                x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte);
+                x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte || x.FunctionCd == FunctionCode.SwitchOrderCode);
             // Uketuke
             var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
 

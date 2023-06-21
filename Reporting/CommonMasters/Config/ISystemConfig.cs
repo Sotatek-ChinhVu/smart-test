@@ -76,4 +76,6 @@ public interface ISystemConfig
     int HikariDiskIsTotalCnt();
     int PrintReceipt();
     int PrintDetail();
+    int P13WelfareGreenSeikyuType();
+    int P13WelfareBlueSeikyuType();
 }
