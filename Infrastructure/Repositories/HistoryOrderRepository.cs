@@ -283,23 +283,24 @@ namespace Infrastructure.Repositories
             return GenerateResult(foundRaiinNo);
         }
 
-        public (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int offset, int limit, int filterId, int isDeleted, List<Tuple<long, bool>> raiinNos, int isShowApproval = 0)
+        public (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int offset, int limit, int filterId, int isDeleted, List<Tuple<long, bool>> raiinNos, int isShowApproval = 0, int type = 0)
         {
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted, raiinNos);
             int totalCount = raiinInfEnumerable.Count();
             List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.UketukeTime).ThenByDescending(r => r.RaiinNo).Skip(offset).Take(limit).ToList();
-            return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted, isShowApproval);
+            return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted, isShowApproval, type);
         }
 
-        public (int totalCount, List<HistoryOrderModel> historyOrderModelList) GetList(int hpId, long ptId, int sinDate, int startDate, int endDate, int isDeleted, int isShowApproval = 0)
+        public (int totalCount, List<HistoryOrderModel> historyOrderModelList) GetList(int hpId, long ptId, int sinDate, int startDate, int endDate, int isDeleted, int isShowApproval = 0, int type = 0)
         {
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, ptId, startDate, endDate, isDeleted);
             int totalCount = raiinInfEnumerable.Count();
             List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.UketukeTime).ThenByDescending(r => r.RaiinNo).ToList();
-            return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted, isShowApproval);
+            return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted, isShowApproval, type);
         }
 
-        private (int totalCount, List<HistoryOrderModel> historyOrderModelList) GetList(int hpId, long ptId, int sinDate, List<RaiinInf> raiinInfList, int totalCount, int isDeleted, int isShowApproval)
+        //type = 1 for print, type = 0 for history
+        private (int totalCount, List<HistoryOrderModel> historyOrderModelList) GetList(int hpId, long ptId, int sinDate, List<RaiinInf> raiinInfList, int totalCount, int isDeleted, int isShowApproval, int type)
         {
             if (!raiinInfList.Any())
             {
@@ -309,7 +310,7 @@ namespace Infrastructure.Repositories
             List<long> raiinNoList = raiinInfList.Select(r => r.RaiinNo).ToList();
 
             List<KarteInfModel> allKarteInfList = GetKarteInfList(hpId, ptId, isDeleted, raiinNoList);
-            Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList);
+            Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList, type);
 
             List<InsuranceModel> insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
             List<RaiinListTagModel> tagModelList = _raiinListTagRepository.GetList(hpId, ptId, raiinNoList);
@@ -357,7 +358,7 @@ namespace Infrastructure.Repositories
 
             List<long> raiinNoList = raiinInfList.Select(r => r.RaiinNo).ToList();
 
-            Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, 0, raiinNoList);
+            Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, 0, raiinNoList, 0);
 
             List<InsuranceModel> insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
 
@@ -409,7 +410,7 @@ namespace Infrastructure.Repositories
             List<long> raiinNoList = raiinInfList.Select(r => r.RaiinNo).ToList();
 
             List<KarteInfModel> allKarteInfList = GetKarteInfList(hpId, ptId, isDeleted, raiinNoList);
-            Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList);
+            Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList, 0);
 
             List<InsuranceModel> insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
             List<RaiinListTagModel> tagModelList = _raiinListTagRepository.GetList(hpId, ptId, raiinNoList);
@@ -558,12 +559,12 @@ namespace Infrastructure.Repositories
             return karteInfs.ToList();
         }
 
-        private Dictionary<long, List<OrdInfModel>> GetOrderInfList(int hpId, long ptId, int isDeleted, List<long> raiinNoList)
+        private Dictionary<long, List<OrdInfModel>> GetOrderInfList(int hpId, long ptId, int isDeleted, List<long> raiinNoList, int type)
         {
             List<OdrInf> allOdrInfList = NoTrackingDataContext.OdrInfs
                 .Where(o => o.HpId == hpId &&
                             o.PtId == ptId &&
-                            o.OdrKouiKbn != 10 &&
+                            (type == 1 || o.OdrKouiKbn != 10) &&
                             raiinNoList.Contains(o.RaiinNo) &&
                             (
                                 o.IsDeleted == DeleteTypes.None ||

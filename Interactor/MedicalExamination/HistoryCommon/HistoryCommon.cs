@@ -149,14 +149,18 @@ public class HistoryCommon : IHistoryCommon
         List<HistoryKarteOdrRaiinItem> filteredKaruteList = new();
         foreach (var history in historyKarteOdrRaiinItems)
         {
-            if (history.HokenGroups == null || !history.HokenGroups.Any())
+            if (history.RaiinNo == 902550356 || history.RaiinNo == 902550392)
             {
-                continue;
+                var temp = "abc";
             }
-
             if (listAcceptedHokenType.Contains((OrderHokenType)history.HokenType))
             {
                 filteredKaruteList.Add(history);
+                continue;
+            }
+
+            if (history.HokenGroups == null || !history.HokenGroups.Any())
+            {
                 continue;
             }
 
@@ -224,6 +228,7 @@ public class HistoryCommon : IHistoryCommon
                                                               inputData.SinDate,
                                                               inputData.StartDate,
                                                               inputData.EndDate,
+                                                              1,
                                                               1);
             }
 
