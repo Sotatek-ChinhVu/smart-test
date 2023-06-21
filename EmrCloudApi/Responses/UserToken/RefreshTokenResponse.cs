@@ -2,14 +2,14 @@
 {
     public class RefreshTokenResponse
     {
-        public RefreshTokenResponse(string accessToken, string refreshToKen)
+        public RefreshTokenResponse(string accessToken, string refreshToken)
         {
             AccessToken = accessToken;
-            RefreshToKen = refreshToKen;
+            RefreshToken = refreshToken;
         }
 
         public string AccessToken { get; private set; }
 
-        public string RefreshToKen { get; private set; }
+        public string RefreshToken { get; private set; }
     }
 }
