@@ -14,6 +14,7 @@ public class SanteiInfDto
         ItemName = outputItem.ItemName;
         IsSettedItemCd = outputItem.IsSettedItemCd;
         LastOdrDateDisplay = outputItem.LastOdrDateDisplay;
+        LastOdrDate = outputItem.LastOdrDate;
         KisanDateDisplay = outputItem.KisanDateDisplay;
         DayCountDisplay = outputItem.DayCountDisplay;
         SanteiItemCountDisplay = outputItem.SanteiItemCountDisplay;
@@ -40,6 +41,8 @@ public class SanteiInfDto
     public bool IsSettedItemCd { get; private set; }
 
     public string LastOdrDateDisplay { get; private set; }
+
+    public int LastOdrDate { get; private set; }
 
     public string KisanDateDisplay { get; private set; }
 
