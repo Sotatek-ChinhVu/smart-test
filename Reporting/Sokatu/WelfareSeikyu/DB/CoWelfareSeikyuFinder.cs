@@ -1,16 +1,11 @@
 ﻿using Helper.Constants;
 using Infrastructure.Base;
-using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore.Internal;
-using PostgreDataContext;
 using Reporting.Calculate.Extensions;
 using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.WelfareSeikyu.Models;
 using Reporting.Structs;
-using System.Linq;
 
 namespace Reporting.Sokatu.WelfareSeikyu.DB
 {
@@ -45,15 +40,15 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
         private List<CoWelfareReceInfModel> getReceInf(int hpId, int seikyuYm, SeikyuType seikyuType, List<int> kohiHokenNos, List<string> kohiHoubetus,
             FutanCheck futanCheck, int hokenKbn, bool isReceKisai)
         {
-            var receInfs = NoTrackingDataContext.ReceInfs.FindListNoTrack();
-            var receStatuses = NoTrackingDataContext.ReceStatuses.FindListNoTrack();
-            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.FindListNoTrack(
+            var receInfs = NoTrackingDataContext.ReceInfs.FindListQueryableNoTrack();
+            var receStatuses = NoTrackingDataContext.ReceStatuses.FindListQueryableNoTrack();
+            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.FindListQueryableNoTrack(
                 p => p.IsDeleted == 0
             );
-            var ptKohis = NoTrackingDataContext.PtHokenInfs.FindListNoTrack(
+            var ptKohis = NoTrackingDataContext.PtHokenInfs.FindListQueryableNoTrack(
                 p => p.IsDeleted == 0
             );
-            var ptInfs = NoTrackingDataContext.PtInfs.FindListNoTrack(
+            var ptInfs = NoTrackingDataContext.PtInfs.FindListQueryableNoTrack(
                 p => p.IsDelete == 0
             );
 
