@@ -43,7 +43,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             {
                 return new SaveDocInfOutputData(resultValidate);
             }
-
+            Console.WriteLine("StartConsoleWriteLineDocument");
             // upload file to S3
             var memoryStream = inputData.StreamImage.ToMemoryStreamAsync().Result;
             if (memoryStream.Length == 0 && inputData.SeqNo <= 0)
@@ -52,7 +52,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             }
             else if (memoryStream.Length > 0)
             {
-                Console.WriteLine("memoryStream.Length: "+memoryStream.Length);
+                Console.WriteLine("memoryStream.Length: " + memoryStream.Length);
                 var ptNum = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0)?.PtNum ?? 0;
                 var listFolderPath = new List<string>(){
                                                    CommonConstants.Store,
