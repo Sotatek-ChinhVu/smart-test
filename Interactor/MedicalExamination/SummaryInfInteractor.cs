@@ -351,7 +351,7 @@ namespace Interactor.MedicalExamination
                     grpItemCd = 2;
                     break;
                 case "3":
-                    // 病歴
+                    // 病態
                     summaryInfItem = GetPathologicalStatus(ptId);
                     grpItemCd = 3;
                     break;
@@ -366,8 +366,8 @@ namespace Interactor.MedicalExamination
                     grpItemCd = 5;
                     break;
                 case "6":
-                    //コメント
-                    summaryInfItem = GetComment(hpId, ptId);
+                    //出産予定
+                    summaryInfItem = GetReproductionInfo(ptId, sinDate);
                     grpItemCd = 6;
                     break;
                 case "7":
@@ -377,12 +377,12 @@ namespace Interactor.MedicalExamination
                     grpItemCd = 7;
                     break;
                 case "8":
-                    //出産予定
-                    summaryInfItem = GetReproductionInfo(ptId, sinDate);
+                    //コメント
+                    summaryInfItem = GetComment(hpId, ptId);
                     grpItemCd = 8;
                     break;
                 case "9":
-                    //予約情報
+                    //住所
                     summaryInfItem = GetReservationInf(hpId, ptId, sinDate);
                     grpItemCd = 9;
                     break;
@@ -509,7 +509,7 @@ namespace Interactor.MedicalExamination
                     summaryInfItem = GetPathologicalStatus(ptId);
                     break;
                 case "4":
-                    // 服薬情報
+                    // 相互作用
                     summaryInfItem = GetInteraction(ptId, sinDate);
                     break;
                 case "5":
@@ -686,7 +686,7 @@ namespace Interactor.MedicalExamination
         private SummaryInfItem GetPathologicalStatus(long ptId)
         {
             int grpItemCd = 3;
-            string headerName = "◆病歴";
+            string headerName = "◆病態";
             StringBuilder headerInfo = new StringBuilder();
 
             var taskReki = Task<List<PtKioRekiModel>>.Factory.StartNew(() => _importantNotePathologicalRekiRepository.GetKioRekiList(ptId));
@@ -728,7 +728,7 @@ namespace Interactor.MedicalExamination
         private SummaryInfItem GetInteraction(long ptId, int sinDate)
         {
             int grpItemCd = 4;
-            string headerName = "◆服薬情報";
+            string headerName = "◆相互作用";
             StringBuilder headerInf = new StringBuilder();
 
             var taskOtherDrug = Task<List<PtOtherDrugModel>>.Factory.StartNew(() => _importantNoteInteractionOtherDrugRepository.GetOtherDrugList(ptId, sinDate));
@@ -1129,7 +1129,7 @@ namespace Interactor.MedicalExamination
                         {
                             headerInfo.Append(Environment.NewLine);
                         }
-                        headerInfo.Append($"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){ptFamilyModel.DiseaseName}");
+                        headerInfo.Append($"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){diseaseName}");
                     }
                 }
 
@@ -1186,7 +1186,7 @@ namespace Interactor.MedicalExamination
         private SummaryInfItem GetReceptionComment(int hpId, long ptId, int sinDate, long raiinNo)
         {
             int grpItemCd = 13;
-            string headerName = "◆来院コメント";
+            string headerName = "◆受付コメント";
             string textRaiinCmtInf = _raiinCmtInfRepository.GetRaiinCmtByPtId(hpId, ptId, sinDate, raiinNo);
 
             var splitHeaderInf = textRaiinCmtInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();

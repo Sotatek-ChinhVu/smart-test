@@ -1263,6 +1263,11 @@ namespace TenantMigration.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("IS_PINNED");
 
+                    b.Property<string>("OrderBy")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("ORDER_BY");
+
                     b.Property<int>("Width")
                         .HasColumnType("integer")
                         .HasColumnName("WIDTH");
@@ -7179,6 +7184,10 @@ namespace TenantMigration.Migrations
                         .HasColumnName("USER_ID");
 
                     b.HasKey("HpId", "PtId", "FunctionCd", "SinDate", "RaiinNo", "OyaRaiinNo");
+
+                    b.HasIndex("HpId", "PtId", "UserId")
+                        .IsUnique()
+                        .HasFilter("FunctionCd = \"02000000\"");
 
                     b.ToTable("LOCK_INF");
                 });

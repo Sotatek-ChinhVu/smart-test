@@ -1160,7 +1160,10 @@ namespace Infrastructure.Repositories
                     result.Add(checkModel.ChangeSantei(false));
                 }
             }
-            result.AddRange(checkedOrderModelList);
+            else
+            {
+                result.AddRange(checkedOrderModelList);
+            }
 
             return result;
         }
@@ -1458,7 +1461,7 @@ namespace Infrastructure.Repositories
             return string.Join(", ", dateInt);
         }
 
-        private List<SinKouiCountModel> GetSinkouCountInMonth(int hpId, long ptId, int sinDate, string itemCd)
+        public List<SinKouiCountModel> GetSinkouCountInMonth(int hpId, long ptId, int sinDate, string itemCd)
         {
             int sinYM = sinDate / 100;
             int sinDay = sinDate - sinYM * 100;

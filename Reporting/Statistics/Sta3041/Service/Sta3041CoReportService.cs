@@ -137,8 +137,8 @@ public class Sta3041CoReportService : ISta3041CoReportService
 
             //作成日時
             _extralData.Add("HeaderR_0_1_" + currentPage, CIUtil.SDateToShowSWDate(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1, 1
-            ) + DateTime.Now.ToString(" HH:mm") + "作成");
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1, 1
+            ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
 
             //改ページ条件
             _extralData.Add("HeaderL_0_2_" + currentPage, headerL.Count >= currentPage ? headerL[currentPage - 1] : string.Empty);

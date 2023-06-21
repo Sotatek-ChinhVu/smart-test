@@ -6,10 +6,12 @@ using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
 using EmrCloudApi.Services;
+using Helper.Constants;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
+using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
 
 namespace EmrCloudApi.Controller
@@ -30,13 +32,14 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.AddLock)]
         public async Task<ActionResult<Response<LockResponse>>> AddLock([FromQuery] LockRequest request)
         {
-            var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
+            var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, Token);
             var output = _bus.Handle(input);
 
             if (output.Status == AddLockStatus.Successed)
             {
+                string functionCode = request.FunctionCod == FunctionCode.SwitchOrderCode ? FunctionCode.MedicalExaminationCode : request.FunctionCod;
                 await _webSocketService.SendMessageAsync(FunctionCodes.AddLockChanged,
-                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 1, FunctionCod = request.FunctionCod });
+                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 1, FunctionCod = functionCode });
             }
 
             var presenter = new AddLockPresenter();
@@ -98,6 +101,31 @@ namespace EmrCloudApi.Controller
 
         //    return new ActionResult<Response>(presenter.Result);
         //}
+
+
+        [HttpPost(ApiPath.GetLockInfo)]
+        public ActionResult<Response<GetLockInfoResponse>> GetList([FromBody] GetLockInfoRequest request)
+        {
+            var input = new GetLockInfoInputData(HpId, request.PtId, request.ListFunctionCdB, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetLockInfoPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetLockInfoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.CheckLockVisiting)]
+        public ActionResult<Response<CheckLockVisitingResponse>> CheckLockVisiting([FromQuery] CheckLockVisitingRequest request)
+        {
+            var input = new CheckLockVisitingInputData(HpId, UserId, request.PtId, request.SinDate, request.FunctionCode, Token);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckLockVisitingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckLockVisitingResponse>>(presenter.Result);
+        }
     }
 
     public class Locker

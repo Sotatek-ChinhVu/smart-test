@@ -2,9 +2,8 @@
 {
     public class PatientInforDto
     {
-        public PatientInforDto(int hpId, long ptId, long ptNum, string kanaName, string name, int sex, int birthday, int isDead, int deathDate, string mail, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, long referenceNo, int limitConsFlg, string memo)
+        public PatientInforDto(long ptId, long ptNum, string kanaName, string name, int sex, int birthday, int isDead, int deathDate, string mail, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, long referenceNo, int limitConsFlg, string memo)
         {
-            HpId = hpId;
             PtId = ptId;
             PtNum = ptNum;
             KanaName = kanaName;
@@ -43,7 +42,6 @@
             Memo = memo;
         }
 
-        public int HpId { get; private set; }
         public long PtId { get; private set; }
         public long PtNum { get; private set; }
         public string KanaName { get; private set; }

@@ -62,6 +62,9 @@
         public static readonly string ExistedId = "ExistedId";
         public static readonly string InputDataNull = "Input data is null";
         public static readonly string Valid = "Valid";
+        public static readonly string MedicalScreenLocked = "Medical Screen Locked!";
+        public static readonly string None = "None";
+        public static readonly string Locked = "Locked";
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
@@ -69,6 +72,8 @@
 
         //Patient Infor
         public static readonly string InvalidPtNum = "Invalid PtNum";
+        public static readonly string InvalidKanjiName = "Invalid Kanji Name";
+        public static readonly string InvalidSex = "Invalid sex";
 
         // RousaiJibai
         public static readonly string InvalidHokenKbn = "Invalid HokenKbn";
@@ -876,7 +881,7 @@
         public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
 
         // Document
-        public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
+        public static readonly string InvalidDocumentCategoryCd = "指定されたカテゴリーは存在しないため、変更できません。";
         public static readonly string MoveDocCategoryNotFound = "Invalid Document MoveCategoryCd!";
         public static readonly string InvalidDocumentCategoryName = "Invalid Document CategoryName, CategoryName is required and not duplicate!";
         public static readonly string InvalidMoveInDocCategoryCd = "Invalid Document move in CategoryCd, CategoryCd is required and exist in DB!";
@@ -966,7 +971,6 @@
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";
         public static readonly string InvalidThisWari = "Invalid ThisWari";
-        public static readonly string InvalidCredit = "Invalid Credit";
         public static readonly string InvalidPayType = "Invalid PayType";
         public static readonly string InvalidComment = "Invalid Comment";
         public static readonly string StateChanged = "State Changed";

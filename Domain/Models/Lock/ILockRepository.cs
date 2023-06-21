@@ -6,7 +6,7 @@ namespace Domain.Models.Lock
     {
         bool ExistLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo);
 
-        bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
+        bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token);
 
         List<LockModel> GetLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
 
@@ -15,5 +15,11 @@ namespace Domain.Models.Lock
         bool RemoveAllLock(int hpId, int userId);
 
         bool ExtendTtl(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
+
+        List<LockModel> GetLockInfo(int hpId, long ptId, List<string> lisFunctionCd_B, int sinDate_B, long raiinNo);
+
+        bool GetVisitingLockStatus(int hpId, int userId, long ptId, string functionCode);
+
+        string GetFunctionNameLock(string functionCode);
     }
 }

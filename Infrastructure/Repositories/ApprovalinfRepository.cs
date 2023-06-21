@@ -1,4 +1,5 @@
 ﻿using Domain.Models.ChartApproval;
+using Domain.Models.Family;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -11,7 +12,7 @@ namespace Infrastructure.Repositories
 {
     public class ApprovalinfRepository : RepositoryBase, IApprovalInfRepository
     {
-        public ApprovalinfRepository(ITenantProvider tenantProvider) : base(tenantProvider) 
+        public ApprovalinfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
 
         }
@@ -89,7 +90,7 @@ namespace Infrastructure.Repositories
         {
             approvalInfs.ForEach(x =>
             {
-                if(!NoTrackingDataContext.ApprovalInfs.Any(p => p.HpId == hpId && p.PtId == x.PtId && p.RaiinNo == x.RaiinNo && p.SinDate == x.SinDate))
+                if (!NoTrackingDataContext.ApprovalInfs.Any(p => p.HpId == hpId && p.PtId == x.PtId && p.RaiinNo == x.RaiinNo && p.SinDate == x.SinDate))
                 {
                     TrackingDataContext.ApprovalInfs.Add(new ApprovalInf()
                     {
@@ -140,6 +141,54 @@ namespace Infrastructure.Repositories
                         };
 
             return query.AsEnumerable().Any(item => item.ApprovalInf.Id == 0);
+        }
+
+        public void UpdateApproveInf(int hpId, long ptId, int sinDate, long raiinNo, int userId)
+        {
+            var approveInfList = TrackingDataContext.ApprovalInfs.Where(item => item.HpId == hpId &&
+                                                                                item.PtId == ptId &&
+                                                                                item.SinDate == sinDate &&
+                                                                                item.RaiinNo == raiinNo &&
+                                                                                item.IsDeleted == 0)
+                                                                  .ToList();
+
+            if (approveInfList.Any())
+            {
+                // Approved
+                foreach (var approvedInf in approveInfList)
+                {
+                    approvedInf.UpdateId = hpId;
+                    approvedInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                }
+            }
+            else
+            {
+                var approvingInfList = approveInfList.Where(x => x.IsDeleted == 1);
+                int seqNo = 0;
+                if (!approvingInfList.Any())
+                {
+                    seqNo = 1;
+                }
+                else
+                {
+                    seqNo = approvingInfList.Max(x => x.SeqNo) + 1;
+                }
+                ApprovalInf newApprovalInf = new()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    SinDate = sinDate,
+                    RaiinNo = raiinNo,
+                    IsDeleted = 0,
+                    SeqNo = seqNo,
+                    CreateId = userId,
+                    UpdateId = userId,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                };
+                TrackingDataContext.ApprovalInfs.Add(newApprovalInf);
+            }
+            TrackingDataContext.SaveChanges();
         }
 
         public void ReleaseResource()

@@ -18,7 +18,7 @@ namespace Domain.Models.Accounting
         List<PaymentMethodMstModel> GetListPaymentMethodMst(int hpId);
         List<KohiInfModel> GetListKohiByKohiId(int hpId, long ptId, int sinDate, List<int> listKohiId);
         bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
-                                   int payType, string comment, bool isDisCharged);
+                                   int payType, string comment, bool isDisCharged, string kaikeiTime);
         bool CheckRaiinInfExist(int hpId, long ptId, long raiinNo);
         List<long> GetRaiinNos(int hpId, long ptId, long raiinNo, bool getAll = true);
         void CheckOrdInfInOutDrug(int hpId, long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist);

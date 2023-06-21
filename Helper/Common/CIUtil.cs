@@ -552,7 +552,7 @@ namespace Helper.Common
         {
             int Result = 0;
             // Get current year, month, day
-            DateTime currentDate = DateTime.Now;
+            DateTime currentDate = CIUtil.GetJapanDateTimeNow();
 
             int numberOfSeparators = ymd.Count(c => c == '/');
             if (numberOfSeparators == 0)
@@ -580,7 +580,7 @@ namespace Helper.Common
 
             if (numberOfSeparators == 1)
             {
-                string temp = DateTime.Now.Year.AsString() + "/";
+                string temp = CIUtil.GetJapanDateTimeNow().Year.AsString() + "/";
                 int firstLocation = ymd.IndexOf('/');
 
                 temp += ymd.Substring(0, firstLocation).PadLeft(2, '0') + "/";
@@ -1230,7 +1230,7 @@ namespace Helper.Common
             int result = 0;
             char wGengo;
             string wYmd = ymd.Trim();
-            DateTime currentDate = DateTime.Now;
+            DateTime currentDate = CIUtil.GetJapanDateTimeNow();
 
             // One character : Current date of current month
             // 一文字は当月のその日
@@ -1409,7 +1409,7 @@ namespace Helper.Common
 
                 if (delimiterCount == 1)
                 {
-                    int sYear = DateTime.Now.Year;
+                    int sYear = CIUtil.GetJapanDateTimeNow().Year;
                     // m/d or mm/dd
                     //Extract month and day part
                     string sMonth = wYmd.Substring(0, wYmd.IndexOf('/'));
@@ -2882,6 +2882,7 @@ namespace Helper.Common
 
             try
             {
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 //ISO 2022 Japanese JIS X 0201-1989; Japanese (JIS-Allow 1 byte Kana - SO/SI)
                 Encoding ascii = Encoding.GetEncoding("iso-2022-jp");
                 asciiBytes = ascii.GetBytes(utf16Char.ToString());
@@ -3287,7 +3288,7 @@ namespace Helper.Common
             int delimiterCount = 0;
             string sTemp;
             string wYm = Ym.Trim();
-            DateTime currentDate = DateTime.Now;
+            DateTime currentDate = CIUtil.GetJapanDateTimeNow();
 
             // Input month only
             int iYm = wYm.AsInteger();
@@ -3585,6 +3586,114 @@ namespace Helper.Common
                 digit = 10 - digit;
 
             return ptNum * 10 + digit;
+        }
+
+        //------------------------------------------------------------------------------
+        //  処理名  ：CiCopyStrWidthDst
+        //  引数    ：Src     （切り出し元の文字列）
+        //            Index   （開始位置）
+        //            Count   （切り出す文字数）
+        //            FmtFg   （1：Countで指定した文字数に半角スペース埋め）
+        //            Dst     （切り出し後の文字列）
+        //  説明    ：Src の Index 文字目から Count 個の文字の入った部分文字列を返します。
+        //
+        //  ※文字数（半角文字が1文字、全角文字が2文字）で計算
+        //------------------------------------------------------------------------------
+        public static string CiCopyStrWidthDst(string Src, int Index, int Count, int FmtFg, ref string Dst)
+        {
+            string Result = "";
+            string sSrcStr = Src;
+            Dst = sSrcStr;
+
+            if (Index == 1 && MecsStringWidth(sSrcStr) < Count)
+            {
+                //長さが指定文字数以下ならそのまま返す
+                Result = sSrcStr;
+                if (FmtFg == 1)
+                {
+                    Result = Result + StringOfChar(" ", Count - MecsStringWidth(Result));
+                }
+                Dst = "";
+            }
+            else
+            {
+                if (Index > MecsStringWidth(sSrcStr))
+                {
+                    Result = "";
+                    return Result;
+                }
+                //開始位置を調べる
+                int iIndex = 0;
+                int iWidth = 0;
+                if (Index > 1)
+                {
+                    for (int i = 1; i < sSrcStr.Length; i++)
+                    {
+                        //１文字ずつ取得
+                        iIndex++;
+
+                        if (MecsIsFullWidth(sSrcStr[i]))
+                        {
+                            //全角文字
+                            iWidth += 2;
+                            if (iWidth == Index)
+                            {
+                                iIndex++;
+                                Count--;
+                            }
+                            if (iWidth >= Index)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //半角文字
+                            iWidth++;
+                            if (iWidth >= Index)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    iIndex++;
+                }
+
+                int iWord = 0;
+                int iBuf = 0;
+                //開始位置から文字列終了までループ
+                for (int i = iIndex; i <= sSrcStr.Length; i++)
+                {
+                    //１文字ずつ取得
+                    string sBuf = MecsCopy(sSrcStr, i, 1);
+                    iWord = iWord + MecsStringWidth(sBuf);
+
+                    if (iWord > Count)
+                    {
+                        //指定エレメント数を超えた場合
+                        iBuf = Result.Length + iIndex;
+                        //切り取った残りの文字列
+                        Dst = MecsCopy(sSrcStr, iBuf, sSrcStr.Length - iBuf + 1);
+                        break;
+                    }
+
+                    //切り取った文字列
+                    Result = Result + sBuf;
+
+                    //切り取った残りの文字列
+                    iBuf = MecsLength(Result) + 1;
+                    Dst = MecsCopy(sSrcStr, iBuf, MecsLength(sSrcStr) - iBuf + 1);
+                }
+            }
+            return Result;
+        }
+
+        public static int MecsLength(string value)
+        {
+            return value.Length;
         }
     }
 }

@@ -33,6 +33,9 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("setFieldData")]
         public Dictionary<int, Dictionary<string, string>> SetFieldData { get; set; } = new();
+
+        [JsonPropertyName("reportConfigPerPage")]
+        public Dictionary<int, ReportConfigModel> ReportConfigPerPage { get; set; } = new();
     }
 
     public class CellModel
@@ -76,6 +79,9 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("visibleFieldList")]
         public Dictionary<string, bool> VisibleFieldList { get; set; } = new Dictionary<string, bool>();
+
+        [JsonPropertyName("visibleAtPrint")]
+        public Dictionary<string, bool> VisibleAtPrint { get; set; } = new Dictionary<string, bool>();
 
         [JsonPropertyName("wrapFieldList")]
         public Dictionary<string, bool> WrapFieldList { get; set; } = new Dictionary<string, bool>();

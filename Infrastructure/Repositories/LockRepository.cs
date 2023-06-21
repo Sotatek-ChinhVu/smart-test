@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId)
+        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token)
         {
             long oyaRaiinNo = 0;
             if (raiinNo > 0)
@@ -37,7 +37,7 @@ namespace Infrastructure.Repositories
 
             string rawSql =
             "INSERT INTO \"LOCK_INF\" (\"FUNCTION_CD\", \"HP_ID\", \"OYA_RAIIN_NO\", \"PT_ID\", \"RAIIN_NO\", \"SIN_DATE\", \"LOCK_DATE\", \"MACHINE\", \"USER_ID\")\r\n      " +
-            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '', {userId}) ON CONFLICT DO NOTHING;";
+            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{token}', {userId}) ON CONFLICT DO NOTHING;";
 
             return TrackingDataContext.Database.ExecuteSqlRaw(rawSql) > 0;
         }
@@ -75,7 +75,7 @@ namespace Infrastructure.Repositories
                     on lockInf.RaiinNo equals raiinInf.RaiinNo into rfg
                     from lockedRaiinInf in rfg.DefaultIfEmpty()
                     join lockMst in NoTrackingDataContext.LockMsts.Where(m => m.FunctionCdB == functionCd && m.IsInvalid == 0)
-            on lockInf.FunctionCd equals lockMst.FunctionCdA
+                    on lockInf.FunctionCd equals lockMst.FunctionCdA
                     join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted != 1 && u.StartDate <= sinDate && sinDate <= u.EndDate)
                     on lockInf.UserId equals userMst.UserId into gj
                     from lockedUserInf in gj.DefaultIfEmpty()
@@ -147,7 +147,7 @@ namespace Infrastructure.Repositories
             }
             TrackingDataContext.LockInfs.Remove(lockInf);
             TrackingDataContext.SaveChanges();
-            return true; 
+            return true;
         }
 
         public bool RemoveAllLock(int hpId, int userId)
@@ -181,6 +181,72 @@ namespace Infrastructure.Repositories
             lockInf.LockDate = CIUtil.GetJapanDateTimeNow();
             TrackingDataContext.SaveChanges();
             return true;
+        }
+
+        public List<LockModel> GetLockInfo(int hpId, long ptId, List<string> lisFunctionCD_B, int sinDate_B, long raiinNo)
+        {
+            var query =
+            (
+                    from lockInf in NoTrackingDataContext.LockInfs.Where(i => i.HpId == hpId && i.PtId == ptId)
+                    join lockMst in NoTrackingDataContext.LockMsts.Where(m => lisFunctionCD_B.Contains(m.FunctionCdB) && m.IsInvalid == 0)
+            on lockInf.FunctionCd equals lockMst.FunctionCdA
+                    join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted != 1 && u.StartDate <= sinDate_B && sinDate_B <= u.EndDate)
+            on lockInf.UserId equals userMst.UserId
+                    join functionMst in NoTrackingDataContext.FunctionMsts.AsQueryable()
+                    on lockInf.FunctionCd equals functionMst.FunctionCd
+                    where lockInf.RaiinNo == 0 || lockInf.RaiinNo == raiinNo
+                    orderby lockMst.LockLevel, lockMst.LockRange
+                    select new
+                    {
+                        lockInf,
+                        lockMst,
+                        userMst,
+                        functionMst
+                    }
+            )
+            .AsEnumerable().ToList();
+
+            var result = query.Select(x => new LockModel(
+                                                        x.lockInf.UserId,
+                                                        x.userMst.Name ?? string.Empty,
+                                                        x.lockInf.LockDate,
+                                                        x.functionMst.FunctionName ?? string.Empty,
+                                                        x.lockInf.FunctionCd,
+                                                        x.lockMst.LockLevel,
+                                                        x.lockMst.LockRange)).ToList();
+            return result;
+        }
+
+        public bool GetVisitingLockStatus(int hpId, int userId, long ptId, string functionCode)
+        {
+            LockInf? log = null;
+            if (functionCode == FunctionCode.MedicalExaminationCode)
+            {
+                log = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && (item.FunctionCd == functionCode
+                                                                                || item.FunctionCd == FunctionCode.SwitchOrderCode)
+                                                                            && item.UserId == userId);
+            }
+            else
+            {
+                log = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && item.FunctionCd == functionCode
+                                                                            && item.UserId == userId);
+            }
+            return log == null;
+        }
+
+        public string GetFunctionNameLock(string functionCode)
+        {
+            string result = string.Empty;
+            var functionItem = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd == functionCode);
+            if (functionItem != null)
+            {
+                result = functionItem.FunctionName ?? string.Empty;
+            }
+            return result;
         }
     }
 }

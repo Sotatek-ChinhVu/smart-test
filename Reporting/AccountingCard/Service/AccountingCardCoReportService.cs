@@ -87,7 +87,7 @@ namespace Reporting.AccountingCard.Service
             _sinYm = sinYm;
             _hokenId = hokenId;
             _includeOutDrug = includeOutDrug;
-            _printoutDateTime = DateTime.Now;
+            _printoutDateTime = CIUtil.GetJapanDateTimeNow();
             byomeiModels = new List<CoReceiptByomeiModel>();
             tekiyoModels = new List<CoReceiptTekiyoModel>();
             coModel = GetData();

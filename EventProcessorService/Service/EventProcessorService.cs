@@ -1,6 +1,7 @@
 ﻿using Entity.Tenant;
 using EventProcessor.Interfaces;
 using EventProcessor.Model;
+using Helper.Common;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
@@ -33,7 +34,7 @@ public class EventProcessorService : IEventProcessorService
                     auditTrailLog.UserId = item.UserId;
                     auditTrailLog.RaiinNo = item.RaiinNo;
                     auditTrailLog.EventCd = item.EventCd;
-                    auditTrailLog.LogDate = DateTime.UtcNow;
+                    auditTrailLog.LogDate = CIUtil.GetJapanDateTimeNow();
                     _tenantDataContext.AuditTrailLogs.Add(auditTrailLog);
                     _tenantDataContext.SaveChanges();
 

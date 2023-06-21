@@ -34,7 +34,7 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GenerateKarte1Report([FromQuery] Karte1ExportRequest request)
     {
         var karte1Data = _reportService.GetKarte1ReportingData(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
-        return await RenderPdf(karte1Data, ReportType.Karte1);
+        return await RenderPdf(karte1Data, ReportType.Common);
     }
 
     [HttpGet(ApiPath.ExportNameLabel)]
@@ -54,7 +54,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ExportByomei)]
     public async Task<IActionResult> GenerateByomeiReport([FromQuery] ByomeiExportRequest request)
     {
-        var byomeiData = _reportService.GetByomeiReportingData(request.PtId, request.FromDay, request.ToDay, request.TenkiIn, request.HokenIdList);
+        var byomeiData = _reportService.GetByomeiReportingData(request.HpId, request.PtId, request.FromDay, request.ToDay, request.TenkiIn, request.HokenIdList);
         return await RenderPdf(byomeiData, ReportType.Common);
     }
 
@@ -130,6 +130,21 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Accounting);
     }
 
+    [HttpPost(ApiPath.AccountingReport)]
+    public async Task<IActionResult> GenerateAccountingReport([FromForm] AccountingReportRequest requestStringJson)
+    {
+        var stringJson = requestStringJson.JsonAccounting;
+        var request = JsonSerializer.Deserialize<AccountingCoReportModelRequest>(stringJson) ?? new();
+        var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
+
+        //public async Task<IActionResult> GenerateAccountingReport([FromBody] AccountingCoReportModelRequest request)
+        //{
+        //    var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
+
+        var data = _reportService.GetAccountingData(request.HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
+        return await RenderPdf(data, ReportType.Accounting);
+    }
+
     [HttpGet(ApiPath.ReceiptReport)]
     public async Task<IActionResult> GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
     {
@@ -175,7 +190,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPrint)]
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
-        var data = _reportService.GetReceiptPrint(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
+        var data = _reportService.GetReceiptPrint(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType);
         return await RenderPdf(data, ReportType.Common);
     }
 
@@ -217,7 +232,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet("ExportKarte2")]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {
-        var inputData = new GetDataPrintKarte2InputData(request.PtId, request.HpId, request.SinDate, request.StartDate, request.EndDate, request.IsCheckedHoken, request.IsCheckedJihi, request.IsCheckedHokenJihi, request.IsCheckedJihiRece, request.IsCheckedHokenRousai, request.IsCheckedHokenJibai, request.IsCheckedDoctor, request.IsCheckedStartTime, request.IsCheckedVisitingTime, request.IsCheckedEndTime, request.IsUketsukeNameChecked, request.IsCheckedSyosai, request.IsIncludeTempSave, request.IsCheckedApproved, request.IsCheckedInputDate, request.IsCheckedSetName, request.DeletedOdrVisibilitySetting, request.IsIppanNameChecked, request.IsCheckedHideOrder);
+        var inputData = new GetDataPrintKarte2InputData(request.PtId, request.HpId, request.SinDate, request.StartDate, request.EndDate, request.IsCheckedHoken, request.IsCheckedJihi, request.IsCheckedHokenJihi, request.IsCheckedJihiRece, request.IsCheckedHokenRousai, request.IsCheckedHokenJibai, request.IsCheckedDoctor, request.IsCheckedStartTime, request.IsCheckedVisitingTime, request.IsCheckedEndTime, request.IsUketsukeNameChecked, request.IsCheckedSyosai, request.IsIncludeTempSave, request.IsCheckedApproved, request.IsCheckedInputDate, request.IsCheckedSetName, request.DeletedOdrVisibilitySetting, request.IsIppanNameChecked, request.IsCheckedHideOrder, request.EmptyMode);
 
         var outputData = _historyCommon.GetDataKarte2(inputData);
 
@@ -300,5 +315,15 @@ public class PdfCreatorController : ControllerBase
                 return File(byteData, "application/pdf");
             }
         }
+    }
+
+    private CoAccountDueListModel ConvertToCoAccountDueListModel(CoAccountDueListRequestModel request)
+    {
+        return new CoAccountDueListModel(
+                   request.SinDate,
+                   0,
+                   request.RaiinNo,
+                   request.OyaRaiinNo
+               );
     }
 }
