@@ -780,6 +780,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
             services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
+            services.AddTransient<IP21WelfareSokatuCoReportService, P21WelfareSokatuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
