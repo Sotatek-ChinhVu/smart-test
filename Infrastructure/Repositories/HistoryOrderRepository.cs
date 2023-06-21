@@ -295,7 +295,7 @@ namespace Infrastructure.Repositories
         {
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, ptId, startDate, endDate, isDeleted);
             int totalCount = raiinInfEnumerable.Count();
-            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.UketukeTime).ThenByDescending(r => r.RaiinNo).ToList();
+            List<RaiinInf> raiinInfList = type == 0 ? raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.UketukeTime).ThenByDescending(r => r.RaiinNo).ToList() : raiinInfEnumerable.OrderBy(r => r.SinDate).ThenBy(r => r.RaiinNo).ToList();
             return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted, isShowApproval, type);
         }
 

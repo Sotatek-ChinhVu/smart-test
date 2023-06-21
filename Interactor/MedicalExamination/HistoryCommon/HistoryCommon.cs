@@ -229,11 +229,13 @@ public class HistoryCommon : IHistoryCommon
                                                               inputData.StartDate,
                                                               inputData.EndDate,
                                                               1,
-                                                              1);
+                                                              0,
+                                                              1
+                                                              );
             }
 
             var result = GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList);
-            List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList;
+            List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList.OrderBy(r => r.SinDate).ThenBy(r => r.RaiinNo).ToList();
             FilterData(ref historyKarteOdrRaiinList, inputData);
             return new GetMedicalExaminationHistoryOutputData(result.Total, historyKarteOdrRaiinList, GetMedicalExaminationHistoryStatus.Successed, 0, inputData, patientInfo ?? new());
         }
