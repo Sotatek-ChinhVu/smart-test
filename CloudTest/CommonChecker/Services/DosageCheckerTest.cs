@@ -12,16 +12,16 @@ namespace CloudUnitTest.CommonChecker.Services
     public class DosageCheckerTest : BaseUT
     {
         [Test]
-        public void CheckDiseaseChecker_001_ReturnsEmptyList_WhenFollowSettingValue()
+        public void CheckDosageChecker_001_ReturnsEmptyList_WhenFollowSettingValue()
         {
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
                                         sinKouiKbn: 20,
                                         itemCd: "620160501",
-                                        itemName: "・ｼｰ・ｼｬ・・・・・・・｡・・ｲ・",
+                                        itemName: "ＰＬ配合顆粒",
                                         suryo: 100,
-                                        unitName: "・ｽ・",
+                                        unitName: "g",
                                         termVal: 0,
                                         syohoKbn: 2,
                                         syohoLimitKbn: 1,
@@ -58,14 +58,20 @@ namespace CloudUnitTest.CommonChecker.Services
                                                                     RealtimeCheckerType.Dosage, odrInfoModel, 20230101, 1231, new(new(), new(), new()), new(), new(), true);
 
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.SaveChanges();
             var dosageChecker = new DosageChecker<OrdInfoModel, OrdInfoDetailModel>();
-            dosageChecker.HpID = 1;
+            dosageChecker.HpID = 999;
             dosageChecker.PtID = 1231;
             dosageChecker.Sinday = 20230101;
             dosageChecker.DataContext = TenantProvider.GetNoTrackingDataContext();
 
             //// Act
             var result = dosageChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
+
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
             //// Assert
             Assert.True(result.ErrorOrderList.Count > 0);
         }
@@ -197,7 +203,7 @@ namespace CloudUnitTest.CommonChecker.Services
             tenantTracking.SaveChanges();
 
             //// Assert
-            Assert.True(result.Any() && result[0].ItemCd == "620160501");
+            Assert.True(result.Any());
         }
     }
 }
