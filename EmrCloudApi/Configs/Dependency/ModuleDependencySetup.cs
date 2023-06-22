@@ -611,6 +611,7 @@ using UseCase.MedicalExamination.GetHeaderVistitDate;
 using UseCase.SystemGenerationConf.Get;
 using UseCase.SystemGenerationConf.GetList;
 using Reporting.Sokatu.WelfareSeikyu.Service;
+using UseCase.Lock.CheckExistFunctionCode;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1346,6 +1347,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
             busBuilder.RegisterUseCase<GetLockInfoInputData, GetLockInfoInteractor>();
             busBuilder.RegisterUseCase<CheckLockVisitingInputData, CheckLockVisitingInteractor>();
+            busBuilder.RegisterUseCase<CheckExistFunctionCodeInputData, CheckExistFunctionCodeInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
