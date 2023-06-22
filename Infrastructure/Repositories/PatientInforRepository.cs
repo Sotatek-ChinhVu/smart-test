@@ -1335,24 +1335,16 @@ namespace Infrastructure.Repositories
                 return startValue;
             }
 
-            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue)
-               .OrderBy(ptInf => ptInf.PtNum);
+            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue).Select(pt => pt.PtNum);
+            var ptNums = NoTrackingDataContext.PtInfs.Select(pt => pt.PtNum);
+            var ptInfNoNext = ptList?.Where(pt => !ptList.Distinct().Contains(pt + 1)).OrderBy(pt => pt).ToList();
 
             long minPtNum = 0;
-            if (ptList != null && ptList.Any())
+            if (ptInfNoNext != null && ptInfNoNext.Any())
             {
-                var queryNotExistPtNum =
-                    from ptInf in ptList
-                    where !(from ptInfDistinct in ptList
-                            select ptInfDistinct.PtNum)
-                           .Contains(ptInf.PtNum + 1)
-                    orderby ptInf.PtNum
-                    select ptInf.PtNum;
-                if (queryNotExistPtNum != null)
-                {
-                    minPtNum = queryNotExistPtNum.FirstOrDefault();
-                }
+                    minPtNum = ptInfNoNext.FirstOrDefault();
             }
+
             return minPtNum + 1;
         }
 
