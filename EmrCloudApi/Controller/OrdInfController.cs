@@ -6,6 +6,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Responses.OrdInfs;
 using EmrCloudApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MedicalExamination.ConvertInputItemToTodayOdr;
@@ -38,11 +39,12 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetOrdInfListTreeResponse>>(presenter.Result);
         }
 
+        [AllowAnonymous]
         [HttpPost(ApiPath.ValidateInputItem)]
         public ActionResult<Response<ValidationInputItemOrdInfListResponse>> ValidateInputItem([FromBody] ValidationInputItemRequest request)
         {
             var input = new ValidationInputItemInputData(
-                        HpId,
+                        1,
                         request.SinDate,
                         request.OdrInfs.Select(o =>
                             new ValidationInputItemItem(
