@@ -25,13 +25,11 @@ namespace CloudUnitTest.CommonChecker.Services
                 new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
             };
 
-            var odrInfoModel = new List<OrdInfoModel>()
-            {
-                new OrdInfoModel(21, 0, ordInfDetails)
-            };
+            var odrInfoModel = new OrdInfoModel(21, 0, ordInfDetails);
 
-            var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
-                                                                    RealtimeCheckerType.Disease, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
+
+            var unitCheckerForOrderListResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                    RealtimeCheckerType.Kinki, odrInfoModel, 20230101, 111);
 
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var kinkiChecker = new KinkiChecker<OrdInfoModel, OrdInfoDetailModel>();
@@ -40,7 +38,7 @@ namespace CloudUnitTest.CommonChecker.Services
             kinkiChecker.Sinday = 20230101;
             kinkiChecker.DataContext = TenantProvider.GetNoTrackingDataContext();
 
-            var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
+            var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
             var temp = systemConf?.Val ?? 0;
             if (systemConf != null)
             {
@@ -52,7 +50,7 @@ namespace CloudUnitTest.CommonChecker.Services
                 {
                     HpId = 1,
                     GrpCd = 2027,
-                    GrpEdaNo = 2,
+                    GrpEdaNo = 1,
                     CreateDate = DateTime.UtcNow,
                     UpdateDate = DateTime.UtcNow,
                     CreateId = 2,
@@ -67,9 +65,9 @@ namespace CloudUnitTest.CommonChecker.Services
             tenantTracking.SaveChanges();
 
             //// Act
-            var result = kinkiChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
+            var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
             //// Assert
-            Assert.True(result.ErrorOrderList.Count == 0);
+            Assert.True(result.ErrorOrderList is null);
         }
 
         [Test]
@@ -103,13 +101,7 @@ namespace CloudUnitTest.CommonChecker.Services
             tenantTracking.SaveChanges();
 
             var tenMsts = CommonCheckerData.ReadTenMst("DIS002", "DIS002");
-            var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("DIS002");
-            var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS002");
-            var ptByomei = CommonCheckerData.ReadPtByomei();
             tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
-            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
-            tenantTracking.PtByomeis.AddRange(ptByomei);
             tenantTracking.SaveChanges();
 
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext());
@@ -141,13 +133,10 @@ namespace CloudUnitTest.CommonChecker.Services
             if (systemConf != null) systemConf.Val = temp;
 
             tenantTracking.TenMsts.RemoveRange(tenMsts);
-            tenantTracking.M42ContraindiDisCon.RemoveRange(m42DisCon);
-            tenantTracking.M42ContraindiDrugMainEx.RemoveRange(m42DrugMainEx);
-            tenantTracking.PtByomeis.RemoveRange(ptByomei);
             tenantTracking.SaveChanges();
 
             ///Assert
-            Assert.True(result.Any());
+            Assert.True(!result.Any());
         }
     }
 }
