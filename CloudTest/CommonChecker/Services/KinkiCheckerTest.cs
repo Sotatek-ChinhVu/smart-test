@@ -149,8 +149,5 @@ namespace CloudUnitTest.CommonChecker.Services
             ///Assert
             Assert.True(result.Any());
         }
-
-        [Test]
-
     }
 }
