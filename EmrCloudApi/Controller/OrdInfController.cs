@@ -6,7 +6,6 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Responses.OrdInfs;
 using EmrCloudApi.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MedicalExamination.ConvertInputItemToTodayOdr;
