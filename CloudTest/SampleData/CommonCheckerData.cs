@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Entity.Tenant;
 
 namespace CloudUnitTest.SampleData
@@ -851,6 +852,101 @@ namespace CloudUnitTest.SampleData
             }
 
             return ptInfs;
+        }
+
+        public static List<PtAlrgyDrug> ReadPtAlrgyDrug()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var ptAlrgyDrugs = new List<PtAlrgyDrug>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_ALRGY_DRUG").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptAlrgy = new PtAlrgyDrug();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    ptAlrgy.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int ptId);
+                                    ptAlrgy.PtId = ptId;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int seqNo);
+                                    ptAlrgy.SeqNo = seqNo;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int sortNo);
+                                    ptAlrgy.SortNo = sortNo;
+                                    break;
+                                case "E":
+                                    ptAlrgy.ItemCd = text;
+                                    break;
+                                case "F":
+                                    ptAlrgy.DrugName = text;
+                                    break;
+                                case "G":
+                                    int.TryParse(text, out int startDate);
+                                    ptAlrgy.StartDate = startDate;
+                                    break;
+                                case "H":
+                                    int.TryParse(text, out int endDate);
+                                    ptAlrgy.EndDate = endDate;
+                                    break;
+                                case "I":
+                                    ptAlrgy.Cmt = text;
+                                    break;
+                                case "J":
+                                    ptAlrgy.IsDeleted = 0;
+                                    break;
+                                case "K":
+                                    ptAlrgy.CreateDate = DateTime.UtcNow;
+                                    break;
+                                case "L":
+                                    ptAlrgy.CreateId = 2;
+                                    break;
+                                case "M":
+                                    ptAlrgy.CreateMachine = "UNITTEST";
+                                    break;
+                                case "N":
+                                    ptAlrgy.UpdateDate = DateTime.UtcNow;
+                                    break;
+                                case "O":
+                                    ptAlrgy.UpdateId = 2;
+                                    break;
+                                case "P":
+                                    ptAlrgy.UpdateMachine = "UNITTEST";
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        ptAlrgyDrugs.Add(ptAlrgy);
+                    }
+                }
+            }
+
+            return ptAlrgyDrugs;
         }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
