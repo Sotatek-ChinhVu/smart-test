@@ -15,6 +15,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Infrastructure.Repositories
@@ -1335,25 +1336,57 @@ namespace Infrastructure.Repositories
                 return startValue;
             }
 
-            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue)
-               .OrderBy(ptInf => ptInf.PtNum);
-
+            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue).Select(ptInf => ptInf.PtNum);
+            var check = ptList?.Any();
+            long minNum = check == true ? ptList?.Min() ?? 0 : 0;
+            long maxNum = check == true ? ptList?.Max() ?? 0 : 0;
+            //.OrderBy(ptInf => ptInf.PtNum);
+            var ranges = CreateRange(minNum, maxNum - minNum + 1);
             long minPtNum = 0;
-            if (ptList != null && ptList.Any())
+            if (check == true)
             {
+
+                //for (long i = minNum; i <= maxNum + 1; i++)
+                //{
+                //    if (ptList?.Contains(i) == false)
+                //    {
+                //        minPtNum = i;
+                //        break;
+                //    }
+                //}
                 var queryNotExistPtNum =
                     from ptInf in ptList
-                    where !(from ptInfDistinct in ptList
-                            select ptInfDistinct.PtNum)
-                           .Contains(ptInf.PtNum + 1)
-                    orderby ptInf.PtNum
-                    select ptInf.PtNum;
+                    where !ranges
+                          .Contains(ptInf + 1)
+                    orderby ptInf
+                    select ptInf;
+                //Parallel.ForEach(ptList, ptInf =>
+                //{
+                //    if (ptList)
+                //    {
+
+                //    }
+                //});
+
                 if (queryNotExistPtNum != null)
                 {
                     minPtNum = queryNotExistPtNum.FirstOrDefault();
                 }
             }
             return minPtNum + 1;
+        }
+
+        public List<long> CreateRange(long start, long count)
+        {
+            List<long> list = new();
+            var limit = start + count;
+
+            while (start < limit)
+            {
+                list.Add(start);
+                start++;
+            }
+            return list;
         }
 
         public (bool resultSave, long ptId) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
