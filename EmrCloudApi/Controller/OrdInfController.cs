@@ -39,12 +39,11 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetOrdInfListTreeResponse>>(presenter.Result);
         }
 
-        [AllowAnonymous]
         [HttpPost(ApiPath.ValidateInputItem)]
         public ActionResult<Response<ValidationInputItemOrdInfListResponse>> ValidateInputItem([FromBody] ValidationInputItemRequest request)
         {
             var input = new ValidationInputItemInputData(
-                        1,
+                        HpId,
                         request.SinDate,
                         request.OdrInfs.Select(o =>
                             new ValidationInputItemItem(
