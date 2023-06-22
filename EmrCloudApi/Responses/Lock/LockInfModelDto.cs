@@ -22,4 +22,6 @@ public class LockInfModelDto
     public string FunctionName { get; private set; }
 
     public string FunctionCode { get; private set; }
+
+    public bool IsExist => !string.IsNullOrEmpty(FunctionCode) && UserId > 0;
 }
