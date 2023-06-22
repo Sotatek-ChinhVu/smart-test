@@ -229,7 +229,7 @@ public class HistoryCommon : IHistoryCommon
                                                               inputData.StartDate,
                                                               inputData.EndDate,
                                                               1,
-                                                              0,
+                                                              1,
                                                               1
                                                               );
             }
