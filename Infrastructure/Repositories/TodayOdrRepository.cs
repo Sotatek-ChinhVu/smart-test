@@ -139,7 +139,7 @@ namespace Infrastructure.Repositories
             if (raiinInf != null)
             {
                 var preProcess = GetModeSaveDate(modeSaveData, raiinInf.Status, sinEndTime, sinStartTime, uketukeTime);
-                raiinInf.Status = (raiinInf.Status == 0 && modeSaveData == 0) ? RaiinState.TempSave : preProcess.status != 0 ? preProcess.status : raiinInf.Status;
+                raiinInf.Status = (raiinInf.Status <= RaiinState.TempSave && modeSaveData == 0) ? RaiinState.TempSave : preProcess.status != 0 ? preProcess.status : raiinInf.Status;
                 //modeSaveData != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
                 raiinInf.SyosaisinKbn = syosaiKbn;
                 raiinInf.JikanKbn = jikanKbn;
