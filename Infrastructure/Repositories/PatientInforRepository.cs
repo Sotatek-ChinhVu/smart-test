@@ -1336,10 +1336,9 @@ namespace Infrastructure.Repositories
             }
 
             var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue).Select(pt => pt.PtNum);
-            var ptNums = NoTrackingDataContext.PtInfs.Select(pt => pt.PtNum);
             var ptInfNoNext = ptList?.Where(pt => !ptList.Distinct().Contains(pt + 1)).OrderBy(pt => pt).ToList();
-
             long minPtNum = 0;
+
             if (ptInfNoNext != null && ptInfNoNext.Any())
             {
                     minPtNum = ptInfNoNext.FirstOrDefault();
