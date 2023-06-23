@@ -2,12 +2,15 @@
 {
     public class LockResponse
     {
-        public LockResponse(string userName, int lockLevel, string screenName)
+        public LockResponse(int userId, string userName, int lockLevel, string screenName)
         {
+            UserId = userId;
             UserName = userName;
             LockLevel = lockLevel;
             ScreenName = screenName;
         }
+
+        public int UserId { get; private set; }
 
         public string UserName { get; private set; }
 

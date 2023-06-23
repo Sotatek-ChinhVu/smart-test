@@ -127,7 +127,7 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
 
             }
         }
-        if (sinDate != DateTime.Now.ToString("yyyyMMdd").AsInteger())
+        if (sinDate != CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger())
         {
             jikanKbn = JikanConst.JikanNai;
             return new DefaultSelectedTimeModel(

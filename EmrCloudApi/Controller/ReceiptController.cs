@@ -616,7 +616,7 @@ public class ReceiptController : AuthorizeControllerBase
     private string GetFileUKECreateName(string inputName)
     {
         if (!string.IsNullOrEmpty(inputName)) return $"{inputName}.zip";
-        return $"ReceiptCreation{CIUtil.DateTimeToInt(DateTime.Now)}.zip";
+        return $"ReceiptCreation{CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow())}.zip";
     }
     #endregion
 }

@@ -143,7 +143,7 @@ public class ByomeiService : IByomeiService
                 bufTo = CIUtil.SDateToShowSDate(coModel.ToDay);
             }
 
-            string sMakeYmd = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
+            string sMakeYmd = CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd HH:mm");
             //HEAD印字
             //日付
             SetFieldData("dfPtNum", coModel.PtNum.ToString());
@@ -154,7 +154,7 @@ public class ByomeiService : IByomeiService
 
             SetFieldData("bcPtNum", coModel.PtNum.ToString()); //患者番号バーコード
 
-            int iAge = CIUtil.SDateToAge(coModel.BirthYmd, CIUtil.DateTimeToInt(DateTime.Now));
+            int iAge = CIUtil.SDateToAge(coModel.BirthYmd, CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow()));
             SetFieldData("dfAge", iAge.ToString());
 
             if (string.IsNullOrEmpty(bufFrom) && string.IsNullOrEmpty(bufTo))

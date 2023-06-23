@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Lock
+﻿using Helper.Constants;
+
+namespace Domain.Models.Lock
 {
     public class LockModel
     {
@@ -21,11 +23,21 @@
             FunctionCode = string.Empty;
         }
 
+        public LockModel(string functionCode, int userId, string userName, string functionName)
+        {
+            FunctionCode = functionCode;
+            UserName = userName;
+            LockDateTime = DateTime.MinValue;
+            FunctionName = functionName;
+            UserId = userId;
+            LockLevel = 0;
+        }
+
         public int UserId { get; private set; }
 
         public string UserName { get; private set; }
 
-        public DateTime LockDateTime { get; private set; } 
+        public DateTime LockDateTime { get; private set; }
 
         public string FunctionName { get; private set; }
 

@@ -50,7 +50,7 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
 
         GetRowCount();
         currentPage = 1;
-        printoutDateTime = DateTime.Now;
+        printoutDateTime = CIUtil.GetJapanDateTimeNow();
         coModel = GetData();
         string rowCountFieldName = "lsOrder";
         MakeOdrDtlList();

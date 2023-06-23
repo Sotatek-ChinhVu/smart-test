@@ -1,5 +1,7 @@
 ﻿using Domain.Models.Lock;
+using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +14,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId)
+        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token)
         {
             long oyaRaiinNo = 0;
             if (raiinNo > 0)
@@ -35,7 +37,7 @@ namespace Infrastructure.Repositories
 
             string rawSql =
             "INSERT INTO \"LOCK_INF\" (\"FUNCTION_CD\", \"HP_ID\", \"OYA_RAIIN_NO\", \"PT_ID\", \"RAIIN_NO\", \"SIN_DATE\", \"LOCK_DATE\", \"MACHINE\", \"USER_ID\")\r\n      " +
-            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '', {userId}) ON CONFLICT DO NOTHING;";
+            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{token}', {userId}) ON CONFLICT DO NOTHING;";
 
             return TrackingDataContext.Database.ExecuteSqlRaw(rawSql) > 0;
         }
@@ -73,7 +75,7 @@ namespace Infrastructure.Repositories
                     on lockInf.RaiinNo equals raiinInf.RaiinNo into rfg
                     from lockedRaiinInf in rfg.DefaultIfEmpty()
                     join lockMst in NoTrackingDataContext.LockMsts.Where(m => m.FunctionCdB == functionCd && m.IsInvalid == 0)
-            on lockInf.FunctionCd equals lockMst.FunctionCdA
+                    on lockInf.FunctionCd equals lockMst.FunctionCdA
                     join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted != 1 && u.StartDate <= sinDate && sinDate <= u.EndDate)
                     on lockInf.UserId equals userMst.UserId into gj
                     from lockedUserInf in gj.DefaultIfEmpty()
@@ -215,16 +217,36 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public bool GetVisitingLockStatus(int hpId,int userId, long ptId, int sinDate, string functionCode)
+        public bool GetVisitingLockStatus(int hpId, int userId, long ptId, string functionCode)
         {
-            return NoTrackingDataContext.LockInfs
-                                        .FirstOrDefault(
-                                        l => l.HpId == hpId &&
-                                        l.SinDate == sinDate &&
-                                        l.PtId == ptId &&
-                                        l.FunctionCd == functionCode &&
-                                        l.UserId == userId
-                                        ) == null;
+            LockInf? log = null;
+            if (functionCode == FunctionCode.MedicalExaminationCode)
+            {
+                log = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && (item.FunctionCd == functionCode
+                                                                                || item.FunctionCd == FunctionCode.SwitchOrderCode)
+                                                                            && item.UserId == userId);
+            }
+            else
+            {
+                log = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && item.FunctionCd == functionCode
+                                                                            && item.UserId == userId);
+            }
+            return log == null;
+        }
+
+        public string GetFunctionNameLock(string functionCode)
+        {
+            string result = string.Empty;
+            var functionItem = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd == functionCode);
+            if (functionItem != null)
+            {
+                result = functionItem.FunctionName ?? string.Empty;
+            }
+            return result;
         }
     }
 }

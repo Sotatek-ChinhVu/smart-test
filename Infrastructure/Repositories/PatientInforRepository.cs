@@ -5,6 +5,7 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.MaxMoney;
 using Domain.Models.PatientInfor;
+using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -21,8 +22,10 @@ namespace Infrastructure.Repositories
     public class PatientInforRepository : RepositoryBase, IPatientInforRepository
     {
         private const string startGroupOrderKey = "group_";
-        public PatientInforRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IReceptionRepository _receptionRepository;
+        public PatientInforRepository(ITenantProvider tenantProvider, IReceptionRepository receptionRepository) : base(tenantProvider)
         {
+            _receptionRepository = receptionRepository;
         }
 
         (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId)
@@ -162,36 +165,11 @@ namespace Infrastructure.Repositories
                     memo = ptMemo.Memo ?? string.Empty;
                 }
 
-
                 //Get lastVisitDate
-                int lastVisitDate = 0;
-                RaiinInf? raiinInf = NoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId &&
-                                                           p.PtId == ptId &&
-                                                           p.IsDeleted == DeleteTypes.None &&
-                                                           p.Status >= RaiinState.TempSave &&
-                                                           (sinDate <= 0 || p.SinDate < sinDate))
-                                                            .OrderByDescending(p => p.SinDate)
-                                                            .ThenByDescending(p => p.RaiinNo)
-                                                            .FirstOrDefault();
-                if (raiinInf != null)
-                {
-                    lastVisitDate = raiinInf.SinDate;
-                }
+                int lastVisitDate = _receptionRepository.GetLastVisit(hpId, ptId, sinDate)?.SinDate ?? 0;
 
                 //Get First Visit Date
-                int firstDate = 0;
-                RaiinInf? raiinInfFirstDate = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId
-                                                                               && x.PtId == itemData.PtId
-                                                                               && x.SyosaisinKbn == SyosaiConst.Syosin
-                                                                               && x.Status >= RaiinState.TempSave
-                                                                               && x.IsDeleted == DeleteTypes.None
-                    )
-                    .OrderByDescending(x => x.SinDate)
-                    .FirstOrDefault();
-                if (raiinInfFirstDate != null)
-                {
-                    firstDate = raiinInfFirstDate.SinDate;
-                }
+                int firstDate = _receptionRepository.GetFirstVisitWithSyosin(hpId, ptId, sinDate);
 
                 return new PatientInforModel(
                     itemData.HpId,
@@ -702,7 +680,7 @@ namespace Infrastructure.Repositories
 
             int GetBirthDayFromAge(int age)
             {
-                var bithDay = DateTime.Now.AddYears(-age);
+                var bithDay = CIUtil.GetJapanDateTimeNow().AddYears(-age);
                 return CIUtil.ShowSDateToSDate(bithDay.ToString("yyyyMMdd"));
             }
 
@@ -1357,24 +1335,15 @@ namespace Infrastructure.Repositories
                 return startValue;
             }
 
-            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue)
-               .OrderBy(ptInf => ptInf.PtNum);
-
+            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue).Select(pt => pt.PtNum);
+            var ptInfNoNext = ptList?.Where(pt => !ptList.Distinct().Contains(pt + 1)).OrderBy(pt => pt).ToList();
             long minPtNum = 0;
-            if (ptList != null && ptList.Any())
+
+            if (ptInfNoNext != null && ptInfNoNext.Any())
             {
-                var queryNotExistPtNum =
-                    from ptInf in ptList
-                    where !(from ptInfDistinct in ptList
-                            select ptInfDistinct.PtNum)
-                           .Contains(ptInf.PtNum + 1)
-                    orderby ptInf.PtNum
-                    select ptInf.PtNum;
-                if (queryNotExistPtNum != null)
-                {
-                    minPtNum = queryNotExistPtNum.FirstOrDefault();
-                }
+                    minPtNum = ptInfNoNext.FirstOrDefault();
             }
+
             return minPtNum + 1;
         }
 

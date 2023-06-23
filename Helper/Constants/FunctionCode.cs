@@ -3,6 +3,7 @@
 public static class FunctionCode
 {
     public const string MedicalExaminationCode = "02000000";
+    public const string SwitchOrderCode = "02000001";
     public const string SuperSetCode = "02001000";
     public const string PatientInfo = "01000000";
     public const string Accounting = "03000000";

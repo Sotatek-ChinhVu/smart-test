@@ -1129,7 +1129,7 @@ namespace Interactor.MedicalExamination
                         {
                             headerInfo.Append(Environment.NewLine);
                         }
-                        headerInfo.Append($"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){ptFamilyModel.DiseaseName}");
+                        headerInfo.Append($"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){diseaseName}");
                     }
                 }
 

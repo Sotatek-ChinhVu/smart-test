@@ -9,6 +9,8 @@ namespace Domain.Models.FlowSheet
 
         Dictionary<long, List<RaiinListInfModel>> GetRaiinListInf(int hpId, long ptId);
 
+        Dictionary<int, List<RaiinListInfModel>> GetRaiinListInfForNextOrder(int hpId, long ptId);
+
         List<RaiinListMstModel> GetRaiinListMsts(int hpId);
 
         bool SaveHolidayMst(HolidayModel holiday, int userId);
