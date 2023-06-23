@@ -5,8 +5,7 @@
         Successed = 1,
         InvalidHpId = 2,
         InvalidPtId = 3,
-        InvalidRsvkrtKbn = 4,
-        NoData = 5,
-        Failed = 6
+        NoData = 4,
+        Failed = 5
     }
 }
