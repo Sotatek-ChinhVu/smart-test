@@ -15,7 +15,7 @@ public class ReceiptListCoReportService : IReceiptListCoReportService
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly List<Dictionary<string, CellModel>> _tableFieldData;
     private List<ReceiptListModel> _receiptListModels;
-    private DateTime _printoutDateTime = DateTime.Now;
+    private DateTime _printoutDateTime = CIUtil.GetJapanDateTimeNow();
 
     public ReceiptListCoReportService(ITenantProvider tenantProvider, ISystemConfig systemConfig)
     {
@@ -33,7 +33,7 @@ public class ReceiptListCoReportService : IReceiptListCoReportService
             var finder = new CoReceiptListFinder(_tenantProvider, _systemConfig);
             _receiptListModels = finder.GetDataReceReport(hpId, seikyuYm, receiptListModels);
 
-            _printoutDateTime = DateTime.Now;
+            _printoutDateTime = CIUtil.GetJapanDateTimeNow();
 
             UpdateDrawForm(seikyuYm);
             return new ReceiptListMapper(_singleFieldData, _tableFieldData).GetData();

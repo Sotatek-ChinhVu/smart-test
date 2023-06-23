@@ -460,6 +460,7 @@ using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
 using UseCase.RaiinListSetting.GetDocCategory;
 using UseCase.RaiinListSetting.GetFilingcategory;
 using UseCase.RaiinListSetting.GetRaiiinListSetting;
+using UseCase.RaiinListSetting.SaveRaiinListSetting;
 using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
@@ -544,7 +545,6 @@ using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemConf.SaveDrugCheckSetting;
 using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
-using UseCase.SystemGenerationConf;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using UseCase.TimeZoneConf.SaveTimeZoneConf;
 using UseCase.Todo.GetListTodoKbn;
@@ -587,26 +587,22 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.Receipt.ValidateCreateUKEFile;
-using Interactor.PatientInfor.SortPatientCommon;
-using Reporting.DrugNoteSeal.Service;
-using Reporting.DrugNoteSeal.DB;
 using Reporting.Sokatu.HikariDisk.DB;
 using Reporting.Sokatu.HikariDisk.Service;
-using Reporting.Sokatu.KoukiSeikyu.DB;
-using UseCase.RaiinListSetting.GetDocCategory;
-using Interactor.RaiinListSetting;
-using Domain.Models.RaiinListSetting;
-using UseCase.RaiinListSetting.GetFilingcategory;
 using Reporting.Sokatu.AfterCareSeikyu.Service;
 using Reporting.Sokatu.AfterCareSeikyu.DB;
-using Reporting.Sijisen.DB;
 using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Interactor.SetMst.CommonSuperSet;
 using Reporting.Sokatu.WelfareSeikyu.DB;
 using Reporting.Byomei.DB;
 using UseCase.User.GetListUserByCurrentUser;
+using UseCase.MedicalExamination.GetHeaderVistitDate;
+using UseCase.SystemGenerationConf.Get;
+using UseCase.SystemGenerationConf.GetList;
+using Reporting.Sokatu.WelfareSeikyu.Service;
+using UseCase.User.GetListJobMst;
+using UseCase.User.GetListFunctionPermission;
 using UseCase.User.SaveListUserMst;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -776,6 +772,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -878,6 +875,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICommonSuperSet, CommonSuperSet>();
             services.AddTransient<ICoKarte1Finder, CoKarte1Finder>();
             services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
+            services.AddTransient<ICheckOpenReportingService, CheckOpenReportingService>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -894,6 +892,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
             busBuilder.RegisterUseCase<GetAllPermissionInputData, GetAllPermissionInteractor>();
             busBuilder.RegisterUseCase<GetListUserByCurrentUserInputData, GetListUserByCurrentUserInteractor>();
+            busBuilder.RegisterUseCase<GetListJobMstInputData, GetListJobMstInteractor>();
+            busBuilder.RegisterUseCase<GetListFunctionPermissionInputData, GetListFunctionPermissionInteractor>();
             busBuilder.RegisterUseCase<SaveListUserMstInputData, SaveListUserMstInteractor>();
 
             //ApprovalInfo
@@ -1028,6 +1028,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetContainerMstInputData, GetContainerMstInteractor>();
             busBuilder.RegisterUseCase<GetSinkouCountInMonthInputData, GetSinkouCountInMonthInteractor>();
             busBuilder.RegisterUseCase<CheckNextOrdHaveOdrInputData, CheckNextOrdHaveInteractor>();
+            busBuilder.RegisterUseCase<GetHeaderVistitDateInputData, GetHeaderVistitDateInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
@@ -1218,6 +1219,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //System Config Generation 
             busBuilder.RegisterUseCase<GetSystemGenerationConfInputData, GetSystemGenerationConfInteractor>();
+            busBuilder.RegisterUseCase<GetSystemGenerationConfListInputData, GetSystemGenerationConfListInteractor>();
 
             //Next Order
             busBuilder.RegisterUseCase<GetNextOrderListInputData, GetNextOrderListInteractor>();
@@ -1359,6 +1361,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDocCategoryRaiinInputData, GetDocCategoryRaiinInteractor>();
             busBuilder.RegisterUseCase<GetFilingcategoryInputData, GetFilingcategoryInteractor>();
             busBuilder.RegisterUseCase<GetRaiiinListSettingInputData, GetRaiiinListSettingInteractor>();
+            busBuilder.RegisterUseCase<SaveRaiinListSettingInputData, SaveRaiinListSettingInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

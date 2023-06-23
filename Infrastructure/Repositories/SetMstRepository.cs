@@ -100,28 +100,27 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                                              && item.IsDeleted == 0);
 
             var searchItemList = setMstModelList!
-                                .Where(item => string.IsNullOrEmpty(textSearch)
-                                               || (item.SetName != null && item.SetName.Contains(textSearch))
-                                               || (item.SetName != null && item.SetName.ToUpper()
-                                                                                       .Replace("ｧ", "ｱ")
-                                                                                       .Replace("ｨ", "ｲ")
-                                                                                       .Replace("ｩ", "ｳ")
-                                                                                       .Replace("ｪ", "ｴ")
-                                                                                       .Replace("ｫ", "ｵ")
-                                                                                       .Replace("ｬ", "ﾔ")
-                                                                                       .Replace("ｭ", "ﾕ")
-                                                                                       .Replace("ｮ", "ﾖ")
-                                                                                       .Replace("ｯ", "ﾂ")
-                                                                                       .Contains(sBigKeyword)))
+                                .Where(item => !string.IsNullOrEmpty(textSearch)
+                                               && ((item.SetName != null && item.SetName.Contains(textSearch))
+                                                    || (item.SetName != null && item.SetName.ToUpper()
+                                                                                            .Replace("ｧ", "ｱ")
+                                                                                            .Replace("ｨ", "ｲ")
+                                                                                            .Replace("ｩ", "ｳ")
+                                                                                            .Replace("ｪ", "ｴ")
+                                                                                            .Replace("ｫ", "ｵ")
+                                                                                            .Replace("ｬ", "ﾔ")
+                                                                                            .Replace("ｭ", "ﾕ")
+                                                                                            .Replace("ｮ", "ﾖ")
+                                                                                            .Replace("ｯ", "ﾂ")
+                                                                                            .Contains(sBigKeyword))
+                                                                                            ))
                                 .ToList();
-
-            var setCdList = searchItemList.Select(item => item.SetCd).ToList();
 
             // SearchBy Order Inf Detail
             var setCdOrderDetailList = NoTrackingDataContext.SetOdrInfDetail
                                        .Where(item => item.HpId == hpId
                                                       && ((item.ItemName != null && item.ItemName.Contains(textSearch))
-                                                          || (item.ItemName != null && item.ItemName.ToUpper()
+                                                           || (item.ItemName != null && item.ItemName.ToUpper()
                                                                                                     .Replace("ｧ", "ｱ")
                                                                                                     .Replace("ｨ", "ｲ")
                                                                                                     .Replace("ｩ", "ｳ")
@@ -131,17 +130,40 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                                                                                     .Replace("ｭ", "ﾕ")
                                                                                                     .Replace("ｮ", "ﾖ")
                                                                                                     .Replace("ｯ", "ﾂ")
-                                                                                                    .Contains(sBigKeyword))))
-                                       .Select(item => item.SetCd)
+                                                                                                    .Contains(sBigKeyword))
+                                                                                                    ))
+                                       .Select(item => new
+                                       {
+                                           item.SetCd,
+                                           item.RpNo,
+                                           item.RpEdaNo
+                                       })
                                        .Distinct()
                                        .ToList();
 
-            var setItemOrderDetailList = setMstModelList!.Where(item => setCdOrderDetailList.Contains(item.SetCd)).ToList();
+            var setOrderInfList = NoTrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId
+                                                                                && item.IsDeleted == 0
+                                                                                && setCdOrderDetailList.Select(item => item.SetCd).Contains(item.SetCd))
+                                                                 .ToList();
+
+            List<int> setCdOrderInfList = new();
+            foreach (var order in setOrderInfList)
+            {
+                var setCds = setCdOrderDetailList.Where(item => item.RpNo == order.RpNo
+                                                                && item.RpEdaNo == order.RpEdaNo)
+                                                 .Select(item => item.SetCd)
+                                                 .ToList();
+                setCdOrderInfList.AddRange(setCds);
+            }
+            setCdOrderInfList = setCdOrderInfList.Distinct().ToList();
+
+            var setItemOrderDetailList = setMstModelList!.Where(item => setCdOrderInfList.Contains(item.SetCd)).ToList();
             searchItemList.AddRange(setItemOrderDetailList);
 
             // SearchBy Karte
             var setCdKarte = NoTrackingDataContext.SetKarteInf.Where(item => item.HpId == hpId
-                                                                             && ((item.Text != null && item.Text.Contains(textSearch)))
+                                                                             && item.IsDeleted == 0
+                                                                             && ((item.Text != null && item.Text.Contains(textSearch))
                                                                                   || (item.Text != null && item.Text.ToUpper()
                                                                                                                     .Replace("ｧ", "ｱ")
                                                                                                                     .Replace("ｨ", "ｲ")
@@ -152,17 +174,20 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                                                                                                     .Replace("ｭ", "ﾕ")
                                                                                                                     .Replace("ｮ", "ﾖ")
                                                                                                                     .Replace("ｯ", "ﾂ")
-                                                                                                                    .Contains(sBigKeyword)))
+                                                                                                                    .Contains(sBigKeyword))))
                                                               .Select(item => item.SetCd)
                                                               .Distinct()
                                                               .ToList();
             var setItemKarteList = setMstModelList!.Where(item => setCdKarte.Contains(item.SetCd)).ToList();
             searchItemList.AddRange(setItemKarteList);
 
+            List<int> setCdList = new();
             // Action gen rootSet
             searchItemList = searchItemList.Distinct().ToList();
             foreach (var searchItem in searchItemList)
             {
+                setCdList.Add(searchItem.SetCd);
+
                 // if item is level 1
                 if (searchItem.Level2 == 0)
                 {
@@ -193,7 +218,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     setCdList.Add(setCdRootLevel1);
 
                     var setCdRootLevel2 = setMstModelList.First(item => item.Level1 == searchItem.Level1
-                                                                        && item.Level2 > 0
+                                                                        && item.Level2 == searchItem.Level2
                                                                         && item.Level3 == 0).SetCd;
                     setCdList.Add(setCdRootLevel2);
                 }
@@ -1853,11 +1878,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 levelNew.IsDeleted = DeleteTypes.Deleted;
             }
 
-            // level2 => level1
-            dragItem.Level1 = 1;
-            dragItem.Level2 = 0;
-            dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            dragItem.UpdateId = userId;
             dragItem.IsDeleted = DeleteTypes.Deleted;
 
             if (rootMaxDropUpdateLevel1 != null)
@@ -1887,6 +1907,12 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 levelNew.IsDeleted = DeleteTypes.None;
             }
+
+            // level2 => level1
+            dragItem.Level1 = 1;
+            dragItem.Level2 = 0;
+            dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            dragItem.UpdateId = userId;
             dragItem.IsDeleted = DeleteTypes.None;
             TrackingDataContext.SaveChanges();
         }
@@ -1899,7 +1925,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             var rootMaxDropUpdateLevel1 = maxDropUpdateLevel1.FirstOrDefault(m => m.Level2 == 0 && m.Level3 == 0);
             var listDropUpdateLevel1ExceptMaxLevel = listUpdateLevel1.Where(l => !maxDropUpdateLevel1.Contains(l)).ToList();
             //LevelDown(1, userId, listUpdateLevel1);
-            LevelDown(1, userId, listUpdateLevel1);
+            LevelDown(1, userId, listDropUpdateLevel1ExceptMaxLevel);
             foreach (var item in listDropUpdateLevel1ExceptMaxLevel)
             {
                 item.IsDeleted = DeleteTypes.Deleted;
@@ -1909,11 +1935,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 item.IsDeleted = DeleteTypes.Deleted;
             }
-            dragItem.Level1 = 1;
-            dragItem.Level2 = 0;
-            dragItem.Level3 = 0;
-            dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            dragItem.UpdateId = userId;
             dragItem.IsDeleted = DeleteTypes.Deleted;
             if (rootMaxDropUpdateLevel1 != null)
             {
@@ -1937,6 +1958,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 item.IsDeleted = DeleteTypes.None;
             }
+            dragItem.Level1 = 1;
+            dragItem.Level2 = 0;
+            dragItem.Level3 = 0;
+            dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            dragItem.UpdateId = userId;
             dragItem.IsDeleted = DeleteTypes.None;
             TrackingDataContext.SaveChanges();
         }

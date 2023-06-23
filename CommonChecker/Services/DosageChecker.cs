@@ -22,12 +22,12 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         {
             bool isMinCheck = SystemConfig!.DosageMinCheckSetting;
             double ratioSetting = SystemConfig.DosageRatioSetting;
-
-            List<DrugInfo> itemList = new List<DrugInfo>();
+            var resultList = new List<DosageResultModel>();
+            var errorOrderList = new List<TOdrInf>();
+            var itemList = new List<DrugInfo>();
 
             foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (checkingOrder.OdrKouiKbn == 21 && !SystemConfig.DosageDrinkingDrugSetting ||
                 checkingOrder.OdrKouiKbn == 22 && !SystemConfig.DosageDrugAsOrderSetting ||
                 checkingOrder.OdrKouiKbn == 23 ||
@@ -36,7 +36,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 {
                     continue;
                 }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                 double usageQuantity = 0;
                 var usageItem = checkingOrder.OdrInfDetailModelsIgnoreEmpty.FirstOrDefault(d => d.IsStandardUsage);
@@ -60,19 +59,30 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                         UsageQuantity = usageQuantity
                     })
                     .ToList());
+
+                if (itemList.Count == 0)
+                {
+                    continue;
+                }
+
+                List<DosageResultModel> checkedResult = Finder!.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, CurrentHeight, CurrentWeight, unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
+
+                if (TermLimitCheckingOnly)
+                {
+                    checkedResult = checkedResult.Where(r => r.LabelChecking == DosageLabelChecking.TermLimit).ToList();
+                }
+
+                if (checkedResult.Count > 0)
+                {
+                    unitCheckerForOrderListResult.ErrorInfo = checkedResult;
+                    unitCheckerForOrderListResult.ErrorOrderList = GetErrorOrderList(unitCheckerForOrderListResult.CheckingOrderList, checkedResult);
+                }
             }
 
-            List<DosageResultModel> checkedResult = Finder!.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, CurrentHeight, CurrentWeight, unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
-
-            if (TermLimitCheckingOnly)
+            if (resultList.Count > 0)
             {
-                checkedResult = checkedResult.Where(r => r.LabelChecking == DosageLabelChecking.TermLimit).ToList();
-            }
-
-            if (checkedResult.Count > 0)
-            {
-                unitCheckerForOrderListResult.ErrorInfo = checkedResult;
-                unitCheckerForOrderListResult.ErrorOrderList = GetErrorOrderList(unitCheckerForOrderListResult.CheckingOrderList, checkedResult);
+                unitCheckerForOrderListResult.ErrorInfo = resultList;
+                unitCheckerForOrderListResult.ErrorOrderList = errorOrderList;
             }
 
             return unitCheckerForOrderListResult;

@@ -11,6 +11,8 @@ using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.Create;
 using UseCase.User.GetList;
 using UseCase.User.GetListUserByCurrentUser;
+using UseCase.User.GetListJobMst;
+using UseCase.User.GetListFunctionPermission;
 using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.SaveListUserMst;
 using UseCase.User.UpsertList;
@@ -95,6 +97,27 @@ public class UserController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListUserByCurrentUserResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListJobMst)]
+    public ActionResult<Response<GetListJobMstResponse>> GetListJobMst()
+    {
+        var input = new GetListJobMstInputData(HpId);
+        var output = _bus.Handle(input);
+        var presenter = new GetListJobMstPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetListJobMstResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListFunctionPermission)]
+    public ActionResult<Response<GetListFunctionPermissionResponse>> GetListFunctionPermission()
+    {
+        var input = new GetListFunctionPermissionInputData();
+        var output = _bus.Handle(input);
+        var presenter = new GetListFunctionPermissionPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListFunctionPermissionResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveListUserMst)]

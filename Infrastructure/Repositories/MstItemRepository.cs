@@ -1709,7 +1709,7 @@ namespace Infrastructure.Repositories
             var entities = NoTrackingDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1) && e.PostCd.EndsWith(postCode2));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1+postCode2));
 
             else if (!string.IsNullOrEmpty(postCode1))
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
@@ -4784,7 +4784,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public (List<TenItemModel> tenItemModels, int totalCount) SearchSuggestionTenMstItem(int hpId, int pageIndex, int pageCount, string keyword, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool isDeleted, List<int> drugKbns, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly)
+        public (List<TenItemModel> tenItemModels, int totalCount) SearchSuggestionTenMstItem(int hpId, int pageIndex, int pageCount, string keyword, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeMisai, bool includeRosai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool isDeleted, List<int> drugKbns, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly)
         {
             if (string.IsNullOrEmpty(keyword))
             {
@@ -5061,6 +5061,11 @@ namespace Infrastructure.Repositories
             if (!includeMisai)
             {
                 queryResult = queryResult.Where(t => t.IsAdopted == 1);
+            }
+
+            if (!includeRosai)
+            {
+                queryResult = queryResult.Where(t => t.RousaiKbn != 1);
             }
 
             queryResult = queryResult.Where(t => t.IsNosearch == 0);

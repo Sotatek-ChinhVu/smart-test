@@ -71,5 +71,9 @@ namespace Domain.Models.User
         List<int> ListDepartmentValid(int hpId);
 
         List<int> ListJobCdValid(int hpId);
+
+        List<JobMstModel> GetListJob(int hpId);
+
+        List<FunctionMstModel> GetListFunctionPermission();
     }
 }

@@ -149,14 +149,18 @@ public class HistoryCommon : IHistoryCommon
         List<HistoryKarteOdrRaiinItem> filteredKaruteList = new();
         foreach (var history in historyKarteOdrRaiinItems)
         {
-            if (history.HokenGroups == null || !history.HokenGroups.Any())
+            if (history.RaiinNo == 902550356 || history.RaiinNo == 902550392)
             {
-                continue;
+                var temp = "abc";
             }
-
             if (listAcceptedHokenType.Contains((OrderHokenType)history.HokenType))
             {
                 filteredKaruteList.Add(history);
+                continue;
+            }
+
+            if (history.HokenGroups == null || !history.HokenGroups.Any())
+            {
                 continue;
             }
 
@@ -224,11 +228,14 @@ public class HistoryCommon : IHistoryCommon
                                                               inputData.SinDate,
                                                               inputData.StartDate,
                                                               inputData.EndDate,
-                                                              1);
+                                                              1,
+                                                              0,
+                                                              1
+                                                              );
             }
 
             var result = GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList);
-            List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList;
+            List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList.OrderBy(r => r.SinDate).ThenBy(r => r.RaiinNo).ToList();
             FilterData(ref historyKarteOdrRaiinList, inputData);
             return new GetMedicalExaminationHistoryOutputData(result.Total, historyKarteOdrRaiinList, GetMedicalExaminationHistoryStatus.Successed, 0, inputData, patientInfo ?? new());
         }
