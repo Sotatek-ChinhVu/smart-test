@@ -741,6 +741,66 @@ namespace CloudUnitTest.SampleData
             return m42Contraindis;
         }
 
+        public static List<M12FoodAlrgy> ReadM12FoodAlrgy(string key)
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m12FoodAlrgys = new List<M12FoodAlrgy>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M12_FOOD_ALRGY").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m12FoodAlrgy = new M12FoodAlrgy();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m12FoodAlrgy.KikinCd = text;
+                                    break;
+                                case "B":
+                                    m12FoodAlrgy.YjCd = text + key;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int foodKbn);
+                                    m12FoodAlrgy.FoodKbn = foodKbn + key;
+                                    break;
+                                case "D":
+                                    m12FoodAlrgy.TenpuLevel = text;
+                                    break;
+                                case "E":
+                                    m12FoodAlrgy.AttentionCmt = text;
+                                    break;
+                                case "F":
+                                    m12FoodAlrgy.WorkingMechanism = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m12FoodAlrgys.Add(m12FoodAlrgy);
+                    }
+                }
+            }
+
+            return m12FoodAlrgys;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
