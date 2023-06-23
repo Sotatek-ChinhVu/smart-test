@@ -38,11 +38,10 @@ namespace EmrCloudApi.Controller
             _bus = bus;
         }
 
-        [AllowAnonymous]
         [HttpGet("GetDrugInf")]
         public ActionResult<Response<GetDrugInforResponse>> GetDrugInformation([FromQuery] GetDrugInforRequest request)
         {
-            var input = new GetDrugInforInputData(1, request.SinDate, request.ItemCd);
+            var input = new GetDrugInforInputData(HpId, request.SinDate, request.ItemCd);
             var output = _bus.Handle(input);
 
             var presenter = new GetDrugInforPresenter();
