@@ -432,7 +432,7 @@ namespace Domain.Common
 
                     var sumBukatu = odrInf.SumBunkatu(bunkatuItem?.Bunkatu ?? string.Empty);
 
-                    if (usageItem.Suryo != sumBukatu)
+                    if ((decimal)usageItem.Suryo != sumBukatu)
                     {
                         var bunkatuIndex = odrInf.OrdInfDetails?.FindIndex(od => od == bunkatuItem) ?? 0;
 

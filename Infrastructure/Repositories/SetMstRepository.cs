@@ -1878,11 +1878,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 levelNew.IsDeleted = DeleteTypes.Deleted;
             }
 
-            // level2 => level1
-            dragItem.Level1 = 1;
-            dragItem.Level2 = 0;
-            dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            dragItem.UpdateId = userId;
             dragItem.IsDeleted = DeleteTypes.Deleted;
 
             if (rootMaxDropUpdateLevel1 != null)
@@ -1912,6 +1907,12 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 levelNew.IsDeleted = DeleteTypes.None;
             }
+
+            // level2 => level1
+            dragItem.Level1 = 1;
+            dragItem.Level2 = 0;
+            dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            dragItem.UpdateId = userId;
             dragItem.IsDeleted = DeleteTypes.None;
             TrackingDataContext.SaveChanges();
         }
@@ -1924,7 +1925,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             var rootMaxDropUpdateLevel1 = maxDropUpdateLevel1.FirstOrDefault(m => m.Level2 == 0 && m.Level3 == 0);
             var listDropUpdateLevel1ExceptMaxLevel = listUpdateLevel1.Where(l => !maxDropUpdateLevel1.Contains(l)).ToList();
             //LevelDown(1, userId, listUpdateLevel1);
-            LevelDown(1, userId, listUpdateLevel1);
+            LevelDown(1, userId, listDropUpdateLevel1ExceptMaxLevel);
             foreach (var item in listDropUpdateLevel1ExceptMaxLevel)
             {
                 item.IsDeleted = DeleteTypes.Deleted;
@@ -1934,11 +1935,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 item.IsDeleted = DeleteTypes.Deleted;
             }
-            dragItem.Level1 = 1;
-            dragItem.Level2 = 0;
-            dragItem.Level3 = 0;
-            dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            dragItem.UpdateId = userId;
             dragItem.IsDeleted = DeleteTypes.Deleted;
             if (rootMaxDropUpdateLevel1 != null)
             {
@@ -1962,6 +1958,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 item.IsDeleted = DeleteTypes.None;
             }
+            dragItem.Level1 = 1;
+            dragItem.Level2 = 0;
+            dragItem.Level3 = 0;
+            dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            dragItem.UpdateId = userId;
             dragItem.IsDeleted = DeleteTypes.None;
             TrackingDataContext.SaveChanges();
         }
