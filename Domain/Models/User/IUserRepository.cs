@@ -65,5 +65,7 @@ namespace Domain.Models.User
         bool GetShowRenkeiCd1ColumnSetting();
 
         List<JobMstModel> GetListJob(int hpId);
+
+        List<FunctionMstModel> GetListFunctionPermission();
     }
 }

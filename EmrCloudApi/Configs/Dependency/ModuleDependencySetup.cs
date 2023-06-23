@@ -602,6 +602,7 @@ using UseCase.SystemGenerationConf.Get;
 using UseCase.SystemGenerationConf.GetList;
 using Reporting.Sokatu.WelfareSeikyu.Service;
 using UseCase.User.GetListJobMst;
+using UseCase.User.GetListFunctionPermission;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -891,6 +892,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetAllPermissionInputData, GetAllPermissionInteractor>();
             busBuilder.RegisterUseCase<GetListUserByCurrentUserInputData, GetListUserByCurrentUserInteractor>();
             busBuilder.RegisterUseCase<GetListJobMstInputData, GetListJobMstInteractor>();
+            busBuilder.RegisterUseCase<GetListFunctionPermissionInputData, GetListFunctionPermissionInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
