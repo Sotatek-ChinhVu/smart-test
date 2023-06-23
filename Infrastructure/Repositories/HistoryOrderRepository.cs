@@ -46,7 +46,7 @@ namespace Infrastructure.Repositories
 
             var isBookMarkChecked = filterDetailList.FirstOrDefault(detail => detail.FilterId == filterId && detail.FilterItemCd == 1 && detail.FilterEdaNo == 0 && detail.Val == 1) != null;
             var listHokenId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 3 && detail.Val == 1).Select(item => item.FilterEdaNo).ToList();
-            var listKaId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 4 &&  detail.Val == 1).Select(item => item.FilterEdaNo).ToList();
+            var listKaId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 4 && detail.Val == 1).Select(item => item.FilterEdaNo).ToList();
             var listUserId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 2 && detail.Val == 1).Select(item => item.FilterEdaNo).ToList();
 
             var detailModel = new KarteFilterDetailModel(hpId, userId, filterId, isBookMarkChecked, listHokenId, listKaId, listUserId);
@@ -85,10 +85,10 @@ namespace Infrastructure.Repositories
             if (karteFilter.OnlyBookmark)
             {
                 raiinInfEnumerable = from raiinInf in raiinInfListQueryable
-                                     join raiinTag in NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.TagNo != 0 && !raiinNoAll.Contains(r.RaiinNo) )
+                                     join raiinTag in NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.TagNo != 0 && !raiinNoAll.Contains(r.RaiinNo))
                                       on raiinInf.RaiinNo equals raiinTag.RaiinNo
                                      select raiinInf;
-                
+
                 var raiinInfEnumerableFE = from raiinInf in raiinInfListQueryable where raiinGets.Contains(raiinInf.RaiinNo) select raiinInf;
                 raiinInfEnumerable = raiinInfEnumerable.Union(raiinInfEnumerableFE);
             }
@@ -617,7 +617,21 @@ namespace Infrastructure.Repositories
                     string updateName = _userInfoService.GetNameById(odrInf.UpdateId);
 
                     List<OdrInfDetail> odrDetailInfList = allOdrDetailInfList.Where(o => o.RaiinNo == raiinNo && o.RpNo == odrInf.RpNo && o.RpEdaNo == odrInf.RpEdaNo).ToList();
-
+                    if (type == 1)
+                    {
+                        foreach (var order in odrDetailInfList)
+                        {
+                            var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == order.ItemCd);
+                            if (tenMst != null && tenMst.IsNodspKarte != 0)
+                            {
+                                odrDetailInfList.Remove(order);
+                            }
+                        }
+                        if (odrInf.OdrKouiKbn == 10)
+                        {
+                            odrDetailInfList = odrDetailInfList.Where(detail => detail.ItemCd != ItemCdConst.JikanKihon).ToList();
+                        }
+                    }
 
                     OrdInfModel ordInfModel = Order.CreateBy(odrInf, odrDetailInfList, tenMsts, kensaMsts, ipnNameMsts, createName, updateName, odrInf.OdrKouiKbn, (int)kensaIrai, (int)kensaIraiCondition);
                     odrInfModelList.Add(ordInfModel);
