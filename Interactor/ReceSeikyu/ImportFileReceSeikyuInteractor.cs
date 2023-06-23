@@ -261,7 +261,7 @@ namespace Interactor.ReceSeikyu
             }
 
             string path = $"{CommonConstants.Tempotary}/{CommonConstants.ReceiptcHen}/{aSeikyuYm}/";
-            string fileNameUpload = $"{DateTime.Now.ToString("yyyyMMdd_HHmmss_")}{fileName}";
+            string fileNameUpload = $"{CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd_HHmmss_")}{fileName}";
 
             string idCloud = _amazonS3Service.UploadObjectAsync(path, fileNameUpload, file, true).Result;
 

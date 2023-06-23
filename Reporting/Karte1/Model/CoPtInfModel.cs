@@ -118,7 +118,7 @@ public class CoPtInfModel
     /// </summary>
     public int Age
     {
-        get { return CIUtil.SDateToAge(Birthday, CIUtil.DateTimeToInt(DateTime.Now)); }
+        get { return CIUtil.SDateToAge(Birthday, CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow())); }
     }
 
     /// <summary>

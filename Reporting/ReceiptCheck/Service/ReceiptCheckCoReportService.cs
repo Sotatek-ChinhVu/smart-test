@@ -52,9 +52,9 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
     private void UpdateDrawForm(int seikyuYm)
     {
         string tempSinYm = seikyuYm.AsString().Insert(4, "年");
-        string sYmd = CIUtil.SDateToShowSWDate(CIUtil.StrToIntDef(DateTime.Now.ToString("yyyyMMdd"), 0), fmtDate: 1) +
-                      "（" + CIUtil.JapanDayOfWeek(DateTime.Now) + "）" +
-                       DateTime.Now.ToString("HH:mm") + " 作成";
+        string sYmd = CIUtil.SDateToShowSWDate(CIUtil.StrToIntDef(CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd"), 0), fmtDate: 1) +
+                      "（" + CIUtil.JapanDayOfWeek(CIUtil.GetJapanDateTimeNow()) + "）" +
+                       CIUtil.GetJapanDateTimeNow().ToString("HH:mm") + " 作成";
 
         string sTgtYm = tempSinYm + "月度";
 

@@ -366,6 +366,11 @@ namespace Infrastructure.Repositories
             return listUserPermission.Union(listUserPermissionOfUserDefault).ToList();
         }
 
+        public List<JobMstModel> GetListJob(int hpId)
+        {
+            return NoTrackingDataContext.JobMsts.Where(j => j.HpId == hpId && !string.IsNullOrEmpty(j.JobName)).Select(x => new JobMstModel(x.HpId, x.JobCd, x.JobName ?? string.Empty, x.SortNo)).ToList();
+        }
+
         public PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode)
         {
             var listUserPermission = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == userId).ToList();

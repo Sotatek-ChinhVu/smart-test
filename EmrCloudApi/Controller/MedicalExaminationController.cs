@@ -21,6 +21,7 @@ using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetContainerMst;
 using UseCase.MedicalExamination.GetDefaultSelectedTime;
+using UseCase.MedicalExamination.GetHeaderVistitDate;
 using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.MedicalExamination.GetKensaAuditTrailLog;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
@@ -605,8 +606,8 @@ namespace EmrCloudApi.Controllers
             var presenter = new GetContainerMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetContainerMstResponse>>(presenter.Result);
-        }   
-        
+        }
+
         [HttpGet(ApiPath.GetSinkouCountInMonth)]
         public ActionResult<Response<GetSinkouCountInMonthResponse>> GetSinkouCountInMonth([FromQuery] GetSinkouCountInMonthRequest request)
         {
@@ -615,6 +616,16 @@ namespace EmrCloudApi.Controllers
             var presenter = new GetSinKouCountInMonthPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetSinkouCountInMonthResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetHeaderVistitDate)]
+        public ActionResult<Response<GetHeaderVistitDateResponse>> GetHeaderVistitDate([FromQuery] GetHeaderVistitDateRequest request)
+        {
+            var input = new GetHeaderVistitDateInputData(HpId, UserId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetHeaderVistitDatePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetHeaderVistitDateResponse>>(presenter.Result);
         }
     }
 }
