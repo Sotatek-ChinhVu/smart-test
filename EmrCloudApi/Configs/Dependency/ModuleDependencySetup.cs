@@ -587,20 +587,10 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.Receipt.ValidateCreateUKEFile;
-using Interactor.PatientInfor.SortPatientCommon;
-using Reporting.DrugNoteSeal.Service;
-using Reporting.DrugNoteSeal.DB;
 using Reporting.Sokatu.HikariDisk.DB;
 using Reporting.Sokatu.HikariDisk.Service;
-using Reporting.Sokatu.KoukiSeikyu.DB;
-using UseCase.RaiinListSetting.GetDocCategory;
-using Interactor.RaiinListSetting;
-using Domain.Models.RaiinListSetting;
-using UseCase.RaiinListSetting.GetFilingcategory;
 using Reporting.Sokatu.AfterCareSeikyu.Service;
 using Reporting.Sokatu.AfterCareSeikyu.DB;
-using Reporting.Sijisen.DB;
 using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Interactor.SetMst.CommonSuperSet;
@@ -611,6 +601,7 @@ using UseCase.MedicalExamination.GetHeaderVistitDate;
 using UseCase.SystemGenerationConf.Get;
 using UseCase.SystemGenerationConf.GetList;
 using Reporting.Sokatu.WelfareSeikyu.Service;
+using UseCase.User.GetListJobMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -899,6 +890,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
             busBuilder.RegisterUseCase<GetAllPermissionInputData, GetAllPermissionInteractor>();
             busBuilder.RegisterUseCase<GetListUserByCurrentUserInputData, GetListUserByCurrentUserInteractor>();
+            busBuilder.RegisterUseCase<GetListJobMstInputData, GetListJobMstInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();

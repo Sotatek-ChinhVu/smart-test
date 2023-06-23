@@ -63,5 +63,7 @@ namespace Domain.Models.User
         List<UserMstModel> GetUsersByCurrentUser(int hpId, int currentUser);
 
         bool GetShowRenkeiCd1ColumnSetting();
+
+        List<JobMstModel> GetListJob(int hpId);
     }
 }
