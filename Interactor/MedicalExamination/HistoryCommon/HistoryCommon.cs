@@ -3,12 +3,15 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
+using Domain.Models.Receipt.Recalculation;
 using Domain.Models.User;
+using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Text;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 using UseCase.MedicalExamination.GetHistory;
@@ -35,7 +38,7 @@ public class HistoryCommon : IHistoryCommon
         _userRepository = userRepository;
     }
 
-    public GetMedicalExaminationHistoryOutputData GetHistoryOutput(int hpId, long ptId, int sinDate, (int totalCount, List<HistoryOrderModel> historyOrderModelList) historyList)
+    public GetMedicalExaminationHistoryOutputData GetHistoryOutput(int hpId, long ptId, int sinDate, (int totalCount, List<HistoryOrderModel> historyOrderModelList) historyList, List<SinKouiListModel> sinkouiList)
     {
         var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
@@ -96,7 +99,7 @@ public class HistoryCommon : IHistoryCommon
                 );
 
             //Excute order
-            ExcuteOrder(insuranceModelList, history.OrderInfList, historyKarteOdrRaiin, historyKarteOdrRaiins);
+            ExcuteOrder(insuranceModelList, history.OrderInfList, historyKarteOdrRaiin, historyKarteOdrRaiins, sinkouiList);
         }
         var result = new GetMedicalExaminationHistoryOutputData(historyList.totalCount, historyKarteOdrRaiins.OrderByDescending(x => x.SinDate).ToList(), GetMedicalExaminationHistoryStatus.Successed, 0);
 
@@ -233,8 +236,15 @@ public class HistoryCommon : IHistoryCommon
                                                               1
                                                               );
             }
-
-            var result = GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList);
+            var raiinNoList = historyList.historyOrderModelList.Select(item => item.RaiinNo).Distinct().ToList();
+            var mainHokenPIdList = historyList.historyOrderModelList.Select(item => item.HokenPid).Distinct().ToList();
+            var sindateList = historyList.historyOrderModelList.Select(item => item.SinDate).Distinct().ToList();
+            List<SinKouiListModel> sinkouiList = _historyOrderRepository.GetSinkouiList(inputData.HpId,
+                                                                                        inputData.PtId,
+                                                                                        sindateList,
+                                                                                        raiinNoList,
+                                                                                        mainHokenPIdList);
+            var result = GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList, sinkouiList);
             List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList.OrderBy(r => r.SinDate).ThenBy(r => r.RaiinNo).ToList();
             FilterData(ref historyKarteOdrRaiinList, inputData);
             return new GetMedicalExaminationHistoryOutputData(result.Total, historyKarteOdrRaiinList, GetMedicalExaminationHistoryStatus.Successed, 0, inputData, patientInfo ?? new());
@@ -265,7 +275,7 @@ public class HistoryCommon : IHistoryCommon
     /// <param name="allOdrInfs"></param>
     /// <param name="historyKarteOdrRaiin"></param>
     /// <param name="historyKarteOdrRaiins"></param>
-    private static void ExcuteOrder(List<InsuranceModel> insuranceData, List<OrdInfModel> orderInfList, HistoryKarteOdrRaiinItem historyKarteOdrRaiin, List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiins)
+    private static void ExcuteOrder(List<InsuranceModel> insuranceData, List<OrdInfModel> orderInfList, HistoryKarteOdrRaiinItem historyKarteOdrRaiin, List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiins, List<SinKouiListModel> sinkouiList)
     {
         var odrInfListByRaiinNo = orderInfList.OrderBy(odr => odr.OdrKouiKbn)
                                   .ThenBy(odr => odr.RpNo)
@@ -275,6 +285,7 @@ public class HistoryCommon : IHistoryCommon
 
         // Find By Hoken
         List<int> hokenPidList = odrInfListByRaiinNo.GroupBy(odr => odr.HokenPid).Select(grp => grp.Key).ToList();
+        bool existGairaiKanriKasan = false;
 
         foreach (var hokenPid in hokenPidList)
         {
@@ -294,9 +305,12 @@ public class HistoryCommon : IHistoryCommon
                 })
                 .Select(grp => grp.FirstOrDefault())
                 .ToList();
-
             foreach (var groupOdrInf in groupOdrInfList)
             {
+                if (groupOdrInf != null)
+                {
+                    sinkouiList = sinkouiList.Where(p => p.RaiinNo == groupOdrInf.RaiinNo && p.SinDate == groupOdrInf.SinDate && p.HokenPid == groupOdrInf.HokenPid && p.IsNodspKarte == 0).ToList();
+                }
 
                 var group = new GroupOdrGHistoryItem(hokenPid, string.Empty, new List<OdrInfHistoryItem>());
 
@@ -310,7 +324,10 @@ public class HistoryCommon : IHistoryCommon
                                             .ToList();
                 foreach (var rpOdrInf in rpOdrInfs.OrderBy(c => c.IsDeleted))
                 {
-
+                    if (rpOdrInf.IsDeleted == DeleteTypes.None && rpOdrInf.OrdInfDetails.Any(p => p.ItemCd == ItemCdConst.GairaiKanriKasan || p.ItemCd == ItemCdConst.GairaiKanriKasanRousai))
+                    {
+                        existGairaiKanriKasan = true;
+                    }
                     var odrModel = new OdrInfHistoryItem(
                                                         rpOdrInf.HpId,
                                                         rpOdrInf.RaiinNo,
@@ -408,6 +425,111 @@ public class HistoryCommon : IHistoryCommon
                                                      );
 
                     group.OdrInfs.Add(odrModel);
+                }
+                if (!existGairaiKanriKasan)
+                {
+                    var sinkouiGairaiKanriKasan = sinkouiList.FirstOrDefault(p => p.ItemCd == ItemCdConst.GairaiKanriKasan || p.ItemCd == ItemCdConst.GairaiKanriKasanRousai);
+                    if (sinkouiGairaiKanriKasan != null)
+                    {
+                        existGairaiKanriKasan = true;
+                        var odrModel = new OdrInfHistoryItem(
+                                                        groupOdrInf.HpId,
+                                                        groupOdrInf.RaiinNo,
+                                                        0,
+                                                        0,
+                                                        groupOdrInf.PtId,
+                                                        groupOdrInf.SinDate,
+                                                        groupOdrInf.HokenPid,
+                                                        sinkouiGairaiKanriKasan.SinKouiKbn,
+                                                        string.Empty,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        new() {
+                                                            new OdrInfDetailItem(
+                                                                groupOdrInf.HpId,
+                                                                groupOdrInf.RaiinNo,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                groupOdrInf.PtId,
+                                                                groupOdrInf.SinDate,
+                                                                sinkouiGairaiKanriKasan.SinKouiKbn,
+                                                                sinkouiGairaiKanriKasan.TenItemCd,
+                                                                sinkouiGairaiKanriKasan.Name,
+                                                                sinkouiGairaiKanriKasan.Name,
+                                                                0,
+                                                                string.Empty,
+                                                                0,
+                                                                0,
+                                                                sinkouiGairaiKanriKasan.KohatuKbn,
+                                                                0,
+                                                                0,
+                                                                sinkouiGairaiKanriKasan.DrugKbn,
+                                                                0,
+                                                                string.Empty,
+                                                                string.Empty,
+                                                                0,
+                                                                sinkouiGairaiKanriKasan.IpnNameCd,
+                                                                string.Empty,
+                                                                0,
+                                                                DateTime.MinValue,
+                                                                0,
+                                                                string.Empty,
+                                                                string.Empty,
+                                                                string.Empty,
+                                                                string.Empty,
+                                                                string.Empty,
+                                                                string.Empty,
+                                                                0,
+                                                                0,
+                                                                false,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                string.Empty,
+                                                                string.Empty,
+                                                                new(),
+                                                                0,
+                                                                0,
+                                                                string.Empty,
+                                                                string.Empty,
+                                                                false,
+                                                                string.Empty,
+                                                                string.Empty,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                                false
+                                                        )
+                                                        },
+                                                        sinkouiGairaiKanriKasan.CreateDate,
+                                                        sinkouiGairaiKanriKasan.CreateId,
+                                                        string.Empty,
+                                                        sinkouiGairaiKanriKasan.CreateDate,
+                                                        0,
+                                                        string.Empty,
+                                                        string.Empty,
+                                                        string.Empty
+                                                     );
+
+                        group.OdrInfs.Add(odrModel);
+                    }
                 }
                 hokenGrp.GroupOdrItems.Add(group);
             }

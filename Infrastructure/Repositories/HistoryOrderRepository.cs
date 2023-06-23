@@ -6,12 +6,14 @@ using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
 using Domain.Models.RainListTag;
+using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Converter;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -454,6 +456,71 @@ namespace Infrastructure.Repositories
                                                 .ThenByDescending(r => r.RaiinNo).Select(r => r.RaiinNo).ToList();
             var index = raiinInfs.IndexOf(raiinNo);
             return index;
+        }
+
+        public List<SinKouiListModel> GetSinkouiList(int hpId, long ptId, List<int> sinDateList, List<long> raiinNoList, List<int> mainPidList)
+        {
+            var sinkouis = NoTrackingDataContext.SinKouis.Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted == 0);
+            var sinkouiCounts = NoTrackingDataContext.SinKouiCounts.Where(p => p.HpId == hpId && p.PtId == ptId);
+            var sinkouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted == 0);
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None);
+
+            var sinKouiJoinSinKouiCountquery = from sinkoui in sinkouis
+                                               join sinkouiCount in sinkouiCounts
+                                               on new { sinkoui.RpNo, sinkoui.SeqNo } equals new { sinkouiCount.RpNo, sinkouiCount.SeqNo }
+                                               select new
+                                               {
+                                                   Sinkoui = sinkoui,
+                                                   SinKouiCount = sinkouiCount
+                                               };
+
+            var sinKouiCountJoinDetailQuery = from sinKouiJoinSinKouiCount in sinKouiJoinSinKouiCountquery
+                                              join sinKouiDetail in sinkouiDetails
+                                              on new { sinKouiJoinSinKouiCount.SinKouiCount.RpNo, sinKouiJoinSinKouiCount.SinKouiCount.SeqNo }
+                                              equals new { sinKouiDetail.RpNo, sinKouiDetail.SeqNo }
+                                              select new
+                                              {
+                                                  Sinkoui = sinKouiJoinSinKouiCount.Sinkoui,
+                                                  SinKouiCount = sinKouiJoinSinKouiCount.SinKouiCount,
+                                                  SinKouiDetail = sinKouiDetail
+                                              };
+            var joinTenMstQuery = from sinKouiCountJoinDetail in sinKouiCountJoinDetailQuery
+                                  join tenMst in tenMsts
+                                  on sinKouiCountJoinDetail.SinKouiDetail.ItemCd equals tenMst.ItemCd into tempTenMstList
+                                  select new
+                                  {
+                                      CreateId = sinKouiCountJoinDetail.Sinkoui.CreateId,
+                                      CreateDate = sinKouiCountJoinDetail.Sinkoui.CreateDate,
+                                      HokenPid = sinKouiCountJoinDetail.Sinkoui.HokenPid,
+                                      SinDate = sinKouiCountJoinDetail.SinKouiCount.SinDate,
+                                      RaiinNo = sinKouiCountJoinDetail.SinKouiCount.RaiinNo,
+                                      ItemCd = sinKouiCountJoinDetail.SinKouiDetail.ItemCd,
+                                      TenMst = tempTenMstList.FirstOrDefault(p => p.StartDate <= sinKouiCountJoinDetail.SinKouiCount.SinDate && sinKouiCountJoinDetail.SinKouiCount.SinDate <= p.EndDate)
+                                  };
+
+            var joinTenMstList = joinTenMstQuery.Where(p => raiinNoList.Contains(p.RaiinNo)
+                                                            && sinDateList.Contains(p.SinDate)
+                                                            && mainPidList.Contains(p.HokenPid)
+                                                            && p.TenMst.IsNodspKarte == 0)
+                                                .ToList();
+
+            var result = joinTenMstList.Select(item => new SinKouiListModel(
+                                                       item.CreateId,
+                                                       item.CreateDate,
+                                                       item.HokenPid,
+                                                       item.SinDate,
+                                                       item.RaiinNo,
+                                                       item.ItemCd,
+                                                       item.TenMst.SinKouiKbn,
+                                                       item.TenMst.ItemCd,
+                                                       item.TenMst.Name ?? string.Empty,
+                                                       item.TenMst.KohatuKbn,
+                                                       item.TenMst.YohoKbn,
+                                                       item.TenMst.IpnNameCd ?? string.Empty,
+                                                       item.TenMst.DrugKbn,
+                                                       item.TenMst.IsNodspKarte
+                                        )).ToList();
+            return result;
         }
 
         #region private method
