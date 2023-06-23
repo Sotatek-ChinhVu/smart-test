@@ -648,7 +648,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                         .ThenByDescending(p => p.cmtKbnMst.StartDate);
 
                         //if (entity.TenMst == null || entity.TenMst != null && entity.TenMst.SanteigaiKbn != 1)
-                        if (tenEntities == null || tenEntities.FirstOrDefault()?.tenMst == null || tenEntities.FirstOrDefault().tenMst.SanteigaiKbn != 1)
+                        if (tenEntities == null || tenEntities.FirstOrDefault()?.tenMst == null || tenEntities.FirstOrDefault()?.tenMst?.SanteigaiKbn != 1)
                         {
                             retDtls.Add(
                                 new OdrDtlTenModel(
