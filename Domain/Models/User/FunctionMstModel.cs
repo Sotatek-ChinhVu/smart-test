@@ -9,9 +9,9 @@
             Permissions = permissions;
         }
 
-        public string FunctionCd { get; set; }
+        public string FunctionCd { get; private set; }
 
-        public string FunctionName { get; set; }
+        public string FunctionName { get; private set; }
 
         public List<PermissionMstModel> Permissions { get; private set; }
     }

@@ -8,9 +8,9 @@
             Permission = permission;
         }
 
-        public string FunctionCd { get; set; } 
+        public string FunctionCd { get; private set; } 
 
-        public int Permission { get; set; }
+        public int Permission { get; private set; }
 
         public string PermissionKey
         {
