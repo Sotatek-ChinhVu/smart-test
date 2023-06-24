@@ -101,10 +101,6 @@ namespace Interactor.Accounting
             {
                 return SaveAccountingStatus.InvalidPtId;
             }
-            else if (inputData.SumAdjust < 0)
-            {
-                return SaveAccountingStatus.InvalidSumAdjust;
-            }
             else if (inputData.ThisWari < 0)
             {
                 return SaveAccountingStatus.InvalidThisWari;
