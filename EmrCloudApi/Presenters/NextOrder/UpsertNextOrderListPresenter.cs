@@ -243,7 +243,7 @@ namespace EmrCloudApi.Presenters.NextOrder
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrReqCd));
                                 break;
                             case OrderInfConst.OrdInfValidationStatus.InvalidBunkatuLength:
-                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrBunkatu));
+                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.ErrorBunkatuOdrDetail, ResponseMessage.TodayOdrBunkatu));
                                 break;
                             case OrderInfConst.OrdInfValidationStatus.InvalidCmtName:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrCmtOpt));
