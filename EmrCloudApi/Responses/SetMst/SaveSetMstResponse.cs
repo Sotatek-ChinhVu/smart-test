@@ -1,13 +1,14 @@
 ﻿using Domain.Models.SetMst;
+using UseCase.SetMst.GetList;
 
 namespace EmrCloudApi.Responses.SetMst;
 
 public class SaveSetMstResponse
 {
-    public SaveSetMstResponse(List<SetMstModel> setMstModel)
+    public SaveSetMstResponse(List<GetSetMstListOutputItem> data)
     {
-        SetMstModel = setMstModel;
+        Data = data;
     }
 
-    public List<SetMstModel> SetMstModel { get; private set; }
+    public List<GetSetMstListOutputItem> Data { get; private set; }
 }

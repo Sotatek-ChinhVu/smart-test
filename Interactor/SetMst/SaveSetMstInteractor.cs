@@ -1,5 +1,6 @@
 ﻿using Domain.Models.SetMst;
 using Domain.Models.User;
+using Interactor.SetMst.CommonSuperSet;
 using UseCase.SetMst.SaveSetMst;
 
 namespace Interactor.SetMst;
@@ -8,11 +9,13 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
 {
     private readonly ISetMstRepository _setMstRepository;
     private readonly IUserRepository _userRepository;
+    private readonly ICommonSuperSet _commonSuperSet;
 
-    public SaveSetMstInteractor(ISetMstRepository setMstRepository, IUserRepository userRepository)
+    public SaveSetMstInteractor(ISetMstRepository setMstRepository, IUserRepository userRepository, ICommonSuperSet commonSuperSet)
     {
         _setMstRepository = setMstRepository;
         _userRepository = userRepository;
+        _commonSuperSet = commonSuperSet;
     }
 
     public SaveSetMstOutputData Handle(SaveSetMstInputData inputData)
@@ -75,7 +78,8 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
             var resultData = _setMstRepository.SaveSetMstModel(inputData.UserId, inputData.SinDate, setMstModel);
             if (resultData != null)
             {
-                return new SaveSetMstOutputData(resultData, SaveSetMstStatus.Successed);
+                var data = _commonSuperSet.BuildTreeSetKbn(resultData);
+                return new SaveSetMstOutputData(data, SaveSetMstStatus.Successed);
             }
             return new SaveSetMstOutputData(new(), SaveSetMstStatus.Failed);
         }
