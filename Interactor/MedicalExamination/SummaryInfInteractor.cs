@@ -197,27 +197,27 @@ namespace Interactor.MedicalExamination
                 header2StringBuilder.Append(header2Property);
                 if (header2Property.Contains("C"))
                 {
-                    header2StringBuilder.Append("C");
+                    header2StringBuilder.Replace("C", string.Empty);
                 }
                 if (header2Property.Contains("D"))
                 {
-                    header2StringBuilder.Append("D");
+                    header2StringBuilder.Replace("D", string.Empty);
                 }
                 if (header2Property.Contains("E"))
                 {
-                    header2StringBuilder.Append("E");
+                    header2StringBuilder.Replace("E", string.Empty);
                 }
                 if (header2Property.Contains("7"))
                 {
-                    header2StringBuilder.Append("7");
+                    header2StringBuilder.Replace("7", string.Empty);
                 }
                 if (header2Property.Contains("9"))
                 {
-                    header2StringBuilder.Append("9");
+                    header2StringBuilder.Replace("9", string.Empty);
                 }
                 if (header2Property.Contains("A"))
                 {
-                    header2StringBuilder.Append("A");
+                    header2StringBuilder.Replace("A", string.Empty);
                 }
                 header2Property = header2StringBuilder.ToString();
 
