@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Diseases;
 using Domain.Models.SetMst;
+using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -38,11 +39,12 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     s.Level1,
                     s.Level2,
                     s.Level3,
-                    s.SetName == null ? String.Empty : s.SetName,
+                    s.SetName == null ? string.Empty : s.SetName,
                     s.WeightKbn,
                     s.Color,
                     s.IsDeleted,
-                    s.IsGroup
+                    s.IsGroup,
+                    false
                     ))
                 .ToList();
         //var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -262,7 +264,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         Dictionary<long, List<OrderTooltipModel>> dicOrders = new();
         foreach (var key in keys)
         {
-            var orderDetailPerRpNo = allOrderDetails.Where(item => item.SetCd == setCd && item.HpId == hpId && key.RpNo == item.RpNo && key.RpEdaNo == item.RpEdaNo).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList();
+            var orderDetailPerRpNo = allOrderDetails.Where(item => item.SetCd == setCd && item.HpId == hpId && key.RpNo == item.RpNo && key.RpEdaNo == item.RpEdaNo).Select(item => new OrderTooltipModel(item.ItemName ?? string.Empty, item.Suryo, item.UnitName ?? string.Empty)).ToList();
             dicOrders.Add(key.RpNo, orderDetailPerRpNo);
         }
 
@@ -281,20 +283,22 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
             // Create SetMst to save
             var oldSetMst = TrackingDataContext.SetMsts.FirstOrDefault(item => item.SetCd == setMstModel.SetCd
-                                                                            && item.SetKbn == setMstModel.SetKbn
-                                                                            && item.SetKbnEdaNo == setKbnEdaNo
-                                                                            && item.GenerationId == setMstModel.GenerationId
-                                                                            && item.IsDeleted != 1);
+                                                                               && item.IsDeleted != 1);
 
-            if (oldSetMst == null && setMstModel.SetCd != 0)
+            if (oldSetMst == null && !setMstModel.IsAddNew)
             {
                 return new SetMstModel();
             }
-            else
+
+            // if is add new with root set level is level 3 => stop progress
+            else if (oldSetMst != null && oldSetMst.Level1 > 0 && oldSetMst.Level2 > 0 && oldSetMst.Level3 > 0 && setMstModel.IsAddNew)
             {
-                oldSetMst = oldSetMst != null ? oldSetMst : new SetMst();
+                return new SetMstModel();
             }
+            oldSetMst = oldSetMst != null ? oldSetMst : new SetMst();
+
             setMst = ConvertSetMstModelToSetMst(oldSetMst, setMstModel, userId);
+            setMst.GenerationId = GetGenerationId(setMst.HpId, sinDate);
 
             if (!isDelete)
             {
@@ -303,18 +307,21 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 ChangeRpName(userId, setMst.SetCd, setMst.SetName ?? string.Empty);
 
                 // If SetMst is add new
-                if (setMstModel.SetCd == 0 || TrackingDataContext.SetMsts.FirstOrDefault(item => item.SetCd == setMstModel.SetCd) == null)
+                if (setMstModel.IsAddNew)
                 {
+                    var level = GetLevelSetMst(setMst.SetCd, setMst.SetKbn, setMst.SetKbnEdaNo, setMst.GenerationId);
+                    setMst.Level1 = level.level1;
+                    setMst.Level2 = level.level2;
+                    setMst.Level3 = level.level3;
+                    setMst.SetCd = 0;
+
                     setMst.IsGroup = setMstModel.IsGroup;
                     if (setMst.SetName == null || setMst.SetName.Length == 0)
                     {
                         setMst.SetName = setMst.IsGroup == 1 ? defaultGroupName : defaultSetName;
                     }
-                    setMst.GenerationId = GetGenerationId(setMst.HpId, sinDate);
                     setMst.CreateDate = CIUtil.GetJapanDateTimeNow();
                     setMst.CreateId = userId;
-                    setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    setMst.UpdateId = userId;
 
                     // Save SetMst 
                     TrackingDataContext.SetMsts.Add(setMst);
@@ -323,67 +330,19 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             // Delete SetMst
             else
             {
-                // set status for IsDelete
                 setMst.IsDeleted = 1;
-                // if SetMst have children element
-                // if SetMst is level 2 and have children element
-                if (setMst.Level2 > 0 && setMst.Level3 == 0)
+                var listSetMstDelete = TrackingDataContext.SetMsts
+                                       .Where(item => item.SetKbn == setMst.SetKbn
+                                                    && item.SetKbnEdaNo == setKbnEdaNo
+                                                    && item.GenerationId == setMst.GenerationId
+                                                    && item.Level1 == setMst.Level1
+                                                    && item.IsDeleted != 1
+                                       ).ToList();
+                foreach (var item in listSetMstDelete)
                 {
-                    var listSetMstLevel3 = TrackingDataContext.SetMsts
-                                            .Where(item => item.SetKbn == setMst.SetKbn
-                                                          && item.SetKbnEdaNo == setKbnEdaNo
-                                                          && item.GenerationId == setMst.GenerationId
-                                                          && item.Level1 == setMst.Level1
-                                                          && item.Level2 == setMst.Level2
-                                                          && item.Level3 > 0
-                                                          && item.IsDeleted != 1
-                                            ).ToList();
-                    foreach (var item in listSetMstLevel3)
-                    {
-                        item.IsDeleted = 1;
-                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        item.UpdateId = userId;
-                    }
-                }
-
-                // if SetMst is level 1 and have children element
-                if (setMst.Level2 == 0 && setMst.Level3 == 0)
-                {
-                    // get list SetMst level 2
-                    var listSetMstLevel2 = TrackingDataContext.SetMsts
-                                            .Where(item => item.SetKbn == setMst.SetKbn
-                                                          && item.SetKbnEdaNo == setKbnEdaNo
-                                                          && item.GenerationId == setMst.GenerationId
-                                                          && item.Level1 == setMst.Level1
-                                                          && item.Level2 > 0
-                                                          && item.Level3 == 0
-                                                          && item.IsDeleted != 1
-                                            ).ToList();
-
-                    // get list SetMst level 3
-                    var listSetMstLevel3 = TrackingDataContext.SetMsts
-                                            .Where(item => item.SetKbn == setMst.SetKbn
-                                                          && item.SetKbnEdaNo == setKbnEdaNo
-                                                          && item.GenerationId == setMst.GenerationId
-                                                          && item.Level1 == setMst.Level1
-                                                          && item.Level3 > 0
-                                                          && item.IsDeleted != 1
-                                            ).ToList();
-
-                    // Update isDelete for SetMst level 2 and level 3
-                    foreach (var level2 in listSetMstLevel2)
-                    {
-                        level2.IsDeleted = 1;
-                        level2.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        level2.UpdateId = userId;
-                    }
-
-                    foreach (var level3 in listSetMstLevel3)
-                    {
-                        level3.IsDeleted = 1;
-                        level3.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        level3.UpdateId = userId;
-                    }
+                    item.IsDeleted = 1;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    item.UpdateId = userId;
                 }
             }
             TrackingDataContext.SaveChanges();
@@ -396,7 +355,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     setMst.Level1,
                     setMst.Level2,
                     setMst.Level3,
-                    setMst.SetName ?? String.Empty,
+                    setMst.SetName ?? string.Empty,
                     setMst.WeightKbn,
                     setMst.Color,
                     setMst.IsDeleted,
@@ -447,7 +406,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     setMst.Level1,
                     setMst.Level2,
                     setMst.Level3,
-                    setMst.SetName ?? String.Empty,
+                    setMst.SetName ?? string.Empty,
                     setMst.WeightKbn,
                     setMst.Color,
                     setMst.IsDeleted,
@@ -708,10 +667,13 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         setMst.SetCd = setMstModel.SetCd;
         setMst.SetKbn = setMstModel.SetKbn;
         setMst.SetKbnEdaNo = (setMstModel.SetKbnEdaNo - 1) > 0 ? setMstModel.SetKbnEdaNo - 1 : 0;
-        setMst.GenerationId = setMstModel.GenerationId;
-        setMst.Level1 = setMstModel.Level1;
-        setMst.Level2 = setMstModel.Level2;
-        setMst.Level3 = setMstModel.Level3;
+        if (setMstModel.IsAddNew)
+        {
+            setMst.GenerationId = setMstModel.GenerationId;
+            setMst.Level1 = setMstModel.Level1;
+            setMst.Level2 = setMstModel.Level2;
+            setMst.Level3 = setMstModel.Level3;
+        }
         setMst.SetName = setMstModel.SetName;
         setMst.Color = setMstModel.Color;
         setMst.WeightKbn = setMstModel.WeightKbn;
@@ -2185,6 +2147,79 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         var levelMax = GetMaxLevel(copyItem.HpId, copyItem.SetKbn, copyItem.SetKbnEdaNo, copyItem.GenerationId, levelPaste >= 1 ? pasteItem?.Level1 ?? 0 : 0, levelPaste >= 2 ? pasteItem?.Level2 ?? 0 : 0, levelPaste >= 3 ? pasteItem?.Level3 ?? 0 : 0, pasteItem == null);
 
         ReSetLevelForItem(levelMax, copyItem, pasteItem, listPasteItems);
+    }
+
+    private (int level1, int level2, int level3) GetLevelSetMst(int setCd, int setKbn, int setKbnEdaNo, int generationId)
+    {
+        IQueryable<SetMst> setMstQuery = NoTrackingDataContext.SetMsts.Where(item => item.IsDeleted == 0
+                                                                                     && item.SetKbn == setKbn
+                                                                                     && item.SetKbnEdaNo == setKbnEdaNo
+                                                                                     && item.GenerationId == generationId);
+        int level1 = 0;
+        int level2 = 0;
+        int level3 = 0;
+
+        // if item is level1
+        if (setCd == 0)
+        {
+            var level1List = setMstQuery.Where(item => item.Level1 > 0
+                                                       && item.Level2 == 0
+                                                       && item.Level3 == 0)
+                                        .Select(item => item.Level1)
+                                        .Distinct()
+                                        .ToList();
+
+            var maxLevel1 = 0;
+            if (level1List.Any())
+            {
+                maxLevel1 = level1List.Max();
+            }
+            level1 = maxLevel1 + 1;
+        }
+
+        if (setCd > 0)
+        {
+            var setItem = setMstQuery.First(item => item.SetCd == setCd);
+            level1 = setItem.Level1;
+
+            // if item is level1 => children is level 2
+            if (setItem.Level1 > 0 && setItem.Level2 == 0 && setItem.Level3 == 0)
+            {
+                var level2List = setMstQuery.Where(item => item.Level1 == setItem.Level1
+                                                       && item.Level2 > 0
+                                                       && item.Level3 == 0)
+                                        .Select(item => item.Level2)
+                                        .Distinct()
+                                        .ToList();
+
+                int maxLevel2 = 0;
+                if (level2List.Any())
+                {
+                    maxLevel2 = level2List.Max();
+                }
+                level2 = maxLevel2 + 1;
+            }
+
+            // if item is level2 => children is level 3
+            else if (setItem.Level1 > 0 && setItem.Level2 > 0 && setItem.Level3 == 0)
+            {
+                level2 = setItem.Level2;
+                var level3List = setMstQuery.Where(item => item.Level1 == setItem.Level1
+                                                           && item.Level2 == setItem.Level2
+                                                           && item.Level3 > 0)
+                                            .Select(item => item.Level3)
+                                            .Distinct()
+                                            .ToList();
+
+                int maxLevel3 = 0;
+                if (level3List.Any())
+                {
+                    maxLevel3 = level3List.Max();
+                }
+                level3 = maxLevel3 + 1;
+            }
+        }
+        return (level1, level2, level3);
     }
 
     #endregion

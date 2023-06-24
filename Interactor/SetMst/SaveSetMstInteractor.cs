@@ -38,22 +38,6 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
         {
             return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSetKbnEdaNo);
         }
-        else if (inputData.GenerationId < 0)
-        {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidGenarationId);
-        }
-        else if (inputData.Level1 <= 0)
-        {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidLevel1);
-        }
-        else if (inputData.Level2 < 0)
-        {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidLevel2);
-        }
-        else if (inputData.Level3 < 0)
-        {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidLevel3);
-        }
         else if (inputData.SetName.Length > 60)
         {
             return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSetName);
@@ -77,15 +61,16 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
                                 inputData.SetCd,
                                 inputData.SetKbn,
                                 inputData.SetKbnEdaNo,
-                                inputData.GenerationId,
-                                inputData.Level1,
-                                inputData.Level2,
-                                inputData.Level3,
+                                0,
+                                0,
+                                0,
+                                0,
                                 inputData.SetName,
                                 inputData.WeightKbn,
                                 inputData.Color,
                                 inputData.IsDeleted,
-                                inputData.IsGroup ? 1 : 0
+                                inputData.IsGroup ? 1 : 0,
+                                inputData.IsAddNew
                              );
             var resultData = _setMstRepository.SaveSetMstModel(inputData.UserId, inputData.SinDate, setMstModel);
             if (resultData != null)
