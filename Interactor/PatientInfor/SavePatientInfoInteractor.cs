@@ -9,6 +9,7 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using UseCase.PatientInfor.CheckValidSamePatient;
 using UseCase.PatientInfor.Save;
 
 namespace Interactor.PatientInfor
@@ -118,6 +119,23 @@ namespace Interactor.PatientInfor
 
             #region Patient Info
             string message = string.Empty;
+            var samePatientInf = _patientInforRepository.FindSamePatient(hpId, model.Patient.Name, model.Patient.Sex, model.Patient.Birthday).Where(item => item.PtId != model.Patient.PtId).ToList();
+            if (samePatientInf.Count > 0)
+            {
+                string msg = string.Empty;
+                samePatientInf.ForEach(ptInf =>
+                {
+                    if (!string.IsNullOrEmpty(msg))
+                    {
+                        msg = msg + Environment.NewLine;
+                    }
+                    msg = msg + "患者番号：" + string.Format("{0,-9}", ptInf.PtNum.AsString());
+                });
+                message = string.Format(ErrorMessage.MessageType_mEnt00020, "同姓同名の患者") + Environment.NewLine;
+                message += msg;
+                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidSamePatient, TypeMessage.TypeMessageWarning));
+            }
+
             if (model.Patient.PtId == 0 && model.Patient.PtNum != 0)
             {
                 if (_systemConfRepository.GetSettingValue(1001, 0, model.Patient.HpId) == 1)

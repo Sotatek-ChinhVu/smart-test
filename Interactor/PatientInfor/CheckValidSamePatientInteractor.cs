@@ -32,7 +32,6 @@ namespace Interactor.PatientInfor
 
             try
             {
-
                 var samePatientInf = _patientInforRepository.FindSamePatient(inputData.HpId, inputData.KanjiName, inputData.Sex, inputData.Birthday).Where(item => item.PtId != inputData.PtId).ToList();
                 if (samePatientInf.Count > 0)
                 {
