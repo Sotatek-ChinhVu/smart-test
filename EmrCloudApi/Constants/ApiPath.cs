@@ -329,6 +329,7 @@
         public const string AddLock = "AddLock";
         public const string CheckLock = "CheckLock";
         public const string RemoveLock = "RemoveLock";
+        public const string CheckExistFunctionCode = "CheckExistFunctionCode";
         public const string RemoveAllLock = "RemoveAllLock";
         public const string ExtendTtl = "ExtendTtl";
         public const string GetLockInfo = "GetLockInfo";

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
+using UseCase.Lock.CheckExistFunctionCode;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
 
@@ -58,6 +59,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<LockResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.CheckExistFunctionCode)]
+        public ActionResult<Response<CheckExistFunctionCodeResponse>> CheckOpenSpecialNote([FromQuery] CheckExistFunctionCodeRequest request)
+        {
+            var input = new CheckExistFunctionCodeInputData(HpId, request.FunctionCod, request.PtId);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckExistFunctionCodePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckExistFunctionCodeResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.RemoveLock)]
