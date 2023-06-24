@@ -22,11 +22,11 @@ namespace Infrastructure.Repositories
                 return info;
             else
             {
-                instance.RefreshTokenIsUsed = true;
+                //instance.RefreshTokenIsUsed = true;
                 TrackingDataContext.UserTokens.Add(new UserToken()
                 {
                     RefreshToken = refreshTokenNew,
-                    RefreshTokenExpiryTime = instance.RefreshTokenExpiryTime,
+                    RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8),
                     UserId = userId
                 });
                 if (TrackingDataContext.SaveChanges() > 0)
