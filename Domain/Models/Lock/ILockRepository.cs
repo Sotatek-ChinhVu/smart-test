@@ -8,6 +8,8 @@ namespace Domain.Models.Lock
 
         bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token);
 
+        LockModel CheckOpenSpecialNote(int hpId, string functionCd, long ptId);
+
         List<LockModel> GetLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
 
         bool RemoveLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);

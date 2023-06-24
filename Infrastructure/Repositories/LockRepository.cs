@@ -42,6 +42,33 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.Database.ExecuteSqlRaw(rawSql) > 0;
         }
 
+        public LockModel CheckOpenSpecialNote(int hpId, string functionCd, long ptId)
+        {
+            var lockInf = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                && item.PtId == ptId
+                                                                                && item.FunctionCd == functionCd);
+            if (lockInf == null)
+            {
+                return new();
+            }
+
+            var userInf = NoTrackingDataContext.UserMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                                && item.UserId == lockInf.UserId
+                                                                                && item.IsDeleted == 0);
+
+            var functionInf = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd==lockInf.FunctionCd);
+
+            return new LockModel(
+                       lockInf.UserId,
+                       userInf?.Name ?? string.Empty,
+                       lockInf.LockDate,
+                       functionInf?.FunctionName ?? string.Empty,
+                       lockInf.FunctionCd,
+                       0,
+                       0
+                );
+        }
+
         public bool ExistLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo)
         {
             long oyaRaiinNo = 0;
