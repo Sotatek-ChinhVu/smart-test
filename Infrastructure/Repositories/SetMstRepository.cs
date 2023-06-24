@@ -438,7 +438,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             ).ToList());
 
             // if is level 1
-            if (setMst.Level1 > 0 && setMst.Level2 == 0)
+            if (setMst.Level1 > 0 && setMst.Level2 == 0 && setMstModel.IsDeleted == 1)
             {
                 result.AddRange(NoTrackingDataContext.SetMsts
                        .Where(item => item.SetKbn == setMst.SetKbn
