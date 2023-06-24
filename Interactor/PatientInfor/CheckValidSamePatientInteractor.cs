@@ -21,7 +21,7 @@ namespace Interactor.PatientInfor
             if (inputData.HpId < 0)
                 return new CheckValidSamePatientOutputData(CheckValidSamePatientStatus.InvalidHpId, string.Empty);
 
-            if(inputData.Birthday < 0)
+            if (inputData.Birthday < 0)
                 return new CheckValidSamePatientOutputData(CheckValidSamePatientStatus.InvalidBirthday, string.Empty);
 
             if (inputData.Sex < 0)
@@ -36,7 +36,7 @@ namespace Interactor.PatientInfor
                 var samePatientInf = _patientInforRepository.FindSamePatient(inputData.HpId, inputData.KanjiName, inputData.Sex, inputData.Birthday).Where(item => item.PtId != inputData.PtId).ToList();
                 if (samePatientInf.Count > 0)
                 {
-                    string msg = "同姓同名の患者。";
+                    string msg = string.Empty;
                     samePatientInf.ForEach(ptInf =>
                     {
                         if (!string.IsNullOrEmpty(msg))
@@ -46,7 +46,8 @@ namespace Interactor.PatientInfor
 
                         msg = msg + "患者番号：" + string.Format("{0,-9}", ptInf.PtNum.AsString());
                     });
-                    string message = string.Format(ErrorMessage.MessageType_mEnt00020, msg);
+                    string message = string.Format(ErrorMessage.MessageType_mEnt00020, "同姓同名の患者") + Environment.NewLine;
+                    message += msg;
                     return new CheckValidSamePatientOutputData(CheckValidSamePatientStatus.IsInValid, message);
                 }
                 else
