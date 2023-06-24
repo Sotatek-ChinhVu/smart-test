@@ -4,10 +4,10 @@ namespace EmrCloudApi.Responses.SetMst;
 
 public class SaveSetMstResponse
 {
-    public SaveSetMstResponse(SetMstModel? setMstModel)
+    public SaveSetMstResponse(List<SetMstModel> setMstModel)
     {
-        this.setMstModel = setMstModel;
+        SetMstModel = setMstModel;
     }
 
-    public SetMstModel? setMstModel { get; private set; }
+    public List<SetMstModel> SetMstModel { get; private set; }
 }

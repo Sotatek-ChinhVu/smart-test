@@ -11,7 +11,7 @@ public class SaveSetMstPresenter : ISaveSetMstOutputPort
 
     public void Complete(SaveSetMstOutputData output)
     {
-        Result.Data = new SaveSetMstResponse(output.setMstModel);
+        Result.Data = new SaveSetMstResponse(output.SetMstList);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

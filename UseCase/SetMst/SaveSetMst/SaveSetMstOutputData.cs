@@ -5,12 +5,12 @@ namespace UseCase.SetMst.SaveSetMst;
 
 public class SaveSetMstOutputData : IOutputData
 {
-    public SaveSetMstOutputData(SetMstModel? setMstModel, SaveSetMstStatus status)
+    public SaveSetMstOutputData(List<SetMstModel> setMstList, SaveSetMstStatus status)
     {
-        this.setMstModel = setMstModel;
+        SetMstList = setMstList;
         Status = status;
     }
 
-    public SetMstModel? setMstModel { get; private set; }
+    public List<SetMstModel> SetMstList { get; private set; }
     public SaveSetMstStatus Status { get; private set; }
 }

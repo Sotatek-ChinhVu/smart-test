@@ -272,8 +272,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     }
 
     [Obsolete]
-    public SetMstModel SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
+    public List<SetMstModel> SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
     {
+        List<SetMst> result = new();
         SetMst setMst = new();
         try
         {
@@ -287,13 +288,13 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
             if (oldSetMst == null && !setMstModel.IsAddNew)
             {
-                return new SetMstModel();
+                return new();
             }
 
             // if is add new with root set level is level 3 => stop progress
             else if (oldSetMst != null && oldSetMst.Level1 > 0 && oldSetMst.Level2 > 0 && oldSetMst.Level3 > 0 && setMstModel.IsAddNew)
             {
-                return new SetMstModel();
+                return new();
             }
             oldSetMst = oldSetMst != null ? oldSetMst : new SetMst();
 
@@ -344,23 +345,100 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
                 }
+
+                // update other item
+
+                // is level 1
+                if (setMst.Level1 > 0 && setMst.Level2 == 0)
+                {
+                    var listUpdateLevel = TrackingDataContext.SetMsts
+                                          .Where(item => item.SetKbn == setMst.SetKbn
+                                                       && item.SetKbnEdaNo == setKbnEdaNo
+                                                       && item.GenerationId == setMst.GenerationId
+                                                       && item.Level1 > setMst.Level1
+                                                       && item.IsDeleted != 1
+                                          ).ToList();
+                    foreach (var item in listUpdateLevel)
+                    {
+                        item.Level1 = item.Level1 - 1;
+                    }
+                }
+
+                // is level 2
+                if (setMst.Level1 > 0 && setMst.Level2 > 0 && setMst.Level3 == 0)
+                {
+                    var listUpdateLevel = TrackingDataContext.SetMsts
+                                          .Where(item => item.SetKbn == setMst.SetKbn
+                                                       && item.SetKbnEdaNo == setKbnEdaNo
+                                                       && item.GenerationId == setMst.GenerationId
+                                                       && item.Level1 == setMst.Level1
+                                                       && item.Level2 > setMst.Level2
+                                                       && item.IsDeleted != 1
+                                          ).ToList();
+                    foreach (var item in listUpdateLevel)
+                    {
+                        item.Level2 = item.Level2 - 1;
+                    }
+                }
+
+                // is level 3
+                if (setMst.Level1 > 0 && setMst.Level2 > 0 && setMst.Level3 > 0)
+                {
+                    var listUpdateLevel = TrackingDataContext.SetMsts
+                                          .Where(item => item.SetKbn == setMst.SetKbn
+                                                       && item.SetKbnEdaNo == setKbnEdaNo
+                                                       && item.GenerationId == setMst.GenerationId
+                                                       && item.Level1 == setMst.Level1
+                                                       && item.Level2 == setMst.Level2
+                                                       && item.Level3 > setMst.Level3
+                                                       && item.IsDeleted != 1
+                                          ).ToList();
+                    foreach (var item in listUpdateLevel)
+                    {
+                        item.Level3 = item.Level3 - 1;
+                    }
+                }
             }
             TrackingDataContext.SaveChanges();
-            return new SetMstModel(
-                    setMst.HpId,
-                    setMst.SetCd,
-                    setMst.SetKbn,
-                    setMst.SetKbnEdaNo,
-                    setMst.GenerationId,
-                    setMst.Level1,
-                    setMst.Level2,
-                    setMst.Level3,
-                    setMst.SetName ?? string.Empty,
-                    setMst.WeightKbn,
-                    setMst.Color,
-                    setMst.IsDeleted,
-                    setMst.IsGroup
-                );
+
+            // if level 1
+            if (setMstModel.IsDeleted == 1 && setMst.Level1 > 0 && setMst.Level2 == 0)
+            {
+                result = TrackingDataContext.SetMsts
+                         .Where(item => item.SetKbn == setMst.SetKbn
+                                      && item.SetKbnEdaNo == setKbnEdaNo
+                                      && item.GenerationId == setMst.GenerationId
+                                      && item.Level1 > setMst.Level1
+                                      && item.IsDeleted != 1
+                         ).ToList();
+                result.Add(setMst);
+            }
+            else
+            {
+                result = TrackingDataContext.SetMsts
+                         .Where(item => item.SetKbn == setMst.SetKbn
+                                      && item.SetKbnEdaNo == setKbnEdaNo
+                                      && item.GenerationId == setMst.GenerationId
+                                      && item.Level1 == setMst.Level1
+                                      && item.IsDeleted != 1
+                         ).ToList();
+            }
+
+            return result.Select(item => new SetMstModel(
+                                             item.HpId,
+                                             item.SetCd,
+                                             item.SetKbn,
+                                             item.SetKbnEdaNo,
+                                             item.GenerationId,
+                                             item.Level1,
+                                             item.Level2,
+                                             item.Level3,
+                                             item.SetName ?? string.Empty,
+                                             item.WeightKbn,
+                                             item.Color,
+                                             item.IsDeleted,
+                                             item.IsGroup
+                                         )).ToList();
         }
         catch (Exception ex)
         {
@@ -397,7 +475,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 RetrySaveSetMst(setMst);
             }
-            return flag ? new SetMstModel(
+            return flag ? new(){new SetMstModel(
                     setMst.HpId,
                     setMst.SetCd,
                     setMst.SetKbn,
@@ -411,7 +489,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     setMst.Color,
                     setMst.IsDeleted,
                     setMst.IsGroup
-                ) : new SetMstModel();
+                ) } : new();
         }
         finally
         {

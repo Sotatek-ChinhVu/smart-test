@@ -20,39 +20,39 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
         var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
         if (notAllowSave)
         {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.MedicalScreenLocked);
+            return new SaveSetMstOutputData(new(), SaveSetMstStatus.MedicalScreenLocked);
         }
         if (inputData.SinDate <= 15000101 && inputData.SinDate > 30000000)
         {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSindate);
+            return new SaveSetMstOutputData(new(), SaveSetMstStatus.InvalidSindate);
         }
         else if (inputData.SetCd < 0)
         {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSetCd);
+            return new SaveSetMstOutputData(new(), SaveSetMstStatus.InvalidSetCd);
         }
         else if (inputData.SetKbn < 1 && inputData.SetKbn > 10)
         {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSetKbn);
+            return new SaveSetMstOutputData(new(), SaveSetMstStatus.InvalidSetKbn);
         }
         else if (inputData.SetKbnEdaNo < 1 && inputData.SetKbnEdaNo > 6)
         {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSetKbnEdaNo);
+            return new SaveSetMstOutputData(new(), SaveSetMstStatus.InvalidSetKbnEdaNo);
         }
         else if (inputData.SetName.Length > 60)
         {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSetName);
+            return new SaveSetMstOutputData(new(), SaveSetMstStatus.InvalidSetName);
         }
         else if (inputData.WeightKbn < 0)
         {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidWeightKbn);
+            return new SaveSetMstOutputData(new(), SaveSetMstStatus.InvalidWeightKbn);
         }
         else if (inputData.Color < 0)
         {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidColor);
+            return new SaveSetMstOutputData(new(), SaveSetMstStatus.InvalidColor);
         }
         else if (inputData.IsDeleted < 0 && inputData.IsDeleted > 1)
         {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidIsDeleted);
+            return new SaveSetMstOutputData(new(), SaveSetMstStatus.InvalidIsDeleted);
         }
         try
         {
@@ -77,11 +77,7 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
             {
                 return new SaveSetMstOutputData(resultData, SaveSetMstStatus.Successed);
             }
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.Failed);
-        }
-        catch (Exception)
-        {
-            return new SaveSetMstOutputData(null, SaveSetMstStatus.Failed);
+            return new SaveSetMstOutputData(new(), SaveSetMstStatus.Failed);
         }
         finally
         {
