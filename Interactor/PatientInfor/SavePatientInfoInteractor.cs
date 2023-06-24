@@ -119,21 +119,24 @@ namespace Interactor.PatientInfor
 
             #region Patient Info
             string message = string.Empty;
-            var samePatientInf = _patientInforRepository.FindSamePatient(hpId, model.Patient.Name, model.Patient.Sex, model.Patient.Birthday).Where(item => item.PtId != model.Patient.PtId).ToList();
-            if (samePatientInf.Count > 0)
+            if (!model.ReactSave.ConfirmSamePatientInf)
             {
-                string msg = string.Empty;
-                samePatientInf.ForEach(ptInf =>
+                var samePatientInf = _patientInforRepository.FindSamePatient(hpId, model.Patient.Name, model.Patient.Sex, model.Patient.Birthday).Where(item => item.PtId != model.Patient.PtId).ToList();
+                if (samePatientInf.Count > 0)
                 {
-                    if (!string.IsNullOrEmpty(msg))
+                    string msg = string.Empty;
+                    samePatientInf.ForEach(ptInf =>
                     {
-                        msg = msg + Environment.NewLine;
-                    }
-                    msg = msg + "患者番号：" + string.Format("{0,-9}", ptInf.PtNum.AsString());
-                });
-                message = string.Format(ErrorMessage.MessageType_mEnt00020, "同姓同名の患者") + Environment.NewLine;
-                message += msg;
-                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidSamePatient, TypeMessage.TypeMessageWarning));
+                        if (!string.IsNullOrEmpty(msg))
+                        {
+                            msg = msg + Environment.NewLine;
+                        }
+                        msg = msg + "患者番号：" + string.Format("{0,-9}", ptInf.PtNum.AsString());
+                    });
+                    message = string.Format(ErrorMessage.MessageType_mEnt00020, "同姓同名の患者") + Environment.NewLine;
+                    message += msg;
+                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidSamePatient, TypeMessage.TypeMessageWarning));
+                }
             }
 
             if (model.Patient.PtId == 0 && model.Patient.PtNum != 0)
