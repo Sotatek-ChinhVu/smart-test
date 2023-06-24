@@ -377,7 +377,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 // update other item
 
                 // is level 1
-                List<SetMst> listUpdateLevel = new();
+                List<SetMst> listUpdateLevel;
                 if (setMst.Level1 > 0 && setMst.Level2 == 0)
                 {
                     listUpdateLevel = TrackingDataContext.SetMsts
@@ -427,8 +427,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         item.Level3 = item.Level3 - 1;
                     }
                 }
-                result = listUpdateLevel;
-                result.Add(setMst);
             }
             TrackingDataContext.SaveChanges();
             result.AddRange(NoTrackingDataContext.SetMsts
@@ -438,6 +436,19 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                            && item.Level1 == setMst.Level1
                                            && item.IsDeleted != 1
                             ).ToList());
+
+            // if is level 1
+            if (setMst.Level1 > 0 && setMst.Level2 == 0)
+            {
+                result.AddRange(NoTrackingDataContext.SetMsts
+                       .Where(item => item.SetKbn == setMst.SetKbn
+                                      && item.SetKbnEdaNo == setKbnEdaNo
+                                      && item.GenerationId == setMst.GenerationId
+                                      && item.Level1 > setMst.Level1
+                                      && item.IsDeleted != 1
+                       ).ToList());
+                result.Add(setMst);
+            }
 
             result = result.Distinct().ToList();
 
