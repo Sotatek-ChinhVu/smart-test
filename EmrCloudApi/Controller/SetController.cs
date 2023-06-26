@@ -59,7 +59,7 @@ public class SetController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.Save)]
-    public async Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
+    public async Task<ActionResult<Response<GetSetMstListResponse>>> Save([FromBody] SaveSetMstRequest request)
     {
         var input = new SaveSetMstInputData(request.PtId, request.RaiinNo, request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, HpId, UserId, request.IsGroup, request.IsAddNew);
         var output = _bus.Handle(input);
@@ -73,7 +73,7 @@ public class SetController : AuthorizeControllerBase
         var presenter = new SaveSetMstPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<SaveSetMstResponse>>(presenter.Result);
+        return new ActionResult<Response<GetSetMstListResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.Reorder)]
