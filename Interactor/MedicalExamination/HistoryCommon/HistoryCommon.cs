@@ -5,13 +5,11 @@ using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.User;
-using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
 using System.Text;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 using UseCase.MedicalExamination.GetHistory;
@@ -426,6 +424,7 @@ public class HistoryCommon : IHistoryCommon
 
                     group.OdrInfs.Add(odrModel);
                 }
+                hokenGrp.GroupOdrItems.Add(group);
                 if (!existGairaiKanriKasan)
                 {
                     var sinkouiGairaiKanriKasan = sinkouiList.FirstOrDefault(p => p.ItemCd == ItemCdConst.GairaiKanriKasan || p.ItemCd == ItemCdConst.GairaiKanriKasanRousai);
@@ -527,10 +526,15 @@ public class HistoryCommon : IHistoryCommon
                                                         string.Empty,
                                                         sinkouiGairaiKanriKasan.CreateName
                                                      );
-                        group.OdrInfs.Add(odrModel);
+
+                        List<OdrInfHistoryItem> listOdrInfHistoryItem = new()
+                        {
+                            odrModel
+                        };
+
+                        hokenGrp.GroupOdrItems.Add(new GroupOdrGHistoryItem(listOdrInfHistoryItem));
                     }
                 }
-                hokenGrp.GroupOdrItems.Add(group);
             }
             historyKarteOdrRaiin.HokenGroups.Add(hokenGrp);
         }
