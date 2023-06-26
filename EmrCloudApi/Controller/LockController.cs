@@ -107,7 +107,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.RemoveAllLockPtId)]
         public ActionResult<Response> RemoveAllLockPtId([FromQuery] RemoveAllLockPtIdRequest request)
         {
-            var input = new RemoveLockInputData(HpId, request.PtId, "", request.SinDate, 0, UserId, false, true);
+            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCd, request.SinDate, 0, UserId, false, true);
             var output = _bus.Handle(input);
 
             var presenter = new RemoveLockPresenter();

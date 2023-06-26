@@ -29,7 +29,7 @@ namespace Interactor.Lock
                 }
                 else if (inputData.IsRemoveAllLockPtId)
                 {
-                    result = _lockRepository.RemoveAllLock(hpId, userId, ptId, sinDate);
+                    result = _lockRepository.RemoveAllLock(hpId, userId, ptId, sinDate, functionCode);
                 }
                 else
                 {

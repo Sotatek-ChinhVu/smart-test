@@ -16,7 +16,7 @@ namespace Domain.Models.Lock
 
         bool RemoveAllLock(int hpId, int userId);
 
-        bool RemoveAllLock(int hpId, int userId, long ptId, int sinDate);
+        bool RemoveAllLock(int hpId, int userId, long ptId, int sinDate, string functionCd);
 
         bool ExtendTtl(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
 

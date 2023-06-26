@@ -189,11 +189,20 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public bool RemoveAllLock(int hpId, int userId, long ptId, int sinDate)
+        public bool RemoveAllLock(int hpId, int userId, long ptId, int sinDate, string functionCd)
         {
+            List<string> functionCdList = new()
+            {
+                functionCd
+            };
+            if (functionCd == FunctionCode.MedicalExaminationCode)
+            {
+                functionCdList.Add(FunctionCode.SwitchOrderCode);
+            }
             var lockInfList = TrackingDataContext.LockInfs.Where(item => item.HpId == hpId
                                                                          && item.UserId == userId
                                                                          && item.PtId == ptId
+                                                                         && functionCdList.Contains(item.FunctionCd)
                                                                          && item.SinDate == sinDate
                                                           ).ToList();
             if (!lockInfList.Any())
