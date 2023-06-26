@@ -56,7 +56,7 @@ namespace Infrastructure.Repositories
                                                                                 && item.UserId == lockInf.UserId
                                                                                 && item.IsDeleted == 0);
 
-            var functionInf = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd==lockInf.FunctionCd);
+            var functionInf = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd == lockInf.FunctionCd);
 
             return new LockModel(
                        lockInf.UserId,
@@ -180,6 +180,22 @@ namespace Infrastructure.Repositories
         public bool RemoveAllLock(int hpId, int userId)
         {
             var lockInfList = TrackingDataContext.LockInfs.Where(r => r.HpId == hpId && r.UserId == userId).ToList();
+            if (!lockInfList.Any())
+            {
+                return true;
+            }
+            TrackingDataContext.LockInfs.RemoveRange(lockInfList);
+            TrackingDataContext.SaveChanges();
+            return true;
+        }
+
+        public bool RemoveAllLock(int hpId, int userId, long ptId, int sinDate)
+        {
+            var lockInfList = TrackingDataContext.LockInfs.Where(item => item.HpId == hpId
+                                                                         && item.UserId == userId
+                                                                         && item.PtId == ptId
+                                                                         && item.SinDate == sinDate
+                                                          ).ToList();
             if (!lockInfList.Any())
             {
                 return true;
