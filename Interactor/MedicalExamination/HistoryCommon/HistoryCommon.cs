@@ -520,14 +520,13 @@ public class HistoryCommon : IHistoryCommon
                                                         },
                                                         sinkouiGairaiKanriKasan.CreateDate,
                                                         sinkouiGairaiKanriKasan.CreateId,
-                                                        string.Empty,
+                                                        sinkouiGairaiKanriKasan.CreateName,
                                                         sinkouiGairaiKanriKasan.CreateDate,
                                                         0,
                                                         string.Empty,
                                                         string.Empty,
-                                                        string.Empty
+                                                        sinkouiGairaiKanriKasan.CreateName
                                                      );
-
                         group.OdrInfs.Add(odrModel);
                     }
                 }

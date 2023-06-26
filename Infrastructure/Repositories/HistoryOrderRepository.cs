@@ -487,6 +487,8 @@ namespace Infrastructure.Repositories
             var joinTenMstQuery = from sinKouiCountJoinDetail in sinKouiCountJoinDetailQuery
                                   join tenMst in tenMsts
                                   on sinKouiCountJoinDetail.SinKouiDetail.ItemCd equals tenMst.ItemCd into tempTenMstList
+                                  join userMst in NoTrackingDataContext.UserMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0)
+                                  on sinKouiCountJoinDetail.Sinkoui.CreateId equals userMst.UserId
                                   select new
                                   {
                                       CreateId = sinKouiCountJoinDetail.Sinkoui.CreateId,
@@ -495,6 +497,7 @@ namespace Infrastructure.Repositories
                                       SinDate = sinKouiCountJoinDetail.SinKouiCount.SinDate,
                                       RaiinNo = sinKouiCountJoinDetail.SinKouiCount.RaiinNo,
                                       ItemCd = sinKouiCountJoinDetail.SinKouiDetail.ItemCd,
+                                      UserName = userMst.Name,
                                       TenMst = tempTenMstList.FirstOrDefault(p => p.StartDate <= sinKouiCountJoinDetail.SinKouiCount.SinDate && sinKouiCountJoinDetail.SinKouiCount.SinDate <= p.EndDate)
                                   };
 
@@ -506,6 +509,7 @@ namespace Infrastructure.Repositories
 
             var result = joinTenMstList.Select(item => new SinKouiListModel(
                                                        item.CreateId,
+                                                       item.UserName,
                                                        item.CreateDate,
                                                        item.HokenPid,
                                                        item.SinDate,

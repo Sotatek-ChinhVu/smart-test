@@ -2,9 +2,10 @@
 
 public class SinKouiListModel
 {
-    public SinKouiListModel(int createId, DateTime createDate, int hokenPid, int sinDate, long raiinNo, string itemCd, int sinKouiKbn, string tenItemCd, string name, int kohatuKbn, int yohoKbn, string ipnNameCd, int drugKbn, int isNodspKarte)
+    public SinKouiListModel(int createId, string createName, DateTime createDate, int hokenPid, int sinDate, long raiinNo, string itemCd, int sinKouiKbn, string tenItemCd, string name, int kohatuKbn, int yohoKbn, string ipnNameCd, int drugKbn, int isNodspKarte)
     {
         CreateId = createId;
+        CreateName = createName;
         CreateDate = createDate;
         HokenPid = hokenPid;
         SinDate = sinDate;
@@ -21,6 +22,8 @@ public class SinKouiListModel
     }
 
     public int CreateId { get; private set; }
+
+    public string CreateName { get; private set; }
 
     public DateTime CreateDate { get; private set; }
 
