@@ -103,10 +103,10 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
 
         //Adult Patient
         var timeZoneConfs = _timeZoneRepository.GetTimeZoneConfs(hpId);
-        TimeZoneConfModel timeZoneConf = new();
+        TimeZoneConfModel? timeZoneConf = null;
         if (timeZoneConfs != null && timeZoneConfs.Any())
         {
-            timeZoneConf = timeZoneConfs.Find(t => t.YoubiKbn == dayOfWeek && t.StartTime <= uketukeTime && t.EndTime > uketukeTime) ?? new();
+            timeZoneConf = timeZoneConfs.Find(t => t.YoubiKbn == dayOfWeek && t.StartTime <= uketukeTime && t.EndTime > uketukeTime);
         }
         if (isHoliday)
         {
