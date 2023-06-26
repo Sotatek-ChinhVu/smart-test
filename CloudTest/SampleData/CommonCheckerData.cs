@@ -741,6 +741,263 @@ namespace CloudUnitTest.SampleData
             return m42Contraindis;
         }
 
+        public static List<PtSupple> ReadMPtSupple(string key)
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var ptSupples = new List<PtSupple>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_SUPPLE").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptSupple = new PtSupple();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    ptSupple.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int ptId);
+                                    ptSupple.PtId = ptId;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int seqNo);
+                                    ptSupple.SeqNo = seqNo;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int sortNo);
+                                    ptSupple.SortNo = sortNo;
+                                    break;
+                                case "E":
+                                    ptSupple.IndexCd = text;
+                                    break;
+                                case "F":
+                                    ptSupple.IndexWord = text;
+                                    break;
+                                case "G":
+                                    int.TryParse(text, out int startDate);
+                                    ptSupple.StartDate = startDate;
+                                    break;
+                                case "H":
+                                    int.TryParse(text, out int endDate);
+                                    ptSupple.EndDate = endDate;
+                                    break;
+                                case "I":
+                                    ptSupple.Cmt = text;
+                                    break;
+                                case "J":
+                                    int.TryParse(text, out int isDeleted);
+                                    ptSupple.IsDeleted = isDeleted;
+                                    break;
+                                case "K":
+                                    ptSupple.CreateDate = DateTime.UtcNow;
+                                    break;
+                                case "L":
+                                    int.TryParse(text, out int createId);
+                                    ptSupple.CreateId = createId;
+                                    break;
+                                case "M":
+                                    ptSupple.CreateMachine = text;
+                                    break;
+                                case "N":
+                                    ptSupple.UpdateDate = DateTime.UtcNow;
+                                    break;
+                                case "O":
+                                    int.TryParse(text, out int updateId);
+                                    ptSupple.UpdateId = updateId;
+                                    break;
+                                case "P":
+                                    ptSupple.UpdateMachine = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        ptSupples.Add(ptSupple);
+                    }
+                }
+            }
+
+            return ptSupples;
+        }
+
+        public static List<M41SuppleIndexdef> ReadM41SuppleIndexdef(string key)
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m41SuppleIndexdefs = new List<M41SuppleIndexdef>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M41_SUPPLE_INDEXDEF").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m41SuppleIndexdef = new M41SuppleIndexdef();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m41SuppleIndexdef.SeibunCd = text;
+                                    break;
+                                case "B":
+                                    m41SuppleIndexdef.IndexWord = text;
+                                    break;
+                                case "C":
+                                    m41SuppleIndexdef.TokuhoFlg = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m41SuppleIndexdefs.Add(m41SuppleIndexdef);
+                    }
+                }
+            }
+
+            return m41SuppleIndexdefs;
+        }
+
+        public static List<M41SuppleIndexcode> ReadM41SuppleIndexcode(string key)
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m41SuppleIndexcodes = new List<M41SuppleIndexcode>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M41_SUPPLE_INDEXCODE").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m41SuppleIndexcode = new M41SuppleIndexcode();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m41SuppleIndexcode.SeibunCd = text;
+                                    break;
+                                case "B":
+                                    m41SuppleIndexcode.IndexCd = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m41SuppleIndexcodes.Add(m41SuppleIndexcode);
+                    }
+                }
+            }
+
+            return m41SuppleIndexcodes;
+        }
+
+        public static List<M01Kinki> ReadM01Kinki(string key)
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m01Kinkis = new List<M01Kinki>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M01_KINKI").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m01Kinki = new M01Kinki();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m01Kinki.ACd = text;
+                                    break;
+                                case "B":
+                                    m01Kinki.BCd = text;
+                                    break;
+                                case "C":
+                                    m01Kinki.CmtCd = text;
+                                    break;
+                                case "D":
+                                    m01Kinki.SayokijyoCd = text;
+                                    break;
+                                case "E":
+                                    m01Kinki.KyodoCd = text;
+                                    break;
+                                case "F":
+                                    m01Kinki.Kyodo = text;
+                                    break;
+                                case "G":
+                                    m01Kinki.DataKbn = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m01Kinkis.Add(m01Kinki);
+                    }
+                }
+            }
+
+            return m01Kinkis;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
