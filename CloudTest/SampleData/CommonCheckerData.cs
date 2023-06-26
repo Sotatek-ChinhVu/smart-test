@@ -949,6 +949,89 @@ namespace CloudUnitTest.SampleData
             return ptAlrgyDrugs;
         }
 
+        public static List<KinkiMst> ReadKinkiMst()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var kinkiMsts = new List<KinkiMst>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "KINKI_MST").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var kinkiMst = new KinkiMst();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    kinkiMst.HpId = hpId;
+                                    break;
+                                case "B":
+                                    kinkiMst.ACd = text;
+                                    break;
+                                case "C":
+                                    kinkiMst.BCd = text;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int seqNo);
+                                    kinkiMst.SeqNo = seqNo;
+                                    break;
+                                case "E":
+                                    int.TryParse(text, out int isDeleted);
+                                    kinkiMst.IsDeleted = isDeleted;
+                                    break;
+                                case "F":
+                                    kinkiMst.CreateDate = DateTime.UtcNow;
+                                    break;
+                                case "G":
+                                    int.TryParse(text, out int createId);
+                                    kinkiMst.CreateId = createId;
+                                    break;
+                                case "H":
+                                    kinkiMst.CreateMachine = text;
+                                    break;
+                                case "I":
+                                    kinkiMst.UpdateDate = DateTime.UtcNow;
+                                    break;
+                                case "J":
+                                    int.TryParse(text, out int updateId);
+                                    kinkiMst.UpdateId = updateId;
+                                    break;
+                                case "K":
+                                    kinkiMst.UpdateMachine = text;
+                                    break;
+                                case "L":
+                                    int.TryParse(text, out int id);
+                                    kinkiMst.Id = id;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        kinkiMsts.Add(kinkiMst);
+                    }
+                }
+            }
+
+            return kinkiMsts;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
