@@ -71,7 +71,7 @@ public class CommonGetListParam : ICommonGetListParam
 
         // hoken
         var hokenPattern = _insuranceRepository.GetInsuranceListById(hpId, ptId, sinDate);
-        var insuranceMstModel = _insuranceMstRepository.GetDataInsuranceMst(hpId, ptId, sinDate);
+        var insuranceMstModel = _insuranceMstRepository.GetDataInsuranceMst(hpId, ptId, sinDate).insurance;
         var hokenModelToReplace = GetListParamHokenInf(age, hokenPId, hokenPattern, insuranceMstModel);
 
         // Get list param

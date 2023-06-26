@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public InsuranceMstModel GetDataInsuranceMst(int hpId, long ptId, int sinDate)
+        public (InsuranceMstModel insurance, int prefNo) GetDataInsuranceMst(int hpId, long ptId, int sinDate)
         {
             // data combobox 1 toki
             var TokkiMsts = NoTrackingDataContext.TokkiMsts.Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
@@ -194,7 +194,7 @@ namespace Infrastructure.Repositories
                                             x.RoudouName ?? string.Empty
                                             )).ToList();
 
-            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, dataComboboxKantokuMst, byomeiMstAftercares, dataRoudouMst, allHokenMst);
+            return (new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, dataComboboxKantokuMst, byomeiMstAftercares, dataRoudouMst, allHokenMst), prefNo);
         }
 
         private List<HokenMstModel> GetHokenMstList(int today, bool isKohi, List<HokenMstModel> allHokenMst)
