@@ -139,7 +139,7 @@ namespace Infrastructure.Repositories
             if (raiinInf != null)
             {
                 var preProcess = GetModeSaveDate(modeSaveData, raiinInf.Status, sinEndTime, sinStartTime, uketukeTime);
-                raiinInf.Status = modeSaveData == 0 ? RaiinState.TempSave : preProcess.status != 0 ? preProcess.status : raiinInf.Status;
+                raiinInf.Status = (raiinInf.Status <= RaiinState.TempSave && modeSaveData == 0) ? RaiinState.TempSave : preProcess.status != 0 ? preProcess.status : raiinInf.Status;
                 //modeSaveData != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
                 raiinInf.SyosaisinKbn = syosaiKbn;
                 raiinInf.JikanKbn = jikanKbn;
@@ -831,7 +831,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    if (karte.Text != karteMst.Text && Encoding.UTF8.GetBytes(karte.RichText) != karteMst.RichText)
+                    if (karte.Text != karteMst.Text || Encoding.UTF8.GetBytes(karte.RichText) != karteMst.RichText)
                     {
                         karteMst.IsDeleted = status == RaiinState.Reservation ? DeleteTypes.Confirm : DeleteTypes.Deleted;
                         var karteEntity = new KarteInf
@@ -2661,6 +2661,20 @@ namespace Infrastructure.Repositories
                             }
                             else if (totalSanteiCount + detail.Suryo > santeiCntCheck.MaxCnt)
                             {
+                                double suryo = Convert.ToDouble(santeiCntCheck.MaxCnt) - totalSanteiCount;
+                                var totalSanteiCountString = totalSanteiCount.ToString();
+                                int digits = 0;
+                                if (totalSanteiCountString.Contains("."))
+                                {
+                                    int startIndex = totalSanteiCountString.IndexOf(".");
+                                    digits = totalSanteiCountString.Substring(startIndex, totalSanteiCountString.Length - startIndex).Length - 1;
+                                    if (digits < 0)
+                                    {
+                                        digits = 0;
+                                    }
+                                }
+                                suryo = Math.Round(suryo, digits);
+
                                 StringBuilder stringBuilder = new StringBuilder("");
                                 stringBuilder.Append("'");
                                 stringBuilder.Append(detail.DisplayItemName);
@@ -2672,11 +2686,10 @@ namespace Infrastructure.Repositories
                                 stringBuilder.Append("単位を超えます。");
                                 stringBuilder.Append(Environment.NewLine);
                                 stringBuilder.Append("数量を'");
-                                stringBuilder.Append(santeiCntCheck.MaxCnt - totalSanteiCount);
+                                stringBuilder.Append(suryo);
                                 stringBuilder.Append("'に変更しますか？");
 
                                 string msg = stringBuilder.ToString();
-                                var suryo = santeiCntCheck.MaxCnt - totalSanteiCount;
                                 detail.ChangeSuryo(suryo);
                                 result.Add(new(2, msg, odrInfIndex, odrInfDetailIndex, new(), suryo));
                             }

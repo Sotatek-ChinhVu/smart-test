@@ -6,10 +6,12 @@ using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
 using EmrCloudApi.Services;
+using Helper.Constants;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
+using UseCase.Lock.CheckExistFunctionCode;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
 
@@ -36,8 +38,9 @@ namespace EmrCloudApi.Controller
 
             if (output.Status == AddLockStatus.Successed)
             {
+                string functionCode = request.FunctionCod == FunctionCode.SwitchOrderCode ? FunctionCode.MedicalExaminationCode : request.FunctionCod;
                 await _webSocketService.SendMessageAsync(FunctionCodes.AddLockChanged,
-                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 1, FunctionCod = request.FunctionCod });
+                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 1, FunctionCod = functionCode });
             }
 
             var presenter = new AddLockPresenter();
@@ -56,6 +59,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<LockResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.CheckExistFunctionCode)]
+        public ActionResult<Response<CheckExistFunctionCodeResponse>> CheckOpenSpecialNote([FromQuery] CheckExistFunctionCodeRequest request)
+        {
+            var input = new CheckExistFunctionCodeInputData(HpId, request.FunctionCod, request.PtId);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckExistFunctionCodePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckExistFunctionCodeResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.RemoveLock)]

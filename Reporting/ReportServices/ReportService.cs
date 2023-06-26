@@ -225,34 +225,6 @@ public class ReportService : IReportService
         return _accountingCoReportService.GetAccountingReportingData(hpId, coAccountingParamModels);
     }
 
-    public bool CheckOpenReportingForm(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> multiAccountDueListModels, bool isPrintMonth, bool ryoshusho, bool meisai)
-    {
-        List<CoAccountingParamModel> requestAccountting = new();
-
-        List<CoAccountDueListModel> nyukinModels = _coAccountingFinder.GetAccountDueList(hpId, ptId);
-        List<int> months = new();
-        foreach (var model in multiAccountDueListModels)
-        {
-            var selectedAccountDueListModel = model;
-            var accountDueListModels = nyukinModels.FindAll(p => p.SinDate / 100 == model.SinDate / 100);
-            if (isPrintMonth)
-            {
-                if (!months.Contains(model.SinDate / 100))
-                {
-                    var printItem = PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SinDate, model.OyaRaiinNo, accountDueListModels);
-                    requestAccountting.AddRange(printItem);
-                    months.Add(model.SinDate / 100);
-                }
-            }
-            else
-            {
-                var printItem = PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SinDate, model.OyaRaiinNo);
-                requestAccountting.AddRange(printItem);
-            }
-        }
-        return _accountingCoReportService.CheckOpenReportingForm(hpId, requestAccountting);
-    }
-
     public AccountingResponse GetAccountingData(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> multiAccountDueListModels, bool isPrintMonth, bool ryoshusho, bool meisai)
     {
         List<CoAccountingParamModel> requestAccountting = new();
@@ -292,7 +264,7 @@ public class ReportService : IReportService
         return result;
     }
 
-    private List<CoAccountingParamModel> PrintWithoutThread(bool ryoshusho, bool meisai, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isPrintMonth, int sinDate, long oyaRaiinNo, List<CoAccountDueListModel>? nyukinModels = null)
+    public List<CoAccountingParamModel> PrintWithoutThread(bool ryoshusho, bool meisai, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isPrintMonth, int sinDate, long oyaRaiinNo, List<CoAccountDueListModel>? nyukinModels = null)
     {
         int GetMaxDateInMonth(int month)
         {
@@ -463,9 +435,9 @@ public class ReportService : IReportService
         return _kensaIraiCoReportService.GetKensalraiData(hpId, systemDate, fromDate, toDate, centerCd);
     }
 
-    public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt)
+    public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType)
     {
-        return _receiptPrintService.GetReceiptPrint(hpId, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt);
+        return _receiptPrintService.GetReceiptPrint(hpId, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType);
     }
 
     public CommonReportingRequestModel GetMemoMsgReportingData(string reportName, string title, List<string> listMessage)

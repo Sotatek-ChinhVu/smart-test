@@ -228,6 +228,9 @@
         public const string GetPermissionByScreen = "GetPermissionByScreen";
         public const string GetAllPermission = "GetAllPermission";
         public const string GetListUserByCurrentUser = "GetListUserByCurrentUser";
+        public const string GetListJobMst = "GetListJobMst";
+        public const string GetListFunctionPermission = "GetListFunctionPermission";
+        public const string SaveListUserMst = "SaveListUserMst";
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
@@ -326,6 +329,7 @@
         public const string AddLock = "AddLock";
         public const string CheckLock = "CheckLock";
         public const string RemoveLock = "RemoveLock";
+        public const string CheckExistFunctionCode = "CheckExistFunctionCode";
         public const string RemoveAllLock = "RemoveAllLock";
         public const string ExtendTtl = "ExtendTtl";
         public const string GetLockInfo = "GetLockInfo";

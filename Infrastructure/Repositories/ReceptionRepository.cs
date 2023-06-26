@@ -484,15 +484,15 @@ namespace Infrastructure.Repositories
                         r.SanteiKbn,
                         r.Status,
                         r.IsYoyaku,
-                        r.YoyakuTime ?? String.Empty,
+                        r.YoyakuTime ?? string.Empty,
                         r.YoyakuId,
                         r.UketukeSbt,
-                        r.UketukeTime ?? String.Empty,
+                        r.UketukeTime ?? string.Empty,
                         r.UketukeId,
                         r.UketukeNo,
                         r.SinStartTime ?? string.Empty,
-                        r.SinEndTime ?? String.Empty,
-                        r.KaikeiTime ?? String.Empty,
+                        r.SinEndTime ?? string.Empty,
+                        r.KaikeiTime ?? string.Empty,
                         r.KaikeiId,
                         r.KaId,
                         r.TantoId,
@@ -522,15 +522,15 @@ namespace Infrastructure.Repositories
                     r.SanteiKbn,
                     r.Status,
                     r.IsYoyaku,
-                    r.YoyakuTime ?? String.Empty,
+                    r.YoyakuTime ?? string.Empty,
                     r.YoyakuId,
                     r.UketukeSbt,
-                    r.UketukeTime ?? String.Empty,
+                    r.UketukeTime ?? string.Empty,
                     r.UketukeId,
                     r.UketukeNo,
                     r.SinStartTime ?? string.Empty,
-                    r.SinEndTime ?? String.Empty,
-                    r.KaikeiTime ?? String.Empty,
+                    r.SinEndTime ?? string.Empty,
+                    r.KaikeiTime ?? string.Empty,
                     r.KaikeiId,
                     r.KaId,
                     r.TantoId,
@@ -564,15 +564,15 @@ namespace Infrastructure.Repositories
                     result.SanteiKbn,
                     result.Status,
                     result.IsYoyaku,
-                    result.YoyakuTime ?? String.Empty,
+                    result.YoyakuTime ?? string.Empty,
                     result.YoyakuId,
                     result.UketukeSbt,
-                    result.UketukeTime ?? String.Empty,
+                    result.UketukeTime ?? string.Empty,
                     result.UketukeId,
                     result.UketukeNo,
                     result.SinStartTime ?? string.Empty,
-                    result.SinEndTime ?? String.Empty,
-                    result.KaikeiTime ?? String.Empty,
+                    result.SinEndTime ?? string.Empty,
+                    result.KaikeiTime ?? string.Empty,
                     result.KaikeiId,
                     result.KaId,
                     result.TantoId,
@@ -617,7 +617,7 @@ namespace Infrastructure.Repositories
             var kaMsts = NoTrackingDataContext.KaMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
             // Lock (Function lock)
             var lockInfs = NoTrackingDataContext.LockInfs.Where(x =>
-                x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte);
+                x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte || x.FunctionCd == FunctionCode.SwitchOrderCode);
             // Uketuke
             var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
 
@@ -732,7 +732,7 @@ namespace Infrastructure.Repositories
                             && x.PtId == raiinInf.PtId
                             && x.SinDate < sinDate
                             && x.Status >= RaiinState.TempSave
-                        orderby x.SinDate descending
+                        orderby x.SinDate descending, x.RaiinNo descending
                         select x.SinDate
                     ).FirstOrDefault(),
                     firstVisitDate = (

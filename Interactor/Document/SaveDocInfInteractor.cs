@@ -36,12 +36,14 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
         try
         {
             bool overwriteFile = false;
+            string path = string.Empty;
+            string fileName = string.Empty;
             var resultValidate = ValidateInputData(inputData);
             if (resultValidate != SaveDocInfStatus.ValidateSuccess)
             {
                 return new SaveDocInfOutputData(resultValidate);
             }
-
+            Console.WriteLine("StartConsoleWriteLineDocument");
             // upload file to S3
             var memoryStream = inputData.StreamImage.ToMemoryStreamAsync().Result;
             if (memoryStream.Length == 0 && inputData.SeqNo <= 0)
@@ -50,13 +52,14 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             }
             else if (memoryStream.Length > 0)
             {
+                Console.WriteLine("memoryStream.Length: " + memoryStream.Length);
                 var ptNum = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0)?.PtNum ?? 0;
                 var listFolderPath = new List<string>(){
                                                    CommonConstants.Store,
                                                    CommonConstants.Files
                                                 };
-                string path = _amazonS3Service.GetFolderUploadToPtNum(listFolderPath, ptNum);
-                string fileName = _amazonS3Service.GetUniqueFileNameKey(inputData.FileName.Trim());
+                path = _amazonS3Service.GetFolderUploadToPtNum(listFolderPath, ptNum);
+                fileName = _amazonS3Service.GetUniqueFileNameKey(inputData.FileName.Trim());
                 var response = _amazonS3Service.UploadObjectAsync(path, fileName, memoryStream);
                 response.Wait();
 
@@ -65,10 +68,17 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
                     inputData.SetFileName(fileName);
                     overwriteFile = true;
                 }
+                Console.WriteLine("path: " + path);
+                Console.WriteLine("fileName: " + fileName);
+                Console.WriteLine("response.Result: " + response.Result);
             }
             if (_documentRepository.SaveDocInf(inputData.UserId, ConvertToDocInfModel(inputData), overwriteFile))
             {
                 return new SaveDocInfOutputData(SaveDocInfStatus.Successed);
+            }
+            if (!string.IsNullOrEmpty(path) && !string.IsNullOrEmpty(fileName))
+            {
+                _amazonS3Service.DeleteObjectAsync(path + fileName);
             }
             return new SaveDocInfOutputData(SaveDocInfStatus.Failed);
         }

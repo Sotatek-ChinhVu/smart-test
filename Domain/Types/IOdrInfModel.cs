@@ -45,7 +45,7 @@ namespace Domain.Types
         bool IsInjection { get; }
         #endregion
 
-        double SumBunkatu(string bunkatu)
+        decimal SumBunkatu(string bunkatu)
         {
             try
             {
@@ -53,8 +53,7 @@ namespace Domain.Types
                     return 0;
 
                 var nums = bunkatu.Split('+');
-
-                return nums.Sum(n => n.AsDouble());
+                return nums.Sum(n => n.AsDecimal());
             }
             catch (Exception)
             {
