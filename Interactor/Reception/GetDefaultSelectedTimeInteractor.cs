@@ -180,8 +180,8 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
             else
             {
 
-                startTime = CIUtil.TimeToShowTime(timeZoneConf.StartTime);
-                endTime = CIUtil.TimeToShowTime(timeZoneConf.EndTime);
+                startTime = CIUtil.TimeToShowTime(timeZoneConf?.StartTime ?? 0);
+                endTime = CIUtil.TimeToShowTime(timeZoneConf?.EndTime ?? 0);
                 isShowPopup = true;
             }
 
