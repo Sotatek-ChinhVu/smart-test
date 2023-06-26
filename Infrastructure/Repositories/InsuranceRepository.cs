@@ -27,10 +27,10 @@ namespace Infrastructure.Repositories
 
         public InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate)
         {
-            if (_cache.KeyExists(key + ptId + hpId))
-            {
-                return ReadCache(ptId, hpId);
-            }
+            //if (_cache.KeyExists(key + ptId + hpId))
+            //{
+            //    return ReadCache(ptId, hpId);
+            //}
             int prefCd = 0;
             var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
             if (hpInf != null)
@@ -429,8 +429,8 @@ namespace Infrastructure.Repositories
             }
             #endregion PtHokenPattern
             var result = new InsuranceDataModel(listInsurance, hokenInfList, kohiInfList);
-            var json = JsonSerializer.Serialize(result);
-            _cache.StringSet(key + ptId + hpId, json);
+            //var json = JsonSerializer.Serialize(result);
+            //_cache.StringSet(key + ptId + hpId, json);
             return result;
         }
 

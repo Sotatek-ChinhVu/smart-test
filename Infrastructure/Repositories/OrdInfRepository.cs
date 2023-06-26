@@ -29,7 +29,7 @@ namespace Infrastructure.Repositories
         public IEnumerable<OrdInfModel> GetList(int hpId, long ptId, int userId, long raiinNo, int sinDate, bool isDeleted)
         {
             var allOdrInf = NoTrackingDataContext.OdrInfs.Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0))?.ToList();
-            var rpNos = allOdrInf?.Select(o => o.RpNo);
+            var rpNos = allOdrInf?.Select(o => o.RpNo).Distinct().ToList();
             var allOdrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.SinDate == sinDate && o.RaiinNo == raiinNo && o.ItemCd != ItemCdConst.JikanKihon && o.ItemCd != ItemCdConst.SyosaiKihon && (rpNos != null && rpNos.Contains(o.RpNo)))?.ToList();
 
             var result = ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sinDate, sinDate, userId, false);
@@ -335,9 +335,9 @@ namespace Infrastructure.Repositories
                 return result;
             }
 
-            var itemCds = allOdrInfDetails?.Select(od => od.ItemCd ?? string.Empty);
-            var ipnCds = allOdrInfDetails?.Select(od => od.IpnCd ?? string.Empty);
-            var sinKouiKbns = allOdrInfDetails?.Select(od => od.SinKouiKbn);
+            var itemCds = allOdrInfDetails?.Select(od => od.ItemCd ?? string.Empty).Distinct().ToList();
+            var ipnCds = allOdrInfDetails?.Select(od => od.IpnCd ?? string.Empty).Distinct().ToList();
+            var sinKouiKbns = allOdrInfDetails?.Select(od => od.SinKouiKbn).Distinct().ToList();
             var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax) && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
             var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
             var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMax && t.EndDate >= sinDateMax) && (ipnCds != null && ipnCds.Contains(t.IpnNameCd))).ToList();
@@ -346,7 +346,7 @@ namespace Infrastructure.Repositories
             var ipnNameMsts = isHistory ? null : NoTrackingDataContext.IpnNameMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.EndDate >= sinDateMax).ToList();
             var ipnKansanMsts = isHistory ? null : NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.IsDeleted == 0).ToList();
             var listYohoSets = isHistory ? null : NoTrackingDataContext.YohoSetMsts.Where(y => y.HpId == hpId && y.IsDeleted == 0 && y.UserId == userId).ToList();
-            var itemCdYohos = isHistory ? null : listYohoSets?.Select(od => od.ItemCd ?? string.Empty);
+            var itemCdYohos = isHistory ? null : listYohoSets?.Select(od => od.ItemCd ?? string.Empty).Distinct().ToList();
 
             var tenMstYohos = isHistory ? null : NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.IsNosearch == 0 && t.StartDate <= sinDateMin && t.EndDate >= sinDateMax && (sinKouiKbns != null && sinKouiKbns.Contains(t.SinKouiKbn)) && (itemCdYohos != null && itemCdYohos.Contains(t.ItemCd))).ToList();
 
@@ -360,8 +360,7 @@ namespace Infrastructure.Repositories
                           on odrInf.CreateId equals user.UserId into odrUsers
                           from odrUser in odrUsers.DefaultIfEmpty()
                           select ConvertToModel(odrInf, odrUser?.Sname ?? string.Empty);
-            var obj = new object();
-            Parallel.ForEach(odrInfs, rpOdrInf =>
+            foreach (var rpOdrInf in odrInfs)
             {
 
                 var odrDetailModels = new List<OrdInfDetailModel>();
@@ -373,8 +372,7 @@ namespace Infrastructure.Repositories
                 {
                     var usage = odrInfDetails.FirstOrDefault(d => d.YohoKbn == 1 || d.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || d.ItemCd == ItemCdConst.TouyakuChozaiGai);
 
-                    var objDetail = new object();
-                    Parallel.For(0, odrInfDetails.Count, index =>
+                    for (int index = 0; index < odrInfDetails.Count; index++)
                     {
                         var odrInfDetail = odrInfDetails[index];
 
@@ -402,18 +400,12 @@ namespace Infrastructure.Repositories
 
                         int kensaGaichu = GetKensaGaichu(odrInfDetail, tenMst, rpOdrInf.InoutKbn, rpOdrInf.OdrKouiKbn, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
                         var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, tenMst ?? new(), kensaMst == null, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, rpOdrInf.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty, isHistory ? new List<YohoSetMstModel>() : GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()), kasan?.Kasan1 ?? 0, kasan?.Kasan2 ?? 0, tenMst?.CnvUnitName ?? string.Empty, tenMst?.OdrUnitName ?? string.Empty, kensaMst?.CenterItemCd1 ?? string.Empty, kensaMst?.CenterItemCd2 ?? string.Empty);
-                        lock (objDetail)
-                        {
-                            odrDetailModels.Add(odrInfDetailModel);
-                        }
-                    });
-                    lock (obj)
-                    {
-                        rpOdrInf.OrdInfDetails.AddRange(odrDetailModels);
-                        result.Add(rpOdrInf);
+                        odrDetailModels.Add(odrInfDetailModel);
                     }
+                    rpOdrInf.OrdInfDetails.AddRange(odrDetailModels);
+                    result.Add(rpOdrInf);
                 }
-            });
+            }
 
             return result;
         }
