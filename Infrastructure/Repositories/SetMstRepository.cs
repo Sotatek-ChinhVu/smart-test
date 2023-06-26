@@ -74,7 +74,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     public List<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, int generationId, string textSearch)
     {
         key = key + "_" + generationId;
-        _cache.KeyDelete(key);
         IEnumerable<SetMstModel> setMstModelList;
         if (!_cache.KeyExists(key))
         {
