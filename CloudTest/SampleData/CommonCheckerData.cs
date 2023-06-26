@@ -917,25 +917,28 @@ namespace CloudUnitTest.SampleData
                                     ptAlrgy.Cmt = text;
                                     break;
                                 case "J":
-                                    ptAlrgy.IsDeleted = 0;
+                                    int.TryParse(text, out int isDeleted);
+                                    ptAlrgy.IsDeleted = isDeleted;
                                     break;
                                 case "K":
                                     ptAlrgy.CreateDate = DateTime.UtcNow;
                                     break;
                                 case "L":
-                                    ptAlrgy.CreateId = 2;
+                                    int.TryParse(text, out int createId);
+                                    ptAlrgy.CreateId = createId;
                                     break;
                                 case "M":
-                                    ptAlrgy.CreateMachine = "UNITTEST";
+                                    ptAlrgy.CreateMachine = text;
                                     break;
                                 case "N":
                                     ptAlrgy.UpdateDate = DateTime.UtcNow;
                                     break;
                                 case "O":
-                                    ptAlrgy.UpdateId = 2;
+                                    int.TryParse(text, out int updateId);
+                                    ptAlrgy.UpdateId = updateId;
                                     break;
                                 case "P":
-                                    ptAlrgy.UpdateMachine = "UNITTEST";
+                                    ptAlrgy.UpdateMachine = text;
                                     break;
                                 default:
                                     break;
@@ -947,6 +950,101 @@ namespace CloudUnitTest.SampleData
             }
 
             return ptAlrgyDrugs;
+        }
+
+        public static List<PtOtherDrug> ReadPtOtherDrug()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var ptOtherDrugs = new List<PtOtherDrug>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_OTHER_DRUG").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptOtherDrug = new PtOtherDrug();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    ptOtherDrug.HpId = hpId;
+                                    break;
+                                case "B":
+                                    long.TryParse(text, out long ptId);
+                                    ptOtherDrug.PtId = ptId;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int seqNo);
+                                    ptOtherDrug.SeqNo = seqNo;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int sortNo);
+                                    ptOtherDrug.SortNo = sortNo;
+                                    break;
+                                case "E":
+                                    ptOtherDrug.ItemCd = text;
+                                    break;
+                                case "F":
+                                    ptOtherDrug.DrugName = text;
+                                    break;
+                                case "G":
+                                    int.TryParse(text, out int startDate);
+                                    ptOtherDrug.StartDate = startDate;
+                                    break;
+                                case "H":
+                                    int.TryParse(text, out int endDate);
+                                    ptOtherDrug.EndDate = endDate;
+                                    break;
+                                case "I":
+                                    ptOtherDrug.Cmt = text;
+                                    break;
+                                case "J":
+                                    ptOtherDrug.IsDeleted = 0;
+                                    break;
+                                case "K":
+                                    ptOtherDrug.CreateDate = DateTime.UtcNow;
+                                    break;
+                                case "L":
+                                    ptOtherDrug.CreateId = 2;
+                                    break;
+                                case "M":
+                                    ptOtherDrug.CreateMachine = "UNITTEST";
+                                    break;
+                                case "N":
+                                    ptOtherDrug.UpdateDate = DateTime.UtcNow;
+                                    break;
+                                case "O":
+                                    ptOtherDrug.UpdateId = 2;
+                                    break;
+                                case "P":
+                                    ptOtherDrug.UpdateMachine = "UNITTEST";
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        ptOtherDrugs.Add(ptOtherDrug);
+                    }
+                }
+            }
+
+            return ptOtherDrugs;
         }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
