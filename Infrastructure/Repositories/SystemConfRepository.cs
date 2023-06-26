@@ -530,6 +530,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         }
 
         return TrackingDataContext.SaveChanges() > 0;
+
     }
 
     private void UpdatePtRyosyoDetail(int userId, SystemConfModel model)
