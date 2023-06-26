@@ -23,6 +23,7 @@ namespace EmrCloudApi.Security
         public static void SetupAuthentication(this IServiceCollection services, ConfigurationManager config)
         {
             _settingInfor = config.GetSection(JwtOptions.Position).Get<JwtOptions>();
+ 
             services.AddTransient<IUserService, UserService>();
             services.AddAuthentication(x =>
             {

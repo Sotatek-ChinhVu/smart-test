@@ -11,7 +11,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public UserTokenModel RefreshTokenByUser(int userId, string refreshToken, string refreshTokenNew)
+        public UserTokenModel RefreshTokenByUser(int userId, string refreshToken, string refreshTokenNew, double refreshHour)
         {
             var instance = TrackingDataContext.UserTokens.FirstOrDefault(x => x.UserId == userId && x.RefreshToken.Equals(refreshToken));
             if (instance is null)
@@ -22,11 +22,11 @@ namespace Infrastructure.Repositories
                 return info;
             else
             {
-                //instance.RefreshTokenIsUsed = true;
+                instance.RefreshTokenIsUsed = true;
                 TrackingDataContext.UserTokens.Add(new UserToken()
                 {
                     RefreshToken = refreshTokenNew,
-                    RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8),
+                    RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(refreshHour),
                     UserId = userId
                 });
                 if (TrackingDataContext.SaveChanges() > 0)

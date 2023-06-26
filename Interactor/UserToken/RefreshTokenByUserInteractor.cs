@@ -19,7 +19,7 @@ namespace Interactor.UserToken
 
             try
             {
-                UserTokenModel result = _userTokenRepository.RefreshTokenByUser(inputData.UserId, inputData.RefreshToken, inputData.NewRefreshToken);
+                UserTokenModel result = _userTokenRepository.RefreshTokenByUser(inputData.UserId, inputData.RefreshToken, inputData.NewRefreshToken, inputData.RefreshHour);
                 if (result.RefreshTokenIsValid)
                     return new RefreshTokenByUserOutputData(RefreshTokenByUserStatus.Successful, result);
                 else

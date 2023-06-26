@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using EmrCloudApi.Configs.Options;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.Auth;
 using EmrCloudApi.Requests.UserToken;
 using EmrCloudApi.Responses;
@@ -20,10 +21,12 @@ namespace EmrCloudApi.Controller;
 public class AuthController : ControllerBase
 {
     private readonly UseCaseBus _bus;
+    private readonly JwtOptions _settingInfor;
 
-    public AuthController(UseCaseBus bus)
+    public AuthController(UseCaseBus bus, ConfigurationManager config)
     {
         _bus = bus;
+        _settingInfor = config.GetSection(JwtOptions.Position).Get<JwtOptions>();
     }
 
     [HttpPost("ExchangeToken"), Produces("application/json")]
@@ -98,7 +101,7 @@ public class AuthController : ControllerBase
             return BadRequest("Invalid access token");
 
         int.TryParse(principal.FindFirstValue(LoginUserConstant.UserId), out int userId);
-        var input = new RefreshTokenByUserInputData(userId, request.RefreshToken, AuthProvider.GeneratorRefreshToken());
+        var input = new RefreshTokenByUserInputData(userId, request.RefreshToken, AuthProvider.GeneratorRefreshToken(), _settingInfor.RefreshTokenExpires);
         //var input = new RefreshTokenByUserInputData(userId, request.RefreshToken, AuthProvider.GeneratorRefreshToken(), DateTime.UtcNow.AddMinutes(3));
         var output = _bus.Handle(input);
         if(output.Status == RefreshTokenByUserStatus.Successful)

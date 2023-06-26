@@ -20,6 +20,6 @@ namespace Domain.Models.UserToken
         /// <param name="refreshToken"> current refresh token</param>
         /// <param name="refreshTokenNew"> new refresh token</param>
         /// <returns></returns>
-        UserTokenModel RefreshTokenByUser(int userId, string refreshToken, string refreshTokenNew);
+        UserTokenModel RefreshTokenByUser(int userId, string refreshToken, string refreshTokenNew, double refreshHour);
     }
 }
