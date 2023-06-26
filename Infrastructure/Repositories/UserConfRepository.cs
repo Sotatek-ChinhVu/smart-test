@@ -183,6 +183,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<UserConf>>(json) : new();
         return datas ?? new();
     }
+
     private List<UserConf> GetData(int hpId, int userId)
     {
         var result = new List<UserConf>();
