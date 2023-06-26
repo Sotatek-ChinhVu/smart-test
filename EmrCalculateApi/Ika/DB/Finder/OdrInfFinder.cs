@@ -599,7 +599,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                             t.ItemCd == entity.ItemCd);
 
                         var tenEntities = (
-                                from tenMst in tenMstBases
+                                from tenMst in tenMstBases.AsEnumerable()
                                 join tenStart in tenMstStartDates on
                                     new { tenMst.HpId, tenMst.ItemCd, tenMst.StartDate } equals
                                     new { tenStart.HpId, tenStart.ItemCd, tenStart.StartDate }
@@ -613,7 +613,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                                 from oj4 in oJoin4.DefaultIfEmpty()
                                 select new
                                 {
-                                    tenMst,
+                                    tenMst = (tenMst != null ? tenMst : new()),
                                     kasan1 = (oj3 != null ? oj3.Kasan1 : 0),
                                     kasan2 = (oj3 != null ? oj3.Kasan2 : 0),
                                     minYakka = (oj4 != null ? oj4.Yakka : 0)
@@ -648,7 +648,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                         .ThenByDescending(p => p.cmtKbnMst.StartDate);
 
                         //if (entity.TenMst == null || entity.TenMst != null && entity.TenMst.SanteigaiKbn != 1)
-                        if (tenEntities == null || tenEntities.FirstOrDefault()?.tenMst == null || tenEntities.FirstOrDefault().tenMst.SanteigaiKbn != 1)
+                        if (tenEntities == null || tenEntities.FirstOrDefault()?.tenMst == null || tenEntities.FirstOrDefault()?.tenMst?.SanteigaiKbn != 1)
                         {
                             retDtls.Add(
                                 new OdrDtlTenModel(

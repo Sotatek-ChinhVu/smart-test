@@ -974,7 +974,7 @@ namespace Infrastructure.Repositories
                                        && item.PtId == ptId
                                        && raiinNos.Contains(item.RaiinNo))
                         .ToList();
-            thisCredit = accDue == 1 ? 0 : thisCredit;
+            thisCredit = (isDisCharged && accDue == 1) ? 0 : thisCredit;
             int allSeikyuGaku = sumAdjust;
             int adjustFutan = thisWari;
             int nyukinGaku = thisCredit;
