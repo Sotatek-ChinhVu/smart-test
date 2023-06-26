@@ -34,6 +34,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     private IEnumerable<SetMstModel> ReloadCache(int hpId, int generationId)
     {
+        key = key + "_" + generationId;
         var setMstModelList =
                 NoTrackingDataContext.SetMsts
                 .Where(s => s.HpId == hpId
@@ -61,8 +62,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setMstModelList;
     }
 
-    private IEnumerable<SetMstModel> ReadCache()
+    private IEnumerable<SetMstModel> ReadCache(int generationId)
     {
+        key = key + "_" + generationId;
         var results = _cache.StringGet(key);
         var json = results.AsString();
         var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SetMstModel>>(json) : new();
@@ -80,7 +82,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         else
         {
-            setMstModelList = ReadCache();
+            setMstModelList = ReadCache(generationId);
         }
 
         List<SetMstModel> result;
