@@ -105,10 +105,16 @@ namespace EmrCloudApi.Controller
 
 
         [HttpGet(ApiPath.RemoveAllLockPtId)]
-        public ActionResult<Response> RemoveAllLockPtId([FromQuery] RemoveAllLockPtIdRequest request)
+        public async Task<ActionResult<Response>> RemoveAllLockPtId([FromQuery] RemoveAllLockPtIdRequest request)
         {
             var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCd, request.SinDate, 0, UserId, false, true);
             var output = _bus.Handle(input);
+
+            if (output.Status == RemoveLockStatus.Successed)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.RemoveLockChanged,
+                    new LockMessage { SinDate = request.SinDate, RaiinNo = 0, PtId = request.PtId, Type = 2, FunctionCod = request.FunctionCd });
+            }
 
             var presenter = new RemoveLockPresenter();
             presenter.Complete(output);
