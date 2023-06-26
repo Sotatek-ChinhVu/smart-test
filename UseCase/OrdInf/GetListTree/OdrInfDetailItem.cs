@@ -5,7 +5,7 @@ namespace UseCase.OrdInfs.GetListTrees
 {
     public class OdrInfDetailItem
     {
-        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName, string centerItemCd1, string centerItemCd2)
+        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName, string centerItemCd1, string centerItemCd2)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -17,6 +17,7 @@ namespace UseCase.OrdInfs.GetListTrees
             SinKouiKbn = sinKouiKbn;
             ItemCd = itemCd;
             ItemName = itemName;
+            DisplayItemName = displayItemName;
             Suryo = suryo;
             UnitName = unitName;
             UnitSbt = unitSbt;
@@ -62,7 +63,7 @@ namespace UseCase.OrdInfs.GetListTrees
         }
 
         [JsonConstructor]
-        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName, string centerItemCd1, string centerItemCd2, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int handanGrpKbn, bool isKensaMstEmpty)
+        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName,string displayItemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName, string centerItemCd1, string centerItemCd2, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int handanGrpKbn, bool isKensaMstEmpty)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -74,6 +75,7 @@ namespace UseCase.OrdInfs.GetListTrees
             SinKouiKbn = sinKouiKbn;
             ItemCd = itemCd;
             ItemName = itemName;
+            DisplayItemName = displayItemName;
             Suryo = suryo;
             UnitName = unitName;
             UnitSbt = unitSbt;
@@ -157,6 +159,9 @@ namespace UseCase.OrdInfs.GetListTrees
 
         [JsonPropertyName("itemName")]
         public string ItemName { get; private set; }
+
+        [JsonPropertyName("displayItemName")]
+        public string DisplayItemName { get; private set; }
 
         [JsonPropertyName("suryo")]
         public double Suryo { get; private set; }
