@@ -22,6 +22,5 @@ public class LockMessage
 
 public class SuperSetMessage
 {
-    public List<SetMstModel> SetMstModels { get; set; } = new();
     public List<GetSetMstListOutputItem> ReorderSetMstModels { get; set; } = new();
 }

@@ -76,7 +76,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.RemoveLock)]
         public async Task<ActionResult<Response>> RemoveLock([FromQuery] LockRequest request)
         {
-            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false);
+            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false, false);
             var output = _bus.Handle(input);
 
             if (output.Status == RemoveLockStatus.Successed)
@@ -94,7 +94,20 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.RemoveAllLock)]
         public ActionResult<Response> RemoveAllLock()
         {
-            var input = new RemoveLockInputData(HpId, 0, "", 0, 0, UserId, true);
+            var input = new RemoveLockInputData(HpId, 0, "", 0, 0, UserId, true, false);
+            var output = _bus.Handle(input);
+
+            var presenter = new RemoveLockPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response>(presenter.Result);
+        }
+
+
+        [HttpGet(ApiPath.RemoveAllLockPtId)]
+        public ActionResult<Response> RemoveAllLockPtId([FromQuery] RemoveAllLockPtIdRequest request)
+        {
+            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCd, request.SinDate, 0, UserId, false, true);
             var output = _bus.Handle(input);
 
             var presenter = new RemoveLockPresenter();
