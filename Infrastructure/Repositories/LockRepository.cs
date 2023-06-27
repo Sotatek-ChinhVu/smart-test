@@ -184,9 +184,10 @@ namespace Infrastructure.Repositories
             {
                 return new();
             }
+            var raiinNoList = lockInfList.Select(item => item.RaiinNo).Distinct().ToList();
             TrackingDataContext.LockInfs.RemoveRange(lockInfList);
             TrackingDataContext.SaveChanges();
-            return lockInfList.Select(item => item.RaiinNo).Distinct().ToList();
+            return raiinNoList;
         }
 
         public List<long> RemoveAllLock(int hpId, int userId, long ptId, int sinDate, string functionCd)
