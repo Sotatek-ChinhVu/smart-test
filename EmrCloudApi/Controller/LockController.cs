@@ -112,7 +112,7 @@ namespace EmrCloudApi.Controller
 
             if (output.Status == RemoveLockStatus.Successed)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.RemoveLockChanged,
+                await _webSocketService.SendMessageAsync(FunctionCodes.RemoveAllLockMessage,
                     new RemoveAllLockMessage { SinDate = request.SinDate, RaiinNoList = output.RaiinNoList, PtId = request.PtId });
             }
 

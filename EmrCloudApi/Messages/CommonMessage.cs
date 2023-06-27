@@ -23,7 +23,7 @@ public class LockMessage
 public class RemoveAllLockMessage
 {
     public int SinDate { get; set; }
-    public List<long> RaiinNoList { get; set; }
+    public List<long> RaiinNoList { get; set; } = new();
     public long PtId { get; set; } = CommonConstants.InvalidId;
 }
 

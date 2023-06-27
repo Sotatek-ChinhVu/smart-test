@@ -20,4 +20,5 @@ public static class FunctionCodes
     public const string SuperCopyPasteChanged = "SuperCopyPasteChanged";
     public const string AccountDueChanged = "AccountDueChanged";
     public const string DeletePtInfChanged = "DeletePtInfChanged";
+    public const string RemoveAllLockMessage = "RemoveAllLockMessage";
 }
