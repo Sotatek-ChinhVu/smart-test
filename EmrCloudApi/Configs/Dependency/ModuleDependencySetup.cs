@@ -602,6 +602,8 @@ using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
 using UseCase.Lock.CheckExistFunctionCode;
+using CommonChecker.Caches.Interface;
+using CommonChecker.Caches;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -637,6 +639,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IUserInfoService, UserInfoService>();
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
+
+            services.AddScoped<ITenMstCacheService, TenMstCacheService>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
