@@ -201,10 +201,15 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
                     fieldBiko = "Biko";
                     for (int i = 1; i <= 5; i++)
                     {
-                        pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                         ReportConfigModel ConfigDataPerPage = _reportConfigPerPage.ContainsKey(pageIndex) ? _reportConfigPerPage[pageIndex] : new();
-
-                        SetVisibleFieldData(string.Format("kohiTitleBiko{0}", i), true);
+                        if (_reportConfigPerPage.ContainsKey(pageIndex))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            ConfigDataPerPage.VisibleFieldList.Add(string.Format("kohiTitleBiko{0}", i), true);
+                        }
 
                         if (!_reportConfigPerPage.ContainsKey(pageIndex))
                         {
@@ -262,14 +267,6 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
         {
             _singleFieldData.Add(field, value);
-        }
-    }
-
-    private void AddListData(ref Dictionary<string, CellModel> dictionary, string field, bool value)
-    {
-        if (!string.IsNullOrEmpty(field) && !dictionary.ContainsKey(field))
-        {
-            dictionary.Add(field, new CellModel(value));
         }
     }
 
