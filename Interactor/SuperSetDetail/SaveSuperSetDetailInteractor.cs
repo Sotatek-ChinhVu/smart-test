@@ -28,6 +28,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
 
     public SaveSuperSetDetailInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository, ISetMstRepository setMstRepository, IUserRepository userRepository, IPatientInforRepository patientInforRepository)
     {
+        _patientInforRepository = patientInforRepository;
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
         _superSetDetailRepository = superSetDetailRepository;
