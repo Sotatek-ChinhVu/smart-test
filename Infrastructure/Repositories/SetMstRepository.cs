@@ -1758,6 +1758,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     item.UpdateId = userId;
                     item.IsDeleted = DeleteTypes.Deleted;
                 }
+                TrackingDataContext.SaveChanges();
             }
             else
             {
