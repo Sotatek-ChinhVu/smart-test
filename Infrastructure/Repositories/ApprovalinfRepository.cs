@@ -1,12 +1,9 @@
 ﻿using Domain.Models.ChartApproval;
-using Domain.Models.Family;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using System;
 
 namespace Infrastructure.Repositories
 {
