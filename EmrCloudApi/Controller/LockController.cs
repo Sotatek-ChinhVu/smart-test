@@ -31,20 +31,20 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.AddLock)]
-        public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> AddLock([FromQuery] LockRequest request)
+        public async Task<ActionResult<Response<LockResponse>>> AddLock([FromQuery] LockRequest request)
         {
             var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, Token);
             var output = _bus.Handle(input);
 
             if (output.Status == AddLockStatus.Successed)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockList);
+                await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockModel);
             }
 
             var presenter = new AddLockPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<UpdateVisitingLockResponse>>(presenter.Result);
+            return new ActionResult<Response<LockResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.CheckLock)]

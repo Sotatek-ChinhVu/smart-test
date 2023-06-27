@@ -5,13 +5,16 @@ namespace UseCase.Lock.Add;
 
 public class AddLockOutputData : IOutputData
 {
-    public List<ResponseLockModel> ResponseLockList { get; private set; }
+    public LockModel LockInf { get; private set; }
+
+    public List<ResponseLockModel> ResponseLockModel { get; private set; }
 
     public AddLockStatus Status { get; private set; }
 
-    public AddLockOutputData(AddLockStatus status, List<ResponseLockModel> responseLockList)
+    public AddLockOutputData(AddLockStatus status, LockModel lockInf, List<ResponseLockModel> responseLockModel)
     {
         Status = status;
-        ResponseLockList = responseLockList;
+        LockInf = lockInf;
+        ResponseLockModel = responseLockModel;
     }
 }

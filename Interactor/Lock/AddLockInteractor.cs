@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Lock;
+using Domain.Models.User;
 using UseCase.Lock.Add;
 
 namespace Interactor.Lock
@@ -6,9 +7,11 @@ namespace Interactor.Lock
     public class AddLockInteractor : IAddLockInputPort
     {
         private readonly ILockRepository _lockRepository;
-        public AddLockInteractor(ILockRepository lockRepository)
+        private readonly IUserRepository _userRepository;
+        public AddLockInteractor(ILockRepository lockRepository, IUserRepository userRepository)
         {
             _lockRepository = lockRepository;
+            _userRepository = userRepository;
         }
 
         public AddLockOutputData Handle(AddLockInputData inputData)
@@ -26,16 +29,20 @@ namespace Interactor.Lock
                 if (result)
                 {
                     var responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate);
-                    return new AddLockOutputData(AddLockStatus.Successed, responseLockList);
+                    return new AddLockOutputData(AddLockStatus.Successed, new LockModel(), responseLockList);
                 }
                 else
                 {
-                    return new AddLockOutputData(AddLockStatus.Existed, new());
+                    string userName = _userRepository.GetByUserId(userId)?.Name ?? string.Empty;
+                    var lockInfList = _lockRepository.GetLock(hpId, functionCode, ptId, sinDate, raiinNo, userId);
+                    var functionName = _lockRepository.GetFunctionNameLock(functionCode);
+                    return new AddLockOutputData(AddLockStatus.Existed, lockInfList.FirstOrDefault() ?? new LockModel(functionCode, userId, userName, functionName), new());
                 }
             }
             finally
             {
                 _lockRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
             }
         }
     }
