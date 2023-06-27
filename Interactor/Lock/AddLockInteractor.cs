@@ -25,7 +25,7 @@ namespace Interactor.Lock
                 bool result = _lockRepository.AddLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, inputData.Token);
                 if (result)
                 {
-                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, sinDate);
+                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate);
                     return new AddLockOutputData(AddLockStatus.Successed, responseLockList);
                 }
                 else

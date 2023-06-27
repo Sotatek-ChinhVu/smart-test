@@ -37,7 +37,7 @@ namespace Interactor.Lock
                 }
                 if (result.Any())
                 {
-                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, sinDate);
+                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate);
                     return new RemoveLockOutputData(RemoveLockStatus.Successed, responseLockList);
                 }
                 return new RemoveLockOutputData(RemoveLockStatus.Failed, new());

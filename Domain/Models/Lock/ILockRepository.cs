@@ -26,6 +26,6 @@ namespace Domain.Models.Lock
 
         string GetFunctionNameLock(string functionCode);
 
-        List<ResponseLockModel> GetResponseLockModel(int hpId, int sinDate);
+        List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate);
     }
 }

@@ -302,12 +302,13 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<ResponseLockModel> GetResponseLockModel(int hpId, int sinDate)
+        public List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate)
         {
             List<ResponseLockModel> result = new();
             // Raiin 
             var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.IsDeleted == DeleteTypes.None
-                                                                             && item.SinDate == sinDate)
+                                                                             && item.SinDate == sinDate
+                                                                             && item.PtId == ptId)
                                                               .ToList();
 
             var raiinNoList = raiinInfList.Select(item => item.RaiinNo).Distinct().ToList();
