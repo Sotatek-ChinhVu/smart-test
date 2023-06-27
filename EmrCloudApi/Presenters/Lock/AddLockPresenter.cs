@@ -10,7 +10,8 @@ public class AddLockPresenter : IAddLockOutputPort
 
     public void Complete(AddLockOutputData outputData)
     {
-        Result.Data = new LockResponse(outputData.LockInf.UserId, outputData.LockInf.UserName, outputData.LockInf.LockLevel, outputData.LockInf.FunctionName);
+        var lockInf = outputData.LockInf;
+        Result.Data = new LockResponse(lockInf.UserId, lockInf.UserName, lockInf.LockLevel, lockInf.FunctionName);
         Result.Message = outputData.Status == AddLockStatus.Successed ? "Successed" : "The lock is existed!!!";
         Result.Status = (int)outputData.Status;
     }

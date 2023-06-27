@@ -6,5 +6,5 @@ public class RemoveAllLockPtIdRequest
 
     public int SinDate { get; set; }
 
-    public string FunctionCd { get; set; }
+    public string FunctionCd { get; set; } = string.Empty;
 }
