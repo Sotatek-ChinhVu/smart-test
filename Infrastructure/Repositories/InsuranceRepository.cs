@@ -26,8 +26,14 @@ namespace Infrastructure.Repositories
                 prefCd = hpInf.PrefNo;
             }
 
+            #region max-id-insurance
+            int maxIdHokenInf = NoTrackingDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId).DefaultIfEmpty().Max(p => p == null ? 0 : p.HokenId);
+            int maxIdKohi = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId).DefaultIfEmpty().Max(p => p == null ? 0 : p.HokenId);
+            int maxPidHokenPattern = NoTrackingDataContext.PtHokenPatterns.Where(x => x.PtId == ptId && x.HpId == hpId).DefaultIfEmpty().Max(p => p == null ? 0 : p.HokenPid);
+            #endregion
+
             #region PtHokenInf
-            IQueryable<PtHokenInf> hokenInfQuery = NoTrackingDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId && h.IsDeleted == DeleteTypes.None).OrderByDescending(x => x.HokenId);
+            IQueryable<PtHokenInf> hokenInfQuery = NoTrackingDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId && (h.IsDeleted == DeleteTypes.None || h.HokenId == maxIdHokenInf)).OrderByDescending(x => x.HokenId);
 
             var hokenMasterInfQuery = NoTrackingDataContext.HokenMsts.Where(h => h.HpId == hpId && h.StartDate <= sinDate && sinDate <= h.EndDate &&
                                                                             (h.PrefNo == prefCd || h.PrefNo == 0 || h.IsOtherPrefValid == 1))
@@ -190,7 +196,7 @@ namespace Infrastructure.Repositories
             #endregion PtHokenInf
 
             #region PtHokenKohi
-            IQueryable<PtKohi> kohiQuery = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).OrderByDescending(entity => entity.HokenId);
+            IQueryable<PtKohi> kohiQuery = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && (x.IsDeleted == DeleteTypes.None || x.HokenId == maxIdKohi)).OrderByDescending(entity => entity.HokenId);
 
             var hokenMasterKohiQuery = NoTrackingDataContext.HokenMsts.Where(h => h.HpId == hpId && h.StartDate <= sinDate && sinDate <= h.EndDate &&
                                                                             (h.PrefNo == prefCd || h.PrefNo == 0 || h.IsOtherPrefValid == 1))
@@ -291,7 +297,7 @@ namespace Infrastructure.Repositories
             #endregion PtHokenKohi
 
             #region PtHokenPattern
-            var dataHokenPatterList = NoTrackingDataContext.PtHokenPatterns.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == DeleteTypes.None).OrderByDescending(x => x.HokenPid);
+            var dataHokenPatterList = NoTrackingDataContext.PtHokenPatterns.Where(x => x.PtId == ptId && x.HpId == hpId && (x.IsDeleted == DeleteTypes.None || x.HokenPid == maxPidHokenPattern)).OrderByDescending(x => x.HokenPid);
             var dataKohi = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteStatus.None);
             var dataHokenInf = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None);
 
@@ -376,12 +382,6 @@ namespace Infrastructure.Repositories
                 ));
             }
             #endregion PtHokenPattern
-
-            #region max-id-insurance
-            int maxIdHokenInf = NoTrackingDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId).DefaultIfEmpty().Max(p => p == null ? 0 : p.HokenId);
-            int maxIdKohi = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId).DefaultIfEmpty().Max(p => p == null ? 0 : p.HokenId);
-            int maxPidHokenPattern = NoTrackingDataContext.PtHokenPatterns.Where(x => x.PtId == ptId && x.HpId == hpId).DefaultIfEmpty().Max(p => p == null ? 0 : p.HokenPid);
-            #endregion
 
             return new InsuranceDataModel(listInsurance, hokenInfList, kohiInfList, maxIdHokenInf, maxIdKohi, maxPidHokenPattern);
         }
