@@ -1,4 +1,5 @@
 ﻿using Domain.Models.MstItem;
+using Domain.Models.PatientInfor;
 using Domain.Models.SetMst;
 using Domain.Models.SuperSetDetail;
 using Domain.Models.User;
@@ -17,6 +18,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
 {
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
     private readonly IMstItemRepository _mstItemRepository;
+    private readonly IPatientInforRepository _patientInforRepository;
     private readonly ISetMstRepository _setMstRepository;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IUserRepository _userRepository;
@@ -24,12 +26,13 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
     private const string SUSPECTED_CD = "8002";
     private const string FREE_WORD = "0000999";
 
-    public SaveSuperSetDetailInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository, ISetMstRepository setMstRepository, IUserRepository userRepository)
+    public SaveSuperSetDetailInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository, ISetMstRepository setMstRepository, IUserRepository userRepository, IPatientInforRepository patientInforRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
         _superSetDetailRepository = superSetDetailRepository;
         _mstItemRepository = mstItemRepository;
+        _userRepository = userRepository;
         _setMstRepository = setMstRepository;
         _userRepository = userRepository;
     }
@@ -71,12 +74,12 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                     {
                         listFileItems = new List<string> { string.Empty };
                     }
-                    SaveSetFile(inputData.HpId, inputData.SetCd, listFileItems, true);
+                    SaveSetFile(inputData.HpId, inputData.PtId, inputData.SetCd, listFileItems, true);
                     return new SaveSuperSetDetailOutputData(result, SaveSuperSetDetailStatus.Successed);
                 }
                 else
                 {
-                    SaveSetFile(inputData.HpId, inputData.SetCd, inputData.FileItem.ListFileItems, false);
+                    SaveSetFile(inputData.HpId, inputData.PtId, inputData.SetCd, inputData.FileItem.ListFileItems, false);
                     return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.Failed);
                 }
             }
@@ -90,7 +93,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         }
     }
 
-    private void SaveSetFile(int hpId, int setCd, List<string> listFileName, bool saveSuccess)
+    private void SaveSetFile(int hpId, long ptId, int setCd, List<string> listFileName, bool saveSuccess)
     {
         List<string> listFolders = new();
         string path = string.Empty;
@@ -103,9 +106,12 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
         if (saveSuccess)
         {
-            if (!listUpdates.Any())
+            var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
+            long ptNum = ptInf != null ? ptInf.PtNum : 0;
+            var fileInfUpdateTemp = CopyFileFromKarteToSuperSet(ptNum, path, listFileName);
+            if (fileInfUpdateTemp.Any())
             {
-                listUpdates = new List<string> { string.Empty };
+                listUpdates = fileInfUpdateTemp.Select(item => item.Value).ToList();
             }
             _superSetDetailRepository.SaveListSetKarteFile(hpId, setCd, host, listUpdates.Select(item => new SetFileInfModel(false, item)).ToList(), false);
         }
@@ -117,6 +123,37 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                 _amazonS3Service.DeleteObjectAsync(path + item);
             }
         }
+    }
+
+    private Dictionary<string, string> CopyFileFromKarteToSuperSet(long ptNum, string pathSaveSet, List<string> listFileFromKarte)
+    {
+        Dictionary<string, string> fileInfUpdateTemp = new();
+
+        var listFolderPath = new List<string>(){
+                                            CommonConstants.Store,
+                                            CommonConstants.Karte
+                                        };
+        string baseAccessUrl = _options.BaseAccessUrl;
+        string karteHost = baseAccessUrl + "/" + _amazonS3Service.GetFolderUploadToPtNum(listFolderPath, ptNum);
+
+        foreach (var oldFileLink in listFileFromKarte)
+        {
+            string oldFileName = Path.GetFileName(oldFileLink);
+            if (oldFileLink.Contains(karteHost))
+            {
+                string newFile = baseAccessUrl + "/" + pathSaveSet + _amazonS3Service.GetUniqueFileNameKey(oldFileName.Trim());
+                var copySuccess = _amazonS3Service.CopyObjectAsync(oldFileLink.Replace(baseAccessUrl, string.Empty), newFile.Replace(baseAccessUrl, string.Empty)).Result;
+                if (copySuccess)
+                {
+                    fileInfUpdateTemp.Add(oldFileName, newFile);
+                }
+            }
+            else
+            {
+                fileInfUpdateTemp.Add(oldFileName, oldFileName);
+            }
+        }
+        return fileInfUpdateTemp;
     }
 
     private List<SetByomeiModel> ConvertToListSetByomeiModel(List<SaveSetByomeiInputItem> inputItems)
