@@ -1,20 +1,20 @@
 ﻿using Domain.Models.ChartApproval;
-using Domain.Models.Family;
+using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using System;
+using static Helper.Constants.UserConst;
 
 namespace Infrastructure.Repositories
 {
     public class ApprovalinfRepository : RepositoryBase, IApprovalInfRepository
     {
-        public ApprovalinfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IUserRepository _userRepository;
+        public ApprovalinfRepository(ITenantProvider tenantProvider, IUserRepository userRepository) : base(tenantProvider)
         {
-
+            _userRepository = userRepository;
         }
 
         public List<ApprovalInfModel> GetList(int hpId, int startDate, int endDate, int kaId, int tantoId)
@@ -145,48 +145,62 @@ namespace Infrastructure.Repositories
 
         public void UpdateApproveInf(int hpId, long ptId, int sinDate, long raiinNo, int userId)
         {
+            bool authorized = _userRepository.GetPermissionByScreenCode(hpId, userId, FunctionCode.ApprovalInfo) == PermissionType.Unlimited;
             var approveInfList = TrackingDataContext.ApprovalInfs.Where(item => item.HpId == hpId &&
                                                                                 item.PtId == ptId &&
                                                                                 item.SinDate == sinDate &&
-                                                                                item.RaiinNo == raiinNo &&
-                                                                                item.IsDeleted == 0)
+                                                                                item.RaiinNo == raiinNo)
                                                                   .ToList();
 
-            if (approveInfList.Any())
+            if (authorized)
             {
-                // Approved
-                foreach (var approvedInf in approveInfList)
+                approveInfList = approveInfList.Where(item => item.IsDeleted == 0).ToList();
+                if (approveInfList.Any())
                 {
-                    approvedInf.UpdateId = hpId;
-                    approvedInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    // Approved
+                    foreach (var approvedInf in approveInfList)
+                    {
+                        approvedInf.UpdateId = hpId;
+                        approvedInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                }
+                else
+                {
+                    var approvingInfList = approveInfList.Where(x => x.IsDeleted == 1).ToList();
+                    int seqNo = 0;
+                    if (!approvingInfList.Any())
+                    {
+                        seqNo = 1;
+                    }
+                    else
+                    {
+                        seqNo = approvingInfList.Max(x => x.SeqNo) + 1;
+                    }
+                    ApprovalInf newApprovalInf = new()
+                    {
+                        HpId = hpId,
+                        PtId = ptId,
+                        SinDate = sinDate,
+                        RaiinNo = raiinNo,
+                        IsDeleted = 0,
+                        SeqNo = seqNo,
+                        CreateId = userId,
+                        UpdateId = userId,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    };
+                    TrackingDataContext.ApprovalInfs.Add(newApprovalInf);
                 }
             }
             else
             {
-                var approvingInfList = approveInfList.Where(x => x.IsDeleted == 1);
-                int seqNo = 0;
-                if (!approvingInfList.Any())
+                var approvedInfs = approveInfList.Where(x => x.IsDeleted == 0).ToList();
+                foreach (var approvedInf in approvedInfs)
                 {
-                    seqNo = 1;
+                    approvedInf.IsDeleted = 1;
+                    approvedInf.UpdateId = Session.UserID;
+                    approvedInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 }
-                else
-                {
-                    seqNo = approvingInfList.Max(x => x.SeqNo) + 1;
-                }
-                ApprovalInf newApprovalInf = new()
-                {
-                    HpId = hpId,
-                    PtId = ptId,
-                    SinDate = sinDate,
-                    RaiinNo = raiinNo,
-                    IsDeleted = 0,
-                    SeqNo = seqNo,
-                    CreateId = userId,
-                    UpdateId = userId,
-                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                };
-                TrackingDataContext.ApprovalInfs.Add(newApprovalInf);
             }
             TrackingDataContext.SaveChanges();
         }
