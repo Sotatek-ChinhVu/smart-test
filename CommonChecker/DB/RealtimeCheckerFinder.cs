@@ -6,7 +6,9 @@ using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Extension;
+using Infrastructure.Services;
 using PostgreDataContext;
 using PtAlrgyDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyDrugModel;
 using PtAlrgyFoodModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyFoodModel;
@@ -14,7 +16,6 @@ using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioReki
 using PtOtcDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtcDrugModel;
 using PtOtherDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtherDrugModel;
 using PtSuppleModelStandard = Domain.Models.SpecialNote.ImportantNote.PtSuppleModel;
-using System.Linq;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
@@ -1950,19 +1951,13 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             List<ItemCodeModel> listDrugCode = listItem.Select(x => new ItemCodeModel(x.ItemCD, x.Id)).ToList();
 
             #region Check by UserData
-            var listDrugCodeItemCd = listDrugCode.Select(x => x.ItemCd).Distinct().ToList();
-            var tenMstList = NoTrackingDataContext.TenMsts.Where(t => listDrugCodeItemCd.Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate).ToList();
-            var yjCdList = tenMstList.Select(t => t.YjCd).Distinct().ToList();
-            var itemCdList = tenMstList.Select(t => t.ItemCd).Distinct().ToList();
-            var dosageDrugList = NoTrackingDataContext.DosageDrugs.Where(d => d.RikikaUnit != null && yjCdList.Contains(d.YjCd)).ToList();
-            var dosageMstList = NoTrackingDataContext.DosageMsts.Where(d => d.IsDeleted == 0 && itemCdList.Contains(d.ItemCd)).ToList();
             var listDosageInfoByUser =
-                (
-                    from tenMst in tenMstList
-                    join dosageDrug in dosageDrugList
+            (
+                    from tenMst in NoTrackingDataContext.TenMsts.Where(t => listDrugCode.Select(x => x.ItemCd).Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate && t.IsDeleted == DeleteTypes.None).AsEnumerable()
+                    join dosageDrug in NoTrackingDataContext.DosageDrugs.Where(d => d.RikikaUnit != null)
                     on tenMst.YjCd equals dosageDrug.YjCd
-                    join dosageMst in dosageMstList
-                    on tenMst.ItemCd equals dosageMst.ItemCd
+                    join dosageDMst in NoTrackingDataContext.DosageMsts.Where(d => d.IsDeleted == 0)
+                    on tenMst.ItemCd equals dosageDMst.ItemCd
                     join listDrugCodes in listDrugCode
                     on tenMst.ItemCd equals listDrugCodes.ItemCd
                     select new
@@ -1976,14 +1971,14 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                         dosageDrug.YakkaiUnit,
                         dosageDrug.RikikaRate,
                         dosageDrug.RikikaUnit,
-                        dosageMst.OnceMin,
-                        dosageMst.OnceMax,
-                        dosageMst.OnceLimit,
-                        dosageMst.OnceUnit,
-                        dosageMst.DayMin,
-                        dosageMst.DayMax,
-                        dosageMst.DayLimit,
-                        dosageMst.DayUnit
+                        dosageDMst.OnceMin,
+                        dosageDMst.OnceMax,
+                        dosageDMst.OnceLimit,
+                        dosageDMst.OnceUnit,
+                        dosageDMst.DayMin,
+                        dosageDMst.DayMax,
+                        dosageDMst.DayLimit,
+                        dosageDMst.DayUnit
                     }
                 ).ToList();
 
@@ -2210,29 +2205,16 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             List<ItemCodeModel> listCheckedCode = listDosageInfoByUser.Select(x => new ItemCodeModel(x.ItemCd, x.Id)).ToList();
             List<ItemCodeModel> listRestCode = listDrugCode.Where(d => !listCheckedCode.Contains(d)).ToList();
-            var restItemCodeList = listRestCode.Select(x => x.ItemCd).Distinct().ToList();
-
-            tenMstList = NoTrackingDataContext.TenMsts.Where(t => restItemCodeList.Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate).ToList();
-            yjCdList = tenMstList.Select(t => t.YjCd).ToList();
-            dosageDrugList = NoTrackingDataContext.DosageDrugs.Where(d => d.RikikaUnit != null && yjCdList.Contains(d.YjCd)).ToList();
-            var doeiCdList = dosageDrugList.Select(d => d.DoeiCd).Distinct().ToList();
-
-            var dosageDosagesList = NoTrackingDataContext.DosageDosages.Where(d => d.KyugenCd != null
-                                                                                   && d.KyugenCd != string.Empty
-                                                                                   && d.DosageCheckFlg == "1"
-                                                                                   && ((d.AgeCd != null && d.AgeCd != string.Empty) || (d.AgeOver <= age && d.AgeUnder > age) || (d.AgeOver == 0 && d.AgeUnder == 0))
-                                                                                   && ((d.WeightOver <= weight && d.WeightUnder > weight) || (d.WeightOver == 0 && d.WeightUnder == 0))
-                                                                                   && ((d.BodyOver <= bodySize && d.BodyUnder > bodySize) || (d.BodyOver == 0 && d.BodyUnder == 0))
-                                                                                   && doeiCdList.Contains(d.DoeiCd)
-                                                                        ).ToList();
-
-
-
             var listDosageInfo =
-                (from tenMst in tenMstList
-                 join dosageDrug in dosageDrugList
+                (from tenMst in NoTrackingDataContext.TenMsts.Where(t => listRestCode.Select(x => x.ItemCd).Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate && t.IsDeleted == DeleteTypes.None).AsEnumerable()
+                 join dosageDrug in NoTrackingDataContext.DosageDrugs.Where(d => d.RikikaUnit != null)
                  on tenMst.YjCd equals dosageDrug.YjCd
-                 join dosageDosage in dosageDosagesList
+                 join dosageDosage in NoTrackingDataContext.DosageDosages.Where(d => string.IsNullOrEmpty(d.KyugenCd)
+                                                                                                     && d.DosageCheckFlg == "1"
+                                                                                                     && (string.IsNullOrEmpty(d.AgeCd) || (d.AgeOver <= age && d.AgeUnder > age) || (d.AgeOver == 0 && d.AgeUnder == 0))
+                                                                                                     && ((d.WeightOver <= weight && d.WeightUnder > weight) || (d.WeightOver == 0 && d.WeightUnder == 0))
+                                                                                                     && ((d.BodyOver <= bodySize && d.BodyUnder > bodySize) || (d.BodyOver == 0 && d.BodyUnder == 0))
+                                                                                                )
                  on dosageDrug.DoeiCd equals dosageDosage.DoeiCd
                  join listRestCodes in listRestCode
                  on tenMst.ItemCd equals listRestCodes.ItemCd

@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Domain.Models.Diseases;
+﻿using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.FlowSheet;
 using Domain.Models.HpInf;
@@ -7,6 +6,7 @@ using Domain.Models.Insurance;
 using Domain.Models.Ka;
 using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
+using Domain.Models.Lock;
 using Domain.Models.Medical;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
@@ -18,7 +18,7 @@ using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
-using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Infrastructure.Interfaces;
@@ -27,7 +27,6 @@ using Interactor.CalculateService;
 using Interactor.Family.ValidateFamilyList;
 using Interactor.NextOrder;
 using Microsoft.Extensions.Options;
-using System;
 using UseCase.Accounting.Recaculate;
 using UseCase.Diseases.Upsert;
 using UseCase.Family;
@@ -83,6 +82,23 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     {
         try
         {
+            var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputDatas.HpId, inputDatas.PtId, inputDatas.RaiinNo, inputDatas.SinDate, inputDatas.UserId);
+            if (notAllowSave)
+            {
+                return new SaveMedicalOutputData(
+                       SaveMedicalStatus.MedicalScreenLocked,
+                       RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                       new(),
+                       KarteValidationStatus.Valid,
+                       ValidateFamilyListStatus.ValidateSuccess,
+                       UpsertFlowSheetStatus.Valid,
+                       UpsertPtDiseaseListStatus.Valid,
+                       0,
+                       0,
+                       0
+                       );
+            }
+
             //Raiin Info
             var inputDataList = inputDatas.OdrItems.ToList();
             var hpIds = inputDataList.Select(x => x.HpId).ToList();
@@ -240,7 +256,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
             //Special Note
             var summaryTab = inputDatas.SpecialNoteItem.SummaryTab;
-            var summaryInfModel = new SummaryInfModel(summaryTab.Id, summaryTab.HpId, summaryTab.PtId, summaryTab.SeqNo, summaryTab.Text, summaryTab.Rtext, DateTime.UtcNow, DateTime.UtcNow);
+            var summaryInfModel = new SummaryInfModel(summaryTab.Id, summaryTab.HpId, summaryTab.PtId, summaryTab.SeqNo, summaryTab.Text, summaryTab.Rtext, CIUtil.GetJapanDateTimeNow(), CIUtil.GetJapanDateTimeNow());
             var patientInfTab = new PatientInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.PregnancyItems.Select(p => new PtPregnancyModel(
                         p.Id,
                         p.HpId,
@@ -253,7 +269,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         p.OvulationDate,
                         p.OvulationDueDate,
                         p.IsDeleted,
-                        DateTime.UtcNow,
+                        CIUtil.GetJapanDateTimeNow(),
                         inputDatas.UserId,
                         string.Empty,
                         p.SinDate

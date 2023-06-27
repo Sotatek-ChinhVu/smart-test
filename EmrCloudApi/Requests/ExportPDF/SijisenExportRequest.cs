@@ -1,9 +1,7 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF
 {
-    public class SijisenExportRequest
+    public class SijisenExportRequest : ReportRequestBase
     {
-        public int HpId { get; set; }
-
         public int FormType { get; set; }
 
         public long PtId { get; set; }
@@ -12,7 +10,7 @@
 
         public long RaiinNo { get; set; }
 
-        public List<LimitModel> OdrKouiKbns { get; set; } = new List<LimitModel> { };
+        public List<LimitModel> OdrKouiKbns { get; set; } = new();
 
         public bool PrintNoOdr { get; set; }
     }

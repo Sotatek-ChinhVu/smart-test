@@ -8,4 +8,5 @@ public enum ReorderSetMstStatus : byte
     InvalidHpId = 4,
     InvalidDragSetCd = 5,
     InvalidDropSetCd = 6,
+    MedicalScreenLocked = 7,
 }

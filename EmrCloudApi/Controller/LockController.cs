@@ -6,10 +6,12 @@ using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
 using EmrCloudApi.Services;
+using Helper.Constants;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
+using UseCase.Lock.CheckExistFunctionCode;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
 
@@ -31,13 +33,14 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.AddLock)]
         public async Task<ActionResult<Response<LockResponse>>> AddLock([FromQuery] LockRequest request)
         {
-            var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
+            var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, Token);
             var output = _bus.Handle(input);
 
             if (output.Status == AddLockStatus.Successed)
             {
+                string functionCode = request.FunctionCod == FunctionCode.SwitchOrderCode ? FunctionCode.MedicalExaminationCode : request.FunctionCod;
                 await _webSocketService.SendMessageAsync(FunctionCodes.AddLockChanged,
-                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 1, FunctionCod = request.FunctionCod });
+                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 1, FunctionCod = functionCode });
             }
 
             var presenter = new AddLockPresenter();
@@ -58,10 +61,22 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<LockResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.CheckExistFunctionCode)]
+        public ActionResult<Response<CheckExistFunctionCodeResponse>> CheckOpenSpecialNote([FromQuery] CheckExistFunctionCodeRequest request)
+        {
+            var input = new CheckExistFunctionCodeInputData(HpId, request.FunctionCod, request.PtId);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckExistFunctionCodePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckExistFunctionCodeResponse>>(presenter.Result);
+        }
+
         [HttpGet(ApiPath.RemoveLock)]
         public async Task<ActionResult<Response>> RemoveLock([FromQuery] LockRequest request)
         {
-            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false);
+            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false, false);
             var output = _bus.Handle(input);
 
             if (output.Status == RemoveLockStatus.Successed)
@@ -79,8 +94,27 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.RemoveAllLock)]
         public ActionResult<Response> RemoveAllLock()
         {
-            var input = new RemoveLockInputData(HpId, 0, "", 0, 0, UserId, true);
+            var input = new RemoveLockInputData(HpId, 0, "", 0, 0, UserId, true, false);
             var output = _bus.Handle(input);
+
+            var presenter = new RemoveLockPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response>(presenter.Result);
+        }
+
+
+        [HttpGet(ApiPath.RemoveAllLockPtId)]
+        public async Task<ActionResult<Response>> RemoveAllLockPtId([FromQuery] RemoveAllLockPtIdRequest request)
+        {
+            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCd, request.SinDate, 0, UserId, false, true);
+            var output = _bus.Handle(input);
+
+            if (output.Status == RemoveLockStatus.Successed)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.RemoveLockChanged,
+                    new LockMessage { SinDate = request.SinDate, RaiinNo = 0, PtId = request.PtId, Type = 2, FunctionCod = request.FunctionCd });
+            }
 
             var presenter = new RemoveLockPresenter();
             presenter.Complete(output);
@@ -111,6 +145,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetLockInfoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.CheckLockVisiting)]
+        public ActionResult<Response<CheckLockVisitingResponse>> CheckLockVisiting([FromQuery] CheckLockVisitingRequest request)
+        {
+            var input = new CheckLockVisitingInputData(HpId, UserId, request.PtId, request.SinDate, request.FunctionCode, Token);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckLockVisitingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckLockVisitingResponse>>(presenter.Result);
         }
     }
 

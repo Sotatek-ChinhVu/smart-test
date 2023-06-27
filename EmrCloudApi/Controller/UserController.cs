@@ -9,9 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.Create;
-using UseCase.User.GetAllPermission;
 using UseCase.User.GetList;
+using UseCase.User.GetListUserByCurrentUser;
+using UseCase.User.GetListJobMst;
+using UseCase.User.GetListFunctionPermission;
 using UseCase.User.GetPermissionByScreenCode;
+using UseCase.User.SaveListUserMst;
 using UseCase.User.UpsertList;
 
 namespace EmrCloudApi.Controller;
@@ -85,15 +88,68 @@ public class UserController : AuthorizeControllerBase
         return new ActionResult<Response<GetPermissionByScreenResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.GetAllPermission)]
-    public ActionResult<Response<GetAllPermissionResponse>> GetAllPermission()
+    [HttpGet(ApiPath.GetListUserByCurrentUser)]
+    public ActionResult<Response<GetListUserByCurrentUserResponse>> GetListUserByCurrentUser()
     {
-        var input = new GetAllPermissionInputData(HpId, UserId);
+        var input = new GetListUserByCurrentUserInputData(HpId, UserId);
         var output = _bus.Handle(input);
-        var presenter = new GetAllPermissionPresenter();
+        var presenter = new GetListUserByCurrentUserPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetAllPermissionResponse>>(presenter.Result);
+        return new ActionResult<Response<GetListUserByCurrentUserResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListJobMst)]
+    public ActionResult<Response<GetListJobMstResponse>> GetListJobMst()
+    {
+        var input = new GetListJobMstInputData(HpId);
+        var output = _bus.Handle(input);
+        var presenter = new GetListJobMstPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetListJobMstResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListFunctionPermission)]
+    public ActionResult<Response<GetListFunctionPermissionResponse>> GetListFunctionPermission()
+    {
+        var input = new GetListFunctionPermissionInputData();
+        var output = _bus.Handle(input);
+        var presenter = new GetListFunctionPermissionPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListFunctionPermissionResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveListUserMst)]
+    public ActionResult<Response<SaveListUserMstResponse>> SaveListUserMst([FromBody] SaveListUserMstRequest request)
+    {
+        var userModels = request.Users.Select(x => new UserMstModel(HpId,
+                                                          x.Id,
+                                                          x.UserId,
+                                                          x.JobCd,
+                                                          x.ManagerKbn,
+                                                          x.KaId,
+                                                          x.Sname ?? string.Empty,
+                                                          x.KanaName ?? string.Empty,
+                                                          x.Name ?? string.Empty,
+                                                          x.Sname ?? string.Empty,
+                                                          x.LoginId ?? string.Empty,
+                                                          x.LoginPass ?? string.Empty,
+                                                          x.MayakuLicenseNo ?? string.Empty,
+                                                          x.StartDate,
+                                                          x.EndDate,
+                                                          x.SortNo,
+                                                          x.IsDeleted,
+                                                          x.RenkeiCd1 ?? string.Empty,
+                                                          x.DrName ?? string.Empty,
+                                                          x.Permissions.Select(p => new UserPermissionModel(HpId, x.UserId, p.FunctionCd, p.Permission, false)).ToList()))
+                                                     .OrderBy(item => item.SortNo).ToList();
+
+        var input = new SaveListUserMstInputData(HpId, userModels, UserId);
+        var output = _bus.Handle(input);
+        var presenter = new SaveListUserMstPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<SaveListUserMstResponse>>(presenter.Result);
     }
 
     private static UserMstModel UserInfoRequestToModel(UserInfoRequest userInfoRequest, int HpId)

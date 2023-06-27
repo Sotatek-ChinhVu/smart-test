@@ -800,7 +800,7 @@ namespace Infrastructure.Repositories
         {
             var result = new List<SelectMaintenanceModel>();
 
-            int today = CIUtil.DateTimeToInt(DateTime.Now);
+            int today = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
 
             bool CheckOneStartDate = NoTrackingDataContext.HokenMsts.Count(x => x.HpId == hpId &&
                                                                                 x.HokenNo == hokenNo &&

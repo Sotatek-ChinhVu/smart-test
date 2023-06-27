@@ -15,7 +15,7 @@ namespace Domain.Models.NextOrder
 
         long GetLastNextOrderSeqNo(int hpId, long ptId);
 
-        List<NextOrderModel> GetList(int hpId, long ptId, int rsvkrtKbn, bool isDeleted);
+        List<NextOrderModel> GetList(int hpId, long ptId, bool isDeleted);
 
         long Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels);
 

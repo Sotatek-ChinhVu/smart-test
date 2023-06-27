@@ -1,8 +1,6 @@
-﻿using Domain.Models.ColumnSetting;
-
-namespace EmrCloudApi.Requests.ColumnSetting;
+﻿namespace EmrCloudApi.Requests.ColumnSetting;
 
 public class SaveColumnSettingListRequest
 {
-    public List<ColumnSettingModel> Settings { get; set; } = new();
+    public List<ColumnSettingRequestItem> Settings { get; set; } = new();
 }

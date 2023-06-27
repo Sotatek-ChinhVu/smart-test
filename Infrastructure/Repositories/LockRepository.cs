@@ -1,5 +1,7 @@
 ﻿using Domain.Models.Lock;
+using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +14,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId)
+        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token)
         {
             long oyaRaiinNo = 0;
             if (raiinNo > 0)
@@ -35,9 +37,36 @@ namespace Infrastructure.Repositories
 
             string rawSql =
             "INSERT INTO \"LOCK_INF\" (\"FUNCTION_CD\", \"HP_ID\", \"OYA_RAIIN_NO\", \"PT_ID\", \"RAIIN_NO\", \"SIN_DATE\", \"LOCK_DATE\", \"MACHINE\", \"USER_ID\")\r\n      " +
-            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '', {userId}) ON CONFLICT DO NOTHING;";
+            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{token}', {userId}) ON CONFLICT DO NOTHING;";
 
             return TrackingDataContext.Database.ExecuteSqlRaw(rawSql) > 0;
+        }
+
+        public LockModel CheckOpenSpecialNote(int hpId, string functionCd, long ptId)
+        {
+            var lockInf = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                && item.PtId == ptId
+                                                                                && item.FunctionCd == functionCd);
+            if (lockInf == null)
+            {
+                return new();
+            }
+
+            var userInf = NoTrackingDataContext.UserMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                                && item.UserId == lockInf.UserId
+                                                                                && item.IsDeleted == 0);
+
+            var functionInf = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd == lockInf.FunctionCd);
+
+            return new LockModel(
+                       lockInf.UserId,
+                       userInf?.Name ?? string.Empty,
+                       lockInf.LockDate,
+                       functionInf?.FunctionName ?? string.Empty,
+                       lockInf.FunctionCd,
+                       0,
+                       0
+                );
         }
 
         public bool ExistLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo)
@@ -73,7 +102,7 @@ namespace Infrastructure.Repositories
                     on lockInf.RaiinNo equals raiinInf.RaiinNo into rfg
                     from lockedRaiinInf in rfg.DefaultIfEmpty()
                     join lockMst in NoTrackingDataContext.LockMsts.Where(m => m.FunctionCdB == functionCd && m.IsInvalid == 0)
-            on lockInf.FunctionCd equals lockMst.FunctionCdA
+                    on lockInf.FunctionCd equals lockMst.FunctionCdA
                     join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted != 1 && u.StartDate <= sinDate && sinDate <= u.EndDate)
                     on lockInf.UserId equals userMst.UserId into gj
                     from lockedUserInf in gj.DefaultIfEmpty()
@@ -160,6 +189,31 @@ namespace Infrastructure.Repositories
             return true;
         }
 
+        public bool RemoveAllLock(int hpId, int userId, long ptId, int sinDate, string functionCd)
+        {
+            List<string> functionCdList = new()
+            {
+                functionCd
+            };
+            if (functionCd == FunctionCode.MedicalExaminationCode)
+            {
+                functionCdList.Add(FunctionCode.SwitchOrderCode);
+            }
+            var lockInfList = TrackingDataContext.LockInfs.Where(item => item.HpId == hpId
+                                                                         && item.UserId == userId
+                                                                         && item.PtId == ptId
+                                                                         && functionCdList.Contains(item.FunctionCd)
+                                                                         && item.SinDate == sinDate
+                                                          ).ToList();
+            if (!lockInfList.Any())
+            {
+                return true;
+            }
+            TrackingDataContext.LockInfs.RemoveRange(lockInfList);
+            TrackingDataContext.SaveChanges();
+            return true;
+        }
+
         public bool ExtendTtl(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId)
         {
             long oyaRaiinNo = 0;
@@ -212,6 +266,38 @@ namespace Infrastructure.Repositories
                                                         x.lockInf.FunctionCd,
                                                         x.lockMst.LockLevel,
                                                         x.lockMst.LockRange)).ToList();
+            return result;
+        }
+
+        public bool GetVisitingLockStatus(int hpId, int userId, long ptId, string functionCode)
+        {
+            LockInf? log = null;
+            if (functionCode == FunctionCode.MedicalExaminationCode)
+            {
+                log = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && (item.FunctionCd == functionCode
+                                                                                || item.FunctionCd == FunctionCode.SwitchOrderCode)
+                                                                            && item.UserId == userId);
+            }
+            else
+            {
+                log = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && item.FunctionCd == functionCode
+                                                                            && item.UserId == userId);
+            }
+            return log == null;
+        }
+
+        public string GetFunctionNameLock(string functionCode)
+        {
+            string result = string.Empty;
+            var functionItem = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd == functionCode);
+            if (functionItem != null)
+            {
+                result = functionItem.FunctionName ?? string.Empty;
+            }
             return result;
         }
     }

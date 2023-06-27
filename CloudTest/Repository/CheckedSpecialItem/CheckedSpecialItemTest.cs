@@ -39,7 +39,8 @@ public class CheckedSpecialItemTest : BaseUT
         tenant.DensiSanteiKaisus.AddRange(sampleData);
         tenant.SaveChanges();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
-        TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository);
+        ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider);
+        TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
         // Act
         var densiSanteis = todayOdrRepository.FindDensiSanteiKaisuList(1, new List<string>{
             "W12334"
@@ -147,7 +148,8 @@ public class CheckedSpecialItemTest : BaseUT
         tenant.SinKouiDetails.AddRange(sinKouiDetails);
         tenant.SaveChanges();
         SystemConfRepository systemConf = new SystemConfRepository(TenantProvider);
-        TodayOdrRepository todayRepository = new TodayOdrRepository(TenantProvider, systemConf);
+        ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider);
+        TodayOdrRepository todayRepository = new TodayOdrRepository(TenantProvider, systemConf, approvalinfRepository);
         // Act
         var santeiCount = todayRepository.SanteiCount(1, 54522111111, 20220101, 20221212, 20220401, 500000004, new List<string>() { "112009210" }, new List<int> { 1 }, new List<int> { 10 });
         // Assert

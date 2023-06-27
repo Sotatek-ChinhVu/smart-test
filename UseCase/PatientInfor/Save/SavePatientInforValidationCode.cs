@@ -77,6 +77,7 @@
         PtGrpInvalidGroupCode,
         #endregion PtGrps
         InvalidSex,
-        InvalidPtNumCheckDigits
+        InvalidPtNumCheckDigits,
+        InvalidSamePatient
     }
 }

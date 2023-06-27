@@ -1,6 +1,7 @@
 ﻿using Domain.Models.MstItem;
 using Domain.Models.SetMst;
 using Domain.Models.SuperSetDetail;
+using Domain.Models.User;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
@@ -18,17 +19,19 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
     private readonly IMstItemRepository _mstItemRepository;
     private readonly ISetMstRepository _setMstRepository;
     private readonly IAmazonS3Service _amazonS3Service;
+    private readonly IUserRepository _userRepository;
     private readonly AmazonS3Options _options;
     private const string SUSPECTED_CD = "8002";
     private const string FREE_WORD = "0000999";
 
-    public SaveSuperSetDetailInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository, ISetMstRepository setMstRepository)
+    public SaveSuperSetDetailInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository, ISetMstRepository setMstRepository, IUserRepository userRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
         _superSetDetailRepository = superSetDetailRepository;
         _mstItemRepository = mstItemRepository;
         _setMstRepository = setMstRepository;
+        _userRepository = userRepository;
     }
 
     public SaveSuperSetDetailOutputData Handle(SaveSuperSetDetailInputData inputData)
@@ -78,10 +81,6 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                 }
             }
             return new SaveSuperSetDetailOutputData(result, SaveSuperSetDetailStatus.Successed);
-        }
-        catch
-        {
-            return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.Failed);
         }
         finally
         {
@@ -223,7 +222,12 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
 
     private SaveSuperSetDetailStatus ValidateSuperSetDetail(SaveSuperSetDetailInputData inputData)
     {
-        if (inputData.HpId <= 0)
+        var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+        if (notAllowSave)
+        {
+            return SaveSuperSetDetailStatus.MedicalScreenLocked;
+        }
+        else if (inputData.HpId <= 0)
         {
             return SaveSuperSetDetailStatus.InvalidHpId;
         }

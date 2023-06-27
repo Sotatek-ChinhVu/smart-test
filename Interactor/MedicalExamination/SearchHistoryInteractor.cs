@@ -50,7 +50,7 @@ namespace Interactor.MedicalExamination
                     return new SearchHistoryOutputData(new(), defaultIndex, SearchHistoryStatus.InvalidSearchType);
                 }
 
-                var result = _historyRepository.Search(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.CurrentIndex, inputData.FilterId, inputData.IsDeleted, inputData.KeyWord, inputData.SearchType, inputData.IsNext);
+                var result = _historyRepository.Search(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.CurrentIndex, inputData.FilterId, inputData.IsDeleted, inputData.KeyWord, inputData.SearchType, inputData.IsNext, inputData.RaiinNos);
 
                 return new SearchHistoryOutputData(new ReceptionItem(result.Item2), result.Item1, SearchHistoryStatus.Successed);
             }
