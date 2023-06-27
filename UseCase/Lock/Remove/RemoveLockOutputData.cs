@@ -1,16 +1,17 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.Lock;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.Lock.Remove;
 
 public class RemoveLockOutputData : IOutputData
 {
-    public RemoveLockStatus Status { get; private set; }
-
-    public List<long> RaiinNoList { get; private set; }
-
-    public RemoveLockOutputData(RemoveLockStatus status, List<long> raiinNoList)
+    public RemoveLockOutputData(RemoveLockStatus status, List<ResponseLockModel> responseLockList)
     {
         Status = status;
-        RaiinNoList = raiinNoList;
+        ResponseLockList = responseLockList;
     }
+
+    public RemoveLockStatus Status { get; private set; }
+
+    public List<ResponseLockModel> ResponseLockList { get; private set; }
 }

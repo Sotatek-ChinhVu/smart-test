@@ -1,18 +1,17 @@
 ﻿using Domain.Models.Lock;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.Lock.Add
+namespace UseCase.Lock.Add;
+
+public class AddLockOutputData : IOutputData
 {
-    public class AddLockOutputData : IOutputData
+    public List<ResponseLockModel> ResponseLockList { get; private set; }
+
+    public AddLockStatus Status { get; private set; }
+
+    public AddLockOutputData(AddLockStatus status, List<ResponseLockModel> responseLockList)
     {
-        public LockModel LockInf { get; set; }
-
-        public AddLockStatus Status { get; private set; }
-
-        public AddLockOutputData(AddLockStatus status, LockModel lockInf)
-        {
-            Status = status;
-            LockInf = lockInf;
-        }
+        Status = status;
+        ResponseLockList = responseLockList;
     }
 }

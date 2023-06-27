@@ -35,7 +35,12 @@ namespace Interactor.Lock
                 {
                     result = _lockRepository.RemoveLock(hpId, functionCode, ptId, sinDate, raiinNo, userId);
                 }
-                return new RemoveLockOutputData(RemoveLockStatus.Successed, result);
+                if (result.Any())
+                {
+                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, sinDate);
+                    return new RemoveLockOutputData(RemoveLockStatus.Successed, responseLockList);
+                }
+                return new RemoveLockOutputData(RemoveLockStatus.Failed, new());
             }
             finally
             {

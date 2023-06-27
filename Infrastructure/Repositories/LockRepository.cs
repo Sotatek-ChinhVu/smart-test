@@ -301,5 +301,38 @@ namespace Infrastructure.Repositories
             }
             return result;
         }
+
+        public List<ResponseLockModel> GetResponseLockModel(int hpId, int sinDate)
+        {
+            List<ResponseLockModel> result = new();
+            // Raiin 
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.IsDeleted == DeleteTypes.None
+                                                                             && item.SinDate == sinDate)
+                                                              .ToList();
+
+            var raiinNoList = raiinInfList.Select(item => item.RaiinNo).Distinct().ToList();
+
+            // Lock 
+            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => raiinNoList.Contains(item.RaiinNo)
+                                                                           && (item.FunctionCd == FunctionCode.MedicalExaminationCode
+                                                                               || item.FunctionCd == FunctionCode.TeamKarte
+                                                                               || item.FunctionCd == FunctionCode.SwitchOrderCode))
+                                                            .ToList();
+            foreach (var raiinItem in raiinInfList)
+            {
+                int status = raiinItem.Status;
+                if (lockInfList.Any(item => item.RaiinNo == raiinItem.RaiinNo))
+                {
+                    status = RaiinState.Examining;
+                }
+                result.Add(new ResponseLockModel(
+                               raiinItem.SinDate,
+                               raiinItem.PtId,
+                               raiinItem.RaiinNo,
+                               status
+                           ));
+            }
+            return result;
+        }
     }
 }

@@ -14,11 +14,11 @@ public static class FunctionCodes
     public const string ReservationChanged = "ReservationChanged";
     public const string MedicalChanged = "MedicalChanged";
     public const string AddLockChanged = "AddLockChanged";
+    public const string LockChanged = "LockChanged";
     public const string RemoveLockChanged = "RemoveLockChanged";
     public const string SupserSetSaveChanged = "SupserSetSaveChanged";
     public const string SupserSetReorderChanged = "SupserSetReorderChanged";
     public const string SuperCopyPasteChanged = "SuperCopyPasteChanged";
     public const string AccountDueChanged = "AccountDueChanged";
     public const string DeletePtInfChanged = "DeletePtInfChanged";
-    public const string RemoveAllLockMessage = "RemoveAllLockMessage";
 }

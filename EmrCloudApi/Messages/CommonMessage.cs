@@ -20,13 +20,6 @@ public class LockMessage
     public string FunctionCod { get; set; } = String.Empty;
 }
 
-public class RemoveAllLockMessage
-{
-    public int SinDate { get; set; }
-    public List<long> RaiinNoList { get; set; } = new();
-    public long PtId { get; set; } = CommonConstants.InvalidId;
-}
-
 public class SuperSetMessage
 {
     public List<GetSetMstListOutputItem> ReorderSetMstModels { get; set; } = new();

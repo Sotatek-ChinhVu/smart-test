@@ -31,22 +31,20 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.AddLock)]
-        public async Task<ActionResult<Response<LockResponse>>> AddLock([FromQuery] LockRequest request)
+        public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> AddLock([FromQuery] LockRequest request)
         {
             var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, Token);
             var output = _bus.Handle(input);
 
             if (output.Status == AddLockStatus.Successed)
             {
-                string functionCode = request.FunctionCod == FunctionCode.SwitchOrderCode ? FunctionCode.MedicalExaminationCode : request.FunctionCod;
-                await _webSocketService.SendMessageAsync(FunctionCodes.AddLockChanged,
-                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 1, FunctionCod = functionCode });
+                await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockList);
             }
 
             var presenter = new AddLockPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<LockResponse>>(presenter.Result);
+            return new ActionResult<Response<UpdateVisitingLockResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.CheckLock)]
@@ -74,25 +72,24 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.RemoveLock)]
-        public async Task<ActionResult<Response>> RemoveLock([FromQuery] LockRequest request)
+        public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> RemoveLock([FromQuery] LockRequest request)
         {
             var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false, false);
             var output = _bus.Handle(input);
 
             if (output.Status == RemoveLockStatus.Successed)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.RemoveLockChanged,
-                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 2, FunctionCod = request.FunctionCod });
+                await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockList);
             }
 
             var presenter = new RemoveLockPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response>(presenter.Result);
+            return new ActionResult<Response<UpdateVisitingLockResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.RemoveAllLock)]
-        public ActionResult<Response> RemoveAllLock()
+        public ActionResult<Response<UpdateVisitingLockResponse>> RemoveAllLock()
         {
             var input = new RemoveLockInputData(HpId, 0, "", 0, 0, UserId, true, false);
             var output = _bus.Handle(input);
@@ -100,26 +97,25 @@ namespace EmrCloudApi.Controller
             var presenter = new RemoveLockPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response>(presenter.Result);
+            return new ActionResult<Response<UpdateVisitingLockResponse>>(presenter.Result);
         }
 
 
         [HttpGet(ApiPath.RemoveAllLockPtId)]
-        public async Task<ActionResult<Response>> RemoveAllLockPtId([FromQuery] RemoveAllLockPtIdRequest request)
+        public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> RemoveAllLockPtId([FromQuery] RemoveAllLockPtIdRequest request)
         {
             var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCd, request.SinDate, 0, UserId, false, true);
             var output = _bus.Handle(input);
 
             if (output.Status == RemoveLockStatus.Successed)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.RemoveAllLockMessage,
-                    new RemoveAllLockMessage { SinDate = request.SinDate, RaiinNoList = output.RaiinNoList, PtId = request.PtId });
+                await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockList);
             }
 
             var presenter = new RemoveLockPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response>(presenter.Result);
+            return new ActionResult<Response<UpdateVisitingLockResponse>>(presenter.Result);
         }
 
         //[HttpGet(ApiPath.ExtendTtl)]

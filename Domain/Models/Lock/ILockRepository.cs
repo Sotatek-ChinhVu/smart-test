@@ -25,5 +25,7 @@ namespace Domain.Models.Lock
         bool GetVisitingLockStatus(int hpId, int userId, long ptId, string functionCode);
 
         string GetFunctionNameLock(string functionCode);
+
+        List<ResponseLockModel> GetResponseLockModel(int hpId, int sinDate);
     }
 }
