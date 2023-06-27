@@ -11,6 +11,12 @@ namespace UseCase.MedicalExamination.GetHistory
             GroupOdrItems = groupOdrItems;
         }
 
+        public HokenGroupHistoryItem(List<GroupOdrGHistoryItem> groupOdrItems)
+        {
+            HokenTitle = string.Empty;
+            GroupOdrItems = groupOdrItems;
+        }
+
         [JsonPropertyName("hokenPid")]
         public int HokenPid { get; private set; }
 

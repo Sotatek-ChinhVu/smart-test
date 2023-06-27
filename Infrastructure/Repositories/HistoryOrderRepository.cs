@@ -6,12 +6,14 @@ using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
 using Domain.Models.RainListTag;
+using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Converter;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -46,7 +48,7 @@ namespace Infrastructure.Repositories
 
             var isBookMarkChecked = filterDetailList.FirstOrDefault(detail => detail.FilterId == filterId && detail.FilterItemCd == 1 && detail.FilterEdaNo == 0 && detail.Val == 1) != null;
             var listHokenId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 3 && detail.Val == 1).Select(item => item.FilterEdaNo).ToList();
-            var listKaId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 4 &&  detail.Val == 1).Select(item => item.FilterEdaNo).ToList();
+            var listKaId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 4 && detail.Val == 1).Select(item => item.FilterEdaNo).ToList();
             var listUserId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 2 && detail.Val == 1).Select(item => item.FilterEdaNo).ToList();
 
             var detailModel = new KarteFilterDetailModel(hpId, userId, filterId, isBookMarkChecked, listHokenId, listKaId, listUserId);
@@ -85,10 +87,10 @@ namespace Infrastructure.Repositories
             if (karteFilter.OnlyBookmark)
             {
                 raiinInfEnumerable = from raiinInf in raiinInfListQueryable
-                                     join raiinTag in NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.TagNo != 0 && !raiinNoAll.Contains(r.RaiinNo) )
+                                     join raiinTag in NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.TagNo != 0 && !raiinNoAll.Contains(r.RaiinNo))
                                       on raiinInf.RaiinNo equals raiinTag.RaiinNo
                                      select raiinInf;
-                
+
                 var raiinInfEnumerableFE = from raiinInf in raiinInfListQueryable where raiinGets.Contains(raiinInf.RaiinNo) select raiinInf;
                 raiinInfEnumerable = raiinInfEnumerable.Union(raiinInfEnumerableFE);
             }
@@ -456,6 +458,75 @@ namespace Infrastructure.Repositories
             return index;
         }
 
+        public List<SinKouiListModel> GetSinkouiList(int hpId, long ptId, List<int> sinDateList, List<long> raiinNoList, List<int> mainPidList)
+        {
+            var sinkouis = NoTrackingDataContext.SinKouis.Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted == 0);
+            var sinkouiCounts = NoTrackingDataContext.SinKouiCounts.Where(p => p.HpId == hpId && p.PtId == ptId);
+            var sinkouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted == 0);
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None);
+
+            var sinKouiJoinSinKouiCountquery = from sinkoui in sinkouis
+                                               join sinkouiCount in sinkouiCounts
+                                               on new { sinkoui.RpNo, sinkoui.SeqNo } equals new { sinkouiCount.RpNo, sinkouiCount.SeqNo }
+                                               select new
+                                               {
+                                                   Sinkoui = sinkoui,
+                                                   SinKouiCount = sinkouiCount
+                                               };
+
+            var sinKouiCountJoinDetailQuery = from sinKouiJoinSinKouiCount in sinKouiJoinSinKouiCountquery
+                                              join sinKouiDetail in sinkouiDetails
+                                              on new { sinKouiJoinSinKouiCount.SinKouiCount.RpNo, sinKouiJoinSinKouiCount.SinKouiCount.SeqNo }
+                                              equals new { sinKouiDetail.RpNo, sinKouiDetail.SeqNo }
+                                              select new
+                                              {
+                                                  Sinkoui = sinKouiJoinSinKouiCount.Sinkoui,
+                                                  SinKouiCount = sinKouiJoinSinKouiCount.SinKouiCount,
+                                                  SinKouiDetail = sinKouiDetail
+                                              };
+            var joinTenMstQuery = from sinKouiCountJoinDetail in sinKouiCountJoinDetailQuery
+                                  join tenMst in tenMsts
+                                  on sinKouiCountJoinDetail.SinKouiDetail.ItemCd equals tenMst.ItemCd into tempTenMstList
+                                  join userMst in NoTrackingDataContext.UserMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0)
+                                  on sinKouiCountJoinDetail.Sinkoui.CreateId equals userMst.UserId
+                                  select new
+                                  {
+                                      CreateId = sinKouiCountJoinDetail.Sinkoui.CreateId,
+                                      CreateDate = sinKouiCountJoinDetail.Sinkoui.CreateDate,
+                                      HokenPid = sinKouiCountJoinDetail.Sinkoui.HokenPid,
+                                      SinDate = sinKouiCountJoinDetail.SinKouiCount.SinDate,
+                                      RaiinNo = sinKouiCountJoinDetail.SinKouiCount.RaiinNo,
+                                      ItemCd = sinKouiCountJoinDetail.SinKouiDetail.ItemCd,
+                                      UserName = userMst.Name,
+                                      TenMst = tempTenMstList.FirstOrDefault(p => p.StartDate <= sinKouiCountJoinDetail.SinKouiCount.SinDate && sinKouiCountJoinDetail.SinKouiCount.SinDate <= p.EndDate)
+                                  };
+
+            var joinTenMstList = joinTenMstQuery.Where(p => raiinNoList.Contains(p.RaiinNo)
+                                                            && sinDateList.Contains(p.SinDate)
+                                                            && mainPidList.Contains(p.HokenPid)
+                                                            && p.TenMst.IsNodspKarte == 0)
+                                                .ToList();
+
+            var result = joinTenMstList.Select(item => new SinKouiListModel(
+                                                       item.CreateId,
+                                                       item.UserName,
+                                                       item.CreateDate,
+                                                       item.HokenPid,
+                                                       item.SinDate,
+                                                       item.RaiinNo,
+                                                       item.ItemCd,
+                                                       item.TenMst.SinKouiKbn,
+                                                       item.TenMst.ItemCd,
+                                                       item.TenMst.Name ?? string.Empty,
+                                                       item.TenMst.KohatuKbn,
+                                                       item.TenMst.YohoKbn,
+                                                       item.TenMst.IpnNameCd ?? string.Empty,
+                                                       item.TenMst.DrugKbn,
+                                                       item.TenMst.IsNodspKarte
+                                        )).ToList();
+            return result;
+        }
+
         #region private method
         private long SearchKarte(int hpId, long ptId, int isDeleted, List<long> raiinNoList, string keyWord, bool isNext)
         {
@@ -617,7 +688,21 @@ namespace Infrastructure.Repositories
                     string updateName = _userInfoService.GetNameById(odrInf.UpdateId);
 
                     List<OdrInfDetail> odrDetailInfList = allOdrDetailInfList.Where(o => o.RaiinNo == raiinNo && o.RpNo == odrInf.RpNo && o.RpEdaNo == odrInf.RpEdaNo).ToList();
-
+                    if (type == 1)
+                    {
+                        foreach (var order in odrDetailInfList)
+                        {
+                            var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == order.ItemCd);
+                            if (tenMst != null && tenMst.IsNodspKarte != 0)
+                            {
+                                odrDetailInfList.Remove(order);
+                            }
+                        }
+                        if (odrInf.OdrKouiKbn == 10)
+                        {
+                            odrDetailInfList = odrDetailInfList.Where(detail => detail.ItemCd != ItemCdConst.JikanKihon).ToList();
+                        }
+                    }
 
                     OrdInfModel ordInfModel = Order.CreateBy(odrInf, odrDetailInfList, tenMsts, kensaMsts, ipnNameMsts, createName, updateName, odrInf.OdrKouiKbn, (int)kensaIrai, (int)kensaIraiCondition);
                     odrInfModelList.Add(ordInfModel);
