@@ -533,6 +533,7 @@ namespace Infrastructure.Repositories
             var karteInfEntities = NoTrackingDataContext.KarteInfs
                 .Where(k => k.PtId == ptId &&
                             k.HpId == hpId &&
+                            k.KarteKbn == KarteConst.KarteKbn &&
                             k.Text != null &&
                             k.Text.Contains(keyWord) &&
                             raiinNoList.Contains(k.RaiinNo) &&
