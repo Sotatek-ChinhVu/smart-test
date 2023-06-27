@@ -68,7 +68,7 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
             }
         }
 
-        var systemConfigs = _systemConfRepository.GetList(SystemConfGroupCodes.ReceptionTimeColor, SystemConfGroupCodes.ReceptionStatusColor);
+        var systemConfigs = _systemConfRepository.GetList(hpId, SystemConfGroupCodes.ReceptionTimeColor, SystemConfGroupCodes.ReceptionStatusColor);
 
         var receptionTimeColorConfigs = systemConfigs
                 .Where(c => c.GrpCd == SystemConfGroupCodes.ReceptionTimeColor)

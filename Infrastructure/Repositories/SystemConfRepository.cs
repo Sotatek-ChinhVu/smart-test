@@ -7,7 +7,6 @@ using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using StackExchange.Redis;
 using System.Collections;
 using System.Text.Json;
@@ -529,8 +528,9 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             }
         }
 
-        return TrackingDataContext.SaveChanges() > 0;
-
+        var result = TrackingDataContext.SaveChanges() > 0;
+        _cache.KeyDelete(key);
+        return result;
     }
 
     private void UpdatePtRyosyoDetail(int userId, SystemConfModel model)
