@@ -12,15 +12,15 @@ public class P45KoukiSeikyuMapper : CommonReportingRequest
     private readonly string _formFileNameP2;
     private readonly Dictionary<string, bool> _visibleFieldData;
     private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
+    private readonly Dictionary<string, string> _fileName;
 
-    public P45KoukiSeikyuMapper(Dictionary<int, ReportConfigModel> reportConfigPerPage, Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileNameP1, string formFileNameP2, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
+    public P45KoukiSeikyuMapper(Dictionary<int, ReportConfigModel> reportConfigPerPage, Dictionary<int, Dictionary<string, string>> setFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, Dictionary<string, string> fileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
     {
         _reportConfigPerPage = reportConfigPerPage;
-        _setFieldData = singleFieldDataM;
+        _setFieldData = setFieldData;
         _listTextData = listTextData;
         _extralData = extralData;
-        _formFileNameP1 = formFileNameP1;
-        _formFileNameP2 = formFileNameP2;
+        _fileName = fileName;
         _singleFieldData = singleFieldData;
         _visibleFieldData = visibleFieldData;
     }
@@ -71,11 +71,11 @@ public class P45KoukiSeikyuMapper : CommonReportingRequest
     }
     public override Dictionary<string, string> GetFileNamePageMap()
     {
-        var fileName = new Dictionary<string, string>
+        /*var fileName = new Dictionary<string, string>
         {
-            { "1", _formFileNameP1 }, { "2", _formFileNameP2 }, { "3", _formFileNameP1 },{ "4", _formFileNameP1 }
-        };
-        return fileName;
+            { "1", _formFileNameP1 }, { "2", _formFileNameP2 }, { "3", _formFileNameP1 }
+        };*/
+        return _fileName;
     }
 
     public override Dictionary<string, bool> GetVisibleFieldData()

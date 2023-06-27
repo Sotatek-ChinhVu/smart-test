@@ -43,6 +43,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, bool> _visibleFieldData;
     private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
+    private readonly Dictionary<string, bool> _visibleAtPrint;
 
     /// <summary>
     /// Finder
@@ -59,6 +60,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         _extralData = new();
         _visibleFieldData = new();
         _reportConfigPerPage = new();
+        _visibleAtPrint = new();
     }
 
     #endregion
@@ -82,7 +84,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         }
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
     }
 
     private bool UpdateDrawForm()

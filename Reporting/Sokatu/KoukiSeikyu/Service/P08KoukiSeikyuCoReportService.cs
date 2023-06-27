@@ -53,6 +53,7 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
     private readonly Dictionary<string, bool> _visibleFieldData;
     private const string _formFileName = "p08KoukiSeikyu.rse";
     private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
+    private readonly Dictionary<string, bool> _visibleAtPrint;
 
     #region Constructor and Init
     public P08KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder kokhoFinder)
@@ -63,6 +64,7 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        _visibleAtPrint = new();
     }
     #endregion
     public CommonReportingRequestModel GetP08KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
@@ -86,7 +88,7 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
         }
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
     }
 
     #region Private function

@@ -1,6 +1,4 @@
 ﻿using Helper.Common;
-using Helper.Constants;
-using Helper.Extension;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.Common.Utils;
@@ -53,6 +51,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        _reportConfigPerPage = new();
     }
     #endregion
 
@@ -71,7 +70,8 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
         var getData = GetData();
-
+        int indexPage = 1;
+        var fileName = new Dictionary<string, string>();
         foreach (string currentNo in hokensyaNos)
         {
             _currentPage = 1;
@@ -80,12 +80,21 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
             while (getData && _hasNextPage)
             {
                 UpdateDrawForm();
-                _currentPage ++;
+                if (_currentPage == 2)
+                {
+                    fileName.Add(indexPage.ToString(), _formFileNameP2);
+                }
+                else
+                {
+                    fileName.Add(indexPage.ToString(), _formFileNameP1);
+                }
+                _currentPage++;
+                indexPage++;
             }
         }
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new P45KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileNameP1, _formFileNameP2, _singleFieldData, _visibleFieldData).GetData();
+        return new P45KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
     }
     #region Private function
 
