@@ -107,14 +107,25 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
         if (saveSuccess)
         {
+            List<SetFileInfModel> setFileInfModelList = new();
             var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
             long ptNum = ptInf != null ? ptInf.PtNum : 0;
             var fileInfUpdateTemp = CopyFileFromKarteToSuperSet(ptNum, path, listFileName);
             if (fileInfUpdateTemp.Any())
             {
-                listUpdates = fileInfUpdateTemp.Select(item => item.Value).ToList();
+                foreach (var item in fileInfUpdateTemp)
+                {
+                    if (item.Key == item.Value)
+                    {
+                        setFileInfModelList.Add(new SetFileInfModel(false, item.Value));
+                    }
+                    else
+                    {
+                        setFileInfModelList.Add(new SetFileInfModel(true, item.Value));
+                    }
+                }
             }
-            _superSetDetailRepository.SaveListSetKarteFile(hpId, setCd, host, listUpdates.Select(item => new SetFileInfModel(false, item)).ToList(), false);
+            _superSetDetailRepository.SaveListSetKarteFile(hpId, setCd, host, setFileInfModelList, false);
         }
         else
         {
