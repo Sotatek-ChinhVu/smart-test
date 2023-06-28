@@ -210,7 +210,7 @@ public class ReceiptPrintService : IReceiptPrintService
         {
             result = _p08KokhoSeikyuCoReportService.GetP08KokhoSeikyuReportingData(hpId, seikyuYm, seikyuType);
         }
-        result.JobName = "check";
+        result.JobName = formName;
         return result;
     }
 
