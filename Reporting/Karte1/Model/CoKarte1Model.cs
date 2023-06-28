@@ -4,7 +4,7 @@ namespace Reporting.Karte1.Model
 {
     public class CoKarte1Model
     {
-        CoPtInfModel PtInfModel { get; } 
+        CoPtInfModel PtInfModel { get; }
         public List<CoPtByomeiModel> PtByomeiModels { get; }
 
         CoPtHokenInfModel PtHokenInfModel { get; }
@@ -280,13 +280,13 @@ namespace Reporting.Karte1.Model
 
                     if (PtHokenInfModel.PtKohis != null)
                     {
-                        for (int i = 0; i < PtHokenInfModel.PtKohis.Count(); i++)
+                        for (int i = 0; i < PtHokenInfModel.PtKohis.Count; i++)
                         {
-                            if (PtHokenInfModel.PtKohis[i].HokenMst.FutanKbn == 0)
+                            if (PtHokenInfModel.PtKohis[i].HokenMst?.FutanKbn == 0)
                             {
                                 ret = 0;
                             }
-                            else if (PtHokenInfModel.PtKohis[i].FutanRate > 0 && (ret == null || ret > PtHokenInfModel.PtKohis[i].FutanRate))
+                            else if (PtHokenInfModel.PtKohis[i]?.FutanRate != null && PtHokenInfModel.PtKohis[i].FutanRate > 0 && (ret == null || ret > PtHokenInfModel.PtKohis[i].FutanRate))
                             {
                                 ret = PtHokenInfModel.PtKohis[i].FutanRate;
                             }
