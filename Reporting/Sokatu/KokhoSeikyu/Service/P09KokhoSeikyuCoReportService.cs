@@ -1,5 +1,8 @@
-﻿using Reporting.Mappers.Common;
+﻿using Helper.Common;
+using Helper.Constants;
+using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
+using Reporting.Sokatu.Common.Utils;
 using Reporting.Sokatu.KokhoSeikyu.DB;
 using Reporting.Sokatu.KokhoSeikyu.Mapper;
 using Reporting.Structs;
@@ -115,37 +118,40 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 Dictionary<string, string> fielDataPerPage = new();
                 fielDataPerPage.Add("hokensyaNo", currentHokensyaNo);
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                _listTextData.Add(pageIndex, fielDataPerPage);
+                _setFieldData.Add(pageIndex, fielDataPerPage);
 
-                if (CurrentPage >= 2) return 1;
+                if (currentPage >= 2) return 1;
 
                 //医療機関情報
-                CoRep.SetFieldData("address1", hpInf.Address1);
-                CoRep.SetFieldData("address2", hpInf.Address2);
-                CoRep.SetFieldData("hpName", hpInf.ReceHpName);
-                CoRep.SetFieldData("kaisetuName", hpInf.KaisetuName);
+                SetFieldData("address1", hpInf.Address1);
+                SetFieldData("address2", hpInf.Address2);
+                SetFieldData("hpName", hpInf.ReceHpName);
+                SetFieldData("kaisetuName", hpInf.KaisetuName);
                 //請求年月
                 CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(seikyuYm * 100 + 1);
-                CoRep.SetFieldData("seikyuGengo", wrkYmd.Gengo);
-                CoRep.SetFieldData("seikyuYear", wrkYmd.Year);
-                CoRep.SetFieldData("seikyuMonth", wrkYmd.Month);
+                SetFieldData("seikyuGengo", wrkYmd.Gengo);
+                SetFieldData("seikyuYear", wrkYmd.Year.ToString());
+                SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
                 //提出年月日
                 wrkYmd = CIUtil.SDateToShowWDate3(
                     CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
                 );
-                CoRep.SetFieldData("reportGengo", wrkYmd.Gengo);
-                CoRep.SetFieldData("reportYear", wrkYmd.Year);
-                CoRep.SetFieldData("reportMonth", wrkYmd.Month);
-                CoRep.SetFieldData("reportDay", wrkYmd.Day);
+                SetFieldData("reportGengo", wrkYmd.Gengo);
+                SetFieldData("reportYear", wrkYmd.Year.ToString());
+                SetFieldData("reportMonth", wrkYmd.Month.ToString());
+                SetFieldData("reportDay", wrkYmd.Day.ToString());
                 //印
-                CoRep.ObjectVisible("inkan", seikyuYm < KaiseiDate.m202210);
-                CoRep.ObjectVisible("inkanMaru", seikyuYm < KaiseiDate.m202210);
-                CoRep.ObjectVisible("bikoRate9", seikyuYm < KaiseiDate.m202210);
-                CoRep.ObjectVisible("bikoIppan", seikyuYm >= KaiseiDate.m202210);
+                SetVisibleFieldData("inkan", seikyuYm < KaiseiDate.m202210);
+                SetVisibleFieldData("inkanMaru", seikyuYm < KaiseiDate.m202210);
+                SetVisibleFieldData("bikoRate9", seikyuYm < KaiseiDate.m202210);
+                SetVisibleFieldData("bikoIppan", seikyuYm >= KaiseiDate.m202210);
 
                 return 1;
             }
             #endregion
+
+            List<ListTextObject> listDataPerPage = new();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
 
             #region BodyP1
             int UpdateFormBodyP1()
@@ -174,17 +180,18 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                     countData wrkData = new countData();
                     //件数
                     wrkData.Count = wrkReces.Count;
-                    CoRep.ListText("count", 0, rowNo, wrkData.Count);
+                    listDataPerPage.Add(new("count", 0, rowNo, wrkData.Count.ToString()));
                     //日数
                     wrkData.Nissu = wrkReces.Sum(r => r.HokenNissu);
-                    CoRep.ListText("nissu", 0, rowNo, wrkData.Nissu);
+                    listDataPerPage.Add(new("nissu", 0, rowNo, wrkData.Nissu.ToString()));
                     //点数
                     wrkData.Tensu = wrkReces.Sum(r => r.Tensu);
-                    CoRep.ListText("tensu", 0, rowNo, wrkData.Tensu);
+                    listDataPerPage.Add(new("tensu", 0, rowNo, wrkData.Tensu.ToString()));
                     //一部負担金
                     wrkData.Futan = wrkReces.Sum(r => r.HokenReceFutan);
-                    CoRep.ListText("futan", 0, rowNo, wrkData.Futan);
+                    listDataPerPage.Add(new("futan", 0, rowNo, wrkData.Futan.ToString()));
                 }
+                _listTextData.Add(pageIndex, listDataPerPage);
 
                 return 1;
             }
@@ -196,11 +203,12 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
 
                 const int maxKohiRow = 4;
-                int kohiIndex = (CurrentPage - 2) * maxKohiRow;
+                int kohiIndex = (currentPage - 2) * maxKohiRow;
 
                 var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
                 if (kohiHoubetus.Count == 0)
                 {
+                    _listTextData.Add(pageIndex, listDataPerPage);
                     _hasNextPage = false;
                     return 1;
                 }
@@ -211,21 +219,21 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                     var wrkReces = curReceInfs.Where(r => r.IsHeiyo && r.IsKohi(kohiHoubetus[kohiIndex])).ToList();
 
                     //法別番号
-                    CoRep.ListText("kohiHoubetu", 0, rowNo, kohiHoubetus[kohiIndex]);
+                    listDataPerPage.Add(new("kohiHoubetu", 0, rowNo, kohiHoubetus[kohiIndex]));
 
                     countData wrkData = new countData();
                     //件数
                     wrkData.Count = wrkReces.Count;
-                    CoRep.ListText("kohiCount", 0, rowNo, wrkData.Count);
+                    listDataPerPage.Add(new("kohiCount", 0, rowNo, wrkData.Count.ToString()));
                     //日数
                     wrkData.Nissu = wrkReces.Sum(r => r.KohiReceNissu(kohiHoubetus[kohiIndex]));
-                    CoRep.ListText("kohiNissu", 0, rowNo, wrkData.Nissu);
+                    listDataPerPage.Add(new("kohiNissu", 0, rowNo, wrkData.Nissu.ToString()));
                     //点数
                     wrkData.Tensu = wrkReces.Sum(r => r.KohiReceTensu(kohiHoubetus[kohiIndex]));
-                    CoRep.ListText("kohiTensu", 0, rowNo, wrkData.Tensu);
+                    listDataPerPage.Add(new("kohiTensu", 0, rowNo, wrkData.Tensu.ToString()));
                     //一部負担金
                     wrkData.Futan = wrkReces.Sum(r => r.KohiReceFutan(kohiHoubetus[kohiIndex]));
-                    CoRep.ListText("kohiFutan", 0, rowNo, wrkData.Futan);
+                    listDataPerPage.Add(new("kohiFutan", 0, rowNo, wrkData.Futan.ToString()));
 
                     kohiIndex++;
                     if (kohiIndex >= kohiHoubetus.Count)
@@ -234,6 +242,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                         break;
                     }
                 }
+                _listTextData.Add(pageIndex, listDataPerPage);
 
                 return 1;
             }
