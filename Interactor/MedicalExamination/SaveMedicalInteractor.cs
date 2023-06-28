@@ -384,7 +384,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 var checkIsSchemaList = _karteInfRepository.ListCheckIsSchema(hpId, ptId, fileInfUpdateTemp);
                 foreach (var item in fileInfUpdateTemp.Select(item => item.Value))
                 {
-                    var isSchema = checkIsSchemaList[item];
+                    var isSchema = checkIsSchemaList.ContainsKey(item) && checkIsSchemaList[item];
                     fileList.Add(new FileInfModel(isSchema, item));
                 }
             }
