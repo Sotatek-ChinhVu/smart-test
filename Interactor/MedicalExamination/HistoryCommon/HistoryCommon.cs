@@ -234,14 +234,18 @@ public class HistoryCommon : IHistoryCommon
                                                               1
                                                               );
             }
-            var raiinNoList = historyList.historyOrderModelList.Select(item => item.RaiinNo).Distinct().ToList();
-            var mainHokenPIdList = historyList.historyOrderModelList.Select(item => item.HokenPid).Distinct().ToList();
-            var sindateList = historyList.historyOrderModelList.Select(item => item.SinDate).Distinct().ToList();
-            List<SinKouiListModel> sinkouiList = _historyOrderRepository.GetSinkouiList(inputData.HpId,
-                                                                                        inputData.PtId,
-                                                                                        sindateList,
-                                                                                        raiinNoList,
-                                                                                        mainHokenPIdList);
+            List<SinKouiListModel> sinkouiList = new();
+            if (historyList.historyOrderModelList != null)
+            {
+                var raiinNoList = historyList.historyOrderModelList.Select(item => item.RaiinNo).Distinct().ToList();
+                var mainHokenPIdList = historyList.historyOrderModelList.Select(item => item.HokenPid).Distinct().ToList();
+                var sindateList = historyList.historyOrderModelList.Select(item => item.SinDate).Distinct().ToList();
+                sinkouiList = _historyOrderRepository.GetSinkouiList(inputData.HpId,
+                                                                     inputData.PtId,
+                                                                     sindateList,
+                                                                     raiinNoList,
+                                                                     mainHokenPIdList);
+            }
             var result = GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList, sinkouiList);
             List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList.OrderBy(r => r.SinDate).ThenBy(r => r.RaiinNo).ToList();
             FilterData(ref historyKarteOdrRaiinList, inputData);

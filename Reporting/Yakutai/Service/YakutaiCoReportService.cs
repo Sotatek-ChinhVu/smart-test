@@ -86,7 +86,7 @@ namespace Reporting.Yakutai.Service
             _printoutDateTime = CIUtil.GetJapanDateTimeNow();
             coModels = GetData();
 
-            if (coModels == null || coModels.Any() == false)
+            if (coModels == null || !coModels.Any())
             {
                 return new();
             }
