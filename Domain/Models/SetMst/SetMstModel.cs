@@ -2,7 +2,7 @@
 
 public class SetMstModel
 {
-    public SetMstModel(int hpId, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int weightKbn, int color, int isDeleted, int isGroup)
+    public SetMstModel(int hpId, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int weightKbn, int color, int isDeleted, int isGroup, bool isAddNew = false)
     {
         HpId = hpId;
         SetCd = setCd;
@@ -17,22 +17,12 @@ public class SetMstModel
         Color = color;
         IsDeleted = isDeleted;
         IsGroup = isGroup;
+        IsAddNew = isAddNew;
     }
     public SetMstModel()
     {
-        HpId = 0;
-        SetCd = 0;
-        SetKbn = 0;
-        SetKbnEdaNo = 0;
-        GenerationId = 0;
-        Level1 = 0;
-        Level2 = 0;
-        Level3 = 0;
         SetName = string.Empty;
-        WeightKbn = 0;
-        Color = 0;
-        IsDeleted = 0;
-        IsGroup = 0;
+        IsAddNew = false;
     }
 
     public int HpId { get; private set; }
@@ -60,4 +50,6 @@ public class SetMstModel
     public int IsDeleted { get; private set; }
 
     public int IsGroup { get; private set; }
+
+    public bool IsAddNew { get; private set; }
 }

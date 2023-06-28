@@ -132,6 +132,7 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId
                     };
+                    //mstModel.FilterId = mst.FilterId;
                     // Create RaiinFilterSort entities with temporary FilterId = 0
                     var sorts = mstModel.ColumnSortInfos.Select(sortModel => CreateSortEntity(tempFilterId, sortModel, hpId, userId)).ToList();
 
