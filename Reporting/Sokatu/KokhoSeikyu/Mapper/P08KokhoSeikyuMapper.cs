@@ -1,31 +1,35 @@
-﻿namespace Reporting.Mappers.Common
+﻿using Reporting.Mappers.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Reporting.Sokatu.KokhoSeikyu.Mapper
 {
-    public class CommonMapper : CommonReportingRequest
+    public class P08KokhoSeikyuMapper : CommonReportingRequest
     {
-        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+        private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, string> _extralData;
-        private readonly Dictionary<string, bool> _visibleFieldData;
-        private readonly string _jobName;
         private readonly string _formFileName;
-        private readonly int _reportType;
+        private readonly Dictionary<string, bool> _visibleFieldData;
+        private readonly Dictionary<string, string> _fileName;
 
-        public CommonMapper(Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData, int reportType, string jobName)
+        public P08KokhoSeikyuMapper(Dictionary<int, Dictionary<string, string>> setFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, Dictionary<string, string> fileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
         {
-            _singleFieldDataM = singleFieldDataM;
+            _setFieldData = setFieldData;
             _listTextData = listTextData;
             _extralData = extralData;
-            _formFileName = formFileName;
+            _fileName = fileName;
             _singleFieldData = singleFieldData;
             _visibleFieldData = visibleFieldData;
-            _reportType = reportType;
-            _jobName = jobName;
         }
 
         public override int GetReportType()
         {
-            return _reportType;
+            return (int)CoReportType.KoukiSeikyu;
         }
 
         public override string GetRowCountFieldName()
@@ -45,7 +49,7 @@
 
         public override string GetJobName()
         {
-            return _jobName;
+            return string.Empty;
         }
 
         public override Dictionary<string, string> GetSingleFieldData()
@@ -65,15 +69,11 @@
 
         public override Dictionary<int, Dictionary<string, string>> GetSetFieldData()
         {
-            return _singleFieldDataM;
+            return _setFieldData;
         }
         public override Dictionary<string, string> GetFileNamePageMap()
         {
-            var fileName = new Dictionary<string, string>
-        {
-            { "1", _formFileName }
-        };
-            return fileName;
+            return _fileName;
         }
 
         public override Dictionary<string, bool> GetVisibleFieldData()
