@@ -23,6 +23,11 @@ public class ReceiptListMapper : CommonReportingRequest
         return "lsSinYm";
     }
 
+    public override string GetJobName()
+    {
+        return "レセチェック一覧";
+    }
+
     public override Dictionary<string, string> GetSingleFieldData()
     {
         return _singleFieldData;
