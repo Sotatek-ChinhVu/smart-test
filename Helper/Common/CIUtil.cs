@@ -236,7 +236,7 @@ namespace Helper.Common
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
 
-            if (endIndex < input.Length)
+            if (endIndex <= input.Length)
             {
                 return input.Substring(startIndex, endIndex);
             }

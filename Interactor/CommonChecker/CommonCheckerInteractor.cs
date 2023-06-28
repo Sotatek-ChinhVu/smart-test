@@ -16,14 +16,13 @@ namespace Interactor.CommonChecker
         {
             var checkedResult = _commonMedicalCheck.CheckListOrder(inputData.HpId, inputData.PtId, inputData.SinDay, inputData.CurrentListOdr, inputData.ListCheckingOrder, inputData.SpecialNoteItem, inputData.PtDiseaseModels, inputData.FamilyItems, inputData.IsDataOfDb, inputData.RealTimeCheckerCondition);
 
-            var result = _commonMedicalCheck.GetErrorDetails(inputData.HpId, inputData.PtId, inputData.SinDay, checkedResult);
-
             if (checkedResult == null || checkedResult.Count == 0)
             {
                 return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Successed);
             }
             else
             {
+                var result = _commonMedicalCheck.GetErrorDetails(inputData.HpId, inputData.PtId, inputData.SinDay, checkedResult);
                 return new GetOrderCheckerOutputData(result ?? new(), GetOrderCheckerStatus.Error);
             }
         }
