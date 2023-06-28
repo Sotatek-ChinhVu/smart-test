@@ -299,7 +299,7 @@ namespace Infrastructure.Repositories
             #region PtHokenPattern
             var dataHokenPatterList = NoTrackingDataContext.PtHokenPatterns.Where(x => x.PtId == ptId && x.HpId == hpId && (x.IsDeleted == DeleteTypes.None || x.HokenPid == maxPidHokenPattern)).OrderByDescending(x => x.HokenPid);
             var dataKohi = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteStatus.None);
-            var dataHokenInf = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None);
+            var dataHokenInf = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId && (x.IsDeleted == DeleteTypes.None || x.HokenId == maxIdHokenInf));
 
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId);
             int birthDayPt = 0;
@@ -309,7 +309,7 @@ namespace Infrastructure.Repositories
             var joinQuery = from ptHokenPattern in dataHokenPatterList
                             join ptHokenInf in dataHokenInf on
                                 new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenId } equals
-                                new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } 
+                                new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId }
                             join ptKohi1 in dataKohi on
                                 new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi1Id } equals
                                 new { ptKohi1.HpId, ptKohi1.PtId, Kohi1Id = ptKohi1.HokenId } into datakohi1
