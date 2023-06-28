@@ -59,21 +59,21 @@ public class SetController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.Save)]
-    public async Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
+    public async Task<ActionResult<Response<GetSetMstListResponse>>> Save([FromBody] SaveSetMstRequest request)
     {
-        var input = new SaveSetMstInputData(request.PtId, request.RaiinNo, request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, HpId, UserId, request.IsGroup);
+        var input = new SaveSetMstInputData(request.PtId, request.RaiinNo, request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, HpId, UserId, request.IsGroup, request.IsAddNew);
         var output = _bus.Handle(input);
 
         if (output.Status == SaveSetMstStatus.Successed)
         {
             await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetSaveChanged,
-                new SuperSetMessage { SetMstModels = new List<SetMstModel> { output.setMstModel ?? new() } });
+                new SuperSetMessage { ReorderSetMstModels = output.SetMstList });
         }
 
         var presenter = new SaveSetMstPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<SaveSetMstResponse>>(presenter.Result);
+        return new ActionResult<Response<GetSetMstListResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.Reorder)]

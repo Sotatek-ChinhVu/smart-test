@@ -604,6 +604,7 @@ using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
 using UseCase.Lock.CheckExistFunctionCode;
 using CommonChecker.Caches.Interface;
 using CommonChecker.Caches;
+using Reporting.Sokatu.KokhoSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -774,6 +775,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
             services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
+            services.AddTransient<IP08KokhoSeikyuCoReportService, P08KokhoSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
