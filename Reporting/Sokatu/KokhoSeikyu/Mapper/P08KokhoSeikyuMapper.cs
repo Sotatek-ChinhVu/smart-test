@@ -29,7 +29,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Mapper
 
         public override int GetReportType()
         {
-            return (int)CoReportType.KoukiSeikyu;
+            return (int)CoReportType.KokhoSeikyu;
         }
 
         public override string GetRowCountFieldName()
