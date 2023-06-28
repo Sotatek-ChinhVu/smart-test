@@ -358,6 +358,41 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
+        public Dictionary<string, bool> ListCheckIsSchema(int hpId, long ptId, Dictionary<string, string> fileInfUpdateTemp)
+        {
+            Dictionary<string, bool> result = new();
+            var fileNameKeyList = fileInfUpdateTemp.Select(item => item.Key).Distinct().ToList();
+            var nextOrderFileList = NoTrackingDataContext.RsvkrtKarteImgInfs.Where(item => item.HpId == hpId
+                                                                                           && item.PtId == ptId
+                                                                                           && !string.IsNullOrEmpty(item.FileName)
+                                                                                           && fileNameKeyList.Contains(item.FileName))
+                                                                             .ToList();
+            var setFileList = NoTrackingDataContext.SetKarteImgInf.Where(item => item.HpId == hpId
+                                                                                 && !string.IsNullOrEmpty(item.FileName)
+                                                                                 && fileNameKeyList.Contains(item.FileName))
+                                                                   .ToList();
+            foreach (var fileInf in fileInfUpdateTemp)
+            {
+                bool isSchema = false;
+                var nextOrderItem = nextOrderFileList.FirstOrDefault(item => item.FileName == fileInf.Key);
+                if (nextOrderItem != null)
+                {
+                    isSchema = nextOrderItem.KarteKbn == 1;
+                }
+                else
+                {
+                    var setItem = setFileList.FirstOrDefault(item => item.FileName == fileInf.Key);
+                    if (setItem != null)
+                    {
+                        isSchema = setItem.KarteKbn == 1;
+                    }
+                }
+
+                result.Add(fileInf.Value, isSchema);
+            }
+            return result;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();
