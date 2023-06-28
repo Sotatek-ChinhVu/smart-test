@@ -64,8 +64,6 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         return result.Where(s => s.GrpCd >= fromGrpCd && s.GrpCd <= toGrpCd).AsEnumerable().Select(s => ToModel(s)).ToList();
     }
 
-
-
     public List<SystemConfModel> GetList(int hpId, List<int> grpCodeList)
     {
         grpCodeList = grpCodeList.Distinct().ToList();
@@ -110,8 +108,14 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                 TrackingDataContext.SystemConfs.Add(systemConfigItem);
             }
         }
-        TrackingDataContext.SaveChanges();
-        _cache.KeyDelete(key);
+       
+        var result = TrackingDataContext.SaveChanges();
+        if (result > 0)
+        {
+            _cache.KeyDelete(key);
+
+        }
+
         return true;
     }
 
@@ -529,7 +533,11 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         }
 
         var result = TrackingDataContext.SaveChanges() > 0;
-        _cache.KeyDelete(key);
+        if (result)
+        {
+            _cache.KeyDelete(key);
+        }
+
         return result;
     }
 

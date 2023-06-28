@@ -45,7 +45,7 @@ namespace Infrastructure.Repositories
             {
                 prefNo = hpInf.PrefNo;
             }
-
+            var hokenMst = NoTrackingDataContext.HokenMsts.ToList();
             IOrderedQueryable<HokenMst> allHokenMstEntity = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId && (x.PrefNo == prefNo || x.PrefNo == 0 || x.IsOtherPrefValid == 1))
                                 .OrderBy(e => e.HpId)
                                 .ThenBy(e => e.HokenNo)

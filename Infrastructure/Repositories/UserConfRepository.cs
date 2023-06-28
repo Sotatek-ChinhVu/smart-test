@@ -234,8 +234,11 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         userConfig.UpdateId = userId;
         userConfig.UpdateDate = CIUtil.GetJapanDateTimeNow();
         userConfig.Val = adoptedValue;
-        TrackingDataContext.SaveChanges();
-        _cache.KeyDelete(key + userId + hpId);
+        var check = TrackingDataContext.SaveChanges();
+        if (check > 0)
+        {
+            _cache.KeyDelete(key + userId + hpId);
+        }
     }
 
     public void UpdateUserConf(int hpId, int userId, int grpCd, int value)
@@ -256,8 +259,11 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         userConfig.UpdateId = userId;
         userConfig.UpdateDate = CIUtil.GetJapanDateTimeNow();
         userConfig.Val = value;
-        TrackingDataContext.SaveChanges();
-        _cache.KeyDelete(key + userId + hpId);
+        var check = TrackingDataContext.SaveChanges();
+        if (check > 0)
+        {
+            _cache.KeyDelete(key + userId + hpId);
+        }
     }
 
     private UserConfModel ToModel(UserConf u)

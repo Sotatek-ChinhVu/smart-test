@@ -277,8 +277,12 @@ namespace Infrastructure.Repositories
                 if (holidayUpdate.HolidayKbn == 0)
                     holidayUpdate.HolidayName = string.Empty;
             }
-            _cache.KeyDelete(HolidayMstCacheKey);
-            return TrackingDataContext.SaveChanges() > 0;
+            var result =  TrackingDataContext.SaveChanges() > 0;
+            if (result)
+            {
+                _cache.KeyDelete(HolidayMstCacheKey);
+            }
+            return result;
         }
 
         public List<HolidayDto> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)

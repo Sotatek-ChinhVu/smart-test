@@ -53,7 +53,6 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
         {
-            _cache.KeyDelete(key);
             var setKbnMstList = Enumerable.Empty<SetKbnMstModel>();
             if (!_cache.KeyExists(key))
             {
