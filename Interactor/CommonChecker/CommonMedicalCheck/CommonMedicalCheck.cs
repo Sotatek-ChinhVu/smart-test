@@ -51,11 +51,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     private readonly double _currentWeight = 0;
 
     private readonly ITenantProvider _tenantProvider;
-    private readonly ITenMstCacheService _tenMstCacheService;
+    private readonly IMasterDataCacheService _masterDataCacheService;
 
-    public CommonMedicalCheck(ITenantProvider tenantProvider, IRealtimeOrderErrorFinder realtimeOrderErrorFinder, ITenMstCacheService tenMstCacheService)
+    public CommonMedicalCheck(ITenantProvider tenantProvider, IRealtimeOrderErrorFinder realtimeOrderErrorFinder)
     {
-        _tenMstCacheService = tenMstCacheService;
+        _masterDataCacheService = new MasterDataCacheService(tenantProvider);
         _tenantProvider = tenantProvider;
         _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
         _itemNameDictionary = new();
@@ -79,7 +79,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         unitChecker.HpID = _hpID;
         unitChecker.PtID = _ptID;
         unitChecker.Sinday = _sinday;
-        unitChecker.InitFinder(_tenantProvider.GetNoTrackingDataContext(), _tenMstCacheService);
+        unitChecker.InitFinder(_tenantProvider.GetNoTrackingDataContext(), _masterDataCacheService);
     }
 
     private void InitTenMstCache(List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
@@ -95,7 +95,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             itemCodeList.AddRange(order.OdrInfDetailModelsIgnoreEmpty.Select(i => i.ItemCd).ToList());
         }
-        _tenMstCacheService.AddCache(itemCodeList.Distinct().ToList());
+        _masterDataCacheService.AddCache(itemCodeList.Distinct().ToList());
     }
 
     public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb, RealTimeCheckerCondition realTimeCheckerCondition)

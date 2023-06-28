@@ -640,7 +640,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
-            services.AddScoped<ITenMstCacheService, TenMstCacheService>();
+            services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();

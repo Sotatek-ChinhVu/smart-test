@@ -31,9 +31,9 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public ISystemConfig? SystemConfig { get; private set; }
 
-        public ITenMstCacheService TenMstCacheService { get; private set; }
+        public IMasterDataCacheService TenMstCacheService { get; private set; }
 
-        public void InitFinder(TenantNoTrackingDataContext _dataContext, ITenMstCacheService _tenMstCacheService)
+        public void InitFinder(TenantNoTrackingDataContext _dataContext, IMasterDataCacheService _tenMstCacheService)
         {
             Finder = new RealtimeCheckerFinder(_dataContext, _tenMstCacheService);
             MasterFinder = new MasterFinder(_dataContext);

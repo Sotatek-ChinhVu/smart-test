@@ -23,8 +23,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
     public class RealtimeCheckerFinder : IRealtimeCheckerFinder
     {
         public TenantNoTrackingDataContext NoTrackingDataContext { get; private set; }
-        private readonly ITenMstCacheService _tenMstCacheService;
-        public RealtimeCheckerFinder(TenantNoTrackingDataContext noTrackingDataContext, ITenMstCacheService tenMstCacheService)
+        private readonly IMasterDataCacheService _tenMstCacheService;
+        public RealtimeCheckerFinder(TenantNoTrackingDataContext noTrackingDataContext, IMasterDataCacheService tenMstCacheService)
         {
             NoTrackingDataContext = noTrackingDataContext;
             _tenMstCacheService = tenMstCacheService;
@@ -126,15 +126,18 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .FirstOrDefault() ?? new PhysicalAverage();
         }
 
-        private IQueryable<M56ExIngrdtMain> GetDrugTypeInfo(int haigouSetting)
+        private List<M56ExIngrdtMain> GetDrugTypeInfo(int haigouSetting, List<string> itemCodeList)
         {
-            return NoTrackingDataContext.M56ExIngrdtMain.Where
-                                                                            (
-                                                                                i => haigouSetting == 0 ||
-                                                                                     haigouSetting == 1 && (i.HaigouFlg != "1" || i.YuekiFlg != "1") ||
-                                                                                     haigouSetting == 2 && (i.HaigouFlg != "1" || i.KanpoFlg != "1") ||
-                                                                                     haigouSetting == 3 && (i.HaigouFlg != "1" || (i.YuekiFlg != "1" && i.KanpoFlg != "1"))
-                                                                            );
+            return _tenMstCacheService
+                .GetM56ExIngrdtMainList(itemCodeList)
+                .Where
+                (
+                    i => haigouSetting == 0 ||
+                         haigouSetting == 1 && (i.HaigouFlg != "1" || i.YuekiFlg != "1") ||
+                         haigouSetting == 2 && (i.HaigouFlg != "1" || i.KanpoFlg != "1") ||
+                         haigouSetting == 3 && (i.HaigouFlg != "1" || (i.YuekiFlg != "1" && i.KanpoFlg != "1"))
+                )
+                .ToList();
         }
 
         #region Check allergy
@@ -154,8 +157,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 (List<TenMst> tenMstList, List<M56ExEdIngredients> m56ExEdIngredientList) getData(List<string> itemCodeList)
                 {
                     var tenMstList = _tenMstCacheService.GetTenMstList(itemCodeList, sinDate);
-                    var yjCdList = tenMstList.Select(t => t.YjCd).Distinct().ToList();
-                    var m56ExEdIngredientList = NoTrackingDataContext.M56ExEdIngredients.Where(i => (i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1") && yjCdList.Contains(i.YjCd)).ToList();
+                    var m56ExEdIngredientList = _tenMstCacheService.GetM56ExEdIngredientList(itemCodeList).Where(i => (i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1")).ToList();
 
                     return new(tenMstList, m56ExEdIngredientList);
                 }
@@ -446,11 +448,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             (List<TenMst> tenMstList, List<M56ExEdIngredients> componentList, List<M56ExIngrdtMain> drugTypeList) getData(List<string> itemCodeList)
             {
                 List<TenMst> tenMstList = _tenMstCacheService.GetTenMstList(itemCodeList, sinDate);
-
-                var yjCdList = tenMstList.Select(t => t.YjCd).ToList();
-
-                List<M56ExEdIngredients> componentList = NoTrackingDataContext.M56ExEdIngredients.Where(i => i.Sbt == 1 && yjCdList.Contains(i.YjCd)).ToList();
-                List<M56ExIngrdtMain> drugTypeList = GetDrugTypeInfo(haigouSetting).Where(i => yjCdList.Contains(i.YjCd)).ToList();
+                List<M56ExEdIngredients> componentList = _tenMstCacheService.GetM56ExEdIngredientList(itemCodeList).Where(i => i.Sbt == 1).ToList();
+                List<M56ExIngrdtMain> drugTypeList = GetDrugTypeInfo(haigouSetting, itemCodeList);
 
                 return (tenMstList, componentList, drugTypeList);
             }
@@ -553,15 +552,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             (List<TenMst> tenMstList, List<M56ExEdIngredients> componentList, List<M56ExIngrdtMain> drugTypeList, List<M56ProdrugCd> drugProList) getData(List<string> itemCodeList)
             {
                 List<TenMst> tenMstList = _tenMstCacheService.GetTenMstList(itemCodeList, sinDate);
-
-                var yjCdList = tenMstList.Select(t => t.YjCd).Distinct().ToList();
-
-                List<M56ExEdIngredients> componentList = NoTrackingDataContext.M56ExEdIngredients.Where(i => i.ProdrugCheck != null && i.ProdrugCheck != string.Empty && i.ProdrugCheck != "0" && yjCdList.Contains(i.YjCd)).ToList();
-                List<M56ExIngrdtMain> drugTypeList = GetDrugTypeInfo(haigouSetting).Where(i => yjCdList.Contains(i.YjCd)).ToList();
-
-                var seibunCdList = componentList.Select(s => s.SeibunCd).ToList();
-
-                List<M56ProdrugCd> drugProList = NoTrackingDataContext.M56ProdrugCd.Where(m => seibunCdList.Contains(m.SeibunCd)).ToList();
+                List<M56ExEdIngredients> componentList = _tenMstCacheService.GetM56ExEdIngredientList(itemCodeList).Where(i => i.ProdrugCheck != null && i.ProdrugCheck != string.Empty && i.ProdrugCheck != "0").ToList();
+                List<M56ExIngrdtMain> drugTypeList = GetDrugTypeInfo(haigouSetting, itemCodeList);
+                List<M56ProdrugCd> drugProList = _tenMstCacheService.GetM56ProdrugCdList(itemCodeList);
 
                 return (tenMstList, componentList, drugTypeList, drugProList);
             }
@@ -661,15 +654,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             (List<TenMst> tenMstList, List<M56ExEdIngredients> componentList, List<M56ExIngrdtMain> drugTypeList, List<M56ExAnalogue> drugAnalogueList) getData(List<string> itemCodeList)
             {
                 List<TenMst> tenMstList = _tenMstCacheService.GetTenMstList(itemCodeList, sinDate);
-
-                var yjCdList = tenMstList.Select(t => t.YjCd).Distinct().ToList();
-
-                List<M56ExEdIngredients> componentList = NoTrackingDataContext.M56ExEdIngredients.Where(i => i.AnalogueCheck == "1" && yjCdList.Contains(i.YjCd)).ToList();
-                List<M56ExIngrdtMain> drugTypeList = GetDrugTypeInfo(haigouSetting).Where(i => yjCdList.Contains(i.YjCd)).ToList();
-
-                var seibunCdList = componentList.Select(s => s.SeibunCd).Distinct().ToList();
-
-                List<M56ExAnalogue> drugAnalogueList = NoTrackingDataContext.M56ExAnalogue.Where(m => seibunCdList.Contains(m.SeibunCd)).ToList();
+                List<M56ExEdIngredients> componentList = _tenMstCacheService.GetM56ExEdIngredientList(itemCodeList).Where(i => i.AnalogueCheck == "1").ToList();
+                List<M56ExIngrdtMain> drugTypeList = GetDrugTypeInfo(haigouSetting, itemCodeList);
+                List<M56ExAnalogue> drugAnalogueList = _tenMstCacheService.GetM56ExAnalogueList(itemCodeList);
 
                 return (tenMstList, componentList, drugTypeList, drugAnalogueList);
             }
@@ -769,16 +756,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             (List<TenMst> tenMstList, List<M56ExIngrdtMain> drugTypeList, List<M56YjDrugClass> yjDrugList, List<M56DrugClass> drugList) getData(List<string> itemCodeList)
             {
                 List<TenMst> tenMstList = _tenMstCacheService.GetTenMstList(itemCodeList, sinDate);
-
-                var yjCdList = tenMstList.Select(t => t.YjCd).Distinct().ToList();
-
-                List<M56ExIngrdtMain> drugTypeList = GetDrugTypeInfo(haigouSetting).Where(i => yjCdList.Contains(i.YjCd)).ToList();
-
-                List<M56YjDrugClass> yjDrugList = NoTrackingDataContext.M56YjDrugClass.Where(m => yjCdList.Contains(m.YjCd)).ToList();
-
-                var classCdList = yjDrugList.Select(y => y.ClassCd).Distinct().ToList();
-
-                List<M56DrugClass> drugList = NoTrackingDataContext.M56DrugClass.Where(d => d.ClassDuplication == "1" && classCdList.Contains(d.ClassCd)).ToList();
+                List<M56ExIngrdtMain> drugTypeList = GetDrugTypeInfo(haigouSetting, itemCodeList);
+                List<M56YjDrugClass> yjDrugList = _tenMstCacheService.GetM56YjDrugClassList(itemCodeList);
+                List<M56DrugClass> drugList = _tenMstCacheService.GetM56DrugClassList(itemCodeList).Where(d => d.ClassDuplication == "1").ToList();
 
                 return (tenMstList, drugTypeList, yjDrugList, drugList);
             }
