@@ -1721,13 +1721,16 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         // if dropItem is level1 
         if (dropItem.Level2 == 0)
         {
+            var dragLevel1 = dragItem.Level1;
+            var dragLevel2 = dragItem.Level2;
+            var dragLevel3 = dragItem.Level3;
             var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > dragItem.Level3).ToList();
             LevelUp(3, userId, listUpdateLevel3);
             foreach (var item in listUpdateLevel3)
             {
                 item.IsDeleted = DeleteTypes.Deleted;
             }
-            var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList();
+            var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0 && (dragItem.Level1 != dropItem.Level1 || !( mst.Level1 == dragLevel1 && mst.Level2 == dragLevel2 && mst.Level3 == dragLevel3))).ToList();
             var maxLevel2 = listUpdateLevel2.Count == 0 ? 0 : listUpdateLevel2.Max(l => l.Level2);
             var maxDropUpdateLevel2 = listUpdateLevel2.Where(m => m.Level2 == maxLevel2).ToList();
             var rootMaxDropUpdateLevel2 = maxDropUpdateLevel2.FirstOrDefault(m => m.Level3 == 0);
@@ -1746,13 +1749,16 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             dragItem.IsDeleted = DeleteTypes.Deleted;
             if (rootMaxDropUpdateLevel2 != null)
             {
+                rootMaxDropUpdateLevel2.IsDeleted = DeleteTypes.Deleted;
                 SaveLevelDown(2, userId, new List<SetMst> { rootMaxDropUpdateLevel2 });
                 foreach (var item in maxDropUpdateLevel2.Where(m => m != rootMaxDropUpdateLevel2).ToList())
                 {
                     item.Level2 = rootMaxDropUpdateLevel2.Level2;
                     item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
+                    item.IsDeleted = DeleteTypes.Deleted;
                 }
+                TrackingDataContext.SaveChanges();
             }
             else
             {
@@ -1765,6 +1771,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             }
 
             foreach (var item in listDropUpdateLevel2ExceptMaxLevel)
+            {
+                item.IsDeleted = DeleteTypes.None;
+            }
+
+            foreach (var item in maxDropUpdateLevel2)
             {
                 item.IsDeleted = DeleteTypes.None;
             }
