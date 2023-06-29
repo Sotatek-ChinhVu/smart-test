@@ -33,7 +33,7 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
     /// <summary>
     /// CoReport Model
     /// </summary>
-    private List<CoP22WelfareReceInfModel> receInfs;
+    private List<CoP22WelfareReceInfModel> receInfs = null;
     private CoHpInfModel hpInf;
 
     private List<(int sinym, string code, string name)> cityNames;
@@ -82,7 +82,17 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
         this.seikyuYm = seikyuYm;
         this.seikyuType = seikyuType;
         this.welfareType = welfareType;
+
+        switch (welfareType)
+        {
+            //こども医療費
+            case 0: kohiHoubetus = new List<string> { "83" }; break;
+            //母子障害
+            case 1: kohiHoubetus = new List<string> { "84", "85" }; break;
+        }
+
         var getData = GetData();
+
         if (welfareType == 1)
         {
             _formFileName = "p22WelfareSeikyu84.rse";
@@ -236,7 +246,7 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
                 listDataPerPage.Add(new("tensu", 0, 11, totalData.Tensu.ToString()));
                 listDataPerPage.Add(new("futan", 0, 11, String.Format("{0:#,0}", totalData.Futan)));
             }
-
+            _listTextData.Add(pageIndex, listDataPerPage);
             return 1;
         }
         #endregion
@@ -281,7 +291,7 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
         kohiHoubetuMsts = _welfareFinder.GetKohiHoubetuMst(hpId, seikyuYm);
 
 
-        return (receInfs?.Count ?? 0) == 0;
+        return (receInfs?.Count ?? 0) > 0;
     }
 
     private void SetFieldData(string field, string value)
