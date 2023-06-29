@@ -4,6 +4,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using System.Linq;
 using System.Linq.Dynamic.Core.Tokenizer;
 
@@ -333,6 +334,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                                                              )).ToList();
         return result;
     }
+
     public List<SyunoNyukinModel> GetListSyunoNyukinModel(List<long> listRaiinNo)
     {
         var result = TrackingDataContext.SyunoNyukin.Where(item => listRaiinNo.Contains(item.RaiinNo) && item.IsDeleted == 0)
@@ -354,6 +356,33 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                                                                     item.NyukinjiDetail ?? string.Empty
                                                              )).ToList();
         return result;
+    }
+
+    public bool IsNyukinExisted(int hpId, long ptId, long raiinNo, int sinDate)
+    {
+        var seikyuList = NoTrackingDataContext.SyunoSeikyus
+                         .Where(item => item.HpId == hpId
+                                        && item.PtId == ptId
+                                        && item.RaiinNo == raiinNo
+                                        && item.SinDate == sinDate
+                                        && item.NyukinKbn != 0);
+
+        var nyukinList = NoTrackingDataContext.SyunoNyukin
+                         .Where(item => item.HpId == hpId
+                                        && item.PtId == ptId
+                                        && item.RaiinNo == raiinNo
+                                        && item.SinDate == sinDate
+                                        && item.IsDeleted == 0);
+
+        var query = from seikyu in seikyuList
+                    join nyukin in nyukinList on new { seikyu.HpId, seikyu.PtId, seikyu.SinDate, seikyu.RaiinNo }
+                                              equals new { nyukin.HpId, nyukin.PtId, nyukin.SinDate, nyukin.RaiinNo }
+                    select new
+                    {
+                        Seikyu = seikyu
+                    };
+
+        return query.Any();
     }
 
     public void ReleaseResource()
