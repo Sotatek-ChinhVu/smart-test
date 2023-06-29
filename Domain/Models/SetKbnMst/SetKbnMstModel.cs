@@ -1,10 +1,7 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Domain.Models.SetKbnMst
+﻿namespace Domain.Models.SetKbnMst
 {
     public class SetKbnMstModel
     {
-        [JsonConstructor]
         public SetKbnMstModel(int hpId, int setKbn, int setKbnEdaNo, string setKbnName, int kaCd, int docCd, int isDeleted, int generationId)
         {
             HpId = hpId;

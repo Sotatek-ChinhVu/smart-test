@@ -4,13 +4,10 @@ namespace UseCase.Reception.GetSettings;
 
 public class GetReceptionSettingsInputData : IInputData<GetReceptionSettingsOutputData>
 {
-    public GetReceptionSettingsInputData(int userId, int hpId)
+    public GetReceptionSettingsInputData(int userId)
     {
         UserId = userId;
-        HpId = hpId;
     }
-
-    public int HpId { get; private set; }
 
     public int UserId { get; private set; }
 }
