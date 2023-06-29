@@ -4,7 +4,7 @@ namespace Domain.Models.InsuranceMst
 {
     public interface IInsuranceMstRepository : IRepositoryBase
     {
-        InsuranceMstModel GetDataInsuranceMst(int hpId, long ptId, int sinDate);
+        (InsuranceMstModel insurance, int prefNo) GetDataInsuranceMst(int hpId, long ptId, int sinDate);
 
         IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int sinDate, string keyword);
 
