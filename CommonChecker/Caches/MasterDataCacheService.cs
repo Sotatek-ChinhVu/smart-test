@@ -1,4 +1,5 @@
 ﻿using CommonChecker.Caches.Interface;
+using CommonCheckers;
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -15,10 +16,11 @@ namespace CommonChecker.Caches
         private readonly List<M56ExAnalogue> _m56ExAnalogueList = new List<M56ExAnalogue>();
         private readonly List<M56YjDrugClass> _m56YjDrugClassList = new List<M56YjDrugClass>();
         private readonly List<M56DrugClass> _m56DrugClassList = new List<M56DrugClass>();
+        private readonly SystemConfig _systemConfig;
 
         public MasterDataCacheService(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-
+            _systemConfig = new SystemConfig(tenantProvider.GetNoTrackingDataContext());
         }
 
         public void AddCache(List<string> itemCodeList)
@@ -50,6 +52,11 @@ namespace CommonChecker.Caches
             var classCdList = yjDrugList.Select(y => y.ClassCd).Distinct().ToList();
 
             _m56DrugClassList.AddRange(NoTrackingDataContext.M56DrugClass.Where(d => classCdList.Contains(d.ClassCd)).ToList());
+        }
+
+        public SystemConfig GetSystemConfig()
+        {
+            return _systemConfig;
         }
 
         private void AddCacheIfNeed(List<string> itemCodeList)

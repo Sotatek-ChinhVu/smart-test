@@ -1,4 +1,5 @@
-﻿using Entity.Tenant;
+﻿using CommonCheckers;
+using Entity.Tenant;
 
 namespace CommonChecker.Caches.Interface
 {
@@ -21,5 +22,7 @@ namespace CommonChecker.Caches.Interface
         List<M56YjDrugClass> GetM56YjDrugClassList(List<string> itemCodeList);
 
         List<M56DrugClass> GetM56DrugClassList(List<string> itemCodeList);
+
+        SystemConfig GetSystemConfig();
     }
 }
