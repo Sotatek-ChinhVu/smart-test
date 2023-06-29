@@ -25289,6 +25289,33 @@ namespace TenantMigration.Migrations
                     b.ToTable("USER_PERMISSION");
                 });
 
+            modelBuilder.Entity("Entity.Tenant.UserToken", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("USER_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text")
+                        .HasColumnName("REFRESH_TOKEN")
+                        .HasColumnOrder(2);
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("TOKEN_EXPIRY_TIME")
+                        .HasColumnOrder(3);
+
+                    b.Property<bool>("RefreshTokenIsUsed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("REFRESH_TOKEN_IS_USED")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("UserId", "RefreshToken");
+
+                    b.ToTable("USER_TOKEN");
+                });
+
             modelBuilder.Entity("Entity.Tenant.WrkSinKoui", b =>
                 {
                     b.Property<int>("HpId")

@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Models.KarteFilterMst;
+using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Reception;
 
 namespace Domain.Models.HistoryOrder
@@ -21,5 +22,7 @@ namespace Domain.Models.HistoryOrder
         List<HistoryOrderModel> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiinNo, byte isKarteInf, List<Tuple<long, bool>> raiinNos);
 
         (int totalCount, List<HistoryOrderModel> historyOrderModels) GetOrdersForOneOrderSheetGroup(int hpId, long ptId, int odrKouiKbn, int grpKouiKbn, int sinDate, int offset, int limit);
+
+        List<SinKouiListModel> GetSinkouiList(int hpId, long ptId, List<int> sinDateList, List<long> raiinNoList, List<int> mainPidList);
     }
 }

@@ -5078,8 +5078,6 @@ namespace Infrastructure.Repositories
                                      from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
                                      select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
 
-            var kensaMstQuery = NoTrackingDataContext.KensaMsts.AsQueryable();
-
             var queryKNTensu = from tenKN in queryResult
                                join ten in queryResult on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
                                where tenKN.ItemCd.StartsWith("KN")
@@ -5098,7 +5096,7 @@ namespace Infrastructure.Repositories
                              join kouiKbnItem in sinKouiCollection
                              on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
                              from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
-                             join kensa in kensaMstQuery
+                             join kensa in NoTrackingDataContext.KensaMsts
                              on ten.TenMst.KensaItemCd equals kensa.KensaItemCd into kensaMsts
                              from kensaMst in kensaMsts.DefaultIfEmpty()
                              join tenKN in queryKNTensu
@@ -5139,7 +5137,7 @@ namespace Infrastructure.Repositories
 
             var totalCount = joinedQuery.Count();
 
-            var entities = joinedQuery.OrderByDescending(item => item.TenMst.IsAdopted).ThenBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
+            var entities = joinedQuery.OrderByDescending(item => item.TenMst.IsAdopted).ThenBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
 
             tenMstModels = entities.AsEnumerable().Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
