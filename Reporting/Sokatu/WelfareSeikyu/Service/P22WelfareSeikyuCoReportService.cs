@@ -131,6 +131,8 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
         #region Header
         int UpdateFormHeader()
         {
+            Dictionary<string, string> fieldDataPerPage = new();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             //医療機関コード
             SetFieldData("hpCode", hpInf.ReceHpCd);
             //医療機関情報
@@ -167,11 +169,13 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
             //市町村
             if (welfareType == 0)
             {
-                SetFieldData("futansyaNo", CIUtil.Copy(currentFutansyaNo, 5, 4));
+                fieldDataPerPage.Add("futansyaNo", CIUtil.Copy(currentFutansyaNo, 5, 4));
+                _setFieldData.Add(pageIndex, fieldDataPerPage);
             }
             else
             {
-                SetFieldData("futansyaNo", currentFutansyaNo);
+                fieldDataPerPage.Add("futansyaNo", currentFutansyaNo);
+                _setFieldData.Add(pageIndex, fieldDataPerPage);
             }
             SetFieldData("hokensyaName", currentCityName);
             //合計金額
@@ -234,14 +238,28 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
                 }
             }
 
-            SetFieldData("subTotalCount", subTotalData.RecordCount.ToString());
+            pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+            Dictionary<string, string> fieldDataPerPage = _setFieldData.ContainsKey(pageIndex) ? _setFieldData[pageIndex] : new();
+
+            fieldDataPerPage.Add("subTotalCount", subTotalData.RecordCount.ToString());
+
+            if (!_setFieldData.ContainsKey(pageIndex))
+            {
+                _setFieldData.Add(pageIndex, fieldDataPerPage);
+            }
             listDataPerPage.Add(new("nissu", 0, 10, subTotalData.Nissu.ToString()));
             listDataPerPage.Add(new("tensu", 0, 10, subTotalData.Tensu.ToString()));
             listDataPerPage.Add(new("futan", 0, 10, String.Format("{0:#,0}", subTotalData.Futan)));
 
             if (_hasNextPage == false)
             {
-                SetFieldData("totalCount", totalData.RecordCount.ToString());
+                fieldDataPerPage.Add("totalCount", totalData.RecordCount.ToString());
+
+                if (!_setFieldData.ContainsKey(pageIndex))
+                {
+                    _setFieldData.Add(pageIndex, fieldDataPerPage);
+                }
+
                 listDataPerPage.Add(new("nissu", 0, 11, totalData.Nissu.ToString()));
                 listDataPerPage.Add(new("tensu", 0, 11, totalData.Tensu.ToString()));
                 listDataPerPage.Add(new("futan", 0, 11, String.Format("{0:#,0}", totalData.Futan)));
