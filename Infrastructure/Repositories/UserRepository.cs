@@ -300,7 +300,8 @@ namespace Infrastructure.Repositories
         {
             var userLock = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
                                                                                  && item.PtId == ptId
-                                                                                 && item.FunctionCd == FunctionCode.MedicalExaminationCode
+                                                                                 && (item.FunctionCd == FunctionCode.MedicalExaminationCode
+                                                                                    || item.FunctionCd == FunctionCode.SwitchOrderCode)
                                                                                  && item.RaiinNo == raiinNo);
             var allow = userLock == null || userLock.UserId == userId;
             return !allow;
