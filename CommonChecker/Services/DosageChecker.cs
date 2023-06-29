@@ -74,8 +74,8 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
                 if (checkedResult.Count > 0)
                 {
-                    unitCheckerForOrderListResult.ErrorInfo = checkedResult;
-                    unitCheckerForOrderListResult.ErrorOrderList = GetErrorOrderList(unitCheckerForOrderListResult.CheckingOrderList, checkedResult);
+                    errorOrderList.Add(checkingOrder);
+                    resultList.AddRange(checkedResult);
                 }
             }
 
@@ -86,24 +86,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             }
 
             return unitCheckerForOrderListResult;
-        }
-
-        private List<TOdrInf> GetErrorOrderList(List<TOdrInf> checkingOrderList, List<DosageResultModel> checkedResultList)
-        {
-            List<string> listErrorItemCode = checkedResultList.Select(r => r.ItemCd).ToList();
-            List<double> suryoErrorList = checkedResultList.Select(r => r.CurrentValue).ToList();
-
-            List<TOdrInf> resultList = new List<TOdrInf>();
-            foreach (var checkingOrder in checkingOrderList)
-            {
-                var existed = checkingOrder.OdrInfDetailModelsIgnoreEmpty.Any(o => listErrorItemCode.Contains(o.ItemCd) && suryoErrorList.Contains(o.Suryo));
-                if (existed)
-                {
-                    resultList.Add(checkingOrder);
-                }
-            }
-
-            return resultList;
         }
     }
 }
