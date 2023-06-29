@@ -1116,8 +1116,6 @@ namespace Infrastructure.Repositories
                 tenMstQueryForGetlastDate = tenMstQueryForGetlastDate.Where(t => t.IsDeleted == DeleteTypes.None);
             }
 
-            var kensaMstQuery = NoTrackingDataContext.KensaMsts.AsQueryable();
-
             var queryKNTensu = from tenKN in queryResult
                                join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
                                where tenKN.ItemCd.StartsWith("KN")
@@ -1146,12 +1144,11 @@ namespace Infrastructure.Repositories
                                  tenKN
                              };
 
-
             var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
             var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
 
             var queryJoinWithKensa = from q in queryFinal
-                                     join k in kensaMstQuery
+                                     join k in NoTrackingDataContext.KensaMsts
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
                                      select new
