@@ -605,6 +605,7 @@ using UseCase.Lock.CheckExistFunctionCode;
 using CommonChecker.Caches.Interface;
 using CommonChecker.Caches;
 using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.AccountDue.IsNyukinExisted;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -776,6 +777,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
             services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
             services.AddTransient<IP08KokhoSeikyuCoReportService, P08KokhoSeikyuCoReportService>();
+            services.AddTransient<IP22WelfareSeikyuCoReportService, P22WelfareSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -1191,6 +1193,7 @@ namespace EmrCloudApi.Configs.Dependency
             //AccoutDue
             busBuilder.RegisterUseCase<GetAccountDueListInputData, GetAccountDueListInteractor>();
             busBuilder.RegisterUseCase<SaveAccountDueListInputData, SaveAccountDueListInteractor>();
+            busBuilder.RegisterUseCase<IsNyukinExistedInputData, IsNyukinExistedInteractor>();
 
             //Accounting
             busBuilder.RegisterUseCase<GetAccountingInputData, GetAccountingInteractor>();

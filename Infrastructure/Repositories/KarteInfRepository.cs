@@ -134,7 +134,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    UpdateSeqNoKarteFile(hpId, ptId, raiinNo, listFiles.Select(item => item.LinkFile.Replace(host, string.Empty)).ToList());
+                    UpdateSeqNoKarteFile(hpId, ptId, raiinNo, listFiles.Select(item => new FileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
                 }
                 return TrackingDataContext.SaveChanges() > 0;
             }
@@ -184,8 +184,9 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        private void UpdateSeqNoKarteFile(int hpId, long ptId, long raiinNo, List<string> listFileName)
+        private void UpdateSeqNoKarteFile(int hpId, long ptId, long raiinNo, List<FileInfModel> fileInfModelList)
         {
+            var fileNameList = fileInfModelList.Select(item => item.LinkFile).Distinct().ToList();
             int position = 1;
             var lastSeqNo = GetLastSeqNo(hpId, ptId, raiinNo);
 
@@ -195,7 +196,7 @@ namespace Infrastructure.Repositories
                                                && item.RaiinNo == raiinNo
                                                && item.SeqNo == lastSeqNo
                                                && item.FileName != null
-                                               && listFileName.Contains(item.FileName)
+                                               && fileNameList.Contains(item.FileName)
                                                ).OrderBy(item => item.Position)
                                                .ToList();
 
@@ -205,16 +206,16 @@ namespace Infrastructure.Repositories
                                                && item.RaiinNo == 0
                                                && item.SeqNo == 0
                                                && item.FileName != null
-                                               && listFileName.Contains(item.FileName)
+                                               && fileNameList.Contains(item.FileName)
                                                ).ToList();
 
 
-            foreach (var fileName in listFileName)
+            foreach (var fileInf in fileInfModelList)
             {
                 var oldItemConvert = listOldFile.FirstOrDefault(item => item.SeqNo == lastSeqNo
                                                                         && item.RaiinNo == raiinNo
                                                                         && item.FileName != null
-                                                                        && item.FileName == fileName);
+                                                                        && item.FileName == fileInf.LinkFile);
 
                 if (oldItemConvert != null)
                 {
@@ -233,7 +234,7 @@ namespace Infrastructure.Repositories
                                                                                 && item.RaiinNo == 0
                                                                                 && item.SeqNo == 0
                                                                                 && item.FileName != null
-                                                                                && item.FileName == fileName);
+                                                                                && item.FileName == fileInf.LinkFile);
                 if (oldItemUpdateSeqNo != null)
                 {
                     oldItemUpdateSeqNo.RaiinNo = raiinNo;
@@ -248,15 +249,15 @@ namespace Infrastructure.Repositories
                 newItem.HpId = hpId;
                 newItem.PtId = ptId;
                 newItem.RaiinNo = raiinNo;
-                newItem.FileName = fileName;
+                newItem.FileName = fileInf.LinkFile;
                 newItem.SeqNo = lastSeqNo + 1;
                 newItem.Position = position;
-                newItem.KarteKbn = 0;
+                newItem.KarteKbn = fileInf.IsSchema ? 1 : 0;
                 TrackingDataContext.KarteImgInfs.Add(newItem);
                 position++;
             }
 
-            if (listFileName.Any(item => item == string.Empty))
+            if (fileInfModelList.Any(item => item.LinkFile == string.Empty))
             {
                 KarteImgInf newFile = new();
                 newFile.FileName = string.Empty;
@@ -355,6 +356,41 @@ namespace Infrastructure.Repositories
                                                             ).ToList();
             TrackingDataContext.KarteImgInfs.RemoveRange(listDeletes);
             return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public Dictionary<string, bool> ListCheckIsSchema(int hpId, long ptId, Dictionary<string, string> fileInfUpdateTemp)
+        {
+            Dictionary<string, bool> result = new();
+            var fileNameKeyList = fileInfUpdateTemp.Select(item => item.Key).Distinct().ToList();
+            var nextOrderFileList = NoTrackingDataContext.RsvkrtKarteImgInfs.Where(item => item.HpId == hpId
+                                                                                           && item.PtId == ptId
+                                                                                           && !string.IsNullOrEmpty(item.FileName)
+                                                                                           && fileNameKeyList.Contains(item.FileName))
+                                                                             .ToList();
+            var setFileList = NoTrackingDataContext.SetKarteImgInf.Where(item => item.HpId == hpId
+                                                                                 && !string.IsNullOrEmpty(item.FileName)
+                                                                                 && fileNameKeyList.Contains(item.FileName))
+                                                                   .ToList();
+            foreach (var fileInf in fileInfUpdateTemp)
+            {
+                bool isSchema = false;
+                var nextOrderItem = nextOrderFileList.FirstOrDefault(item => item.FileName == fileInf.Key);
+                if (nextOrderItem != null)
+                {
+                    isSchema = nextOrderItem.KarteKbn == 1;
+                }
+                else
+                {
+                    var setItem = setFileList.FirstOrDefault(item => item.FileName == fileInf.Key);
+                    if (setItem != null)
+                    {
+                        isSchema = setItem.KarteKbn == 1;
+                    }
+                }
+
+                result.Add(fileInf.Value, isSchema);
+            }
+            return result;
         }
 
         public void ReleaseResource()

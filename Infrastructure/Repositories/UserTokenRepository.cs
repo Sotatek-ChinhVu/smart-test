@@ -29,6 +29,10 @@ namespace Infrastructure.Repositories
                     RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8),
                     UserId = userId
                 });
+
+                var refreshTokenExpireds = TrackingDataContext.UserTokens.Where(u => u.UserId == userId && u.RefreshTokenExpiryTime < DateTime.UtcNow);
+                TrackingDataContext.RemoveRange(refreshTokenExpireds);
+
                 if (TrackingDataContext.SaveChanges() > 0)
                     return new UserTokenModel(instance.UserId, refreshTokenNew, instance.RefreshTokenExpiryTime, false);
                 else

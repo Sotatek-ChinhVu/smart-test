@@ -281,6 +281,7 @@
         public const string GetSystemConfig = "GetSystemConfig";
         public const string GetMeiHoGai = "GetMeiHoGai";
         public const string CheckOpenAccounting = "CheckOpenAccounting";
+        public const string IsNyukinExisted = "IsNyukinExisted";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 
