@@ -4,6 +4,7 @@ using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
 using Helper.Enum;
 using Interactor.MedicalExamination.HistoryCommon;
+using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
 using Reporting.ReceiptList.Model;
@@ -275,12 +276,30 @@ public class PdfCreatorController : ControllerBase
 
                 using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
                 {
+                    PdfReader pdfReader = new PdfReader(streamingData);
                     var byteData = streamingData.ToArray();
-
-                    return File(byteData, "application/pdf");
+                    var result = SetTitleMetadata(byteData, "カルテ２号紙.pdf");
+                    return File(result, "application/pdf");
                 }
             }
         }
+    }
+
+    private byte[] SetTitleMetadata(byte[] pdf, string title)
+    {
+        using var inputStream = new MemoryStream(pdf);
+        using var reader = new PdfReader(inputStream);
+        using var outputStream = new MemoryStream();
+        using var writer = new PdfWriter(outputStream);
+        using (var document = new PdfDocument(reader, writer))
+        {
+            var documentInfo = document.GetDocumentInfo();
+
+            documentInfo.SetTitle(title);
+        }
+
+        // The PdfDocument must be closed first to write to the output stream
+        return outputStream.ToArray();
     }
 
     private async Task<IActionResult> RenderPdf(object data, ReportType reportType)

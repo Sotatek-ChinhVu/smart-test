@@ -203,7 +203,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             hpInf = _welfareFinder.GetHpInf(hpId, seikyuYm);
             receInfs = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, kohiHoubetus, FutanCheck.KohiFutan, 0);
 
-            return (receInfs?.Count ?? 0) == 0;
+            return (receInfs?.Count ?? 0) > 0;
         }
 
         private void SetFieldData(string field, string value)

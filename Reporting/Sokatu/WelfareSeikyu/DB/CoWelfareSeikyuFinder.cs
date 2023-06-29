@@ -1,4 +1,5 @@
-﻿using Helper.Constants;
+﻿using Domain.Constant;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -45,16 +46,16 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
         private List<CoWelfareReceInfModel> getReceInf(int hpId, int seikyuYm, SeikyuType seikyuType, List<int> kohiHokenNos, List<string> kohiHoubetus,
             FutanCheck futanCheck, int hokenKbn, bool isReceKisai)
         {
-            var receInfs = NoTrackingDataContext.ReceInfs.FindListNoTrack();
-            var receStatuses = NoTrackingDataContext.ReceStatuses.FindListNoTrack();
-            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.FindListNoTrack(
-                p => p.IsDeleted == 0
+            var receInfs = NoTrackingDataContext.ReceInfs.FindListQueryableNoTrack();
+            var receStatuses = NoTrackingDataContext.ReceStatuses.FindListQueryableNoTrack();
+            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.FindListQueryableNoTrack(
+                p => p.IsDeleted == DeleteStatus.None
             );
-            var ptKohis = NoTrackingDataContext.PtHokenInfs.FindListNoTrack(
-                p => p.IsDeleted == 0
+            var ptKohis = NoTrackingDataContext.PtKohis.FindListQueryableNoTrack(
+                p => p.IsDeleted == DeleteStatus.None
             );
-            var ptInfs = NoTrackingDataContext.PtInfs.FindListNoTrack(
-                p => p.IsDelete == 0
+            var ptInfs = NoTrackingDataContext.PtInfs.FindListQueryableNoTrack(
+                p => p.IsDelete == DeleteStatus.None
             );
 
             var joinQuery = (
@@ -142,10 +143,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                 if (kohiHoubetus?.Count >= 1)
                 {
                     joinQuery = joinQuery.Where(r =>
-                        (kohiHoubetus.Contains(r.receInf.Kohi1Houbetu) && r.receInf.Kohi1Futan10en >= lowKohiFutan10en && r.receInf.Kohi1Futan >= lowKohiFutan && r.receInf.Kohi1IchibuSotogaku + r.receInf.Kohi1Futan >= lowIchibuFutan) ||
-                        (kohiHoubetus.Contains(r.receInf.Kohi2Houbetu) && r.receInf.Kohi2Futan10en >= lowKohiFutan10en && r.receInf.Kohi2Futan >= lowKohiFutan && r.receInf.Kohi2IchibuSotogaku + r.receInf.Kohi2Futan >= lowIchibuFutan) ||
-                        (kohiHoubetus.Contains(r.receInf.Kohi3Houbetu) && r.receInf.Kohi3Futan10en >= lowKohiFutan10en && r.receInf.Kohi3Futan >= lowKohiFutan && r.receInf.Kohi3IchibuSotogaku + r.receInf.Kohi3Futan >= lowIchibuFutan) ||
-                        (kohiHoubetus.Contains(r.receInf.Kohi4Houbetu) && r.receInf.Kohi4Futan10en >= lowKohiFutan10en && r.receInf.Kohi4Futan >= lowKohiFutan && r.receInf.Kohi4IchibuSotogaku + r.receInf.Kohi4Futan >= lowIchibuFutan)
+                        (kohiHoubetus.Contains(r.receInf.Kohi1Houbetu ?? string.Empty) && r.receInf.Kohi1Futan10en >= lowKohiFutan10en && r.receInf.Kohi1Futan >= lowKohiFutan && r.receInf.Kohi1IchibuSotogaku + r.receInf.Kohi1Futan >= lowIchibuFutan) ||
+                        (kohiHoubetus.Contains(r.receInf.Kohi2Houbetu ?? string.Empty) && r.receInf.Kohi2Futan10en >= lowKohiFutan10en && r.receInf.Kohi2Futan >= lowKohiFutan && r.receInf.Kohi2IchibuSotogaku + r.receInf.Kohi2Futan >= lowIchibuFutan) ||
+                        (kohiHoubetus.Contains(r.receInf.Kohi3Houbetu ?? string.Empty) && r.receInf.Kohi3Futan10en >= lowKohiFutan10en && r.receInf.Kohi3Futan >= lowKohiFutan && r.receInf.Kohi3IchibuSotogaku + r.receInf.Kohi3Futan >= lowIchibuFutan) ||
+                        (kohiHoubetus.Contains(r.receInf.Kohi4Houbetu ?? string.Empty) && r.receInf.Kohi4Futan10en >= lowKohiFutan10en && r.receInf.Kohi4Futan >= lowKohiFutan && r.receInf.Kohi4IchibuSotogaku + r.receInf.Kohi4Futan >= lowIchibuFutan)
                     );
                 }
             }
@@ -173,7 +174,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                     );
                 }
             }
-
+            
             //社保国保
             if (hokenKbn == HokenKbn.Syaho)
             {
