@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmrCloudApi", "EmrCloudApi\EmrCloudApi.csproj", "{3ABF5B09-A74F-43F4-A727-2DA2D196DFAF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4.Database", "4.Database", "{78182681-6E91-47BB-A39A-574D6DBB7280}"
+
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entity", "Entity\Entity.csproj", "{EC41962F-E540-4622-A757-A70B588F2961}"
 EndProject
