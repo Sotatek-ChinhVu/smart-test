@@ -16,6 +16,7 @@ using UseCase.User.GetListFunctionPermission;
 using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.SaveListUserMst;
 using UseCase.User.UpsertList;
+using UseCase.User.GetAllPermission;
 
 namespace EmrCloudApi.Controller;
 
@@ -97,6 +98,17 @@ public class UserController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListUserByCurrentUserResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetAllPermission)]
+    public ActionResult<Response<GetAllPermissionResponse>> GetAllPermission()
+    {
+        var input = new GetAllPermissionInputData(HpId, UserId);
+        var output = _bus.Handle(input);
+        var presenter = new GetAllPermissionPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetAllPermissionResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetListJobMst)]

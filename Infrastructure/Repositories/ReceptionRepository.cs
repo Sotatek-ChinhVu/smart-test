@@ -600,26 +600,26 @@ namespace Infrastructure.Repositories
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
             var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => (isDeleted == 2 || x.IsDeleted == isDeleted));
-            var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(x => isDeleted == 2 || x.IsDelete == DeleteTypes.None);
-            var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(x => isDeleted == 2 || x.IsDelete == DeleteTypes.None);
-            var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
             // Pt (Patient)
-            var ptInfs = NoTrackingDataContext.PtInfs.Where(x => isDeleted == 2 || x.IsDelete == DeleteTypes.None);
-            var ptCmtInfs = NoTrackingDataContext.PtCmtInfs.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
-            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
-            var ptKohis = NoTrackingDataContext.PtKohis.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(x => (isDeleted == 2 || x.IsDelete == isDeleted));
+            var ptCmtInfs = NoTrackingDataContext.PtCmtInfs.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.IsDeleted == DeleteTypes.None);
             // Rsv (Reservation)
             var rsvInfs = NoTrackingDataContext.RsvInfs;
-            var rsvFrameMsts = NoTrackingDataContext.RsvFrameMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var rsvFrameMsts = NoTrackingDataContext.RsvFrameMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // User (Doctor)
-            var userMsts = NoTrackingDataContext.UserMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Ka (Department)
-            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Lock (Function lock)
             var lockInfs = NoTrackingDataContext.LockInfs.Where(x =>
                 x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte || x.FunctionCd == FunctionCode.SwitchOrderCode);
             // Uketuke
-            var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
 
             // 2. Filter collections by parameters
             var filteredRaiinInfs = raiinInfs;
@@ -748,7 +748,7 @@ namespace Infrastructure.Repositories
                 };
 
             var raiins = raiinQuery.ToList();
-            var grpIds = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && (isDeleted == 2 || x.IsDeleted == DeleteTypes.None)).Select(x => x.GrpCd).ToList();
+            var grpIds = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
             var models = raiins.Select(r => new ReceptionRowModel(
                 r.raiinInf.RaiinNo,
                 r.raiinInf.PtId,

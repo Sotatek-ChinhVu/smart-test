@@ -67,6 +67,7 @@ namespace Interactor.MedicalExamination
                                  od.SinKouiKbn,
                                  od.ItemCd,
                                  od.ItemName,
+                                 od.DisplayItemName,
                                  od.Suryo,
                                  od.UnitName,
                                  od.UnitSbt,

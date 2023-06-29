@@ -14,6 +14,7 @@ public static class FunctionCodes
     public const string ReservationChanged = "ReservationChanged";
     public const string MedicalChanged = "MedicalChanged";
     public const string AddLockChanged = "AddLockChanged";
+    public const string LockChanged = "LockChanged";
     public const string RemoveLockChanged = "RemoveLockChanged";
     public const string SupserSetSaveChanged = "SupserSetSaveChanged";
     public const string SupserSetReorderChanged = "SupserSetReorderChanged";
