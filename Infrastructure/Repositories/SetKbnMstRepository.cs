@@ -115,7 +115,7 @@ namespace Infrastructure.Repositories
             var check = TrackingDataContext.SaveChanges() > 0;
             if (check)
             {
-                _cache.KeyDelete(key);
+                ReloadCache();
             }
             return check;
         }

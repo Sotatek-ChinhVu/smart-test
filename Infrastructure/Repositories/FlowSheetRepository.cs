@@ -280,7 +280,7 @@ namespace Infrastructure.Repositories
             var result =  TrackingDataContext.SaveChanges() > 0;
             if (result)
             {
-                _cache.KeyDelete(HolidayMstCacheKey);
+                ReloadHolidayCache(holiday.HpId);
             }
             return result;
         }

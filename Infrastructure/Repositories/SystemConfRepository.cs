@@ -112,8 +112,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         var result = TrackingDataContext.SaveChanges();
         if (result > 0)
         {
-            _cache.KeyDelete(key);
-
+            ReloadCache(hpId);
         }
 
         return true;
@@ -535,7 +534,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         var result = TrackingDataContext.SaveChanges() > 0;
         if (result)
         {
-            _cache.KeyDelete(key);
+            ReloadCache(hpId);
         }
 
         return result;

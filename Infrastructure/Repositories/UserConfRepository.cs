@@ -237,7 +237,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         var check = TrackingDataContext.SaveChanges();
         if (check > 0)
         {
-            _cache.KeyDelete(key + userId + hpId);
+            ReloadCache(hpId, userId);
         }
     }
 
@@ -262,7 +262,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         var check = TrackingDataContext.SaveChanges();
         if (check > 0)
         {
-            _cache.KeyDelete(key + userId + hpId);
+            ReloadCache(hpId, userId);
         }
     }
 
@@ -437,7 +437,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 
         var result = TrackingDataContext.SaveChanges() > 0;
         if (result)
-            _cache.KeyDelete(key + userId + hpId);
+            ReloadCache(hpId, userId);
         return result;
     }
 
