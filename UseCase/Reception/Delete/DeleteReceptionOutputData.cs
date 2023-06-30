@@ -1,18 +1,22 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.Reception;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.Reception.Delete
 {
     public class DeleteReceptionOutputData : IOutputData
     {
-        public DeleteReceptionOutputData(DeleteReceptionStatus status, List<DeleteReceptionItem> deleteReceptionItems)
+        public DeleteReceptionOutputData(DeleteReceptionStatus status, List<DeleteReceptionItem> deleteReceptionItems, List<ReceptionRowModel> receptionInfos)
         {
             Status = status;
             DeleteReceptionItems = deleteReceptionItems;
+            ReceptionInfos = receptionInfos;
         }
 
         public List<DeleteReceptionItem> DeleteReceptionItems { get; private set; }
 
         public DeleteReceptionStatus Status { get; private set; }
+
+        public List<ReceptionRowModel> ReceptionInfos { get; private set; }
     }
 
     public class DeleteReceptionItem

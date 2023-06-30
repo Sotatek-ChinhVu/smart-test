@@ -21,10 +21,11 @@ public class InsertReceptionInteractor : IInsertReceptionInputPort
         try
         {
             ReceptionSaveDto dto = input.Dto;
+            List<ReceptionRowModel> receptionInfos = new();
 
             if (dto!.Insurances.Any(i => !i.IsValidData()))
             {
-                return new InsertReceptionOutputData(InsertReceptionStatus.InvalidInsuranceList, 0);
+                return new InsertReceptionOutputData(InsertReceptionStatus.InvalidInsuranceList, 0, receptionInfos);
             }
 
             // check end set uketukeNo
@@ -32,7 +33,11 @@ public class InsertReceptionInteractor : IInsertReceptionInputPort
             dto.ChangeUketukeNo(uketukeNo);
 
             var raiinNo = _receptionRepository.Insert(dto, input.HpId, input.UserId);
-            return new InsertReceptionOutputData(InsertReceptionStatus.Success, raiinNo);
+            if (raiinNo > 0)
+            {
+                receptionInfos = _receptionRepository.GetList(input.HpId, dto.Reception.SinDate, raiinNo, dto.Reception.PtId);
+            }
+            return new InsertReceptionOutputData(InsertReceptionStatus.Success, raiinNo, receptionInfos);
         }
         finally
         {
