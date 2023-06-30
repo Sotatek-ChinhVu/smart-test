@@ -207,7 +207,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
 
     public string GetAccessBaseS3() => $"{_options.BaseAccessUrl}/";
 
-    public async Task<bool> S3FilePathIsExists(string locationFile)
+    public async Task<(bool valid,string key)> S3FilePathIsExists(string locationFile)
     {
         var listS3Objects = await _s3Client.ListObjectsV2Async(new ListObjectsV2Request
         {
@@ -216,6 +216,6 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
             MaxKeys = 1
         });
 
-        return listS3Objects.S3Objects.Any();
+        return (listS3Objects.S3Objects.Any(), locationFile);
     }
 }

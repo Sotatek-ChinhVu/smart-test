@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.User
 
         public void Complete(GetListUserByCurrentUserOutputData output)
         {
-            Result.Data = new GetListUserByCurrentUserResponse(output.Users, output.GetShowRenkeiCd1ColumnSetting);
+            Result.Data = new GetListUserByCurrentUserResponse(output.Users, output.GetShowRenkeiCd1ColumnSetting, output.ManagerKbnCurrrentUser);
             Result.Message = GetMessage(output.Status);
             Result.Status = (int)output.Status;
         }

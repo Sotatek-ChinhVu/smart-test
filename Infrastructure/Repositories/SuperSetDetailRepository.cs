@@ -1236,7 +1236,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             }
             else
             {
-                UpdateSeqNoSetFile(hpId, setCd, listFiles.Select(item => item.LinkFile.Replace(host, string.Empty)).ToList());
+                UpdateSeqNoSetFile(hpId, setCd, listFiles.Select(item => new SetFileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
@@ -1246,8 +1246,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         }
     }
 
-    private void UpdateSeqNoSetFile(int hpId, int setCd, List<string> listFileName)
+    private void UpdateSeqNoSetFile(int hpId, int setCd, List<SetFileInfModel> fileInfModelList)
     {
+        var listFileName = fileInfModelList.Select(item => item.LinkFile).Distinct().ToList();
         int position = 1;
         var lastSeqNo = GetLastSeqNo(hpId, setCd);
         var listOldFile = TrackingDataContext.SetKarteImgInf.Where(item =>
@@ -1267,21 +1268,46 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                                                 && listFileName.Contains(item.FileName)
                                                             ).ToList();
 
-        foreach (var item in listOldFile)
+        foreach (var fileItem in fileInfModelList)
         {
-            SetKarteImgInf newFile = item;
-            newFile.Id = 0;
-            newFile.SeqNo = lastSeqNo + 1;
-            newFile.Position = position;
-            TrackingDataContext.SetKarteImgInf.Add(newFile);
-            position++;
-        }
+            var oldItemConvert = listOldFile.FirstOrDefault(item => item.SeqNo == lastSeqNo
+                                                                    && item.SetCd == setCd
+                                                                    && item.FileName != null
+                                                                    && item.FileName == fileItem.LinkFile);
 
-        foreach (var item in listUpdateFiles)
-        {
-            item.SeqNo = lastSeqNo + 1;
-            item.SetCd = setCd;
-            item.Position = position;
+            if (oldItemConvert != null)
+            {
+                SetKarteImgInf newFile = oldItemConvert;
+                newFile.Id = 0;
+                newFile.SeqNo = lastSeqNo + 1;
+                newFile.Position = position;
+                TrackingDataContext.SetKarteImgInf.Add(newFile);
+                position++;
+                continue;
+            }
+
+            var oldItemUpdateSeqNo = listUpdateFiles.FirstOrDefault(item => item.SetCd == 0
+                                                                            && item.SeqNo == 0
+                                                                            && item.FileName != null
+                                                                            && item.FileName == fileItem.LinkFile);
+            if (oldItemUpdateSeqNo != null)
+            {
+                oldItemUpdateSeqNo.SetCd = setCd;
+                oldItemUpdateSeqNo.SeqNo = lastSeqNo + 1;
+                oldItemUpdateSeqNo.Position = position;
+                position++;
+                continue;
+            }
+
+            SetKarteImgInf newItem = new();
+            newItem.Id = 0;
+            newItem.HpId = hpId;
+            newItem.FileName = fileItem.LinkFile;
+            newItem.SeqNo = lastSeqNo + 1;
+            newItem.Position = position;
+            newItem.KarteKbn = fileItem.IsSchema ? 1 : 0;
+            newItem.SetCd = setCd;
+            TrackingDataContext.SetKarteImgInf.Add(newItem);
             position++;
         }
 

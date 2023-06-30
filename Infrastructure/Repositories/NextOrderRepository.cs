@@ -825,9 +825,9 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<NextOrderModel> GetList(int hpId, long ptId, int rsvkrtKbn, bool isDeleted)
+        public List<NextOrderModel> GetList(int hpId, long ptId, bool isDeleted)
         {
-            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.HpId == hpId && rsv.PtId == ptId && rsv.RsvkrtKbn == rsvkrtKbn && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
+            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.HpId == hpId && rsv.PtId == ptId && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
 
             return allRsvkrtMst?.Select(rsv => ConvertToModel(rsv)).ToList() ?? new List<NextOrderModel>();
         }
