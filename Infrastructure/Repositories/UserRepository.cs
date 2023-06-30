@@ -7,7 +7,9 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
 using static Helper.Constants.UserConst;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories
 {
@@ -110,11 +112,10 @@ namespace Infrastructure.Repositories
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
-        public UserMstModel? GetByUserId(int userId)
+        public UserMstModel GetByUserId(int userId)
         {
-            var entity = NoTrackingDataContext.UserMsts
-                .Where(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
-            return entity is null ? null : ToModel(entity);
+            var entity = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None);
+            return entity is null ? new UserMstModel() : ToModel(entity);
         }
 
         public UserMstModel GetByUserId(int userId, int sinDate)
@@ -165,7 +166,6 @@ namespace Infrastructure.Repositories
                     var userMst = TrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                     if (userMst != null)
                     {
-                        userMst.UserId = inputData.UserId;
                         userMst.JobCd = inputData.JobCd;
                         userMst.ManagerKbn = inputData.ManagerKbn;
                         userMst.KaId = inputData.KaId;
@@ -173,7 +173,6 @@ namespace Infrastructure.Repositories
                         userMst.Name = inputData.Name ?? string.Empty;
                         userMst.Sname = inputData.Sname ?? string.Empty;
                         userMst.DrName = inputData.DrName ?? string.Empty;
-                        userMst.LoginId = inputData.LoginId ?? string.Empty;
                         userMst.LoginPass = inputData.LoginPass ?? string.Empty;
                         userMst.MayakuLicenseNo = inputData.MayakuLicenseNo ?? string.Empty;
                         userMst.StartDate = inputData.StartDate;
@@ -301,7 +300,8 @@ namespace Infrastructure.Repositories
         {
             var userLock = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
                                                                                  && item.PtId == ptId
-                                                                                 && item.FunctionCd == FunctionCode.MedicalExaminationCode
+                                                                                 && (item.FunctionCd == FunctionCode.MedicalExaminationCode
+                                                                                    || item.FunctionCd == FunctionCode.SwitchOrderCode)
                                                                                  && item.RaiinNo == raiinNo);
             var allow = userLock == null || userLock.UserId == userId;
             return !allow;
@@ -364,6 +364,11 @@ namespace Infrastructure.Repositories
             var listUserPermissionOfUserDefault = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == 0).AsEnumerable().Select(u => new UserPermissionModel(u.HpId, u.UserId, u.FunctionCd, u.Permission, true));
 
             return listUserPermission.Union(listUserPermissionOfUserDefault).ToList();
+        }
+
+        public List<JobMstModel> GetListJob(int hpId)
+        {
+            return NoTrackingDataContext.JobMsts.Where(j => j.HpId == hpId && !string.IsNullOrEmpty(j.JobName)).Select(x => new JobMstModel(x.HpId, x.JobCd, x.JobName ?? string.Empty, x.SortNo)).ToList();
         }
 
         public PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode)
@@ -434,10 +439,148 @@ namespace Infrastructure.Repositories
                                                      .OrderBy(item => item.SortNo).ToList();
         }
 
+        /// <summary>
+        /// only pass users need save.
+        /// </summary>
+        /// <param name="users"></param>
+        /// <param name="currentUser"></param>
+        /// <returns></returns>
+        public bool SaveListUserMst(int hpId, List<UserMstModel> users , int currentUser)
+        {
+            IEnumerable<long> userIdList = users.Select(x => x.Id);
+            var usersUpdate = TrackingDataContext.UserMsts.Where(x => userIdList.Contains(x.UserId)).ToList();
+            foreach(var item in users)
+            {
+                var update = usersUpdate.FirstOrDefault(x => x.Id == item.Id);
+                if(update is null)
+                {
+                    if(item.Id == 0)
+                    {
+                        TrackingDataContext.UserMsts.Add(new UserMst()
+                        {
+                            Id = item.Id,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = currentUser,
+                            DrName = item.DrName,
+                            EndDate = item.EndDate,
+                            HpId = hpId,
+                            IsDeleted = DeleteTypes.None,
+                            JobCd = item.JobCd,
+                            KaId = item.KaId,
+                            KanaName = item.KanaName,
+                            LoginId = item.LoginId,
+                            LoginPass = item.LoginPass,
+                            ManagerKbn = item.ManagerKbn,
+                            Name = item.Name,
+                            RenkeiCd1 = item.RenkeiCd1,
+                            MayakuLicenseNo = item.MayakuLicenseNo,
+                            Sname = item.Sname,
+                            SortNo = item.SortNo,
+                            StartDate = item.StartDate,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UserId = item.UserId,
+                            UpdateId = currentUser
+                        });
+
+                        TrackingDataContext.UserPermissions.AddRange(item.Permissions.Select(x => new UserPermission()
+                        {
+                            HpId = hpId,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = currentUser,
+                            FunctionCd = x.FunctionCd,
+                            Permission = x.Permission,
+                            UpdateId = currentUser,
+                            UserId = item.UserId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow()
+                        }));
+                    }
+                }
+                else
+                {
+                    update.DrName = item.DrName;
+                    update.EndDate = item.EndDate;
+                    update.HpId = hpId;
+                    update.JobCd = item.JobCd;
+                    update.KaId = item.KaId;
+                    update.KanaName = item.KanaName;
+                    update.LoginId = item.LoginId;
+                    update.LoginPass = item.LoginPass;
+                    update.ManagerKbn = item.ManagerKbn;
+                    update.Name = item.Name;
+                    update.RenkeiCd1 = item.RenkeiCd1;
+                    update.MayakuLicenseNo = item.MayakuLicenseNo;
+                    update.Sname = item.Sname;
+                    update.SortNo = item.SortNo;
+                    update.StartDate = item.StartDate;
+                    update.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    update.UpdateId = currentUser;
+
+                    var permissionByUsers = TrackingDataContext.UserPermissions.Where(x => x.HpId == hpId && x.UserId == update.UserId);
+                    foreach (var permission in item.Permissions)
+                    {
+                        var updateP = permissionByUsers.FirstOrDefault(x => x.FunctionCd == permission.FunctionCd);
+                        if(updateP is null)
+                        {
+                            TrackingDataContext.UserPermissions.Add(new UserPermission()
+                            {
+                                HpId = hpId,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                CreateId = currentUser,
+                                FunctionCd = permission.FunctionCd,
+                                Permission = permission.Permission,
+                                UpdateId = currentUser,
+                                UserId = update.UserId,
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            });
+                        }
+                        else
+                        {
+                            updateP.Permission = permission.Permission;
+                            updateP.UpdateId = currentUser;
+                            updateP.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        }
+                    }
+                }
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool UserIdIsExistInDb(int userId)
+        {
+            return NoTrackingDataContext.UserMsts.Any(x => x.UserId == userId);
+        }
+
+        public List<int> ListJobCdValid(int hpId)
+        {
+            return NoTrackingDataContext.JobMsts.Where(x => x.HpId == hpId).Select(x => x.JobCd).ToList();
+        }
+
+        public List<int> ListDepartmentValid(int hpId)
+        {
+            return NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.KaId).ToList();
+        }
+
         public bool GetShowRenkeiCd1ColumnSetting()
         {
             var renkeiMst = NoTrackingDataContext.RenkeiMsts.FirstOrDefault(u => u.RenkeiId == 2016);
             return renkeiMst != null && renkeiMst.IsInvalid == 0;
+        }
+
+        public List<FunctionMstModel> GetListFunctionPermission()
+        {
+            IQueryable<FunctionMst> listFuncMst = NoTrackingDataContext.FunctionMsts;
+            IQueryable<PermissionMst> listPerMst = NoTrackingDataContext.PermissionMsts;
+            var functionMstQuery = (from funcMst in listFuncMst
+                                   join perMst in listPerMst on funcMst.FunctionCd equals perMst.FunctionCd into listPermission
+                                   select new
+                                   {
+                                       FuncMst = funcMst,
+                                       ListPermission = listPermission,
+                                   }).ToList();
+
+            return functionMstQuery.Where(x => x.ListPermission.Any()).Select(x => new FunctionMstModel(x.FuncMst.FunctionCd,
+                                                                                                        x.FuncMst.FunctionName ?? string.Empty, 
+                                                                                                        x.ListPermission.Select(p => new PermissionMstModel(p.FunctionCd, p.Permission)).ToList())).ToList();
         }
 
         private PermissionType GetPermissionTypeByCode(int code)

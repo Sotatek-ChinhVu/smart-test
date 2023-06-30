@@ -5,11 +5,14 @@ namespace EmrCloudApi.Responses.Insurance
 {
     public class PatientInsuranceDto
     {
-        public PatientInsuranceDto(List<InsuranceModel> listInsurance, List<HokenInfModel> listHokenInf, List<KohiInfModel> listKohi)
+        public PatientInsuranceDto(List<InsuranceModel> listInsurance, List<HokenInfModel> listHokenInf, List<KohiInfModel> listKohi, int maxIdHokenInf, int maxIdHokenKohi, int maxPidHokenPattern)
         {
             ListInsurance = listInsurance.Select(i => new PatternDto(i)).ToList();
             ListHokenInf = listHokenInf.Select(h => new HokenInfDto(h)).ToList();
             ListKohi = listKohi.Select(k => new KohiInfDto(k)).ToList();
+            MaxIdHokenInf = maxIdHokenInf;
+            MaxIdHokenKohi = maxIdHokenKohi;
+            MaxPidHokenPattern = maxPidHokenPattern;
         }
 
         public PatientInsuranceDto()
@@ -24,5 +27,11 @@ namespace EmrCloudApi.Responses.Insurance
         public List<HokenInfDto> ListHokenInf { get; private set; }
 
         public List<KohiInfDto> ListKohi { get; private set; }
+
+        public int MaxIdHokenInf { get; private set; }
+
+        public int MaxIdHokenKohi { get; private set; }
+
+        public int MaxPidHokenPattern { get; private set; }
     }
 }

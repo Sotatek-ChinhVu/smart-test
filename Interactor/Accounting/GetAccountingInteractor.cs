@@ -32,7 +32,7 @@ namespace Interactor.Accounting
 
                 if (syunoSeikyu == null)
                 {
-                    return new GetAccountingOutputData(new(), GetAccountingStatus.NoData, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty, new(), new());
+                    return new GetAccountingOutputData(new(), GetAccountingStatus.NoData, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty, new(), new(), true);
                 }
                 else if (syunoSeikyu.NyukinKbn == 0)
                 {
@@ -149,7 +149,7 @@ namespace Interactor.Accounting
                 thisCredit = sumAdjust;
             }
 
-            return new GetAccountingOutputData(listSyunoSeikyu, GetAccountingStatus.Successed, totalPoint, kanFutan, totalSelfExpense, tax, adjustFutan, debitBalance, sumAdjust, sumAdjustView, thisCredit, thisWari, paytype, comment, kohiInfModels, allSyunoSeikyuModels);
+            return new GetAccountingOutputData(listSyunoSeikyu, GetAccountingStatus.Successed, totalPoint, kanFutan, totalSelfExpense, tax, adjustFutan, debitBalance, sumAdjust, sumAdjustView, thisCredit, thisWari, paytype, comment, kohiInfModels, allSyunoSeikyuModels, isSettled);
         }
     }
 }
