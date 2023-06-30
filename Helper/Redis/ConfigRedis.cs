@@ -26,7 +26,10 @@ namespace Helper.Redis
                 }
                 config.EndPoints.Add(host, port);
 
-                var connection = ConnectionMultiplexer.Connect(config);
+                var taskConnection = ConnectionMultiplexer.ConnectAsync(config);
+                Task.WaitAll(taskConnection);
+                var connection = taskConnection.Result;
+
                 connection.ConnectionFailed += (_, e) =>
                 {
                     Console.WriteLine("Connection to Redis failed in help.");
