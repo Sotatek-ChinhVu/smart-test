@@ -48,7 +48,10 @@ namespace Infrastructure.CommonDB
         public void GetRedis()
         {
             string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
-            RedisConnectorHelper.RedisHost = connection;
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public string GetClinicID()

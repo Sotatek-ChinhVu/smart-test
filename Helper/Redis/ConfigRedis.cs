@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
 
 namespace Helper.Redis
 {
