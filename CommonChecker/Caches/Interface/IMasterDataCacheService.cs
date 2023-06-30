@@ -25,6 +25,12 @@ namespace CommonChecker.Caches.Interface
 
         List<KinkiMst> GetKinkiMstList(List<string> itemCodeList);
 
+        List<DosageDrug> GetDosageDrugList(List<string> itemCodeList);
+
+        List<DosageMst> GetDosageMstList(List<string> itemCodeList);
+
+        List<DosageDosage> GetDosageDosageList(List<string> itemCodeList);
+
         PtInf GetPtInf();
 
         SystemConfig GetSystemConfig();
