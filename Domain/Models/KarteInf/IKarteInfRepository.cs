@@ -22,5 +22,7 @@ namespace Domain.Models.KarteInfs
         bool ClearTempData(int hpId, long ptId, List<string> listFileNames);
 
         long ConvertTextToRichText(int hpId, long ptId);
+
+        Dictionary<string, bool> ListCheckIsSchema(int hpId, long ptId, Dictionary<string, string> fileInfUpdateTemp);
     }
 }

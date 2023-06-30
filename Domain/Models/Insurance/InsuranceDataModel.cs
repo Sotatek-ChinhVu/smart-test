@@ -1,19 +1,17 @@
 ﻿using Domain.Models.InsuranceInfor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Models.Insurance
 {
     public class InsuranceDataModel
     {
-        public InsuranceDataModel(List<InsuranceModel> listInsurance, List<HokenInfModel> listHokenInf, List<KohiInfModel> listKohi)
+        public InsuranceDataModel(List<InsuranceModel> listInsurance, List<HokenInfModel> listHokenInf, List<KohiInfModel> listKohi, int maxIdHokenInf, int maxIdHokenKohi, int maxPidHokenPattern)
         {
             ListInsurance = listInsurance;
             ListHokenInf = listHokenInf;
             ListKohi = listKohi;
+            MaxIdHokenInf = maxIdHokenInf;
+            MaxIdHokenKohi = maxIdHokenKohi;
+            MaxPidHokenPattern = maxPidHokenPattern;
         }
         
         public InsuranceDataModel()
@@ -28,5 +26,11 @@ namespace Domain.Models.Insurance
         public List<HokenInfModel> ListHokenInf { get; private set; }
 
         public List<KohiInfModel> ListKohi { get; private set; }
+
+        public int MaxIdHokenInf { get; private set; }
+
+        public int MaxIdHokenKohi { get; private set; }
+
+        public int MaxPidHokenPattern { get; private set; }
     }
 }

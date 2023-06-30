@@ -1,4 +1,5 @@
 ﻿using CommonChecker;
+using CommonChecker.Caches.Interface;
 using CommonChecker.Models;
 using CommonChecker.Types;
 using CommonCheckers.OrderRealtimeChecker.DB;
@@ -30,17 +31,13 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public ISystemConfig? SystemConfig { get; private set; }
 
-        private TenantNoTrackingDataContext? _dataContext;
-        public TenantNoTrackingDataContext DataContext
+        public IMasterDataCacheService TenMstCacheService { get; private set; }
+
+        public void InitFinder(TenantNoTrackingDataContext _dataContext, IMasterDataCacheService _tenMstCacheService)
         {
-            get => _dataContext!;
-            set
-            {
-                _dataContext = value;
-                Finder = new RealtimeCheckerFinder(value);
-                MasterFinder = new MasterFinder(value);
-                SystemConfig = new SystemConfig(value);
-            }
+            Finder = new RealtimeCheckerFinder(_dataContext, _tenMstCacheService);
+            MasterFinder = new MasterFinder(_dataContext);
+            SystemConfig = new SystemConfig(_dataContext);
         }
 
         public UnitCheckerResult<TOdrInf, TOdrDetail> CheckOrder(TOdrInf checkingOrder)

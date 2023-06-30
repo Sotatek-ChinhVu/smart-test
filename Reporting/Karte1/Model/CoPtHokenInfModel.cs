@@ -164,8 +164,8 @@ namespace Reporting.Karte1.Model
         {
             get
             {
-                string ret = "";
-                if (string.IsNullOrEmpty(PtHokenInf.EdaNo) == false)
+                string ret = string.Empty;
+                if (!string.IsNullOrEmpty(PtHokenInf.EdaNo))
                 {
                     ret = PtHokenInf.EdaNo.PadLeft(2, '0');
                 }
@@ -181,7 +181,7 @@ namespace Reporting.Karte1.Model
         {
             get
             {
-                string ret = "";
+                string ret = string.Empty;
 
                 if (new int[] { 11, 12, 13 }.Contains(HokenKbn))
                 {
@@ -196,7 +196,7 @@ namespace Reporting.Karte1.Model
                 else
                 {
                     ret = Kigo + "・" + Bango;
-                    if (string.IsNullOrEmpty(EdaNo) == false)
+                    if (!string.IsNullOrEmpty(EdaNo))
                     {
                         ret = ret + "(" + EdaNo + ")";
                     }
@@ -694,7 +694,7 @@ namespace Reporting.Karte1.Model
         {
             get
             {
-                string ret = "";
+                string ret = string.Empty;
 
                 if (HokenSbtKbn == 8)
                 {
@@ -786,21 +786,21 @@ namespace Reporting.Karte1.Model
         /// <returns></returns>
         public string KohiFutansyaNo(int index)
         {
-            string ret = "";
+            string ret = string.Empty;
 
             switch (index)
             {
                 case 1:
-                    ret = PtKohi1?.FutansyaNo ?? "";
+                    ret = PtKohi1?.FutansyaNo ?? string.Empty;
                     break;
                 case 2:
-                    ret = PtKohi2?.FutansyaNo ?? "";
+                    ret = PtKohi2?.FutansyaNo ?? string.Empty;
                     break;
                 case 3:
-                    ret = PtKohi3?.FutansyaNo ?? "";
+                    ret = PtKohi3?.FutansyaNo ?? string.Empty;
                     break;
                 case 4:
-                    ret = PtKohi4?.FutansyaNo ?? "";
+                    ret = PtKohi4?.FutansyaNo ?? string.Empty;
                     break;
             }
 
@@ -814,21 +814,21 @@ namespace Reporting.Karte1.Model
         /// <returns></returns>
         public string KohiJyukyusyaNo(int index)
         {
-            string ret = "";
+            string ret = string.Empty;
 
             switch (index)
             {
                 case 1:
-                    ret = PtKohi1?.JyukyusyaNo ?? "";
+                    ret = PtKohi1?.JyukyusyaNo ?? string.Empty;
                     break;
                 case 2:
-                    ret = PtKohi2?.JyukyusyaNo ?? "";
+                    ret = PtKohi2?.JyukyusyaNo ?? string.Empty;
                     break;
                 case 3:
-                    ret = PtKohi3?.JyukyusyaNo ?? "";
+                    ret = PtKohi3?.JyukyusyaNo ?? string.Empty;
                     break;
                 case 4:
-                    ret = PtKohi4?.JyukyusyaNo ?? "";
+                    ret = PtKohi4?.JyukyusyaNo ?? string.Empty;
                     break;
             }
 
