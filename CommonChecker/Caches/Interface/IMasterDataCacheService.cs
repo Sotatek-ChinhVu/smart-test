@@ -7,9 +7,9 @@ namespace CommonChecker.Caches.Interface
     {
         void InitCache(List<string> itemCodeList, int sinday, long ptId);
 
-        TenMst? GetTenMst(string itemCode, int sinday);
+        TenMst? GetTenMst(string itemCode);
 
-        List<TenMst> GetTenMstList(List<string> itemCodeList, int sinday);
+        List<TenMst> GetTenMstList(List<string> itemCodeList);
 
         List<M56ExIngrdtMain> GetM56ExIngrdtMainList(List<string> itemCodeList);
 

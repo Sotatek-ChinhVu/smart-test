@@ -131,18 +131,18 @@ namespace CommonChecker.Caches
             AddCacheList(itemCodeListNotCache);
         }
 
-        public TenMst? GetTenMst(string itemCode, int sinday)
+        public TenMst? GetTenMst(string itemCode)
         {
             AddCacheIfNeed(new List<string>() { itemCode });
 
-            return _tenMstCacheList.FirstOrDefault(t => itemCode == t.ItemCd && t.StartDate <= sinday && sinday <= t.EndDate);
+            return _tenMstCacheList.FirstOrDefault(t => itemCode == t.ItemCd);
         }
 
-        public List<TenMst> GetTenMstList(List<string> itemCodeList, int sinday)
+        public List<TenMst> GetTenMstList(List<string> itemCodeList)
         {
             AddCacheIfNeed(itemCodeList);
 
-            return _tenMstCacheList.Where(t => itemCodeList.Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate).ToList();
+            return _tenMstCacheList.Where(t => itemCodeList.Contains(t.ItemCd)).ToList();
         }
 
         public List<M56ExIngrdtMain> GetM56ExIngrdtMainList(List<string> itemCodeList)
