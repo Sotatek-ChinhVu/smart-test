@@ -34,4 +34,5 @@ public class StatisticExportRequest : ReportRequestBase
 
     public long? PtNumTo { get; set; } = 0;
 
+    public string FormName { get; set; } = string.Empty;
 }

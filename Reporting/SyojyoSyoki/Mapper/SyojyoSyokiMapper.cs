@@ -50,6 +50,11 @@ namespace Reporting.SyojyoSyoki.Mapper
             return new();
         }
 
+        public override string GetJobName()
+        {
+            return "症状詳記";
+        }
+
         public override Dictionary<string, string> GetFileNamePageMap()
         {
             var fileName = new Dictionary<string, string>();

@@ -234,7 +234,7 @@ namespace EmrCloudApi.Presenters.OrdInfs
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrReqCd));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidBunkatuLength:
-                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrBunkatu));
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.ErrorBunkatuOdrDetail, ResponseMessage.TodayOdrBunkatu));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidCmtName:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSuryo));

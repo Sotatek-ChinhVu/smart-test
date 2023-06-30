@@ -42,11 +42,6 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
 
     public UpdateReceptionStaticCellOutputData Handle(UpdateReceptionStaticCellInputData input)
     {
-        var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(input.HpId, input.PtId, input.RaiinNo, input.SinDate, input.UserId);
-        if (notAllowSave)
-        {
-            return new UpdateReceptionStaticCellOutputData(UpdateReceptionStaticCellStatus.MedicalScreenLocked);
-        }
         if (input.HpId <= 0)
         {
             return new UpdateReceptionStaticCellOutputData(UpdateReceptionStaticCellStatus.InvalidHpId);

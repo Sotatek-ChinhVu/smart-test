@@ -228,6 +228,9 @@
         public const string GetPermissionByScreen = "GetPermissionByScreen";
         public const string GetAllPermission = "GetAllPermission";
         public const string GetListUserByCurrentUser = "GetListUserByCurrentUser";
+        public const string GetListJobMst = "GetListJobMst";
+        public const string GetListFunctionPermission = "GetListFunctionPermission";
+        public const string SaveListUserMst = "SaveListUserMst";
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
@@ -278,6 +281,7 @@
         public const string GetSystemConfig = "GetSystemConfig";
         public const string GetMeiHoGai = "GetMeiHoGai";
         public const string CheckOpenAccounting = "CheckOpenAccounting";
+        public const string IsNyukinExisted = "IsNyukinExisted";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 
@@ -326,7 +330,9 @@
         public const string AddLock = "AddLock";
         public const string CheckLock = "CheckLock";
         public const string RemoveLock = "RemoveLock";
+        public const string CheckExistFunctionCode = "CheckExistFunctionCode";
         public const string RemoveAllLock = "RemoveAllLock";
+        public const string RemoveAllLockPtId = "RemoveAllLockPtId";
         public const string ExtendTtl = "ExtendTtl";
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
