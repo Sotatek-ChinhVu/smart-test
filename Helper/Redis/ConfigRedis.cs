@@ -10,7 +10,21 @@ namespace Helper.Redis
         {
             RedisConnectorHelper.lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
             {
-                return ConnectionMultiplexer.Connect(RedisHost);
+                var connection = ConnectionMultiplexer.Connect(RedisHost);
+                connection.ConnectionFailed += (_, e) =>
+                {
+                    Console.WriteLine("Connection to Redis failed in help.");
+                };
+
+                if (!connection.IsConnected)
+                {
+                    Console.WriteLine("Did not connect to Redis in help.");
+                }
+                else
+                {
+                    Console.WriteLine("Connected to Redis in help.");
+                }
+                return connection;
             });
         }
 

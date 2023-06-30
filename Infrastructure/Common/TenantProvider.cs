@@ -48,6 +48,7 @@ namespace Infrastructure.CommonDB
         public void GetRedis()
         {
             string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            Console.WriteLine(connection);
             if (RedisConnectorHelper.RedisHost != connection)
             {
                 RedisConnectorHelper.RedisHost = connection;
