@@ -230,8 +230,7 @@ namespace Infrastructure.Repositories
                     continue;
                 }
 
-                var oldItemUpdateSeqNo = listUpdateFiles.FirstOrDefault(item => item.SeqNo == lastSeqNo
-                                                                                && item.RaiinNo == 0
+                var oldItemUpdateSeqNo = listUpdateFiles.FirstOrDefault(item => item.RaiinNo == 0
                                                                                 && item.SeqNo == 0
                                                                                 && item.FileName != null
                                                                                 && item.FileName == fileInf.LinkFile);
