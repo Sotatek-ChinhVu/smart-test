@@ -1377,7 +1377,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetRaiiinListSettingInputData, GetRaiiinListSettingInteractor>();
             busBuilder.RegisterUseCase<SaveRaiinListSettingInputData, SaveRaiinListSettingInteractor>();
             //SinKoui
-            busBuilder.RegisterUseCase<GetSinKouiInputData, GetSinKouiInteractor>();
+            busBuilder.RegisterUseCase<GetListSinKouiInputData, GetListSinKouiInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

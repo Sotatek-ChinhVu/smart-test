@@ -23,7 +23,7 @@ public class SinKouiController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetSinKouiResponse>> GetList([FromQuery] GetSinKouiRequest req)
     {
-        var input = new GetSinKouiInputData(HpId, req.PtId);
+        var input = new GetListSinKouiInputData(HpId, req.PtId);
         var output = _bus.Handle(input);
 
         var presenter = new GetSinKouiPresenter();

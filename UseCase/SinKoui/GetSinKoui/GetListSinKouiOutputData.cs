@@ -3,15 +3,15 @@ using UseCase.Core.Sync.Core;
 
 namespace UseCase.SinKoui.GetSinKoui
 {
-    public class GetSinKouiListOutputData : IOutputData
+    public class GetListSinKouiOutputData : IOutputData
     {
-        public GetSinKouiListOutputData(GetSinKouiListStatus status, List<string> sinYmBindings)
+        public GetListSinKouiOutputData(GetListSinKouiStatus status, List<string> sinYmBindings)
         {
             Status = status;
             SinYmBindings = sinYmBindings;
         }
 
-        public GetSinKouiListStatus Status { get; private set; }
+        public GetListSinKouiStatus Status { get; private set; }
         public List<string> SinYmBindings { get; private set; } = new List<string>();
     }
 }

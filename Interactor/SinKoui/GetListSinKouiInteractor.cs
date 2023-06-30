@@ -4,26 +4,26 @@ using UseCase.SinKoui.GetSinKoui;
 
 namespace Interactor.SinKoui;
 
-public class GetSinKouiInteractor : IGetSinKouiListInputPort
+public class GetListSinKouiInteractor : IGetListSinKouiInputPort
 {
     private readonly ISinKouiRepository _sinKouiRepository;
 
-    public GetSinKouiInteractor(ISinKouiRepository sinKouiRepository)
+    public GetListSinKouiInteractor(ISinKouiRepository sinKouiRepository)
     {
         _sinKouiRepository = sinKouiRepository;
     }
 
-    public GetSinKouiListOutputData Handle(GetSinKouiInputData input)
+    public GetListSinKouiOutputData Handle(GetListSinKouiInputData input)
     {
         try
         {
             if (input.PtId <= 0)
             {
-                return new GetSinKouiListOutputData(GetSinKouiListStatus.InvalidPtId, new());
+                return new GetListSinKouiOutputData(GetListSinKouiStatus.InvalidPtId, new());
             }
 
             var sinKoui = _sinKouiRepository.GetListKaikeiInf(input.HpId, input.PtId);
-            return new GetSinKouiListOutputData(GetSinKouiListStatus.Success, sinKoui);
+            return new GetListSinKouiOutputData(GetListSinKouiStatus.Success, sinKoui);
         }
         finally
         {

@@ -1,9 +1,9 @@
-﻿using Domain.Models.SinKoui;
-using Domain.Models.User;
+﻿using Domain.Models.Futan;
+using Domain.Models.SinKoui;
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
+using System.Linq.Dynamic.Core;
 
 namespace Infrastructure.Repositories
 {
@@ -15,11 +15,16 @@ namespace Infrastructure.Repositories
 
         public List<string> GetListKaikeiInf(int hpId, long ptId)
         {
-            var listSindate = NoTrackingDataContext.KaikeiInfs.Where(item => item.HpId == hpId && item.PtId == ptId)
-                .Select(item => new KaikeiInfModel(item))
-                .ToList();
-            var sinDateFinder = listSindate.Select(x => x.SinYmBinding).Distinct().ToList();
-            return sinDateFinder;
+            var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+            var result = kaikeiInfs.Select(x => ToModel(x)).Distinct().ToList();
+            return result.Select(x => x.SinYmBinding).Distinct().ToList();
+        }
+
+        private static KaikeiInfModel ToModel(KaikeiInf u)
+        {
+            return new KaikeiInfModel(
+                u.PtId,
+                u.SinDate);
         }
 
         public void ReleaseResource()

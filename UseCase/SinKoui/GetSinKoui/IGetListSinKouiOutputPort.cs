@@ -2,7 +2,7 @@
 
 namespace UseCase.SinKoui.GetSinKoui
 {
-    public interface IGetSinKouiListOutputPort : IOutputPort<GetSinKouiListOutputData>
+    public interface IGetListSinKouiOutputPort : IOutputPort<GetListSinKouiOutputData>
     {
     }
 }

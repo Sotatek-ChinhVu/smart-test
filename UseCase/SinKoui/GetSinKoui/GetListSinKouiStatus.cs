@@ -1,6 +1,6 @@
 ﻿namespace UseCase.SinKoui.GetSinKoui
 {
-    public enum GetSinKouiListStatus
+    public enum GetListSinKouiStatus
     {
         Success = 1,
         InvalidPtId,

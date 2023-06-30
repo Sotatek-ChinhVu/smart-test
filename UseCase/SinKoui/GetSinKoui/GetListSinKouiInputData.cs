@@ -2,9 +2,9 @@
 
 namespace UseCase.SinKoui.GetSinKoui;
 
-public class GetSinKouiInputData : IInputData<GetSinKouiListOutputData>
+public class GetListSinKouiInputData : IInputData<GetListSinKouiOutputData>
 {
-    public GetSinKouiInputData(int hpId, long ptId)
+    public GetListSinKouiInputData(int hpId, long ptId)
     {
         HpId = hpId; 
         PtId = ptId;
