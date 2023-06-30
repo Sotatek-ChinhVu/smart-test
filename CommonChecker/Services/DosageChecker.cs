@@ -26,6 +26,14 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             var errorOrderList = new List<TOdrInf>();
             var itemList = new List<DrugInfo>();
 
+            var ptBodyInf = Finder!.GetPtBodyInfo(
+                HpID, 
+                PtID, 
+                Sinday, 
+                CurrentHeight, 
+                CurrentWeight, 
+                unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
+
             foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
                 if (checkingOrder.OdrKouiKbn == 21 && !SystemConfig.DosageDrinkingDrugSetting ||
@@ -65,7 +73,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                     continue;
                 }
 
-                List<DosageResultModel> checkedResult = Finder!.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, CurrentHeight, CurrentWeight, unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
+                List<DosageResultModel> checkedResult = Finder!.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, ptBodyInf.height, ptBodyInf.weight, unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
 
                 if (TermLimitCheckingOnly)
                 {

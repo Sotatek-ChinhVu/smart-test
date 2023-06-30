@@ -5,7 +5,7 @@ namespace CommonChecker.Caches.Interface
 {
     public interface IMasterDataCacheService
     {
-        void AddCache(List<string> itemCodeList);
+        void InitCache(List<string> itemCodeList, int sinday, long ptId);
 
         TenMst? GetTenMst(string itemCode, int sinday);
 
@@ -22,6 +22,10 @@ namespace CommonChecker.Caches.Interface
         List<M56YjDrugClass> GetM56YjDrugClassList(List<string> itemCodeList);
 
         List<M56DrugClass> GetM56DrugClassList(List<string> itemCodeList);
+
+        List<KinkiMst> GetKinkiMstList(List<string> itemCodeList);
+
+        PtInf GetPtInf();
 
         SystemConfig GetSystemConfig();
     }

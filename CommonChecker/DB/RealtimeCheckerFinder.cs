@@ -91,11 +91,6 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return listFilteredBySinData;
         }
 
-        public PtInf GetPatientInfo(int hpId, long ptId)
-        {
-            return NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete == 0) ?? new PtInf();
-        }
-
         public KensaInfDetail GetBodyInfo(int hpId, long ptId, int sinday, string kensaItemCode)
         {
             return NoTrackingDataContext.KensaInfDetails
@@ -928,7 +923,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 return listLevel;
             }
 
-            PtInf patientInfo = GetPatientInfo(hpID, ptID);
+            PtInf patientInfo = _tenMstCacheService.GetPtInf();
             if (patientInfo == null)
             {
                 return new List<AgeResultModel>();
@@ -1444,8 +1439,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                             }
                             ).ToList();
 
-            var listChecked = NoTrackingDataContext.KinkiMsts.Where(k => k.HpId == hpID &&
-                                                                         k.IsDeleted == 0 &&
+            var listChecked = _tenMstCacheService.GetKinkiMstList(itemCodeList).Where(k => 
                                                                          k.BCd != null &&
                                                                          (
                                                                               listCurrentOrderCodeItemCd.Contains(k.ACd) && listAddedOrderCodeItemCd.Contains(k.BCd) ||
@@ -1874,17 +1868,13 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return filteredResultAsLevel;
         }
 
-        public List<DosageResultModel> CheckDosage(int hpId, long ptId, int sinday, List<DrugInfo> listItem, bool minCheck, double ratioSetting, double currentHeight, double currentWeight, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
+        public (double weight, double height) GetPtBodyInfo(int hpId, long ptId, int sinday, double currentHeight, double currentWeight, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
         {
-            PtInf patientInfo = GetPatientInfo(hpId, ptId);
+            PtInf patientInfo = _tenMstCacheService.GetPtInf();
             if (patientInfo == null)
             {
-                return new List<DosageResultModel>();
+                return new(0, 0);
             }
-
-            List<DosageResultModel> checkedResult = new List<DosageResultModel>();
-
-            double age = CIUtil.SDateToAge(patientInfo.Birthday, sinday);
             int sex = patientInfo.Sex;
 
             double weight = 0;
@@ -1919,6 +1909,20 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 height = currentHeight;
             }
 
+            return new(weight, height);
+        }
+
+        public List<DosageResultModel> CheckDosage(int hpId, long ptId, int sinday, List<DrugInfo> listItem, bool minCheck, double ratioSetting, double height, double weight, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
+        {
+            PtInf patientInfo = _tenMstCacheService.GetPtInf();
+            if (patientInfo == null)
+            {
+                return new List<DosageResultModel>();
+            }
+
+            List<DosageResultModel> checkedResult = new List<DosageResultModel>();
+
+            double age = CIUtil.SDateToAge(patientInfo.Birthday, sinday);
             double ratioAsAge = GetRatio(patientInfo.Birthday, sinday);
             double bodySize = GetBodySize(weight, height, age);
 

@@ -95,7 +95,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             itemCodeList.AddRange(order.OdrInfDetailModelsIgnoreEmpty.Select(i => i.ItemCd).ToList());
         }
-        _masterDataCacheService.AddCache(itemCodeList.Distinct().ToList());
+        _masterDataCacheService.InitCache(itemCodeList.Distinct().ToList(), _sinday);
     }
 
     public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb, RealTimeCheckerCondition realTimeCheckerCondition)
