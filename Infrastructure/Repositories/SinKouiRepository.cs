@@ -13,12 +13,13 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<KaikeiInfModel> GetListKaikeiInf(int hpId, long ptId)
+        public List<string> GetListKaikeiInf(int hpId, long ptId)
         {
-            return  NoTrackingDataContext.KaikeiInfs
-                .Where(item => item.HpId == hpId && item.PtId == ptId)
+            var listSindate = NoTrackingDataContext.KaikeiInfs.Where(item => item.HpId == hpId && item.PtId == ptId)
                 .Select(item => new KaikeiInfModel(item))
                 .ToList();
+            var sinDateFinder = listSindate.Select(x => x.SinYmBinding).Distinct().ToList();
+            return sinDateFinder;
         }
 
         public void ReleaseResource()

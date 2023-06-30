@@ -1,4 +1,5 @@
 ﻿using Domain.Models.SinKoui;
+using Entity.Tenant;
 using UseCase.SinKoui.GetSinKoui;
 
 namespace Interactor.SinKoui;
@@ -18,7 +19,7 @@ public class GetSinKouiInteractor : IGetSinKouiListInputPort
         {
             if (input.PtId <= 0)
             {
-                return new GetSinKouiListOutputData(GetSinKouiListStatus.InvalidPtId);
+                return new GetSinKouiListOutputData(GetSinKouiListStatus.InvalidPtId, new());
             }
 
             var sinKoui = _sinKouiRepository.GetListKaikeiInf(input.HpId, input.PtId);

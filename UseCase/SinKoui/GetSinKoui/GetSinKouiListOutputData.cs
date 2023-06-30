@@ -5,18 +5,13 @@ namespace UseCase.SinKoui.GetSinKoui
 {
     public class GetSinKouiListOutputData : IOutputData
     {
-        public GetSinKouiListOutputData(GetSinKouiListStatus status)
+        public GetSinKouiListOutputData(GetSinKouiListStatus status, List<string> sinYmBindings)
         {
             Status = status;
-        }
-
-        public GetSinKouiListOutputData(GetSinKouiListStatus status, List<KaikeiInfModel> kaikeiInfs)
-        {
-            Status = status;
-            KaikeiInfs = kaikeiInfs;
+            SinYmBindings = sinYmBindings;
         }
 
         public GetSinKouiListStatus Status { get; private set; }
-        public List<KaikeiInfModel> KaikeiInfs { get; private set; } = new List<KaikeiInfModel>();
+        public List<string> SinYmBindings { get; private set; } = new List<string>();
     }
 }

@@ -1,14 +1,15 @@
 ﻿using Domain.Models.SinKoui;
+using UseCase.SinKoui.GetSinKoui;
 
 namespace EmrCloudApi.Responses.SinKoui
 {
     public class GetSinKouiResponse
     {
-        public GetSinKouiResponse(List<KaikeiInfModel> kaikeiInfModels)
+        public GetSinKouiResponse(List<string> sinYmBindings)
         {
-            KaikeiInfModels = kaikeiInfModels;
+            SinYmBindings = sinYmBindings;
         }
 
-        public List<KaikeiInfModel> KaikeiInfModels { get; private set; }
+        public List<string> SinYmBindings { get; private set; }
     }
 }
