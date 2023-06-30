@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using Helper.Extension;
+using StackExchange.Redis;
 
 namespace Helper.Redis
 {
@@ -10,7 +11,22 @@ namespace Helper.Redis
         {
             RedisConnectorHelper.lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
             {
-                var connection = ConnectionMultiplexer.Connect(RedisHost);
+                var strs = RedisHost.Split(":");
+                string host = string.Empty;
+                int port = -1;
+                var config = new ConfigurationOptions
+                {
+                    AbortOnConnectFail = false
+                };
+                ConfigurationOptions options = new ConfigurationOptions();
+                if (strs.Count() == 2)
+                {
+                    host = strs.FirstOrDefault()?.ToString() ?? string.Empty;
+                    port = strs.LastOrDefault()?.AsInteger() ?? 0;
+                }
+                config.EndPoints.Add(host, port);
+
+                var connection = ConnectionMultiplexer.Connect(config);
                 connection.ConnectionFailed += (_, e) =>
                 {
                     Console.WriteLine("Connection to Redis failed in help.");
