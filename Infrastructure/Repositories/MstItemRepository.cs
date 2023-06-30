@@ -1116,6 +1116,8 @@ namespace Infrastructure.Repositories
                 tenMstQueryForGetlastDate = tenMstQueryForGetlastDate.Where(t => t.IsDeleted == DeleteTypes.None);
             }
 
+            var totalCount = queryResult.Count();
+
             var queryKNTensu = (from tenKN in queryResult
                                 join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
                                 where tenKN.ItemCd.StartsWith("KN")
@@ -1143,8 +1145,6 @@ namespace Infrastructure.Repositories
                                   ten.YakkaSyusaiItem,
                                   tenKN
                               }).ToList();
-
-            var totalCount = queryFinal.Count();
 
             var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
             var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
