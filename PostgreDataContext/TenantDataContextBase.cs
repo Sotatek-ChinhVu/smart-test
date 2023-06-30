@@ -431,6 +431,7 @@ namespace PostgreDataContext
 
             modelBuilder.Entity<LockInf>()
            .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter("FunctionCd = \"02000000\"").IsUnique();
+            modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
@@ -1157,5 +1158,7 @@ namespace PostgreDataContext
         public DbSet<OnlineConsent> OnlineConsents { get; set; } = default!;
 
         public DbSet<KouiHoukatuMst> KouiHoukatuMsts { get; set; } = default!;
+
+        public DbSet<UserToken> UserTokens { get; set; } = default!;
     }
 }
