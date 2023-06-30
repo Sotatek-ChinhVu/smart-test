@@ -606,6 +606,9 @@ using CommonChecker.Caches.Interface;
 using CommonChecker.Caches;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using UseCase.AccountDue.IsNyukinExisted;
+using Domain.Models.SinKoui;
+using UseCase.SinKoui.GetSinKoui;
+using Interactor.SinKoui;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -882,6 +885,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
             services.AddTransient<ICheckOpenReportingService, CheckOpenReportingService>();
             services.AddTransient<IUserTokenRepository, UserTokenRepository>();
+            services.AddTransient<ISinKouiRepository, SinKouiRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1372,6 +1376,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFilingcategoryInputData, GetFilingcategoryInteractor>();
             busBuilder.RegisterUseCase<GetRaiiinListSettingInputData, GetRaiiinListSettingInteractor>();
             busBuilder.RegisterUseCase<SaveRaiinListSettingInputData, SaveRaiinListSettingInteractor>();
+            //SinKoui
+            busBuilder.RegisterUseCase<GetSinKouiInputData, GetSinKouiInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
