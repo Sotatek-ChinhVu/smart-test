@@ -19,6 +19,7 @@ namespace EmrCloudApi.Presenters.SinKoui
         private string GetMessage(GetSinKouiListStatus status) => status switch
         {
             GetSinKouiListStatus.Success => ResponseMessage.Success,
+            GetSinKouiListStatus.InvalidPtId => ResponseMessage.InvalidPtId,
             _ => string.Empty
         };
     }
