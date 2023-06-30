@@ -4,8 +4,8 @@ namespace Reporting.Karte1.Model
 {
     public class CoPtKohiModel
     {
-        public PtKohi PtKohi { get; } = new();
-        public HokenMst HokenMst { get; } = new();
+        public PtKohi PtKohi { get; }
+        public HokenMst HokenMst { get; }
         public KohiPriority KohiPriority { get; } = new();
 
         public CoPtKohiModel(PtKohi ptKohi, HokenMst hokenMst)
@@ -83,7 +83,7 @@ namespace Reporting.Karte1.Model
         /// </summary>
         public string FutansyaNo
         {
-            get { return PtKohi.FutansyaNo ?? ""; }
+            get { return PtKohi.FutansyaNo ?? string.Empty; }
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Reporting.Karte1.Model
         /// </summary>
         public string JyukyusyaNo
         {
-            get { return PtKohi.JyukyusyaNo ?? ""; }
+            get { return PtKohi.JyukyusyaNo ?? string.Empty; }
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Reporting.Karte1.Model
         /// </summary>
         public string TokusyuNo
         {
-            get { return PtKohi.TokusyuNo ?? ""; }
+            get { return PtKohi.TokusyuNo ?? string.Empty; }
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace Reporting.Karte1.Model
         /// </summary>
         public int FutanRate
         {
-            get => HokenMst.FutanRate;
+            get => HokenMst?.FutanRate ?? 0;
         }
         /// <summary>
         /// 月上限額

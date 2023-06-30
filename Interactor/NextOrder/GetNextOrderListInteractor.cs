@@ -26,12 +26,8 @@ namespace Interactor.NextOrder
                     return new GetNextOrderListOutputData(new(), GetNextOrderListStatus.InvalidPtId);
 
                 }
-                if (inputData.RsvkrtKbn != 0 && inputData.RsvkrtKbn != 1)
-                {
-                    return new GetNextOrderListOutputData(new(), GetNextOrderListStatus.InvalidRsvkrtKbn);
-                }
 
-                var nextOrders = _nextOrderRepository.GetList(inputData.HpId, inputData.PtId, inputData.RsvkrtKbn, inputData.IsDeleted);
+                var nextOrders = _nextOrderRepository.GetList(inputData.HpId, inputData.PtId, inputData.IsDeleted);
 
                 if (nextOrders.Count == 0)
                 {

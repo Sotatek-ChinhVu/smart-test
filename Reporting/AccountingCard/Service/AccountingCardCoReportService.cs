@@ -108,7 +108,7 @@ namespace Reporting.AccountingCard.Service
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
-            return new CommonMapper(_singleFieldDataM, _listTextData, _extralData, "fmAccountingCard.rse", _singleFieldData, _visibleFieldData, (int)CoReportType.AccountingCard).GetData();
+            return new CommonMapper(_singleFieldDataM, _listTextData, _extralData, "fmAccountingCard.rse", _singleFieldData, _visibleFieldData, (int)CoReportType.AccountingCard, "会計カード").GetData();
         }
         #endregion
 
