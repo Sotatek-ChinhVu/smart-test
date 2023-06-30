@@ -2,11 +2,9 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
-using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using System.Text.Json;
-using StackExchange.Redis;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories;
 
@@ -14,7 +12,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 {
     private const int ADOPTED_CONFIRM_CD = 100005;
     private static List<ConfigGroupDefault> configGroupDefault = new();
-    private readonly IDatabase _cache;
+    private readonly IMemoryCache _memoryCache;
     private List<int> listFunctionButtonCode = new List<int> { 10, 3, 902, 922, 923, 906, 907, 14, 919, 903, 9, 905, 15, 921, 928, 19 };
     private List<int> listSuperSetButtonCode = new List<int> { 301, 302, 303, 304, 305, 306, 307, 308, 309, 310 };
     private List<int> listSuperSetButtonCodeItem = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -27,13 +25,11 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     private const int claimSagakuAtReceTimeGrpCd = 923;
     private const int noteScreenDisplayGrpCd = 919;
     private const int saveCheckGrpCd = 921;
-    private readonly string key;
 
-    public UserConfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    public UserConfRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
     {
-        key = GetCacheKey() + "UserMst";
+        _memoryCache = memoryCache;
         InitConfigDefaultValue();
-        _cache = RedisConnectorHelper.Connection.GetDatabase();
     }
 
     public List<UserConfModel> GetList(int userId, int fromGrpCd, int toGrpCd)
@@ -45,47 +41,48 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 
     public List<UserConfModel> GetList(int hpId, int userId, List<int> grpCodes)
     {
-        var result = GetData(hpId, userId);
-
-        return result!.Select(r => ToModel(r)).ToList();
+        //if (!_memoryCache.TryGetValue(GetCacheKey(), out List<UserConfModel> result))
+        //{
+        //    result = ReloadCache(hpId, userId, grpCodes);
+        //}
+        var result = ReloadCache(hpId, userId, grpCodes);
+        return result!;
     }
 
     public List<UserConfModel> GetList(int hpId, int userId)
     {
-        var userConfs = GetData(hpId, userId);
-        var entities = userConfs.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
+        var entities = NoTrackingDataContext.UserConfs.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
         var result = entities.Select(e => new UserConfModel(e.UserId, e.GrpCd, e.GrpItemCd, e.GrpItemEdaNo, e.Val, e.Param ?? string.Empty)).ToList();
         return result;
     }
 
-    public Dictionary<string, int> GetDic(int hpId, int userId)
+    public Dictionary<string, int> GetList(int userId)
     {
         var result = new Dictionary<string, int>();
-        var userConfs = GetData(hpId, userId);
 
-        var displaySetName = userConfs
+        var displaySetName = NoTrackingDataContext.UserConfs
             .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 2 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 2);
         result.Add("DisplaySetName", displaySetName);
-        var displayUserInput = userConfs
+        var displayUserInput = NoTrackingDataContext.UserConfs
           .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 3 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 3);
         result.Add("DisplayUserInput", displayUserInput);
-        var displayTimeInput = userConfs
+        var displayTimeInput = NoTrackingDataContext.UserConfs
     .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 4 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 4);
         result.Add("DisplayTimeInput", displayTimeInput);
-        var displayDrugPrice = userConfs
+        var displayDrugPrice = NoTrackingDataContext.UserConfs
    .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 5 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 5);
         result.Add("DisplayDrugPrice", displayDrugPrice);
-        var adoptedConfirmCD = userConfs
+        var adoptedConfirmCD = NoTrackingDataContext.UserConfs
    .FirstOrDefault(u => u.UserId == userId && u.GrpCd == ADOPTED_CONFIRM_CD)?.Val ?? GetDefaultValue(ADOPTED_CONFIRM_CD);
         result.Add("AdoptedConfirmCD", adoptedConfirmCD);
-        var confirmEditByomei = userConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100006 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100006);
+        var confirmEditByomei = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100006 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100006);
         result.Add("ConfirmEditByomei", confirmEditByomei);
-        var isLockSuperSetDisplay = userConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 906 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(906);
+        var isLockSuperSetDisplay = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 906 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(906);
         result.Add("IsLockSuperSetDisplay", isLockSuperSetDisplay);
-        var displayByomeiDateType = userConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100001 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100001);
+        var displayByomeiDateType = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100001 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100001);
         result.Add("DisplayByomeiDateType", displayByomeiDateType);
 
-        string paramSaveMedical = userConfs
+        string paramSaveMedical = NoTrackingDataContext.UserConfs
             .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 5)?.Param ?? "11111";
         var isByomeiCheckTempSave = paramSaveMedical[0].AsInteger();
         var isByomeiCheckKeisanSave = paramSaveMedical[1].AsInteger();
@@ -98,7 +95,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         result.Add("IsByomeiCheckTrialCalc", isByomeiCheckTrialCalc);
         result.Add("IsByomeiCheckNormalSave", isByomeiCheckNormalSave);
 
-        string santeiCheckSaveParam = userConfs
+        string santeiCheckSaveParam = NoTrackingDataContext.UserConfs
          .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 1)?.Param ?? "10100";
         var isSanteiCheckNormalSave = santeiCheckSaveParam[0].AsInteger();
         var isSanteiCheckTempSave = santeiCheckSaveParam[2].AsInteger();
@@ -111,7 +108,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         result.Add("IsSanteiCheckTrialCalc", isSanteiCheckTrialCalc);
         result.Add("IsSanteiCheckPrint", isSanteiCheckPrint);
 
-        string inputCheckSaveParam = userConfs
+        string inputCheckSaveParam = NoTrackingDataContext.UserConfs
          .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 2)?.Param ?? "10100";
         var isInputCheckNormalSave = inputCheckSaveParam[0].AsInteger();
         var isInputCheckTempSave = inputCheckSaveParam[2].AsInteger();
@@ -124,7 +121,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         result.Add("IsInputCheckTrialCalc", isInputCheckTrialCalc);
         result.Add("IsInputCheckPrint", isInputCheckPrint);
 
-        string reportCheckSaveParam = userConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 4)?.Param ?? "10101";
+        string reportCheckSaveParam = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 4)?.Param ?? "10101";
         var isReportCheckKeisanSave = reportCheckSaveParam[1].AsInteger();
         var isReportCheckNormalSave = reportCheckSaveParam[0].AsInteger();
         var isReportCheckTempSave = reportCheckSaveParam[2].AsInteger();
@@ -137,8 +134,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 
     public string GetSettingParam(int hpId, int userId, int groupCd, int grpItemCd = 0, string defaultValue = "")
     {
-        var userConfs = GetData(hpId, userId);
-        var userConf = userConfs.FirstOrDefault(p =>
+        var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p =>
              p.HpId == hpId && p.GrpCd == groupCd && p.GrpItemCd == grpItemCd && p.UserId == userId);
         return userConf != null ? userConf.Param ?? string.Empty : defaultValue;
     }
@@ -146,10 +142,9 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     public List<UserConfModel> GetListSettingParam(int hpId, int userId, List<Tuple<int, int>> groupCode, string defaultValue = "")
     {
         var result = new List<UserConfModel>();
-        var userConfs = GetData(hpId, userId);
         foreach (var cd in groupCode)
         {
-            var userConf = userConfs.FirstOrDefault(p =>
+            var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p =>
              p.HpId == hpId && p.GrpCd == cd.Item1 && p.GrpItemCd == cd.Item2 && p.UserId == userId);
 
             result.Add(new UserConfModel(
@@ -164,56 +159,35 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         return result;
     }
 
-    private List<UserConf> ReloadCache(int hpId, int userId)
+    private List<UserConfModel> ReloadCache(int hpId, int userId, List<int> grpCodes)
     {
         var result = NoTrackingDataContext.UserConfs
                                     .Where(item => item.UserId == userId
-                                                   && item.HpId == hpId)
+                                                   && item.HpId == hpId
+                                                   && grpCodes.Contains(item.GrpCd))
+                                    .AsEnumerable()
+                                    .Select(item => ToModel(item))
                                     .ToList();
-        var json = JsonSerializer.Serialize(result);
-        _cache.StringSet(key + userId + hpId, json);
-
+        var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetPriority(CacheItemPriority.Normal);
+        _memoryCache.Set(GetCacheKey(), result, cacheEntryOptions);
         return result;
     }
 
-    private List<UserConf> ReadCache(int userId, int hpId)
-    {
-        var results = _cache.StringGet(key + userId + hpId);
-        var json = results.AsString();
-        var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<UserConf>>(json) : new();
-        return datas ?? new();
-    }
-
-    private List<UserConf> GetData(int hpId, int userId)
-    {
-        var result = new List<UserConf>();
-        if (!_cache.KeyExists(key + userId + hpId))
-        {
-            result = ReloadCache(hpId, userId);
-        }
-        else
-        {
-            result = ReadCache(userId, hpId);
-        }
-
-        return result;
-    }
 
     public List<UserConfModel> GetListUserConf(int hpId, int userId, int groupCd)
     {
-        var userConfs = GetData(hpId, userId);
-        return userConfs.Where(p =>
+        return NoTrackingDataContext.UserConfs.Where(p =>
             p.HpId == hpId && p.GrpCd == groupCd && p.UserId == userId).AsEnumerable().Select(u => ToModel(u)).ToList();
     }
 
-    public int Sagaku(int hpId, int userId, bool fromRece)
+    public int Sagaku(bool fromRece)
     {
-        var userConfs = GetData(hpId, userId);
         if (fromRece)
         {
-            return userConfs.FirstOrDefault(p => p.HpId == hpId && p.UserId == userId && p.GrpCd == 923 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
+            return NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 923 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
         }
-        return userConfs.FirstOrDefault(p => p.HpId == hpId && p.UserId == userId && p.GrpCd == 922 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
+        return NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 922 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
     }
 
     public void UpdateAdoptedByomeiConfig(int hpId, int userId, int adoptedValue)
@@ -234,11 +208,8 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         userConfig.UpdateId = userId;
         userConfig.UpdateDate = CIUtil.GetJapanDateTimeNow();
         userConfig.Val = adoptedValue;
-        var check = TrackingDataContext.SaveChanges();
-        if (check > 0)
-        {
-            ReloadCache(hpId, userId);
-        }
+
+        TrackingDataContext.SaveChanges();
     }
 
     public void UpdateUserConf(int hpId, int userId, int grpCd, int value)
@@ -259,11 +230,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         userConfig.UpdateId = userId;
         userConfig.UpdateDate = CIUtil.GetJapanDateTimeNow();
         userConfig.Val = value;
-        var check = TrackingDataContext.SaveChanges();
-        if (check > 0)
-        {
-            ReloadCache(hpId, userId);
-        }
+        TrackingDataContext.SaveChanges();
     }
 
     private UserConfModel ToModel(UserConf u)
@@ -435,10 +402,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
             }
         }
 
-        var result = TrackingDataContext.SaveChanges() > 0;
-        if (result)
-            ReloadCache(hpId, userId);
-        return result;
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     private static UserConf ConvertToEntity(int userId, int hpId, UserConfModel userConfModel)
@@ -457,8 +421,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 
     public int GetSettingValue(int hpId, int userId, int groupCd, int grpItemCd = 0, int grpItemEdaNo = 0)
     {
-        var userConfs = GetData(hpId, userId);
-        var userConf = userConfs.FirstOrDefault(p => p.HpId == hpId
+        var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId
                                                                            && p.GrpCd == groupCd
                                                                            && p.GrpItemCd == grpItemCd
                                                                            && p.GrpItemEdaNo == grpItemEdaNo
@@ -468,8 +431,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 
     public List<(int groupItemCd, int value)> GetSettingValues(int hpId, int userId, int groupCd, int fromGroupItemCd, int toGroupItemCd)
     {
-        var userConfs = GetData(hpId, userId);
-        userConfs = userConfs.Where(p => p.HpId == hpId
+        var userConfs = NoTrackingDataContext.UserConfs.Where(p => p.HpId == hpId
                                                                            && p.GrpCd == groupCd
                                                                            && p.UserId == userId).ToList();
         List<(int groupItemCd, int value)> values = new();
