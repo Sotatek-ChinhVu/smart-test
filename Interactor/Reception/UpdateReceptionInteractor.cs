@@ -22,16 +22,17 @@ public class UpdateReceptionInteractor : IUpdateReceptionInputPort
         {
             ReceptionSaveDto dto = input.Dto;
             List<ReceptionRowModel> receptionInfos = new();
+            List<SameVisitModel> sameVisitList = new();
 
             var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(input.HpId, dto.Reception.PtId, dto.Reception.RaiinNo, dto.Reception.SinDate, input.UserId);
             if (notAllowSave)
             {
-                return new UpdateReceptionOutputData(UpdateReceptionStatus.MedicalScreenLocked, receptionInfos);
+                return new UpdateReceptionOutputData(UpdateReceptionStatus.MedicalScreenLocked, receptionInfos, sameVisitList);
             }
 
             else if (dto!.Insurances.Any(i => !i.IsValidData()))
             {
-                return new UpdateReceptionOutputData(UpdateReceptionStatus.InvalidInsuranceList, receptionInfos);
+                return new UpdateReceptionOutputData(UpdateReceptionStatus.InvalidInsuranceList, receptionInfos, sameVisitList);
             }
 
             var success = _receptionRepository.Update(input.Dto, input.HpId, input.UserId);
@@ -39,8 +40,9 @@ public class UpdateReceptionInteractor : IUpdateReceptionInputPort
             if (success)
             {
                 receptionInfos = _receptionRepository.GetList(input.HpId, dto.Reception.SinDate, dto.Reception.RaiinNo, dto.Reception.PtId);
+                sameVisitList = _receptionRepository.GetListSameVisit(input.HpId, dto.Reception.PtId, dto.Reception.SinDate);
             }
-            return new UpdateReceptionOutputData(status, receptionInfos);
+            return new UpdateReceptionOutputData(status, receptionInfos, sameVisitList);
         }
         finally
         {

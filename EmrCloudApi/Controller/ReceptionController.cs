@@ -96,7 +96,7 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
             if (output.Status == InsertReceptionStatus.Success)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, output.ReceptionInfos);
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new InsertReceptionPresenter();
@@ -112,7 +112,7 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
             if (output.Status == UpdateReceptionStatus.Success)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, output.ReceptionInfos);
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new UpdateReceptionPresenter();
@@ -275,7 +275,7 @@ namespace EmrCloudApi.Controller
             var deleteFirst = output.DeleteReceptionItems.FirstOrDefault();
             if (output.Status == DeleteReceptionStatus.Successed && deleteFirst != null)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, output.ReceptionInfos);
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new DeleteReceptionPresenter();

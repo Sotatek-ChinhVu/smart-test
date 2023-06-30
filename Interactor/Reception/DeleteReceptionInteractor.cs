@@ -23,22 +23,23 @@ public class DeleteReceptionInteractor : IDeleteReceptionInputPort
         try
         {
             List<ReceptionRowModel> receptionInfos = new();
+            List<SameVisitModel> sameVisitList = new();
             var raiinNos = inputData.RaiinNos.Distinct().ToList();
             if (inputData.HpId < 0)
             {
-                return new DeleteReceptionOutputData(DeleteReceptionStatus.InvalidHpId, new(), receptionInfos);
+                return new DeleteReceptionOutputData(DeleteReceptionStatus.InvalidHpId, new(), receptionInfos, sameVisitList);
             }
             if (inputData.UserId <= 0)
             {
-                return new DeleteReceptionOutputData(DeleteReceptionStatus.InvalidUserId, new(), receptionInfos);
+                return new DeleteReceptionOutputData(DeleteReceptionStatus.InvalidUserId, new(), receptionInfos, sameVisitList);
             }
             if (raiinNos.Count < 1)
             {
-                return new DeleteReceptionOutputData(DeleteReceptionStatus.InvalidRaiinNo, new(), receptionInfos);
+                return new DeleteReceptionOutputData(DeleteReceptionStatus.InvalidRaiinNo, new(), receptionInfos, sameVisitList);
             }
             if (!_raiinInfRepository.CheckExistOfRaiinNos(raiinNos.Select(r => r.RaiinNo).ToList()))
             {
-                return new DeleteReceptionOutputData(DeleteReceptionStatus.InvalidRaiinNo, new(), receptionInfos);
+                return new DeleteReceptionOutputData(DeleteReceptionStatus.InvalidRaiinNo, new(), receptionInfos, sameVisitList);
             }
 
             var result = _raiinInfRepository.Delete(inputData.Flag, inputData.HpId, inputData.PtId, inputData.UserId, inputData.SinDate, raiinNos.Select(r => new Tuple<long, long, int>(r.RaiinNo, r.OyaRaiinNo, r.Status)).ToList());
@@ -51,10 +52,11 @@ public class DeleteReceptionInteractor : IDeleteReceptionInputPort
                 });
                 //Item1: SinDate, Item2: RaiinNo, Item3: PtId
                 receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, result.First().Item2, inputData.PtId);
-                return new DeleteReceptionOutputData(DeleteReceptionStatus.Successed, result.Select(r => new DeleteReceptionItem(r.Item1, r.Item2, r.Item3)).ToList(), receptionInfos);
+                sameVisitList = _receptionRepository.GetListSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
+                return new DeleteReceptionOutputData(DeleteReceptionStatus.Successed, result.Select(r => new DeleteReceptionItem(r.Item1, r.Item2, r.Item3)).ToList(), receptionInfos, sameVisitList);
             }
 
-            return new DeleteReceptionOutputData(DeleteReceptionStatus.Failed, new(), receptionInfos);
+            return new DeleteReceptionOutputData(DeleteReceptionStatus.Failed, new(), receptionInfos, sameVisitList);
         }
         finally
         {
