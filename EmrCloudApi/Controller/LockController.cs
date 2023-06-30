@@ -42,10 +42,12 @@ namespace EmrCloudApi.Controller
 
             if (_cancellationToken!.Value.IsCancellationRequested)
             {
+                Console.WriteLine("Come in cancelation Addlock");
                 var inputDelete = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false, false);
                 _bus.Handle(inputDelete);
                 output = new AddLockOutputData(AddLockStatus.Failed, new(), new());
                 presenter.Complete(output);
+                Console.WriteLine("End cancelation Addlock ");
                 return new ActionResult<Response<LockResponse>>(presenter.Result);
             }
             else
