@@ -43,7 +43,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtAlrgyDrugModel> GetAlrgyDrugList(long ptId)
         {
-            var ptAlrgyDrugs = NoTrackingDataContext.PtAlrgyDrugs.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyDrugModel(
+            var ptAlrgyDrugs = NoTrackingDataContext.PtAlrgyDrugs.AsEnumerable().Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyDrugModel(
                x.HpId,
                x.PtId,
                x.SeqNo,
@@ -60,7 +60,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtAlrgyDrugModel> GetAlrgyDrugList(long ptId, int sinDate)
         {
-            var ptAlrgyDrugs = NoTrackingDataContext.PtAlrgyDrugs.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyDrugModel(
+            var ptAlrgyDrugs = NoTrackingDataContext.PtAlrgyDrugs.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtAlrgyDrugModel(
                x.HpId,
                x.PtId,
                x.SeqNo,
@@ -77,7 +77,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtAlrgyElseModel> GetAlrgyElseList(long ptId)
         {
-            var ptAlrgyElses = NoTrackingDataContext.PtAlrgyElses.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyElseModel(
+            var ptAlrgyElses = NoTrackingDataContext.PtAlrgyElses.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtAlrgyElseModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
@@ -93,7 +93,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtAlrgyElseModel> GetAlrgyElseList(long ptId, int sinDate)
         {
-            var ptAlrgyElses = NoTrackingDataContext.PtAlrgyElses.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyElseModel(
+            var ptAlrgyElses = NoTrackingDataContext.PtAlrgyElses.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtAlrgyElseModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
@@ -156,7 +156,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtInfectionModel> GetInfectionList(long ptId)
         {
-            var ptInfections = NoTrackingDataContext.PtInfection.Where(x => x.PtId == ptId && x.IsDeleted == 0).OrderBy(x => x.SortNo).Select(x => new PtInfectionModel(
+            var ptInfections = NoTrackingDataContext.PtInfection.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().OrderBy(x => x.SortNo).Select(x => new PtInfectionModel(
                x.HpId,
                x.PtId,
                x.SeqNo,
@@ -173,7 +173,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtKioRekiModel> GetKioRekiList(long ptId)
         {
-            var ptKioRekis = NoTrackingDataContext.PtKioRekis.Where(x => x.PtId == ptId && x.IsDeleted == 0).OrderBy(p => p.SortNo).Select(x => new PtKioRekiModel(
+            var ptKioRekis = NoTrackingDataContext.PtKioRekis.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().OrderBy(p => p.SortNo).Select(x => new PtKioRekiModel(
                x.HpId,
                x.PtId,
                x.SeqNo,
@@ -191,7 +191,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtOtcDrugModel> GetOtcDrugList(long ptId)
         {
-            var ptOtcDrugs = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtOtcDrugModel(
+            var ptOtcDrugs = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtOtcDrugModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
@@ -208,7 +208,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtOtcDrugModel> GetOtcDrugList(long ptId, int sinDate)
         {
-            var ptOtcDrugs = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtOtcDrugModel(
+            var ptOtcDrugs = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtOtcDrugModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
@@ -226,7 +226,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtOtherDrugModel> GetOtherDrugList(long ptId)
         {
-            var ptOtherDrugs = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtOtherDrugModel(
+            var ptOtherDrugs = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtOtherDrugModel(
               x.HpId,
               x.PtId,
               x.SeqNo,
@@ -243,7 +243,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtOtherDrugModel> GetOtherDrugList(long ptId, int sinDate)
         {
-            var ptOtherDrugs = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtOtherDrugModel(
+            var ptOtherDrugs = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtOtherDrugModel(
               x.HpId,
               x.PtId,
               x.SeqNo,
@@ -260,7 +260,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtSuppleModel> GetSuppleList(long ptId)
         {
-            var ptSupples = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtSuppleModel(
+            var ptSupples = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtSuppleModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
@@ -277,7 +277,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtSuppleModel> GetSuppleList(long ptId, int sinDate)
         {
-            var ptSupples = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtSuppleModel(
+            var ptSupples = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtSuppleModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,

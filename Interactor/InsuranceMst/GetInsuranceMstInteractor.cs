@@ -21,23 +21,23 @@ namespace Interactor.InsuranceMst
         {
             if (inputData.HpId < 0)
             {
-                return new GetInsuranceMstOutputData(new InsuranceMstModel(), GetInsuranceMstStatus.InvalidHpId);
+                return new GetInsuranceMstOutputData(new InsuranceMstModel(), GetInsuranceMstStatus.InvalidHpId, 0);
             }
 
             if (inputData.PtId < 0)
             {
-                return new GetInsuranceMstOutputData(new InsuranceMstModel(), GetInsuranceMstStatus.InvalidPtId);
+                return new GetInsuranceMstOutputData(new InsuranceMstModel(), GetInsuranceMstStatus.InvalidPtId, 0);
             }
             
             if (inputData.SinDate < 0)
             {
-                return new GetInsuranceMstOutputData(new InsuranceMstModel(), GetInsuranceMstStatus.InvalidSinDate);
+                return new GetInsuranceMstOutputData(new InsuranceMstModel(), GetInsuranceMstStatus.InvalidSinDate, 0);
             }
 
             try
             {
                 var data = _insuranceMstReponsitory.GetDataInsuranceMst(inputData.HpId, inputData.PtId, inputData.SinDate);
-                return new GetInsuranceMstOutputData(data, GetInsuranceMstStatus.Successed);
+                return new GetInsuranceMstOutputData(data.insurance, GetInsuranceMstStatus.Successed, data.prefNo);
             }
             finally
             {

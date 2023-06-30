@@ -18,11 +18,6 @@ public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellI
 
     public UpdateReceptionDynamicCellOutputData Handle(UpdateReceptionDynamicCellInputData input)
     {
-        var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(input.HpId, input.PtId, input.RaiinNo, input.SinDate, input.UserId);
-        if (notAllowSave)
-        {
-            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.MedicalScreenLocked);
-        }
         if (input.HpId <= 0)
         {
             return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidHpId);

@@ -118,7 +118,8 @@ namespace Infrastructure.Converter
                                           tenMst?.CmtCol3 ?? 0,
                                           tenMst?.CmtCol4 ?? 0,
                                           tenMst?.HandanGrpKbn ?? 0,
-                                          kensaMst == null
+                                          kensaMst == null,
+                                          odrInf.OdrKouiKbn
                                           );
                 odrInfDetailModelList.Add(odrInfDetailModel);
             }

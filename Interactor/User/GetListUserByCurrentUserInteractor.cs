@@ -18,19 +18,20 @@ namespace Interactor.User
             {
                 if (input.HpId <= 0)
                 {
-                    return new GetListUserByCurrentUserOutputData(GetListUserByCurrentUserStatus.InvalidHpId, new List<UserMstModel>(), false);
+                    return new GetListUserByCurrentUserOutputData(GetListUserByCurrentUserStatus.InvalidHpId, new List<UserMstModel>(), false, 0);
                 }
                 if (input.UserId <= 0)
                 {
-                    return new GetListUserByCurrentUserOutputData(GetListUserByCurrentUserStatus.InvalidUserId, new List<UserMstModel>(), false);
+                    return new GetListUserByCurrentUserOutputData(GetListUserByCurrentUserStatus.InvalidUserId, new List<UserMstModel>(), false, 0);
                 }
 
                 var users = _userRepository.GetUsersByCurrentUser(input.HpId, input.UserId);
                 bool getShowRenkei = _userRepository.GetShowRenkeiCd1ColumnSetting();
+                var currentInfo = _userRepository.GetByUserId(input.UserId);
                 if (users.Any())
-                    return new GetListUserByCurrentUserOutputData(GetListUserByCurrentUserStatus.Successful, users, getShowRenkei);
+                    return new GetListUserByCurrentUserOutputData(GetListUserByCurrentUserStatus.Successful, users, getShowRenkei, currentInfo.ManagerKbn);
                 else
-                    return new GetListUserByCurrentUserOutputData(GetListUserByCurrentUserStatus.NoData, users, getShowRenkei);
+                    return new GetListUserByCurrentUserOutputData(GetListUserByCurrentUserStatus.NoData, users, getShowRenkei, currentInfo.ManagerKbn);
             }
             finally
             {
