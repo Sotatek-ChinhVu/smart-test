@@ -64,7 +64,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             this.seikyuType = seikyuType;
             this.diskCnt = diskCnt;
             var getData = GetData();
-            currentPage = 1;
+            this.currentPage = 1;
             hasNextPage = true;
 
             while (getData && hasNextPage)
@@ -171,7 +171,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                 .ThenBy(r => r.KohiSbt)
                 .ToList();
 
-            return (receInfs?.Count ?? 0) == 0;
+            return (receInfs?.Count ?? 0) > 0;
         }
 
         private void SetFieldData(string field, string value)
