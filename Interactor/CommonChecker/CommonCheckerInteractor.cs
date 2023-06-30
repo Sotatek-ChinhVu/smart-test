@@ -16,8 +16,6 @@ namespace Interactor.CommonChecker
         {
             var checkedResult = _commonMedicalCheck.CheckListOrder(inputData.HpId, inputData.PtId, inputData.SinDay, inputData.CurrentListOdr, inputData.ListCheckingOrder, inputData.SpecialNoteItem, inputData.PtDiseaseModels, inputData.FamilyItems, inputData.IsDataOfDb, inputData.RealTimeCheckerCondition);
 
-            return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Successed);
-
             var result = _commonMedicalCheck.GetErrorDetails(inputData.HpId, inputData.PtId, inputData.SinDay, checkedResult);
 
             if (checkedResult == null || checkedResult.Count == 0)
