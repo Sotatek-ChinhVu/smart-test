@@ -1,20 +1,16 @@
 ﻿using Domain.Models.SetGenerationMst;
-using Helper.Extension;
-using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories
 {
     public class SetGenerationMstRepository : RepositoryBase, ISetGenerationMstRepository
     {
-        private readonly StackExchange.Redis.IDatabase _cache;
-        private readonly string key;
-        public SetGenerationMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IMemoryCache _memoryCache;
+        public SetGenerationMstRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
         {
-            key = GetCacheKey() + "SetGenerationMst";
-            _cache = RedisConnectorHelper.Connection.GetDatabase();
+            _memoryCache = memoryCache;
         }
 
         private IEnumerable<SetGenerationMstModel> ReloadCache()
@@ -27,36 +23,21 @@ namespace Infrastructure.Repositories
                         s.IsDeleted
                     )
                   ).ToList();
-
-            var json = JsonSerializer.Serialize(setGenerationMstList);
-            _cache.StringSet(key, json);
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetPriority(CacheItemPriority.Normal);
+            _memoryCache.Set(GetCacheKey(), setGenerationMstList, cacheEntryOptions);
 
             return setGenerationMstList;
         }
 
         public IEnumerable<SetGenerationMstModel> GetList(int hpId, int sinDate)
         {
-            IEnumerable<SetGenerationMstModel>? setGenerationMstList =
-
-Enumerable.Empty<SetGenerationMstModel>();
-            if (!_cache.KeyExists(key))
+            if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetGenerationMstModel>? setGenerationMstList))
             {
                 setGenerationMstList = ReloadCache();
             }
-            else
-            {
-                setGenerationMstList = ReadCache();
-            }
 
             return setGenerationMstList!.Where(s => s.StartDate <= sinDate).OrderByDescending(x => x.StartDate).ToList();
-        }
-
-        private List<SetGenerationMstModel> ReadCache()
-        {
-            var results = _cache.StringGet(key);
-            var json = results.AsString();
-            var datas = JsonSerializer.Deserialize<List<SetGenerationMstModel>>(json);
-            return datas ?? new();
         }
 
         public int GetGenerationId(int hpId, int sinDate)

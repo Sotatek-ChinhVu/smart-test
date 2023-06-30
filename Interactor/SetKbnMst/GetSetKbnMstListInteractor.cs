@@ -19,23 +19,23 @@ namespace Interactor.SetKbnMst
 
             if (inputData.HpId < 0)
             {
-                return new GetSetKbnMstListOutputData(new(), GetSetKbnMstListStatus.InvalidHpId);
+                return new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.InvalidHpId);
             }
             if (inputData.SetKbnFrom < 0)
             {
-                return new GetSetKbnMstListOutputData(new(), GetSetKbnMstListStatus.InvalidSetKbnFrom);
+                return new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.InvalidSetKbnFrom);
             }
             if (inputData.SetKbnTo < 0)
             {
-                return new GetSetKbnMstListOutputData(new(), GetSetKbnMstListStatus.InvalidSetKbnTo);
+                return new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.InvalidSetKbnTo);
             }
             if (inputData.SinDate < 0)
             {
-                return new GetSetKbnMstListOutputData(new(), GetSetKbnMstListStatus.InvalidSinDate);
+                return new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.InvalidSinDate);
             }
             if (inputData.SetKbnFrom > inputData.SetKbnTo)
             {
-                return new GetSetKbnMstListOutputData(new(), GetSetKbnMstListStatus.InvalidSetKbn);
+                return new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.InvalidSetKbn);
             }
             try
             {
