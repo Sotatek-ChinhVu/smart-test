@@ -148,7 +148,7 @@ namespace Infrastructure.Repositories
                 raiinInf.TantoId = tantoId;
                 raiinInf.KaId = kaId;
                 raiinInf.UketukeTime = string.IsNullOrEmpty(preProcess.uketukeTime) ? raiinInf.UketukeTime : preProcess.uketukeTime;
-                if (string.IsNullOrEmpty(raiinInf.SinEndTime))
+                if (string.IsNullOrEmpty(raiinInf.SinEndTime) && modeSaveData != 0)
                     raiinInf.SinEndTime = sinEndTime;
                 if (string.IsNullOrEmpty(raiinInf.SinStartTime))
                     raiinInf.SinStartTime = sinStartTime;
