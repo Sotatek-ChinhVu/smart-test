@@ -43,6 +43,10 @@ using Helper.Common;
 using UseCase.Receipt.ValidateCreateUKEFile;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
+using EmrCloudApi.Presenters.SinKoui;
+using EmrCloudApi.Requests.SinKoui;
+using EmrCloudApi.Responses.SinKoui;
+using UseCase.SinKoui.GetSinKoui;
 
 namespace EmrCloudApi.Controller;
 
@@ -461,6 +465,18 @@ public class ReceiptController : AuthorizeControllerBase
         var presenter = new ValidateCreateUKEFilePresenter();
         presenter.Complete(output);
         return new ActionResult<Response<ValidateCreateUKEFileResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetList)]
+    public ActionResult<Response<GetListSinKouiResponse>> GetList([FromQuery] GetListSinKouiRequest req)
+    {
+        var input = new GetListSinKouiInputData(HpId, req.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListSinKouiPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListSinKouiResponse>>(presenter.Result);
     }
 
     #region Private function

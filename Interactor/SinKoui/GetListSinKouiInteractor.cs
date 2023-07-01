@@ -1,16 +1,15 @@
-﻿using Domain.Models.SinKoui;
-using Entity.Tenant;
+﻿using Domain.Models.Receipt;
 using UseCase.SinKoui.GetSinKoui;
 
 namespace Interactor.SinKoui;
 
 public class GetListSinKouiInteractor : IGetListSinKouiInputPort
 {
-    private readonly ISinKouiRepository _sinKouiRepository;
+    private readonly IReceiptRepository _receiptRepository;
 
-    public GetListSinKouiInteractor(ISinKouiRepository sinKouiRepository)
+    public GetListSinKouiInteractor(IReceiptRepository receiptRepository)
     {
-        _sinKouiRepository = sinKouiRepository;
+        _receiptRepository = receiptRepository;
     }
 
     public GetListSinKouiOutputData Handle(GetListSinKouiInputData input)
@@ -22,12 +21,12 @@ public class GetListSinKouiInteractor : IGetListSinKouiInputPort
                 return new GetListSinKouiOutputData(GetListSinKouiStatus.InvalidPtId, new());
             }
 
-            var sinKoui = _sinKouiRepository.GetListKaikeiInf(input.HpId, input.PtId);
+            var sinKoui = _receiptRepository.GetListKaikeiInf(input.HpId, input.PtId);
             return new GetListSinKouiOutputData(GetListSinKouiStatus.Success, sinKoui);
         }
         finally
         {
-            _sinKouiRepository.ReleaseResource();
+            _receiptRepository.ReleaseResource();
         }
     }
 }

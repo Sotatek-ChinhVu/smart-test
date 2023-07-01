@@ -5,13 +5,13 @@ using UseCase.SinKoui.GetSinKoui;
 
 namespace EmrCloudApi.Presenters.SinKoui
 {
-    public class GetSinKouiPresenter : IGetListSinKouiOutputPort
+    public class GetListSinKouiPresenter : IGetListSinKouiOutputPort
     {
-        public Response<GetSinKouiResponse> Result { get; private set; } = new Response<GetSinKouiResponse>();
+        public Response<GetListSinKouiResponse> Result { get; private set; } = new Response<GetListSinKouiResponse>();
 
         public void Complete(GetListSinKouiOutputData output)
         {
-            Result.Data = new GetSinKouiResponse(output.SinYmBindings);
+            Result.Data = new GetListSinKouiResponse(output.SinYmBindings);
             Result.Message = GetMessage(output.Status);
             Result.Status = (int)output.Status;
         }

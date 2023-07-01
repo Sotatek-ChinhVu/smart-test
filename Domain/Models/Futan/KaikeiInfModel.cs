@@ -58,23 +58,6 @@ namespace Domain.Models.Futan
             Kohi4Priority = kohi4Priority;
         }
 
-        public KaikeiInfModel(long ptId, int sinDate)
-        {
-            PtId = ptId;
-            SinDate = sinDate;
-            ReceSbt = string.Empty;
-            Houbetu = string.Empty;
-            Kohi1Houbetu = string.Empty;
-            Kohi2Houbetu = string.Empty;
-            Kohi3Houbetu = string.Empty;
-            Kohi4Houbetu = string.Empty;
-            Kohi1Priority = string.Empty;
-            Kohi2Priority = string.Empty;
-            Kohi3Priority = string.Empty;
-            Kohi4Priority = string.Empty;
-            CreateMachine = string.Empty;
-        }
-
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
@@ -174,7 +157,5 @@ namespace Domain.Models.Futan
         public string Kohi3Priority { get; private set; }
 
         public string Kohi4Priority { get; private set; }
-
-        public string SinYmBinding => (SinDate / 100).AsString().Length == 6 ? (SinDate / 100).AsString().Insert(4, "/") : "";
     }
 }

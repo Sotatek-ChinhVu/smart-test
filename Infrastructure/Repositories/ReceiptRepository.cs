@@ -3351,7 +3351,19 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
+    public List<string> GetListKaikeiInf(int hpId, long ptId)
+    {
+        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+        var result = kaikeiInfs.Select(x => ToModel(x)).Distinct().ToList();
+        return result.Select(x => x.SinYmBinding).Distinct().ToList();
+    }
 
+    private static KaikeiInfModel ToModel(KaikeiInf u)
+    {
+        return new KaikeiInfModel(
+            u.PtId,
+            u.SinDate);
+    }
 
     public void ReleaseResource()
     {
