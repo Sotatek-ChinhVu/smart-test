@@ -399,10 +399,11 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-        public bool CheckExistHokenPid(List<int> hokenPids)
+        public bool CheckExistHokenPids(List<int> hokenPids)
         {
-            var check = NoTrackingDataContext.PtHokenPatterns.Count(x => hokenPids.Contains(x.HokenPid));
-            return hokenPids.Count == check;
+            hokenPids = hokenPids.Distinct().ToList();
+            var check = NoTrackingDataContext.PtHokenPatterns.Any(x => hokenPids.Contains(x.HokenPid));
+            return check;
         }
 
         public List<HokenInfModel> GetCheckListHokenInf(int hpId, long ptId, List<int> hokenPids)
@@ -1458,6 +1459,11 @@ namespace Infrastructure.Repositories
                    kohi.Houbetu ?? string.Empty,
                    kohi.SeqNo
                 );
+        }
+
+        public bool CheckExistHokenPid(int hokenPid)
+        {
+            throw new NotImplementedException();
         }
     }
 }

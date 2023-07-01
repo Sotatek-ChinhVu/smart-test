@@ -22,8 +22,8 @@ namespace EmrCloudApi.Presenters.InsuranceList
                 case GetDefaultSelectPatternStatus.InvalidPtId:
                     Result.Message = ResponseMessage.InvalidPtId;
                     break;
-                case GetDefaultSelectPatternStatus.InvalidHistoryPidExistedInputData:
-                    Result.Message = ResponseMessage.InvalidHistoryPidExistedInputData;
+                case GetDefaultSelectPatternStatus.HokenPidInvalidNoExisted:
+                    Result.Message = ResponseMessage.HokenPidInvalidNoExisted;
                     break;
                 case GetDefaultSelectPatternStatus.InvalidHpId:
                     Result.Message = ResponseMessage.InvalidHpId;

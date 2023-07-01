@@ -15,7 +15,9 @@ namespace Domain.Models.Insurance
 
         bool CheckExistHokenId(int hokenId);
 
-        bool CheckExistHokenPid(List<int> hokenPid);
+        bool CheckExistHokenPids(List<int> hokenPids);
+
+        bool CheckExistHokenPid(int hokenPid);
 
         List<HokenInfModel> GetCheckListHokenInf(int hpId, long ptId, List<int> hokenPids);
 

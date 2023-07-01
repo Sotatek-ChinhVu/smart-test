@@ -1,5 +1,7 @@
 ﻿using Domain.Models.Insurance;
+using Infrastructure.Repositories;
 using UseCase.Insurance.GetDefaultSelectPattern;
+using UseCase.User.UpsertList;
 
 namespace Interactor.Insurance
 {
@@ -35,10 +37,9 @@ namespace Interactor.Insurance
                     return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidHistoryPid);
                 }
 
-                var checkInputHistoryPid = inputData.HistoryPids;
-                if (checkInputHistoryPid.Count() != checkInputHistoryPid.Distinct().Count())
+                if (!_insuranceResponsitory.CheckExistHokenPids(inputData.HistoryPids))
                 {
-                    return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidHistoryPidExistedInputData);
+                    return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.HokenPidInvalidNoExisted);
                 }
 
                 if (inputData.SelectedHokenPid < 0)
