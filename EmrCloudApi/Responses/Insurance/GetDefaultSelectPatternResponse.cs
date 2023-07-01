@@ -2,11 +2,11 @@
 {
     public class GetDefaultSelectPatternResponse
     {
-        public GetDefaultSelectPatternResponse(int hokenPid)
+        public GetDefaultSelectPatternResponse(List<int> hokenPids)
         {
-            HokenPid = hokenPid;
+            HokenPids = hokenPids;
         }
 
-        public int HokenPid { get; private set; }
+        public List<int> HokenPids { get; private set; }
     }
 }

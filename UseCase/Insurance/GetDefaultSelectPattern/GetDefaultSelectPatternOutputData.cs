@@ -4,13 +4,13 @@ namespace UseCase.Insurance.GetDefaultSelectPattern
 {
     public class GetDefaultSelectPatternOutputData : IOutputData
     {
-        public int HokenPid { get; private set; }
+        public List<int> HokenPids { get; private set; }
 
         public GetDefaultSelectPatternStatus Status { get; private set; }
 
-        public GetDefaultSelectPatternOutputData(int hokenPid, GetDefaultSelectPatternStatus status)
+        public GetDefaultSelectPatternOutputData(List<int> hokenPids, GetDefaultSelectPatternStatus status)
         {
-            HokenPid = hokenPid;
+            HokenPids = hokenPids;
             Status = status;
         }
     }

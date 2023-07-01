@@ -2,6 +2,7 @@
 {
     public enum GetDefaultSelectPatternStatus : byte
     {
+        InvalidHistoryPidExistedInputData = 8,
         Failed = 7,
         InvalidSelectedHokenPid = 6,
         InvalidHistoryPid = 5,

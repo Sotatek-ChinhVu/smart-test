@@ -20,21 +20,25 @@ namespace Interactor.Insurance
                     return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidHpId);
                 }
 
-
                 if (inputData.PtId < 0)
                 {
                     return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidPtId);
                 }
-
 
                 if (inputData.SinDate < 0)
                 {
                     return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidSinDate);
                 }
 
-                if (inputData.HistoryPid < 0)
+                foreach (var HistoryPid in inputData.HistoryPids)
                 {
-                    return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidHistoryPid);
+                    if(HistoryPid < 0) return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidHistoryPid);
+                }
+
+                var checkInputHistoryPid = inputData.HistoryPids;
+                if (checkInputHistoryPid.Count() != checkInputHistoryPid.Distinct().Count())
+                {
+                    return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidHistoryPidExistedInputData);
                 }
 
                 if (inputData.SelectedHokenPid < 0)
@@ -42,7 +46,7 @@ namespace Interactor.Insurance
                     return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidSelectedHokenPid);
                 }
 
-                var data = _insuranceResponsitory.GetDefaultSelectPattern(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.HistoryPid, inputData.SelectedHokenPid);
+                var data = _insuranceResponsitory.GetListHistoryPid(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.HistoryPids, inputData.SelectedHokenPid);
 
                 return new GetDefaultSelectPatternOutputData(data, GetDefaultSelectPatternStatus.Successed);
             }

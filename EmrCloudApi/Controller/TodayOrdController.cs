@@ -228,7 +228,7 @@ namespace EmrCloudApi.Controller
                 HpId,
                 request.PtId,
                 request.SinDate,
-                request.HistoryPid,
+                request.HistoryPids,
                 request.SelectedHokenPid);
 
             var output = _bus.Handle(input);

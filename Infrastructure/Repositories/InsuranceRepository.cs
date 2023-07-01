@@ -856,6 +856,18 @@ namespace Infrastructure.Repositories
             return listInsurance.FirstOrDefault() ?? new InsuranceModel();
         }
 
+        public List<int> GetListHistoryPid(int hpId, long ptId, int sinDate, List<int> historyPids, int selectedHokenPid)
+        {
+            var distinctHistoryPids = historyPids.Distinct();
+            List<int> result = new();
+            foreach (var historyPid in distinctHistoryPids)
+            {
+                var historyPidList = GetDefaultSelectPattern(hpId, ptId, sinDate, historyPid, selectedHokenPid);
+                result.Add(historyPidList);
+            }
+            return result;
+        }
+
         public int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid)
         {
             bool _isSameKohiHoubetu(InsuranceModel pattern1, InsuranceModel pattern2)

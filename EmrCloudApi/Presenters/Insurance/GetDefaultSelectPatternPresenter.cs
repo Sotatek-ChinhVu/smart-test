@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.InsuranceList
             Result = new Response<GetDefaultSelectPatternResponse>()
             {
 
-                Data = new GetDefaultSelectPatternResponse(output.HokenPid),
+                Data = new GetDefaultSelectPatternResponse(output.HokenPids),
                 Status = (byte)output.Status,
             };
             switch (output.Status)
@@ -21,6 +21,9 @@ namespace EmrCloudApi.Presenters.InsuranceList
 
                 case GetDefaultSelectPatternStatus.InvalidPtId:
                     Result.Message = ResponseMessage.InvalidPtId;
+                    break;
+                case GetDefaultSelectPatternStatus.InvalidHistoryPidExistedInputData:
+                    Result.Message = ResponseMessage.InvalidHistoryPidExistedInputData;
                     break;
                 case GetDefaultSelectPatternStatus.InvalidHpId:
                     Result.Message = ResponseMessage.InvalidHpId;
