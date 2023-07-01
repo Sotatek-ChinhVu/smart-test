@@ -1,4 +1,5 @@
-﻿using Domain.Models.SetKbnMst;
+﻿using Amazon.Runtime.Internal.Util;
+using Domain.Models.SetKbnMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -53,6 +54,14 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
         {
+            var endPoints = _cache.Multiplexer.GetEndPoints();
+            var server = _cache.Multiplexer.GetServer(endPoints[0]);
+            var keys = server.Keys().ToList();
+            foreach (var item in keys)
+            {
+                _cache.KeyDelete(item);
+            }
+
             var setKbnMstList = Enumerable.Empty<SetKbnMstModel>();
             if (!_cache.KeyExists(key))
             {

@@ -1,4 +1,5 @@
-﻿using Domain.Models.Diseases;
+﻿using Amazon.Runtime.Internal.Util;
+using Domain.Models.Diseases;
 using Domain.Models.SetMst;
 using Entity.Tenant;
 using Helper.Common;
@@ -33,6 +34,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     private IEnumerable<SetMstModel> ReloadCache(int hpId, int generationId)
     {
+   
+
         var finalKey = key + "_" + generationId;
         var setMstModelList =
                 NoTrackingDataContext.SetMsts
