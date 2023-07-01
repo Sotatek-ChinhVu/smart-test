@@ -336,5 +336,25 @@ namespace Infrastructure.Repositories
             }
             return result;
         }
+
+        public bool CheckLockOpenAccounting(int hpId, long ptId, long raiinNo)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                  && item.RaiinNo == raiinNo
+                                                                                  && item.IsDeleted == 0);
+            if (raiinInf == null)
+            {
+                return false;
+            }
+            else if (raiinInf.Status == 9)
+            {
+                return false;
+            }
+            long oyaRaiinNo = raiinInf.OyaRaiinNo;
+            var existLockInf = NoTrackingDataContext.LockInfs.Any(item => item.HpId == hpId
+                                                                          && item.PtId == ptId
+                                                                          && item.OyaRaiinNo == oyaRaiinNo);
+            return existLockInf;
+        }
     }
 }

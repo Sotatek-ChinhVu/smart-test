@@ -20,4 +20,6 @@ public interface ICoDrugInfFinder
     List<PiImage> GetProductImages(int hpId, string itemCd);
 
     List<DrugInf> GetDrugInfo(int hpId, string itemCd, int age, int gender);
+
+    PathPicture GetDefaultPathPicture();
 }
