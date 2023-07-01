@@ -68,7 +68,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
 
         #endregion
 
-        public CommonReportingRequestModel GetP09KokhoSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
+        public CommonReportingRequestModel GetP09KokhoSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, List<string> printHokensyaNos)
         {
             this.hpId = hpId;
             this.seikyuYm = seikyuYm;
