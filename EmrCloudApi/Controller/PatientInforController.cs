@@ -219,6 +219,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet("GetInsuranceMst")]
+        [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
         public ActionResult<Response<GetInsuranceMstResponse>> GetInsuranceMst([FromQuery] GetInsuranceMstRequest request)
         {
             var input = new GetInsuranceMstInputData(HpId, request.PtId, request.SinDate);
