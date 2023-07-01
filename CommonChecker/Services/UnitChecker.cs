@@ -37,7 +37,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         {
             Finder = new RealtimeCheckerFinder(_dataContext, _tenMstCacheService);
             MasterFinder = new MasterFinder(_dataContext);
-            SystemConfig = new SystemConfig(_dataContext);
+            SystemConfig = _tenMstCacheService.GetSystemConfig();
         }
 
         public UnitCheckerResult<TOdrInf, TOdrDetail> CheckOrder(TOdrInf checkingOrder)

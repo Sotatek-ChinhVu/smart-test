@@ -105,13 +105,16 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.ReceiptList)]
-    public async Task<IActionResult> GetReceiptListReport([FromBody] GetReceiptListRequest request)
+    public async Task<IActionResult> GetReceiptListReport([FromForm] AccountingReportRequest requestStringJson)
     {
+        var stringJson = requestStringJson.JsonAccounting;
+        var request = JsonSerializer.Deserialize<GetReceiptListRequest>(stringJson) ?? new();
+
         var receInputList = request.ReceiptListModels.Select(item => new ReceiptInputModel(
                                                                          item.SinYm,
                                                                          item.PtId,
                                                                          item.HokenId))
-                                                    .ToList();
+                                                     .ToList();
 
         var data = _reportService.GetReceiptListReportingData(request.HpId, request.SeikyuYm, receInputList);
         return await RenderPdf(data, ReportType.Common);
