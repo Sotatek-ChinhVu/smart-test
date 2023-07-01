@@ -337,6 +337,7 @@
         public const string ExtendTtl = "ExtendTtl";
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
+        public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";

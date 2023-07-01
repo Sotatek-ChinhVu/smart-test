@@ -1,4 +1,5 @@
-﻿using UseCase.MedicalExamination.AutoCheckOrder;
+﻿using EmrCloudApi.Requests.MedicalExamination.ChangeAfterAutoCheck;
+using UseCase.MedicalExamination.AutoCheckOrder;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 
 namespace EmrCloudApi.Requests.MedicalExamination
@@ -11,7 +12,7 @@ namespace EmrCloudApi.Requests.MedicalExamination
 
         public long PtId { get; set; }
 
-        public List<OdrInfItemInputData> OdrInfs { get; set; } = new();
+        public List<ChangeAutoCheckOdrInfDto> OdrInfs { get; set; } = new();
 
         public List<AutoCheckOrderItem> TargetItems { get; set; } = new();
     }

@@ -41,21 +41,6 @@ namespace CommonCheckers
             }
         }
 
-        public bool CheckContainKey(int groupCd, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false)
-        {
-            SystemConf systemConf = new SystemConf();
-            if (!fromLastestDb)
-            {
-                systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo) ?? new SystemConf();
-            }
-            else
-            {
-                systemConf = NoTrackingDataContext.SystemConfs.Where(p =>
-                    p.HpId == HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new SystemConf();
-            }
-            return systemConf != null ? true : false;
-        }
-
         public string GetSettingParam(int groupCd, int grpEdaNo = 0, string defaultParam = "", bool fromLastestDb = false)
         {
             lock (_threadsafelock)

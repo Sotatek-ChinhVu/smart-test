@@ -1,4 +1,5 @@
-﻿using Domain.Models.MstItem;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Domain.Models.MstItem;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.InsuranceList;
@@ -11,6 +12,7 @@ using EmrCloudApi.Responses.InsuranceList;
 using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Services;
+using Entity.Tenant;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
@@ -358,7 +360,67 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.ChangeAfterAutoCheckOrder)]
         public ActionResult<Response<ChangeAfterAutoCheckOrderResponse>> ChangeAfterAutoCheckOrder([FromBody] ChangeAfterAutoCheckOrderRequest request)
         {
-            var input = new ChangeAfterAutoCheckOrderInputData(HpId, request.SinDate, UserId, request.RaiinNo, request.PtId, request.OdrInfs, request.TargetItems);
+            var odrInput = request.OdrInfs.Select(o => new OdrInfItemInputData(HpId,
+                                                                               o.RaiinNo,
+                                                                               o.RpNo,
+                                                                               o.RpEdaNo,
+                                                                               o.PtId,
+                                                                               o.SinDate,
+                                                                               o.HokenPid,
+                                                                               o.OdrKouiKbn,
+                                                                               o.RpName,
+                                                                               o.InoutKbn,
+                                                                               o.SikyuKbn,
+                                                                               o.SyohoSbt,
+                                                                               o.SanteiKbn,
+                                                                               o.TosekiKbn,
+                                                                               o.DaysCnt,
+                                                                               o.SortNo,
+                                                                               o.Id,
+                                                                               o.OdrDetails.Select(od => new OdrInfDetailItemInputData(HpId,
+                                                                                                                                       od.RaiinNo,
+                                                                                                                                       od.RpNo,
+                                                                                                                                       od.RpEdaNo,
+                                                                                                                                       od.RowNo,
+                                                                                                                                       od.PtId,
+                                                                                                                                       od.SinDate,
+                                                                                                                                       od.SinKouiKbn,
+                                                                                                                                       od.ItemCd,
+                                                                                                                                       od.ItemName,
+                                                                                                                                       od.Suryo,
+                                                                                                                                       od.UnitName,
+                                                                                                                                       od.UnitSbt,
+                                                                                                                                       od.TermVal,
+                                                                                                                                       od.KohatuKbn,
+                                                                                                                                       od.SyohoKbn,
+                                                                                                                                       od.SyohoLimitKbn,
+                                                                                                                                       od.DrugKbn,
+                                                                                                                                       od.YohoKbn,
+                                                                                                                                       od.Kokuji1,
+                                                                                                                                       od.Kokuji2,
+                                                                                                                                       od.IsNodspRece,
+                                                                                                                                       od.IpnCd,
+                                                                                                                                       od.IpnName,
+                                                                                                                                       od.JissiKbn,
+                                                                                                                                       od.JissiDate,
+                                                                                                                                       od.JissiId,
+                                                                                                                                       od.JissiMachine,
+                                                                                                                                       od.ReqCd,
+                                                                                                                                       od.Bunkatu,
+                                                                                                                                       od.CmtName,
+                                                                                                                                       od.CmtOpt,
+                                                                                                                                       od.FontColor,
+                                                                                                                                       od.CommentNewline,
+                                                                                                                                       od.YjCd,
+                                                                                                                                       od.RikikaRate,
+                                                                                                                                       od.KikakiUnit,
+                                                                                                                                       od.YakkaiUnit,
+                                                                                                                                       od.RikikaUnit,
+                                                                                                                                       od.YoukaiekiCd,
+                                                                                                                                       od.MemoItem)).ToList(),
+                                                                               o.IsDeleted)).ToList();
+
+            var input = new ChangeAfterAutoCheckOrderInputData(HpId, request.SinDate, UserId, request.RaiinNo, request.PtId, odrInput, request.TargetItems);
             var output = _bus.Handle(input);
 
             var presenter = new ChangeAfterAutoCheckOrderPresenter();

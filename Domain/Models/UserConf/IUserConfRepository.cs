@@ -8,7 +8,7 @@ public interface IUserConfRepository : IRepositoryBase
 
     List<UserConfModel> GetList(int hpId, int userId, List<int> grpCodes);
 
-    Dictionary<string, int> GetList(int userId);
+    Dictionary<string, int> GetDic(int hpId, int userId);
 
     List<UserConfModel> GetListUserConf(int hpId, int userId, int groupCd);
 
@@ -16,7 +16,7 @@ public interface IUserConfRepository : IRepositoryBase
 
     void UpdateUserConf(int hpId, int userId, int grpCd, int value);
 
-    int Sagaku(bool fromRece);
+    int Sagaku(int hpId, int userId, bool fromRece);
 
     int GetDefaultValue(int groupCd, int groupItemCd = 0);
 

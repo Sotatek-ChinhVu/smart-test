@@ -608,6 +608,12 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.Lock.CheckExistFunctionCode;
+using CommonChecker.Caches.Interface;
+using CommonChecker.Caches;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.AccountDue.IsNyukinExisted;
+using UseCase.Lock.CheckLockOpenAccounting;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1354,6 +1360,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetLockInfoInputData, GetLockInfoInteractor>();
             busBuilder.RegisterUseCase<CheckLockVisitingInputData, CheckLockVisitingInteractor>();
             busBuilder.RegisterUseCase<CheckExistFunctionCodeInputData, CheckExistFunctionCodeInteractor>();
+            busBuilder.RegisterUseCase<CheckLockOpenAccountingInputData, CheckLockOpenAccountingInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
