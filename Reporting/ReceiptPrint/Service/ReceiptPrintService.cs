@@ -222,7 +222,7 @@ public class ReceiptPrintService : IReceiptPrintService
         {
             result = _p22WelfareSeikyuCoReportService.GetP22WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType, welfareType);
         }
-        else if (prefNo == 24 && reportId == 105 && reportEdaNo == 1 )
+        else if (prefNo == 24 && reportId == 105 && reportEdaNo == 0)
         {
             result = _p24WelfareSyomeiCoReportService.GetP24WelfareSyomeiReportingData(hpId, seikyuYm, seikyuType, printPtIds);
         }
