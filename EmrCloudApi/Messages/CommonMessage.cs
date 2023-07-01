@@ -1,4 +1,5 @@
-﻿using Domain.Models.Reception;
+﻿using Domain.Models.PatientInfor;
+using Domain.Models.Reception;
 using Helper.Constants;
 using UseCase.SetMst.GetList;
 
@@ -17,7 +18,7 @@ public class LockMessage
     public long RaiinNo { get; set; } = CommonConstants.InvalidId;
     public long PtId { get; set; } = CommonConstants.InvalidId;
     public byte Type { get; set; }
-    public string FunctionCod { get; set; } = String.Empty;
+    public string FunctionCod { get; set; } = string.Empty;
 }
 
 public class SuperSetMessage
@@ -36,4 +37,14 @@ public class ReceptionChangedMessage
     public List<ReceptionRowModel> ReceptionInfos { get; set; }
 
     public List<SameVisitModel> SameVisitList { get; set; }
+}
+
+public class PatientInforMessage
+{
+    public PatientInforMessage(PatientInforModel patientInforModel)
+    {
+        PatientInforModel = patientInforModel;
+    }
+
+    public PatientInforModel PatientInforModel { get; set; }
 }
