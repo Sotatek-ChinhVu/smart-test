@@ -86,7 +86,7 @@ public class ReceiptPrintService : IReceiptPrintService
         _p22WelfareSeikyuCoReportService = p22WelfareSeikyuCoReportService;
     }
 
-    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType)
+    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos)
     {
         CommonReportingRequestModel result = new();
         var seikyuType = GetSeikyuType(dataKbn);
@@ -210,7 +210,7 @@ public class ReceiptPrintService : IReceiptPrintService
         }
         else if (prefNo == 08 && reportId == 103 && reportEdaNo == 0)
         {
-            result = _p08KokhoSeikyuCoReportService.GetP08KokhoSeikyuReportingData(hpId, seikyuYm, seikyuType);
+            result = _p08KokhoSeikyuCoReportService.GetP08KokhoSeikyuReportingData(hpId, seikyuYm, seikyuType, printHokensyaNos);
         }
         else if (prefNo == 22 && reportId == 105 && reportEdaNo == 0 && welfareType == 0)
         {

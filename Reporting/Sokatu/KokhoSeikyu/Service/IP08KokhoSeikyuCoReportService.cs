@@ -10,6 +10,6 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
 {
     public interface IP08KokhoSeikyuCoReportService
     {
-        CommonReportingRequestModel GetP08KokhoSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType);
+        CommonReportingRequestModel GetP08KokhoSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, List<string> printHokensyaNos);
     }
 }
