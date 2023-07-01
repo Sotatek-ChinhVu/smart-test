@@ -30,9 +30,9 @@ namespace Interactor.Insurance
                     return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidSinDate);
                 }
 
-                foreach (var HistoryPid in inputData.HistoryPids)
+                if(inputData.HistoryPids.Any(h => h< 0))
                 {
-                    if(HistoryPid < 0) return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidHistoryPid);
+                    return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.InvalidHistoryPid);
                 }
 
                 var checkInputHistoryPid = inputData.HistoryPids;
