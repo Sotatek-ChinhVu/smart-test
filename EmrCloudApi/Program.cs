@@ -13,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEmrOptions(builder.Configuration);
 builder.Services.AddMemoryCache();
+builder.Services.AddResponseCaching();
 
 #if DEBUG
 builder.Services.AddSignalR()
@@ -205,6 +206,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseResponseCaching();
 
 // SignalR Hub
 app.MapHub<CommonHub>("/CommonHub");
