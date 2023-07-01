@@ -467,8 +467,8 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<ValidateCreateUKEFileResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.GetList)]
-    public ActionResult<Response<GetListSinKouiResponse>> GetList([FromQuery] GetListSinKouiRequest req)
+    [HttpGet(ApiPath.GetListSinKoui)]
+    public ActionResult<Response<GetListSinKouiResponse>> GetListSinKoui([FromQuery] GetListSinKouiRequest req)
     {
         var input = new GetListSinKouiInputData(HpId, req.PtId);
         var output = _bus.Handle(input);
