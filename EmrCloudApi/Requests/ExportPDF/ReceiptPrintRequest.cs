@@ -23,5 +23,7 @@
         public int DiskKind { get; set; }
 
         public int DiskCnt { get; set; }
+
+        public List<string> PrintHokensyaNos { get; set; }
     }
 }

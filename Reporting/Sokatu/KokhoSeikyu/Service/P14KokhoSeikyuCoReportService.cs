@@ -60,7 +60,7 @@ public class P14KokhoSeikyuCoReportService : IP14KokhoSeikyuCoReportService
     private int currentPage;
     #endregion
 
-    public CommonReportingRequestModel GetP14KokhoSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
+    public CommonReportingRequestModel GetP14KokhoSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, List<string> printHokensyaNos)
     {
         this.hpId = hpId;
         this.seikyuYm = seikyuYm;
