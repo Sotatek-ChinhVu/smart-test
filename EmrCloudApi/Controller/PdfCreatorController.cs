@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
+using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
@@ -35,28 +36,28 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GenerateKarte1Report([FromQuery] Karte1ExportRequest request)
     {
         var karte1Data = _reportService.GetKarte1ReportingData(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
-        return await RenderPdf(karte1Data, ReportType.Common);
+        return await RenderPdf(karte1Data, ReportType.Common, karte1Data.JobName);
     }
 
     [HttpGet(ApiPath.ExportNameLabel)]
     public async Task<IActionResult> GenerateNameLabelReport([FromQuery] NameLabelExportRequest request)
     {
         var data = _reportService.GetNameLabelReportingData(request.PtId, request.KanjiName, request.SinDate);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.ExportDrugInfo)]
     public async Task<IActionResult> GenerateDrugInfReport([FromQuery] DrugInfoExportRequest request)
     {
         var drugInfo = _reportService.SetOrderInfo(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-        return await RenderPdf(drugInfo, ReportType.DrugInfo);
+        return await RenderPdf(drugInfo, ReportType.DrugInfo, "薬情.pdf");
     }
 
     [HttpGet(ApiPath.ExportByomei)]
     public async Task<IActionResult> GenerateByomeiReport([FromQuery] ByomeiExportRequest request)
     {
         var byomeiData = _reportService.GetByomeiReportingData(request.HpId, request.PtId, request.FromDay, request.ToDay, request.TenkiIn, request.HokenIdList);
-        return await RenderPdf(byomeiData, ReportType.Common);
+        return await RenderPdf(byomeiData, ReportType.Common, byomeiData.JobName);
     }
 
     [HttpGet(ApiPath.ExportOrderLabel)]
@@ -68,7 +69,7 @@ public class PdfCreatorController : ControllerBase
             odrKouiKbns.Add(new(item.From, item.To));
         }
         var data = _reportService.GetOrderLabelReportingData(0, request.HpId, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, new());
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.ExportSijisen)]
@@ -80,28 +81,28 @@ public class PdfCreatorController : ControllerBase
             odrKouiKbns.Add(new(item.From, item.To));
         }
         var sijisenData = _reportService.GetSijisenReportingData(request.HpId, request.FormType, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, request.PrintNoOdr);
-        return await RenderPdf(sijisenData, ReportType.Common);
+        return await RenderPdf(sijisenData, ReportType.Common, sijisenData.JobName);
     }
 
     [HttpGet(ApiPath.MedicalRecordWebId)]
     public async Task<IActionResult> GenerateMedicalRecordWebIdReport([FromQuery] MedicalRecordWebIdRequest request)
     {
         var data = _reportService.GetMedicalRecordWebIdReportingData(request.HpId, request.PtId, request.SinDate);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.OutDrug)]
     public async Task<IActionResult> GenerateOutDrugWebIdReport([FromQuery] OutDrugRequest request)
     {
         var data = _reportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-        return await RenderPdf(data, ReportType.OutDug);
+        return await RenderPdf(data, ReportType.OutDug, "院外処方箋.pdf");
     }
 
     [HttpGet(ApiPath.ReceiptCheck)]
     public async Task<IActionResult> GetReceiptCheckReport([FromQuery] ReceiptCheckRequest request)
     {
         var data = _reportService.GetReceiptCheckCoReportService(request.HpId, request.PtIds, request.SeikyuYm);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpPost(ApiPath.ReceiptList)]
@@ -117,7 +118,7 @@ public class PdfCreatorController : ControllerBase
                                                      .ToList();
 
         var data = _reportService.GetReceiptListReportingData(request.HpId, request.SeikyuYm, receInputList);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.PeriodReceiptReport)]
@@ -131,7 +132,7 @@ public class PdfCreatorController : ControllerBase
                                                                                            request.PrintType, request.FormFileName))
                                                                        .ToList();
         var data = _reportService.GetAccountingReportingData(request.HpId, requestConvert);
-        return await RenderPdf(data, ReportType.Accounting);
+        return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
     [HttpPost(ApiPath.AccountingReport)]
@@ -146,91 +147,91 @@ public class PdfCreatorController : ControllerBase
         //    var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
 
         var data = _reportService.GetAccountingData(request.HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
-        return await RenderPdf(data, ReportType.Accounting);
+        return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
     [HttpGet(ApiPath.ReceiptReport)]
     public async Task<IActionResult> GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
     {
         var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
-        return await RenderPdf(data, ReportType.Accounting);
+        return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
     [HttpGet(ApiPath.StaticReport)]
     public async Task<IActionResult> GenerateStatisticReport([FromQuery] StatisticExportRequest request)
     {
         var data = _reportService.GetStatisticReportingData(request.HpId, request.FormName, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo, request.CoFileType, request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.PatientManagement)]
     public async Task<IActionResult> GeneratePatientManagement([FromQuery] PatientManagementRequest request)
     {
         var data = _reportService.GetPatientManagement(request.HpId, request.MenuId);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.ReceiptPreview)]
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
         var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.SyojyoSyoki)]
     public async Task<IActionResult> SyojyoSyoki([FromQuery] SyojyoSyokiRequest request)
     {
         var data = _reportService.GetSyojyoSyokiReportingData(request.HpId, request.PtId, request.SeiKyuYm, request.HokenId);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.Kensalrai)]
     public async Task<IActionResult> Kensalrai([FromQuery] KensalraiRequest request)
     {
         var data = _reportService.GetKensalraiData(request.HpId, request.SystemDate, request.FromDate, request.ToDate, request.CenterCd);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.ReceiptPrint)]
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
         var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpPost(ApiPath.MemoMsgPrint)]
     public async Task<IActionResult> MemoMsgPrint([FromBody] MemoMsgPrintRequest request)
     {
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.ReceTarget)]
     public async Task<IActionResult> ReceTarget([FromQuery] ReceTargetRequest request)
     {
         var data = _reportService.GetReceTargetPrint(request.HpId, request.SeikyuYm);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.DrugNoteSeal)]
     public async Task<IActionResult> GetDrugNoteSealPrintData([FromQuery] DrugNoteSealPrintDataRequest request)
     {
         var data = _reportService.GetDrugNoteSealPrintData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.Yakutai)]
     public async Task<IActionResult> Yakutai([FromQuery] YakutaiRequest request)
     {
         var data = _reportService.GetYakutaiReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.AccountingCard)]
     public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
     {
         var data = _reportService.GetAccountingCardReportingData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.IncludeOutDrug);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet("ExportKarte2")]
@@ -282,6 +283,12 @@ public class PdfCreatorController : ControllerBase
                     PdfReader pdfReader = new PdfReader(streamingData);
                     var byteData = streamingData.ToArray();
                     var result = SetTitleMetadata(byteData, "カルテ２号紙.pdf");
+                    ContentDisposition cd = new ContentDisposition
+                    {
+                        FileName = "カルテ２号紙.pdf",
+                        Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
+                    };
+                    Response.Headers.Add("Content-Disposition", cd.ToString());
                     return File(result, "application/pdf");
                 }
             }
@@ -305,7 +312,7 @@ public class PdfCreatorController : ControllerBase
         return outputStream.ToArray();
     }
 
-    private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
+    private async Task<IActionResult> RenderPdf(object data, ReportType reportType, string fileName)
     {
         StringContent jsonContent = (reportType ==
           ReportType.Karte1
@@ -329,7 +336,12 @@ public class PdfCreatorController : ControllerBase
         using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}{functionName}", jsonContent))
         {
             response.EnsureSuccessStatusCode();
-
+            ContentDisposition cd = new ContentDisposition
+            {
+                FileName = fileName,
+                Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
+            };
+            Response.Headers.Add("Content-Disposition", cd.ToString());
             using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
             {
                 var byteData = streamingData.ToArray();
