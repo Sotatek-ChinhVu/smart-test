@@ -65,7 +65,7 @@ public class ReceiptPrintService : IReceiptPrintService
         _p13KokhoSeikyuCoReportService = p13KokhoSeikyuCoReportService;
     }
 
-    public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt)
+    public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, List<string> printHokensyaNos)
     {
         var seikyuType = GetSeikyuType(dataKbn);
 
@@ -148,7 +148,7 @@ public class ReceiptPrintService : IReceiptPrintService
         }
         else if (prefNo == 13 && reportId == 103 && reportEdaNo == 0)
         {
-            return _p13KokhoSeikyuCoReportService.GetP13KokhoSeikyuReportingData(hpId, seikyuYm, seikyuType);
+            return _p13KokhoSeikyuCoReportService.GetP13KokhoSeikyuReportingData(hpId, seikyuYm, seikyuType, printHokensyaNos);
         }
         return new();
     }
