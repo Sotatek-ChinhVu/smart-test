@@ -1,12 +1,14 @@
-﻿namespace EmrCloudApi.Responses.InsuranceList
+﻿using UseCase.Insurance.GetDefaultSelectPattern;
+
+namespace EmrCloudApi.Responses.InsuranceList
 {
     public class GetDefaultSelectPatternResponse
     {
-        public GetDefaultSelectPatternResponse(List<int> hokenPids)
+        public GetDefaultSelectPatternResponse(List<GetDefaultSelectPatternItem> hokenPids)
         {
             HokenPids = hokenPids;
         }
 
-        public List<int> HokenPids { get; private set; }
+        public List<GetDefaultSelectPatternItem> HokenPids { get; private set; }
     }
 }

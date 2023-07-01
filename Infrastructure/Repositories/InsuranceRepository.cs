@@ -857,14 +857,14 @@ namespace Infrastructure.Repositories
             return listInsurance.FirstOrDefault() ?? new InsuranceModel();
         }
 
-        public List<int> GetListHistoryPid(int hpId, long ptId, int sinDate, List<int> historyPids, int selectedHokenPid)
+        public List<(int, int)> GetListHistoryPid(int hpId, long ptId, int sinDate, List<int> historyPids, int selectedHokenPid)
         {
             var distinctHistoryPids = historyPids.Distinct();
-            List<int> result = new();
+            List<(int, int)> result = new();
             foreach (var historyPid in distinctHistoryPids)
             {
                 var historyPidList = GetDefaultSelectPattern(hpId, ptId, sinDate, historyPid, selectedHokenPid);
-                result.Add(historyPidList);
+                result.Add(new(historyPid, historyPidList));
             }
             return result;
         }

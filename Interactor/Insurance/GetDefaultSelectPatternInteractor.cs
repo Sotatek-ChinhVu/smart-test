@@ -49,7 +49,7 @@ namespace Interactor.Insurance
 
                 var data = _insuranceResponsitory.GetListHistoryPid(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.HistoryPids, inputData.SelectedHokenPid);
 
-                return new GetDefaultSelectPatternOutputData(data, GetDefaultSelectPatternStatus.Successed);
+                return new GetDefaultSelectPatternOutputData(data.Select(d => new GetDefaultSelectPatternItem(d.Item1, d.Item2)).ToList(), GetDefaultSelectPatternStatus.Successed);
             }
             catch
             {
