@@ -1,6 +1,4 @@
-﻿using Helper.Extension;
-
-namespace Domain.Models.Futan
+﻿namespace Domain.Models.Futan
 {
     public class KaikeiInfModel
     {
