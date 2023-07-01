@@ -634,7 +634,7 @@ namespace EmrCloudApi.Configs.Dependency
         private void SetupInterfaces(IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<ITenantProvider, TenantProvider>();
+            services.AddScoped<ITenantProvider, TenantProvider>();
             services.AddSingleton<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
