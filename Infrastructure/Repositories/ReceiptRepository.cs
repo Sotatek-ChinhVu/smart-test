@@ -15,7 +15,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -3353,9 +3352,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public List<string> GetListKaikeiInf(int hpId, long ptId)
     {
-        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
-        var result = kaikeiInfs.Select(x => new KaikeiInfModel(x.PtId, x.SinDate)).OrderByDescending(x => x.SinDate).ToList();
-        return result.Select(x => x.SinYmBinding).Distinct().ToList();
+        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs
+                                                .Where(x => x.HpId == hpId && x.PtId == ptId)
+                                                .AsEnumerable()
+                                                .Select(x => new KaikeiInfModel(x.PtId, x.SinDate))
+                                                .OrderByDescending(x => x.SinDate);
+        return kaikeiInfs.Select(x => x.SinYmBinding).Distinct().ToList();
     }
 
     public void ReleaseResource()
