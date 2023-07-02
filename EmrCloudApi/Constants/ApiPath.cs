@@ -271,6 +271,7 @@
         public const string SaveReceStatus = "SaveReceStatus";
         public const string GetReceStatus = "GetReceStatus";
         public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
+        public const string GetListSinKoui = "GetListSinKoui";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
