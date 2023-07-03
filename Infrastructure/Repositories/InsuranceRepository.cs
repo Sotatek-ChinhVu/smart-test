@@ -861,15 +861,16 @@ namespace Infrastructure.Repositories
         {
             var distinctHistoryPids = historyPids.Distinct();
             List<(int, int)> result = new();
+            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate).Where(i => i.StartDate <= sinDate && i.EndDate >= sinDate).ToList();
             foreach (var historyPid in distinctHistoryPids)
             {
-                var historyPidList = GetDefaultSelectPattern(hpId, ptId, sinDate, historyPid, selectedHokenPid);
+                var historyPidList = GetDefaultSelectPattern(hpId, ptId, sinDate, historyPid, selectedHokenPid, hokenPatternModels);
                 result.Add(new(historyPid, historyPidList));
             }
             return result;
         }
 
-        public int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid)
+        public int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid, List<InsuranceModel> hokenPatternModels)
         {
             bool _isSameKohiHoubetu(InsuranceModel pattern1, InsuranceModel pattern2)
             {
@@ -883,7 +884,6 @@ namespace Infrastructure.Repositories
 
                 return false;
             }
-            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate).Where(i => i.StartDate <= sinDate && i.EndDate >= sinDate).ToList();
             var historyHokenPattern = hokenPatternModels.FirstOrDefault(p => p.HokenPid == historyPid);
             if (historyHokenPattern == null)
             {
