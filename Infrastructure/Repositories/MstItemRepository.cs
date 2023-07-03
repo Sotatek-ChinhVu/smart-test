@@ -1745,7 +1745,7 @@ namespace Infrastructure.Repositories
 
             if (!string.IsNullOrEmpty(address))
             {
-                entities = entities.Where(e =>
+                query = entities.Where(e =>
                     (e.PrefName + e.CityName + e.Banti).Contains(address) ||
                     (e.PrefName + e.CityName).Contains(address) ||
                     (e.PrefName != null && e.PrefName.Contains(address)));
