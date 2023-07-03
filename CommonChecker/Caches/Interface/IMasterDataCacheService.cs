@@ -31,6 +31,8 @@ namespace CommonChecker.Caches.Interface
 
         List<DosageDosage> GetDosageDosageList(List<string> itemCodeList);
 
+        List<M01Kinki> GetM01KinkiList(List<string> itemCodeList);
+
         PtInf GetPtInf();
 
         SystemConfig GetSystemConfig();
