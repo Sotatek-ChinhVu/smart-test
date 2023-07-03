@@ -3351,11 +3351,11 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
-    public List<string> GetListKaikeiInf(int hpId, long ptId)
+    public List<int> GetListKaikeiInf(int hpId, long ptId)
     {
         var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
         var result = kaikeiInfs.Select(x => new KaikeiInfModel(x.PtId, x.SinDate)).OrderByDescending(x => x.SinDate).ToList();
-        return result.Select(x => x.SinYmBinding).Distinct().ToList();
+        return result.Select(x => x.SinYm).Distinct().ToList();
     }
 
     public void ReleaseResource()
