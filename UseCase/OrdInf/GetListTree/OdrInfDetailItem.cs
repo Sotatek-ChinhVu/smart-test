@@ -5,7 +5,7 @@ namespace UseCase.OrdInfs.GetListTrees
 {
     public class OdrInfDetailItem
     {
-        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName, string centerItemCd1, string centerItemCd2)
+        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName, string centerItemCd1, string centerItemCd2)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -17,6 +17,7 @@ namespace UseCase.OrdInfs.GetListTrees
             SinKouiKbn = sinKouiKbn;
             ItemCd = itemCd;
             ItemName = itemName;
+            DisplayItemName = displayItemName;
             Suryo = suryo;
             UnitName = unitName;
             UnitSbt = unitSbt;
@@ -59,10 +60,86 @@ namespace UseCase.OrdInfs.GetListTrees
             HasCmtName = hasCmtName;
             CenterItemCd1 = centerItemCd1;
             CenterItemCd2 = centerItemCd2;
+            KikakiUnit = string.Empty;
+            YakkaiUnit = string.Empty;
+            RikikaUnit = string.Empty;
+            YoukaiekiCd = string.Empty;
+            MemoItem = string.Empty;
         }
 
         [JsonConstructor]
-        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName, string centerItemCd1, string centerItemCd2, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int handanGrpKbn, bool isKensaMstEmpty)
+        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName,string displayItemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName, string centerItemCd1, string centerItemCd2, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int handanGrpKbn, bool isKensaMstEmpty)
+        {
+            HpId = hpId;
+            RaiinNo = raiinNo;
+            RpNo = rpNo;
+            RpEdaNo = rpEdaNo;
+            RowNo = rowNo;
+            PtId = ptId;
+            SinDate = sinDate;
+            SinKouiKbn = sinKouiKbn;
+            ItemCd = itemCd;
+            ItemName = itemName;
+            DisplayItemName = displayItemName;
+            Suryo = suryo;
+            UnitName = unitName;
+            UnitSbt = unitSbt;
+            TermVal = termVal;
+            KohatuKbn = kohatuKbn;
+            SyohoKbn = syohoKbn;
+            SyohoLimitKbn = syohoLimitKbn;
+            DrugKbn = drugKbn;
+            YohoKbn = yohoKbn;
+            Kokuji1 = kokuji1;
+            Kokuji2 = kokuji2;
+            IsNodspRece = isNodspRece;
+            IpnCd = ipnCd;
+            IpnName = ipnName;
+            JissiKbn = jissiKbn;
+            JissiDate = jissiDate;
+            JissiId = jissiId;
+            JissiMachine = jissiMachine;
+            ReqCd = reqCd;
+            Bunkatu = bunkatu;
+            CmtName = cmtName;
+            CmtOpt = cmtOpt;
+            FontColor = fontColor;
+            CommentNewline = commentNewline;
+            Yakka = yakka;
+            IsGetPriceInYakka = isGetPriceInYakka;
+            Ten = ten;
+            BunkatuKoui = bunkatuKoui;
+            AlternationIndex = alternationIndex;
+            KensaGaichu = kensaGaichu;
+            OdrTermVal = odrTermVal;
+            CnvTermVal = cnvTermVal;
+            YjCd = yjCd;
+            MasterSbt = masterSbt;
+            YohoSets = yohoSets;
+            Kasan1 = kasan1;
+            Kasan2 = kasan2;
+            CnvUnitName = cnvUnitName;
+            OdrUnitName = odrUnitName;
+            HasCmtName = hasCmtName;
+            CenterItemCd1 = centerItemCd1;
+            CenterItemCd2 = centerItemCd2;
+            CmtCol1 = cmtCol1;
+            CmtCol2 = cmtCol2;
+            CmtCol3 = cmtCol3;
+            CmtCol4 = cmtCol4;
+            CmtColKeta1 = cmtColKeta1;
+            CmtColKeta2 = cmtColKeta2;
+            CmtColKeta3 = cmtColKeta3;
+            CmtColKeta4 = cmtColKeta4;
+            HandanGrpKbn = handanGrpKbn;
+            IsKensaMstEmpty = isKensaMstEmpty;
+            KikakiUnit = string.Empty;
+            YakkaiUnit = string.Empty;
+            RikikaUnit = string.Empty;
+            YoukaiekiCd = string.Empty;
+            MemoItem = string.Empty;
+        }
+        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName, string centerItemCd1, string centerItemCd2, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int handanGrpKbn, bool isKensaMstEmpty, decimal rikikaRate, string kikakiUnit, string yakkaiUnit, string rikikaUnit, string youkaiekiCd, string memoItem)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -126,6 +203,13 @@ namespace UseCase.OrdInfs.GetListTrees
             CmtColKeta4 = cmtColKeta4;
             HandanGrpKbn = handanGrpKbn;
             IsKensaMstEmpty = isKensaMstEmpty;
+            RikikaRate = rikikaRate;
+            KikakiUnit = kikakiUnit;
+            YakkaiUnit = yakkaiUnit;
+            RikikaUnit = rikikaUnit;
+            YoukaiekiCd = youkaiekiCd;
+            MemoItem = memoItem;
+            DisplayItemName = string.Empty;
         }
 
         [JsonPropertyName("hpId")]
@@ -157,6 +241,9 @@ namespace UseCase.OrdInfs.GetListTrees
 
         [JsonPropertyName("itemName")]
         public string ItemName { get; private set; }
+
+        [JsonPropertyName("displayItemName")]
+        public string DisplayItemName { get; private set; }
 
         [JsonPropertyName("suryo")]
         public double Suryo { get; private set; }
@@ -314,5 +401,23 @@ namespace UseCase.OrdInfs.GetListTrees
 
         [JsonPropertyName("isKensaMstEmpty")]
         public bool IsKensaMstEmpty { get; private set; }
+
+        [JsonPropertyName("kikakiUnit")]
+        public string KikakiUnit { get; private set; }
+
+        [JsonPropertyName("yakkaiUnit")]
+        public string YakkaiUnit { get; private set; }
+
+        [JsonPropertyName("rikikaRate")]
+        public decimal RikikaRate { get; private set; }
+
+        [JsonPropertyName("rikikaUnit")]
+        public string RikikaUnit { get; private set; }
+
+        [JsonPropertyName("youkaiekiCd")]
+        public string YoukaiekiCd { get; private set; }
+
+        [JsonPropertyName("memoItem")]
+        public string MemoItem { get; private set; }
     }
 }

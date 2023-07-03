@@ -1,8 +1,10 @@
 ﻿using Domain.Models.Accounting;
 using Domain.Models.HpInf;
+using Domain.Models.Lock;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Domain.Models.User;
+using Helper.Constants;
 using UseCase.Accounting.SaveAccounting;
 
 namespace Interactor.Accounting
@@ -57,7 +59,7 @@ namespace Interactor.Accounting
                 var debitBalance = listAllSyunoSeikyu.Sum(item => item.SeikyuGaku -
                                                   item.SyunoNyukinModels.Sum(itemNyukin =>
                                                       itemNyukin.NyukinGaku + itemNyukin.AdjustFutan));
-                var accDue = (int)_systemConfRepository.GetSettingValue(3020, 0, 1);
+                var accDue = (int)_systemConfRepository.GetSettingValue(3020, 0, inputData.HpId);
 
                 if (accDue == 0)
                 {
@@ -65,7 +67,7 @@ namespace Interactor.Accounting
                 }
 
                 var save = _accountingRepository.SaveAccounting(listAllSyunoSeikyu, listSyunoSeikyu, inputData.HpId, inputData.PtId, inputData.UserId, accDue, inputData.SumAdjust, inputData.ThisWari, inputData.Credit,
-                                                                inputData.PayType, inputData.Comment, inputData.IsDisCharged);
+                                                                inputData.PayType, inputData.Comment, inputData.IsDisCharged, inputData.KaikeiTime);
                 if (save)
                 {
                     return new SaveAccountingOutputData(SaveAccountingStatus.Success);
@@ -106,10 +108,6 @@ namespace Interactor.Accounting
             else if (inputData.ThisWari < 0)
             {
                 return SaveAccountingStatus.InvalidThisWari;
-            }
-            else if (inputData.Credit < 0)
-            {
-                return SaveAccountingStatus.InvalidCredit;
             }
             else if (inputData.PayType < 0)
             {

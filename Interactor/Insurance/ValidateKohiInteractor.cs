@@ -10,11 +10,11 @@ namespace Interactor.Insurance
 {
     public class ValidateKohiInteractor : IValidKohiInputPort
     {
-        private readonly IPatientInforRepository _patientInforRepository;
+        private readonly IInsuranceMstRepository _insuranceMstRepository;
 
-        public ValidateKohiInteractor(IPatientInforRepository patientInforRepository)
+        public ValidateKohiInteractor(IInsuranceMstRepository insuranceMstRepository)
         {
-            _patientInforRepository = patientInforRepository;
+            _insuranceMstRepository = insuranceMstRepository;
         }
 
         public ValidKohiOutputData Handle(ValidKohiInputData inputData)
@@ -28,14 +28,11 @@ namespace Interactor.Insurance
                 if (inputData.PtBirthday < 0)
                     validateDetails.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidPtBirthday, string.Empty, TypeMessage.TypeMessageError));
 
-                // Get HokenMst Kohi1
-                var hokenMstKohi = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo, inputData.SelectedKohiHokenEdraNo, inputData.SinDate);
-
                 //IsValidKohi1
-                IsValidKohi(ref validateDetails, inputData.IsKohiEmptyModel, inputData.IsSelectedKohiMst, inputData.SelectedKohiFutansyaNo, inputData.SelectedKohiJyukyusyaNo, inputData.SelectedKohiTokusyuNo, inputData.SelectedKohiStartDate, inputData.SelectedKohiEndDate, inputData.SelectedKohiConfirmDate, hokenMstKohi.IsFutansyaNoCheck, hokenMstKohi.IsJyukyusyaNoCheck, hokenMstKohi.IsTokusyuNoCheck, hokenMstKohi.StartDate, hokenMstKohi.EndDate, hokenMstKohi.DisplayTextMaster, 1, inputData.SinDate, inputData.SelectedKohiIsAddNew, inputData.SelectedHokenPatternIsExpirated);
+                IsValidKohi(ref validateDetails, inputData.IsKohiEmptyModel, inputData.IsSelectedKohiMst, inputData.SelectedKohiFutansyaNo, inputData.SelectedKohiJyukyusyaNo, inputData.SelectedKohiTokusyuNo, inputData.SelectedKohiStartDate, inputData.SelectedKohiEndDate, inputData.SelectedKohiConfirmDate, inputData.KohiMasterIsFutansyaNoCheck, inputData.KohiMasterIsJyukyusyaNoCheck, inputData.KohiMasterIsTokusyuNoCheck, inputData.KohiMasterStartDate, inputData.KohiMasterEndDate, inputData.KohiMasterDisplayTextMaster, 1, inputData.SinDate, inputData.SelectedKohiIsAddNew, inputData.SelectedHokenPatternIsExpirated);
 
                 // check Kohi No Function1
-                IsValidKohiNo_Fnc(ref validateDetails, inputData.IsKohiEmptyModel, inputData.IsSelectedKohiMst, inputData.SelectedKohiHokenNo, inputData.SelectedKohiFutansyaNo, inputData.SelectedKohiTokusyuNo, hokenMstKohi.IsJyukyusyaNoCheck, hokenMstKohi.IsFutansyaNoCheck, hokenMstKohi.JyuKyuCheckDigit, hokenMstKohi.CheckDigit, hokenMstKohi.Houbetu, inputData.SelectedKohiJyukyusyaNo, hokenMstKohi.AgeStart, hokenMstKohi.AgeEnd, 1, inputData.PtBirthday);
+                IsValidKohiNo_Fnc(ref validateDetails, inputData.IsKohiEmptyModel, inputData.IsSelectedKohiMst, inputData.SelectedKohiHokenNo, inputData.SelectedKohiFutansyaNo, inputData.SelectedKohiTokusyuNo, inputData.KohiMasterIsJyukyusyaNoCheck, inputData.KohiMasterIsFutansyaNoCheck, inputData.KohiMasterJyukyuCheckDigit, inputData.KohiMasterCheckDigit, inputData.KohiMasterHoubetu, inputData.SelectedKohiJyukyusyaNo, inputData.KohiMasterAgeStart, inputData.KohiMasterAgeEnd, 1, inputData.PtBirthday);
             }
             catch (Exception ex)
             {
@@ -43,7 +40,7 @@ namespace Interactor.Insurance
             }
             finally
             {
-                _patientInforRepository.ReleaseResource();
+                _insuranceMstRepository.ReleaseResource();
             }
             return new ValidKohiOutputData(validateDetails);
         }
@@ -491,7 +488,7 @@ namespace Interactor.Insurance
                     int intAge = -1;
                     if (ptBirthday != 0)
                     {
-                        intAge = CIUtil.SDateToAge(ptBirthday, Int32.Parse(DateTime.Now.ToString("yyyyMMdd")));
+                        intAge = CIUtil.SDateToAge(ptBirthday, Int32.Parse(CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd")));
                     }
                     if (intAge != -1)
                     {

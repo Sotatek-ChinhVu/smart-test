@@ -2,6 +2,5 @@
 {
     public class GetPaymentMethodRequest
     {
-        public int HpId { get; set; }
     }
 }

@@ -65,7 +65,6 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 ListPtFamilyRekiInfo = listPtFamilyRekiInfo
             }
         );
-        var temp1 = query.ToList();
         return query.AsEnumerable().Select(data => new FamilyModel(
                 data.PtFamily.FamilyId,
                 data.PtFamily.PtId,
@@ -118,7 +117,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                                             item.Sex,
                                                             item.Birthday,
                                                             item.IsDead,
-                                                            int.Parse(DateTime.UtcNow.ToString("yyyyMMdd"))
+                                                            int.Parse(CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd"))
                                                         )).ToList();
     }
 
@@ -380,7 +379,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 UpdatePtInf(listPtInf, familyModel.FamilyPtId, familyModel.IsDead);
                 if (!SaveFamilyRekiList(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis))
                 {
-                    return false;
+                    continue;
                 }
             }
             else
@@ -388,7 +387,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 var ptFamilyEntity = listFamilyDB.FirstOrDefault(item => item.FamilyId == familyModel.FamilyId);
                 if (ptFamilyEntity == null)
                 {
-                    return false;
+                    continue;
                 }
                 ptFamilyEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 ptFamilyEntity.UpdateId = userId;
@@ -410,7 +409,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 UpdatePtInf(listPtInf, familyModel.FamilyPtId, familyModel.IsDead);
                 if (!SaveFamilyRekiList(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis))
                 {
-                    return false;
+                    continue;
                 }
             }
         }
@@ -456,7 +455,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 var ptFamilyRekiEntity = listPtFamilyRekiEntity.FirstOrDefault(item => item.Id == familyRekiModel.Id);
                 if (ptFamilyRekiEntity == null)
                 {
-                    return false;
+                    continue;
                 }
                 ptFamilyRekiEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 ptFamilyRekiEntity.UpdateId = userId;

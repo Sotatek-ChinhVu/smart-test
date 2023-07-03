@@ -9,7 +9,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        public List<TOdrInf> CurrentListOrder = new();
+        public List<TOdrInf> CurrentListOrder { get; set; } = new();
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
@@ -40,7 +40,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             {
                 // Check duplicated itemCode
                 List<DuplicationResultModel> listDuplicatedItemCode = CheckDuplicatedItemCode(checkingOrder, currentOdrDetailCodeList);
-                if (listDuplicatedItemCode != null)
+                if (listDuplicatedItemCode != null && listDuplicatedItemCode.Any())
                 {
                     listErrorInfo.AddRange(listDuplicatedItemCode);
                 }
@@ -50,7 +50,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             {
                 // Check duplicated ippanCode
                 List<DuplicationResultModel> listDuplicatedIppanCode = CheckDuplicatedIppanCode(checkingOrder, currentOdrDetailList);
-                if (listDuplicatedIppanCode != null)
+                if (listDuplicatedIppanCode != null && listDuplicatedIppanCode.Any())
                 {
                     listErrorInfo.AddRange(listDuplicatedIppanCode);
                 }

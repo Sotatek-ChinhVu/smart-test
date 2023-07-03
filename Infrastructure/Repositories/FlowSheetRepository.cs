@@ -1,14 +1,20 @@
 ﻿using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
+using Domain.Models.SetMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Caching.Memory;
 using System.Diagnostics;
 using System.Linq.Dynamic.Core;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
@@ -23,18 +29,20 @@ namespace Infrastructure.Repositories
 
         private string HolidayMstCacheKey
         {
-            get => $"{GetCacheKey()}-HolidayMstCacheKey";
+            get => $"{key}-HolidayMstCacheKey";
         }
 
         private string RaiinListMstCacheKey
         {
-            get => $"{GetCacheKey()}-RaiinListMstCacheKey";
+            get => $"{key}-RaiinListMstCacheKey";
         }
 
-        private readonly IMemoryCache _memoryCache;
-        public FlowSheetRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
+        private readonly StackExchange.Redis.IDatabase _cache;
+        private string key;
+        public FlowSheetRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _memoryCache = memoryCache;
+            key = GetCacheKey();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
 
         public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, ref long totalCount)
@@ -58,12 +66,11 @@ namespace Infrastructure.Repositories
                                                                                         && r.PtId == ptId
                                                                                         && r.IsDeleted == DeleteTypes.None
                                                                                         && r.RsvkrtKbn == 0);
-
             var groupNextOdr = (
                                     from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable<RsvkrtOdrInf>()
                                     join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
                                                      equals new { rsvkrtMst.HpId, rsvkrtMst.PtId, rsvkrtMst.RsvkrtNo }
-                                    group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo, rsvkrtOdrInf } into g
+                                    group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo } into g
                                     select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, string.Empty, -1, 0)
                                ).ToList();
 
@@ -80,12 +87,12 @@ namespace Infrastructure.Repositories
                                      .ToList();
 
             var nextKarteList = NoTrackingDataContext.RsvkrtKarteInfs
-                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))
+                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && k.KarteKbn == 1)
                 .ToList();
             Console.WriteLine("Get nextKarteList: " + stopwatch.ElapsedMilliseconds);
 
             var historyKarteList = NoTrackingDataContext.KarteInfs
-                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))
+                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && k.KarteKbn == 1)
                 .ToList();
             Console.WriteLine("Get historyKarteList: " + stopwatch.ElapsedMilliseconds);
 
@@ -129,6 +136,7 @@ namespace Infrastructure.Repositories
             foreach (var flowSheetModel in flowSheetModelList)
             {
                 string karteContent = string.Empty;
+
                 if (flowSheetModel.IsNext)
                 {
                     var nextKarte = nextKarteList.FirstOrDefault(n => n.RsvkrtNo == flowSheetModel.RaiinNo);
@@ -186,24 +194,35 @@ namespace Infrastructure.Repositories
                             Detail = raiinListDetail.Where(c => c.HpId == mst.HpId && c.GrpId == mst.GrpId).ToList()
                         };
             var raiinListMstModelList = query
-                .Select(data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName ?? string.Empty, data.Mst.SortNo, data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName ?? string.Empty, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()))
+                .Select(data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName ?? string.Empty, data.Mst.SortNo, data.Mst.IsDeleted, data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName ?? string.Empty, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()))
                 .ToList();
-
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetPriority(CacheItemPriority.Normal);
-            _memoryCache.Set(RaiinListMstCacheKey, raiinListMstModelList, cacheEntryOptions);
+            var json = JsonSerializer.Serialize(raiinListMstModelList);
+            _cache.StringSet(RaiinListMstCacheKey, json);
 
             return raiinListMstModelList;
         }
 
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
         {
-            if (!_memoryCache.TryGetValue(RaiinListMstCacheKey, out List<RaiinListMstModel>? setKbnMstList))
+            var setKbnMstList = new List<RaiinListMstModel>();
+            if (!_cache.KeyExists(RaiinListMstCacheKey))
             {
                 setKbnMstList = ReloadRaiinListMstCache(hpId);
             }
+            else
+            {
+                setKbnMstList = ReadCacheRaiinListMst();
+            }
 
             return setKbnMstList!;
+        }
+
+        private List<RaiinListMstModel> ReadCacheRaiinListMst()
+        {
+            var results = _cache.StringGet(RaiinListMstCacheKey);
+            var json = results.AsString();
+            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<RaiinListMstModel>>(json) : new();
+            return datas ?? new();
         }
 
         #endregion
@@ -215,12 +234,17 @@ namespace Infrastructure.Repositories
                 .Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None)
                 .Select(h => new HolidayDto(h.SeqNo, h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
                 .ToList();
-
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetPriority(CacheItemPriority.Normal);
-            _memoryCache.Set(HolidayMstCacheKey, holidayModelList, cacheEntryOptions);
-
+            var json = JsonSerializer.Serialize(holidayModelList);
+            _cache.StringSet(HolidayMstCacheKey, json);
             return holidayModelList;
+        }
+
+        private List<HolidayDto> ReadCacheHolidayMst()
+        {
+            var results = _cache.StringGet(HolidayMstCacheKey);
+            var json = results.AsString();
+            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<HolidayDto>>(json) : new();
+            return datas ?? new();
         }
 
         public bool SaveHolidayMst(HolidayModel holiday, int userId)
@@ -253,16 +277,24 @@ namespace Infrastructure.Repositories
                 if (holidayUpdate.HolidayKbn == 0)
                     holidayUpdate.HolidayName = string.Empty;
             }
-            _memoryCache.Remove(HolidayMstCacheKey);
-            return TrackingDataContext.SaveChanges() > 0;
+            var result =  TrackingDataContext.SaveChanges() > 0;
+            if (result)
+            {
+                ReloadHolidayCache(holiday.HpId);
+            }
+            return result;
         }
 
         public List<HolidayDto> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
         {
-
-            if (!_memoryCache.TryGetValue(HolidayMstCacheKey, out IEnumerable<HolidayDto>? holidayMstList))
+            var holidayMstList = new List<HolidayDto>();
+            if (!_cache.KeyExists(HolidayMstCacheKey))
             {
                 holidayMstList = ReloadHolidayCache(hpId);
+            }
+            else
+            {
+                holidayMstList = ReadCacheHolidayMst();
             }
             return holidayMstList!.Where(h => holidayFrom <= h.SinDate && h.SinDate <= holidayTo).ToList();
         }
@@ -468,11 +500,30 @@ namespace Infrastructure.Repositories
                         from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId)
                         join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
                         on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
+                        where raiinListInf.RaiinNo != 0
                         select new { raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
                      );
 
             var result = raiinListInfs
                 .GroupBy(r => r.RaiinNo)
+                .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
+
+            return result;
+        }
+
+        public Dictionary<int, List<RaiinListInfModel>> GetRaiinListInfForNextOrder(int hpId, long ptId)
+        {
+            var raiinListInfs =
+                     (
+                        from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId)
+                        join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
+                        on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
+                        where raiinListInf.RaiinNo == 0
+                        select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
+                     );
+
+            var result = raiinListInfs
+                .GroupBy(r => r.SinDate)
                 .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
 
             return result;
@@ -488,7 +539,7 @@ namespace Infrastructure.Repositories
 
             List<(int, string)> result = new();
             var raiinInfs = NoTrackingDataContext.RaiinInfs
-                .Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate)
+                .Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate && r.Status >= RaiinState.TempSave)
                 .Select(r => new { r.SinDate, r.SyosaisinKbn, r.Status }).ToList();
             var holidays = NoTrackingDataContext.HolidayMsts.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate).Select(r => new { r.SinDate, r.HolidayName }).ToList();
 

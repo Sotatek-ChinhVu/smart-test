@@ -32,5 +32,7 @@ namespace Domain.Models.Insurance
         List<InsuranceScanModel> GetListInsuranceScanByPtId(int hpId, long ptId);
 
         int GetHokenKbnByHokenId(int hpId, int hokenId, long ptId);
+
+        List<string> GetNameKeys(int hpId, int prefNo);
     }
 }

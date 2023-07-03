@@ -1,13 +1,11 @@
 using EmrCloudApi.Configs.Dependency;
 using EmrCloudApi.Configs.Options;
 using EmrCloudApi.Realtime;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using EmrCloudApi.Security;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using StackExchange.Redis;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEmrOptions(builder.Configuration);
 builder.Services.AddMemoryCache();
+builder.Services.AddResponseCaching();
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+});
 
 #if DEBUG
 builder.Services.AddSignalR()
@@ -133,27 +136,7 @@ builder.Services.AddCors(options =>
 });
 
 // Authentication
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-    .AddJwtBearer(options =>
-    {
-        options.SaveToken = false;
-        options.RequireHttpsMetadata = false;
-
-        var jwtOptions = builder.Configuration.GetSection(JwtOptions.Position).Get<JwtOptions>();
-        var key = Encoding.UTF8.GetBytes(jwtOptions.Secret);
-        options.TokenValidationParameters = new TokenValidationParameters()
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
-        };
-    });
+builder.Services.SetupAuthentication(builder.Configuration);
 
 //Serilog 
 builder.Host.UseSerilog((ctx, lc) => lc
@@ -208,8 +191,15 @@ app.UseHttpsRedirection();
 
 app.Use(async (context, next) =>
 {
-    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { (string)context.Request.Headers["Origin"] });
+        context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept" });
+        context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
+        context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
+        context.Response.Headers.Add("Access-Control-Max-Age", "7200");
+        context.Response.StatusCode = 200;
+    }
     await next(context);
 });
 
@@ -220,6 +210,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseResponseCaching();
+
+app.UseResponseCompression();
 
 // SignalR Hub
 app.MapHub<CommonHub>("/CommonHub");

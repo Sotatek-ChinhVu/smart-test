@@ -415,6 +415,12 @@ namespace Domain.Common
                 var bunkatuItem = odrInf.OrdInfDetails?.FirstOrDefault(i => i.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu);
                 if (bunkatuItem != null)
                 {
+                    if (string.IsNullOrEmpty(bunkatuItem?.Bunkatu))
+                    {
+                        var bunkatuIndex = odrInf.OrdInfDetails?.FindIndex(od => od == bunkatuItem) ?? 0;
+                        return new(bunkatuIndex.ToString(), OrdInfValidationStatus.InvalidBunkatuNoInput);
+                    }
+
                     var usageItem = odrInf.OrdInfDetails?.FirstOrDefault(item => item.IsStandardUsage);
 
                     if (usageItem == null)
@@ -426,11 +432,11 @@ namespace Domain.Common
 
                     var sumBukatu = odrInf.SumBunkatu(bunkatuItem?.Bunkatu ?? string.Empty);
 
-                    if (usageItem.Suryo != sumBukatu)
+                    if ((decimal)usageItem.Suryo != sumBukatu)
                     {
-                        var usageIndex = odrInf.OrdInfDetails?.FindIndex(od => od == usageItem) ?? 0;
+                        var bunkatuIndex = odrInf.OrdInfDetails?.FindIndex(od => od == bunkatuItem) ?? 0;
 
-                        return new(usageIndex.ToString(), OrdInfValidationStatus.InvalidSumBunkatuDifferentSuryo);
+                        return new(bunkatuIndex.ToString(), OrdInfValidationStatus.InvalidSumBunkatuDifferentSuryo);
                     }
                 }
             }
@@ -543,6 +549,10 @@ namespace Domain.Common
             {
                 return OrdInfValidationStatus.InvalidItemCd;
             }
+            if (odrInfDetail.CmtOpt.Length > 38)
+            {
+                return OrdInfValidationStatus.InvalidCmtOpt;
+            }
             if (odrInfDetail.ItemName.Length > 240)
             {
                 return OrdInfValidationStatus.InvalidItemName;
@@ -570,10 +580,6 @@ namespace Domain.Common
             if (odrInfDetail.CmtName.Length > 240)
             {
                 return OrdInfValidationStatus.InvalidCmtName;
-            }
-            if (odrInfDetail.CmtOpt.Length > 38)
-            {
-                return OrdInfValidationStatus.InvalidCmtOpt;
             }
 
             return OrdInfValidationStatus.Valid;
@@ -639,9 +645,13 @@ namespace Domain.Common
 
         private static OrdInfValidationStatus ValidateCmtDetail(int sinDate, TOdrInfDetailModel odrInfDetail)
         {
-            if (odrInfDetail.Is840Cmt && odrInfDetail.CmtCol1 > 0 && (string.IsNullOrEmpty(odrInfDetail.CmtOpt) || string.IsNullOrEmpty(odrInfDetail.CmtName)))
+            if (odrInfDetail.Is840Cmt)
             {
-                return OrdInfValidationStatus.InvalidCmt840;
+                string cmtOpt = OdrUtil.GetCmtOpt840(odrInfDetail.CmtOpt);
+                if (odrInfDetail.CmtCol1 > 0 && (string.IsNullOrEmpty(cmtOpt) || string.IsNullOrEmpty(odrInfDetail.CmtName)))
+                {
+                    return OrdInfValidationStatus.InvalidCmt840;
+                }
             }
 
             if (odrInfDetail.Is842Cmt)

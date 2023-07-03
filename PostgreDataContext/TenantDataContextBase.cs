@@ -422,6 +422,16 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtFamily>().HasKey(p => new { p.FamilyId });
             modelBuilder.Entity<SokatuMst>().HasKey(s => new { s.HpId, s.PrefNo, s.StartYm, s.ReportEdaNo, s.ReportId });
             modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
+            modelBuilder.Entity<SetMst>()
+           .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter("IsDeleted = 0").IsUnique();
+
+            modelBuilder
+                .Entity<SetMst>()
+                .HasQueryFilter(p => p.IsDeleted == 0);
+
+            modelBuilder.Entity<LockInf>()
+           .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter("FunctionCd = \"02000000\"").IsUnique();
+            modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
@@ -1148,5 +1158,7 @@ namespace PostgreDataContext
         public DbSet<OnlineConsent> OnlineConsents { get; set; } = default!;
 
         public DbSet<KouiHoukatuMst> KouiHoukatuMsts { get; set; } = default!;
+
+        public DbSet<UserToken> UserTokens { get; set; } = default!;
     }
 }

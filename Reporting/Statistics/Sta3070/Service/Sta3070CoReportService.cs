@@ -218,8 +218,8 @@ public class Sta3070CoReportService : ISta3070CoReportService
             _extralData.Add("HeaderR_0_0_" + currentPage, hpInf.HpName);
             //作成日時
             _extralData.Add("HeaderR_0_1_" + currentPage, CIUtil.SDateToShowSWDate(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
-            ) + DateTime.Now.ToString(" HH:mm") + "作成");
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
+            ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
             //ページ数
             int totalPage = (int)Math.Ceiling((double)printDatas.Count / maxCol);
             if (!_extralData.ContainsKey("totalPage"))

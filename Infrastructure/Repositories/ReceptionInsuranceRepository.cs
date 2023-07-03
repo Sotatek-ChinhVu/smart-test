@@ -140,74 +140,78 @@ namespace Infrastructure.Repositories
       
         public string IsValidAgeCheck(int sinDate, int hokenPid, int hpId, long ptId, int ptInfBirthday)
         {
-            var checkResult = "";
-            // pattern
-            var listPattern = NoTrackingDataContext.PtHokenPatterns.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
-                                                                (pattern.StartDate <= sinDate && pattern.EndDate >= sinDate)
-                                                                && pattern.HpId == hpId && pattern.PtId == ptId
-                                                                    );
-
-            var listHokenInf = NoTrackingDataContext.PtHokenInfs.Where(x => x.IsDeleted == DeleteTypes.None
-                                                                && x.HpId == hpId && x.PtId == ptId
-                                                                && ((x.HokenKbn == 1 && x.Houbetu != HokenConstant.HOUBETU_NASHI) || x.HokenKbn == 2)
-                                                                && !(!String.IsNullOrEmpty(x.HokensyaNo) && x.HokensyaNo.Length == 8
-                                                                        && (x.HokensyaNo.StartsWith("109") || x.HokensyaNo.StartsWith("99"))
-                                                                ));
-            var dataJoinPatternWithHokenInf = from ptHokenPattern in listPattern
-                                              join ptHokenInf in listHokenInf on
-                                                  new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenId } equals
-                                                  new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId }
-                                              select new
-                                              {
-                                                  ptHokenPattern,
-                                                  ptHokenInf
-                                              };
-            var validPattern = dataJoinPatternWithHokenInf.Where(pattern => pattern.ptHokenPattern.HokenPid == hokenPid);
-
-            if (validPattern == null || validPattern.Count() == 0)
+            int CheckAgeReception = (int)this.GetSettingValue(1005, 0 , hpId);
+            string checkResult = "";
+            if(CheckAgeReception == 1)
             {
-                return checkResult;
-            }
+                // pattern
+                var listPattern = NoTrackingDataContext.PtHokenPatterns.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
+                                                                    (pattern.StartDate <= sinDate && pattern.EndDate >= sinDate)
+                                                                    && pattern.HpId == hpId && pattern.PtId == ptId
+                                                                        );
 
-            string checkParam = GetSettingParam(1005);
-            var splittedParam = checkParam.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var listHokenInf = NoTrackingDataContext.PtHokenInfs.Where(x => x.IsDeleted == DeleteTypes.None
+                                                                    && x.HpId == hpId && x.PtId == ptId
+                                                                    && ((x.HokenKbn == 1 && x.Houbetu != HokenConstant.HOUBETU_NASHI) || x.HokenKbn == 2)
+                                                                    && !(!String.IsNullOrEmpty(x.HokensyaNo) && x.HokensyaNo.Length == 8
+                                                                            && (x.HokensyaNo.StartsWith("109") || x.HokensyaNo.StartsWith("99"))
+                                                                    ));
+                var dataJoinPatternWithHokenInf = from ptHokenPattern in listPattern
+                                                  join ptHokenInf in listHokenInf on
+                                                      new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenId } equals
+                                                      new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId }
+                                                  select new
+                                                  {
+                                                      ptHokenPattern,
+                                                      ptHokenInf
+                                                  };
+                var validPattern = dataJoinPatternWithHokenInf.Where(pattern => pattern.ptHokenPattern.HokenPid == hokenPid);
 
-            int invalidAgeCheck = 0;
-            //PatientInf.Birthday
-            int patientInfBirthDay = ptInfBirthday;
-
-            foreach (var param in splittedParam)
-            {
-                int ageCheck = Int32.Parse(param.Trim());
-                if (ageCheck == 0) continue;
-
-                foreach (var pattern in validPattern)
+                if (validPattern == null || validPattern.Count() == 0)
                 {
-                    var ptCheck = NoTrackingDataContext.PtHokenChecks.Where(x => x.HokenId == pattern.ptHokenPattern.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern)
-                                    .OrderByDescending(x => x.CheckDate).FirstOrDefault();
-                    int confirmDate = GetConfirmDateHokenInf(ptCheck);
-                    if (!IsValidAgeCheckConfirm(ageCheck, confirmDate, patientInfBirthDay, sinDate) && invalidAgeCheck <= ageCheck)
+                    return checkResult;
+                }
+
+                string checkParam = GetSettingParam(hpId ,1005);
+                var splittedParam = checkParam.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                int invalidAgeCheck = 0;
+                //PatientInf.Birthday
+                int patientInfBirthDay = ptInfBirthday;
+
+                foreach (var param in splittedParam)
+                {
+                    int ageCheck = Int32.Parse(param.Trim());
+                    if (ageCheck == 0) continue;
+
+                    foreach (var pattern in validPattern)
                     {
-                        invalidAgeCheck = ageCheck;
+                        var ptCheck = NoTrackingDataContext.PtHokenChecks.Where(x => x.HokenId == pattern.ptHokenPattern.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern)
+                                        .OrderByDescending(x => x.CheckDate).FirstOrDefault();
+                        int confirmDate = GetConfirmDateHokenInf(ptCheck);
+                        if (!IsValidAgeCheckConfirm(ageCheck, confirmDate, patientInfBirthDay, sinDate) && invalidAgeCheck <= ageCheck)
+                        {
+                            invalidAgeCheck = ageCheck;
+                        }
                     }
                 }
-            }
 
-            if (invalidAgeCheck != 0)
-            {
-                string cardName;
-                int age = CIUtil.SDateToAge(patientInfBirthDay, sinDate);
-                if (age >= 70)
+                if (invalidAgeCheck != 0)
                 {
-                    cardName = "高齢受給者証";
+                    string cardName;
+                    int age = CIUtil.SDateToAge(patientInfBirthDay, sinDate);
+                    if (age >= 70)
+                    {
+                        cardName = "高齢受給者証";
+                    }
+                    else
+                    {
+                        cardName = "保険証";
+                    }
+                    var stringParams = new string[] { $"{invalidAgeCheck}歳となりました。", cardName };
+                    checkResult = string.Format(ErrorMessage.MessageType_mChk00080, stringParams);
+                    return checkResult;
                 }
-                else
-                {
-                    cardName = "保険証";
-                }
-                var stringParams = new string[] { $"{invalidAgeCheck}歳となりました。", cardName };
-                checkResult = string.Format(ErrorMessage.MessageType_mChk00080, stringParams);
-                return checkResult;
             }
             return checkResult;
         }
@@ -217,9 +221,9 @@ namespace Infrastructure.Repositories
             return ptHokenCheck is null ? 0 : DateTimeToInt(ptHokenCheck.CheckDate);
         }
 
-        private string GetSettingParam(int groupCd, int grpEdaNo = 0, string defaultParam = "")
+        private string GetSettingParam(int hpId, int groupCd, int grpEdaNo = 0 , string defaultParam = "")
         {
-            var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+            var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo && p.HpId == hpId);
             //Fix comment 894 (duong.vu)
             //Return value in DB if and only if Param is not null or white space
             if (systemConf != null && !string.IsNullOrWhiteSpace(systemConf.Param))
@@ -338,6 +342,12 @@ namespace Infrastructure.Repositories
         private bool IsExpirated(int startDate, int endDate, int sinDate)
         {
             return !(startDate <= sinDate && endDate >= sinDate);
+        }
+
+        private double GetSettingValue(int groupCd, int grpEdaNo, int hpId)
+        {
+            var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo && p.HpId == hpId);
+            return systemConf != null ? systemConf.Val : 0;
         }
 
         public void ReleaseResource()

@@ -5,7 +5,6 @@
     {
         public long Id { get; set; }
         public long PtId { get; set; }
-        public int HpId { get; set; }
         public int SortNo { get; set; }
         public List<PrefixSuffixRequest> PrefixList { get; set; } = new List<PrefixSuffixRequest>();
         public List<PrefixSuffixRequest> SuffixList { get; set; } = new List<PrefixSuffixRequest>();

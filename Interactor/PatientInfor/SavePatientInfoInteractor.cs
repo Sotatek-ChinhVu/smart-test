@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
+using Domain.Models.Lock;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper;
@@ -8,6 +9,7 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using UseCase.PatientInfor.CheckValidSamePatient;
 using UseCase.PatientInfor.Save;
 
 namespace Interactor.PatientInfor
@@ -90,7 +92,9 @@ namespace Interactor.PatientInfor
                     result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
 
                 if (result.resultSave)
+                {
                     return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId);
+                }
                 else
                     return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
             }
@@ -115,6 +119,26 @@ namespace Interactor.PatientInfor
 
             #region Patient Info
             string message = string.Empty;
+            if (!model.ReactSave.ConfirmSamePatientInf)
+            {
+                var samePatientInf = _patientInforRepository.FindSamePatient(hpId, model.Patient.Name, model.Patient.Sex, model.Patient.Birthday).Where(item => item.PtId != model.Patient.PtId).ToList();
+                if (samePatientInf.Count > 0)
+                {
+                    string msg = string.Empty;
+                    samePatientInf.ForEach(ptInf =>
+                    {
+                        if (!string.IsNullOrEmpty(msg))
+                        {
+                            msg = msg + Environment.NewLine;
+                        }
+                        msg = msg + "患者番号：" + string.Format("{0,-9}", ptInf.PtNum.AsString());
+                    });
+                    message = string.Format(ErrorMessage.MessageType_mEnt00020, "同姓同名の患者") + Environment.NewLine;
+                    message += msg;
+                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidSamePatient, TypeMessage.TypeMessageWarning));
+                }
+            }
+
             if (model.Patient.PtId == 0 && model.Patient.PtNum != 0)
             {
                 if (_systemConfRepository.GetSettingValue(1001, 0, model.Patient.HpId) == 1)
@@ -152,14 +176,15 @@ namespace Interactor.PatientInfor
             }
 
             resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName ?? string.Empty, model.Patient.Name ?? string.Empty, model.Patient.HpId, model.ReactSave));
-            int sinDay = DateTime.Now.ToString("yyyyMMdd").AsInteger();
+            int sinDay = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
             resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, isUpdate, model.Patient.Birthday, sinDay, hpId, model.ReactSave, model.Patient.MainHokenPid));
 
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.IsDead`"), SavePatientInforValidationCode.InvalidIsDead, TypeMessage.TypeMessageError));
 
-            if (model.Patient.IsDead == 1 && model.Patient.DeathDate == 0)
-                resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.DeathDate`"), SavePatientInforValidationCode.InvalidDeathDate, TypeMessage.TypeMessageError));
+            // temp remove not need validate
+            //if (model.Patient.IsDead == 0 && model.Patient.DeathDate > 0)
+            //    resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.DeathDate`"), SavePatientInforValidationCode.InvalidDeathDate, TypeMessage.TypeMessageError));
 
             if (model.Patient.HomePost != null && model.Patient.HomePost.Length > 7)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.HomePost`"), SavePatientInforValidationCode.InvalidHomePost, TypeMessage.TypeMessageError));

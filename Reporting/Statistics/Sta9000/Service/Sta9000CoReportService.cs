@@ -802,7 +802,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
             return;
         }
 
-        nowDate = DateTime.Now.ToString("yyyyMMdd").AsInteger();
+        nowDate = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
         hpInf = _finder.GetHpInf(hpId, nowDate);
 
         //処方・病名一覧用データ取得
@@ -861,8 +861,8 @@ public class Sta9000CoReportService : ISta9000CoReportService
             _extralData.Add("HeaderR_0_0_" + currentPage, hpInf.HpName);
             //作成日時
             _extralData.Add("HeaderR_0_1_" + currentPage, CIUtil.SDateToShowSWDate(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
-            ) + DateTime.Now.ToString(" HH:mm") + "作成");
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
+            ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
             //ページ数
             int totalPage = (int)Math.Ceiling((double)printDatas.Count / reportInfs[reportType].MaxRow);
             _extralData.Add("HeaderR_0_2_" + currentPage, currentPage + " / " + totalPage);

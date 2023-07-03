@@ -9,9 +9,9 @@ namespace Domain.Models.Reception
 
         bool Update(ReceptionSaveDto dto, int hpId, int userId);
 
-        ReceptionModel Get(long raiinNo);
+        ReceptionModel Get(long raiinNo, bool flag = false);
 
-        List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily, int isDeleted = 2);
+        List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily, int isDeleted = 2, bool searchSameVisit = false);
 
         IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
 
@@ -58,5 +58,7 @@ namespace Domain.Models.Reception
         List<ReceptionModel> GetRaiinListWithKanInf(int hpId, long ptId);
 
         ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate);
+
+        List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Domain.Models.Diseases;
+﻿using Domain.Models.ChartApproval;
+using Domain.Models.Diseases;
 using Domain.Models.KarteInfs;
 using Domain.Models.MstItem;
 using Domain.Models.NextOrder;
@@ -34,28 +35,51 @@ namespace Infrastructure.Repositories
 
         private const string SUSPECT_FLAG = "の疑い";
         private readonly ISystemConfRepository _systemConf;
+        private readonly IApprovalInfRepository _approvalInfRepository;
 
-        public TodayOdrRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf) : base(tenantProvider)
+        public TodayOdrRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf, IApprovalInfRepository approvalInfRepository) : base(tenantProvider)
         {
             _systemConf = systemConf;
+            _approvalInfRepository = approvalInfRepository;
         }
 
         public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, byte status)
         {
+            bool isUpdateApproveInf = false;
+            var user = NoTrackingDataContext.UserMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                             && item.UserId == userId
+                                                                             && item.StartDate <= sinDate
+                                                                             && item.EndDate >= sinDate
+                                                                             && item.IsDeleted == DeleteTypes.None);
+            if (user != null)
+            {
+                // isDococtor
+                isUpdateApproveInf = user.JobCd == 1;
+            }
+
             if (odrInfs.Count > 0)
             {
+                // order change
                 UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs, userId, status);
+                isUpdateApproveInf = true;
             }
 
             SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId, status);
             if (karteInfModel.PtId > 0 && karteInfModel.HpId > 0 && karteInfModel.RaiinNo > 0 && karteInfModel.SinDate > 0)
             {
-                UpsertKarteInfs(karteInfModel, userId);
+                // karte change
+                UpsertKarteInfs(karteInfModel, userId, status);
+                isUpdateApproveInf = true;
             }
 
             SaveRaiinListInf(odrInfs, userId);
 
             SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, userId);
+
+            if (isUpdateApproveInf)
+            {
+                _approvalInfRepository.UpdateApproveInf(hpId, ptId, sinDate, raiinNo, userId);
+            }
 
             return true;
         }
@@ -115,7 +139,7 @@ namespace Infrastructure.Repositories
             if (raiinInf != null)
             {
                 var preProcess = GetModeSaveDate(modeSaveData, raiinInf.Status, sinEndTime, sinStartTime, uketukeTime);
-                raiinInf.Status = modeSaveData == 0 ? RaiinState.TempSave : preProcess.status != 0 ? preProcess.status : raiinInf.Status;
+                raiinInf.Status = (raiinInf.Status <= RaiinState.TempSave && modeSaveData == 0) ? RaiinState.TempSave : preProcess.status != 0 ? preProcess.status : raiinInf.Status;
                 //modeSaveData != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
                 raiinInf.SyosaisinKbn = syosaiKbn;
                 raiinInf.JikanKbn = jikanKbn;
@@ -124,8 +148,10 @@ namespace Infrastructure.Repositories
                 raiinInf.TantoId = tantoId;
                 raiinInf.KaId = kaId;
                 raiinInf.UketukeTime = string.IsNullOrEmpty(preProcess.uketukeTime) ? raiinInf.UketukeTime : preProcess.uketukeTime;
-                raiinInf.SinEndTime = string.IsNullOrEmpty(preProcess.sinEndTime) ? raiinInf.SinEndTime : preProcess.sinEndTime;
-                raiinInf.SinStartTime = string.IsNullOrEmpty(preProcess.sinStartTime) ? raiinInf.SinStartTime : preProcess.sinStartTime;
+                if (string.IsNullOrEmpty(raiinInf.SinEndTime) && modeSaveData != 0)
+                    raiinInf.SinEndTime = sinEndTime;
+                if (string.IsNullOrEmpty(raiinInf.SinStartTime))
+                    raiinInf.SinStartTime = sinStartTime;
                 raiinInf.UpdateId = userId;
                 raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 TrackingDataContext.SaveChanges();
@@ -365,19 +391,19 @@ namespace Infrastructure.Repositories
             int sinDate = ordInfs[0].SinDate;
 
             // Get Raiin List Inf
-            var raiinListInfs = NoTrackingDataContext.RaiinListInfs.Where(item => item.HpId == hpId
+            var raiinListInfs = TrackingDataContext.RaiinListInfs.Where(item => item.HpId == hpId
                                                                 && item.RaiinNo == raiinNo
                                                                 && item.PtId == ptId
                                                                 && item.SinDate == sinDate).ToList();
 
             // Get KouiKbnMst
-            var kouiKbnMst = NoTrackingDataContext.KouiKbnMsts.ToList();
+            var kouiKbnMst = TrackingDataContext.KouiKbnMsts.ToList();
 
             // Get Raiin List
-            var raiinListMstList = NoTrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListDetailList = NoTrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListKouiList = NoTrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListItemList = NoTrackingDataContext.RaiinListItems.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListMstList = TrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListDetailList = TrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListKouiList = TrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListItemList = TrackingDataContext.RaiinListItems.Where(item => item.IsDeleted == 0).ToList();
 
             // Filter GrpId
             // Get all raiin list master contain item and koui
@@ -491,7 +517,7 @@ namespace Infrastructure.Repositories
                         List<RaiinListItem> itemCdList = raiinListItems.FindAll(item => item.ItemCd == itemCd);
                         foreach (RaiinListItem raiinListItem in itemCdList)
                         {
-                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN) ?? new RaiinListInf();
+                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN);
                             if (raiinListInf == null)
                             {
                                 // Check contains with grpId
@@ -509,7 +535,7 @@ namespace Infrastructure.Repositories
                                         SinDate = sinDate,
                                         GrpId = raiinListItem.GrpId,
                                         KbnCd = raiinListItem.KbnCd,
-                                        UpdateDate = DateTime.Now,
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                         UpdateId = userId,
                                         RaiinListKbn = RaiinListKbnConstants.ITEM_KBN
                                     };
@@ -524,7 +550,7 @@ namespace Infrastructure.Repositories
                                 if (originSortNo == null || originSortNo > newSortNo)
                                 {
                                     raiinListInf.KbnCd = raiinListItem.KbnCd;
-                                    raiinListInf.UpdateDate = DateTime.Now;
+                                    raiinListInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                     raiinListInf.UpdateId = userId;
                                 }
                             }
@@ -534,13 +560,13 @@ namespace Infrastructure.Repositories
                     // Add or Update with SinKouiKbn
                     foreach (int koui in currentKouiSet.ToArray())
                     {
-                        var kouiMst = kouiKbnMst?.Find(item => item.KouiKbn1 == koui || item.KouiKbn2 == koui) ?? new KouiKbnMst();
+                        var kouiMst = kouiKbnMst?.Find(item => item.KouiKbn1 == koui || item.KouiKbn2 == koui);
                         if (kouiMst == null) continue;
 
                         List<RaiinListKoui> kouiItemList = raiinListKouis.FindAll(item => item.KouiKbnId == kouiMst.KouiKbnId);
                         foreach (RaiinListKoui kouiItem in kouiItemList)
                         {
-                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == kouiItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN) ?? new RaiinListInf();
+                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == kouiItem.GrpId && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN);
                             if (raiinListInf == null)
                             {
                                 // Check contains with grpId
@@ -558,7 +584,7 @@ namespace Infrastructure.Repositories
                                         SinDate = sinDate,
                                         GrpId = kouiItem.GrpId,
                                         KbnCd = kouiItem.KbnCd,
-                                        UpdateDate = DateTime.Now,
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                         UpdateId = userId,
                                         RaiinListKbn = RaiinListKbnConstants.KOUI_KBN
                                     };
@@ -573,7 +599,7 @@ namespace Infrastructure.Repositories
                                 if (originSortNo == null || originSortNo > newSortNo)
                                 {
                                     raiinListInf.KbnCd = kouiItem.KbnCd;
-                                    raiinListInf.UpdateDate = DateTime.Now;
+                                    raiinListInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                     raiinListInf.UpdateId = userId;
                                 }
                             }
@@ -584,8 +610,8 @@ namespace Infrastructure.Repositories
             if (raiinListInfList.Count > 0 || IsDeleteExecute)
             {
                 TrackingDataContext.RaiinListInfs.AddRange(raiinListInfList);
-                TrackingDataContext.SaveChanges();
             }
+            TrackingDataContext.SaveChanges();
         }
 
         private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs, int userId, int status)
@@ -599,7 +625,7 @@ namespace Infrastructure.Repositories
                     var ordInfo = TrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.Id == item.Id && o.RaiinNo == item.RaiinNo && o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo);
                     if (ordInfo != null)
                     {
-                        ordInfo.IsDeleted = status == RaiinState.Reservation ?   DeleteTypes.Confirm :  item.IsDeleted;
+                        ordInfo.IsDeleted = status == RaiinState.Reservation ? DeleteTypes.Confirm : item.IsDeleted;
                         ordInfo.UpdateId = userId;
                         ordInfo.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
@@ -681,7 +707,7 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        ordInf.IsDeleted = DeleteTypes.Deleted;
+                        ordInf.IsDeleted = status == RaiinState.Reservation ? DeleteTypes.Confirm : DeleteTypes.Deleted;
                         ordInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         ordInf.UpdateId = userId;
                         var ordInfEntity = new OdrInf
@@ -758,7 +784,7 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
         }
 
-        private void UpsertKarteInfs(KarteInfModel karte, int userId)
+        private void UpsertKarteInfs(KarteInfModel karte, int userId, byte status)
         {
             int hpId = karte.HpId;
             long ptId = karte.PtId;
@@ -805,10 +831,9 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    if (karte.Text != karteMst.Text && Encoding.UTF8.GetBytes(karte.RichText) != karteMst.RichText)
+                    if (karte.Text != karteMst.Text || Encoding.UTF8.GetBytes(karte.RichText) != karteMst.RichText)
                     {
-                        karteMst.IsDeleted = DeleteTypes.Deleted;
-
+                        karteMst.IsDeleted = status == RaiinState.Reservation ? DeleteTypes.Confirm : DeleteTypes.Deleted;
                         var karteEntity = new KarteInf
                         {
                             HpId = karte.HpId,
@@ -1888,6 +1913,11 @@ namespace Infrastructure.Repositories
                     bool existItem = false;
                     foreach (var todayOrd in todayOrds)
                     {
+                        if (todayOrd.IsDeleted == 0)
+                        {
+                            continue;
+                        }
+
                         foreach (var todayOdrDetail in todayOrd.OrdInfDetails)
                         {
                             if (excludeItems.Exists(p => p.ItemCd == todayOdrDetail.ItemCd)) continue;
@@ -1912,6 +1942,11 @@ namespace Infrastructure.Repositories
                     existItem = false;
                     foreach (var todayOrd in todayOrds)
                     {
+                        if (todayOrd.IsDeleted == 1 || todayOrd.IsDeleted == 2)
+                        {
+                            continue;
+                        }
+
                         foreach (var todayOdr in todayOrd.OrdInfDetails)
                         {
                             if (excludeItems.Exists(p => p.ItemCd == todayOdr.ItemCd)) continue;
@@ -1970,7 +2005,7 @@ namespace Infrastructure.Repositories
                 ipNameCds.AddRange(ordInfDetail.Select(od => od.IpnCd));
             }
             itemCds = itemCds.Distinct().ToList();
-            ipNameCds = itemCds.Distinct().ToList();
+            ipNameCds = ipNameCds.Distinct().ToList();
             var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sinDate && t.EndDate >= sinDate && itemCds.Contains(t.ItemCd)).ToList();
             var kensaItemCds = tenMsts.Select(t => t.KensaItemCd).ToList();
             var kensaItemSeqNos = tenMsts.Select(t => t.KensaItemSeqNo).ToList();
@@ -2626,6 +2661,20 @@ namespace Infrastructure.Repositories
                             }
                             else if (totalSanteiCount + detail.Suryo > santeiCntCheck.MaxCnt)
                             {
+                                double suryo = Convert.ToDouble(santeiCntCheck.MaxCnt) - totalSanteiCount;
+                                var totalSanteiCountString = totalSanteiCount.ToString();
+                                int digits = 0;
+                                if (totalSanteiCountString.Contains("."))
+                                {
+                                    int startIndex = totalSanteiCountString.IndexOf(".");
+                                    digits = totalSanteiCountString.Substring(startIndex, totalSanteiCountString.Length - startIndex).Length - 1;
+                                    if (digits < 0)
+                                    {
+                                        digits = 0;
+                                    }
+                                }
+                                suryo = Math.Round(suryo, digits);
+
                                 StringBuilder stringBuilder = new StringBuilder("");
                                 stringBuilder.Append("'");
                                 stringBuilder.Append(detail.DisplayItemName);
@@ -2637,11 +2686,10 @@ namespace Infrastructure.Repositories
                                 stringBuilder.Append("単位を超えます。");
                                 stringBuilder.Append(Environment.NewLine);
                                 stringBuilder.Append("数量を'");
-                                stringBuilder.Append(santeiCntCheck.MaxCnt - totalSanteiCount);
+                                stringBuilder.Append(suryo);
                                 stringBuilder.Append("'に変更しますか？");
 
                                 string msg = stringBuilder.ToString();
-                                var suryo = santeiCntCheck.MaxCnt - totalSanteiCount;
                                 detail.ChangeSuryo(suryo);
                                 result.Add(new(2, msg, odrInfIndex, odrInfDetailIndex, new(), suryo));
                             }
@@ -2672,8 +2720,8 @@ namespace Infrastructure.Repositories
             var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(i =>
                    i.HpId == hpId &&
                    i.StartDate <= sinDate &&
-                   i.EndDate >= sinDate &&
-                   ipnNameCds.Contains(i.IpnNameCd)).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty));
+                   i.EndDate >= sinDate).AsEnumerable().Where(i =>
+                   ipnNameCds.Contains(i.IpnNameCd)).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty)).ToList();
             var autoSetSyohoKbnKohatuDrug = _systemConf.GetSettingValue(2020, 0, hpId);
             var autoSetSyohoLimitKohatuDrug = _systemConf.GetSettingValue(2020, 1, hpId);
             var autoSetSyohoKbnSenpatuDrug = _systemConf.GetSettingValue(2021, 0, hpId);
@@ -2874,6 +2922,25 @@ namespace Infrastructure.Repositories
 
                             var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == targetItem.Item5.ItemCd);
                             var kensaMst = targetItem == null ? null : kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst?.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo); List<OrdInfDetailModel> odrInfDetail = new();
+
+                            string yjCd = tenMst?.YjCd ?? string.Empty;
+
+                            var dosageDrug = NoTrackingDataContext.DosageDrugs.FirstOrDefault(d => d.YjCd == yjCd);
+                            var dosageDosages = NoTrackingDataContext.DosageDosages.Where(item => dosageDrug != null && dosageDrug.DoeiCd == item.DoeiCd).ToList();
+
+                            var dosagetModel = dosageDrug == null ? new DosageDrugModel() : new DosageDrugModel(
+                                                             dosageDrug.YjCd,
+                                                             dosageDrug.DoeiCd,
+                                                             dosageDrug.DgurKbn ?? string.Empty,
+                                                             dosageDrug.KikakiUnit ?? string.Empty,
+                                                             dosageDrug.YakkaiUnit ?? string.Empty,
+                                                             dosageDrug.RikikaRate,
+                                                             dosageDrug.RikikaUnit ?? string.Empty,
+                                                             dosageDrug.YoukaiekiCd ?? string.Empty,
+                                                             dosageDosages.FirstOrDefault(item => item.DoeiCd == dosageDrug.DoeiCd)?.UsageDosage?.Replace("；", Environment.NewLine) ?? string.Empty
+                                                    );
+
+
                             var odrInfDetailModel = new OrdInfDetailModel(
                                 hpId,
                                 raiinNo,
@@ -2921,7 +2988,7 @@ namespace Infrastructure.Repositories
                                 0,
                                 0,
                                 0,
-                                string.Empty,
+                                yjCd,
                                 new(),
                                 0,
                                 0,
@@ -2937,7 +3004,13 @@ namespace Infrastructure.Repositories
                                 tenMst?.CmtCol3 ?? 0,
                                 tenMst?.CmtCol4 ?? 0,
                                 tenMst?.HandanGrpKbn ?? 0,
-                                kensaMst == null
+                                kensaMst == null,
+                                dosagetModel.RikikaRate,
+                                dosagetModel.KikakiUnit,
+                                dosagetModel.YakkaiUnit,
+                                dosagetModel.RikikaUnit,
+                                dosagetModel.YoukaiekiCd,
+                                dosagetModel.MemoItem
                             );
                             odrInfDetail.Add(odrInfDetailModel);
 
@@ -3110,13 +3183,13 @@ namespace Infrastructure.Repositories
             var ipnItems = NoTrackingDataContext.IpnNameMsts.Where(i =>
                    i.HpId == hpId &&
                    i.StartDate <= sinDate &&
-                   i.EndDate >= sinDate &&
-                   ipnCds.Contains(i.IpnNameCd)).ToList();
+                   i.EndDate >= sinDate).AsEnumerable().
+                   Where(i => ipnCds.Contains(i.IpnNameCd)).ToList();
 
             var ipnMinYakkaMsts = NoTrackingDataContext.IpnMinYakkaMsts.Where(i =>
                i.HpId == hpId &&
                i.StartDate <= sinDate &&
-               i.EndDate >= sinDate &&
+               i.EndDate >= sinDate).AsEnumerable().Where(i =>
                ipnCds.Contains(i.IpnNameCd)).ToList();
 
             var itemCds = expiredItems.Values.Select(e => e.ItemCd).Distinct().ToList();

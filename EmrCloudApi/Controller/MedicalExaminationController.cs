@@ -21,11 +21,13 @@ using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetContainerMst;
 using UseCase.MedicalExamination.GetDefaultSelectedTime;
+using UseCase.MedicalExamination.GetHeaderVistitDate;
 using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.MedicalExamination.GetKensaAuditTrailLog;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
 using UseCase.MedicalExamination.GetOrderSheetGroup;
+using UseCase.MedicalExamination.GetSinkouCountInMonth;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.SummaryInf;
@@ -338,7 +340,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.OrderRealtimeChecker)]
         public ActionResult<Response<OrderRealtimeCheckerResponse>> OrderRealtimeChecker([FromBody] OrderRealtimeCheckerRequest request)
         {
-            var input = new GetOrderCheckerInputData(request.PtId, request.HpId, request.SinDay, request.CurrentListOdr, request.ListCheckingOrder, request.SpecialNoteItem, request.PtDiseaseModels, request.FamilyItems, request.IsDataOfDb, request.RealTimeCheckerCondition);
+            var input = new GetOrderCheckerInputData(request.PtId, HpId, request.SinDay, request.CurrentListOdr, request.ListCheckingOrder, request.SpecialNoteItem, request.PtDiseaseModels, request.FamilyItems, request.IsDataOfDb, request.RealTimeCheckerCondition);
             var output = _bus.Handle(input);
             var presenter = new OrderRealtimeCheckerPresenter();
             presenter.Complete(output);
@@ -378,7 +380,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.Calculate)]
         public ActionResult<Response<CalculateResponseOfMedical>> Calculate([FromBody] CalculateRequest request)
         {
-            var input = new CalculateInputData(request.FromRcCheck, request.IsSagaku, HpId, request.PtId, request.SinDate, request.SeikyuUp, request.Prefix);
+            var input = new CalculateInputData(request.RaiinNo, request.FromRcCheck, request.IsSagaku, HpId, request.PtId, request.SinDate, request.SeikyuUp, request.Prefix, UserId);
             var output = _bus.Handle(input);
             var presenter = new CalculatePresenter();
             presenter.Complete(output);
@@ -389,7 +391,7 @@ namespace EmrCloudApi.Controllers
         public async Task<ActionResult<Response<SaveMedicalResponse>>> SaveMedical([FromBody] SaveMedicalRequest request)
         {
             var familyList = ConvertToFamilyInputItem(request.FamilyList);
-            var input = new SaveMedicalInputData(HpId, request.PtId, request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.Status, request.OdrInfs.Select(
+            var input = new SaveMedicalInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.Status, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
                             HpId,
                             o.RaiinNo,
@@ -458,6 +460,7 @@ namespace EmrCloudApi.Controllers
                     request.KarteItem.IsDeleted,
                     request.KarteItem.RichText),
                 UserId,
+                request.IsSagaku,
                 new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems),
                 familyList,
                 request.NextOrderItems,
@@ -518,14 +521,16 @@ namespace EmrCloudApi.Controllers
                                                                 family.Biko,
                                                                 family.SortNo,
                                                                 family.IsDeleted,
-                                                                family.PtFamilyRekiList.Select(reki => new FamilyRekiItem(
-                                                                                                           reki.Id,
-                                                                                                           reki.ByomeiCd,
-                                                                                                           reki.Byomei,
-                                                                                                           reki.Cmt,
-                                                                                                           reki.SortNo,
-                                                                                                           reki.IsDeleted))
-                                                                                       .ToList()))
+                                                                family.PtFamilyRekiList
+                                                                      .Select(reki => new FamilyRekiItem(
+                                                                                          reki.Id,
+                                                                                          reki.ByomeiCd,
+                                                                                          reki.Byomei,
+                                                                                          reki.Cmt,
+                                                                                          reki.SortNo,
+                                                                                          reki.IsDeleted))
+                                                                      .ToList(),
+                                                                 family.IsRevertItem))
                                           .ToList();
             return result;
         }
@@ -566,7 +571,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.TrialAccounting)]
         public ActionResult<Response<GetTrialAccountingResponse>> TrialAccounting([FromBody] GetTrialAccountingRequest request)
         {
-            var input = new GetTrialAccountingInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.OdrInfItems);
+            var input = new GetTrialAccountingInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.OdrInfItems);
             var output = _bus.Handle(input);
             var presenter = new GetTrialAccountingPresenter();
             presenter.Complete(output);
@@ -596,11 +601,31 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.GetContainerMst)]
         public ActionResult<Response<GetContainerMstResponse>> GetContainerMst([FromBody] GetContainerMstRequest request)
         {
-            var input = new GetContainerMstInputData(request.HpId, request.SinDate, request.DefaultChecked, request.OdrInfItems);
+            var input = new GetContainerMstInputData(HpId, request.SinDate, request.DefaultChecked, request.OdrInfItems);
             var output = _bus.Handle(input);
             var presenter = new GetContainerMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetContainerMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetSinkouCountInMonth)]
+        public ActionResult<Response<GetSinkouCountInMonthResponse>> GetSinkouCountInMonth([FromQuery] GetSinkouCountInMonthRequest request)
+        {
+            var input = new GetSinkouCountInMonthInputData(HpId, request.SinDate, request.ItemCd, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetSinKouCountInMonthPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetSinkouCountInMonthResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetHeaderVistitDate)]
+        public ActionResult<Response<GetHeaderVistitDateResponse>> GetHeaderVistitDate([FromQuery] GetHeaderVistitDateRequest request)
+        {
+            var input = new GetHeaderVistitDateInputData(HpId, UserId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetHeaderVistitDatePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetHeaderVistitDateResponse>>(presenter.Result);
         }
     }
 }

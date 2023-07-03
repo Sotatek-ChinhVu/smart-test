@@ -43,6 +43,10 @@ using Helper.Common;
 using UseCase.Receipt.ValidateCreateUKEFile;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
+using EmrCloudApi.Presenters.SinKoui;
+using EmrCloudApi.Requests.SinKoui;
+using EmrCloudApi.Responses.SinKoui;
+using UseCase.SinKoui.GetSinKoui;
 
 namespace EmrCloudApi.Controller;
 
@@ -70,7 +74,7 @@ public class ReceiptController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetReceCmtList)]
     public ActionResult<Response<GetReceCmtListResponse>> GetListReceCmt([FromQuery] GetReceCmtListRequest request)
     {
-        var input = new GetReceCmtListInputData(HpId, request.SinYm, request.PtId, request.HokenId);
+        var input = new GetReceCmtListInputData(HpId, request.SinYm, request.PtId, request.HokenId, request.SinDate);
         var output = _bus.Handle(input);
 
         var presenter = new GetReceCmtListPresenter();
@@ -463,6 +467,18 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<ValidateCreateUKEFileResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetListSinKoui)]
+    public ActionResult<Response<GetListSinKouiResponse>> GetListSinKoui([FromQuery] GetListSinKouiRequest req)
+    {
+        var input = new GetListSinKouiInputData(HpId, req.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListSinKouiPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListSinKouiResponse>>(presenter.Result);
+    }
+
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
     {
@@ -616,7 +632,7 @@ public class ReceiptController : AuthorizeControllerBase
     private string GetFileUKECreateName(string inputName)
     {
         if (!string.IsNullOrEmpty(inputName)) return $"{inputName}.zip";
-        return $"ReceiptCreation{CIUtil.DateTimeToInt(DateTime.Now)}.zip";
+        return $"ReceiptCreation{CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow())}.zip";
     }
     #endregion
 }

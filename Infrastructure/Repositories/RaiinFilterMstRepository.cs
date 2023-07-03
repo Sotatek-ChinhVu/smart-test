@@ -42,21 +42,21 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
 
         var mstWithSorts = query.ToList();
         return mstWithSorts.Select(x => new RaiinFilterMstModel(
-            x.mst.FilterId,
-            x.mst.SortNo,
-            x.mst.FilterName ?? string.Empty,
-            x.mst.SelectKbn,
-            x.mst.Shortcut ?? string.Empty,
-            columnSortInfos: x.sorts.Select(s => new RaiinFilterSortModel(
-                s.Id,
-                s.FilterId,
-                s.SeqNo,
-                s.Priority,
-                s.ColumnName ?? string.Empty,
-                s.KbnCd,
-                s.SortKbn
-            )).ToList()
-        )).ToList();
+                                    x.mst.FilterId,
+                                    x.mst.SortNo,
+                                    x.mst.FilterName ?? string.Empty,
+                                    x.mst.SelectKbn,
+                                    x.mst.Shortcut ?? string.Empty,
+                                    columnSortInfos: x.sorts.Select(s => new RaiinFilterSortModel(
+                                                                    s.Id,
+                                                                    s.FilterId,
+                                                                    s.SeqNo,
+                                                                    s.Priority,
+                                                                    s.ColumnName ?? string.Empty,
+                                                                    s.KbnCd,
+                                                                    s.SortKbn))
+                                                                    .OrderBy(s => s.Priority).ToList()
+                                    )).OrderBy( x => x.SortNo).ToList();
     }
 
     public int GetTantoId(long ptId, int sinDate, long raiinNo)
@@ -132,6 +132,7 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId
                     };
+                    //mstModel.FilterId = mst.FilterId;
                     // Create RaiinFilterSort entities with temporary FilterId = 0
                     var sorts = mstModel.ColumnSortInfos.Select(sortModel => CreateSortEntity(tempFilterId, sortModel, hpId, userId)).ToList();
 

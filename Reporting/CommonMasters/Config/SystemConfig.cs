@@ -26,15 +26,15 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     {
         lock (_threadsafelock)
         {
-            SystemConf systemConf = new();
+            SystemConf? systemConf = null;
             if (!fromLastestDb)
             {
-                systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo) ?? new();
+                systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
             }
             else
             {
                 systemConf = NoTrackingDataContext.SystemConfs.Where(p =>
-                    p.HpId == Session.HospitalID && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new();
+                    p.HpId == Session.HospitalID && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault();
             }
             return systemConf != null ? systemConf.Val : defaultValue;
         }
@@ -889,29 +889,29 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     ///     0: オーダー単位
     ///     1: 換算単位
     /// </summary>
-    public int YakutaiTaniDsp => (int)GetSettingValue(92005, 1);
+    public int YakutaiTaniDsp() { return (int)GetSettingValue(92005, 1); }
     /// <summary>
     /// 薬袋ラベル（用紙サイズ）
     ///     0:服用量に応じて変更しない
     ///     1:服用量に応じて変更する
     /// </summary>
-    public int YakutaiPaperSize => (int)GetSettingValue(92005, 2);
+    public int YakutaiPaperSize() { return (int)GetSettingValue(92005, 2); }
     /// <summary>
     /// 薬袋ラベル（1回量換算)
     ///     0:使用しない
     ///     1:使用する
     /// </summary>
-    public int YakutaiOnceAmount => (int)GetSettingValue(92005, 3);
+    public int YakutaiOnceAmount() { return (int)GetSettingValue(92005, 3); }
     /// <summary>
     /// 薬袋ラベル（印刷単位)
     ///     0:用法毎に印刷
     ///     1:Rp毎に印刷
     /// </summary>
-    public int YakutaiPrintUnit => (int)GetSettingValue(92005, 4);
+    public int YakutaiPrintUnit() { return (int)GetSettingValue(92005, 4); }
     /// <summary>
     /// 薬袋ラベル（内服／用紙小）
     /// </summary>
-    public int YakutaiNaifukuPaperSmallMinValue => (int)GetSettingValue(92005, 11);
+    public int YakutaiNaifukuPaperSmallMinValue() { return (int)GetSettingValue(92005, 11); }
     /// <summary>
     /// 薬袋ラベル（内服／用紙小・プリンタ）
     /// </summary>
@@ -919,7 +919,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 薬袋ラベル（内服／用紙中・最小服用量）
     /// </summary>
-    public int YakutaiNaifukuPaperNormalMinValue => (int)GetSettingValue(92005, 12);
+    public int YakutaiNaifukuPaperNormalMinValue() { return (int)GetSettingValue(92005, 12); }
     /// <summary>
     /// 薬袋ラベル（内服／用紙中・プリンタ）
     /// </summary>
@@ -927,7 +927,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 薬袋ラベル（内服／用紙大・最小服用量）
     /// </summary>
-    public int YakutaiNaifukuPaperBigMinValue => (int)GetSettingValue(92005, 13);
+    public int YakutaiNaifukuPaperBigMinValue() { return (int)GetSettingValue(92005, 13); }
     /// <summary>
     /// 薬袋ラベル（内服／用紙大・プリンタ）
     /// </summary>
@@ -935,7 +935,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （頓服／用紙小）
     /// </summary>
-    public int YakutaiTonpukuPaperSmallMinValue => (int)GetSettingValue(92005, 21);
+    public int YakutaiTonpukuPaperSmallMinValue() { return (int)GetSettingValue(92005, 21); }
     /// <summary>
     /// （頓服／用紙小・プリンタ）
     /// </summary>
@@ -943,7 +943,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （頓服／用紙中・最小服用量）
     /// </summary>
-    public int YakutaiTonpukuPaperNormalMinValue => (int)GetSettingValue(92005, 22);
+    public int YakutaiTonpukuPaperNormalMinValue() { return (int)GetSettingValue(92005, 22); }
     /// <summary>
     /// （頓服／用紙中・プリンタ）
     /// </summary>
@@ -951,7 +951,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （頓服／用紙大・最小服用量）
     /// </summary>
-    public int YakutaiTonpukuPaperBigMinValue => (int)GetSettingValue(92005, 23);
+    public int YakutaiTonpukuPaperBigMinValue() { return (int)GetSettingValue(92005, 23); }
     /// <summary>
     /// （頓服／用紙大・プリンタ）
     /// </summary>
@@ -959,7 +959,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （外用／用紙小）
     /// </summary>
-    public int YakutaiGaiyoPaperSmallMinValue => (int)GetSettingValue(92005, 31);
+    public int YakutaiGaiyoPaperSmallMinValue() { return (int)GetSettingValue(92005, 31); }
     /// <summary>
     /// （外用／用紙小・プリンタ）
     /// </summary>
@@ -967,7 +967,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （外用／用紙中・最小服用量）
     /// </summary>
-    public int YakutaiGaiyoPaperNormalMinValue => (int)GetSettingValue(92005, 32);
+    public int YakutaiGaiyoPaperNormalMinValue() { return (int)GetSettingValue(92005, 32); }
     /// <summary>
     /// （外用／用紙中・プリンタ）
     /// </summary>
@@ -975,7 +975,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （外用／用紙大・最小服用量）
     /// </summary>
-    public int YakutaiGaiyoPaperBigMinValue => (int)GetSettingValue(92005, 33);
+    public int YakutaiGaiyoPaperBigMinValue() { return (int)GetSettingValue(92005, 33); }
     /// <summary>
     /// （外用／用紙大・プリンタ）
     /// </summary>
@@ -983,7 +983,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 薬袋ラベル用紙サイズ  
     /// </summary>
-    public int YakutaiLabelSize => (int)GetSettingValue(92005, 2);
+    public int YakutaiLabelSize() { return (int)GetSettingValue(92005, 2); }
     /// <summary>
     /// 服用時点別一包化指示項目
     /// </summary>
@@ -1814,7 +1814,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 領収証
     /// </summary>
-    public int PrintReceipt => (int)GetSettingValue(93001, 0);
+    public int PrintReceipt() { return (int)GetSettingValue(93001, 0); }
 
     /// <summary>
     /// 請求額0円領収証

@@ -52,6 +52,7 @@
         public static readonly string InvalidGrpKouiKbn = "Invalid GrpKouiKbn";
         public static readonly string InvalidDocCd = "Invalid DocCd";
         public static readonly string InvalidRenkeiId = "Invalid RenkeiId";
+        public static readonly string ErrorBunkatuOdrDetail = "入力できる文字を超えました。\r\n 合計10文字以内に入力してください。";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -62,6 +63,9 @@
         public static readonly string ExistedId = "ExistedId";
         public static readonly string InputDataNull = "Input data is null";
         public static readonly string Valid = "Valid";
+        public static readonly string MedicalScreenLocked = "Medical Screen Locked!";
+        public static readonly string None = "None";
+        public static readonly string Locked = "Locked";
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
@@ -69,6 +73,8 @@
 
         //Patient Infor
         public static readonly string InvalidPtNum = "Invalid PtNum";
+        public static readonly string InvalidKanjiName = "Invalid Kanji Name";
+        public static readonly string InvalidSex = "Invalid sex";
 
         // RousaiJibai
         public static readonly string InvalidHokenKbn = "Invalid HokenKbn";
@@ -876,7 +882,7 @@
         public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
 
         // Document
-        public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
+        public static readonly string InvalidDocumentCategoryCd = "指定されたカテゴリーは存在しないため、変更できません。";
         public static readonly string MoveDocCategoryNotFound = "Invalid Document MoveCategoryCd!";
         public static readonly string InvalidDocumentCategoryName = "Invalid Document CategoryName, CategoryName is required and not duplicate!";
         public static readonly string InvalidMoveInDocCategoryCd = "Invalid Document move in CategoryCd, CategoryCd is required and exist in DB!";
@@ -932,14 +938,14 @@
         // Family
         public static readonly string InvalidPtIdOrFamilyPtId = "予期しないエラーが発生しました。";
         public static readonly string InvalidFamilyId = "予期しないエラーが発生しました。";
-        public static readonly string InvalidZokugaraCd = "既に登録されています";
+        public static readonly string InvalidZokugaraCd = "続柄が重複しています。";
         public static readonly string InvalidFamilyBirthday = "予期しないエラーが発生しました。";
         public static readonly string InvalidFamilyIsSeparated = "予期しないエラーが発生しました。";
         public static readonly string InvalidFamilyBiko = "備考は120文字以内に入力してください。";
         public static readonly string InvalidFamilyRekiId = "予期しないエラーが発生しました。";
         public static readonly string InvalidByomeiCd = "検索対象が見つかりません。\n・あいまい検索する場合は、全角文字で入力してください。";
         public static readonly string InvalidFamilyCmt = "病名の備考は100文字以内に入力してください。";
-        public static readonly string DuplicateFamily = "既に登録されています";
+        public static readonly string DuplicateFamily = "続柄が重複しています。";
         public static readonly string InvalidNameMaxLength = "氏名は100文字以内に入力してください。";
         public static readonly string InvalidKanaNameMaxLength = "氏名は100文字以内に入力してください。";
         public static readonly string FamilyNotAllow = "患者番号が重複しています。";
@@ -966,7 +972,6 @@
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";
         public static readonly string InvalidThisWari = "Invalid ThisWari";
-        public static readonly string InvalidCredit = "Invalid Credit";
         public static readonly string InvalidPayType = "Invalid PayType";
         public static readonly string InvalidComment = "Invalid Comment";
         public static readonly string StateChanged = "State Changed";

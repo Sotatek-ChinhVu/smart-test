@@ -1,5 +1,6 @@
 ﻿using Domain.Models.SpecialNote.ImportantNote;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -29,9 +30,9 @@ namespace Infrastructure.Repositories.SpecialNote
                         StartDate = item.StartDate,
                         EndDate = item.EndDate,
                         Cmt = item.Cmt,
-                        CreateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,
-                        UpdateDate = DateTime.UtcNow,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId
                     }
                );
@@ -42,16 +43,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtAlrgyDrugModel> GetAlrgyDrugList(long ptId)
         {
-            var ptAlrgyDrugs = NoTrackingDataContext.PtAlrgyDrugs.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyDrugModel(
+            var ptAlrgyDrugs = NoTrackingDataContext.PtAlrgyDrugs.AsEnumerable().Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyDrugModel(
                x.HpId,
                x.PtId,
                x.SeqNo,
                x.SortNo,
-               x.ItemCd ?? String.Empty,
-               x.DrugName ?? String.Empty,
+               x.ItemCd ?? string.Empty,
+               x.DrugName ?? string.Empty,
                x.StartDate,
                x.EndDate,
-               x.Cmt ?? String.Empty,
+               x.Cmt ?? string.Empty,
                x.IsDeleted
             ));
             return ptAlrgyDrugs.ToList();
@@ -59,16 +60,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtAlrgyDrugModel> GetAlrgyDrugList(long ptId, int sinDate)
         {
-            var ptAlrgyDrugs = NoTrackingDataContext.PtAlrgyDrugs.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyDrugModel(
+            var ptAlrgyDrugs = NoTrackingDataContext.PtAlrgyDrugs.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtAlrgyDrugModel(
                x.HpId,
                x.PtId,
                x.SeqNo,
                x.SortNo,
-               x.ItemCd ?? String.Empty,
-               x.DrugName ?? String.Empty,
+               x.ItemCd ?? string.Empty,
+               x.DrugName ?? string.Empty,
                x.StartDate,
                x.EndDate,
-               x.Cmt ?? String.Empty,
+               x.Cmt ?? string.Empty,
                x.IsDeleted
             ));
             return ptAlrgyDrugs.AsEnumerable().Where(x => x.FullStartDate <= sinDate && sinDate <= x.FullEndDate).OrderBy(x => x.SortNo).ToList();
@@ -76,15 +77,15 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtAlrgyElseModel> GetAlrgyElseList(long ptId)
         {
-            var ptAlrgyElses = NoTrackingDataContext.PtAlrgyElses.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyElseModel(
+            var ptAlrgyElses = NoTrackingDataContext.PtAlrgyElses.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtAlrgyElseModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
-                x.AlrgyName ?? String.Empty,
+                x.AlrgyName ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
             return ptAlrgyElses.ToList();
@@ -92,15 +93,15 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtAlrgyElseModel> GetAlrgyElseList(long ptId, int sinDate)
         {
-            var ptAlrgyElses = NoTrackingDataContext.PtAlrgyElses.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyElseModel(
+            var ptAlrgyElses = NoTrackingDataContext.PtAlrgyElses.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtAlrgyElseModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
-                x.AlrgyName ?? String.Empty,
+                x.AlrgyName ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
             return ptAlrgyElses.AsEnumerable().Where(x => x.FullStartDate <= sinDate && sinDate <= x.FullEndDate).OrderBy(x => x.SortNo).ToList();
@@ -118,12 +119,12 @@ namespace Infrastructure.Repositories.SpecialNote
                               ale.PtId,
                               ale.SeqNo,
                               ale.SortNo,
-                              ale.AlrgyKbn ?? String.Empty,
+                              ale.AlrgyKbn ?? string.Empty,
                               ale.StartDate,
                               ale.EndDate,
-                              ale.Cmt ?? String.Empty,
+                              ale.Cmt ?? string.Empty,
                               ale.IsDeleted,
-                              mst.FoodName ?? String.Empty
+                              mst.FoodName ?? string.Empty
                         );
 
             return query.ToList();
@@ -141,12 +142,12 @@ namespace Infrastructure.Repositories.SpecialNote
                               ale.PtId,
                               ale.SeqNo,
                               ale.SortNo,
-                              ale.AlrgyKbn ?? String.Empty,
+                              ale.AlrgyKbn ?? string.Empty,
                               ale.StartDate,
                               ale.EndDate,
-                              ale.Cmt ?? String.Empty,
+                              ale.Cmt ?? string.Empty,
                               ale.IsDeleted,
-                              mst.FoodName ?? String.Empty
+                              mst.FoodName ?? string.Empty
                         );
 
             return query.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
@@ -155,16 +156,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtInfectionModel> GetInfectionList(long ptId)
         {
-            var ptInfections = NoTrackingDataContext.PtInfection.Where(x => x.PtId == ptId && x.IsDeleted == 0).OrderBy(x => x.SortNo).Select(x => new PtInfectionModel(
+            var ptInfections = NoTrackingDataContext.PtInfection.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().OrderBy(x => x.SortNo).Select(x => new PtInfectionModel(
                x.HpId,
                x.PtId,
                x.SeqNo,
                x.SortNo,
-               x.ByomeiCd ?? String.Empty,
-               x.ByotaiCd ?? String.Empty,
-               x.Byomei ?? String.Empty,
+               x.ByomeiCd ?? string.Empty,
+               x.ByotaiCd ?? string.Empty,
+               x.Byomei ?? string.Empty,
                x.StartDate,
-               x.Cmt ?? String.Empty,
+               x.Cmt ?? string.Empty,
                x.IsDeleted
             ));
             return ptInfections.ToList();
@@ -172,16 +173,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtKioRekiModel> GetKioRekiList(long ptId)
         {
-            var ptKioRekis = NoTrackingDataContext.PtKioRekis.Where(x => x.PtId == ptId && x.IsDeleted == 0).OrderBy(p => p.SortNo).Select(x => new PtKioRekiModel(
+            var ptKioRekis = NoTrackingDataContext.PtKioRekis.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().OrderBy(p => p.SortNo).Select(x => new PtKioRekiModel(
                x.HpId,
                x.PtId,
                x.SeqNo,
                x.SortNo,
-               x.ByomeiCd ?? String.Empty,
-               x.ByotaiCd ?? String.Empty,
-               x.Byomei ?? String.Empty,
+               x.ByomeiCd ?? string.Empty,
+               x.ByotaiCd ?? string.Empty,
+               x.Byomei ?? string.Empty,
                x.StartDate,
-               x.Cmt ?? String.Empty,
+               x.Cmt ?? string.Empty,
                x.IsDeleted
             ));
 
@@ -190,16 +191,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtOtcDrugModel> GetOtcDrugList(long ptId)
         {
-            var ptOtcDrugs = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtOtcDrugModel(
+            var ptOtcDrugs = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtOtcDrugModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
                 x.SerialNum,
-                x.TradeName ?? String.Empty,
+                x.TradeName ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
             return ptOtcDrugs.ToList();
@@ -207,16 +208,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtOtcDrugModel> GetOtcDrugList(long ptId, int sinDate)
         {
-            var ptOtcDrugs = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtOtcDrugModel(
+            var ptOtcDrugs = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtOtcDrugModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
                 x.SerialNum,
-                x.TradeName ?? String.Empty,
+                x.TradeName ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
             return ptOtcDrugs.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
@@ -225,16 +226,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtOtherDrugModel> GetOtherDrugList(long ptId)
         {
-            var ptOtherDrugs = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtOtherDrugModel(
+            var ptOtherDrugs = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtOtherDrugModel(
               x.HpId,
               x.PtId,
               x.SeqNo,
               x.SortNo,
-              x.ItemCd ?? String.Empty,
-              x.DrugName ?? String.Empty,
+              x.ItemCd ?? string.Empty,
+              x.DrugName ?? string.Empty,
               x.StartDate,
               x.EndDate,
-              x.Cmt ?? String.Empty,
+              x.Cmt ?? string.Empty,
               x.IsDeleted
             ));
             return ptOtherDrugs.ToList();
@@ -242,16 +243,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtOtherDrugModel> GetOtherDrugList(long ptId, int sinDate)
         {
-            var ptOtherDrugs = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtOtherDrugModel(
+            var ptOtherDrugs = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtOtherDrugModel(
               x.HpId,
               x.PtId,
               x.SeqNo,
               x.SortNo,
-              x.ItemCd ?? String.Empty,
-              x.DrugName ?? String.Empty,
+              x.ItemCd ?? string.Empty,
+              x.DrugName ?? string.Empty,
               x.StartDate,
               x.EndDate,
-              x.Cmt ?? String.Empty,
+              x.Cmt ?? string.Empty,
               x.IsDeleted
             ));
             return ptOtherDrugs.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).OrderBy(p => p.SortNo).ToList();
@@ -259,36 +260,36 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtSuppleModel> GetSuppleList(long ptId)
         {
-            var ptSupples = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtSuppleModel(
+            var ptSupples = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtSuppleModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
-                x.IndexCd ?? String.Empty,
-                x.IndexWord ?? String.Empty,
+                x.IndexCd ?? string.Empty,
+                x.IndexWord ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
-            return ptSupples.ToList();
+            return ptSupples.OrderBy(x => x.SortNo).ToList();
         }
 
         public List<PtSuppleModel> GetSuppleList(long ptId, int sinDate)
         {
-            var ptSupples = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtSuppleModel(
+            var ptSupples = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0).AsEnumerable().Select(x => new PtSuppleModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
-                x.IndexCd ?? String.Empty,
-                x.IndexWord ?? String.Empty,
+                x.IndexCd ?? string.Empty,
+                x.IndexWord ?? string.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt ?? String.Empty,
+                x.Cmt ?? string.Empty,
                 x.IsDeleted
             ));
-            return ptSupples.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).ToList();
+            return ptSupples.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).OrderBy(x => x.SortNo).ToList();
         }
 
         public void ReleaseResource()

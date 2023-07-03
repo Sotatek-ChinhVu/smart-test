@@ -102,6 +102,20 @@ namespace Domain.Models.Insurance
             Houbetu = string.Empty;
         }
 
+        public KohiInfModel(int hokenNo, int hokenId, int hokenSbtKbn, string houbetu, long seqNo)
+        {
+            HokenNo = hokenNo;
+            HokenId = hokenId;
+            HokenSbtKbn = hokenSbtKbn;
+            Houbetu = houbetu;
+            SeqNo = seqNo;
+            ConfirmDateList = new();
+            FutansyaNo= string.Empty;
+            JyukyusyaNo= string.Empty;
+            TokusyuNo = string.Empty;
+            HokenMstModel = new();
+        }
+
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }
 
         public string FutansyaNo { get; private set; }
@@ -173,14 +187,14 @@ namespace Domain.Models.Insurance
                 {
                     return false;
                 }
-                List<ConfirmDateModel> isValidHokenChecks = ConfirmDateList
+                var isValidHokenChecks = ConfirmDateList
                     .Where(x => x.IsDeleted == 0)
                     .OrderByDescending(x => x.ConfirmDate)
                     .ToList();
                 int sinYM = CIUtil.Copy(SinDate.AsString(), 1, 6).AsInteger();
-                foreach (ConfirmDateModel ptHokenCheck in isValidHokenChecks)
+                foreach (var ptHokenCheck in isValidHokenChecks)
                 {
-                    int currentConfirmYM = ptHokenCheck.ConfirmDate;
+                    int currentConfirmYM = CIUtil.Copy(ptHokenCheck.ConfirmDate.AsString(), 1, 6).AsInteger();
                     if (currentConfirmYM == sinYM)
                     {
                         return true;

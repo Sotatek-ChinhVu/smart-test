@@ -4,7 +4,7 @@ namespace Domain.Models.InsuranceMst
 {
     public interface IInsuranceMstRepository : IRepositoryBase
     {
-        InsuranceMstModel GetDataInsuranceMst(int hpId, long ptId, int sinDate);
+        (InsuranceMstModel insurance, int prefNo) GetDataInsuranceMst(int hpId, long ptId, int sinDate);
 
         IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int sinDate, string keyword);
 
@@ -31,5 +31,9 @@ namespace Domain.Models.InsuranceMst
         List<IsKantokuCdValidModel> GetIsKantokuCdValidList(int hpId, List<IsKantokuCdValidModel> kantokuCdValidList);
 
         bool SaveOrdInsuranceMst(List<HokenMstModel> insuranceChangeOdrs, int hpId, int userId);
+
+        HokenMstModel GetHokenMasterReadOnly(int hpId, int hokenNo, int hokenEdaNo, int prefNo, int sinDate);
+
+        List<string> GetNameKeys(int hpId, int prefNo);
     }
 }

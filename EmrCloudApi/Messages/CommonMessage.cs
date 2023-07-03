@@ -1,4 +1,6 @@
-﻿using Helper.Constants;
+﻿using Domain.Models.Reception;
+using Helper.Constants;
+using UseCase.SetMst.GetList;
 
 namespace EmrCloudApi.Messages;
 
@@ -20,5 +22,18 @@ public class LockMessage
 
 public class SuperSetMessage
 {
-    public List<int> SetCds { get; set; } = new();
+    public List<GetSetMstListOutputItem> ReorderSetMstModels { get; set; } = new();
+}
+
+public class ReceptionChangedMessage
+{
+    public ReceptionChangedMessage(List<ReceptionRowModel> receptionInfos, List<SameVisitModel> sameVisitList)
+    {
+        ReceptionInfos = receptionInfos;
+        SameVisitList = sameVisitList;
+    }
+
+    public List<ReceptionRowModel> ReceptionInfos { get; set; }
+
+    public List<SameVisitModel> SameVisitList { get; set; }
 }

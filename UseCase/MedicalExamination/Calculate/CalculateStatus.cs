@@ -3,6 +3,7 @@
     public enum CalculateStatus : byte
     {
         Successed = 1,
-        Failed
+        Failed,
+        MedicalScreenLocked
     }
 }

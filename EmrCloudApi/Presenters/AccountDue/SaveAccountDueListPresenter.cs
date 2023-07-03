@@ -11,7 +11,7 @@ public class SaveAccountDueListPresenter
 
     public void Complete(SaveAccountDueListOutputData output)
     {
-        Result.Data = new SaveAccountDueListResponse(output.Status == SaveAccountDueListStatus.Successed || output.Status == SaveAccountDueListStatus.NoItemChange);
+        Result.Data = new SaveAccountDueListResponse(output.AccountDueModel.AccountDueList.Select(item => new AccountDueDto(item)).ToList());
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }
