@@ -909,21 +909,22 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting)
         {
+            int originPageSize = pageSize;
+            if (isPtNumCheckDigit)
+            {
+                pageSize = pageSize * 10;
+            }
             long endIndex = (pageIndex - 1) * pageSize + ptNum + pageSize;
             long startIndex = (pageIndex - 1) * pageSize + ptNum;
             List<PatientInforModel> result = new();
 
-            for (long i = startIndex; i < endIndex; i++)
-            {
-                if (isPtNumCheckDigit && !CIUtil.PtNumCheckDigits(i))
-                {
-                    endIndex++;
-                }
-            }
-
             var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
             for (long i = startIndex; i < endIndex; i++)
             {
+                if (result.Count > originPageSize)
+                {
+                    break;
+                }
                 if (isPtNumCheckDigit && !CIUtil.PtNumCheckDigits(i))
                 {
                     continue;
