@@ -187,6 +187,6 @@ namespace Domain.Models.Accounting
 
         public string Kohi4Priority { get; private set; }
 
-        public string SinYmBinding => (SinDate / 100).AsString().Length == 6 ? (SinDate / 100).AsString().Insert(4, "/") : "";
+        public int SinYm => SinDate / 100;
     }
 }

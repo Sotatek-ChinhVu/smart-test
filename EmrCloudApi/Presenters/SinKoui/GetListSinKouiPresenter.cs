@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.SinKoui
 
         public void Complete(GetListSinKouiOutputData output)
         {
-            Result.Data = new GetListSinKouiResponse(output.SinYmBindings);
+            Result.Data = new GetListSinKouiResponse(output.SinYms);
             Result.Message = GetMessage(output.Status);
             Result.Status = (int)output.Status;
         }

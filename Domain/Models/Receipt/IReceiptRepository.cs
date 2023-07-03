@@ -122,5 +122,5 @@ public interface IReceiptRepository : IRepositoryBase
 
     bool SaveReceStatusCalc(List<ReceStatusModel> newReceStatus, List<ReceStatusModel> updateList, int userId, int hpId);
 
-    List<string> GetListKaikeiInf(int hpId, long ptId);
+    List<int> GetListKaikeiInf(int hpId, long ptId);
 }
