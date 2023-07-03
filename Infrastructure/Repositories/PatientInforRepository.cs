@@ -909,21 +909,31 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting)
         {
+            if (ptNum > 9999999999)
+            {
+                return new();
+            }
+            int originPageSize = pageSize;
+            if (isPtNumCheckDigit)
+            {
+                pageSize = pageSize * 10;
+            }
             long endIndex = (pageIndex - 1) * pageSize + ptNum + pageSize;
             long startIndex = (pageIndex - 1) * pageSize + ptNum;
-            var result = new List<PatientInforModel>();
+            List<PatientInforModel> result = new();
 
             var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
-
             for (long i = startIndex; i < endIndex; i++)
             {
+                if (result.Count > originPageSize || i > 9999999999)
+                {
+                    break;
+                }
                 if (isPtNumCheckDigit && !CIUtil.PtNumCheckDigits(i))
                 {
-                    endIndex++;
                     continue;
                 }
-
-                var checkExistPtNum = existPtNum.FirstOrDefault(p => p.PtNum == i && (autoSetting != 1 ? true : p.IsDelete == 0));
+                var checkExistPtNum = existPtNum.FirstOrDefault(p => p.PtNum == i && (autoSetting != 1 || p.IsDelete == 0));
                 if (checkExistPtNum == null)
                 {
                     result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き)")));
