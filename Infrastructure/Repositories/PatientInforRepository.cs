@@ -909,6 +909,10 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting)
         {
+            if (ptNum > 9999999999)
+            {
+                return new();
+            }
             int originPageSize = pageSize;
             if (isPtNumCheckDigit)
             {
@@ -921,7 +925,7 @@ namespace Infrastructure.Repositories
             var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
             for (long i = startIndex; i < endIndex; i++)
             {
-                if (result.Count > originPageSize)
+                if (result.Count > originPageSize || i > 9999999999)
                 {
                     break;
                 }
