@@ -1282,7 +1282,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             var listCurrentOrderSubYj8Code = listCurrentOrderSubYjCode.Select(o => o.YjCd8).Distinct().ToList();
             var listCurrentOrderSubYj9Code = listCurrentOrderSubYjCode.Select(o => o.YjCd9).Distinct().ToList();
             var listCurrentOrderSubYj12Code = listCurrentOrderSubYjCode.Select(o => o.YjCd12).Distinct().ToList();
-            var filteredMasterData = NoTrackingDataContext.M01Kinki
+            var filteredMasterData = _tenMstCacheService.GetM01KinkiList(itemCodeList)
                         .Where
                         (
                             k =>
