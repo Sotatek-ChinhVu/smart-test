@@ -3352,9 +3352,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public List<int> GetListKaikeiInf(int hpId, long ptId)
     {
-        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
-        var result = kaikeiInfs.Select(x => new KaikeiInfModel(x.PtId, x.SinDate)).OrderByDescending(x => x.SinDate).ToList();
-        return result.Select(x => x.SinYm).Distinct().ToList();
+        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs
+                                                .Where(x => x.HpId == hpId && x.PtId == ptId)
+                                                .AsEnumerable()
+                                                .Select(x => new KaikeiInfModel(x.PtId, x.SinDate))
+                                                .OrderByDescending(x => x.SinDate);
+        return kaikeiInfs.Select(x => x.SinYm).Distinct().ToList();
     }
 
     public void ReleaseResource()
