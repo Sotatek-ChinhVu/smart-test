@@ -911,19 +911,24 @@ namespace Infrastructure.Repositories
         {
             long endIndex = (pageIndex - 1) * pageSize + ptNum + pageSize;
             long startIndex = (pageIndex - 1) * pageSize + ptNum;
-            var result = new List<PatientInforModel>();
-
-            var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
+            List<PatientInforModel> result = new();
 
             for (long i = startIndex; i < endIndex; i++)
             {
                 if (isPtNumCheckDigit && !CIUtil.PtNumCheckDigits(i))
                 {
                     endIndex++;
+                }
+            }
+
+            var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
+            for (long i = startIndex; i < endIndex; i++)
+            {
+                if (isPtNumCheckDigit && !CIUtil.PtNumCheckDigits(i))
+                {
                     continue;
                 }
-
-                var checkExistPtNum = existPtNum.FirstOrDefault(p => p.PtNum == i && (autoSetting != 1 ? true : p.IsDelete == 0));
+                var checkExistPtNum = existPtNum.FirstOrDefault(p => p.PtNum == i && (autoSetting != 1 || p.IsDelete == 0));
                 if (checkExistPtNum == null)
                 {
                     result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き)")));
