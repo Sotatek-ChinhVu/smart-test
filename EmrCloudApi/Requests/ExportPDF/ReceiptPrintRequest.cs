@@ -26,5 +26,5 @@ public class ReceiptPrintRequest : ReportRequestBase
 
     public string FormName { get; set; } = string.Empty;
 
-    public List<string> PrintHokensyaNosList { get; set; }
+    public List<string> PrintHokensyaNos { get; set; }
 }

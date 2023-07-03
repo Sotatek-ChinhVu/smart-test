@@ -33,8 +33,8 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
         private List<CoKaMstModel> kaMsts;
         #endregion
 
-        private const string _formFileNameP1 = "p09KokhoSeikyuP1.rse";
-        private const string _formFileNameP2 = "p09KokhoSeikyuP2.rse";
+        private const string _formFileNameP1 = "p17KokhoSeikyuP1.rse";
+        private const string _formFileNameP2 = "p17KokhoSeikyuP2.rse";
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<string, string> _extralData;
@@ -79,7 +79,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 while (getData && hasNextPage)
                 {
                     UpdateDrawForm();
-                    if (currentPage == 2)
+                    if (currentPage >= 2)
                     {
                         fileName.Add(indexPage.ToString(), _formFileNameP2);
                     }
