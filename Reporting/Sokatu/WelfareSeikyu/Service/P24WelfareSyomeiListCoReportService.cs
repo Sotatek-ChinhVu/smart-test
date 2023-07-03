@@ -2,13 +2,9 @@
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.WelfareSeikyu.DB;
+using Reporting.Sokatu.WelfareSeikyu.Mapper;
 using Reporting.Sokatu.WelfareSeikyu.Models;
 using Reporting.Structs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reporting.Sokatu.WelfareSeikyu.Service
 {
@@ -81,6 +77,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     currentPage++;
                 }
             }
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
         #region Private function
         private bool UpdateDrawForm()
@@ -106,11 +106,11 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
                 );
                 SetFieldData("reportGengo", wrkYmd.Gengo);
-                CoRep.SetFieldData("reportYear", wrkYmd.Year);
-                CoRep.SetFieldData("reportMonth", wrkYmd.Month);
-                CoRep.SetFieldData("reportDay", wrkYmd.Day);
+                SetFieldData("reportYear", wrkYmd.Year.ToString());
+                SetFieldData("reportMonth", wrkYmd.Month.ToString());
+                SetFieldData("reportDay", wrkYmd.Day.ToString());
                 //申請者記入欄
-                CoRep.SetFieldData("seikyuGengo", wrkYmd.Gengo);
+                SetFieldData("seikyuGengo", wrkYmd.Gengo);
 
                 return 1;
             }
@@ -119,8 +119,11 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             #region Body
             int UpdateFormBody()
             {
+                List<ListTextObject> listDataPerPage = new();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+
                 const int maxRow = 16;
-                int ptIndex = (CurrentPage - 1) * maxRow;
+                int ptIndex = (currentPage - 1) * maxRow;
 
                 var curReceInfs = receInfs
                     .Where(r => r.CityCode == currentCityCode)
@@ -135,32 +138,32 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     var curReceInf = curReceInfs[ptIndex];
 
                     //市町コード
-                    CoRep.ListText("cityCode", 0, rowNo, curReceInf.CityCode);
+                    listDataPerPage.Add(new("cityCode", 0, rowNo, curReceInf.CityCode));
                     //助成種別
-                    CoRep.ListText("kohiSbt", 0, rowNo, curReceInf.KohiSbt);
+                    listDataPerPage.Add(new("kohiSbt", 0, rowNo, curReceInf.KohiSbt.ToString()));
                     //受給者証資格番号
-                    CoRep.ListText("jyukyusyaNo", 0, rowNo, curReceInf.WelfareJyukyusyaNo);
+                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.WelfareJyukyusyaNo));
                     //氏名
-                    CoRep.ListText("ptName", 0, rowNo, curReceInf.PtName);
+                    listDataPerPage.Add(new("ptName", 0, rowNo, curReceInf.PtName));
                     //性別
-                    CoRep.ListText("ptSex", 0, rowNo, curReceInf.Sex);
+                    listDataPerPage.Add(new("ptSex", 0, rowNo, curReceInf.Sex.ToString()));
                     //生年月日
-                    CoRep.ListText("birthday", 0, rowNo, CIUtil.SDateToWDate(curReceInf.BirthDay));
+                    listDataPerPage.Add(new("birthday", 0, rowNo, CIUtil.SDateToWDate(curReceInf.BirthDay).ToString()));
                     //診療年月
-                    CoRep.ListText("sinYm", 0, rowNo, CIUtil.SDateToWDate(curReceInf.SinYm * 100 + 1) / 100);
+                    listDataPerPage.Add(new("sinYm", 0, rowNo, (CIUtil.SDateToWDate(curReceInf.SinYm * 100 + 1) / 100).ToString()));
                     //一部負担割合
-                    CoRep.ListText("hokenRate", 0, rowNo, curReceInf.HokenRate / 10);
+                    listDataPerPage.Add(new("hokenRate", 0, rowNo, (curReceInf.HokenRate / 10).ToString()));
                     //保険請求点数
-                    CoRep.ListText("tensu", 0, rowNo, curReceInf.Tensu);
+                    listDataPerPage.Add(new("tensu", 0, rowNo, curReceInf.Tensu.ToString()));
                     //一部負担額
-                    CoRep.ListText("futan", 0, rowNo, curReceInf.HokenReceFutan);
+                    listDataPerPage.Add(new("futan", 0, rowNo, curReceInf.HokenReceFutan.ToString()));
 
                     //公費・長 区分、公費請求点数、公費・長 一部負担額
                     if (curReceInf.IsChoki)
                     {
-                        CoRep.ListText("kohiKbn", 0, rowNo, 99);
-                        CoRep.ListText("kohiTensu", 0, rowNo, curReceInf.KohiReceTensu(1));
-                        CoRep.ListText("kohiFutan", 0, rowNo, curReceInf.Kohi1Limit);
+                        listDataPerPage.Add(new("kohiKbn", 0, rowNo, "99"));
+                        listDataPerPage.Add(new("kohiTensu", 0, rowNo, curReceInf.KohiReceTensu(1).ToString()));
+                        listDataPerPage.Add(new("kohiFutan", 0, rowNo, curReceInf.Kohi1Limit.ToString()));
                     }
                     else
                     {
@@ -184,14 +187,14 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                         }
                         if (kohiTensu > 0)
                         {
-                            CoRep.ListText("kohiKbn", 0, rowNo, kohiHoubetu);
-                            CoRep.ListText("kohiTensu", 0, rowNo, kohiTensu);
-                            CoRep.ListText("kohiFutan", 0, rowNo, kohiFutan);
+                            listDataPerPage.Add(new("kohiKbn", 0, rowNo, kohiHoubetu));
+                            listDataPerPage.Add(new("kohiTensu", 0, rowNo, kohiTensu.ToString()));
+                            listDataPerPage.Add(new("kohiFutan", 0, rowNo, kohiFutan.ToString()));
                         }
                     }
 
                     //処方せん発行区分
-                    CoRep.ListText("outDrug", 0, rowNo, curReceInf.IsOutDrug ? "1" : "");
+                    listDataPerPage.Add(new("outDrug", 0, rowNo, curReceInf.IsOutDrug ? "1" : ""));
 
 
                     ptIndex++;
@@ -201,6 +204,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                         break;
                     }
                 }
+                _listTextData.Add(pageIndex, listDataPerPage);
 
                 return 1;
             }
@@ -208,17 +212,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
             #endregion
 
-            try
+            if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
             {
-                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-                {
-                    hasNextPage = _hasNextPage;
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                Log.WriteLogError(ModuleName, this, nameof(UpdateDrawForm), e);
                 hasNextPage = _hasNextPage;
                 return false;
             }
