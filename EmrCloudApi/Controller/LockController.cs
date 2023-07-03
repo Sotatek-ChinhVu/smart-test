@@ -35,7 +35,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.AddLock)]
         public async Task<ActionResult<Response<LockResponse>>> AddLock([FromQuery] LockRequest request, CancellationToken cancellationToken)
         {
-            var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, Token);
+            var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, Token, request.TabKey);
             var output = _bus.Handle(input);
             var presenter = new AddLockPresenter();
 
@@ -120,7 +120,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.RemoveAllLockPtId)]
         public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> RemoveAllLockPtId([FromQuery] RemoveAllLockPtIdRequest request)
         {
-            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCd, request.SinDate, 0, UserId, false, true);
+            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCd, request.SinDate, 0, UserId, false, true, request.TabKey);
             var output = _bus.Handle(input);
 
             if (output.Status == RemoveLockStatus.Successed)
