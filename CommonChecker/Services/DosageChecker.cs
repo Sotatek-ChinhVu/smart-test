@@ -26,6 +26,14 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             var errorOrderList = new List<TOdrInf>();
             var itemList = new List<DrugInfo>();
 
+            var ptBodyInf = Finder!.GetPtBodyInfo(
+                HpID, 
+                PtID, 
+                Sinday, 
+                CurrentHeight, 
+                CurrentWeight, 
+                unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
+
             foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
                 if (checkingOrder.OdrKouiKbn == 21 && !SystemConfig.DosageDrinkingDrugSetting ||
@@ -65,7 +73,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                     continue;
                 }
 
-                List<DosageResultModel> checkedResult = Finder!.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, CurrentHeight, CurrentWeight, unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
+                List<DosageResultModel> checkedResult = Finder!.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, ptBodyInf.height, ptBodyInf.weight, unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
 
                 if (TermLimitCheckingOnly)
                 {
@@ -74,8 +82,8 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
                 if (checkedResult.Count > 0)
                 {
-                    unitCheckerForOrderListResult.ErrorInfo = checkedResult;
-                    unitCheckerForOrderListResult.ErrorOrderList = GetErrorOrderList(unitCheckerForOrderListResult.CheckingOrderList, checkedResult);
+                    errorOrderList.Add(checkingOrder);
+                    resultList.AddRange(checkedResult);
                 }
             }
 
@@ -86,24 +94,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             }
 
             return unitCheckerForOrderListResult;
-        }
-
-        private List<TOdrInf> GetErrorOrderList(List<TOdrInf> checkingOrderList, List<DosageResultModel> checkedResultList)
-        {
-            List<string> listErrorItemCode = checkedResultList.Select(r => r.ItemCd).ToList();
-            List<double> suryoErrorList = checkedResultList.Select(r => r.CurrentValue).ToList();
-
-            List<TOdrInf> resultList = new List<TOdrInf>();
-            foreach (var checkingOrder in checkingOrderList)
-            {
-                var existed = checkingOrder.OdrInfDetailModelsIgnoreEmpty.Any(o => listErrorItemCode.Contains(o.ItemCd) && suryoErrorList.Contains(o.Suryo));
-                if (existed)
-                {
-                    resultList.Add(checkingOrder);
-                }
-            }
-
-            return resultList;
         }
     }
 }

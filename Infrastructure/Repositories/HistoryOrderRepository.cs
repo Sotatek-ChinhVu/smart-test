@@ -572,11 +572,9 @@ namespace Infrastructure.Repositories
                             )
                       )
                 .ToList();
-
             List<long> raiinNoListByOrder = allOdrInfList.Select(o => o.RaiinNo).Distinct().ToList();
             List<long> rpNoListByOrder = allOdrInfList.Select(o => o.RpNo).Distinct().ToList();
             List<long> rpEdaNoListByOrder = allOdrInfList.Select(o => o.RpEdaNo).Distinct().ToList();
-
             var allOdrDetailInfList = NoTrackingDataContext.OdrInfDetails
                 .Where(o => o.HpId == hpId &&
                             o.PtId == ptId &&
@@ -585,10 +583,9 @@ namespace Infrastructure.Repositories
                             rpEdaNoListByOrder.Contains(o.RpEdaNo) &&
                             o.ItemName != null &&
                             o.ItemName.Contains(keyWord));
-
             if (isNext)
             {
-                allOdrDetailInfList = allOdrDetailInfList.OrderByDescending(o => o.SinDate).OrderByDescending(o => o.RaiinNo);
+                allOdrDetailInfList = allOdrDetailInfList.OrderByDescending(o => o.SinDate).ThenByDescending(o => o.RaiinNo);
             }
             else
             {

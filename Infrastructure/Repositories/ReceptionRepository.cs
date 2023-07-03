@@ -582,6 +582,24 @@ namespace Infrastructure.Repositories
                );
         }
 
+        public List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate)
+        {
+            List<SameVisitModel> result = new();
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                             && item.PtId == ptId
+                                                                             && item.SinDate == sinDate
+                                                                             && item.IsDeleted == 0)
+                                                              .ToList();
+
+            foreach (var raiinInf in raiinInfList)
+            {
+                string sameVisit = raiinInfList.FirstOrDefault(item => item.OyaRaiinNo == raiinInf.OyaRaiinNo && item.RaiinNo != raiinInf.RaiinNo)?.OyaRaiinNo.ToString() ?? string.Empty;
+                var sameItem = new SameVisitModel(raiinInf.SinDate, raiinInf.PtId, raiinInf.RaiinNo, raiinInf.OyaRaiinNo, sameVisit);
+                result.Add(sameItem);
+            }
+            return result;
+        }
+
         public bool CheckListNo(List<long> raininNos)
         {
             var check = NoTrackingDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
@@ -645,7 +663,6 @@ namespace Infrastructure.Repositories
             {
                 filteredRaiinInfs = filteredRaiinInfs.Where(item => item.Status >= 3);
             }
-
             // 3. Perform the join operation
             var raiinQuery =
                 from raiinInf in filteredRaiinInfs

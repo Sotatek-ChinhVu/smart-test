@@ -1,4 +1,6 @@
-﻿using CommonChecker.DB;
+﻿using CommonChecker.Caches;
+using CommonChecker.Caches.Interface;
+using CommonChecker.DB;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
@@ -49,9 +51,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     private readonly double _currentWeight = 0;
 
     private readonly ITenantProvider _tenantProvider;
+    private readonly IMasterDataCacheService _masterDataCacheService;
 
     public CommonMedicalCheck(ITenantProvider tenantProvider, IRealtimeOrderErrorFinder realtimeOrderErrorFinder)
     {
+        _masterDataCacheService = new MasterDataCacheService(tenantProvider);
         _tenantProvider = tenantProvider;
         _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
         _itemNameDictionary = new();
@@ -72,10 +76,26 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
     public void InitUnitCheck(UnitChecker<OrdInfoModel, OrdInfoDetailModel> unitChecker)
     {
-        unitChecker.DataContext = _tenantProvider.GetNoTrackingDataContext();
         unitChecker.HpID = _hpID;
         unitChecker.PtID = _ptID;
         unitChecker.Sinday = _sinday;
+        unitChecker.InitFinder(_tenantProvider.GetNoTrackingDataContext(), _masterDataCacheService);
+    }
+
+    private void InitTenMstCache(List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
+    {
+        List<string> itemCodeList = new List<string>();
+
+        foreach (var order in currentListOdr)
+        {
+            itemCodeList.AddRange(order.OdrInfDetailModelsIgnoreEmpty.Select(i => i.ItemCd).ToList());
+        }
+
+        foreach (var order in listCheckingOrder)
+        {
+            itemCodeList.AddRange(order.OdrInfDetailModelsIgnoreEmpty.Select(i => i.ItemCd).ToList());
+        }
+        _masterDataCacheService.InitCache(itemCodeList.Distinct().ToList(), _sinday, _ptID);
     }
 
     public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb, RealTimeCheckerCondition realTimeCheckerCondition)
@@ -87,6 +107,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listErrorOfAllOrder = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
         List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
         List<OrdInfoModel> tempCurrentListOdr = new List<OrdInfoModel>(currentListOdr);
+
+        InitTenMstCache(currentListOdr, listCheckingOrder);
 
         listCheckingOrder.ForEach((order) =>
         {
@@ -148,6 +170,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listErrorOfAllOrder = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
         List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
         List<OrdInfoModel> tempCurrentListOdr = new();
+
+        InitTenMstCache(new List<OrdInfoModel>(), listCheckingOrder);
 
         listCheckingOrder.ForEach((order) =>
         {

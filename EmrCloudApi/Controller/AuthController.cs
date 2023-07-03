@@ -1,4 +1,6 @@
-﻿using EmrCloudApi.Constants;
+﻿using Castle.Core.Internal;
+using DocumentFormat.OpenXml.VariantTypes;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.Auth;
 using EmrCloudApi.Requests.UserToken;
 using EmrCloudApi.Responses;
@@ -54,11 +56,11 @@ public class AuthController : ControllerBase
         };
 
         string token = AuthProvider.GenerateAccessToken(claims);
-        string refreshToken = SigInRefreshToken(user.UserId);
+        var resultRefreshToken = SigInRefreshToken(user.UserId);
 
-        if(!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(refreshToken))
+        if(!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(resultRefreshToken.refreshToken))
         {
-            var successResult = GetSuccessResult(token, user.UserId, user.Name, user.KanaName, user.KaId, user.JobCd == 1, user.ManagerKbn, user.Sname, user.HpId, refreshToken);
+            var successResult = GetSuccessResult(token, user.UserId, user.Name, user.KanaName, user.KaId, user.JobCd == 1, user.ManagerKbn, user.Sname, user.HpId, resultRefreshToken.refreshToken, resultRefreshToken.refreshTokenExpiryTime);
             return Ok(successResult);
         }
         else
@@ -72,17 +74,17 @@ public class AuthController : ControllerBase
         {
             return new Response<ExchangeTokenResponse>
             {
-                Data = new ExchangeTokenResponse(string.Empty, 0, string.Empty, string.Empty, 0, false, 0, string.Empty, 0, string.Empty),
+                Data = new ExchangeTokenResponse(string.Empty, 0, string.Empty, string.Empty, 0, false, 0, string.Empty, 0, string.Empty, DateTime.MinValue),
                 Status = 0,
                 Message = errorMessage
             };
         }
 
-        Response<ExchangeTokenResponse> GetSuccessResult(string token, int userId, string name, string kanaName, int kaId, bool isDoctor, int managerKbn, string sName, int hpId, string refreshToken)
+        Response<ExchangeTokenResponse> GetSuccessResult(string token, int userId, string name, string kanaName, int kaId, bool isDoctor, int managerKbn, string sName, int hpId, string refreshToken, DateTime refreshTokenExpiryTime)
         {
             return new Response<ExchangeTokenResponse>
             {
-                Data = new ExchangeTokenResponse(token, userId, name, kanaName, kaId, isDoctor, managerKbn, sName, hpId, refreshToken),
+                Data = new ExchangeTokenResponse(token, userId, name, kanaName, kaId, isDoctor, managerKbn, sName, hpId, refreshToken, refreshTokenExpiryTime),
                 Status = 1,
                 Message = ResponseMessage.Success
             };
@@ -113,7 +115,7 @@ public class AuthController : ControllerBase
 
             return new Response<RefreshTokenResponse>
             {
-                Data = new RefreshTokenResponse(newToken, output.UserToken.RefreshToken),
+                Data = new RefreshTokenResponse(newToken, output.UserToken.RefreshToken, output.UserToken.RefreshTokenExpiryTime),
                 Status = (int)output.Status
             };
         }
@@ -121,21 +123,22 @@ public class AuthController : ControllerBase
         {
             return new Response<RefreshTokenResponse>
             {
-                Data = new RefreshTokenResponse(string.Empty, string.Empty),
+                Data = new RefreshTokenResponse(string.Empty, string.Empty, DateTime.MinValue),
                 Status = (int)output.Status,
                 Message = "Invalid refresh token"
             };
         }
     }
 
-    private string SigInRefreshToken(int userId)
+    private (string refreshToken, DateTime refreshTokenExpiryTime) SigInRefreshToken(int userId)
     {
         string refreshToken = AuthProvider.GeneratorRefreshToken();
-        var input = new SigninRefreshTokenInputData(userId, refreshToken, DateTime.UtcNow.AddHours(AuthProvider.GetHoursRefreshTokenExpiryTime()));
+        var refreshTokenExpiryTime = DateTime.UtcNow.AddHours(AuthProvider.GetHoursRefreshTokenExpiryTime());
+        var input = new SigninRefreshTokenInputData(userId, refreshToken, refreshTokenExpiryTime);
         var output = _bus.Handle(input);
         if (output.Status == SigninRefreshTokenStatus.Successful)
-            return refreshToken;
+            return new (refreshToken, refreshTokenExpiryTime);
         else
-            return string.Empty;
+            return new(string.Empty, DateTime.MinValue);
     }
 }

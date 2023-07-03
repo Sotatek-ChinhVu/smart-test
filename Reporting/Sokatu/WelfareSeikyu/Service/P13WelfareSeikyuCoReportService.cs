@@ -36,11 +36,10 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, bool> _visibleFieldData;
     private readonly Dictionary<string, bool> _visibleAtPrint;
-    private readonly ITenantProvider _tenantProvider;
     private readonly ISystemConfig _systemConfig;
 
     #region Constructor and Init
-    public P13WelfareSeikyuCoReportService(ITenantProvider tenantProvider, ISystemConfig systemConfig, ICoWelfareSeikyuFinder welfareFinder)
+    public P13WelfareSeikyuCoReportService(ISystemConfig systemConfig, ICoWelfareSeikyuFinder welfareFinder)
     {
         _welfareFinder = welfareFinder;
         _singleFieldData = new();
