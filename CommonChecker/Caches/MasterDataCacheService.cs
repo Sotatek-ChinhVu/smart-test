@@ -18,7 +18,6 @@ namespace CommonChecker.Caches
         private readonly List<M56YjDrugClass> _m56YjDrugClassList = new List<M56YjDrugClass>();
         private readonly List<M56DrugClass> _m56DrugClassList = new List<M56DrugClass>();
         private readonly List<KinkiMst> _kinkiMstList = new List<KinkiMst>();
-        private readonly List<M01Kinki> _m01KinkiList = new List<M01Kinki>();
         private readonly List<DosageDrug> _dosageDrugList = new List<DosageDrug>();
         private readonly List<DosageMst> _dosageMstList = new List<DosageMst>();
         private readonly List<DosageDosage> _dosageDosageList = new List<DosageDosage>();
@@ -79,42 +78,6 @@ namespace CommonChecker.Caches
                                                                                  itemCodeList.Contains(k.ACd) ||
                                                                                  itemCodeList.Contains(k.BCd)
                                                                             )).ToList());
-            var subYjCdList = yjCodeList.Select(y => new
-            {
-                YjCd4 = CIUtil.Substring(y ?? string.Empty, 0, 4),
-                YjCd7 = CIUtil.Substring(y ?? string.Empty, 0, 7),
-                YjCd8 = CIUtil.Substring(y ?? string.Empty, 0, 8),
-                YjCd9 = CIUtil.Substring(y ?? string.Empty, 0, 9),
-                YjCd12 = CIUtil.Substring(y ?? string.Empty, 0, 12)
-            });
-
-            var subYj4CodeList = subYjCdList.Select(o => o.YjCd4).Distinct().ToList();
-            var subYj7CodeList = subYjCdList.Select(o => o.YjCd7).Distinct().ToList();
-            var subYj8CodeList = subYjCdList.Select(o => o.YjCd8).Distinct().ToList();
-            var subYj9CodeList = subYjCdList.Select(o => o.YjCd9).Distinct().ToList();
-            var subYj12CodeList = subYjCdList.Select(o => o.YjCd12).Distinct().ToList();
-            var m01KinkiList = NoTrackingDataContext.M01Kinki
-                        .Where
-                        (
-                            k =>
-                            (
-                                subYj7CodeList.Contains(k.ACd) ||
-                                subYj8CodeList.Contains(k.ACd) ||
-                                subYj9CodeList.Contains(k.ACd) ||
-                                subYj12CodeList.Contains(k.ACd)
-                            )
-                            &&
-                            (
-                                subYj4CodeList.Contains(k.BCd) ||
-                                subYj7CodeList.Contains(k.BCd) ||
-                                subYj8CodeList.Contains(k.BCd) ||
-                                subYj9CodeList.Contains(k.BCd) ||
-                                subYj12CodeList.Contains(k.BCd)
-                            )
-                        )
-                        .ToList();
-            _m01KinkiList.AddRange(m01KinkiList);
-
             #endregion
 
             #region Cache for Dosage
@@ -136,13 +99,6 @@ namespace CommonChecker.Caches
             AddCacheIfNeed(itemCodeList);
 
             return _dosageDrugList;
-        }
-        
-        public List<M01Kinki> GetM01KinkiList(List<string> itemCodeList)
-        {
-            AddCacheIfNeed(itemCodeList);
-
-            return _m01KinkiList;
         }
         
         public List<DosageMst> GetDosageMstList(List<string> itemCodeList)
