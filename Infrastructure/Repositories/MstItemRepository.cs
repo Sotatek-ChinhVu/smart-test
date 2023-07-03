@@ -1696,18 +1696,43 @@ namespace Infrastructure.Repositories
                )).ToList();
         }
 
-        public (int, List<PostCodeMstModel>) PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
+        public (int, List<PostCodeMstModel>) SearchAddress(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
+        {
+            var listPostCode = GetPostCodeMsts(hpId, postCode1, postCode2, address, pageIndex, pageSize);
+
+            if (listPostCode.Item1 == 0)
+            {
+                while (address.Length > 3)
+                {
+                    address = address.Substring(0, address.Length - 3);
+
+                    listPostCode = GetPostCodeMsts(hpId, postCode1, postCode2, address, pageIndex, pageSize);
+                    if (listPostCode.Item1 > 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return (listPostCode.Item1, listPostCode.Item2);
+        }
+
+        private (int, List<PostCodeMstModel>) GetPostCodeMsts(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
         {
             var entities = NoTrackingDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1 + postCode2));
-
+            {
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
+            }
             else if (!string.IsNullOrEmpty(postCode1))
+            {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
-
+            }
             else if (!string.IsNullOrEmpty(postCode2))
+            {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.EndsWith(postCode2));
+            }
 
             if (!string.IsNullOrEmpty(address))
             {
@@ -1716,9 +1741,19 @@ namespace Infrastructure.Repositories
                                                 || (e.PrefName != null && e.PrefName.Contains(address)));
             }
 
-            var totalCount = entities.Count();
+            var query = entities;
 
-            var result = entities.OrderBy(x => x.PostCd)
+            if (!string.IsNullOrEmpty(address))
+            {
+                query = entities.Where(e =>
+                    (e.PrefName + e.CityName + e.Banti).Contains(address) ||
+                    (e.PrefName + e.CityName).Contains(address) ||
+                    (e.PrefName != null && e.PrefName.Contains(address)));
+            }
+
+            var totalCount = query.Count();
+
+            var result = query.OrderBy(x => x.PostCd)
                                   .ThenBy(x => x.PrefName)
                                   .ThenBy(x => x.CityName)
                                   .ThenBy(x => x.Banti)
