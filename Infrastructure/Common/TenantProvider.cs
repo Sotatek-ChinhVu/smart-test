@@ -1,4 +1,5 @@
 ﻿using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ namespace Infrastructure.CommonDB
         {
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
+            GetRedis();
         }
 
         public string GetConnectionString()
@@ -41,6 +43,16 @@ namespace Infrastructure.CommonDB
             string result = clientDomainInConfig ?? string.Empty;
 
             return result;
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            Console.WriteLine(connection);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public string GetClinicID()

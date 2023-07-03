@@ -148,7 +148,7 @@ namespace Infrastructure.Repositories
                 raiinInf.TantoId = tantoId;
                 raiinInf.KaId = kaId;
                 raiinInf.UketukeTime = string.IsNullOrEmpty(preProcess.uketukeTime) ? raiinInf.UketukeTime : preProcess.uketukeTime;
-                if (string.IsNullOrEmpty(raiinInf.SinEndTime))
+                if (string.IsNullOrEmpty(raiinInf.SinEndTime) && modeSaveData != 0)
                     raiinInf.SinEndTime = sinEndTime;
                 if (string.IsNullOrEmpty(raiinInf.SinStartTime))
                     raiinInf.SinStartTime = sinStartTime;
@@ -2922,6 +2922,25 @@ namespace Infrastructure.Repositories
 
                             var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == targetItem.Item5.ItemCd);
                             var kensaMst = targetItem == null ? null : kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst?.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo); List<OrdInfDetailModel> odrInfDetail = new();
+
+                            string yjCd = tenMst?.YjCd ?? string.Empty;
+
+                            var dosageDrug = NoTrackingDataContext.DosageDrugs.FirstOrDefault(d => d.YjCd == yjCd);
+                            var dosageDosages = NoTrackingDataContext.DosageDosages.Where(item => dosageDrug != null && dosageDrug.DoeiCd == item.DoeiCd).ToList();
+
+                            var dosagetModel = dosageDrug == null ? new DosageDrugModel() : new DosageDrugModel(
+                                                             dosageDrug.YjCd,
+                                                             dosageDrug.DoeiCd,
+                                                             dosageDrug.DgurKbn ?? string.Empty,
+                                                             dosageDrug.KikakiUnit ?? string.Empty,
+                                                             dosageDrug.YakkaiUnit ?? string.Empty,
+                                                             dosageDrug.RikikaRate,
+                                                             dosageDrug.RikikaUnit ?? string.Empty,
+                                                             dosageDrug.YoukaiekiCd ?? string.Empty,
+                                                             dosageDosages.FirstOrDefault(item => item.DoeiCd == dosageDrug.DoeiCd)?.UsageDosage?.Replace("；", Environment.NewLine) ?? string.Empty
+                                                    );
+
+
                             var odrInfDetailModel = new OrdInfDetailModel(
                                 hpId,
                                 raiinNo,
@@ -2969,7 +2988,7 @@ namespace Infrastructure.Repositories
                                 0,
                                 0,
                                 0,
-                                string.Empty,
+                                yjCd,
                                 new(),
                                 0,
                                 0,
@@ -2985,7 +3004,13 @@ namespace Infrastructure.Repositories
                                 tenMst?.CmtCol3 ?? 0,
                                 tenMst?.CmtCol4 ?? 0,
                                 tenMst?.HandanGrpKbn ?? 0,
-                                kensaMst == null
+                                kensaMst == null,
+                                dosagetModel.RikikaRate,
+                                dosagetModel.KikakiUnit,
+                                dosagetModel.YakkaiUnit,
+                                dosagetModel.RikikaUnit,
+                                dosagetModel.YoukaiekiCd,
+                                dosagetModel.MemoItem
                             );
                             odrInfDetail.Add(odrInfDetailModel);
 
