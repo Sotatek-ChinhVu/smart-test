@@ -4,13 +4,13 @@ namespace UseCase.SinKoui.GetSinKoui
 {
     public class GetListSinKouiOutputData : IOutputData
     {
-        public GetListSinKouiOutputData(GetListSinKouiStatus status, List<string> sinYmBindings)
+        public GetListSinKouiOutputData(GetListSinKouiStatus status, List<int> sinYms)
         {
             Status = status;
-            SinYmBindings = sinYmBindings;
+            SinYms = sinYms;
         }
 
         public GetListSinKouiStatus Status { get; private set; }
-        public List<string> SinYmBindings { get; private set; } = new List<string>();
+        public List<int> SinYms { get; private set; } = new List<int>();
     }
 }

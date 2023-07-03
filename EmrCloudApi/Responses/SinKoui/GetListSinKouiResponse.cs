@@ -2,11 +2,11 @@
 {
     public class GetListSinKouiResponse
     {
-        public GetListSinKouiResponse(List<string> sinYmBindings)
+        public GetListSinKouiResponse(List<int> sinYms)
         {
-            SinYmBindings = sinYmBindings;
+            SinYms = sinYms;
         }
 
-        public List<string> SinYmBindings { get; private set; }
+        public List<int> SinYms { get; private set; }
     }
 }
