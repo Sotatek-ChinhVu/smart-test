@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Reporting.Mappers.Common;
+using Reporting.Structs;
 
 namespace Reporting.Sokatu.WelfareSeikyu.Service
 {
-    internal class IP26WelfareSeikyuCoReportService
+    public interface IP26WelfareSeikyuCoReportService
     {
+        CommonReportingRequestModel GetP26WelfareSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType);
     }
 }
