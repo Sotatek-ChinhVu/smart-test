@@ -1,16 +1,26 @@
 ﻿using Domain.Models.HpInf;
+using Domain.Models.Insurance;
+using Domain.Models.InsuranceMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using StackExchange.Redis;
 
 namespace Infrastructure.Repositories
 {
     public class HpInfRepository : RepositoryBase, IHpInfRepository
     {
-        public HpInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IInsuranceRepository _insuranceRepository;
+        private readonly IInsuranceMstRepository _insuranceMstRepository;
+        private readonly IDatabase _cache;
+        public HpInfRepository(ITenantProvider tenantProvider, IInsuranceRepository insuranceRepository, IInsuranceMstRepository insuranceMstRepository) : base(tenantProvider)
         {
+            _insuranceRepository = insuranceRepository;
+            _insuranceMstRepository = insuranceMstRepository;
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
 
         public bool CheckHpId(int hpId)
@@ -135,7 +145,21 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            return TrackingDataContext.SaveChanges() > 0;
+            var result = TrackingDataContext.SaveChanges() > 0;
+            if (result)
+            {
+                var keyInsurance = _insuranceRepository.GetNameKeys(0, 0).FirstOrDefault();
+                if (!string.IsNullOrEmpty(keyInsurance))
+                {
+                    _cache.KeyDelete(keyInsurance);
+                }
+                var keyInsuranceMst = _insuranceMstRepository.GetNameKeys(0, 0).FirstOrDefault();
+                if (!string.IsNullOrEmpty(keyInsuranceMst))
+                {
+                    _cache.KeyDelete(keyInsuranceMst);
+                }
+            }
+            return result;
         }
     }
 }
