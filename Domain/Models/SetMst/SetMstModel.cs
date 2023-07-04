@@ -1,10 +1,7 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Domain.Models.SetMst;
+﻿namespace Domain.Models.SetMst;
 
 public class SetMstModel
 {
-    [JsonConstructor]
     public SetMstModel(int hpId, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int weightKbn, int color, int isDeleted, int isGroup, bool isAddNew = false)
     {
         HpId = hpId;

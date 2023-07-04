@@ -1,12 +1,10 @@
 ﻿using Domain.Models.RaiinListSetting;
 using Helper.Extension;
-using System.Text.Json.Serialization;
 
 namespace Domain.Models.RaiinListMst
 {
     public class RaiinListDetailModel
     {
-        [JsonConstructor]
         public RaiinListDetailModel(int grpId, int kbnCd, int sortNo, string kbnName, string colorCd, int isDeleted)
         {
             GrpId = grpId;
