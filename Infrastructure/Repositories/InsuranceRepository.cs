@@ -1463,7 +1463,8 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistHokenPid(int hokenPid)
         {
-            throw new NotImplementedException();
+            var check = NoTrackingDataContext.PtHokenPatterns.Any(h => h.HokenPid == hokenPid && h.IsDeleted == 0);
+            return check;
         }
     }
 }
