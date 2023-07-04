@@ -1,19 +1,16 @@
 ﻿using Domain.Models.Diseases;
 using Domain.Models.SetMst;
+using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Extension;
-using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
-using StackExchange.Redis;
 using System.Data;
 using System.Text;
-using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
@@ -21,24 +18,18 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 {
     private readonly string defaultSetName = "新規セット";
     private readonly string defaultGroupName = "新規グループ";
+    private readonly IMemoryCache _memoryCache;
     private readonly int tryCountSave = 10;
-    private readonly string key;
-    private readonly IDatabase _cache;
-
-    public SetMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
+    public SetMstRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
     {
-        key = GetCacheKey() + "SetMst";
-        _cache = RedisConnectorHelper.Connection.GetDatabase();
+        _memoryCache = memoryCache;
     }
 
-    private IEnumerable<SetMstModel> ReloadCache(int hpId, int generationId)
+    private IEnumerable<SetMstModel> ReloadCache(int hpId)
     {
-        var finalKey = key + "_" + generationId;
         var setMstModelList =
                 NoTrackingDataContext.SetMsts
-                .Where(s => s.HpId == hpId
-                            && s.IsDeleted == 0
-                            && s.GenerationId == generationId)
+                .Where(s => s.HpId == hpId)
                 .Select(s => new SetMstModel(
                     s.HpId,
                     s.SetCd,
@@ -56,33 +47,19 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     false
                     ))
                 .ToList();
-        var json = JsonSerializer.Serialize(setMstModelList);
-        _cache.StringSet(finalKey, json);
+        //var cacheEntryOptions = new MemoryCacheEntryOptions()
+        //        .SetPriority(CacheItemPriority.Normal);
+        //_memoryCache.Set(GetCacheKey(), setMstModelList, cacheEntryOptions);
 
         return setMstModelList;
     }
 
-    private IEnumerable<SetMstModel> ReadCache(int generationId)
-    {
-        var finalKey = key + "_" + generationId;
-        var results = _cache.StringGet(finalKey);
-        var json = results.AsString();
-        var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SetMstModel>>(json) : new();
-        return datas ?? new();
-    }
-
     public List<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, int generationId, string textSearch)
     {
-        var finalKey = key + "_" + generationId;
-        IEnumerable<SetMstModel> setMstModelList;
-        if (!_cache.KeyExists(finalKey))
-        {
-            setMstModelList = ReloadCache(hpId, generationId);
-        }
-        else
-        {
-            setMstModelList = ReadCache(generationId);
-        }
+        //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
+        //{
+        var setMstModelList = ReloadCache(hpId);
+        //}
 
         List<SetMstModel> result;
         if (string.IsNullOrEmpty(textSearch))
@@ -341,21 +318,21 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
             setMstList = setMstList.Distinct().ToList();
 
-            var setMstListResult = setMstList.Select(item => new SetMstModel(
-                                              item.HpId,
-                                              item.SetCd,
-                                              item.SetKbn,
-                                              item.SetKbnEdaNo,
-                                              item.GenerationId,
-                                              item.Level1,
-                                              item.Level2,
-                                              item.Level3,
-                                              item.SetName ?? string.Empty,
-                                              item.WeightKbn,
-                                              item.Color,
-                                              item.IsDeleted,
-                                              item.IsGroup
-                                          )).ToList();
+           var setMstListResult = setMstList.Select(item => new SetMstModel(
+                                             item.HpId,
+                                             item.SetCd,
+                                             item.SetKbn,
+                                             item.SetKbnEdaNo,
+                                             item.GenerationId,
+                                             item.Level1,
+                                             item.Level2,
+                                             item.Level3,
+                                             item.SetName ?? string.Empty,
+                                             item.WeightKbn,
+                                             item.Color,
+                                             item.IsDeleted,
+                                             item.IsGroup
+                                         )).ToList();
             return setMstListResult;
         }
         catch (Exception ex)
@@ -411,11 +388,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         finally
         {
-            ReloadCache(1, setMst.GenerationId);
+            ReloadCache(1);
         }
     }
 
-    private SetMst SaveSetMstAction(int userId, int sinDate, SetMstModel setMstModel)
+    private  SetMst SaveSetMstAction(int userId, int sinDate, SetMstModel setMstModel)
     {
         SetMst setMst = new();
 
@@ -580,7 +557,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         SetMst? dropItem = null;
         int? originDragLevel1 = null;
         int? originDropLevel1 = null;
-        int generationId = 0;
         List<SetMstModel> setMstModels = new();
         bool status = false;
         try
@@ -666,12 +642,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         finally
         {
-            generationId = dragItem?.GenerationId ?? 0;
-            if (generationId > 0)
-            {
-                var setMsts = ReloadCache(1, generationId);
-                setMstModels = GetDataAfterDragDrop(setMsts, dragItem ?? new(), dropItem ?? new(), originDragLevel1 ?? 0, originDropLevel1 ?? 0);
-            }
+            var setMsts = ReloadCache(1);
+            setMstModels = GetDataAfterDragDrop(setMsts, dragItem ?? new(), dropItem ?? new(), originDragLevel1 ?? 0, originDropLevel1 ?? 0);
         }
         return (status, setMstModels);
     }
@@ -764,7 +736,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         finally
         {
-            var setMsts = ReloadCache(1, generationId);
+            var setMsts = ReloadCache(1);
             var rootSet = setMsts.FirstOrDefault(s => s.SetCd == setCd);
             setMstModels = setMsts.Where(s => s.HpId == rootSet?.HpId && s.SetKbn == rootSet.SetKbn && s.SetKbnEdaNo == rootSet.SetKbnEdaNo && s.GenerationId == rootSet.GenerationId && (rootSet.Level1 == 0 || (rootSet.Level1 > 0 && s.Level1 == rootSet.Level1))).ToList();
         }
@@ -782,6 +754,28 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         DisposeDataContext();
     }
 
+    public IEnumerable<SetMstModel> GetListFollowSetCd(int hpId, byte type, List<int> setCds)
+    {
+        //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
+        //{
+        var setMstModelList = ReloadCache(hpId);
+        //}
+
+        var result = new List<SetMstModel>();
+        if (type == 1)
+        {
+            result = setMstModelList?.Where(s => setCds.Contains(s.SetCd)).ToList() ?? new();
+        }
+        else
+        {
+            result = setMstModelList?.Where(s => setCds.Contains(s.SetCd)).ToList() ?? new();
+        }
+
+        return result.OrderBy(s => s.Level1)
+         .ThenBy(s => s.Level2)
+         .ThenBy(s => s.Level3)
+         .ToList();
+    }
     #region private method
 
     // GetGenerationId by hpId and sindate
@@ -1736,7 +1730,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 item.IsDeleted = DeleteTypes.Deleted;
             }
-            var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0 && (dragItem.Level1 != dropItem.Level1 || !(mst.Level1 == dragLevel1 && mst.Level2 == dragLevel2 && mst.Level3 == dragLevel3))).ToList();
+            var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0 && (dragItem.Level1 != dropItem.Level1 || !( mst.Level1 == dragLevel1 && mst.Level2 == dragLevel2 && mst.Level3 == dragLevel3))).ToList();
             var maxLevel2 = listUpdateLevel2.Count == 0 ? 0 : listUpdateLevel2.Max(l => l.Level2);
             var maxDropUpdateLevel2 = listUpdateLevel2.Where(m => m.Level2 == maxLevel2).ToList();
             var rootMaxDropUpdateLevel2 = maxDropUpdateLevel2.FirstOrDefault(m => m.Level3 == 0);
