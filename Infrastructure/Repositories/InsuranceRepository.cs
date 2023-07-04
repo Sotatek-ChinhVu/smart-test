@@ -5,31 +5,22 @@ using Domain.Models.InsuranceMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Extension;
 using Helper.Mapping;
-using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using StackExchange.Redis;
-using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
     public class InsuranceRepository : RepositoryBase, IInsuranceRepository
     {
-        private readonly IDatabase _cache;
-        private readonly string key;
-
         public InsuranceRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            key = GetCacheKey();
-            _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
+
         public InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate)
         {
             int prefCd = 0;
-            var hpInfs = GetDataForHpInf();
-            var hpInf = hpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
+            var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
             if (hpInf != null)
             {
                 prefCd = hpInf.PrefNo;
@@ -395,108 +386,6 @@ namespace Infrastructure.Repositories
             return new InsuranceDataModel(listInsurance, hokenInfList, kohiInfList, maxIdHokenInf, maxIdKohi, maxPidHokenPattern);
         }
 
-        private List<HokenMst> ReloadCacheForHokenMst(int hpId, int prefNo)
-        {
-            var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId && (x.PrefNo == prefNo || x.PrefNo == 0 || x.IsOtherPrefValid == 1)).ToList();
-            var json = JsonSerializer.Serialize(hokenMsts);
-            _cache.StringSet(key + "-" + "HokenMst" + "-" + hpId + "-" + prefNo, json);
-            return hokenMsts;
-        }
-
-        private List<HokenMst> ReadCacheForHokenMst(int hpId, int prefNo)
-        {
-            var results = _cache.StringGet(key + "-" + "HokenMst" + "-" + hpId + "-" + prefNo);
-            var json = results.AsString();
-            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<HokenMst>>(json) : new();
-            return datas ?? new();
-        }
-
-        public List<HokenMst> GetDataForHokenMst(int hpId, int prefNo)
-        {
-            var hokenMsts = new List<HokenMst>();
-            if (!_cache.KeyExists(key + "-" + "HokenMst" + "-" + hpId + "-" + prefNo))
-            {
-                hokenMsts = ReloadCacheForHokenMst(hpId, prefNo);
-            }
-            else
-            {
-                hokenMsts = ReadCacheForHokenMst(hpId, prefNo);
-            }
-
-            return hokenMsts;
-        }
-
-        private List<RoudouMst> ReloadCacheForRoudouMst()
-        {
-            var roudouMsts = NoTrackingDataContext.RoudouMsts.ToList();
-            var json = JsonSerializer.Serialize(roudouMsts);
-            _cache.StringSet(key + "-" + "RoudouMst", json);
-            return roudouMsts;
-        }
-
-        private List<RoudouMst> ReadCacheForRoudouMst()
-        {
-            var results = _cache.StringGet(key + "-" + "RoudouMst");
-            var json = results.AsString();
-            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<RoudouMst>>(json) : new();
-            return datas ?? new();
-        }
-
-        private List<RoudouMst> GetDataForRoudouMst()
-        {
-            var byomeiMsts = new List<RoudouMst>();
-            if (!_cache.KeyExists(key + "-" + "RoudouMst"))
-            {
-                byomeiMsts = ReloadCacheForRoudouMst();
-            }
-            else
-            {
-                byomeiMsts = ReadCacheForRoudouMst();
-            }
-
-            return byomeiMsts;
-        }
-
-        private List<HpInf> ReloadCacheForHpInf()
-        {
-            var hpInfs = NoTrackingDataContext.HpInfs.ToList();
-            var json = JsonSerializer.Serialize(hpInfs);
-            _cache.StringSet(key + "-" + "HpInf", json);
-            return hpInfs;
-        }
-
-        private List<HpInf> ReadCacheForHpInf()
-        {
-            var results = _cache.StringGet(key + "-" + "HpInf");
-            var json = results.AsString();
-            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<HpInf>>(json) : new();
-            return datas ?? new();
-        }
-
-        private List<HpInf> GetDataForHpInf()
-        {
-            var hpInfs = new List<HpInf>();
-            if (!_cache.KeyExists(key + "-" + "HpInf"))
-            {
-                hpInfs = ReloadCacheForHpInf();
-            }
-            else
-            {
-                hpInfs = ReadCacheForHpInf();
-            }
-            return hpInfs;
-        }
-
-        public List<string> GetNameKeys(int hpId, int prefNo)
-        {
-            var keys = new List<string>();
-            var keyHpInf = key + "-" + "HpInf";
-            keys.Add(keyHpInf);
-            var keyHokenMst = key + "-" + "HokenMst" + "-" + hpId + "-" + prefNo;
-            keys.Add(keyHokenMst);
-            return keys;
-        }
-
         public bool CheckExistHokenPIdList(List<int> hokenPIds, List<int> hpIds, List<long> ptIds)
         {
             if (hokenPIds.Count == 0) return true;
@@ -510,9 +399,10 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-        public bool CheckExistHokenPid(int hokenPid)
+        public bool CheckExistHokenPids(List<int> hokenPids)
         {
-            var check = NoTrackingDataContext.PtHokenPatterns.Any(h => h.HokenPid == hokenPid && h.IsDeleted == 0);
+            hokenPids = hokenPids.Distinct().ToList();
+            var check = NoTrackingDataContext.PtHokenPatterns.Any(x => hokenPids.Contains(x.HokenPid));
             return check;
         }
 
@@ -967,7 +857,20 @@ namespace Infrastructure.Repositories
             return listInsurance.FirstOrDefault() ?? new InsuranceModel();
         }
 
-        public int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid)
+        public List<(int, int)> GetListHistoryPid(int hpId, long ptId, int sinDate, List<int> historyPids, int selectedHokenPid)
+        {
+            var distinctHistoryPids = historyPids.Distinct();
+            List<(int, int)> result = new();
+            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate).Where(i => i.StartDate <= sinDate && i.EndDate >= sinDate).ToList();
+            foreach (var historyPid in distinctHistoryPids)
+            {
+                var historyPidList = GetDefaultSelectPattern(hpId, ptId, sinDate, historyPid, selectedHokenPid, hokenPatternModels);
+                result.Add(new(historyPid, historyPidList));
+            }
+            return result;
+        }
+
+        public int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid, List<InsuranceModel> hokenPatternModels)
         {
             bool _isSameKohiHoubetu(InsuranceModel pattern1, InsuranceModel pattern2)
             {
@@ -981,7 +884,6 @@ namespace Infrastructure.Repositories
 
                 return false;
             }
-            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate).Where(i => i.StartDate <= sinDate && i.EndDate >= sinDate).ToList();
             var historyHokenPattern = hokenPatternModels.FirstOrDefault(p => p.HokenPid == historyPid);
             if (historyHokenPattern == null)
             {
@@ -1143,7 +1045,7 @@ namespace Infrastructure.Repositories
         public List<InsuranceModel> GetInsuranceList(int hpId, long ptId, int sinDate, bool isDeleted = false)
         {
             int prefCd = 0;
-            var hpInf = GetDataForHpInf().Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
+            var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
             if (hpInf != null)
             {
                 prefCd = hpInf.PrefNo;
@@ -1557,6 +1459,11 @@ namespace Infrastructure.Repositories
                    kohi.Houbetu ?? string.Empty,
                    kohi.SeqNo
                 );
+        }
+
+        public bool CheckExistHokenPid(int hokenPid)
+        {
+            throw new NotImplementedException();
         }
     }
 }

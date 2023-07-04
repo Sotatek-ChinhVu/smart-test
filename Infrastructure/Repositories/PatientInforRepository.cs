@@ -89,131 +89,81 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo)
+        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo)
         {
-
-            var itemData = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
-
-
-            // Raiin Count
-            int raiinCount = 0;
-
-            // status = RaiinState Receptionist
-            var GetCountraiinInf = NoTrackingDataContext.RaiinInfs.Where(u => u.HpId == hpId &&
-                                                                         u.SinDate == sinDate &&
-                                                                         u.RaiinNo != raiinNo &&
-                                                                         u.IsDeleted == DeleteTypes.None &&
-                                                                         u.Status == 1).ToList();
-            if (GetCountraiinInf != null && GetCountraiinInf.Count > 0)
-            {
-                raiinCount = GetCountraiinInf.Count;
-            }
+            var itemData = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
 
             if (itemData == null)
             {
-                return new PatientInforModel(
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    "",
-                    "",
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    0,
-                    0,
-                    0,
-                    0,
-                    "",
-                    0,
-                    0,
-                    raiinCount);
+                return new();
             }
-            else
+
+            // Raiin Count
+            // status = RaiinState Receptionist
+            int raiinCount = NoTrackingDataContext.RaiinInfs.Count(u => u.HpId == hpId &&
+                                                                        u.SinDate == sinDate &&
+                                                                        u.RaiinNo != raiinNo &&
+                                                                        u.IsDeleted == DeleteTypes.None &&
+                                                                        u.Status == 1);
+
+            //Get ptMemo
+            string memo = string.Empty;
+            PtMemo? ptMemo = NoTrackingDataContext.PtMemos.FirstOrDefault(x => x.PtId == itemData.PtId);
+            if (ptMemo != null)
             {
-
-                //Get ptMemo
-                string memo = string.Empty;
-                PtMemo? ptMemo = NoTrackingDataContext.PtMemos.Where(x => x.PtId == itemData.PtId).FirstOrDefault();
-                if (ptMemo != null)
-                {
-                    memo = ptMemo.Memo ?? string.Empty;
-                }
-
-                //Get lastVisitDate
-                int lastVisitDate = _receptionRepository.GetLastVisit(hpId, ptId, sinDate)?.SinDate ?? 0;
-
-                //Get First Visit Date
-                int firstDate = _receptionRepository.GetFirstVisitWithSyosin(hpId, ptId, sinDate);
-
-                return new PatientInforModel(
-                    itemData.HpId,
-                    itemData.PtId,
-                    itemData.ReferenceNo,
-                    itemData.SeqNo,
-                    itemData.PtNum,
-                    itemData.KanaName ?? string.Empty,
-                    itemData.Name ?? string.Empty,
-                    itemData.Sex,
-                    itemData.Birthday,
-                    itemData.LimitConsFlg,
-                    itemData.IsDead,
-                    itemData.DeathDate,
-                    itemData.HomePost ?? string.Empty,
-                    itemData.HomeAddress1 ?? string.Empty,
-                    itemData.HomeAddress2 ?? string.Empty,
-                    itemData.Tel1 ?? string.Empty,
-                    itemData.Tel2 ?? string.Empty,
-                    itemData.Mail ?? string.Empty,
-                    itemData.Setanusi ?? string.Empty,
-                    itemData.Zokugara ?? string.Empty,
-                    itemData.Job ?? string.Empty,
-                    itemData.RenrakuName ?? string.Empty,
-                    itemData.RenrakuPost ?? string.Empty,
-                    itemData.RenrakuAddress1 ?? string.Empty,
-                    itemData.RenrakuAddress2 ?? string.Empty,
-                    itemData.RenrakuTel ?? string.Empty,
-                    itemData.RenrakuMemo ?? string.Empty,
-                    itemData.OfficeName ?? string.Empty,
-                    itemData.OfficePost ?? string.Empty,
-                    itemData.OfficeAddress1 ?? string.Empty,
-                    itemData.OfficeAddress2 ?? string.Empty,
-                    itemData.OfficeTel ?? string.Empty,
-                    itemData.OfficeMemo ?? string.Empty,
-                    itemData.IsRyosyoDetail,
-                    itemData.PrimaryDoctor,
-                    itemData.IsTester,
-                    itemData.MainHokenPid,
-                    memo,
-                    lastVisitDate,
-                    firstDate,
-                    raiinCount);
+                memo = ptMemo.Memo ?? string.Empty;
             }
+
+            //Get lastVisitDate
+            int lastVisitDate = _receptionRepository.GetLastVisit(hpId, ptId, sinDate)?.SinDate ?? 0;
+
+            //Get First Visit Date
+            int firstDate = _receptionRepository.GetFirstVisitWithSyosin(hpId, ptId, sinDate);
+            string comment = NoTrackingDataContext.PtCmtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)?.Text ?? string.Empty;
+
+            return new PatientInforModel(
+                itemData.HpId,
+                itemData.PtId,
+                itemData.ReferenceNo,
+                itemData.SeqNo,
+                itemData.PtNum,
+                itemData.KanaName ?? string.Empty,
+                itemData.Name ?? string.Empty,
+                itemData.Sex,
+                itemData.Birthday,
+                itemData.LimitConsFlg,
+                itemData.IsDead,
+                itemData.DeathDate,
+                itemData.HomePost ?? string.Empty,
+                itemData.HomeAddress1 ?? string.Empty,
+                itemData.HomeAddress2 ?? string.Empty,
+                itemData.Tel1 ?? string.Empty,
+                itemData.Tel2 ?? string.Empty,
+                itemData.Mail ?? string.Empty,
+                itemData.Setanusi ?? string.Empty,
+                itemData.Zokugara ?? string.Empty,
+                itemData.Job ?? string.Empty,
+                itemData.RenrakuName ?? string.Empty,
+                itemData.RenrakuPost ?? string.Empty,
+                itemData.RenrakuAddress1 ?? string.Empty,
+                itemData.RenrakuAddress2 ?? string.Empty,
+                itemData.RenrakuTel ?? string.Empty,
+                itemData.RenrakuMemo ?? string.Empty,
+                itemData.OfficeName ?? string.Empty,
+                itemData.OfficePost ?? string.Empty,
+                itemData.OfficeAddress1 ?? string.Empty,
+                itemData.OfficeAddress2 ?? string.Empty,
+                itemData.OfficeTel ?? string.Empty,
+                itemData.OfficeMemo ?? string.Empty,
+                itemData.IsRyosyoDetail,
+                itemData.PrimaryDoctor,
+                itemData.IsTester,
+                itemData.MainHokenPid,
+                memo,
+                lastVisitDate,
+                firstDate,
+                raiinCount,
+                comment);
         }
 
         public bool CheckExistIdList(List<long> ptIds)
@@ -750,7 +700,8 @@ namespace Infrastructure.Repositories
                 memo,
                 lastVisitDate,
                 0,
-                0);
+                0,
+                string.Empty);
         }
 
         public PatientInforModel PatientCommentModels(int hpId, long ptId)
@@ -2122,7 +2073,8 @@ namespace Infrastructure.Repositories
                         string.Empty,
                         0,
                         0,
-                        0
+                        0,
+                        string.Empty
                     );
         }
 
@@ -2612,7 +2564,8 @@ namespace Infrastructure.Repositories
                                                                                   string.Empty,
                                                                                   0,
                                                                                   0,
-                                                                                  0)).ToList();
+                                                                                  0,
+                                                                                  string.Empty)).ToList();
         }
     }
 }

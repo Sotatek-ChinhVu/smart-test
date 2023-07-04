@@ -5,7 +5,7 @@ namespace Domain.Models.PatientInfor
 {
     public class PatientInforModel
     {
-        public PatientInforModel(int hpId, long ptId, long referenceNo, long seqNo, long ptNum, string kanaName, string name, int sex, int birthday, int limitConsFlg, int isDead, int deathDate, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string mail, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, string memo, int lastVisitDate, int firstVisitDate, int rainCount)
+        public PatientInforModel(int hpId, long ptId, long referenceNo, long seqNo, long ptNum, string kanaName, string name, int sex, int birthday, int limitConsFlg, int isDead, int deathDate, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string mail, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, string memo, int lastVisitDate, int firstVisitDate, int rainCount, string comment)
         {
             HpId = hpId;
             PtId = ptId;
@@ -48,7 +48,7 @@ namespace Domain.Models.PatientInfor
             LastVisitDate = lastVisitDate;
             FirstVisitDate = firstVisitDate;
             RainCountInt = rainCount;
-            Comment = string.Empty;
+            Comment = comment;
         }
 
         public PatientInforModel(int hpId, long ptId, string comment)

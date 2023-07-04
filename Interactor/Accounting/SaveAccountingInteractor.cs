@@ -101,10 +101,6 @@ namespace Interactor.Accounting
             {
                 return SaveAccountingStatus.InvalidPtId;
             }
-            else if (inputData.ThisWari < 0)
-            {
-                return SaveAccountingStatus.InvalidThisWari;
-            }
             else if (inputData.PayType < 0)
             {
                 return SaveAccountingStatus.InvalidPayType;

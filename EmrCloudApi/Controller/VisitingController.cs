@@ -69,7 +69,7 @@ public class VisitingController : AuthorizeControllerBase
     [HttpGet(ApiPath.Get + "Settings")]
     public ActionResult<Response<GetReceptionSettingsResponse>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
     {
-        var input = new GetReceptionSettingsInputData(UserId, HpId);
+        var input = new GetReceptionSettingsInputData(UserId);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionSettingsPresenter();
         presenter.Complete(output);
@@ -95,16 +95,11 @@ public class VisitingController : AuthorizeControllerBase
         switch (output.Status)
         {
             case UpdateReceptionStaticCellStatus.RaiinInfUpdated:
-                await _webSocketService.SendMessageAsync(FunctionCodes.RaiinInfChanged,
-                    new CommonMessage { RaiinNo = input.RaiinNo, PtId = req.PtId, SinDate = req.SinDate });
-                break;
             case UpdateReceptionStaticCellStatus.RaiinCmtUpdated:
-                await _webSocketService.SendMessageAsync(FunctionCodes.RaiinCmtChanged,
-                    new CommonMessage { RaiinNo = input.RaiinNo, PtId = req.PtId, SinDate = req.SinDate });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
                 break;
             case UpdateReceptionStaticCellStatus.PatientCmtUpdated:
-                await _webSocketService.SendMessageAsync(FunctionCodes.PatientCmtChanged,
-                    new CommonMessage { PtId = input.PtId, RaiinNo = req.RaiinNo, SinDate = req.SinDate });
+                await _webSocketService.SendMessageAsync(FunctionCodes.PatientInfChanged, new PatientInforMessage(output.PatientInforModel));
                 break;
         }
 
@@ -120,8 +115,7 @@ public class VisitingController : AuthorizeControllerBase
         var output = _bus.Handle(input);
         if (output.Status == UpdateReceptionDynamicCellStatus.Success)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.RaiinKubunChanged,
-                new CommonMessage { RaiinNo = input.RaiinNo, PtId = req.PtId, SinDate = req.SinDate });
+            await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
         }
 
         var presenter = new UpdateReceptionDynamicCellPresenter();

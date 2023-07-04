@@ -13,11 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEmrOptions(builder.Configuration);
 builder.Services.AddMemoryCache();
-builder.Services.AddResponseCaching();
-builder.Services.AddResponseCompression(options =>
-{
-    options.EnableForHttps = true;
-});
+//builder.Services.AddResponseCaching();
+//builder.Services.AddResponseCompression(options =>
+//{
+//    options.EnableForHttps = true;
+//});
 
 #if DEBUG
 builder.Services.AddSignalR()
@@ -211,9 +211,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseResponseCaching();
+//app.UseResponseCaching();
 
-app.UseResponseCompression();
+//app.UseResponseCompression();
 
 // SignalR Hub
 app.MapHub<CommonHub>("/CommonHub");

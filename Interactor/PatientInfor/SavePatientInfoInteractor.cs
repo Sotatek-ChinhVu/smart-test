@@ -29,10 +29,11 @@ namespace Interactor.PatientInfor
 
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
         {
+            PatientInforModel patientInforModel = new();
             var validations = Validation(inputData);
             if (validations.Any())
             {
-                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0);
+                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0, patientInforModel);
             }
             try
             {
@@ -74,10 +75,6 @@ namespace Interactor.PatientInfor
                                     _amazonS3Service.DeleteObjectAsync(item.FileName);
                                 }
                             }
-                            else
-                            {
-                                continue;
-                            }
                         }
                     }
                     return listReturn;
@@ -93,14 +90,11 @@ namespace Interactor.PatientInfor
 
                 if (result.resultSave)
                 {
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId);
+                    patientInforModel = _patientInforRepository.GetById(inputData.HpId, result.ptId, 0, 0) ?? new();
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId, patientInforModel);
                 }
                 else
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
-            }
-            catch
-            {
-                return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0, patientInforModel);
             }
             finally
             {

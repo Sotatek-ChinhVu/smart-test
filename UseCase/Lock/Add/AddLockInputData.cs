@@ -18,7 +18,9 @@ namespace UseCase.Lock.Add
 
         public string Token { get; private set; }
 
-        public AddLockInputData(int hpId, long ptId, string functionCode, int sinDate, long raiinNo, int userId, string token)
+        public string TabKey { get; private set; }
+
+        public AddLockInputData(int hpId, long ptId, string functionCode, int sinDate, long raiinNo, int userId, string token, string tabKey)
         {
             HpId = hpId;
             PtId = ptId;
@@ -27,6 +29,7 @@ namespace UseCase.Lock.Add
             RaiinNo = raiinNo;
             UserId = userId;
             Token = token;
+            TabKey = tabKey;
         }
     }
 }
