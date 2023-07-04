@@ -221,14 +221,14 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<ValidationTodayOrdResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.GetDefaultSelectPattern)]
-        public ActionResult<Response<GetDefaultSelectPatternResponse>> GetDefaultSelectPattern([FromQuery] GetDefaultSelectPatternRequest request)
+        [HttpPost(ApiPath.GetDefaultSelectPattern)]
+        public ActionResult<Response<GetDefaultSelectPatternResponse>> GetDefaultSelectPattern([FromBody] GetDefaultSelectPatternRequest request)
         {
             var input = new GetDefaultSelectPatternInputData(
                 HpId,
                 request.PtId,
                 request.SinDate,
-                request.HistoryPid,
+                request.HistoryPids,
                 request.SelectedHokenPid);
 
             var output = _bus.Handle(input);
