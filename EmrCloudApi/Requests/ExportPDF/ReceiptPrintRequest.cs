@@ -25,4 +25,6 @@ public class ReceiptPrintRequest : ReportRequestBase
     public int WelfareType { get; set; }
 
     public string FormName { get; set; } = string.Empty;
+
+    public List<string> printHokensyaNos { get; set; }
 }
