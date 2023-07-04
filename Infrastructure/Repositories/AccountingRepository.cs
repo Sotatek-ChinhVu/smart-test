@@ -1059,7 +1059,7 @@ namespace Infrastructure.Repositories
                 }
 
             }
-            if (accDue != 0 && thisCredit != 0)
+            if (accDue != 0 && (thisCredit != 0 && isDisCharged) || (nyukinGaku != 0 && !isDisCharged))
             {
                 AdjustWariExecute(hpId, ptId, userId, thisCredit, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment);
             }

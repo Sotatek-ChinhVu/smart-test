@@ -29,7 +29,7 @@ namespace Interactor.Receipt
 
             foreach (var item in receInf.ReceInfModels)
             {
-                insuranceInfs.Add(new InsuranceInfDto(item.InsuranceName, item.HokenKbn, item.Nissu, item.Tensu, item.IchibuFutan, item.EdaNo, item.Kigo, item.Bango,
+                insuranceInfs.Add(new InsuranceInfDto(item.HokenId, item.InsuranceName, item.HokenKbn, item.Nissu, item.Tensu, item.IchibuFutan, item.EdaNo, item.Kigo, item.Bango,
                     item.Kohi1ReceKisai, item.Kohi1Id, item.Kohi2ReceKisai, item.Kohi2Id, item.Kohi3ReceKisai, item.Kohi3Id, item.Kohi4ReceKisai,
                     item.Kohi1FutansyaNo, item.Kohi1JyukyusyaNo, item.Kohi2FutansyaNo, item.Kohi2JyukyusyaNo, item.Kohi3FutansyaNo, item.Kohi3JyukyusyaNo,
                     item.Kohi4FutansyaNo, item.Kohi4JyukyusyaNo, item.HokensyaNo));
