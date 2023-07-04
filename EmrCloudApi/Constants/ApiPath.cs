@@ -102,6 +102,8 @@
         public const string DrugNoteSeal = "DrugNoteSeal";
         public const string Yakutai = "Yakutai";
         public const string AccountingCard = "AccountingCard";
+        public const string ExportKarte2 = "ExportKarte2";
+        public const string ExportKarte3 = "ExportKarte3";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";

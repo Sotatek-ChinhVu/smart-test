@@ -1,25 +1,23 @@
 ﻿using Reporting.Mappers.Common;
 
-namespace Reporting.ReceTarget.Mapper;
+namespace Reporting.Karte3.Mapper;
 
-public class ReceTargetMapper : CommonReportingRequest
+public class Karte3Mapper : CommonReportingRequest
 {
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, string> _extralData;
-    private readonly string _formFileName;
 
-    public ReceTargetMapper(Dictionary<string, string> singleFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName)
+    public Karte3Mapper(Dictionary<string, string> singleFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData)
     {
         _singleFieldData = singleFieldData;
         _listTextData = listTextData;
         _extralData = extralData;
-        _formFileName = formFileName;
     }
 
     public override int GetReportType()
     {
-        return (int)CoReportType.ReceTarget;
+        return (int)CoReportType.Karte3;
     }
 
     public override string GetRowCountFieldName()
@@ -34,7 +32,7 @@ public class ReceTargetMapper : CommonReportingRequest
 
     public override string GetJobName()
     {
-        return "レセ対象患者一覧";
+        return "カルテ３号紙";
     }
 
     public override Dictionary<string, string> GetSingleFieldData()
@@ -64,10 +62,6 @@ public class ReceTargetMapper : CommonReportingRequest
 
     public override Dictionary<string, string> GetFileNamePageMap()
     {
-        var fileName = new Dictionary<string, string>
-        {
-            { "1", _formFileName }
-        };
-        return fileName;
+        return new();
     }
 }

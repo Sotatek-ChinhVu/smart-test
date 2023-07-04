@@ -614,6 +614,8 @@ using CommonChecker.Caches;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using UseCase.AccountDue.IsNyukinExisted;
 using UseCase.Lock.CheckLockOpenAccounting;
+using Reporting.Karte3.Service;
+using Reporting.Karte3.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -786,6 +788,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
             services.AddTransient<IP08KokhoSeikyuCoReportService, P08KokhoSeikyuCoReportService>();
             services.AddTransient<IP22WelfareSeikyuCoReportService, P22WelfareSeikyuCoReportService>();
+            services.AddTransient<IKarte3CoReportService, Karte3CoReportService>();
+            services.AddTransient<ICoKarte3Finder, CoKarte3Finder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

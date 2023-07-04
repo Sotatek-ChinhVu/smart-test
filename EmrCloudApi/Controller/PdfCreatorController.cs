@@ -234,7 +234,14 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
-    [HttpGet("ExportKarte2")]
+    [HttpGet(ApiPath.ExportKarte3)]
+    public async Task<IActionResult> GetKarte3ReportingData([FromQuery] Karte3ReportingRequest request)
+    {
+        var data = _reportService.GetKarte3ReportingData(request.HpId, request.PtId, request.StartSinYm, request.EndSinYm, request.IncludeHoken, request.IncludeJihi);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
+    [HttpGet(ApiPath.ExportKarte2)]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {
         var inputData = new GetDataPrintKarte2InputData(request.PtId, request.HpId, request.SinDate, request.StartDate, request.EndDate, request.IsCheckedHoken, request.IsCheckedJihi, request.IsCheckedHokenJihi, request.IsCheckedJihiRece, request.IsCheckedHokenRousai, request.IsCheckedHokenJibai, request.IsCheckedDoctor, request.IsCheckedStartTime, request.IsCheckedVisitingTime, request.IsCheckedEndTime, request.IsUketsukeNameChecked, request.IsCheckedSyosai, request.IsIncludeTempSave, request.IsCheckedApproved, request.IsCheckedInputDate, request.IsCheckedSetName, request.DeletedOdrVisibilitySetting, request.IsIppanNameChecked, request.IsCheckedHideOrder, request.EmptyMode);
@@ -336,6 +343,7 @@ public class PdfCreatorController : ControllerBase
         using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}{functionName}", jsonContent))
         {
             response.EnsureSuccessStatusCode();
+            fileName = fileName.Replace(".rse", "").Replace(".pdf", "") + ".pdf";
             ContentDisposition cd = new ContentDisposition
             {
                 FileName = fileName,
