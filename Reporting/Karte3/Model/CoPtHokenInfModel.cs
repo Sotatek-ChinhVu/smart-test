@@ -73,7 +73,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string HokensyaNo
         {
-            get { return PtHokenInf.HokensyaNo; }
+            get { return PtHokenInf.HokensyaNo ?? string.Empty; }
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string Kigo
         {
-            get { return PtHokenInf.Kigo; }
+            get { return PtHokenInf.Kigo ?? string.Empty; }
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string Bango
         {
-            get { return PtHokenInf.Bango; }
+            get { return PtHokenInf.Bango ?? string.Empty; }
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string Houbetu
         {
-            get { return PtHokenInf.Houbetu; }
+            get { return PtHokenInf.Houbetu ?? string.Empty; }
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string HokensyaName
         {
-            get { return PtHokenInf.HokensyaName; }
+            get { return PtHokenInf.HokensyaName ?? string.Empty; }
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string HokensyaPost
         {
-            get { return PtHokenInf.HokensyaPost; }
+            get { return PtHokenInf.HokensyaPost ?? string.Empty; }
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string HokensyaAddress
         {
-            get { return PtHokenInf.HokensyaAddress; }
+            get { return PtHokenInf.HokensyaAddress ?? string.Empty; }
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string HokensyaTel
         {
-            get { return PtHokenInf.HokensyaTel; }
+            get { return PtHokenInf.HokensyaTel ?? string.Empty; }
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string Tokki1
         {
-            get { return PtHokenInf.Tokki1; }
+            get { return PtHokenInf.Tokki1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -352,7 +352,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string Tokki2
         {
-            get { return PtHokenInf.Tokki2; }
+            get { return PtHokenInf.Tokki2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -360,7 +360,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string Tokki3
         {
-            get { return PtHokenInf.Tokki3; }
+            get { return PtHokenInf.Tokki3 ?? string.Empty; }
         }
 
         /// <summary>
@@ -368,7 +368,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string Tokki4
         {
-            get { return PtHokenInf.Tokki4; }
+            get { return PtHokenInf.Tokki4 ?? string.Empty; }
         }
 
         /// <summary>
@@ -376,7 +376,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string Tokki5
         {
-            get { return PtHokenInf.Tokki5; }
+            get { return PtHokenInf.Tokki5 ?? string.Empty; }
         }
 
         /// <summary>
@@ -387,7 +387,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string RousaiKofuNo
         {
-            get { return PtHokenInf.RousaiKofuNo; }
+            get { return PtHokenInf.RousaiKofuNo ?? string.Empty; }
         }
 
         /// <summary>
@@ -405,7 +405,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string RousaiJigyosyoName
         {
-            get { return PtHokenInf.RousaiJigyosyoName; }
+            get { return PtHokenInf.RousaiJigyosyoName ?? string.Empty; }
         }
 
         /// <summary>
@@ -413,7 +413,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string RousaiPrefName
         {
-            get { return PtHokenInf.RousaiPrefName; }
+            get { return PtHokenInf.RousaiPrefName ?? string.Empty; }
         }
 
         /// <summary>
@@ -421,7 +421,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string RousaiCityName
         {
-            get { return PtHokenInf.RousaiCityName; }
+            get { return PtHokenInf.RousaiCityName ?? string.Empty; }
         }
 
         /// <summary>
@@ -438,7 +438,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string RousaiSyobyoCd
         {
-            get { return PtHokenInf.RousaiSyobyoCd; }
+            get { return PtHokenInf.RousaiSyobyoCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -446,7 +446,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string RousaiRoudouCd
         {
-            get { return PtHokenInf.RousaiRoudouCd; }
+            get { return PtHokenInf.RousaiRoudouCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -454,7 +454,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string RousaiKantokuCd
         {
-            get { return PtHokenInf.RousaiKantokuCd; }
+            get { return PtHokenInf.RousaiKantokuCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -488,7 +488,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string JibaiHokenName
         {
-            get { return PtHokenInf.JibaiHokenName; }
+            get { return PtHokenInf.JibaiHokenName ?? string.Empty; }
         }
 
         /// <summary>
@@ -496,7 +496,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string JibaiHokenTanto
         {
-            get { return PtHokenInf.JibaiHokenTanto; }
+            get { return PtHokenInf.JibaiHokenTanto ?? string.Empty; }
         }
 
         /// <summary>
@@ -504,7 +504,7 @@ namespace Reporting.Karte3.Model
         /// </summary>
         public string JibaiHokenTel
         {
-            get { return PtHokenInf.JibaiHokenTel; }
+            get { return PtHokenInf.JibaiHokenTel ?? string.Empty; }
         }
 
         /// <summary>

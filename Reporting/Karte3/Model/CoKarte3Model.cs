@@ -58,7 +58,7 @@ namespace Reporting.Karte3.Model
         {
             get
             {
-                string ret = "";
+                string ret = string.Empty;
 
                 if (BirthDay > 0)
                 {
@@ -130,8 +130,8 @@ namespace Reporting.Karte3.Model
                 #region sub method
                 string _getHeiyo()
                 {
-                    string heiyo = "";
-                    switch (HoubetuNos.Count())
+                    string heiyo = string.Empty;
+                    switch (HoubetuNos.Count)
                     {
                         case 0:
                             heiyo += "単独";
@@ -154,8 +154,8 @@ namespace Reporting.Karte3.Model
 
                 string _getKohiHeiyo()
                 {
-                    string heiyo = "";
-                    switch (HoubetuNos.Count())
+                    string heiyo = string.Empty;
+                    switch (HoubetuNos.Count)
                     {
                         case 1:
                             heiyo = "公費単独";
@@ -184,7 +184,7 @@ namespace Reporting.Karte3.Model
                 }
                 #endregion
 
-                string ret = "";
+                string ret = string.Empty;
 
                 if (PtHokenInf != null)
                 {
@@ -210,7 +210,7 @@ namespace Reporting.Karte3.Model
                     }
                     else
                     {
-                        string honke = "";
+                        string honke = string.Empty;
 
                         if (PtHokenInf.HokenKbn == 1)
                         {
