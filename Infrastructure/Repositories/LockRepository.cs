@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token)
+        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token, string tabKey)
         {
             long oyaRaiinNo = 0;
             if (raiinNo > 0)
@@ -37,7 +37,7 @@ namespace Infrastructure.Repositories
 
             string rawSql =
             "INSERT INTO \"LOCK_INF\" (\"FUNCTION_CD\", \"HP_ID\", \"OYA_RAIIN_NO\", \"PT_ID\", \"RAIIN_NO\", \"SIN_DATE\", \"LOCK_DATE\", \"MACHINE\", \"USER_ID\")\r\n      " +
-            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{token}', {userId}) ON CONFLICT DO NOTHING;";
+            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{tabKey}', {userId}) ON CONFLICT DO NOTHING;";
 
             return TrackingDataContext.Database.ExecuteSqlRaw(rawSql) > 0;
         }
@@ -190,7 +190,7 @@ namespace Infrastructure.Repositories
             return raiinNoList;
         }
 
-        public List<long> RemoveAllLock(int hpId, int userId, long ptId, int sinDate, string functionCd)
+        public List<long> RemoveAllLock(int hpId, int userId, long ptId, int sinDate, string functionCd, string tabKey)
         {
             List<string> functionCdList = new()
             {
@@ -205,6 +205,7 @@ namespace Infrastructure.Repositories
                                                                          && item.PtId == ptId
                                                                          && functionCdList.Contains(item.FunctionCd)
                                                                          && item.SinDate == sinDate
+                                                                         && item.Machine == tabKey
                                                           ).ToList();
             if (!lockInfList.Any())
             {

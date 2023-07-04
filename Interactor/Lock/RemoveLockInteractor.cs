@@ -21,6 +21,7 @@ namespace Interactor.Lock
                 int sinDate = inputData.SinDate;
                 int hpId = inputData.HpId;
                 int userId = inputData.UserId;
+                string tabKey = inputData.TabKey;
 
                 List<long> result;
                 if (inputData.IsRemoveAllLock)
@@ -29,7 +30,7 @@ namespace Interactor.Lock
                 }
                 else if (inputData.IsRemoveAllLockPtId)
                 {
-                    result = _lockRepository.RemoveAllLock(hpId, userId, ptId, sinDate, functionCode);
+                    result = _lockRepository.RemoveAllLock(hpId, userId, ptId, sinDate, functionCode, tabKey);
                 }
                 else
                 {
