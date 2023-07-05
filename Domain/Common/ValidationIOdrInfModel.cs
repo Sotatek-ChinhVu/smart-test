@@ -193,6 +193,10 @@ namespace Domain.Common
             {
                 return (flag != 1 && flag != 0) ? OrdInfValidationStatus.InvalidSuryo : OrdInfValidationStatus.NoFillSuryo;
             }
+            if (!odrInfDetail.ItemCd.StartsWith("J") && !string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) &&  odrInfDetail.Suryo == -1)
+            {
+                return OrdInfValidationStatus.InvalidPrice;
+            }
             if (!KohatuKbns.ContainsValue(odrInfDetail.KohatuKbn))
             {
                 return OrdInfValidationStatus.InvalidKohatuKbn;
