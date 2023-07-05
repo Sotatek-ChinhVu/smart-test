@@ -26,7 +26,7 @@ namespace Domain.Models.Lock
 
         string GetFunctionNameLock(string functionCode);
 
-        List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate);
+        List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate, long raiinNo);
 
         bool CheckLockOpenAccounting(int hpId, long ptId, long raiinNo, int userId);
     }

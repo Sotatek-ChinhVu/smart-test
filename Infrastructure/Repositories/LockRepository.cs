@@ -321,16 +321,26 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate)
+        public List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate, long raiinNo)
         {
             List<ResponseLockModel> result = new();
-            // Raiin 
-            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.IsDeleted == DeleteTypes.None
+            List<long> raiinNoList = new();
+            List<RaiinInf> raiinInfList = new();
+
+            // Raiin
+            if (raiinNo == 0)
+            {
+                raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.IsDeleted == DeleteTypes.None
                                                                              && item.SinDate == sinDate
                                                                              && item.PtId == ptId)
                                                               .ToList();
 
-            var raiinNoList = raiinInfList.Select(item => item.RaiinNo).Distinct().ToList();
+                raiinNoList = raiinInfList.Select(item => item.RaiinNo).Distinct().ToList();
+            }
+            else
+            {
+                raiinNoList.Add(raiinNo);
+            }
 
             // Lock 
             var lockInfList = NoTrackingDataContext.LockInfs.Where(item => raiinNoList.Contains(item.RaiinNo)
@@ -350,6 +360,16 @@ namespace Infrastructure.Repositories
                                raiinItem.PtId,
                                raiinItem.RaiinNo,
                                status
+                           ));
+            }
+
+            if (raiinNo != 0 && lockInfList.Any(item => item.RaiinNo == raiinNo))
+            {
+                result.Add(new ResponseLockModel(
+                               sinDate,
+                               ptId,
+                               raiinNo,
+                               RaiinState.Examining
                            ));
             }
             return result;
