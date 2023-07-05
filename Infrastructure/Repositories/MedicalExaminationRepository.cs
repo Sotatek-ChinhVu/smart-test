@@ -292,10 +292,8 @@ namespace Infrastructure.Repositories
         {
             var raiinInfQuery = NoTrackingDataContext.RaiinInfs
                .Where(s => s.HpId == hpId && s.PtId == ptId && s.SinDate == sinDate && s.OyaRaiinNo == oyaRaiinNo && s.RaiinNo != raiinNo);
-            var count = raiinInfQuery.Count();
             var odrInfQuery = NoTrackingDataContext.OdrInfs
                 .Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.IsDeleted == 0);
-            count = odrInfQuery.Count();
             var odrInfDetailQuery = NoTrackingDataContext.OdrInfDetails
                 .Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && itemCd.Contains(o.ItemCd));
             var resultQuery = from raiinInf in raiinInfQuery.AsEnumerable()
