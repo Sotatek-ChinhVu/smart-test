@@ -375,25 +375,46 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public bool CheckLockOpenAccounting(int hpId, long ptId, long raiinNo, int userId)
+        public List<LockModel> CheckLockOpenAccounting(int hpId, long ptId, long raiinNo, int userId)
         {
             var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
                                                                                   && item.RaiinNo == raiinNo
                                                                                   && item.IsDeleted == 0);
             if (raiinInf == null)
             {
-                return false;
+                return new();
             }
             else if (raiinInf.Status == 9)
             {
-                return false;
+                return new();
             }
             long oyaRaiinNo = raiinInf.OyaRaiinNo;
-            var existLockInf = NoTrackingDataContext.LockInfs.Any(item => item.HpId == hpId
-                                                                          && item.PtId == ptId
-                                                                          && item.UserId == userId
-                                                                          && item.OyaRaiinNo == oyaRaiinNo);
-            return existLockInf;
+            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => item.HpId == hpId
+                                                                           && item.PtId == ptId
+                                                                           && item.UserId == userId
+                                                                           && item.OyaRaiinNo == oyaRaiinNo)
+                                                            .ToList();
+
+            List<LockModel> result = new();
+            var functionCdList = lockInfList.Select(item => item.FunctionCd).Distinct().ToList();
+            var lockMstList = NoTrackingDataContext.LockMsts.Where(item => functionCdList.Contains(item.FunctionCdB) && item.IsInvalid == 0).ToList();
+            var functionMstList = NoTrackingDataContext.FunctionMsts.Where(item => functionCdList.Contains(item.FunctionCd)).ToList();
+            var userMst = NoTrackingDataContext.UserMsts.FirstOrDefault(item => item.HpId == hpId && item.IsDeleted != 1 && item.UserId == userId);
+            foreach (var lockInf in lockInfList)
+            {
+                var lockMst = lockMstList.FirstOrDefault(item => lockInf.FunctionCd == item.FunctionCdA);
+                var functionMst = functionMstList.FirstOrDefault(item => item.FunctionCd == lockInf.FunctionCd);
+                var lockModel = new LockModel(
+                                    lockInf.UserId,
+                                    userMst?.Name ?? string.Empty,
+                                    lockInf.LockDate,
+                                    functionMst?.FunctionName ?? string.Empty,
+                                    lockInf.FunctionCd,
+                                    lockMst?.LockLevel ?? 0,
+                                    lockMst?.LockRange ?? 0);
+                result.Add(lockModel);
+            }
+            return result;
         }
     }
 }

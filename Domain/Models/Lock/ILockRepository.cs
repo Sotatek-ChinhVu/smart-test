@@ -28,6 +28,6 @@ namespace Domain.Models.Lock
 
         List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate, long raiinNo);
 
-        bool CheckLockOpenAccounting(int hpId, long ptId, long raiinNo, int userId);
+        List<LockModel> CheckLockOpenAccounting(int hpId, long ptId, long raiinNo, int userId);
     }
 }
