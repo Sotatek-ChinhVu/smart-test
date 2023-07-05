@@ -32,8 +32,8 @@ namespace EmrCloudApi.Controller
             _webSocketService = webSocketService;
         }
 
-        [HttpGet(ApiPath.AddLock)]
-        public async Task<ActionResult<Response<LockResponse>>> AddLock([FromQuery] LockRequest request, CancellationToken cancellationToken)
+        [HttpPost(ApiPath.AddLock)]
+        public async Task<ActionResult<Response<LockResponse>>> AddLock([FromBody] LockRequest request, CancellationToken cancellationToken)
         {
             var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, Token, request.TabKey);
             var output = _bus.Handle(input);
