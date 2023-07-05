@@ -16,7 +16,7 @@ public class CheckLockOpenAccountingInteractor : ICheckLockOpenAccountingInputPo
     {
         try
         {
-            var checkLock = _lockRepository.CheckLockOpenAccounting(inputData.HpId, inputData.PtId, inputData.RaiinNo);
+            var checkLock = _lockRepository.CheckLockOpenAccounting(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.UserId);
             return new CheckLockOpenAccountingOutputData(checkLock ? CheckLockOpenAccountingStatus.Locked : CheckLockOpenAccountingStatus.NotLock);
         }
         finally

@@ -44,7 +44,8 @@ namespace EmrCloudApi.Controller
             if (_cancellationToken!.Value.IsCancellationRequested)
             {
                 Console.WriteLine("Come in cancelation Addlock");
-                if(output.Status == AddLockStatus.Successed){
+                if (output.Status == AddLockStatus.Successed)
+                {
                     var inputDelete = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false, false);
                     _bus.Handle(inputDelete);
                 }
@@ -176,7 +177,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.CheckLockOpenAccounting)]
         public ActionResult<Response<CheckLockOpenAccountingResponse>> CheckLockOpenAccounting([FromQuery] CheckLockOpenAccountingRequest request)
         {
-            var input = new CheckLockOpenAccountingInputData(HpId, request.PtId, request.RaiinNo);
+            var input = new CheckLockOpenAccountingInputData(HpId, request.PtId, request.RaiinNo, UserId);
             var output = _bus.Handle(input);
 
             var presenter = new CheckLockOpenAccountingPresenter();
