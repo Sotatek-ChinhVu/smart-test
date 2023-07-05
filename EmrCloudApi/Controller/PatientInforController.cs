@@ -219,6 +219,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet("GetInsuranceMst")]
+        [ResponseCache(Duration = 1800, Location = ResponseCacheLocation.Any, NoStore = true)]
         public ActionResult<Response<GetInsuranceMstResponse>> GetInsuranceMst([FromQuery] GetInsuranceMstRequest request)
         {
             var input = new GetInsuranceMstInputData(HpId, request.PtId, request.SinDate);
@@ -631,8 +632,7 @@ namespace EmrCloudApi.Controller
 
             if (output.Status == SavePatientInfoStatus.Successful)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.PatientInfChanged,
-                    new CommonMessage { PtId = output.PtID, RaiinNo = 0, SinDate = 0 });
+                await _webSocketService.SendMessageAsync(FunctionCodes.PatientInfChanged, new PatientInforMessage(output.PatientInforModel));
             }
 
             var presenter = new SavePatientInfoPresenter();

@@ -23,4 +23,6 @@ public class ReceiptPrintRequest : ReportRequestBase
     public int DiskCnt { get; set; }
 
     public int WelfareType { get; set; }
+
+    public string FormName { get; set; } = string.Empty;
 }
