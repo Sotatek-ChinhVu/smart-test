@@ -78,7 +78,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             {
                 currentFutansyaNo = currentCode;
                 currentCityName = currentCity;
-                VisibleAtPrint("Frame", false);
+                VisibleAtPrint("Frame", true);
                 currentPage = 1;
                 hasNextPage = true;
 
