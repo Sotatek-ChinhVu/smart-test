@@ -5097,18 +5097,18 @@ namespace Infrastructure.Repositories
 
             queryResult = queryResult.Where(t => t.IsNosearch == 0);
 
-            var tenJoinYakkaSyusai = from ten in queryResult.AsEnumerable()
-                                     join yakkaSyusaiMstItem in yakkaSyusaiMstList
-                                     on new { ten.HpId, ten.YakkaCd, ten.ItemCd, ten.StartDate }
-                                     equals new { yakkaSyusaiMstItem.HpId, yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd, yakkaSyusaiMstItem.StartDate }
-                                     into yakkaSyusaiMstItems
-                                     from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
-                                     select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
+            var tenJoinYakkaSyusai = (from ten in queryResult
+                                      join yakkaSyusaiMstItem in yakkaSyusaiMstList
+                                      on new { ten.HpId, ten.YakkaCd, ten.ItemCd, ten.StartDate }
+                                      equals new { yakkaSyusaiMstItem.HpId, yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd, yakkaSyusaiMstItem.StartDate }
+                                      into yakkaSyusaiMstItems
+                                      from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
+                                      select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem }).ToList();
 
-            var queryKNTensu = from tenKN in queryResult
-                               join ten in queryResult on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
-                               where tenKN.ItemCd.StartsWith("KN")
-                               select new { tenKN.ItemCd, ten.Ten };
+            var queryKNTensu = (from tenKN in queryResult
+                                join ten in queryResult on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
+                                where tenKN.ItemCd.StartsWith("KN")
+                                select new { tenKN.ItemCd, ten.Ten }).ToList();
 
             var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.StartDate <= sTDDate && u.EndDate >= sTDDate);
             var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.StartDate <= sTDDate && u.EndDate >= sTDDate);
@@ -5116,27 +5116,27 @@ namespace Infrastructure.Repositories
             var ipnMinYakka = NoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
                                                                            p.HpId == hpId &&
                                                                            p.StartDate <= sTDDate &&
-                                                                           p.EndDate >= sTDDate);
+                                                                           p.EndDate >= sTDDate).ToList();
             var sinKouiCollection = new SinkouiCollection();
 
-            var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
-                             join kouiKbnItem in sinKouiCollection
-                             on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
-                             from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
-                             join kensa in NoTrackingDataContext.KensaMsts
-                             on ten.TenMst.KensaItemCd equals kensa.KensaItemCd into kensaMsts
-                             from kensaMst in kensaMsts.DefaultIfEmpty()
-                             join tenKN in queryKNTensu
-                             on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
-                             from tenKN in tenKNLeft.DefaultIfEmpty()
-                             select new
-                             {
-                                 TenMst = ten.TenMst,
-                                 KouiName = tenKouiKbn.SinkouiName,
-                                 ten.YakkaSyusaiItem,
-                                 KensaMst = kensaMst,
-                                 TenKN = tenKN
-                             };
+            var queryFinal = (from ten in tenJoinYakkaSyusai
+                              join kouiKbnItem in sinKouiCollection
+                              on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
+                              from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
+                              join kensa in NoTrackingDataContext.KensaMsts
+                              on ten.TenMst.KensaItemCd equals kensa.KensaItemCd into kensaMsts
+                              from kensaMst in kensaMsts.DefaultIfEmpty()
+                              join tenKN in queryKNTensu
+                              on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
+                              from tenKN in tenKNLeft.DefaultIfEmpty()
+                              select new
+                              {
+                                  TenMst = ten.TenMst,
+                                  KouiName = tenKouiKbn.SinkouiName,
+                                  ten.YakkaSyusaiItem,
+                                  KensaMst = kensaMst,
+                                  TenKN = tenKN
+                              }).ToList();
 
             var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
             var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
@@ -5166,7 +5166,7 @@ namespace Infrastructure.Repositories
 
             var entities = joinedQuery.OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
 
-            tenMstModels = entities.AsEnumerable().Select(item => new TenItemModel(
+            tenMstModels = entities.Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
                                                            item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,
