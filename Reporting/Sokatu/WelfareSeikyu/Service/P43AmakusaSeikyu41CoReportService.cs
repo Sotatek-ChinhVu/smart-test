@@ -144,6 +144,11 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
+                    if (receInfs.Count <= ptIndex)
+                    {
+                        _hasNextPage = false;
+                        break;
+                    }
                     var curReceInf = receInfs[ptIndex];
 
                     //受給者番号
@@ -177,21 +182,25 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                 }
 
                 //小計
-                short wrkRow = (short)maxRow;
-                listDataPerPage.Add(new("nissu", 0, wrkRow, totalData.KohiNissu.ToString()));
-                listDataPerPage.Add(new("tensu", 0, wrkRow, totalData.KohiTensu.ToString()));
-                listDataPerPage.Add(new("kohiFutan", 0, wrkRow, "0"));
-                listDataPerPage.Add(new("futan", 0, wrkRow, totalData.IchibuFutan.ToString()));
-
-                if (!_hasNextPage)
+                if (_hasNextPage == true)
                 {
-                    //合計
-                    wrkRow = (short)(maxRow + 1);
-                    listDataPerPage.Add(new("nissu", 0, wrkRow, receInfs.Sum(r => r.KohiNissu).ToString()));
-                    listDataPerPage.Add(new("tensu", 0, wrkRow, receInfs.Sum(r => r.KohiTensu).ToString()));
+                    short wrkRow = (short)maxRow;
+                    listDataPerPage.Add(new("nissu", 0, wrkRow, totalData.KohiNissu.ToString()));
+                    listDataPerPage.Add(new("tensu", 0, wrkRow, totalData.KohiTensu.ToString()));
                     listDataPerPage.Add(new("kohiFutan", 0, wrkRow, "0"));
-                    listDataPerPage.Add(new("futan", 0, wrkRow, receInfs.Sum(r => r.IchibuFutan).ToString()));
+                    listDataPerPage.Add(new("futan", 0, wrkRow, totalData.IchibuFutan.ToString()));
+
+                    if (!_hasNextPage)
+                    {
+                        //合計
+                        wrkRow = (short)(maxRow + 1);
+                        listDataPerPage.Add(new("nissu", 0, wrkRow, receInfs.Sum(r => r.KohiNissu).ToString()));
+                        listDataPerPage.Add(new("tensu", 0, wrkRow, receInfs.Sum(r => r.KohiTensu).ToString()));
+                        listDataPerPage.Add(new("kohiFutan", 0, wrkRow, "0"));
+                        listDataPerPage.Add(new("futan", 0, wrkRow, receInfs.Sum(r => r.IchibuFutan).ToString()));
+                    }
                 }
+                
                 _listTextData.Add(pageIndex, listDataPerPage);
 
                 return 1;
@@ -219,7 +228,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             //天草市こども医療費の対象に絞る
             receInfs = receInfs.Where(x => x.IsWelfare).OrderBy(x => x.JyukyusyaNo.PadLeft(7, '0')).ToList();
 
-            return (receInfs?.Count ?? 0) > 0;
+            return (receInfs?.Count ?? 0) == 0;
         }
 
         private void GetRowCount(string formFileName)
