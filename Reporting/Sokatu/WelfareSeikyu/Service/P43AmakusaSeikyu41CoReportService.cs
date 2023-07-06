@@ -1,11 +1,12 @@
-﻿using Reporting.Mappers.Common;
+﻿using Helper.Common;
+using Reporting.Mappers.Common;
+using Reporting.ReadRseReportFile.Model;
+using Reporting.ReadRseReportFile.Service;
+using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.WelfareSeikyu.DB;
+using Reporting.Sokatu.WelfareSeikyu.Mapper;
+using Reporting.Sokatu.WelfareSeikyu.Models;
 using Reporting.Structs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Reporting.Sokatu.WelfareSeikyu.Models.CoP43WelfareReceInfModel2;
 
 namespace Reporting.Sokatu.WelfareSeikyu.Service
@@ -38,11 +39,26 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         private List<CoP43WelfareReceInfModel2> receInfs;
         private CoHpInfModel hpInf;
         #endregion
+        private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
+        private readonly Dictionary<string, string> _singleFieldData;
+        private readonly Dictionary<string, string> _extralData;
+        private readonly Dictionary<int, List<ListTextObject>> _listTextData;
+        private readonly Dictionary<string, bool> _visibleFieldData;
+        private readonly Dictionary<string, bool> _visibleAtPrint;
+        private string _formFileName = "p43AmakusaSeikyu41.rse";
+        private readonly IReadRseReportFileService _readRseReportFileService;
 
         #region Constructor and Init
-        public P43AmakusaSeikyu41CoReportService(ICoWelfareSeikyuFinder welfareFinder)
+        public P43AmakusaSeikyu41CoReportService(ICoWelfareSeikyuFinder welfareFinder, IReadRseReportFileService readRseReportFileService)
         {
             _welfareFinder = welfareFinder;
+            _singleFieldData = new();
+            _setFieldData = new();
+            _extralData = new();
+            _listTextData = new();
+            _visibleFieldData = new();
+            _visibleAtPrint = new();
+            _readRseReportFileService = readRseReportFileService;
         }
         #endregion
 
@@ -50,17 +66,37 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         private int hpId;
         private int seikyuYm;
         private SeikyuType seikyuType;
+        private int currentPage;
+        private bool hasNextPage;
+        private int maxRow;
         #endregion
 
         public CommonReportingRequestModel GetP43AmakusaSeikyu41sReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
-            throw new NotImplementedException();
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
+            GetRowCount("p43AmakusaSeikyu41.rse");
+
+            currentPage = 1;
+            hasNextPage = true;
+
+            while (getData && hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
 
         #region Private function
         private bool UpdateDrawForm()
         {
-            int maxRow = CoRep.GetListRowCount("jyukyusyaNo");
+            //int maxRow = GetRowCount("jyukyusyaNo");
             bool _hasNextPage = true;
 
             #region SubMethod
@@ -69,28 +105,28 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             int UpdateFormHeader()
             {
                 //医療機関コード
-                CoRep.SetFieldData("hpCode", hpInf.HpCd);
+                SetFieldData("hpCode", hpInf.HpCd);
                 //医療機関情報
-                CoRep.SetFieldData("address1", hpInf.Address1);
-                CoRep.SetFieldData("address2", hpInf.Address2);
-                CoRep.SetFieldData("hpName", hpInf.ReceHpName);
-                CoRep.SetFieldData("kaisetuName", hpInf.KaisetuName);
-                CoRep.SetFieldData("hpTel", hpInf.Tel);
+                SetFieldData("address1", hpInf.Address1);
+                SetFieldData("address2", hpInf.Address2);
+                SetFieldData("hpName", hpInf.ReceHpName);
+                SetFieldData("kaisetuName", hpInf.KaisetuName);
+                SetFieldData("hpTel", hpInf.Tel);
                 //請求年月
                 CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(seikyuYm * 100 + 1);
-                CoRep.SetFieldData("seikyuGengo", wrkYmd.Gengo);
-                CoRep.SetFieldData("seikyuYear", wrkYmd.Year);
-                CoRep.SetFieldData("seikyuMonth", wrkYmd.Month);
+                SetFieldData("seikyuGengo", wrkYmd.Gengo);
+                SetFieldData("seikyuYear", wrkYmd.Year.ToString());
+                SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
                 //提出年月日
                 wrkYmd = CIUtil.SDateToShowWDate3(
                     CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
                 );
-                CoRep.SetFieldData("reportGengo", wrkYmd.Gengo);
-                CoRep.SetFieldData("reportYear", wrkYmd.Year);
-                CoRep.SetFieldData("reportMonth", wrkYmd.Month);
-                CoRep.SetFieldData("reportDay", wrkYmd.Day);
+                SetFieldData("reportGengo", wrkYmd.Gengo);
+                SetFieldData("reportYear", wrkYmd.Year.ToString());
+                SetFieldData("reportMonth", wrkYmd.Month.ToString());
+                SetFieldData("reportDay", wrkYmd.Day.ToString());
                 //ページ数
-                CoRep.SetFieldData("page", CurrentPage);
+                SetFieldData("page", currentPage.ToString());
 
                 return 1;
             }
@@ -99,7 +135,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             #region Body
             int UpdateFormBody()
             {
-                int ptIndex = (CurrentPage - 1) * maxRow;
+                List<ListTextObject> listDataPerPage = new();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+
+                int ptIndex = (currentPage - 1) * maxRow;
 
                 countData totalData = new countData();
 
@@ -108,26 +147,26 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     var curReceInf = receInfs[ptIndex];
 
                     //受給者番号
-                    CoRep.ListText("jyukyusyaNo", 0, rowNo, curReceInf.JyukyusyaNo);
+                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.JyukyusyaNo));
 
                     //氏名
-                    CoRep.ListText("ptName", 0, rowNo, curReceInf.PtName);
+                    listDataPerPage.Add(new("ptName", 0, rowNo, curReceInf.PtName));
                     //生年月日
-                    CoRep.ListText("birthday", 0, rowNo, curReceInf.BirthDayW);
+                    listDataPerPage.Add(new("birthday", 0, rowNo, curReceInf.BirthDayW));
 
                     //実日数
-                    CoRep.ListText("nissu", 0, rowNo, curReceInf.KohiNissu);
+                    listDataPerPage.Add(new("nissu", 0, rowNo, curReceInf.KohiNissu.ToString()));
                     totalData.KohiNissu += curReceInf.KohiNissu;
                     //総点数
-                    CoRep.ListText("tensu", 0, rowNo, curReceInf.KohiTensu);
+                    listDataPerPage.Add(new("tensu", 0, rowNo, curReceInf.KohiTensu.ToString()));
                     totalData.KohiTensu += curReceInf.KohiTensu;
                     //公費負担額
-                    CoRep.ListText("kohiFutan", 0, rowNo, 0);
+                    listDataPerPage.Add(new("kohiFutan", 0, rowNo, "0"));
                     //一部負担額
-                    CoRep.ListText("futan", 0, rowNo, curReceInf.IchibuFutan);
+                    listDataPerPage.Add(new("futan", 0, rowNo, curReceInf.IchibuFutan.ToString()));
                     totalData.IchibuFutan += curReceInf.IchibuFutan;
                     //負担割合
-                    CoRep.ListText("futanRate", 0, rowNo, curReceInf.HokenRate);
+                    listDataPerPage.Add(new("futanRate", 0, rowNo, curReceInf.HokenRate));
 
                     ptIndex++;
                     if (ptIndex >= receInfs.Count)
@@ -139,20 +178,21 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
                 //小計
                 short wrkRow = (short)maxRow;
-                CoRep.ListText("nissu", 0, wrkRow, totalData.KohiNissu);
-                CoRep.ListText("tensu", 0, wrkRow, totalData.KohiTensu);
-                CoRep.ListText("kohiFutan", 0, wrkRow, 0);
-                CoRep.ListText("futan", 0, wrkRow, totalData.IchibuFutan);
+                listDataPerPage.Add(new("nissu", 0, wrkRow, totalData.KohiNissu.ToString()));
+                listDataPerPage.Add(new("tensu", 0, wrkRow, totalData.KohiTensu.ToString()));
+                listDataPerPage.Add(new("kohiFutan", 0, wrkRow, "0"));
+                listDataPerPage.Add(new("futan", 0, wrkRow, totalData.IchibuFutan.ToString()));
 
                 if (!_hasNextPage)
                 {
                     //合計
                     wrkRow = (short)(maxRow + 1);
-                    CoRep.ListText("nissu", 0, wrkRow, receInfs.Sum(r => r.KohiNissu));
-                    CoRep.ListText("tensu", 0, wrkRow, receInfs.Sum(r => r.KohiTensu));
-                    CoRep.ListText("kohiFutan", 0, wrkRow, 0);
-                    CoRep.ListText("futan", 0, wrkRow, receInfs.Sum(r => r.IchibuFutan));
+                    listDataPerPage.Add(new("nissu", 0, wrkRow, receInfs.Sum(r => r.KohiNissu).ToString()));
+                    listDataPerPage.Add(new("tensu", 0, wrkRow, receInfs.Sum(r => r.KohiTensu).ToString()));
+                    listDataPerPage.Add(new("kohiFutan", 0, wrkRow, "0"));
+                    listDataPerPage.Add(new("futan", 0, wrkRow, receInfs.Sum(r => r.IchibuFutan).ToString()));
                 }
+                _listTextData.Add(pageIndex, listDataPerPage);
 
                 return 1;
             }
@@ -160,17 +200,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
             #endregion
 
-            try
+            if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
             {
-                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-                {
-                    hasNextPage = _hasNextPage;
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                Log.WriteLogError(ModuleName, this, nameof(UpdateDrawForm), e);
                 hasNextPage = _hasNextPage;
                 return false;
             }
@@ -181,8 +212,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
         private bool GetData()
         {
-            hpInf = welfareFinder.GetHpInf(seikyuYm);
-            var wrkReces = welfareFinder.GetReceInf(seikyuYm, seikyuType, kohiHoubetus, FutanCheck.KohiFutan, -1);
+            hpInf = _welfareFinder.GetHpInf(hpId, seikyuYm);
+            var wrkReces = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, kohiHoubetus, FutanCheck.KohiFutan, -1);
             //熊本県用のモデルにコピー
             receInfs = wrkReces.Select(x => new CoP43WelfareReceInfModel2(x.ReceInf, x.PtInf, x.PtKohi1, x.PtKohi2, x.PtKohi3, x.PtKohi4, kohiHokens)).ToList();
             //天草市こども医療費の対象に絞る
@@ -190,6 +221,26 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
             return (receInfs?.Count ?? 0) > 0;
         }
+
+        private void GetRowCount(string formFileName)
+        {
+            List<ObjectCalculate> fieldInputList = new();
+
+            fieldInputList.Add(new ObjectCalculate("jyukyusyaNo", (int)CalculateTypeEnum.GetListRowCount));
+
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.WelfareSeikyu, formFileName, fieldInputList);
+            var javaOutputData = _readRseReportFileService.ReadFileRse(data);
+            maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == "jyukyusyaNo" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
+        }
+
+        private void SetFieldData(string field, string value)
+        {
+            if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
+            {
+                _singleFieldData.Add(field, value);
+            }
+        }
+
         #endregion
     }
 }
