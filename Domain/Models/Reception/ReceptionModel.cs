@@ -121,6 +121,25 @@ namespace Domain.Models.Reception
             HokenKbnName = string.Empty;
         }
 
+        public ReceptionModel(int hpId, long ptId, long raiinNo, int sinDate)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            RaiinNo = raiinNo;
+            SinDate = sinDate;
+            YoyakuTime = string.Empty;
+            UketukeTime = string.Empty;
+            SinStartTime = string.Empty;
+            SinEndTime = string.Empty;
+            KaikeiTime = string.Empty;
+            SName = string.Empty;
+            KaSname = string.Empty;
+            Houbetu = string.Empty;
+            HokensyaNo = string.Empty;
+            HokenKbnName = string.Empty;
+            Comment = string.Empty;
+        }
+
         public ReceptionModel(long raiinNo, int uketukeId, int kaId, string uketukeTime, string sinStartTime, int status, int yokakuId, int tantoId)
         {
             RaiinNo = raiinNo;

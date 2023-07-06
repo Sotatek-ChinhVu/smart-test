@@ -30,6 +30,7 @@ using UseCase.RaiinKbn.GetPatientRaiinKubunList;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
+using UseCase.Reception.GetLastKarute;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetRaiinListWithKanInf;
@@ -284,8 +285,18 @@ namespace EmrCloudApi.Controller
             return Ok(presenter.Result);
         }
 
+        [HttpGet(ApiPath.GetLastKarute)]
+        public ActionResult<Response<GetLastKaruteResponse>> GetLastKarute([FromQuery] GetLastKaruteRequest request)
+        {
+            var input = new GetLastKaruteInputData(HpId, request.PtNum);
+            var output = _bus.Handle(input);
+            var presenter = new GetLastKarutePresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
         [HttpGet(ApiPath.Test)]
-        public ActionResult<Response<DeleteReceptionResponse>> Test(DeleteReceptionRequest request)
+        public ActionResult<Response<GetLastKaruteResponse>> Test(DeleteReceptionRequest request)
         {
             return Ok();
         }
