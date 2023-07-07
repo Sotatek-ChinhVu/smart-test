@@ -1251,9 +1251,10 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        ReceptionModel? IReceptionRepository.GetLastKarute(int hpId, long ptNum)
+        public ReceptionModel? GetLastKarute(int hpId, long ptNum)
         {
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == ptNum && p.IsDelete == DeleteTypes.None);
+
             if (ptInf != null)
             {
                 var raiinInf = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptInf.PtId && r.IsDeleted == DeleteTypes.None
@@ -1266,6 +1267,7 @@ namespace Infrastructure.Repositories
                                               raiinInf.SinDate);
                 }
             }
+
             return null;
         }
 

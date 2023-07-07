@@ -292,7 +292,7 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
             var presenter = new GetLastKarutePresenter();
             presenter.Complete(output);
-            return Ok(presenter.Result);
+            return new ActionResult<Response<GetLastKaruteResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.Test)]

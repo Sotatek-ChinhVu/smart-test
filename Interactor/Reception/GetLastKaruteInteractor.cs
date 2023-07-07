@@ -16,17 +16,19 @@ namespace Interactor.Reception
         {
             try
             {
-                if (inputData.PtNum <= 0)
+                if (inputData.PtNum < 0)
                 {
                     return new GetLastKaruteOutputData(GetLastKaruteStatus.InvalidPtNum, new());
                 }
 
-                var receptionModel = _receptionRepository.GetLastKarute(inputData.HpId, inputData.PtNum);
-                if (receptionModel == null)
+                var reception = _receptionRepository.GetLastKarute(inputData.HpId, inputData.PtNum);
+
+                if (reception == null)
                 {
-                    return new GetLastKaruteOutputData(GetLastKaruteStatus.InvalidNoData, new());
+                    return new GetLastKaruteOutputData(GetLastKaruteStatus.NoData, new());
                 }
-                return new GetLastKaruteOutputData(GetLastKaruteStatus.Successed, receptionModel);
+
+                return new GetLastKaruteOutputData(GetLastKaruteStatus.Successed, reception ?? new());
             }
             finally
             {

@@ -60,10 +60,6 @@ public class GetLastRaiinInfsInteractor : IGetLastRaiinInfsInputPort
             }
             return new GetLastRaiinInfsOutputData(GetLastRaiinInfsStatus.Successed, result);
         }
-        catch (Exception)
-        {
-            return new GetLastRaiinInfsOutputData(GetLastRaiinInfsStatus.Failed);
-        }
         finally
         {
             _receptionRepository.ReleaseResource();

@@ -2,8 +2,8 @@
 {
     public enum GetLastKaruteStatus
     {
-        Successed = 0,
-        InvalidPtNum = 1,
-        InvalidNoData = 2,
+        Successed = 1,
+        NoData,
+        InvalidPtNum,
     }
 }

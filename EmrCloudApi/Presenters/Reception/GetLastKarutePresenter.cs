@@ -20,7 +20,7 @@ public class GetLastKarutePresenter
     {
         GetLastKaruteStatus.Successed => ResponseMessage.Success,
         GetLastKaruteStatus.InvalidPtNum => ResponseMessage.InvalidPtNum,
-        GetLastKaruteStatus.InvalidNoData => ResponseMessage.InvalidNoData,
+        GetLastKaruteStatus.NoData => ResponseMessage.NoData,
         _ => string.Empty
     };
 }
