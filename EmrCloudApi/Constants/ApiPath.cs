@@ -155,6 +155,7 @@
         public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
         public const string InitDoctorCombo = "InitDoctorCombo";
         public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
+        public const string GetLastKarute = "GetLastKarute";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
