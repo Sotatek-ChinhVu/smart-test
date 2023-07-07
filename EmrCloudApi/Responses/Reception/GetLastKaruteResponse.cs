@@ -4,10 +4,10 @@ namespace EmrCloudApi.Responses.Reception;
 
 public class GetLastKaruteResponse
 {
-    public GetLastKaruteResponse(ReceptionModel receptionModels)
+    public GetLastKaruteResponse(ReceptionModel receptionModel)
     {
-        ReceptionModels = receptionModels;
+        ReceptionModel = receptionModel;
     }
 
-    public ReceptionModel ReceptionModels { get; private set; }
+    public ReceptionModel ReceptionModel { get; private set; }
 }

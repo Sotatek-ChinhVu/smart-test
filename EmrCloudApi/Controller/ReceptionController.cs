@@ -296,7 +296,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.Test)]
-        public ActionResult<Response<GetLastKaruteResponse>> Test(DeleteReceptionRequest request)
+        public ActionResult<Response<DeleteReceptionResponse>> Test(DeleteReceptionRequest request)
         {
             return Ok();
         }

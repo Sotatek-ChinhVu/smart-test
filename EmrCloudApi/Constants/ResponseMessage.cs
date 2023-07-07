@@ -73,6 +73,7 @@
 
         //Patient Infor
         public static readonly string InvalidPtNum = "Invalid PtNum";
+        public static readonly string InvalidNoData = "Invalid No Data";
         public static readonly string InvalidKanjiName = "Invalid Kanji Name";
         public static readonly string InvalidSex = "Invalid sex";
 

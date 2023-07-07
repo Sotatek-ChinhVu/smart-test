@@ -16,16 +16,16 @@ namespace Interactor.Reception
         {
             try
             {
-                if (inputData.HpId <= 0)
-                {
-                    return new GetLastKaruteOutputData(GetLastKaruteStatus.InvalidHpId, new());
-                }
-                else if (inputData.PtNum <= 0)
+                if (inputData.PtNum <= 0)
                 {
                     return new GetLastKaruteOutputData(GetLastKaruteStatus.InvalidPtNum, new());
                 }
 
                 var receptionModel = _receptionRepository.GetLastKarute(inputData.HpId, inputData.PtNum);
+                if (receptionModel == null)
+                {
+                    return new GetLastKaruteOutputData(GetLastKaruteStatus.InvalidNoData, new());
+                }
                 return new GetLastKaruteOutputData(GetLastKaruteStatus.Successed, receptionModel);
             }
             finally

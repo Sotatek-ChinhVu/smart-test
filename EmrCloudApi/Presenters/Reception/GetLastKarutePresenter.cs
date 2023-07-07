@@ -11,7 +11,7 @@ public class GetLastKarutePresenter
 
     public void Complete(GetLastKaruteOutputData output)
     {
-        Result.Data = new GetLastKaruteResponse(output.ListReceptions);
+        Result.Data = new GetLastKaruteResponse(output.Reception);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }
@@ -19,8 +19,8 @@ public class GetLastKarutePresenter
     private string GetMessage(GetLastKaruteStatus status) => status switch
     {
         GetLastKaruteStatus.Successed => ResponseMessage.Success,
-        GetLastKaruteStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         GetLastKaruteStatus.InvalidPtNum => ResponseMessage.InvalidPtNum,
+        GetLastKaruteStatus.InvalidNoData => ResponseMessage.InvalidNoData,
         _ => string.Empty
     };
 }
