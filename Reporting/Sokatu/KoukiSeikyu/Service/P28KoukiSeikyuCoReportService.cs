@@ -2,8 +2,6 @@
 using Helper.Constants;
 using Helper.Extension;
 using Reporting.Mappers.Common;
-using Reporting.ReadRseReportFile.Model;
-using Reporting.ReadRseReportFile.Service;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.Common.Utils;
 using Reporting.Sokatu.KoukiSeikyu.DB;
@@ -23,6 +21,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
     private int currentPage;
     private string currentHokensyaNo;
     private int dataRowCount;
+    private int count;
 
     /// <summary>
     /// CoReport Model
@@ -78,6 +77,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
             hasNextPage = true;
             while (getData && hasNextPage)
             {
+                this.count = 0;
                 UpdateDrawForm();
                 currentPage++;
             }
@@ -188,7 +188,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
                 _hasNextPage = false;
                 return 1;
             }
-
+            count = 0;
             //集計
             for (short rowNo = 0; rowNo < maxKohiRow; rowNo++)
             {
@@ -201,18 +201,16 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
                 {
                     //3つ以上ある場合は備考欄に記載する
                     fieldBiko = "Biko";
-                    for (int i = 1; i <= 5; i++)
+                    ReportConfigModel ConfigDataPerPage = _reportConfigPerPage.ContainsKey(pageIndex) ? _reportConfigPerPage[pageIndex] : new();
+                    
+                    if (count == 0)
                     {
-                        ReportConfigModel ConfigDataPerPage = _reportConfigPerPage.ContainsKey(pageIndex) ? _reportConfigPerPage[pageIndex] : new();
-                        if (_reportConfigPerPage.ContainsKey(pageIndex))
-                        {
-                            continue;
-                        }
-                        else
+                        for (int i = 1; i <= 5; i++)
                         {
                             ConfigDataPerPage.VisibleFieldList.Add(string.Format("kohiTitleBiko{0}", i), true);
                         }
 
+                        count++;
                         if (!_reportConfigPerPage.ContainsKey(pageIndex))
                         {
                             _reportConfigPerPage.Add(pageIndex, ConfigDataPerPage);
