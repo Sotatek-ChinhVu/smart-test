@@ -347,7 +347,7 @@ namespace Infrastructure.Repositories
                         {
                             // Update
                             existingEntity.KbnCd = kbnInfDto.KbnCd;
-                            existingEntity.UpdateDate = DateTime.UtcNow;
+                            existingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             existingEntity.UpdateId = userId;
                         }
                     }
@@ -484,15 +484,15 @@ namespace Infrastructure.Repositories
                         r.SanteiKbn,
                         r.Status,
                         r.IsYoyaku,
-                        r.YoyakuTime ?? String.Empty,
+                        r.YoyakuTime ?? string.Empty,
                         r.YoyakuId,
                         r.UketukeSbt,
-                        r.UketukeTime ?? String.Empty,
+                        r.UketukeTime ?? string.Empty,
                         r.UketukeId,
                         r.UketukeNo,
                         r.SinStartTime ?? string.Empty,
-                        r.SinEndTime ?? String.Empty,
-                        r.KaikeiTime ?? String.Empty,
+                        r.SinEndTime ?? string.Empty,
+                        r.KaikeiTime ?? string.Empty,
                         r.KaikeiId,
                         r.KaId,
                         r.TantoId,
@@ -522,15 +522,15 @@ namespace Infrastructure.Repositories
                     r.SanteiKbn,
                     r.Status,
                     r.IsYoyaku,
-                    r.YoyakuTime ?? String.Empty,
+                    r.YoyakuTime ?? string.Empty,
                     r.YoyakuId,
                     r.UketukeSbt,
-                    r.UketukeTime ?? String.Empty,
+                    r.UketukeTime ?? string.Empty,
                     r.UketukeId,
                     r.UketukeNo,
                     r.SinStartTime ?? string.Empty,
-                    r.SinEndTime ?? String.Empty,
-                    r.KaikeiTime ?? String.Empty,
+                    r.SinEndTime ?? string.Empty,
+                    r.KaikeiTime ?? string.Empty,
                     r.KaikeiId,
                     r.KaId,
                     r.TantoId,
@@ -564,15 +564,15 @@ namespace Infrastructure.Repositories
                     result.SanteiKbn,
                     result.Status,
                     result.IsYoyaku,
-                    result.YoyakuTime ?? String.Empty,
+                    result.YoyakuTime ?? string.Empty,
                     result.YoyakuId,
                     result.UketukeSbt,
-                    result.UketukeTime ?? String.Empty,
+                    result.UketukeTime ?? string.Empty,
                     result.UketukeId,
                     result.UketukeNo,
                     result.SinStartTime ?? string.Empty,
-                    result.SinEndTime ?? String.Empty,
-                    result.KaikeiTime ?? String.Empty,
+                    result.SinEndTime ?? string.Empty,
+                    result.KaikeiTime ?? string.Empty,
                     result.KaikeiId,
                     result.KaId,
                     result.TantoId,
@@ -580,6 +580,24 @@ namespace Infrastructure.Repositories
                     result.JikanKbn,
                     string.Empty
                );
+        }
+
+        public List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate)
+        {
+            List<SameVisitModel> result = new();
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                             && item.PtId == ptId
+                                                                             && item.SinDate == sinDate
+                                                                             && item.IsDeleted == 0)
+                                                              .ToList();
+
+            foreach (var raiinInf in raiinInfList)
+            {
+                string sameVisit = raiinInfList.FirstOrDefault(item => item.OyaRaiinNo == raiinInf.OyaRaiinNo && item.RaiinNo != raiinInf.RaiinNo)?.OyaRaiinNo.ToString() ?? string.Empty;
+                var sameItem = new SameVisitModel(raiinInf.SinDate, raiinInf.PtId, raiinInf.RaiinNo, raiinInf.OyaRaiinNo, sameVisit);
+                result.Add(sameItem);
+            }
+            return result;
         }
 
         public bool CheckListNo(List<long> raininNos)
@@ -600,26 +618,26 @@ namespace Infrastructure.Repositories
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
             var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => (isDeleted == 2 || x.IsDeleted == isDeleted));
-            var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(x => isDeleted == 2 || x.IsDelete == DeleteTypes.None);
-            var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(x => isDeleted == 2 || x.IsDelete == DeleteTypes.None);
-            var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
             // Pt (Patient)
-            var ptInfs = NoTrackingDataContext.PtInfs.Where(x => isDeleted == 2 || x.IsDelete == DeleteTypes.None);
-            var ptCmtInfs = NoTrackingDataContext.PtCmtInfs.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
-            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
-            var ptKohis = NoTrackingDataContext.PtKohis.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(x => (isDeleted == 2 || x.IsDelete == isDeleted));
+            var ptCmtInfs = NoTrackingDataContext.PtCmtInfs.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.IsDeleted == DeleteTypes.None);
             // Rsv (Reservation)
             var rsvInfs = NoTrackingDataContext.RsvInfs;
-            var rsvFrameMsts = NoTrackingDataContext.RsvFrameMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var rsvFrameMsts = NoTrackingDataContext.RsvFrameMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // User (Doctor)
-            var userMsts = NoTrackingDataContext.UserMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Ka (Department)
-            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Lock (Function lock)
             var lockInfs = NoTrackingDataContext.LockInfs.Where(x =>
-                x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte);
+                x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte || x.FunctionCd == FunctionCode.SwitchOrderCode);
             // Uketuke
-            var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => isDeleted == 2 || x.IsDeleted == DeleteTypes.None);
+            var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
 
             // 2. Filter collections by parameters
             var filteredRaiinInfs = raiinInfs;
@@ -733,7 +751,7 @@ namespace Infrastructure.Repositories
                             && x.PtId == raiinInf.PtId
                             && x.SinDate < sinDate
                             && x.Status >= RaiinState.TempSave
-                        orderby x.SinDate descending
+                        orderby x.SinDate descending, x.RaiinNo descending
                         select x.SinDate
                     ).FirstOrDefault(),
                     firstVisitDate = (
@@ -749,7 +767,7 @@ namespace Infrastructure.Repositories
                 };
 
             var raiins = raiinQuery.ToList();
-            var grpIds = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && (isDeleted == 2 || x.IsDeleted == DeleteTypes.None)).Select(x => x.GrpCd).ToList();
+            var grpIds = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
             var models = raiins.Select(r => new ReceptionRowModel(
                 r.raiinInf.RaiinNo,
                 r.raiinInf.PtId,
@@ -1231,6 +1249,26 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
 
             return result;
+        }
+
+        public ReceptionModel? GetLastKarute(int hpId, long ptNum)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == ptNum && p.IsDelete == DeleteTypes.None);
+
+            if (ptInf != null)
+            {
+                var raiinInf = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptInf.PtId && r.IsDeleted == DeleteTypes.None
+                                                                                    && r.Status >= RaiinState.TempSave).OrderByDescending(r => r.SinDate).FirstOrDefault();
+                if (raiinInf != null)
+                {
+                    return new ReceptionModel(raiinInf.HpId,
+                                              raiinInf.PtId,
+                                              raiinInf.RaiinNo,
+                                              raiinInf.SinDate);
+                }
+            }
+
+            return null;
         }
 
         public void ReleaseResource()

@@ -127,7 +127,7 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd"))
             );
             SetFieldData("reportGengo", wrkYmd.Gengo);
             SetFieldData("reportYear", wrkYmd.Year.ToString());

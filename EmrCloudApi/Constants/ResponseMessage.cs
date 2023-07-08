@@ -52,6 +52,7 @@
         public static readonly string InvalidGrpKouiKbn = "Invalid GrpKouiKbn";
         public static readonly string InvalidDocCd = "Invalid DocCd";
         public static readonly string InvalidRenkeiId = "Invalid RenkeiId";
+        public static readonly string ErrorBunkatuOdrDetail = "入力できる文字を超えました。\r\n 合計10文字以内に入力してください。";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -174,6 +175,8 @@
         public static readonly string InvalidSelectedHokenPid = "Invalid SelectedHokenPid";
         public static readonly string InvalidException = "Invalid Exception";
         public static readonly string InvalidNoDataSave = "Does not exist data to save";
+        public static readonly string InvalidHistoryPidExistedInputData = "Invalid HistoryPid Existed InputData";
+        public static readonly string HokenPidInvalidNoExisted = "HokenPid Invalid NoExisted";
 
         // Validate Pattern
         public static readonly string InvalidPatternJihiSelectedHokenInfHokenNoEquals0 = "Invalid SelectedHokenInf HokenNo Equals 0";
@@ -970,8 +973,7 @@
 
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";
-        public static readonly string InvalidThisWari = "Invalid ThisWari"; 
-        public static readonly string InvalidCredit = "Invalid Credit";
+        public static readonly string InvalidThisWari = "Invalid ThisWari";
         public static readonly string InvalidPayType = "Invalid PayType";
         public static readonly string InvalidComment = "Invalid Comment";
         public static readonly string StateChanged = "State Changed";

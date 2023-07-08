@@ -9,6 +9,7 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using UseCase.PatientInfor.CheckValidSamePatient;
 using UseCase.PatientInfor.Save;
 
 namespace Interactor.PatientInfor
@@ -28,10 +29,11 @@ namespace Interactor.PatientInfor
 
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
         {
+            PatientInforModel patientInforModel = new();
             var validations = Validation(inputData);
             if (validations.Any())
             {
-                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0);
+                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0, patientInforModel);
             }
             try
             {
@@ -73,10 +75,6 @@ namespace Interactor.PatientInfor
                                     _amazonS3Service.DeleteObjectAsync(item.FileName);
                                 }
                             }
-                            else
-                            {
-                                continue;
-                            }
                         }
                     }
                     return listReturn;
@@ -92,14 +90,11 @@ namespace Interactor.PatientInfor
 
                 if (result.resultSave)
                 {
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId);
+                    patientInforModel = _patientInforRepository.GetById(inputData.HpId, result.ptId, 0, 0) ?? new();
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId, patientInforModel);
                 }
                 else
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
-            }
-            catch
-            {
-                return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0, patientInforModel);
             }
             finally
             {
@@ -118,6 +113,26 @@ namespace Interactor.PatientInfor
 
             #region Patient Info
             string message = string.Empty;
+            if (!model.ReactSave.ConfirmSamePatientInf)
+            {
+                var samePatientInf = _patientInforRepository.FindSamePatient(hpId, model.Patient.Name, model.Patient.Sex, model.Patient.Birthday).Where(item => item.PtId != model.Patient.PtId).ToList();
+                if (samePatientInf.Count > 0)
+                {
+                    string msg = string.Empty;
+                    samePatientInf.ForEach(ptInf =>
+                    {
+                        if (!string.IsNullOrEmpty(msg))
+                        {
+                            msg = msg + Environment.NewLine;
+                        }
+                        msg = msg + "患者番号：" + string.Format("{0,-9}", ptInf.PtNum.AsString());
+                    });
+                    message = string.Format(ErrorMessage.MessageType_mEnt00020, "同姓同名の患者") + Environment.NewLine;
+                    message += msg;
+                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidSamePatient, TypeMessage.TypeMessageWarning));
+                }
+            }
+
             if (model.Patient.PtId == 0 && model.Patient.PtNum != 0)
             {
                 if (_systemConfRepository.GetSettingValue(1001, 0, model.Patient.HpId) == 1)
@@ -155,7 +170,7 @@ namespace Interactor.PatientInfor
             }
 
             resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName ?? string.Empty, model.Patient.Name ?? string.Empty, model.Patient.HpId, model.ReactSave));
-            int sinDay = DateTime.Now.ToString("yyyyMMdd").AsInteger();
+            int sinDay = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
             resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, isUpdate, model.Patient.Birthday, sinDay, hpId, model.ReactSave, model.Patient.MainHokenPid));
 
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)

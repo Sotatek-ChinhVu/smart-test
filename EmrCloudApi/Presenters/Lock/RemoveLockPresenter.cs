@@ -1,15 +1,16 @@
 ﻿using EmrCloudApi.Responses;
-using UseCase.Lock.Check;
+using EmrCloudApi.Responses.Lock;
 using UseCase.Lock.Remove;
 
 namespace EmrCloudApi.Presenters.Lock;
 
 public class RemoveLockPresenter : IRemoveLockOutputPort
 {
-    public Response Result { get; private set; } = new();
+    public Response<UpdateVisitingLockResponse> Result { get; private set; } = new();
 
     public void Complete(RemoveLockOutputData outputData)
     {
+        Result.Data = new UpdateVisitingLockResponse(outputData.ResponseLockList.Select(item => new ResponseLockDto(item)).ToList());
         Result.Message = outputData.Status == RemoveLockStatus.Successed ? "Successed" : "Failed";
         Result.Status = (int)outputData.Status;
     }

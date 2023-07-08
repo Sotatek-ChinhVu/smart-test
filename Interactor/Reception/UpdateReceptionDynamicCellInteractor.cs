@@ -1,5 +1,5 @@
 ﻿using Domain.Models.RaiinKubunMst;
-using Domain.Models.User;
+using Domain.Models.Reception;
 using Helper.Constants;
 using UseCase.Reception.UpdateDynamicCell;
 
@@ -8,21 +8,18 @@ namespace Interactor.Reception;
 public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellInputPort
 {
     private readonly IRaiinKubunMstRepository _raiinKbnInfRepository;
-    private readonly IUserRepository _userRepository;
+    private readonly IReceptionRepository _receptionRepository;
 
-    public UpdateReceptionDynamicCellInteractor(IRaiinKubunMstRepository raiinKbnInfRepository, IUserRepository userRepository)
+    public UpdateReceptionDynamicCellInteractor(IRaiinKubunMstRepository raiinKbnInfRepository, IReceptionRepository receptionRepository)
     {
         _raiinKbnInfRepository = raiinKbnInfRepository;
-        _userRepository = userRepository;
+        _receptionRepository = receptionRepository;
     }
 
     public UpdateReceptionDynamicCellOutputData Handle(UpdateReceptionDynamicCellInputData input)
     {
-        var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(input.HpId, input.PtId, input.RaiinNo, input.SinDate, input.UserId);
-        if (notAllowSave)
-        {
-            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.MedicalScreenLocked);
-        }
+        List<ReceptionRowModel> receptionInfos = new();
+        List<SameVisitModel> sameVisitList = new();
         if (input.HpId <= 0)
         {
             return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidHpId);
@@ -47,7 +44,8 @@ public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellI
         try
         {
             UpdateDynamicCell(input);
-            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.Success);
+            receptionInfos = _receptionRepository.GetList(input.HpId, input.SinDate, input.RaiinNo, input.PtId);
+            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.Success, receptionInfos, sameVisitList);
         }
         finally
         {

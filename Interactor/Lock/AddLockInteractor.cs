@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Lock;
+using Domain.Models.User;
 using UseCase.Lock.Add;
 
 namespace Interactor.Lock
@@ -6,9 +7,11 @@ namespace Interactor.Lock
     public class AddLockInteractor : IAddLockInputPort
     {
         private readonly ILockRepository _lockRepository;
-        public AddLockInteractor(ILockRepository lockRepository)
+        private readonly IUserRepository _userRepository;
+        public AddLockInteractor(ILockRepository lockRepository, IUserRepository userRepository)
         {
             _lockRepository = lockRepository;
+            _userRepository = userRepository;
         }
 
         public AddLockOutputData Handle(AddLockInputData inputData)
@@ -22,20 +25,24 @@ namespace Interactor.Lock
                 int hpId = inputData.HpId;
                 int userId = inputData.UserId;
 
-                bool result = _lockRepository.AddLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, inputData.Token);
+                bool result = _lockRepository.AddLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, inputData.Token, inputData.TabKey);
                 if (result)
                 {
-                    return new AddLockOutputData(AddLockStatus.Successed, new LockModel());
+                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate);
+                    return new AddLockOutputData(AddLockStatus.Successed, new LockModel(), responseLockList);
                 }
                 else
                 {
+                    string userName = _userRepository.GetByUserId(userId)?.Name ?? string.Empty;
                     var lockInfList = _lockRepository.GetLock(hpId, functionCode, ptId, sinDate, raiinNo, userId);
-                    return new AddLockOutputData(AddLockStatus.Existed, lockInfList.FirstOrDefault() ?? new LockModel());
+                    var functionName = _lockRepository.GetFunctionNameLock(functionCode);
+                    return new AddLockOutputData(AddLockStatus.Existed, lockInfList.FirstOrDefault() ?? new LockModel(functionCode, userId, userName, functionName), new());
                 }
             }
             finally
             {
                 _lockRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
             }
         }
     }

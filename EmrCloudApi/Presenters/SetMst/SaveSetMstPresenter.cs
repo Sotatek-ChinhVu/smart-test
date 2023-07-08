@@ -7,11 +7,11 @@ namespace EmrCloudApi.Presenters.SetMst;
 
 public class SaveSetMstPresenter : ISaveSetMstOutputPort
 {
-    public Response<SaveSetMstResponse> Result { get; private set; } = new Response<SaveSetMstResponse>();
+    public Response<GetSetMstListResponse> Result { get; private set; } = new();
 
     public void Complete(SaveSetMstOutputData output)
     {
-        Result.Data = new SaveSetMstResponse(output.setMstModel);
+        Result.Data = new GetSetMstListResponse(output.SetMstList);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

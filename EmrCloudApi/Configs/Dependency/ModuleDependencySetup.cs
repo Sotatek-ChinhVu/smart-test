@@ -1,4 +1,6 @@
-﻿using CommonChecker.DB;
+﻿using CommonChecker.Caches;
+using CommonChecker.Caches.Interface;
+using CommonChecker.DB;
 using CommonChecker.Services;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
@@ -68,6 +70,7 @@ using Domain.Models.UketukeSbtMst;
 using Domain.Models.UsageTreeSet;
 using Domain.Models.User;
 using Domain.Models.UserConf;
+using Domain.Models.UserToken;
 using Domain.Models.VisitingListSetting;
 using Domain.Models.YohoSetMst;
 using EmrCloudApi.Realtime;
@@ -136,6 +139,7 @@ using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SetMst.CommonSuperSet;
+using Interactor.SinKoui;
 using Interactor.SpecialNote;
 using Interactor.StickyNote;
 using Interactor.SuperSetDetail;
@@ -148,6 +152,7 @@ using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
 using Interactor.User;
 using Interactor.UserConf;
+using Interactor.UserToken;
 using Interactor.VisitingList;
 using Interactor.WeightedSetConfirmation;
 using Interactor.YohoSetMst;
@@ -156,6 +161,7 @@ using Reporting.Accounting.DB;
 using Reporting.Accounting.Service;
 using Reporting.AccountingCard.DB;
 using Reporting.AccountingCard.Service;
+using Reporting.Byomei.DB;
 using Reporting.Byomei.Service;
 using Reporting.Calculate.Implementation;
 using Reporting.Calculate.Interface;
@@ -201,12 +207,15 @@ using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.HikariDisk.DB;
 using Reporting.Sokatu.HikariDisk.Service;
 using Reporting.Sokatu.KokhoSeikyu.DB;
+using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSokatu.DB;
 using Reporting.Sokatu.KokhoSokatu.Service;
 using Reporting.Sokatu.KoukiSeikyu.DB;
 using Reporting.Sokatu.KoukiSeikyu.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Reporting.Sokatu.Syaho.Service;
+using Reporting.Sokatu.WelfareSeikyu.DB;
+using Reporting.Sokatu.WelfareSeikyu.Service;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
@@ -258,6 +267,7 @@ using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.DB;
 using Reporting.Yakutai.Service;
 using UseCase.AccountDue.GetAccountDueList;
+using UseCase.AccountDue.IsNyukinExisted;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
 using UseCase.Accounting.CheckOpenAccounting;
@@ -348,6 +358,7 @@ using UseCase.KarteInf.GetList;
 using UseCase.KohiHokenMst.Get;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
+using UseCase.Lock.CheckExistFunctionCode;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
@@ -373,6 +384,7 @@ using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetContainerMst;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
+using UseCase.MedicalExamination.GetHeaderVistitDate;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.MedicalExamination.GetHistoryIndex;
@@ -527,6 +539,7 @@ using UseCase.SetMst.GetList;
 using UseCase.SetMst.GetToolTip;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
+using UseCase.SinKoui.GetSinKoui;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.GetPtWeight;
@@ -545,7 +558,8 @@ using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemConf.SaveDrugCheckSetting;
 using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
-using UseCase.SystemGenerationConf;
+using UseCase.SystemGenerationConf.Get;
+using UseCase.SystemGenerationConf.GetList;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using UseCase.TimeZoneConf.SaveTimeZoneConf;
 using UseCase.Todo.GetListTodoKbn;
@@ -562,17 +576,23 @@ using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.GetAllPermission;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
+using UseCase.User.GetListFunctionPermission;
+using UseCase.User.GetListJobMst;
+using UseCase.User.GetListUserByCurrentUser;
 using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.GetUserConfList;
 using UseCase.User.GetUserConfModelList;
 using UseCase.User.MigrateDatabase;
 using UseCase.User.Sagaku;
+using UseCase.User.SaveListUserMst;
 using UseCase.User.UpdateUserConf;
 using UseCase.User.UpsertList;
 using UseCase.User.UpsertUserConfList;
 using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.UserConf.UserSettingParam;
+using UseCase.UserToken.GetInfoRefresh;
+using UseCase.UserToken.SiginRefresh;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.WeightedSetConfirmation.CheckOpen;
@@ -588,27 +608,15 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.Receipt.ValidateCreateUKEFile;
-using Interactor.PatientInfor.SortPatientCommon;
-using Reporting.DrugNoteSeal.Service;
-using Reporting.DrugNoteSeal.DB;
-using Reporting.Sokatu.HikariDisk.DB;
-using Reporting.Sokatu.HikariDisk.Service;
-using Reporting.Sokatu.KoukiSeikyu.DB;
-using UseCase.RaiinListSetting.GetDocCategory;
-using Interactor.RaiinListSetting;
-using Domain.Models.RaiinListSetting;
-using UseCase.RaiinListSetting.GetFilingcategory;
-using Reporting.Sokatu.AfterCareSeikyu.Service;
-using Reporting.Sokatu.AfterCareSeikyu.DB;
-using Reporting.Sijisen.DB;
-using Reporting.Sokatu.Syaho.Service;
-using Reporting.Sokatu.Syaho.DB;
-using Interactor.SetMst.CommonSuperSet;
-using Reporting.Sokatu.WelfareSeikyu.DB;
-using Reporting.Byomei.DB;
-using UseCase.User.GetListUserByCurrentUser;
-using UseCase.MedicalExamination.GetHeaderVistitDate;
+using UseCase.Lock.CheckExistFunctionCode;
+using CommonChecker.Caches.Interface;
+using CommonChecker.Caches;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.AccountDue.IsNyukinExisted;
+using UseCase.Lock.CheckLockOpenAccounting;
+using Reporting.Karte3.Service;
+using Reporting.Karte3.DB;
+using UseCase.Reception.GetLastKarute;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -639,12 +647,13 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
-            services.AddTransient<IUserService, UserService>();
 
             //Cache data
             services.AddScoped<IUserInfoService, UserInfoService>();
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
+
+            services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
@@ -777,6 +786,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
+            services.AddTransient<IP08KokhoSeikyuCoReportService, P08KokhoSeikyuCoReportService>();
+            services.AddTransient<IP22WelfareSeikyuCoReportService, P22WelfareSeikyuCoReportService>();
+            services.AddTransient<IKarte3CoReportService, Karte3CoReportService>();
+            services.AddTransient<ICoKarte3Finder, CoKarte3Finder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -879,6 +893,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICommonSuperSet, CommonSuperSet>();
             services.AddTransient<ICoKarte1Finder, CoKarte1Finder>();
             services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
+            services.AddTransient<ICheckOpenReportingService, CheckOpenReportingService>();
+            services.AddTransient<IUserTokenRepository, UserTokenRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -895,6 +911,11 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
             busBuilder.RegisterUseCase<GetAllPermissionInputData, GetAllPermissionInteractor>();
             busBuilder.RegisterUseCase<GetListUserByCurrentUserInputData, GetListUserByCurrentUserInteractor>();
+            busBuilder.RegisterUseCase<GetListJobMstInputData, GetListJobMstInteractor>();
+            busBuilder.RegisterUseCase<GetListFunctionPermissionInputData, GetListFunctionPermissionInteractor>();
+            busBuilder.RegisterUseCase<SaveListUserMstInputData, SaveListUserMstInteractor>();
+            busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
+            busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
@@ -1162,6 +1183,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Reception - Valid Pattern Expirated
             busBuilder.RegisterUseCase<ValidPatternExpiratedInputData, ValidPatternExpiratedInteractor>();
+            busBuilder.RegisterUseCase<GetLastKaruteInputData, GetLastKaruteInteractor>();
 
             //System Conf
             busBuilder.RegisterUseCase<GetSystemConfInputData, GetSystemConfInteractor>();
@@ -1185,6 +1207,7 @@ namespace EmrCloudApi.Configs.Dependency
             //AccoutDue
             busBuilder.RegisterUseCase<GetAccountDueListInputData, GetAccountDueListInteractor>();
             busBuilder.RegisterUseCase<SaveAccountDueListInputData, SaveAccountDueListInteractor>();
+            busBuilder.RegisterUseCase<IsNyukinExistedInputData, IsNyukinExistedInteractor>();
 
             //Accounting
             busBuilder.RegisterUseCase<GetAccountingInputData, GetAccountingInteractor>();
@@ -1219,6 +1242,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //System Config Generation 
             busBuilder.RegisterUseCase<GetSystemGenerationConfInputData, GetSystemGenerationConfInteractor>();
+            busBuilder.RegisterUseCase<GetSystemGenerationConfListInputData, GetSystemGenerationConfListInteractor>();
 
             //Next Order
             busBuilder.RegisterUseCase<GetNextOrderListInputData, GetNextOrderListInteractor>();
@@ -1341,6 +1365,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
             busBuilder.RegisterUseCase<GetLockInfoInputData, GetLockInfoInteractor>();
             busBuilder.RegisterUseCase<CheckLockVisitingInputData, CheckLockVisitingInteractor>();
+            busBuilder.RegisterUseCase<CheckExistFunctionCodeInputData, CheckExistFunctionCodeInteractor>();
+            busBuilder.RegisterUseCase<CheckLockOpenAccountingInputData, CheckLockOpenAccountingInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
@@ -1361,6 +1387,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFilingcategoryInputData, GetFilingcategoryInteractor>();
             busBuilder.RegisterUseCase<GetRaiiinListSettingInputData, GetRaiiinListSettingInteractor>();
             busBuilder.RegisterUseCase<SaveRaiinListSettingInputData, SaveRaiinListSettingInteractor>();
+            //SinKoui
+            busBuilder.RegisterUseCase<GetListSinKouiInputData, GetListSinKouiInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

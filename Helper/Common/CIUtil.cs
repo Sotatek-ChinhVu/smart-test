@@ -236,7 +236,7 @@ namespace Helper.Common
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
 
-            if (endIndex < input.Length)
+            if (endIndex <= input.Length)
             {
                 return input.Substring(startIndex, endIndex);
             }
@@ -552,7 +552,7 @@ namespace Helper.Common
         {
             int Result = 0;
             // Get current year, month, day
-            DateTime currentDate = DateTime.Now;
+            DateTime currentDate = CIUtil.GetJapanDateTimeNow();
 
             int numberOfSeparators = ymd.Count(c => c == '/');
             if (numberOfSeparators == 0)
@@ -580,7 +580,7 @@ namespace Helper.Common
 
             if (numberOfSeparators == 1)
             {
-                string temp = DateTime.Now.Year.AsString() + "/";
+                string temp = CIUtil.GetJapanDateTimeNow().Year.AsString() + "/";
                 int firstLocation = ymd.IndexOf('/');
 
                 temp += ymd.Substring(0, firstLocation).PadLeft(2, '0') + "/";
@@ -1230,7 +1230,7 @@ namespace Helper.Common
             int result = 0;
             char wGengo;
             string wYmd = ymd.Trim();
-            DateTime currentDate = DateTime.Now;
+            DateTime currentDate = CIUtil.GetJapanDateTimeNow();
 
             // One character : Current date of current month
             // 一文字は当月のその日
@@ -1409,7 +1409,7 @@ namespace Helper.Common
 
                 if (delimiterCount == 1)
                 {
-                    int sYear = DateTime.Now.Year;
+                    int sYear = CIUtil.GetJapanDateTimeNow().Year;
                     // m/d or mm/dd
                     //Extract month and day part
                     string sMonth = wYmd.Substring(0, wYmd.IndexOf('/'));
@@ -3288,7 +3288,7 @@ namespace Helper.Common
             int delimiterCount = 0;
             string sTemp;
             string wYm = Ym.Trim();
-            DateTime currentDate = DateTime.Now;
+            DateTime currentDate = CIUtil.GetJapanDateTimeNow();
 
             // Input month only
             int iYm = wYm.AsInteger();

@@ -32,5 +32,5 @@ public interface IAmazonS3Service
 
     string GetAccessBaseS3();
 
-    Task<bool> S3FilePathIsExists(string locationFile);
+    Task<(bool valid, string key)> S3FilePathIsExists(string locationFile);
 }

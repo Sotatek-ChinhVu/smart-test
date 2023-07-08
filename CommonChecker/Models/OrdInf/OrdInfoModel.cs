@@ -46,11 +46,5 @@ namespace CommonChecker.Models.OrdInf
                 return new List<OrdInfoDetailModel>(OrdInfDetails.Where(o => !o.IsEmpty).ToList());
             }
         }
-
-        public OrdInfoModel ChangeOdrDetail(List<OrdInfoDetailModel> ordInfDetails)
-        {
-            OrdInfDetails = ordInfDetails;
-            return this;
-        }
     }
 }

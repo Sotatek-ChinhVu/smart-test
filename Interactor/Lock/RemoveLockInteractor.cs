@@ -21,17 +21,27 @@ namespace Interactor.Lock
                 int sinDate = inputData.SinDate;
                 int hpId = inputData.HpId;
                 int userId = inputData.UserId;
+                string tabKey = inputData.TabKey;
 
-                bool result;
+                List<long> result;
                 if (inputData.IsRemoveAllLock)
                 {
                     result = _lockRepository.RemoveAllLock(hpId, userId);
+                }
+                else if (inputData.IsRemoveAllLockPtId)
+                {
+                    result = _lockRepository.RemoveAllLock(hpId, userId, ptId, sinDate, functionCode, tabKey);
                 }
                 else
                 {
                     result = _lockRepository.RemoveLock(hpId, functionCode, ptId, sinDate, raiinNo, userId);
                 }
-                return new RemoveLockOutputData(result ? RemoveLockStatus.Successed : RemoveLockStatus.Failed);
+                if (result.Any())
+                {
+                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate);
+                    return new RemoveLockOutputData(RemoveLockStatus.Successed, responseLockList);
+                }
+                return new RemoveLockOutputData(RemoveLockStatus.Failed, new());
             }
             finally
             {

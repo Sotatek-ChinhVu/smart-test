@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Document;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
@@ -104,7 +105,7 @@ public class DeleteDocCategoryInteractor : IDeleteDocCategoryInputPort
                     if (indexExtentFile > 0)
                     {
                         string extentFile = destinationFile.Substring(indexExtentFile);
-                        destinationFile = destinationFile.Replace(extentFile, "_" + DateTime.UtcNow.ToString("yyyyMMdd_HHMMss")) + extentFile;
+                        destinationFile = destinationFile.Replace(extentFile, "_" + CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd_HHMMss")) + extentFile;
                     }
                 }
                 _amazonS3Service.MoveObjectAsync(sourceFile, destinationFile);

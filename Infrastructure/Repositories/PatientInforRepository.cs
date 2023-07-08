@@ -5,6 +5,7 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.MaxMoney;
 using Domain.Models.PatientInfor;
+using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -21,8 +22,10 @@ namespace Infrastructure.Repositories
     public class PatientInforRepository : RepositoryBase, IPatientInforRepository
     {
         private const string startGroupOrderKey = "group_";
-        public PatientInforRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IReceptionRepository _receptionRepository;
+        public PatientInforRepository(ITenantProvider tenantProvider, IReceptionRepository receptionRepository) : base(tenantProvider)
         {
+            _receptionRepository = receptionRepository;
         }
 
         (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId)
@@ -86,156 +89,81 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo)
+        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo)
         {
-
-            var itemData = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
-
-
-            // Raiin Count
-            int raiinCount = 0;
-
-            // status = RaiinState Receptionist
-            var GetCountraiinInf = NoTrackingDataContext.RaiinInfs.Where(u => u.HpId == hpId &&
-                                                                         u.SinDate == sinDate &&
-                                                                         u.RaiinNo != raiinNo &&
-                                                                         u.IsDeleted == DeleteTypes.None &&
-                                                                         u.Status == 1).ToList();
-            if (GetCountraiinInf != null && GetCountraiinInf.Count > 0)
-            {
-                raiinCount = GetCountraiinInf.Count;
-            }
+            var itemData = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
 
             if (itemData == null)
             {
-                return new PatientInforModel(
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    "",
-                    "",
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    0,
-                    0,
-                    0,
-                    0,
-                    "",
-                    0,
-                    0,
-                    raiinCount);
+                return new();
             }
-            else
+
+            // Raiin Count
+            // status = RaiinState Receptionist
+            int raiinCount = NoTrackingDataContext.RaiinInfs.Count(u => u.HpId == hpId &&
+                                                                        u.SinDate == sinDate &&
+                                                                        u.RaiinNo != raiinNo &&
+                                                                        u.IsDeleted == DeleteTypes.None &&
+                                                                        u.Status == 1);
+
+            //Get ptMemo
+            string memo = string.Empty;
+            PtMemo? ptMemo = NoTrackingDataContext.PtMemos.FirstOrDefault(x => x.PtId == itemData.PtId);
+            if (ptMemo != null)
             {
-
-                //Get ptMemo
-                string memo = string.Empty;
-                PtMemo? ptMemo = NoTrackingDataContext.PtMemos.Where(x => x.PtId == itemData.PtId).FirstOrDefault();
-                if (ptMemo != null)
-                {
-                    memo = ptMemo.Memo ?? string.Empty;
-                }
-
-
-                //Get lastVisitDate
-                int lastVisitDate = 0;
-                RaiinInf? raiinInf = NoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId &&
-                                                           p.PtId == ptId &&
-                                                           p.IsDeleted == DeleteTypes.None &&
-                                                           p.Status >= RaiinState.TempSave &&
-                                                           (sinDate <= 0 || p.SinDate < sinDate))
-                                                            .OrderByDescending(p => p.SinDate)
-                                                            .ThenByDescending(p => p.RaiinNo)
-                                                            .FirstOrDefault();
-                if (raiinInf != null)
-                {
-                    lastVisitDate = raiinInf.SinDate;
-                }
-
-                //Get First Visit Date
-                int firstDate = 0;
-                RaiinInf? raiinInfFirstDate = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId
-                                                                               && x.PtId == itemData.PtId
-                                                                               && x.SyosaisinKbn == SyosaiConst.Syosin
-                                                                               && x.Status >= RaiinState.TempSave
-                                                                               && x.IsDeleted == DeleteTypes.None
-                    )
-                    .OrderByDescending(x => x.SinDate)
-                    .FirstOrDefault();
-                if (raiinInfFirstDate != null)
-                {
-                    firstDate = raiinInfFirstDate.SinDate;
-                }
-
-                return new PatientInforModel(
-                    itemData.HpId,
-                    itemData.PtId,
-                    itemData.ReferenceNo,
-                    itemData.SeqNo,
-                    itemData.PtNum,
-                    itemData.KanaName ?? string.Empty,
-                    itemData.Name ?? string.Empty,
-                    itemData.Sex,
-                    itemData.Birthday,
-                    itemData.LimitConsFlg,
-                    itemData.IsDead,
-                    itemData.DeathDate,
-                    itemData.HomePost ?? string.Empty,
-                    itemData.HomeAddress1 ?? string.Empty,
-                    itemData.HomeAddress2 ?? string.Empty,
-                    itemData.Tel1 ?? string.Empty,
-                    itemData.Tel2 ?? string.Empty,
-                    itemData.Mail ?? string.Empty,
-                    itemData.Setanusi ?? string.Empty,
-                    itemData.Zokugara ?? string.Empty,
-                    itemData.Job ?? string.Empty,
-                    itemData.RenrakuName ?? string.Empty,
-                    itemData.RenrakuPost ?? string.Empty,
-                    itemData.RenrakuAddress1 ?? string.Empty,
-                    itemData.RenrakuAddress2 ?? string.Empty,
-                    itemData.RenrakuTel ?? string.Empty,
-                    itemData.RenrakuMemo ?? string.Empty,
-                    itemData.OfficeName ?? string.Empty,
-                    itemData.OfficePost ?? string.Empty,
-                    itemData.OfficeAddress1 ?? string.Empty,
-                    itemData.OfficeAddress2 ?? string.Empty,
-                    itemData.OfficeTel ?? string.Empty,
-                    itemData.OfficeMemo ?? string.Empty,
-                    itemData.IsRyosyoDetail,
-                    itemData.PrimaryDoctor,
-                    itemData.IsTester,
-                    itemData.MainHokenPid,
-                    memo,
-                    lastVisitDate,
-                    firstDate,
-                    raiinCount);
+                memo = ptMemo.Memo ?? string.Empty;
             }
+
+            //Get lastVisitDate
+            int lastVisitDate = _receptionRepository.GetLastVisit(hpId, ptId, sinDate)?.SinDate ?? 0;
+
+            //Get First Visit Date
+            int firstDate = _receptionRepository.GetFirstVisitWithSyosin(hpId, ptId, sinDate);
+            string comment = NoTrackingDataContext.PtCmtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)?.Text ?? string.Empty;
+
+            return new PatientInforModel(
+                itemData.HpId,
+                itemData.PtId,
+                itemData.ReferenceNo,
+                itemData.SeqNo,
+                itemData.PtNum,
+                itemData.KanaName ?? string.Empty,
+                itemData.Name ?? string.Empty,
+                itemData.Sex,
+                itemData.Birthday,
+                itemData.LimitConsFlg,
+                itemData.IsDead,
+                itemData.DeathDate,
+                itemData.HomePost ?? string.Empty,
+                itemData.HomeAddress1 ?? string.Empty,
+                itemData.HomeAddress2 ?? string.Empty,
+                itemData.Tel1 ?? string.Empty,
+                itemData.Tel2 ?? string.Empty,
+                itemData.Mail ?? string.Empty,
+                itemData.Setanusi ?? string.Empty,
+                itemData.Zokugara ?? string.Empty,
+                itemData.Job ?? string.Empty,
+                itemData.RenrakuName ?? string.Empty,
+                itemData.RenrakuPost ?? string.Empty,
+                itemData.RenrakuAddress1 ?? string.Empty,
+                itemData.RenrakuAddress2 ?? string.Empty,
+                itemData.RenrakuTel ?? string.Empty,
+                itemData.RenrakuMemo ?? string.Empty,
+                itemData.OfficeName ?? string.Empty,
+                itemData.OfficePost ?? string.Empty,
+                itemData.OfficeAddress1 ?? string.Empty,
+                itemData.OfficeAddress2 ?? string.Empty,
+                itemData.OfficeTel ?? string.Empty,
+                itemData.OfficeMemo ?? string.Empty,
+                itemData.IsRyosyoDetail,
+                itemData.PrimaryDoctor,
+                itemData.IsTester,
+                itemData.MainHokenPid,
+                memo,
+                lastVisitDate,
+                firstDate,
+                raiinCount,
+                comment);
         }
 
         public bool CheckExistIdList(List<long> ptIds)
@@ -702,7 +630,7 @@ namespace Infrastructure.Repositories
 
             int GetBirthDayFromAge(int age)
             {
-                var bithDay = DateTime.Now.AddYears(-age);
+                var bithDay = CIUtil.GetJapanDateTimeNow().AddYears(-age);
                 return CIUtil.ShowSDateToSDate(bithDay.ToString("yyyyMMdd"));
             }
 
@@ -772,7 +700,8 @@ namespace Infrastructure.Repositories
                 memo,
                 lastVisitDate,
                 0,
-                0);
+                0,
+                string.Empty);
         }
 
         public PatientInforModel PatientCommentModels(int hpId, long ptId)
@@ -931,21 +860,31 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting)
         {
+            if (ptNum > 9999999999)
+            {
+                return new();
+            }
+            int originPageSize = pageSize;
+            if (isPtNumCheckDigit)
+            {
+                pageSize = pageSize * 10;
+            }
             long endIndex = (pageIndex - 1) * pageSize + ptNum + pageSize;
             long startIndex = (pageIndex - 1) * pageSize + ptNum;
-            var result = new List<PatientInforModel>();
+            List<PatientInforModel> result = new();
 
             var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
-
             for (long i = startIndex; i < endIndex; i++)
             {
+                if (result.Count > originPageSize || i > 9999999999)
+                {
+                    break;
+                }
                 if (isPtNumCheckDigit && !CIUtil.PtNumCheckDigits(i))
                 {
-                    endIndex++;
                     continue;
                 }
-
-                var checkExistPtNum = existPtNum.FirstOrDefault(p => p.PtNum == i && (autoSetting != 1 ? true : p.IsDelete == 0));
+                var checkExistPtNum = existPtNum.FirstOrDefault(p => p.PtNum == i && (autoSetting != 1 || p.IsDelete == 0));
                 if (checkExistPtNum == null)
                 {
                     result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き)")));
@@ -1349,33 +1288,43 @@ namespace Infrastructure.Repositories
 
         private long GetAutoPtNumAction(long startValue, int hpId)
         {
+            int ptNumCheckDigit = (int)GetSettingValue(1001, hpId, 0);
             int autoSetting = (int)GetSettingValue(1014, hpId, 0);
-            var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault
-                (ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum == startValue);
-            if (ptNumExisting == null)
-            {
-                return startValue;
-            }
-
-            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue)
-               .OrderBy(ptInf => ptInf.PtNum);
-
+            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue).Select(pt => pt.PtNum);
             long minPtNum = 0;
-            if (ptList != null && ptList.Any())
+
+            if (ptNumCheckDigit == 1)
             {
-                var queryNotExistPtNum =
-                    from ptInf in ptList
-                    where !(from ptInfDistinct in ptList
-                            select ptInfDistinct.PtNum)
-                           .Contains(ptInf.PtNum + 1)
-                    orderby ptInf.PtNum
-                    select ptInf.PtNum;
-                if (queryNotExistPtNum != null)
+                if (ptList != null && ptList.Any())
                 {
-                    minPtNum = queryNotExistPtNum.FirstOrDefault();
+                    var ptListDropNumberUnit = ptList.Select(pt => (long)(pt / 10));
+                    var ptInfNoNext = ptList?.Where(pt => !ptListDropNumberUnit.Distinct().Contains(((pt / 10) + 1))).Select(pt => pt / 10).OrderBy(pt => pt).ToList();
+
+                    if (ptInfNoNext != null && ptInfNoNext.Any())
+                    {
+                        minPtNum = ptInfNoNext.FirstOrDefault();
+                    }
                 }
+                return CIUtil.PtIDChkDgtMakeM10W31(minPtNum + 1);
             }
-            return minPtNum + 1;
+            else
+            {
+                var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault
+                    (ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum == startValue);
+                if (ptNumExisting == null)
+                {
+                    return startValue;
+                }
+
+                var ptInfNoNext = ptList?.Where(pt => !ptList.Distinct().Contains(pt + 1)).OrderBy(pt => pt).ToList();
+
+                if (ptInfNoNext != null && ptInfNoNext.Any())
+                {
+                    minPtNum = ptInfNoNext.FirstOrDefault();
+                }
+
+                return minPtNum + 1;
+            }
         }
 
         public (bool resultSave, long ptId) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
@@ -2124,7 +2073,8 @@ namespace Infrastructure.Repositories
                         string.Empty,
                         0,
                         0,
-                        0
+                        0,
+                        string.Empty
                     );
         }
 
@@ -2614,7 +2564,8 @@ namespace Infrastructure.Repositories
                                                                                   string.Empty,
                                                                                   0,
                                                                                   0,
-                                                                                  0)).ToList();
+                                                                                  0,
+                                                                                  string.Empty)).ToList();
         }
     }
 }

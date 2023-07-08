@@ -18,6 +18,7 @@ using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Infrastructure.Interfaces;
@@ -255,7 +256,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
             //Special Note
             var summaryTab = inputDatas.SpecialNoteItem.SummaryTab;
-            var summaryInfModel = new SummaryInfModel(summaryTab.Id, summaryTab.HpId, summaryTab.PtId, summaryTab.SeqNo, summaryTab.Text, summaryTab.Rtext, DateTime.UtcNow, DateTime.UtcNow);
+            var summaryInfModel = new SummaryInfModel(summaryTab.Id, summaryTab.HpId, summaryTab.PtId, summaryTab.SeqNo, summaryTab.Text, summaryTab.Rtext, CIUtil.GetJapanDateTimeNow(), CIUtil.GetJapanDateTimeNow());
             var patientInfTab = new PatientInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.PregnancyItems.Select(p => new PtPregnancyModel(
                         p.Id,
                         p.HpId,
@@ -268,7 +269,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         p.OvulationDate,
                         p.OvulationDueDate,
                         p.IsDeleted,
-                        DateTime.UtcNow,
+                        CIUtil.GetJapanDateTimeNow(),
                         inputDatas.UserId,
                         string.Empty,
                         p.SinDate
@@ -376,13 +377,19 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
         if (saveSuccess)
         {
+            List<FileInfModel> fileList = new();
             var fileInfUpdateTemp = CopyFileFromDoActionToKarte(ptInf != null ? ptInf.PtNum : 0, listFileName);
             if (fileInfUpdateTemp.Any())
             {
-                listUpdates = fileInfUpdateTemp.Select(item => item.Value).ToList();
+                var checkIsSchemaList = _karteInfRepository.ListCheckIsSchema(hpId, ptId, fileInfUpdateTemp);
+                foreach (var item in fileInfUpdateTemp.Select(item => item.Value))
+                {
+                    var isSchema = checkIsSchemaList.ContainsKey(item) && checkIsSchemaList[item];
+                    fileList.Add(new FileInfModel(isSchema, item));
+                }
             }
 
-            _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, listUpdates.Select(item => new FileInfModel(false, item)).ToList(), false);
+            _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, fileList, false);
         }
         else
         {
