@@ -63,6 +63,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             this.seikyuYm = seikyuYm;
             this.seikyuType = seikyuType;
             var getData = GetData();
+            currentPage = 1;
+            hasNextPage = true;
 
             while (getData && hasNextPage)
             {
