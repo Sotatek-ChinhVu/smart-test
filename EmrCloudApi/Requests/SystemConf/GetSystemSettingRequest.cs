@@ -2,6 +2,5 @@
 {
     public class GetSystemSettingRequest
     {
-        public int HpId { get; set; }
     }
 }

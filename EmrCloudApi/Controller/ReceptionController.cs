@@ -30,6 +30,7 @@ using UseCase.RaiinKbn.GetPatientRaiinKubunList;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
+using UseCase.Reception.GetLastKarute;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetRaiinListWithKanInf;
@@ -96,8 +97,7 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
             if (output.Status == InsertReceptionStatus.Success)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = output.RaiinNo, PtId = input.Dto.Reception.PtId });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new InsertReceptionPresenter();
@@ -113,8 +113,7 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
             if (output.Status == UpdateReceptionStatus.Success)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = input.Dto.Reception.RaiinNo, PtId = input.Dto.Reception.PtId });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new UpdateReceptionPresenter();
@@ -191,7 +190,8 @@ namespace EmrCloudApi.Controller
                                                            request.IsKohiHaveHokenMst1, request.KohiConfirmDate1, request.KohiHokenMstDisplayTextMaster1, request.KohiHokenMstStartDate1, request.KohiHokenMstEndDate1,
                                                            request.IsEmptyKohi2, request.IsKohiHaveHokenMst2, request.KohiConfirmDate2, request.KohiHokenMstDisplayTextMaster2, request.KohiHokenMstStartDate2,
                                                            request.KohiHokenMstEndDate2, request.IsEmptyKohi3, request.IsKohiHaveHokenMst3, request.KohiConfirmDate3, request.KohiHokenMstDisplayTextMaster3, request.KohiHokenMstStartDate3,
-                                                           request.KohiHokenMstEndDate3, request.IsEmptyKohi4, request.IsKohiHaveHokenMst4, request.KohiConfirmDate4, request.KohiHokenMstDisplayTextMaster4, request.KohiHokenMstStartDate4, request.KohiHokenMstEndDate4, request.PatientInfBirthday, request.PatternHokenKbn);
+                                                           request.KohiHokenMstEndDate3, request.IsEmptyKohi4, request.IsKohiHaveHokenMst4, request.KohiConfirmDate4, request.KohiHokenMstDisplayTextMaster4, request.KohiHokenMstStartDate4, request.KohiHokenMstEndDate4, request.PatientInfBirthday, request.PatternHokenKbn
+                                                           , request.SelectedHokenInfIsEmptyModel);
             var output = _bus.Handle(input);
 
             var presenter = new ValidPatternExpiratedPresenter();
@@ -276,8 +276,7 @@ namespace EmrCloudApi.Controller
             var deleteFirst = output.DeleteReceptionItems.FirstOrDefault();
             if (output.Status == DeleteReceptionStatus.Successed && deleteFirst != null)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                    new CommonMessage { SinDate = deleteFirst.SinDate, RaiinNo = deleteFirst.RaiinNo, PtId = deleteFirst.PtId });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new DeleteReceptionPresenter();
@@ -285,5 +284,22 @@ namespace EmrCloudApi.Controller
 
             return Ok(presenter.Result);
         }
+
+        [HttpGet(ApiPath.GetLastKarute)]
+        public ActionResult<Response<GetLastKaruteResponse>> GetLastKarute([FromQuery] GetLastKaruteRequest request)
+        {
+            var input = new GetLastKaruteInputData(HpId, request.PtNum);
+            var output = _bus.Handle(input);
+            var presenter = new GetLastKarutePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetLastKaruteResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.Test)]
+        public ActionResult<Response<DeleteReceptionResponse>> Test(DeleteReceptionRequest request)
+        {
+            return Ok();
+        }
+
     }
 }

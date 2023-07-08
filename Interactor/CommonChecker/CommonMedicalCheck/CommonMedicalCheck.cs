@@ -1,4 +1,6 @@
-﻿using CommonChecker.DB;
+﻿using CommonChecker.Caches;
+using CommonChecker.Caches.Interface;
+using CommonChecker.DB;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
@@ -49,9 +51,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     private readonly double _currentWeight = 0;
 
     private readonly ITenantProvider _tenantProvider;
+    private readonly IMasterDataCacheService _masterDataCacheService;
 
     public CommonMedicalCheck(ITenantProvider tenantProvider, IRealtimeOrderErrorFinder realtimeOrderErrorFinder)
     {
+        _masterDataCacheService = new MasterDataCacheService(tenantProvider);
         _tenantProvider = tenantProvider;
         _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
         _itemNameDictionary = new();
@@ -72,10 +76,26 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
     public void InitUnitCheck(UnitChecker<OrdInfoModel, OrdInfoDetailModel> unitChecker)
     {
-        unitChecker.DataContext = _tenantProvider.GetNoTrackingDataContext();
         unitChecker.HpID = _hpID;
         unitChecker.PtID = _ptID;
         unitChecker.Sinday = _sinday;
+        unitChecker.InitFinder(_tenantProvider.GetNoTrackingDataContext(), _masterDataCacheService);
+    }
+
+    private void InitTenMstCache(List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
+    {
+        List<string> itemCodeList = new List<string>();
+
+        foreach (var order in currentListOdr)
+        {
+            itemCodeList.AddRange(order.OdrInfDetailModelsIgnoreEmpty.Select(i => i.ItemCd).ToList());
+        }
+
+        foreach (var order in listCheckingOrder)
+        {
+            itemCodeList.AddRange(order.OdrInfDetailModelsIgnoreEmpty.Select(i => i.ItemCd).ToList());
+        }
+        _masterDataCacheService.InitCache(itemCodeList.Distinct().ToList(), _sinday, _ptID);
     }
 
     public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb, RealTimeCheckerCondition realTimeCheckerCondition)
@@ -87,6 +107,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listErrorOfAllOrder = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
         List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
         List<OrdInfoModel> tempCurrentListOdr = new List<OrdInfoModel>(currentListOdr);
+
+        InitTenMstCache(currentListOdr, listCheckingOrder);
 
         listCheckingOrder.ForEach((order) =>
         {
@@ -148,6 +170,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listErrorOfAllOrder = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
         List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
         List<OrdInfoModel> tempCurrentListOdr = new();
+
+        InitTenMstCache(new List<OrdInfoModel>(), listCheckingOrder);
 
         listCheckingOrder.ForEach((order) =>
         {
@@ -732,9 +756,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<ErrorInfoModel> result = new List<ErrorInfoModel>();
 
         var errorGroup = (from a in allergyInfo
-                          group a by new { a.YjCd, a.AllergyYjCd }
+                          group a by new { a.YjCd, a.AllergyYjCd , a.Id}
                           into gcs
-                          select new { gcs.Key.YjCd, gcs.Key.AllergyYjCd }
+                          select new { gcs.Key.YjCd, gcs.Key.AllergyYjCd , gcs.Key.Id}
                           ).ToList();
 
         foreach (var error in errorGroup)
@@ -748,6 +772,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string allergyItemName = _itemNameDictionary.ContainsKey(error.AllergyYjCd) ? _itemNameDictionary[error.AllergyYjCd] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.DrugAllergyChecker,
+                Id = error.Id,
                 FirstCellContent = "アレルギー",
                 ThridCellContent = itemName,
                 FourthCellContent = allergyItemName
@@ -827,6 +853,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string itemName = _itemNameByItemCodeDictionary.ContainsKey(a.ItemCd) ? _itemNameByItemCodeDictionary[a.ItemCd] : string.Empty;
             ErrorInfoModel info = new ErrorInfoModel()
             {
+                ErrorType = CommonCheckerType.DrugAllergyChecker,
                 Id = a.Id,
                 FirstCellContent = "アレルギー",
                 ThridCellContent = itemName,
@@ -871,6 +898,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string foodName = _foodNameDictionary.ContainsKey(error.AlrgyKbn) ? _foodNameDictionary[error.AlrgyKbn] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.FoodAllergyChecker,
                 Id = error.Id,
                 FirstCellContent = "アレルギー",
                 ThridCellContent = itemName,
@@ -929,6 +957,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string itemName = _itemNameDictionary.ContainsKey(error.YjCd) ? _itemNameDictionary[error.YjCd] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.AgeChecker,
                 Id = error.Id,
                 FirstCellContent = "投与年齢",
                 ThridCellContent = itemName,
@@ -1007,6 +1036,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.DiseaseChecker,
                 Id = drugDiseaseCode.Id,
                 FirstCellContent = DiseaseTypeName(drugDiseaseCode.DiseaseType),
                 ThridCellContent = itemName,
@@ -1123,6 +1153,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.KinkiChecker,
                 Id = kikinCode.Id,
                 FirstCellContent = GetCheckingTitle(),
                 ThridCellContent = itemAName,
@@ -1259,6 +1290,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.KinkiChecker,
                 Id = k.Id,
                 FirstCellContent = "相互作用",
                 ThridCellContent = itemAName,
@@ -1294,6 +1326,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string itemName = _itemNameDictionary.ContainsKey(dayLimit.YjCd) ? _itemNameDictionary[dayLimit.YjCd] : string.Empty;
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
+            errorInfoModel.ErrorType = CommonCheckerType.DayLimitChecker;
             errorInfoModel.Id = dayLimit.Id;
             errorInfoModel.FirstCellContent = "投与日数";
             errorInfoModel.SecondCellContent = "ー";
@@ -1322,6 +1355,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
             string itemName = _itemNameDictionary.ContainsKey(dosage.YjCd) ? _itemNameDictionary[dosage.YjCd] : string.Empty;
+            errorInfoModel.ErrorType = CommonCheckerType.DosageChecker;
             errorInfoModel.Id = dosage.Id;
             errorInfoModel.FirstCellContent = "投与量";
             errorInfoModel.ThridCellContent = itemName;
@@ -1395,6 +1429,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
+            errorInfoModel.ErrorType = CommonCheckerType.DuplicationChecker;
             errorInfoModel.Id = duplicationError.Id;
             errorInfoModel.FirstCellContent = duplicationError.IsComponentDuplicated ? "成分重複" : "同一薬剤";
             errorInfoModel.SecondCellContent = "ー";
@@ -1416,7 +1451,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 BorderBrushCode = LevelConfig.DuplicationCommonSource[duplicationError.Level][1],
                 Title = LevelConfig.DuplicationCommonSource[duplicationError.Level][2],
                 FirstItemName = itemName,
-                SecondItemName = duplicationError.IsComponentDuplicated || duplicationError.IsIppanCdDuplicated ? duplicatedItemName : string.Empty
+                SecondItemName = duplicationError.IsComponentDuplicated || duplicationError.IsIppanCdDuplicated ? duplicatedItemName : string.Empty,
+                Level = duplicationError.Level
             };
 
             if (duplicationError.IsIppanCdDuplicated)

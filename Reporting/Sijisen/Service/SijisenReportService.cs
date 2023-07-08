@@ -70,7 +70,7 @@ public class SijisenReportService : ISijisenReportService
             this.odrKouiKbns = odrKouiKbns;
         }
         this.printNoOdr = printNoOdr;
-        printoutDateTime = DateTime.Now;
+        printoutDateTime = CIUtil.GetJapanDateTimeNow();
         currentPage = 1;
 
         GetRowCount();

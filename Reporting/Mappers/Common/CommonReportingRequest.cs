@@ -15,6 +15,7 @@ public class CommonReportingRequest : ICommonReportingRequest
             ExtralData = GetExtralData(),
             ListTextData = GetListTextData(),
             SetFieldData = GetSetFieldData(),
+            ReportConfigPerPage = GetReportConfigModelPerPage(),
             ReportConfigModel = new ReportConfigModel()
             {
                 VisibleFieldList = GetVisibleFieldData(),
@@ -87,6 +88,11 @@ public class CommonReportingRequest : ICommonReportingRequest
     }
 
     public virtual Dictionary<int, Dictionary<string, string>> GetSetFieldData()
+    {
+        return new();
+    }
+
+    public virtual Dictionary<int, ReportConfigModel> GetReportConfigModelPerPage()
     {
         return new();
     }

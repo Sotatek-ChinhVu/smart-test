@@ -75,6 +75,8 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
+using UseCase.PatientInfor.CheckValidSamePatient;
+using UseCase.PatientInfor.CheckAllowDeletePatientInfo;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.GetListPatient;
@@ -622,13 +624,14 @@ namespace EmrCloudApi.Controller
                  patientInfo.ReactSave,
                  patientInfo.MaxMoneys,
                  insuranceScans,
-                 UserId);
+                 UserId,
+                 HpId
+                 );
             var output = _bus.Handle(input);
 
             if (output.Status == SavePatientInfoStatus.Successful)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.PatientInfChanged,
-                    new CommonMessage { PtId = output.PtID, RaiinNo = 0, SinDate = 0 });
+                await _webSocketService.SendMessageAsync(FunctionCodes.PatientInfChanged, new PatientInforMessage(output.PatientInforModel));
             }
 
             var presenter = new SavePatientInfoPresenter();
@@ -959,6 +962,29 @@ namespace EmrCloudApi.Controller
             }
         }
 
+        [HttpPost(ApiPath.CheckValidSamePatient)]
+        public ActionResult<Response<CheckValidSamePatientResponse>> CheckValidSamePatient([FromBody] CheckValidSamePatientRequest request)
+        {
+            var input = new CheckValidSamePatientInputData(HpId,
+                                                           request.PtId,
+                                                           request.KanjiName,
+                                                           request.Birthday,
+                                                           request.Sex);
+            var output = _bus.Handle(input);
+            var presenter = new CheckValidSamePatientPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckValidSamePatientResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckAllowDeletePatientInfo)]
+        public ActionResult<Response<CheckAllowDeletePatientInfoResponse>> CheckAllowDeletePatientInfo([FromBody] CheckAllowDeletePatientInfoRequest request)
+        {
+            var input = new CheckAllowDeletePatientInfoInputData(HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new CheckAllowDeletePatientInfoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckAllowDeletePatientInfoResponse>>(presenter.Result);
+        }
 
         private void StopCalculationCaculaleSwapHoken(CalculationSwapHokenMessageStop stopCalcStatus)
         {

@@ -125,8 +125,8 @@ public class Sta3030CoReportService : ISta3030CoReportService
 
             //作成日時
             _extralData.Add("HeaderR_0_1_" + currentPage, CIUtil.SDateToShowSWDate(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
-            ) + DateTime.Now.ToString(" HH:mm") + "作成");
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
+            ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
 
             //ページ数
             int totalPage = (int)Math.Ceiling((double)printDatas.Count / maxRow);
@@ -245,7 +245,7 @@ public class Sta3030CoReportService : ISta3030CoReportService
                 printData.PtName = tgtData.PtName;
                 printData.PtKanaName = tgtData.PtKanaName;
                 printData.BirthdayI = tgtData.Birthday;
-                printData.Age = CIUtil.SDateToAge(tgtData.Birthday, CIUtil.DateTimeToInt(DateTime.Now));
+                printData.Age = CIUtil.SDateToAge(tgtData.Birthday, CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow()));
                 printData.SexCd = tgtData.SexCd;
                 printData.LastVisitDateI = tgtData.LastVisitDate;
             }

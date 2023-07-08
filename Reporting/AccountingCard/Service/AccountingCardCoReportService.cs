@@ -58,7 +58,7 @@ namespace Reporting.AccountingCard.Service
         private int _tekiyoRowCount;
 
         private int _currentPage;
-        private bool _hasNextPage;
+        private bool hasNextPage;
         private DateTime _printoutDateTime;
         List<CoReceiptByomeiModel> byomeiModels;
         List<CoReceiptTekiyoModel> tekiyoModels;
@@ -87,28 +87,29 @@ namespace Reporting.AccountingCard.Service
             _sinYm = sinYm;
             _hokenId = hokenId;
             _includeOutDrug = includeOutDrug;
-            _printoutDateTime = DateTime.Now;
+            _printoutDateTime = CIUtil.GetJapanDateTimeNow();
             byomeiModels = new List<CoReceiptByomeiModel>();
             tekiyoModels = new List<CoReceiptTekiyoModel>();
             coModel = GetData();
-            if (coModel == null) return new();
-
-            _currentPage = 1;
-            _hasNextPage = true;
-            GetRowCount("fmAccountingCard.rse");
-            MakeByoList();
-
-            MakeTekiyoList();
-
-            while (_hasNextPage)
+            if (coModel != null && coModel.PtInfModel != null)
             {
-                UpdateDrawForm();
-                _currentPage++;
+                _currentPage = 1;
+                hasNextPage = true;
+                GetRowCount("fmAccountingCard.rse");
+                MakeByoList();
+
+                MakeTekiyoList();
+
+                while (hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
-            return new CommonMapper(_singleFieldDataM, _listTextData, _extralData, "fmAccountingCard.rse", _singleFieldData, _visibleFieldData, (int)CoReportType.AccountingCard).GetData();
+            return new CommonMapper(_singleFieldDataM, _listTextData, _extralData, "fmAccountingCard.rse", _singleFieldData, _visibleFieldData, (int)CoReportType.AccountingCard, "会計カード").GetData();
         }
         #endregion
 
@@ -443,7 +444,7 @@ namespace Reporting.AccountingCard.Service
         /// <returns></returns>
         private bool UpdateDrawForm()
         {
-            _hasNextPage = true;
+            bool _hasNextPage = true;
             #region SubMethod
             List<ListTextObject> listDataPerPage = new();
             // ヘッダー 
@@ -776,18 +777,12 @@ namespace Reporting.AccountingCard.Service
             }
             #endregion
 
-            try
+            if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
             {
-                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-                {
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
+                hasNextPage = _hasNextPage;
                 return false;
             }
-
+            hasNextPage = _hasNextPage;
             return true;
         }
 
@@ -807,8 +802,6 @@ namespace Reporting.AccountingCard.Service
             CoPtInfModel ptInfModel = _finder.FindPtInf(_hpId, _ptId, CIUtil.GetLastDateOfMonth(_sinYm * 100 + 1));
 
             // 診療情報
-            //List<long> raiinNos = kaikeiInfModels.GroupBy(p=>p.RaiinNo).Select(p=>p.Key).ToList();
-            //SinMeiViewModel sinMeiViewModel = new SinMeiViewModel(SinMeiMode.AccountingCard, IncludeOutDrug, hpId, PtId, sinDate, raiinNos, false);
             SinMeiViewModel sinMeiViewModel = new SinMeiViewModel(SinMeiMode.AccountingCard, _includeOutDrug, _hpId, _ptId, _sinYm, _hokenId, _tenantProvider, _systemConfigProvider, _emrLogger);
 
             // 病名

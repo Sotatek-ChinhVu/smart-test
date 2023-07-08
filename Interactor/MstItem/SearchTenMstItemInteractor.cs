@@ -58,7 +58,7 @@ namespace Interactor.MstItem
                     result = _mstItemRepository.SearchSuggestionTenMstItem(
                     inputData.HpId, inputData.PageIndex, inputData.PageCount, inputData.Keyword,
                     inputData.KouiKbn, inputData.OriKouiKbn, inputData.KouiKbns,
-                    inputData.IncludeMisai, inputData.STDDate, inputData.ItemCodeStartWith,
+                    inputData.IncludeMisai, inputData.IncludeRosai, inputData.STDDate, inputData.ItemCodeStartWith,
                     inputData.IsIncludeUsage, inputData.IsDeleted, inputData.DrugKbns,
                     inputData.ItemFilter, inputData.IsSearch831SuffixOnly);
                 }
