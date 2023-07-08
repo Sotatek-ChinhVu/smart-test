@@ -77,7 +77,6 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
             hasNextPage = true;
             while (getData && hasNextPage)
             {
-                this.count = 0;
                 UpdateDrawForm();
                 currentPage++;
             }
@@ -202,15 +201,15 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
                     //3つ以上ある場合は備考欄に記載する
                     fieldBiko = "Biko";
                     ReportConfigModel ConfigDataPerPage = _reportConfigPerPage.ContainsKey(pageIndex) ? _reportConfigPerPage[pageIndex] : new();
-                    
+
                     if (count == 0)
                     {
                         for (int i = 1; i <= 5; i++)
                         {
                             ConfigDataPerPage.VisibleFieldList.Add(string.Format("kohiTitleBiko{0}", i), true);
                         }
-
                         count++;
+
                         if (!_reportConfigPerPage.ContainsKey(pageIndex))
                         {
                             _reportConfigPerPage.Add(pageIndex, ConfigDataPerPage);
