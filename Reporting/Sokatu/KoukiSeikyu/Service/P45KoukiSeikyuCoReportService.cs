@@ -23,7 +23,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
     /// <summary>
     /// CoReport Model
     /// </summary>
-    private string _currentHokensyaNo;
+    private string currentHokensyaNo;
     private List<string> hokensyaNos;
     private List<CoReceInfModel> receInfs;
     private CoHpInfModel hpInf;
@@ -56,31 +56,31 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
     #endregion
 
     #region Init properties
-    private int _hpId;
-    private int _seikyuYm;
-    private SeikyuType _seikyuType;
-    private bool _hasNextPage;
-    private int _currentPage;
+    private int hpId;
+    private int seikyuYm;
+    private SeikyuType seikyuType;
+    private bool hasNextPage;
+    private int currentPage;
     private List<string> printHokensyaNos;
     #endregion
 
     public CommonReportingRequestModel GetP45KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        _hpId = hpId;
-        _seikyuYm = seikyuYm;
-        _seikyuType = seikyuType;
+        this.hpId = hpId;
+        this.seikyuYm = seikyuYm;
+        this.seikyuType = seikyuType;
         var getData = GetData();
         int indexPage = 1;
         var fileName = new Dictionary<string, string>();
         foreach (string currentNo in hokensyaNos)
         {
-            _currentPage = 1;
-            _currentHokensyaNo = currentNo;
-            _hasNextPage = true;
-            while (getData && _hasNextPage)
+            currentPage = 1;
+            currentHokensyaNo = currentNo;
+            hasNextPage = true;
+            while (getData && hasNextPage)
             {
                 UpdateDrawForm();
-                if (_currentPage == 2)
+                if (currentPage == 2)
                 {
                     fileName.Add(indexPage.ToString(), _formFileNameP2);
                 }
@@ -88,7 +88,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
                 {
                     fileName.Add(indexPage.ToString(), _formFileNameP1);
                 }
-                _currentPage++;
+                currentPage++;
                 indexPage++;
             }
         }
@@ -109,7 +109,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
             //医療機関コード
             SetFieldData("hpCode", hpInf.HpCd);
             //保険者
-            fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.ToString());
+            fieldDataPerPage.Add("hokensyaNo", currentHokensyaNo.ToString());
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             _setFieldData.Add(pageIndex, fieldDataPerPage);
             //医療機関情報
@@ -119,12 +119,12 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
             SetFieldData("hpTel", hpInf.Tel);
             SetFieldData("kaisetuName", hpInf.KaisetuName);
             //請求年月
-            CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(_seikyuYm * 100 + 1);
+            CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(seikyuYm * 100 + 1);
             SetFieldData("seikyuGengo", wrkYmd.Gengo);
             SetFieldData("seikyuYear", wrkYmd.Year.ToString());
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
 
-            if (_currentPage >= 2) return 1;
+            if (currentPage >= 2) return 1;
 
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
@@ -144,7 +144,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
         {
             List<ListTextObject> listDataPerPage = new();
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-            var curReceInfs = receInfs.Where(r => r.HokensyaNo == _currentHokensyaNo);
+            var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
 
             #region Body
             const int maxRow = 2;
@@ -184,7 +184,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
             if (kohiHoubetus.Count == 0)
             {
                 _listTextData.Add(pageIndex, listDataPerPage);
-                _hasNextPage = false;
+                hasNextPage = false;
                 return 1;
             }
 
@@ -213,7 +213,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
                 kohiIndex++;
                 if (kohiIndex >= kohiHoubetus.Count)
                 {
-                    _hasNextPage = false;
+                    hasNextPage = false;
                     break;
                 }
             }
@@ -229,15 +229,15 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
         {
             List<ListTextObject> listDataPerPage = new();
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-            var curReceInfs = receInfs.Where(r => r.HokensyaNo == _currentHokensyaNo);
+            var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
 
             const int maxKohiRow = 7;
-            int kohiIndex = (_currentPage - 2) * maxKohiRow + 4;
+            int kohiIndex = (currentPage - 2) * maxKohiRow + 4;
 
             var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
             if (kohiHoubetus.Count <= 4)
             {
-                _hasNextPage = false;
+                hasNextPage = false;
                 return 1;
             }
 
@@ -266,7 +266,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
                 kohiIndex++;
                 if (kohiIndex >= kohiHoubetus.Count)
                 {
-                    _hasNextPage = false;
+                    hasNextPage = false;
                     break;
                 }
             }
@@ -278,7 +278,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
 
         #endregion
 
-        switch (_currentPage)
+        switch (currentPage)
         {
             case 1:
                 if (UpdateFormHeader() < 0 || UpdateFormBodyP1() < 0)
@@ -298,8 +298,8 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
 
     private bool GetData()
     {
-        hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
-        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
+        hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
+        receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
         //保険者番号の指定がある場合は絞り込み
         var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();

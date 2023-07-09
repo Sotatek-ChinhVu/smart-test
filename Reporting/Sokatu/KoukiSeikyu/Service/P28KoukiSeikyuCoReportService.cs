@@ -48,11 +48,11 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
     /// Finder
     /// </summary>
 
-    private readonly ICoKoukiSeikyuFinder _finder;
+    private readonly ICoKoukiSeikyuFinder _kokhoFinder;
 
-    public P28KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder finder)
+    public P28KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder kokhoFinder)
     {
-        _finder = finder;
+        _kokhoFinder = kokhoFinder;
         _singleFieldData = new();
         _setFieldData = new();
         _listTextData = new();
@@ -271,15 +271,15 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
 
     private bool GetData()
     {
-        hpInf = _finder.GetHpInf(hpId, seikyuYm);
-        receInfs = _finder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.NoSum);
+        hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
+        receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.NoSum);
         //保険者番号の指定がある場合は絞り込み
         var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
         //保険者番号リストを取得
         hokensyaNos = wrkReceInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();
         //保険者名を取得
-        hokensyaNames = _finder.GetHokensyaName(hpId, hokensyaNos);
+        hokensyaNames = _kokhoFinder.GetHokensyaName(hpId, hokensyaNos);
 
         return (receInfs?.Count ?? 0) > 0;
     }

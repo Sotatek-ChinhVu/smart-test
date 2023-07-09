@@ -26,9 +26,9 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private bool _hasNextPage;
-        private int _currentPage;
-        private string _currentHokensyaNo;
+        private bool hasNextPage;
+        private int currentPage;
+        private string currentHokensyaNo;
         private List<string> hokensyaNos;
         private List<CoReceInfModel> receInfs;
         private CoHpInfModel hpInf;
@@ -61,27 +61,27 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
         #endregion
 
         #region Init properties
-        private int _hpId;
-        private int _seikyuYm;
-        private SeikyuType _seikyuType;
+        private int hpId;
+        private int seikyuYm;
+        private SeikyuType seikyuType;
         private List<string> printHokensyaNos;
         #endregion
 
         public CommonReportingRequestModel GetP35KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
-            _hpId = hpId;
-            _seikyuYm = seikyuYm;
-            _seikyuType = seikyuType;
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
             var getData = GetData();
             foreach (string currentNo in hokensyaNos)
             {
-                _currentHokensyaNo = currentNo;
-                _currentPage = 1;
-                _hasNextPage = true;
-                while (getData && _hasNextPage)
+                currentHokensyaNo = currentNo;
+                currentPage = 1;
+                hasNextPage = true;
+                while (getData && hasNextPage)
                 {
                     UpdateDrawForm();
-                    _currentPage++;
+                    currentPage++;
                 }
 
             }
@@ -111,7 +111,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
                 SetFieldData("hpTel", hpInf.Tel);
                 SetFieldData("kaisetuName", hpInf.KaisetuName);
                 //請求年月
-                CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(_seikyuYm * 100 + 1);
+                CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(seikyuYm * 100 + 1);
                 SetFieldData("seikyuGengo", wrkYmd.Gengo);
                 SetFieldData("seikyuYear", wrkYmd.Year.ToString());
                 SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
@@ -125,10 +125,10 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
                 SetFieldData("reportDay", wrkYmd.Day.ToString());
                 //保険者（下6桁頭2桁）
                 //SetFieldData("hokensyaNo", _currentHokensyaNo.Substring(_currentHokensyaNo.Length - 6, 2));
-                fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.Substring(_currentHokensyaNo.Length - 6, 2));
+                fieldDataPerPage.Add("hokensyaNo", currentHokensyaNo.Substring(currentHokensyaNo.Length - 6, 2));
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 _setFieldData.Add(pageIndex, fieldDataPerPage);
-                int prefNo = _currentHokensyaNo.Substring(_currentHokensyaNo.Length - 6, 2).AsInteger();
+                int prefNo = currentHokensyaNo.Substring(currentHokensyaNo.Length - 6, 2).AsInteger();
                 SetFieldData("hokensyaPref", PrefCode.PrefName(prefNo));
 
                 return 1;
@@ -140,12 +140,12 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
             {
                 List<ListTextObject> listDataPerPage = new();
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                var curReceInfs = receInfs.Where(r => r.HokensyaNo == _currentHokensyaNo);
+                var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
 
                 #region Body
                 const int maxRow = 2;
 
-                if (_currentPage == 1)
+                if (currentPage == 1)
                 {
                     //1枚目のみ記載する
                     for (short rowNo = 0; rowNo < maxRow; rowNo++)
@@ -179,13 +179,13 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
 
                 #region 公費負担医療
                 const int maxKohiRow = 5;
-                int kohiIndex = (_currentPage - 1) * maxKohiRow;
+                int kohiIndex = (currentPage - 1) * maxKohiRow;
 
                 var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
                 if (kohiHoubetus.Count == 0)
                 {
                     _listTextData.Add(pageIndex, listDataPerPage);
-                    _hasNextPage = false;
+                    hasNextPage = false;
                     return 1;
                 }
 
@@ -214,7 +214,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
                     kohiIndex++;
                     if (kohiIndex >= kohiHoubetus.Count)
                     {
-                        _hasNextPage = false;
+                        hasNextPage = false;
                         break;
                     }
                 }
@@ -246,8 +246,8 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
 
         private bool GetData()
         {
-            hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
-            receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
+            hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
+            receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
             //保険者番号の指定がある場合は絞り込み
             var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
                 receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
@@ -257,7 +257,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
                 wrkReceInfs.Where(r => r.IsPrefIn).GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList()
             );
             //公費法別番号リストを取得
-            kohiHoubetuMsts = _kokhoFinder.GetKohiHoubetuMst(_hpId, _seikyuYm);
+            kohiHoubetuMsts = _kokhoFinder.GetKohiHoubetuMst(hpId, seikyuYm);
 
             return (receInfs?.Count ?? 0) > 0;
         }
