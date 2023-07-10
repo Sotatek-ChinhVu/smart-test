@@ -1,21 +1,28 @@
-﻿using Reporting.Accounting.DB;
+﻿using Infrastructure.Base;
+using Infrastructure.Interfaces;
+using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Service;
 using Reporting.CommonMasters.Enums;
 
 namespace Reporting.ReportServices;
 
-public class CheckOpenReportingService : ICheckOpenReportingService
+public class CheckOpenReportingService : RepositoryBase, ICheckOpenReportingService
 {
     private readonly ICoAccountingFinder _coAccountingFinder;
     private readonly IAccountingCoReportService _accountingCoReportService;
     private readonly IReportService _reportService;
 
-    public CheckOpenReportingService(ICoAccountingFinder coAccountingFinder, IAccountingCoReportService accountingCoReportService, IReportService reportService)
+    public CheckOpenReportingService(ITenantProvider tenantProvider, ICoAccountingFinder coAccountingFinder, IAccountingCoReportService accountingCoReportService, IReportService reportService) : base(tenantProvider)
     {
         _coAccountingFinder = coAccountingFinder;
         _accountingCoReportService = accountingCoReportService;
         _reportService = reportService;
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 
     public bool CheckOpenAccountingForm(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false)
@@ -49,6 +56,17 @@ public class CheckOpenReportingService : ICheckOpenReportingService
             }
         }
         return _accountingCoReportService.CheckOpenReportingForm(hpId, requestAccountting);
+    }
+
+    public bool ExistedReceInfs(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
+    {
+        return NoTrackingDataContext.ReceInfs.Any(p =>
+                p.HpId == hpId &&
+                p.PtId == (ptId > 0 ? ptId : p.PtId) &&
+                p.SeikyuYm == seikyuYm &&
+                p.SinYm == (sinYm > 0 ? sinYm : p.SinYm) &&
+            p.HokenId == (hokenId > 0 ? hokenId : p.HokenId)
+            );
     }
 
 }

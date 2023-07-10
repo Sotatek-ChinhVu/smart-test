@@ -1,5 +1,6 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportPDF;
+using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
 using Reporting.ReportServices;
@@ -9,11 +10,11 @@ namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CheckOpenFormController : ControllerBase
+public class CheckOpenFormController : AuthorizeControllerBase
 {
     private readonly ICheckOpenReportingService _checkOpenReportingService;
 
-    public CheckOpenFormController(ICheckOpenReportingService checkOpenReportingService)
+    public CheckOpenFormController(ICheckOpenReportingService checkOpenReportingService, IUserService userService) : base(userService)
     {
         _checkOpenReportingService = checkOpenReportingService;
     }
@@ -25,15 +26,31 @@ public class CheckOpenFormController : ControllerBase
         var request = JsonSerializer.Deserialize<AccountingCoReportModelRequest>(stringJson) ?? new();
         var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
 
-        var data = _checkOpenReportingService.CheckOpenAccountingForm(request.HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
+        var data = _checkOpenReportingService.CheckOpenAccountingForm(HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
         return Ok(data);
     }
 
     [HttpGet(ApiPath.ReceiptReport)]
     public IActionResult GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
     {
-        var data = _checkOpenReportingService.CheckOpenAccountingForm(request.HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
+        var data = _checkOpenReportingService.CheckOpenAccountingForm(HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
         return Ok(data);
+    }
+
+    [HttpGet(ApiPath.SyojyoSyoki)]
+    public IActionResult GenerateSyojyoSyokiReport([FromQuery] SyojyoSyokiRequest request)
+    {
+        try
+        {
+            var isExisted = _checkOpenReportingService.ExistedReceInfs(HpId, request.PtId, request.SeiKyuYm, 0, request.HokenId);
+
+            if (!isExisted) return Ok();
+            return Ok();
+        }
+        finally
+        {
+            _checkOpenReportingService.ReleaseResource();
+        }
     }
 
     #region Private function
