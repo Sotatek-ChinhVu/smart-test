@@ -144,12 +144,13 @@ public class P25KoukiSeikyuCoReportService : IP25KoukiSeikyuCoReportService
             int prefNo = _currentHokensyaNo.Substring(_currentHokensyaNo.Length - 6, 2).AsInteger();
             SetFieldData("hokensyaPref", PrefCode.PrefName(prefNo));
             fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.ToString());
-            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
             //在医総及び在医総管
             if (printZaiiso)
             {
-                SetFieldData("zaiisoCircle", "〇");
+                fieldDataPerPage.Add("zaiisoCircle", "〇");
             }
+
+            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
 
             return 1;
         }
