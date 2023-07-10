@@ -617,6 +617,7 @@ using UseCase.Lock.CheckLockOpenAccounting;
 using Reporting.Karte3.Service;
 using Reporting.Karte3.DB;
 using UseCase.Reception.GetLastKarute;
+using UseCase.MstItem.ConvertStringChkJISKj;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1142,6 +1143,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateAdoptedItemListInputData, UpdateAdoptedItemListInteractor>();
             busBuilder.RegisterUseCase<GetCmtCheckMstListInputData, GetCmtCheckMstListInteractor>();
             busBuilder.RegisterUseCase<SearchTenMstItemInputData, SearchTenMstItemInteractor>();
+            busBuilder.RegisterUseCase<ConvertStringChkJISKjInputData, ConvertStringChkJISKjInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
