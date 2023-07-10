@@ -67,7 +67,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.CheckLock)]
-        public ActionResult<Response<LockResponse>> CheckLock([FromBody] LockRequest request)
+        public ActionResult<Response<LockResponse>> CheckLock([FromBody] CheckLockRequest request)
         {
             var input = new CheckLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
             var output = _bus.Handle(input);
@@ -93,7 +93,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.RemoveLock)]
         public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> RemoveLock([FromBody] LockRequest request)
         {
-            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false, false);
+            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false, false, request.TabKey);
             var output = _bus.Handle(input);
 
             if (output.Status == RemoveLockStatus.Successed)
