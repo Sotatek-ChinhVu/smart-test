@@ -4,6 +4,8 @@ using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Service;
 using Reporting.CommonMasters.Enums;
+using Reporting.OrderLabel.Model;
+using Reporting.OrderLabel.Service;
 
 namespace Reporting.ReportServices;
 
@@ -11,13 +13,15 @@ public class CheckOpenReportingService : RepositoryBase, ICheckOpenReportingServ
 {
     private readonly ICoAccountingFinder _coAccountingFinder;
     private readonly IAccountingCoReportService _accountingCoReportService;
+    private readonly IOrderLabelCoReportService _orderLabelCoReportService;
     private readonly IReportService _reportService;
 
-    public CheckOpenReportingService(ITenantProvider tenantProvider, ICoAccountingFinder coAccountingFinder, IAccountingCoReportService accountingCoReportService, IReportService reportService) : base(tenantProvider)
+    public CheckOpenReportingService(ITenantProvider tenantProvider, ICoAccountingFinder coAccountingFinder, IAccountingCoReportService accountingCoReportService, IReportService reportService, IOrderLabelCoReportService orderLabelCoReportService) : base(tenantProvider)
     {
         _coAccountingFinder = coAccountingFinder;
         _accountingCoReportService = accountingCoReportService;
         _reportService = reportService;
+        _orderLabelCoReportService = orderLabelCoReportService;
     }
 
     public void ReleaseResource()
@@ -58,15 +62,23 @@ public class CheckOpenReportingService : RepositoryBase, ICheckOpenReportingServ
         return _accountingCoReportService.CheckOpenReportingForm(hpId, requestAccountting);
     }
 
-    public bool ExistedReceInfs(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
+    public CoPrintExitCode CheckOpenOrderLabel(int mode, int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, List<RsvkrtOdrInfModel> rsvKrtOdrInfModels)
     {
-        return NoTrackingDataContext.ReceInfs.Any(p =>
+        return _orderLabelCoReportService.CheckOpenOrderLabel(mode, hpId, ptId, sinDate, raiinNo, odrKouiKbns, rsvKrtOdrInfModels);
+    }
+    public CoPrintExitCode CheckOpenSyojyoSyokiReportStatus(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
+    {
+        var isExisted = NoTrackingDataContext.ReceInfs.Any(p =>
                 p.HpId == hpId &&
                 p.PtId == (ptId > 0 ? ptId : p.PtId) &&
                 p.SeikyuYm == seikyuYm &&
                 p.SinYm == (sinYm > 0 ? sinYm : p.SinYm) &&
             p.HokenId == (hokenId > 0 ? hokenId : p.HokenId)
             );
+
+        if (isExisted) return CoPrintExitCode.EndSuccess;
+
+        return CoPrintExitCode.EndNoData;
     }
 
 }

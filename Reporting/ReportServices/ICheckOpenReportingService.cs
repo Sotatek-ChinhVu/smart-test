@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Reporting.Accounting.Model;
 using Reporting.CommonMasters.Enums;
+using Reporting.OrderLabel.Model;
 
 namespace Reporting.ReportServices;
 
@@ -10,5 +11,7 @@ public interface ICheckOpenReportingService : IRepositoryBase
 
     bool CheckOpenAccountingForm(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false);
 
-    bool ExistedReceInfs(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
+    CoPrintExitCode CheckOpenOrderLabel(int mode, int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, List<RsvkrtOdrInfModel> rsvKrtOdrInfModels);
+
+    CoPrintExitCode CheckOpenSyojyoSyokiReportStatus(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
 }

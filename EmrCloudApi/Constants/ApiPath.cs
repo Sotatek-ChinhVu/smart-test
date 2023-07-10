@@ -38,6 +38,7 @@
         public const string GetCmtCheckMstList = "GetCmtCheckMstList";
         public const string GetJihiMstList = "GetJihiMstList";
         public const string SearchTenMstItem = "SearchTenMstItem";
+        public const string ConvertStringChkJISKj = "ConvertStringChkJISKj";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
