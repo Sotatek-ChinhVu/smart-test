@@ -1280,6 +1280,158 @@ namespace CloudUnitTest.SampleData
             return m12FoodAlrgys;
         }
 
+        public static List<PtOtcDrug> ReadPtOtcDrug(string key)
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var ptOtcDrugs = new List<PtOtcDrug>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_OTC_DRUG").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptOtcDrug = new PtOtcDrug();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    ptOtcDrug.HpId = hpId;
+                                    break;
+                                case "B":
+                                    long.TryParse(text, out long ptId);
+                                    ptOtcDrug.PtId = ptId;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int seqNo);
+                                    ptOtcDrug.SeqNo = seqNo;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int sortNo);
+                                    ptOtcDrug.SortNo = sortNo;
+                                    break;
+                                case "E":
+                                    int.TryParse(text, out int serialNum);
+                                    ptOtcDrug.SerialNum = serialNum;
+                                    break;
+                                case "F":
+                                    ptOtcDrug.TradeName = text;
+                                    break;
+                                case "G":
+                                    int.TryParse(text, out int startDate);
+                                    ptOtcDrug.StartDate = startDate;
+                                    break;
+                                case "H":
+                                    int.TryParse(text, out int endDate);
+                                    ptOtcDrug.EndDate = endDate;
+                                    break;
+                                case "I":
+                                    ptOtcDrug.Cmt = text;
+                                    break;
+                                case "J":
+                                    int.TryParse(text, out int isDeleted);
+                                    ptOtcDrug.IsDeleted = isDeleted;
+                                    break;
+                                case "K":
+                                    ptOtcDrug.CreateDate = DateTime.UtcNow;
+                                    break;
+                                case "L":
+                                    int.TryParse(text, out int createId);
+                                    ptOtcDrug.CreateId = createId;
+                                    break;
+                                case "M":
+                                    ptOtcDrug.CreateMachine = text;
+                                    break;
+                                case "N":
+                                    ptOtcDrug.UpdateDate = DateTime.UtcNow;
+                                    break;
+                                case "O":
+                                    int.TryParse(text, out int updateId);
+                                    ptOtcDrug.UpdateId = updateId;
+                                    break;
+                                case "P":
+                                    ptOtcDrug.UpdateMachine = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        ptOtcDrugs.Add(ptOtcDrug);
+                    }
+                }
+            }
+
+            return ptOtcDrugs;
+        }
+
+        public static List<M38Ingredients> ReadM38Ingredients(string key)
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m38Ingredients = new List<M38Ingredients>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M38_INGREDIENTS").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m38Ingredient = new M38Ingredients();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int serialNum);
+                                    m38Ingredient.SerialNum = serialNum;
+                                    break;
+                                case "B":
+                                    m38Ingredient.SeibunCd = text;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int sbt);
+                                    m38Ingredient.Sbt = sbt;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m38Ingredients.Add(m38Ingredient);
+                    }
+                }
+            }
+
+            return m38Ingredients;
+        }
+
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
