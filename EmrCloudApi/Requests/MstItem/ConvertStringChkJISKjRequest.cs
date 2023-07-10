@@ -2,7 +2,5 @@
 
 public class ConvertStringChkJISKjRequest
 {
-    public string InputString { get; set; } = string.Empty;
-
-    public string SOut { get; set; } = string.Empty;
+    public List<string> InputList { get; set; }
 }

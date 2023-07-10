@@ -7,8 +7,17 @@ public class ConvertStringChkJISKjInteractor : IConvertStringChkJISKjInputPort
 {
     public ConvertStringChkJISKjOutputData Handle(ConvertStringChkJISKjInputData inputData)
     {
-        string sOut = inputData.SOut;
-        var result = CIUtil.Chk_JISKj(inputData.InputString, out sOut);
-        return new ConvertStringChkJISKjOutputData(result, sOut, ConvertStringChkJISKjStatus.Successed);
+        var contentStr = string.Empty;
+        string result = string.Empty;
+        foreach (var item in inputData.InputList)
+        {
+            var errorStr = CIUtil.Chk_JISKj(item, out contentStr);
+            if (!string.IsNullOrEmpty(errorStr))
+            {
+                result = item;
+                break;
+            }
+        }
+        return new ConvertStringChkJISKjOutputData(result, contentStr, ConvertStringChkJISKjStatus.Successed);
     }
 }
