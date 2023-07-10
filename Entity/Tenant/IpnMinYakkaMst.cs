@@ -6,6 +6,7 @@ namespace Entity.Tenant
 {
     [Table(name: "IPN_MIN_YAKKA_MST")]
     [Index(nameof(HpId), nameof(IpnNameCd), nameof(StartDate), Name = "IPN_MIN_YAKKA_MST_IDX01")]
+    [Index(nameof(HpId), nameof(StartDate), nameof(EndDate), nameof() Name = "IPN_MIN_YAKKA_MST_IDX02")]
     [Serializable]
     public class IpnMinYakkaMst : EmrCloneable<IpnMinYakkaMst>
     {
