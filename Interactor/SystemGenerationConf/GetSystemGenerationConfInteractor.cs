@@ -1,5 +1,5 @@
 ﻿using Domain.Models.SystemGenerationConf;
-using UseCase.SystemGenerationConf;
+using UseCase.SystemGenerationConf.Get;
 
 namespace Interactor.SystemGenerationConf
 {

@@ -2,7 +2,7 @@
 {
     public class RaiinListItemModel
     {
-        public RaiinListItemModel(int hpId, int grpId, int kbnCd, string itemCd, long seqNo, string inputName, int isExclude, bool isAddNew, int isDeleted, bool isModify)
+        public RaiinListItemModel(int hpId, int grpId, int kbnCd, string itemCd, long seqNo, string inputName, int isExclude, bool isAddNew, int isDeleted)
         {
             HpId = hpId;
             GrpId = grpId;
@@ -13,7 +13,6 @@
             IsExclude = isExclude;
             IsAddNew = isAddNew;
             IsDeleted = isDeleted;
-            IsModify = isModify;
         }
 
         public int HpId { get; private set; }
@@ -33,8 +32,6 @@
         public bool IsAddNew { get; private set; }
 
         public int IsDeleted { get; private set; }
-
-        public bool IsModify { get; private set; }
 
         public bool CheckDefaultValue()
         {

@@ -1,0 +1,34 @@
+﻿namespace EmrCloudApi.Requests.RaiinListSetting
+{
+    public class RaiinListFileDto
+    {
+        public RaiinListFileDto(int hpId, int grpId, int kbnCd, int categoryCd, string categoryName, long seqNo, int isDeleted)
+        {
+            HpId = hpId;
+            GrpId = grpId;
+            KbnCd = kbnCd;
+            CategoryCd = categoryCd;
+            CategoryName = categoryName;
+            SeqNo = seqNo;
+            IsDeleted = isDeleted;
+        }
+
+        public int HpId { get; private set; }
+
+        public int GrpId { get; private set; }
+
+        public int KbnCd { get; private set; }
+
+        public int CategoryCd { get; private set; }
+
+        /// <summary>
+        /// FilingCategoryModel?.CategoryName
+        /// </summary>
+        public string CategoryName { get; private set; }
+
+
+        public long SeqNo { get; private set; }
+
+        public int IsDeleted { get; private set; }
+    }
+}

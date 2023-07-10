@@ -52,6 +52,10 @@ namespace Domain.Models.Diseases
             TogetuByomei = togetuByomei;
             DelDate = delDate;
             ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(string byomeiCd, string byomei, int sikkanKbn)
@@ -83,6 +87,10 @@ namespace Domain.Models.Diseases
             HokenPid = 0;
             HosokuCmt = string.Empty;
             ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int hpId, long ptId, long seqNo, string byomeiCd, int sortNo,
@@ -127,6 +135,10 @@ namespace Domain.Models.Diseases
             HokenPid = hokenPid;
             HosokuCmt = hosokuCmt;
             ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel()
@@ -158,6 +170,10 @@ namespace Domain.Models.Diseases
             HokenPid = 0;
             HosokuCmt = string.Empty;
             ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn)
@@ -189,6 +205,10 @@ namespace Domain.Models.Diseases
             HokenPid = hokenPid;
             HosokuCmt = string.Empty;
             ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, string byomeiCd)
@@ -220,6 +240,10 @@ namespace Domain.Models.Diseases
             HokenPid = hokenPid;
             HosokuCmt = string.Empty;
             ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, string byomeiCd, string byomei)
@@ -252,6 +276,10 @@ namespace Domain.Models.Diseases
             HosokuCmt = string.Empty;
             ItemCd = string.Empty;
             Byomei = byomei;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn)
@@ -283,6 +311,10 @@ namespace Domain.Models.Diseases
             HokenPid = hokenPid;
             HosokuCmt = string.Empty;
             ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn, string icd1012013)
@@ -314,6 +346,10 @@ namespace Domain.Models.Diseases
             HokenPid = hokenPid;
             HosokuCmt = string.Empty;
             ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn, string icd1012013, int nanbyoCd)
@@ -345,6 +381,10 @@ namespace Domain.Models.Diseases
             HokenPid = hokenPid;
             HosokuCmt = string.Empty;
             ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList)
@@ -367,6 +407,10 @@ namespace Domain.Models.Diseases
             Icd1012013 = string.Empty;
             Icd1022013 = string.Empty;
             ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(string itemCd, string byomeiCd, string byomei, int sikkanCd, bool isAdopted, int nanbyoCd)
@@ -384,6 +428,10 @@ namespace Domain.Models.Diseases
             Icd1012013 = string.Empty;
             Icd1022013 = string.Empty;
             HosokuCmt = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
         }
 
         public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, int isNodspRece, int tenkiKbn, List<PrefixSuffixModel> prefixList)
@@ -408,6 +456,19 @@ namespace Domain.Models.Diseases
             Icd1012013 = string.Empty;
             Icd1022013 = string.Empty;
             ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
+        }
+
+        public PtDiseaseModel ChangeCreateUserUpdateDate(string createUser, string updateUser, DateTime createDate, DateTime updateDate)
+        {
+            CreateUser = createUser;
+            UpdateUser = updateUser;
+            CreateDate = createDate == DateTime.MinValue ? string.Empty : CIUtil.GetCIDateTimeStr(createDate);
+            UpdateDate = updateDate == DateTime.MinValue ? string.Empty : CIUtil.GetCIDateTimeStr(updateDate);
+            return this;
         }
 
         public ValidationStatus Validation()
@@ -494,10 +555,10 @@ namespace Domain.Models.Diseases
             #endregion
 
             #region advance
-            if (CIUtil.GetByteCountFromString(Byomei) > 40 && ByomeiCd != null && ByomeiCd.Equals(PtDiseaseConst.FREE_WORD))
-            {
-                return ValidationStatus.InvalidFreeWord;
-            }
+            //if (ByomeiCd.Length > 40 && ByomeiCd != null && ByomeiCd.Equals(PtDiseaseConst.FREE_WORD))
+            //{
+            //    return ValidationStatus.InvalidFreeWord;
+            //}
             if (TenkiKbn == TenkiKbnConst.Continued && TenkiDate > 0)
             {
                 return ValidationStatus.InvalidTenkiDateContinue;
@@ -596,6 +657,14 @@ namespace Domain.Models.Diseases
         public string ItemCd { get; private set; }
 
         public bool IsAdopted { get; private set; }
+
+        public string CreateUser { get; private set; }
+
+        public string CreateDate { get; private set; }
+
+        public string UpdateDate { get; private set; }
+
+        public string UpdateUser { get; private set; }
 
         public string FullByomei { get => string.Concat(Byomei, HosokuCmt); }
 

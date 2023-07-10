@@ -1,4 +1,5 @@
-﻿using Domain.Models.NextOrder;
+﻿using Domain.Constant;
+using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.RaiinKubunMst;
 using Entity.Tenant;
@@ -7,6 +8,7 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Text;
@@ -98,8 +100,10 @@ namespace Infrastructure.Repositories
         {
             long rsvkrtNo = 0;
             long ptNum = GetPtNum(hpId, ptId);
+            var odrInfs = new List<RsvkrtOrderInfModel>();
             foreach (var nextOrderModel in nextOrderModels)
             {
+                odrInfs.AddRange(nextOrderModel.RsvkrtOrderInfs);
                 var maxRpNo = GetMaxRpNo(hpId, ptId);
                 var seqNo = GetMaxSeqNo(ptId, hpId, nextOrderModel.RsvkrtNo);
                 if (nextOrderModel.IsDeleted == DeleteTypes.Deleted || nextOrderModel.IsDeleted == DeleteTypes.Confirm)
@@ -149,11 +153,199 @@ namespace Infrastructure.Repositories
                         UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
                     }
                     SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
+                    SaveNextOrderRaiinListInf(userId, odrInfs);
                 }
             }
             TrackingDataContext.SaveChanges();
 
             return rsvkrtNo;
+        }
+
+        public void SaveNextOrderRaiinListInf(int userId, List<RsvkrtOrderInfModel> nextOrderModels)
+        {
+            // Get Raiin List Koui
+            var raiinListMstQuery = TrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0);
+            var raiinListDetailQuery = TrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0);
+            var raiinListKouiQuery = TrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0);
+            var raiinListKouiList = from raiinListKoui in raiinListKouiQuery
+                                    join raiinListDetail in raiinListDetailQuery on new { raiinListKoui.GrpId, raiinListKoui.KbnCd }
+                                                                                 equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
+                                    join raiinListMst in raiinListMstQuery on new { raiinListKoui.GrpId }
+                                                                           equals new { raiinListMst.GrpId }
+                                    select new { raiinListKoui };
+
+            List<RaiinListKoui> raiinListKouis = raiinListKouiList.Select(item => item.raiinListKoui).ToList();
+
+            // Get Raiin List Item
+            var raiinListItemQuery = TrackingDataContext.RaiinListItems.Where(item => item.IsExclude == 0
+                                                                        && item.IsDeleted == 0);
+            var raiinListItemList = from raiinListItem in raiinListItemQuery
+                                    join raiinListDetail in raiinListDetailQuery on new { raiinListItem.GrpId, raiinListItem.KbnCd }
+                                                                                 equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
+                                    join raiinListMst in raiinListMstQuery on new { raiinListItem.GrpId }
+                                                                           equals new { raiinListMst.GrpId }
+                                    select new { raiinListItem };
+
+            List<RaiinListItem> raiinListItems = raiinListItemList.Select(item => item.raiinListItem).ToList();
+
+            // Get KouiKbnMst
+            List<KouiKbnMst> kouiKbnMst = TrackingDataContext.KouiKbnMsts.ToList();
+
+            // Define Added RaiinListInf
+            List<RaiinListInf> raiinListInfList = new List<RaiinListInf>();
+
+            foreach (var odrInf in nextOrderModels)
+            {
+                    HashSet<int> deleteKouiSet = new HashSet<int>();
+                    HashSet<int> currentKouiSet = new HashSet<int>();
+                    HashSet<string> deleteItemCdSet = new HashSet<string>();
+                    HashSet<string> currentItemCdSet = new HashSet<string>();
+
+                    int hpId = odrInf.HpId;
+                    long ptId = odrInf.PtId;
+                    int sinDate = odrInf.RsvDate;
+
+                    // Get Raiin List Inf
+                    List<RaiinListInf> raiinListInfs = TrackingDataContext.RaiinListInfs
+                                                        .Where(item => item.HpId == hpId
+                                                                        && item.RaiinNo == 0
+                                                                        && item.PtId == ptId
+                                                                        && item.SinDate == sinDate).ToList();
+
+                    foreach (var nextOdrDetail in odrInf.OrdInfDetails)
+                    {
+                        if (odrInf.IsDeleted != 0)
+                        {
+                            deleteKouiSet.Add(nextOdrDetail.SinKouiKbn);
+                            deleteItemCdSet.Add(nextOdrDetail.ItemCd);
+                            continue;
+                        }
+                        currentKouiSet.Add(nextOdrDetail.SinKouiKbn);
+                        currentItemCdSet.Add(nextOdrDetail.ItemCd);
+                    }
+                    // Delete with SinKouiKbn
+                    foreach (int koui in deleteKouiSet.ToArray())
+                    {
+                        if (currentKouiSet.Contains(koui))
+                        {
+                            continue;
+                        }
+                        // Get KouiKbnMst
+                        var kouiMst = kouiKbnMst?.Find(item => item.KouiKbn1 == koui || item.KouiKbn2 == koui);
+                        if (kouiMst == null) continue;
+                        // Get List RaiinListKoui contains koui 
+                        List<RaiinListKoui> kouiItemList = raiinListKouis.FindAll(item => item.KouiKbnId == kouiMst.KouiKbnId);
+                        foreach (RaiinListKoui kouiItem in kouiItemList)
+                        {
+                            var raiinListInf = raiinListInfs.Find(item => item.GrpId == kouiItem.GrpId && item.KbnCd == kouiItem.KbnCd);
+                            if (raiinListInf != null)
+                            {
+                                TrackingDataContext.RaiinListInfs.Remove(raiinListInf);
+                            }
+                        }
+                    }
+
+                    // Delete with ItemCd
+                    foreach (string itemCd in deleteItemCdSet.ToArray())
+                    {
+                        if (currentItemCdSet.Contains(itemCd))
+                        {
+                            continue;
+                        }
+                        List<RaiinListItem> itemCdList = raiinListItems.FindAll(item => item.ItemCd == itemCd);
+                        foreach (RaiinListItem raiinListItem in itemCdList)
+                        {
+                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId && item.KbnCd == raiinListItem.KbnCd);
+                            if (raiinListInf != null)
+                            {
+                                TrackingDataContext.RaiinListInfs.Remove(raiinListInf);
+                            }
+                        }
+                    }
+                    // Add or Update with ItemCd
+                    foreach (string itemCd in currentItemCdSet.ToArray())
+                    {
+                        List<RaiinListItem> itemCdList = raiinListItems.FindAll(item => item.ItemCd == itemCd);
+                        foreach (RaiinListItem raiinListItem in itemCdList)
+                        {
+                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId);
+                            if (raiinListInf == null)
+                            {
+                                // Check contains with grpId
+                                if (raiinListInfList.Find(item => item.RaiinNo == 0
+                                                                 && item.SinDate == sinDate
+                                                                 && item.GrpId == raiinListItem.GrpId) == null)
+                                {
+                                    // create new 
+                                    raiinListInf = new RaiinListInf()
+                                    {
+                                        HpId = hpId,
+                                        PtId = ptId,
+                                        RaiinNo = 0,
+                                        SinDate = sinDate,
+                                        GrpId = raiinListItem.GrpId,
+                                        KbnCd = raiinListItem.KbnCd,
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                        UpdateId = userId,
+                                    };
+                                    raiinListInfList.Add(raiinListInf);
+                                }
+                            }
+                            else
+                            {
+                                // update
+                                raiinListInf.KbnCd = raiinListItem.KbnCd;
+                                raiinListInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                raiinListInf.UpdateId = userId;
+                            }
+                        }
+                    }
+
+                    // Add or Update with SinKouiKbn
+                    foreach (int koui in currentKouiSet.ToArray())
+                    {
+                        var kouiMst = kouiKbnMst?.Find(item => item.KouiKbn1 == koui);
+                        if (kouiMst == null) continue;
+
+                        List<RaiinListKoui> kouiItemList = raiinListKouis.FindAll(item => item.KouiKbnId == kouiMst.KouiKbnId);
+                        foreach (RaiinListKoui kouiItem in kouiItemList)
+                        {
+                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == kouiItem.GrpId);
+                            if (raiinListInf == null)
+                            {
+                                // Check contains with grpId
+                                if (raiinListInfList.Find(item => item.RaiinNo == 0
+                                                                 && item.SinDate == sinDate
+                                                                 && item.GrpId == kouiItem.GrpId) == null)
+                                {
+                                    // create new 
+                                    raiinListInf = new RaiinListInf()
+                                    {
+                                        HpId = hpId,
+                                        PtId = ptId,
+                                        RaiinNo = 0,
+                                        SinDate = sinDate,
+                                        GrpId = kouiItem.GrpId,
+                                        KbnCd = kouiItem.KbnCd,
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                        UpdateId = userId
+                                    };
+                                    raiinListInfList.Add(raiinListInf);
+                                }
+                            }
+                            else
+                            {
+                                // update
+                                raiinListInf.KbnCd = kouiItem.KbnCd;
+                                raiinListInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                raiinListInf.UpdateId = userId;
+                            }
+                        }
+                    }
+            }
+
+            TrackingDataContext.RaiinListInfs.AddRange(raiinListInfList);
+            TrackingDataContext.SaveChanges();
         }
 
         private void UpsertOrderInf(int userId, long maxRpNo, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels, long rsvkrtNo = 0, int rsvDate = 0)
@@ -633,9 +825,9 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<NextOrderModel> GetList(int hpId, long ptId, int rsvkrtKbn, bool isDeleted)
+        public List<NextOrderModel> GetList(int hpId, long ptId, bool isDeleted)
         {
-            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.HpId == hpId && rsv.PtId == ptId && rsv.RsvkrtKbn == rsvkrtKbn && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
+            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.HpId == hpId && rsv.PtId == ptId && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
 
             return allRsvkrtMst?.Select(rsv => ConvertToModel(rsv)).ToList() ?? new List<NextOrderModel>();
         }
@@ -1088,6 +1280,31 @@ namespace Infrastructure.Repositories
                 }
             }
         }
+
+        public bool CheckNextOrdHaveOdr(int hpId, long ptId, int sinDate)
+        {
+            var allRsvkrtMstQuery = NoTrackingDataContext.RsvkrtMsts
+                .Where(mst => mst.HpId == hpId && mst.PtId == ptId && mst.IsDeleted == 0 && mst.RsvkrtKbn == 0 && (mst.RsvDate == sinDate || mst.RsvDate == 99999999));
+
+            IQueryable<RsvkrtOdrInf> allRsvkrtOdrInfQuery;
+            allRsvkrtOdrInfQuery = NoTrackingDataContext.RsvkrtOdrInfs
+                .Where(o => o.HpId == hpId &&
+                                        o.PtId == ptId &&
+                                        (o.RsvDate == sinDate || o.RsvDate == 99999999) &&
+                                        o.OdrKouiKbn >= 13 &&
+                                        o.IsDeleted == DeleteStatus.None);
+
+            var queryRsvkrtMsts = from mst in allRsvkrtMstQuery
+                                  join odr in allRsvkrtOdrInfQuery on mst.RsvkrtNo equals odr.RsvkrtNo into odrs
+                                  orderby mst.RsvDate descending
+                                  select new
+                                  {
+                                      Mst = mst,
+                                      Odrs = odrs,
+                                  };
+            return queryRsvkrtMsts.AsEnumerable().Count(x => x != null && x.Odrs.Any(o => o != null && o.IsDeleted == 0)) > 0;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();

@@ -13,4 +13,5 @@ public enum CopyPasteSetMstStatus : byte
     InvalidPasteSetKbnEdaNo = 9,
     InvalidCopySetKbn = 10,
     InvalidCopySetKbnEdaNo = 11,
+    MedicalScreenLocked = 12,
 }

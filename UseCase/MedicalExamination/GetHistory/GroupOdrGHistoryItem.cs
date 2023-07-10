@@ -192,5 +192,11 @@ namespace UseCase.MedicalExamination.GetHistory
             SinkyuName = sinkyuName;
             OdrInfs = odrInfs;
         }
+
+        public GroupOdrGHistoryItem(List<OdrInfHistoryItem> odrInfs)
+        {
+            OdrInfs = odrInfs;
+            SinkyuName = string.Empty;
+        }
     }
 }

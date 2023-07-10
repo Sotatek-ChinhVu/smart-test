@@ -6,9 +6,12 @@ namespace EmrCloudApi.Responses.InsuranceMst
     {
         public InsuranceMstModel InsuranceMst { get; private set; }
 
-        public GetInsuranceMstResponse(InsuranceMstModel insuranceMst)
+        public int PrefNo { get; private set; }
+
+        public GetInsuranceMstResponse(InsuranceMstModel insuranceMst, int prefNo)
         {
             InsuranceMst = insuranceMst;
+            PrefNo = prefNo;
         }
 
     }

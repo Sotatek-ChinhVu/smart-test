@@ -232,7 +232,7 @@ namespace EmrCloudApi.Presenters.MedicalExamination
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrReqCd));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidBunkatuLength:
-                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrBunkatu));
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.ErrorBunkatuOdrDetail, ResponseMessage.TodayOdrBunkatu));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidCmtName:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrCmtOpt));
@@ -275,6 +275,9 @@ namespace EmrCloudApi.Presenters.MedicalExamination
                         break;
                     case OrderInfConst.OrdInfValidationStatus.NoFillSuryo:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MNoInputData, ResponseMessage.TodayOdrSuryo));
+                        break;
+                    case OrderInfConst.OrdInfValidationStatus.InvalidBunkatuNoInput:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MNoInputData, string.Empty));
                         break;
                     default:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, "-1", "-1", string.Empty, string.Empty));

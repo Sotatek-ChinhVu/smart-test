@@ -243,7 +243,7 @@ namespace EmrCloudApi.Presenters.NextOrder
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrReqCd));
                                 break;
                             case OrderInfConst.OrdInfValidationStatus.InvalidBunkatuLength:
-                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrBunkatu));
+                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.ErrorBunkatuOdrDetail, ResponseMessage.TodayOdrBunkatu));
                                 break;
                             case OrderInfConst.OrdInfValidationStatus.InvalidCmtName:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrCmtOpt));
@@ -289,6 +289,9 @@ namespace EmrCloudApi.Presenters.NextOrder
                                 break;
                             case OrderInfConst.OrdInfValidationStatus.InvalidHasUsage:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.ErrorHasUsage, string.Empty));
+                                break;
+                            case OrderInfConst.OrdInfValidationStatus.InvalidBunkatuNoInput:
+                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MNoInputData, string.Empty));
                                 break;
                             default:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, "-1", "-1", string.Empty, string.Empty));

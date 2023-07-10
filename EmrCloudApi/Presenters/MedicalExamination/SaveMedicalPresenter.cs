@@ -23,7 +23,7 @@ public class SaveMedicalPresenter : ISaveMedicalOutputPort
 
         Result = new Response<SaveMedicalResponse>()
         {
-            Message = outputData.Status == SaveMedicalStatus.Successed ? ResponseMessage.Success : ResponseMessage.Failed,
+            Message = GetMessageCommon(outputData.Status),
             Status = (byte)outputData.Status
         };
 
@@ -241,7 +241,7 @@ public class SaveMedicalPresenter : ISaveMedicalOutputPort
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrReqCd));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidBunkatuLength:
-                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrBunkatu));
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.ErrorBunkatuOdrDetail, ResponseMessage.TodayOdrBunkatu));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidCmtName:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrCmtOpt));
@@ -281,6 +281,9 @@ public class SaveMedicalPresenter : ISaveMedicalOutputPort
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidHasUsage:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.ErrorHasUsage, string.Empty));
+                        break;
+                    case OrderInfConst.OrdInfValidationStatus.InvalidBunkatuNoInput:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MNoInputData, string.Empty));
                         break;
                     default:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, "-1", "-1", string.Empty, string.Empty));
@@ -436,6 +439,14 @@ public class SaveMedicalPresenter : ISaveMedicalOutputPort
           ResponseMessage.MCommonError,
         UpsertPtDiseaseListStatus.Valid =>
   ResponseMessage.Valid,
+        _ => string.Empty
+    };
+
+    private string GetMessageCommon(SaveMedicalStatus status) => status switch
+    {
+        SaveMedicalStatus.Successed => ResponseMessage.Success,
+        SaveMedicalStatus.Failed => ResponseMessage.Failed,
+        SaveMedicalStatus.MedicalScreenLocked => ResponseMessage.MedicalScreenLocked,
         _ => string.Empty
     };
 }
