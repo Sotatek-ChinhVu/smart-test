@@ -4339,6 +4339,8 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "StartDate", "IpnNameCd", "SeqNo");
 
+                    b.HasIndex(new[] { "HpId", "StartDate", "EndDate", "IpnNameCd" }, "IPN_KASAN_EXCLUDE_IDX01");
+
                     b.ToTable("IPN_KASAN_EXCLUDE");
                 });
 
@@ -4391,6 +4393,8 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("HpId", "StartDate", "ItemCd");
+
+                    b.HasIndex(new[] { "HpId", "StartDate", "EndDate", "ItemCd" }, "IPN_KASAN_EXCLUDE_ITEM_IDX01");
 
                     b.ToTable("IPN_KASAN_EXCLUDE_ITEM");
                 });
@@ -4537,6 +4541,8 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex(new[] { "HpId", "IpnNameCd", "StartDate" }, "IPN_MIN_YAKKA_MST_IDX01");
 
+                    b.HasIndex(new[] { "HpId", "StartDate", "EndDate", "IpnNameCd" }, "IPN_MIN_YAKKA_MST_IDX02");
+
                     b.ToTable("IPN_MIN_YAKKA_MST");
                 });
 
@@ -4603,6 +4609,8 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("HpId", "IpnNameCd", "StartDate", "SeqNo");
+
+                    b.HasIndex(new[] { "IpnNameCd" }, "IPN_NAME_MST_IDX01");
 
                     b.ToTable("IPN_NAME_MST");
                 });
@@ -6376,6 +6384,8 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("HpId", "KensaItemCd", "KensaItemSeqNo");
+
+                    b.HasIndex(new[] { "KensaItemCd" }, "KENSA_MST_IDX01");
 
                     b.ToTable("KENSA_MST");
                 });
@@ -13726,6 +13736,8 @@ namespace TenantMigration.Migrations
                     b.HasIndex(new[] { "HpId", "PtId", "SinDate", "Status", "IsDeleted" }, "RAIIN_INF_IDX01");
 
                     b.HasIndex(new[] { "HpId", "PtId", "SinDate", "Status", "SyosaisinKbn", "IsDeleted" }, "RAIIN_INF_IDX02");
+
+                    b.HasIndex(new[] { "IsDeleted", "SinDate", "PtId" }, "RAIIN_INF_IDX03");
 
                     b.ToTable("RAIIN_INF");
                 });
@@ -23717,6 +23729,8 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "ItemCd", "StartDate");
 
+                    b.HasIndex(new[] { "HpId", "ItemCd", "StartDate", "EndDate", "Name", "KanaName1", "KanaName2", "KanaName3", "KanaName4", "KanaName5", "KanaName6", "KanaName7", "IsDeleted", "IsAdopted" }, "TEN_MST_IDX08");
+
                     b.ToTable("TEN_MST");
                 });
 
@@ -25289,6 +25303,33 @@ namespace TenantMigration.Migrations
                     b.ToTable("USER_PERMISSION");
                 });
 
+            modelBuilder.Entity("Entity.Tenant.UserToken", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("USER_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text")
+                        .HasColumnName("REFRESH_TOKEN")
+                        .HasColumnOrder(2);
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("TOKEN_EXPIRY_TIME")
+                        .HasColumnOrder(3);
+
+                    b.Property<bool>("RefreshTokenIsUsed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("REFRESH_TOKEN_IS_USED")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("UserId", "RefreshToken");
+
+                    b.ToTable("USER_TOKEN");
+                });
+
             modelBuilder.Entity("Entity.Tenant.WrkSinKoui", b =>
                 {
                     b.Property<int>("HpId")
@@ -25890,6 +25931,8 @@ namespace TenantMigration.Migrations
                         .HasColumnName("YAKKA");
 
                     b.HasKey("HpId", "YakkaCd", "ItemCd", "StartDate");
+
+                    b.HasIndex(new[] { "StartDate", "EndDate" }, "YAKKA_SYUSAI_MST_IDX01");
 
                     b.ToTable("YAKKA_SYUSAI_MST");
                 });

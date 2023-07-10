@@ -15,4 +15,6 @@ public interface IAccountDueRepository : IRepositoryBase
     Dictionary<int, string> GetPaymentMethod(int hpId);
 
     Dictionary<int, string> GetUketsukeSbt(int hpId);
+
+    bool IsNyukinExisted(int hpId, long ptId, long raiinNo, int sinDate);
 }

@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token)
+        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token, string tabKey)
         {
             long oyaRaiinNo = 0;
             if (raiinNo > 0)
@@ -37,9 +37,36 @@ namespace Infrastructure.Repositories
 
             string rawSql =
             "INSERT INTO \"LOCK_INF\" (\"FUNCTION_CD\", \"HP_ID\", \"OYA_RAIIN_NO\", \"PT_ID\", \"RAIIN_NO\", \"SIN_DATE\", \"LOCK_DATE\", \"MACHINE\", \"USER_ID\")\r\n      " +
-            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{token}', {userId}) ON CONFLICT DO NOTHING;";
+            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{tabKey}', {userId}) ON CONFLICT DO NOTHING;";
 
             return TrackingDataContext.Database.ExecuteSqlRaw(rawSql) > 0;
+        }
+
+        public LockModel CheckOpenSpecialNote(int hpId, string functionCd, long ptId)
+        {
+            var lockInf = NoTrackingDataContext.LockInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                && item.PtId == ptId
+                                                                                && item.FunctionCd == functionCd);
+            if (lockInf == null)
+            {
+                return new();
+            }
+
+            var userInf = NoTrackingDataContext.UserMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                                && item.UserId == lockInf.UserId
+                                                                                && item.IsDeleted == 0);
+
+            var functionInf = NoTrackingDataContext.FunctionMsts.FirstOrDefault(item => item.FunctionCd == lockInf.FunctionCd);
+
+            return new LockModel(
+                       lockInf.UserId,
+                       userInf?.Name ?? string.Empty,
+                       lockInf.LockDate,
+                       functionInf?.FunctionName ?? string.Empty,
+                       lockInf.FunctionCd,
+                       0,
+                       0
+                );
         }
 
         public bool ExistLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo)
@@ -129,7 +156,7 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public bool RemoveLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId)
+        public List<long> RemoveLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId)
         {
             long oyaRaiinNo = 0;
             if (raiinNo > 0)
@@ -143,23 +170,51 @@ namespace Infrastructure.Repositories
             var lockInf = TrackingDataContext.LockInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.FunctionCd == functionCd && r.RaiinNo == raiinNo && r.OyaRaiinNo == oyaRaiinNo && r.SinDate == sinDate && r.UserId == userId);
             if (lockInf == null)
             {
-                return true;
+                return new() { raiinNo };
             }
             TrackingDataContext.LockInfs.Remove(lockInf);
             TrackingDataContext.SaveChanges();
-            return true;
+            return new() { lockInf.RaiinNo };
         }
 
-        public bool RemoveAllLock(int hpId, int userId)
+        public List<long> RemoveAllLock(int hpId, int userId)
         {
             var lockInfList = TrackingDataContext.LockInfs.Where(r => r.HpId == hpId && r.UserId == userId).ToList();
             if (!lockInfList.Any())
             {
-                return true;
+                return new();
             }
+            var raiinNoList = lockInfList.Select(item => item.RaiinNo).Distinct().ToList();
             TrackingDataContext.LockInfs.RemoveRange(lockInfList);
             TrackingDataContext.SaveChanges();
-            return true;
+            return raiinNoList;
+        }
+
+        public List<long> RemoveAllLock(int hpId, int userId, long ptId, int sinDate, string functionCd, string tabKey)
+        {
+            List<string> functionCdList = new()
+            {
+                functionCd
+            };
+            if (functionCd == FunctionCode.MedicalExaminationCode)
+            {
+                functionCdList.Add(FunctionCode.SwitchOrderCode);
+            }
+            var lockInfList = TrackingDataContext.LockInfs.Where(item => item.HpId == hpId
+                                                                         && item.UserId == userId
+                                                                         && item.PtId == ptId
+                                                                         && functionCdList.Contains(item.FunctionCd)
+                                                                         && item.SinDate == sinDate
+                                                                         && item.Machine == tabKey
+                                                          ).ToList();
+            if (!lockInfList.Any())
+            {
+                return new();
+            }
+            var raiinNoList = lockInfList.Select(item => item.RaiinNo).Distinct().ToList();
+            TrackingDataContext.LockInfs.RemoveRange(lockInfList);
+            TrackingDataContext.SaveChanges();
+            return raiinNoList;
         }
 
         public bool ExtendTtl(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId)
@@ -247,6 +302,60 @@ namespace Infrastructure.Repositories
                 result = functionItem.FunctionName ?? string.Empty;
             }
             return result;
+        }
+
+        public List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate)
+        {
+            List<ResponseLockModel> result = new();
+            // Raiin 
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.IsDeleted == DeleteTypes.None
+                                                                             && item.SinDate == sinDate
+                                                                             && item.PtId == ptId)
+                                                              .ToList();
+
+            var raiinNoList = raiinInfList.Select(item => item.RaiinNo).Distinct().ToList();
+
+            // Lock 
+            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => raiinNoList.Contains(item.RaiinNo)
+                                                                           && (item.FunctionCd == FunctionCode.MedicalExaminationCode
+                                                                               || item.FunctionCd == FunctionCode.TeamKarte
+                                                                               || item.FunctionCd == FunctionCode.SwitchOrderCode))
+                                                            .ToList();
+            foreach (var raiinItem in raiinInfList)
+            {
+                int status = raiinItem.Status;
+                if (lockInfList.Any(item => item.RaiinNo == raiinItem.RaiinNo))
+                {
+                    status = RaiinState.Examining;
+                }
+                result.Add(new ResponseLockModel(
+                               raiinItem.SinDate,
+                               raiinItem.PtId,
+                               raiinItem.RaiinNo,
+                               status
+                           ));
+            }
+            return result;
+        }
+
+        public bool CheckLockOpenAccounting(int hpId, long ptId, long raiinNo)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                  && item.RaiinNo == raiinNo
+                                                                                  && item.IsDeleted == 0);
+            if (raiinInf == null)
+            {
+                return false;
+            }
+            else if (raiinInf.Status == 9)
+            {
+                return false;
+            }
+            long oyaRaiinNo = raiinInf.OyaRaiinNo;
+            var existLockInf = NoTrackingDataContext.LockInfs.Any(item => item.HpId == hpId
+                                                                          && item.PtId == ptId
+                                                                          && item.OyaRaiinNo == oyaRaiinNo);
+            return existLockInf;
         }
     }
 }

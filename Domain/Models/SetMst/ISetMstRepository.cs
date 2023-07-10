@@ -9,7 +9,7 @@ public interface ISetMstRepository : IRepositoryBase
     (bool status, List<SetMstModel> setMstModels) ReorderSetMst(int userId, int hpId, int setCdDragItem, int setCdDropItem);
     List<SetMstModel> PasteSetMst(int hpId, int userId, int generationId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int copySetKbnEdaNo, int copySetKbn, int pasteSetKbnEdaNo, int pasteSetKbn);
 
-    SetMstModel SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel);
+    List<SetMstModel> SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel);
 
     bool CheckExistSetMstBySetCd(int setCd);
 

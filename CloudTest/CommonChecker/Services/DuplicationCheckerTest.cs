@@ -542,7 +542,6 @@ namespace CloudUnitTest.CommonChecker.Services
             var result = duplicationChecker.CheckDuplicatedItemCode(checkingOrder, currentOdrDetailList.Select(o => new ItemCodeModel(o.ItemCd, o.Id)).ToList());
 
             //Assert
-
             Assert.True(result.Count == 1 && result[0].Id == "id1" && result[0].DuplicatedItemCd == "613110017");
         }
     }
