@@ -228,7 +228,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             //天草市こども医療費の対象に絞る
             receInfs = receInfs.Where(x => x.IsWelfare).OrderBy(x => x.JyukyusyaNo.PadLeft(7, '0')).ToList();
 
-            return (receInfs?.Count ?? 0) == 0;
+            return (receInfs?.Count ?? 0) > 0;
         }
 
         private void GetRowCount(string formFileName)
