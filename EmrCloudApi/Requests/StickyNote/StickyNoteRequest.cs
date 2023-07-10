@@ -2,7 +2,6 @@
 {
     public class GetStickyNoteRequest
     {
-        public int HpId { get; set; }
         public int PtId { get; set; }
     }
 }

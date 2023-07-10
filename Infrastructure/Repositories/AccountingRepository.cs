@@ -958,7 +958,7 @@ namespace Infrastructure.Repositories
         }
 
         public bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
-                                   int payType, string comment, bool isDisCharged)
+                                   int payType, string comment, bool isDisCharged, string kaikeiTime)
         {
 
             var raiinNos = syunoSeikyuModels.Select(item => item.RaiinNo).Distinct().ToList();
@@ -974,7 +974,7 @@ namespace Infrastructure.Repositories
                                        && item.PtId == ptId
                                        && raiinNos.Contains(item.RaiinNo))
                         .ToList();
-
+            thisCredit = (isDisCharged && accDue == 1) ? 0 : thisCredit;
             int allSeikyuGaku = sumAdjust;
             int adjustFutan = thisWari;
             int nyukinGaku = thisCredit;
@@ -993,7 +993,7 @@ namespace Infrastructure.Repositories
                 if (!isDisCharged)
                 {
                     ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
-                    out outNyukinKbn, isLastRecord);
+                out outNyukinKbn, isLastRecord);
                     allSeikyuGaku -= thisSeikyuGaku;
                 }
                 else
@@ -1027,7 +1027,7 @@ namespace Infrastructure.Repositories
                         NyukinjiSeikyu = item.SeikyuGaku
                     });
 
-                    UpdateStatusRaiinInf(userId, item, raiinInLists);
+                    UpdateStatusRaiinInf(userId, item, raiinInLists, kaikeiTime);
                     UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
                 }
                 else
@@ -1054,12 +1054,12 @@ namespace Infrastructure.Repositories
                     syuno.UpdateId = userId;
                     syuno.NyukinDate = item.SinDate;
 
-                    UpdateStatusRaiinInf(userId, item, raiinInLists);
+                    UpdateStatusRaiinInf(userId, item, raiinInLists, kaikeiTime);
                     UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
                 }
 
             }
-            if (accDue != 0 && thisCredit != 0)
+            if (accDue != 0 && (thisCredit != 0 && isDisCharged) || (nyukinGaku != 0 && !isDisCharged))
             {
                 AdjustWariExecute(hpId, ptId, userId, thisCredit, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment);
             }
@@ -1122,7 +1122,7 @@ namespace Infrastructure.Repositories
                     UpdateId = userId,
                     NyukinjiTensu = item.SeikyuTensu,
                     NyukinjiDetail = item.SeikyuDetail,
-                    NyukinjiSeikyu = item.SeikyuGaku
+                    NyukinjiSeikyu = item.SeikyuGaku,
                 });
 
                 UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
@@ -1155,14 +1155,14 @@ namespace Infrastructure.Repositories
             outNyukinKbn = thisSeikyuGaku == 0 ? 3 : 1;
         }
 
-        private void UpdateStatusRaiinInf(int userId, SyunoSeikyuModel syunoSeikyu, List<RaiinInf> raiinLists)
+        private void UpdateStatusRaiinInf(int userId, SyunoSeikyuModel syunoSeikyu, List<RaiinInf> raiinLists, string kaikeiTime)
         {
             var raiin = raiinLists.FirstOrDefault(item => item.RaiinNo == syunoSeikyu.RaiinNo);
 
             if (raiin != null)
             {
                 raiin.Status = RaiinState.Settled;
-                raiin.KaikeiTime = CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow());
+                raiin.KaikeiTime = kaikeiTime;
                 raiin.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 raiin.UpdateId = userId;
             }

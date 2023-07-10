@@ -74,7 +74,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Save + "RaiinKbnInfList")]
         public ActionResult<Response<SaveRaiinKbnInfListResponse>> SaveRaiinKbnInfList([FromBody] SaveRaiinKbnInfListRequest request)
         {
-            var input = new SaveRaiinKbnInfListInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo, request.UserId, request.KbnInfDtos);
+            var input = new SaveRaiinKbnInfListInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.UserId, request.KbnInfDtos);
             var output = _bus.Handle(input);
 
             var presenter = new SaveRaiinKbnInfListPresenter();

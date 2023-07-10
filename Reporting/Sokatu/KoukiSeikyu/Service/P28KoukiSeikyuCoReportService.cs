@@ -15,7 +15,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service;
 public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
 {
     #region Constructor and Init
-    private const int MyPrefNo = 28;
+    private const int myPrefNo = 28;
     private int _hpId;
     private int _seikyuYm;
     private SeikyuType _seikyuType;
@@ -105,7 +105,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
             SetFieldData("seikyuMonth", wrkYmd.Month.AsString());
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd"))
             );
             SetFieldData("reportGengo", wrkYmd.Gengo.AsString());
             SetFieldData("reportYear", wrkYmd.Year.AsString());
@@ -253,7 +253,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
     private bool GetData()
     {
         hpInf = _finder.GetHpInf(_hpId, _seikyuYm);
-        receInfs = _finder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.NoSum);
+        receInfs = _finder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.NoSum);
         var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
         receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
         hokensyaNos = wrkReceInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();

@@ -164,7 +164,63 @@ namespace Interactor.MedicalExamination
             if (infoType == InfoType.PtHeaderInfo)
             {
                 header1Property = _userConfRepository.GetSettingParam(hpId, userId, 910, defaultValue: "234");
+                StringBuilder header1StringBuilder = new();
+                header1StringBuilder.Append(header1Property);
+                if (!header1Property.Contains("C"))
+                {
+                    header1StringBuilder.Append("C");
+                }
+                if (!header1Property.Contains("D"))
+                {
+                    header1StringBuilder.Append("D");
+                }
+                if (!header1Property.Contains("E"))
+                {
+                    header1StringBuilder.Append("E");
+                }
+                if (!header1Property.Contains("7"))
+                {
+                    header1StringBuilder.Append("7");
+                }
+                if (!header1Property.Contains("9"))
+                {
+                    header1StringBuilder.Append("9");
+                }
+                if (!header1Property.Contains("A"))
+                {
+                    header1StringBuilder.Append("A");
+                }
+                header1Property = header1StringBuilder.ToString();
+
                 header2Property = _userConfRepository.GetSettingParam(hpId, userId, 911, defaultValue: "567");
+                StringBuilder header2StringBuilder = new();
+                header2StringBuilder.Append(header2Property);
+                if (header2Property.Contains("C"))
+                {
+                    header2StringBuilder.Replace("C", string.Empty);
+                }
+                if (header2Property.Contains("D"))
+                {
+                    header2StringBuilder.Replace("D", string.Empty);
+                }
+                if (header2Property.Contains("E"))
+                {
+                    header2StringBuilder.Replace("E", string.Empty);
+                }
+                if (header2Property.Contains("7"))
+                {
+                    header2StringBuilder.Replace("7", string.Empty);
+                }
+                if (header2Property.Contains("9"))
+                {
+                    header2StringBuilder.Replace("9", string.Empty);
+                }
+                if (header2Property.Contains("A"))
+                {
+                    header2StringBuilder.Replace("A", string.Empty);
+                }
+                header2Property = header2StringBuilder.ToString();
+
                 listUserconfig = _userConfRepository.GetList(hpId, userId, new List<int> { 912 }).ToList();
                 //_notifications = GetNotification(hpId, ptId, sinDate, userId);
                 //_notificationPopUps = GetPopUpNotification(hpId, userId, _notifications);
@@ -1129,7 +1185,7 @@ namespace Interactor.MedicalExamination
                         {
                             headerInfo.Append(Environment.NewLine);
                         }
-                        headerInfo.Append($"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){ptFamilyModel.DiseaseName}");
+                        headerInfo.Append($"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){diseaseName}");
                     }
                 }
 

@@ -1,4 +1,6 @@
 ﻿using Domain.Models.SetMst;
+using Domain.Models.User;
+using Interactor.SetMst.CommonSuperSet;
 using UseCase.SetMst.CopyPasteSetMst;
 
 namespace Interactor.SetMst;
@@ -6,14 +8,24 @@ namespace Interactor.SetMst;
 public class CopyPasteSetMstInteractor : ICopyPasteSetMstInputPort
 {
     private readonly ISetMstRepository _setMstRepository;
+    private readonly ICommonSuperSet _commonSuperSet;
+    private readonly IUserRepository _userRepository;
 
-    public CopyPasteSetMstInteractor(ISetMstRepository setMstRepository)
+    public CopyPasteSetMstInteractor(ISetMstRepository setMstRepository, ICommonSuperSet commonSuperSet, IUserRepository userRepository)
     {
         _setMstRepository = setMstRepository;
+        _commonSuperSet = commonSuperSet;
+        _userRepository = userRepository;
     }
+
     public CopyPasteSetMstOutputData Handle(CopyPasteSetMstInputData inputData)
     {
-        if (inputData.HpId <= 0)
+        var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+        if (notAllowSave)
+        {
+            return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.MedicalScreenLocked);
+        }
+        else if (inputData.HpId <= 0)
         {
             return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.InvalidHpId);
         }
@@ -50,7 +62,7 @@ public class CopyPasteSetMstInteractor : ICopyPasteSetMstInputPort
             var setMsts = _setMstRepository.PasteSetMst(inputData.HpId, inputData.UserId, inputData.GenerationId, inputData.CopySetCd, inputData.PasteSetCd, inputData.PasteToOtherGroup, inputData.CopySetKbnEdaNo, inputData.CopySetKbn, inputData.PasteSetKbnEdaNo, inputData.PasteSetKbn);
             if (setMsts.Count > 0)
             {
-                return new CopyPasteSetMstOutputData(setMsts, CopyPasteSetMstStatus.Successed);
+                return new CopyPasteSetMstOutputData(_commonSuperSet.BuildTreeSetKbn(setMsts), CopyPasteSetMstStatus.Successed);
             }
             return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.InvalidLevel);
         }

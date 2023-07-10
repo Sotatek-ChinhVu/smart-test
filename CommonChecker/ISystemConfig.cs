@@ -7,7 +7,6 @@ namespace CommonChecker
     {
 
         public double GetSettingValue(int groupCd, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false);
-        public bool CheckContainKey(int groupCd, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false);
         public string GetSettingParam(int groupCd, int grpEdaNo = 0, string defaultParam = "", bool fromLastestDb = false);
         public List<SystemConf> GetListGroupCd(int groupCd, bool fromLastestDb = false);
         public SystemConf CreateNewSystemConf(int grpCd, int grpEdaNo = 0, int value = 0, string param = "");

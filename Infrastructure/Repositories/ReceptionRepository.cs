@@ -241,6 +241,15 @@ namespace Infrastructure.Repositories
                     entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     entity.UpdateId = userId;
                 }
+
+                if (entity.IsYoyaku == 1 && entity.Status == RaiinState.Reservation)
+                {
+                    if (string.IsNullOrEmpty(entity.UketukeTime) || entity.UketukeTime.Equals("0"))
+                    {
+                        entity.UketukeTime = model.UketukeTime;
+                    }
+                    entity.Status = model.Status;
+                }
             }
 
             void ResetOyaRaiinNo(int hpId, int userId, long ptId, long raiinNo)
@@ -338,7 +347,7 @@ namespace Infrastructure.Repositories
                         {
                             // Update
                             existingEntity.KbnCd = kbnInfDto.KbnCd;
-                            existingEntity.UpdateDate = DateTime.UtcNow;
+                            existingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             existingEntity.UpdateId = userId;
                         }
                     }
@@ -366,11 +375,6 @@ namespace Infrastructure.Repositories
                 foreach (var insuranceItem in insurances)
                 {
                     var hokenGrp = insuranceItem.IsHokenGroupKohi ? HokenGroupConstant.HokenGroupKohi : HokenGroupConstant.HokenGroupHokenPattern;
-                    var listCheckTime = oldHokenCheckDB.Where(item =>
-                                                                    item.HokenId == insuranceItem.HokenId
-                                                                    && item.HokenGrp == hokenGrp)
-                                                        .OrderByDescending(item => item.CheckDate)
-                                                        .ToList();
 
                     var listHokenCheckInsertInput = insuranceItem.ConfirmDateList.Where(item => item.SeqNo == 0).ToList();
                     var listHokenCheckUpdateInput = insuranceItem.ConfirmDateList.Where(item => item.SeqNo != 0).ToList();
@@ -389,42 +393,23 @@ namespace Infrastructure.Repositories
                     // Update PtHokenCheck
                     foreach (var update in listHokenCheckUpdateInput)
                     {
-                        var checkDatetimeInput = DateTime.ParseExact(update.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
+                        var checkDatetimeInput = DateTime.ParseExact(update.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+                        var utcCheckDateTime = DateTime.SpecifyKind(checkDatetimeInput, DateTimeKind.Utc);
+
                         var hokenCheckItem = listUpdateItemDB.FirstOrDefault(item => item.SeqNo == update.SeqNo);
                         if (hokenCheckItem != null)
                         {
                             hokenCheckItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             hokenCheckItem.UpdateId = userId;
 
-                            /// <summary>
-                            /// Update check date:
-                            /// If checkDate of item in database is not equal checkDate input,
-                            /// and checkDate input not equal other checkDate in database
-                            /// then update checkDate
-                            /// </summary>
-                            if (!hokenCheckItem.CheckDate.ToString("yyyyMMdd").Equals(update.SinDate.ToString())
-                                && !listCheckTime.Select(item => item.CheckDate.ToString("yyyyMMdd")).ToList().Contains(update.SinDate.ToString()))
-                            {
-                                hokenCheckItem.CheckDate = checkDatetimeInput;
-                                var removeItem = listCheckTime.FirstOrDefault(item => item.SeqNo == update.SeqNo);
-                                if (removeItem != null)
-                                {
-                                    listCheckTime.Remove(removeItem);
-                                }
-                            }
-
                             // update isDelete
                             if (update.IsDelete)
                             {
                                 hokenCheckItem.IsDeleted = 1;
-                                var removeItem = listCheckTime.FirstOrDefault(item => item.SeqNo == update.SeqNo);
-                                if (removeItem != null)
-                                {
-                                    listCheckTime.Remove(removeItem);
-                                }
                             }
                             else
                             {
+                                hokenCheckItem.CheckDate = utcCheckDateTime;
                                 hokenCheckItem.CheckCmt = update.Comment;
                                 hokenCheckItem.CheckId = userId;
                             }
@@ -434,24 +419,23 @@ namespace Infrastructure.Repositories
                     // Add new PtHokenCheck
                     foreach (var item in listHokenCheckInsertInput)
                     {
-                        var checkDatetime = DateTime.ParseExact(item.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
-                        if (listCheckTime == null || !listCheckTime.Select(item => item.CheckDate.ToString("yyyyMMdd")).ToList().Contains(item.SinDate.ToString()))
+                        var checkDatetime = DateTime.ParseExact(item.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+                        var utcCheckDateTime = DateTime.SpecifyKind(checkDatetime, DateTimeKind.Utc);
+
+                        listHokenCheckAddNew.Add(new PtHokenCheck
                         {
-                            listHokenCheckAddNew.Add(new PtHokenCheck
-                            {
-                                HpId = hpId,
-                                PtID = ptId,
-                                HokenGrp = hokenGrp,
-                                HokenId = insuranceItem.HokenId,
-                                CheckDate = checkDatetime,
-                                CheckCmt = item.Comment,
-                                CheckId = userId,
-                                CreateDate = CIUtil.GetJapanDateTimeNow(),
-                                CreateId = userId,
-                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                                UpdateId = userId
-                            });
-                        }
+                            HpId = hpId,
+                            PtID = ptId,
+                            HokenGrp = hokenGrp,
+                            HokenId = insuranceItem.HokenId,
+                            CheckDate = utcCheckDateTime,
+                            CheckCmt = item.Comment,
+                            CheckId = userId,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId
+                        });
                     }
                 }
                 TrackingDataContext.PtHokenChecks.AddRange(listHokenCheckAddNew);
@@ -500,15 +484,15 @@ namespace Infrastructure.Repositories
                         r.SanteiKbn,
                         r.Status,
                         r.IsYoyaku,
-                        r.YoyakuTime ?? String.Empty,
+                        r.YoyakuTime ?? string.Empty,
                         r.YoyakuId,
                         r.UketukeSbt,
-                        r.UketukeTime ?? String.Empty,
+                        r.UketukeTime ?? string.Empty,
                         r.UketukeId,
                         r.UketukeNo,
                         r.SinStartTime ?? string.Empty,
-                        r.SinEndTime ?? String.Empty,
-                        r.KaikeiTime ?? String.Empty,
+                        r.SinEndTime ?? string.Empty,
+                        r.KaikeiTime ?? string.Empty,
                         r.KaikeiId,
                         r.KaId,
                         r.TantoId,
@@ -538,15 +522,15 @@ namespace Infrastructure.Repositories
                     r.SanteiKbn,
                     r.Status,
                     r.IsYoyaku,
-                    r.YoyakuTime ?? String.Empty,
+                    r.YoyakuTime ?? string.Empty,
                     r.YoyakuId,
                     r.UketukeSbt,
-                    r.UketukeTime ?? String.Empty,
+                    r.UketukeTime ?? string.Empty,
                     r.UketukeId,
                     r.UketukeNo,
                     r.SinStartTime ?? string.Empty,
-                    r.SinEndTime ?? String.Empty,
-                    r.KaikeiTime ?? String.Empty,
+                    r.SinEndTime ?? string.Empty,
+                    r.KaikeiTime ?? string.Empty,
                     r.KaikeiId,
                     r.KaId,
                     r.TantoId,
@@ -560,10 +544,10 @@ namespace Infrastructure.Repositories
         {
             var result = NoTrackingDataContext.RaiinInfs
                             .Where(p => p.HpId == hpId &&
-                                                           p.PtId == ptId &&
-                                                           p.IsDeleted == DeleteTypes.None &&
-                                                           p.Status >= RaiinState.TempSave &&
-                                                           (sinDate <= 0 || p.SinDate < sinDate))
+                                        p.PtId == ptId &&
+                                        p.IsDeleted == DeleteTypes.None &&
+                                        p.Status >= RaiinState.TempSave &&
+                                        (sinDate <= 0 || p.SinDate < sinDate))
                             .OrderByDescending(p => p.SinDate)
                             .ThenByDescending(p => p.RaiinNo)
                             .FirstOrDefault();
@@ -580,15 +564,15 @@ namespace Infrastructure.Repositories
                     result.SanteiKbn,
                     result.Status,
                     result.IsYoyaku,
-                    result.YoyakuTime ?? String.Empty,
+                    result.YoyakuTime ?? string.Empty,
                     result.YoyakuId,
                     result.UketukeSbt,
-                    result.UketukeTime ?? String.Empty,
+                    result.UketukeTime ?? string.Empty,
                     result.UketukeId,
                     result.UketukeNo,
                     result.SinStartTime ?? string.Empty,
-                    result.SinEndTime ?? String.Empty,
-                    result.KaikeiTime ?? String.Empty,
+                    result.SinEndTime ?? string.Empty,
+                    result.KaikeiTime ?? string.Empty,
                     result.KaikeiId,
                     result.KaId,
                     result.TantoId,
@@ -596,6 +580,24 @@ namespace Infrastructure.Repositories
                     result.JikanKbn,
                     string.Empty
                );
+        }
+
+        public List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate)
+        {
+            List<SameVisitModel> result = new();
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                             && item.PtId == ptId
+                                                                             && item.SinDate == sinDate
+                                                                             && item.IsDeleted == 0)
+                                                              .ToList();
+
+            foreach (var raiinInf in raiinInfList)
+            {
+                string sameVisit = raiinInfList.FirstOrDefault(item => item.OyaRaiinNo == raiinInf.OyaRaiinNo && item.RaiinNo != raiinInf.RaiinNo)?.OyaRaiinNo.ToString() ?? string.Empty;
+                var sameItem = new SameVisitModel(raiinInf.SinDate, raiinInf.PtId, raiinInf.RaiinNo, raiinInf.OyaRaiinNo, sameVisit);
+                result.Add(sameItem);
+            }
+            return result;
         }
 
         public bool CheckListNo(List<long> raininNos)
@@ -620,7 +622,7 @@ namespace Infrastructure.Repositories
             var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
             var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
             // Pt (Patient)
-            var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(x => (isDeleted == 2 || x.IsDelete == isDeleted));
             var ptCmtInfs = NoTrackingDataContext.PtCmtInfs.Where(x => x.IsDeleted == DeleteTypes.None);
             var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteTypes.None);
             var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.IsDeleted == DeleteTypes.None);
@@ -633,7 +635,7 @@ namespace Infrastructure.Repositories
             var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Lock (Function lock)
             var lockInfs = NoTrackingDataContext.LockInfs.Where(x =>
-                x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte);
+                x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte || x.FunctionCd == FunctionCode.SwitchOrderCode);
             // Uketuke
             var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
 
@@ -749,7 +751,7 @@ namespace Infrastructure.Repositories
                             && x.PtId == raiinInf.PtId
                             && x.SinDate < sinDate
                             && x.Status >= RaiinState.TempSave
-                        orderby x.SinDate descending
+                        orderby x.SinDate descending, x.RaiinNo descending
                         select x.SinDate
                     ).FirstOrDefault(),
                     firstVisitDate = (
@@ -820,7 +822,7 @@ namespace Infrastructure.Repositories
                 var kanaName = model.KanaName?.Replace("　", " ") ?? "";
                 var list = models
                     .Where(vs => vs.KanaName?.Replace("　", " ") == kanaName && vs.PtId != model.PtId && model.PtNum != vs.PtNum);
-                if (!string.IsNullOrWhiteSpace(kanaName) && list != null && list.Count() > 0)
+                if (!string.IsNullOrWhiteSpace(kanaName) && list != null && list.Any())
                 {
                     model.IsNameDuplicate = true;
                 }
@@ -1247,6 +1249,26 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
 
             return result;
+        }
+
+        public ReceptionModel? GetLastKarute(int hpId, long ptNum)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == ptNum && p.IsDelete == DeleteTypes.None);
+
+            if (ptInf != null)
+            {
+                var raiinInf = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptInf.PtId && r.IsDeleted == DeleteTypes.None
+                                                                                    && r.Status >= RaiinState.TempSave).OrderByDescending(r => r.SinDate).FirstOrDefault();
+                if (raiinInf != null)
+                {
+                    return new ReceptionModel(raiinInf.HpId,
+                                              raiinInf.PtId,
+                                              raiinInf.RaiinNo,
+                                              raiinInf.SinDate);
+                }
+            }
+
+            return null;
         }
 
         public void ReleaseResource()

@@ -5,9 +5,8 @@ namespace EmrCloudApi.Requests.Insurance
 {
     public class HokenInfDto
     {
-        public HokenInfDto(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, string edaNo, int hokenEdaNo, string hokensyaNo, string kigo, string bango, int honkeKbn, int hokenKbn, string houbetu, int keizokuKbn, int sikakuDate, int kofuDate, int startDate, int endDate, int kogakuKbn, int tokureiYm1, int tokureiYm2, int tasukaiYm, int syokumuKbn, int genmenKbn, int genmenRate, int genmenGaku, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, int rousaiSaigaiKbn, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiSyobyoDate, string rousaiSyobyoCd, string rousaiRoudouCd, string rousaiKantokuCd, int rousaiReceCount, int ryoyoStartDate, int ryoyoEndDate, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, int isDeleted, List<ConfirmDateDto> confirmDates, List<RousaiTenkiDto> rousaiTenkis, bool isAddNew, int sinDate)
+        public HokenInfDto(long ptId, int hokenId, long seqNo, int hokenNo, string edaNo, int hokenEdaNo, string hokensyaNo, string kigo, string bango, int honkeKbn, int hokenKbn, string houbetu, int keizokuKbn, int sikakuDate, int kofuDate, int startDate, int endDate, int kogakuKbn, int tokureiYm1, int tokureiYm2, int tasukaiYm, int syokumuKbn, int genmenKbn, int genmenRate, int genmenGaku, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, int rousaiSaigaiKbn, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiSyobyoDate, string rousaiSyobyoCd, string rousaiRoudouCd, string rousaiKantokuCd, int rousaiReceCount, int ryoyoStartDate, int ryoyoEndDate, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, int isDeleted, List<ConfirmDateDto> confirmDates, List<RousaiTenkiDto> rousaiTenkis, bool isAddNew, int sinDate)
         {
-            HpId = hpId;
             PtId = ptId;
             HokenId = hokenId;
             SeqNo = seqNo;
@@ -60,8 +59,6 @@ namespace EmrCloudApi.Requests.Insurance
             IsAddNew = isAddNew;
             SinDate = sinDate;
         }
-
-        public int HpId { get; private set; }
 
         public long PtId { get; private set; }
 

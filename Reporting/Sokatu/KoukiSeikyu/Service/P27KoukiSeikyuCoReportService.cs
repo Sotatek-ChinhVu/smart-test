@@ -266,7 +266,7 @@ public class P27KoukiSeikyuCoReportService : IP27KoukiSeikyuCoReportService
         //保険者名を取得
         hokensyaNames = _kokhoFinder.GetHokensyaName(_hpId, hokensyaNos);
 
-        return (receInfs?.Count ?? 0) > 0;
+        return true;
     }
 
     private void SetFieldData(string field, string value)

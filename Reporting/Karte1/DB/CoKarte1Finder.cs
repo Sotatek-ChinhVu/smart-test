@@ -1,40 +1,34 @@
 ﻿using Domain.Constant;
 using Entity.Tenant;
 using Helper.Constants;
+using Infrastructure.Base;
+using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using PostgreDataContext;
 using Reporting.Karte1.Model;
 
 namespace Reporting.Karte1.DB;
 
-public class CoKarte1Finder
+public class CoKarte1Finder : RepositoryBase, ICoKarte1Finder
 {
-    private readonly int HpId = Session.HospitalID;
-    private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-
-    public CoKarte1Finder(TenantNoTrackingDataContext tenantNoTrackingDataContext)
+    public CoKarte1Finder(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantNoTrackingDataContext = tenantNoTrackingDataContext;
     }
 
-    /// <summary>
-    /// 患者情報を取得する
-    /// </summary>
-    /// <param name="ptId">患者ID</param>
-    /// <returns>患者情報</returns>
-    public CoPtInfModel FindPtInf(long ptId, int sinDate)
+    public CoPtInfModel FindPtInf(int hpId, long ptId, int sinDate)
     {
 
-        var ptInfs = _tenantNoTrackingDataContext.PtInfs.Where(p =>
-                 p.HpId == HpId &&
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p =>
+                 p.HpId == hpId &&
                  p.PtId == ptId &&
                  p.IsDelete == DeleteStatus.None
             );
-        var ptMemos = _tenantNoTrackingDataContext.PtMemos.Where(p =>
-                    p.HpId == HpId &&
+        var ptMemos = NoTrackingDataContext.PtMemos.Where(p =>
+                    p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.IsDeleted == DeleteStatus.None);
-        var ptCmtInfs = _tenantNoTrackingDataContext.PtCmtInfs.Where(p =>
-                    p.HpId == HpId &&
+        var ptCmtInfs = NoTrackingDataContext.PtCmtInfs.Where(p =>
+                    p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.IsDeleted == DeleteStatus.None);
 
@@ -65,8 +59,7 @@ public class CoKarte1Finder
 
         List<CoPtInfModel> results = new List<CoPtInfModel>();
 
-        entities?.ForEach(entity =>
-        {
+        entities?.ForEach(entity => {
             results.Add(
                 new CoPtInfModel(
                     entity.PtInf,
@@ -76,16 +69,10 @@ public class CoKarte1Finder
                 ));
         });
 
-        return results.FirstOrDefault() ?? new();
+        return results.FirstOrDefault();
     }
 
-    /// <summary>
-    /// 患者病名情報を取得する
-    /// </summary>
-    /// <param name="ptId"></param>
-    /// <param name="tenkiByomei">true: 転帰病名も印字</param>
-    /// <returns></returns>
-    public List<CoPtByomeiModel> FindPtByomei(long ptId, int hokenPid, bool tenkiByomei)
+    public List<CoPtByomeiModel> FindPtByomei(int hpId, long ptId, int hokenPid, bool tenkiByomei)
     {
         List<int> tenkiKbns = new List<int> { TenkiKbnConst.Continued };
 
@@ -94,9 +81,9 @@ public class CoKarte1Finder
             tenkiKbns.AddRange(new List<int> { TenkiKbnConst.Cured, TenkiKbnConst.Dead, TenkiKbnConst.Canceled, TenkiKbnConst.Other });
         }
 
-        var ptByomeis = _tenantNoTrackingDataContext.PtByomeis.Where(p =>
-            p.HpId == HpId &&
-            (ptId > 0 ? p.PtId == ptId : true) &&
+        var ptByomeis = NoTrackingDataContext.PtByomeis.Where(p =>
+            p.HpId == hpId &&
+            (ptId <= 0 || p.PtId == ptId) &&
             (p.HokenPid == 0 || p.HokenPid == hokenPid) &&
             tenkiKbns.Contains(p.TenkiKbn) &&
             p.IsDeleted == DeleteStatus.None
@@ -120,19 +107,12 @@ public class CoKarte1Finder
         return results;
     }
 
-    /// <summary>
-    /// 患者保険情報を取得する
-    /// </summary>
-    /// <param name="ptId">患者ID</param>
-    /// <param name="hokenPid">保険組み合わせID</param>
-    /// <param name="sinDate">診療日</param>
-    /// <returns></returns>
-    public CoPtHokenInfModel FindPtHokenInf(long ptId, int hokenPid, int sinDate)
+    public CoPtHokenInfModel FindPtHokenInf(int hpId, long ptId, int hokenPid, int sinDate)
     {
-        var hokenMsts = _tenantNoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts;
 
         //診療日基準で保険番号マスタのキー情報を取得
-        var hokenMstKeys = _tenantNoTrackingDataContext.HokenMsts.Where(
+        var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
             h => h.StartDate <= sinDate
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
@@ -146,21 +126,21 @@ public class CoKarte1Finder
                 StartDate = x.Max(d => d.StartDate)
             }
         );
-        var ptHokenPatterns = _tenantNoTrackingDataContext.PtHokenPatterns.Where(p =>
-            p.HpId == HpId &&
+        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(p =>
+            p.HpId == hpId &&
             p.PtId == ptId &&
             p.HokenPid == hokenPid &&
             p.IsDeleted == DeleteStatus.None
         );
 
-        var ptHokenInfs = _tenantNoTrackingDataContext.PtHokenInfs.Where(p =>
-            p.HpId == HpId &&
+        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p =>
+            p.HpId == hpId &&
             p.PtId == ptId &&
             p.IsDeleted == DeleteStatus.None
         );
 
-        var ptKohis = _tenantNoTrackingDataContext.PtKohis.Where(p =>
-            p.HpId == HpId &&
+        var ptKohis = NoTrackingDataContext.PtKohis.Where(p =>
+            p.HpId == hpId &&
             p.PtId == ptId &&
             p.IsDeleted == DeleteStatus.None
         );
@@ -218,7 +198,7 @@ public class CoKarte1Finder
                 new { ptKohi4Mst.hokenMst.HpId, ptKohi4Mst.hokenMst.HokenNo, ptKohi4Mst.hokenMst.HokenEdaNo, ptKohi4Mst.hokenMst.PrefNo } into joinPtKohi4Msts
             from joinPtKohi4Mst in joinPtKohi4Msts.DefaultIfEmpty()
             where
-                joinPtHokenInf.HpId == HpId &&
+                joinPtHokenInf.HpId == hpId &&
                 joinPtHokenInf.PtId == ptId &&
                 joinPtHokenInf.IsDeleted == DeleteStatus.None
             select new
@@ -243,23 +223,17 @@ public class CoKarte1Finder
                     data.ptHokenInf,
                     data.ptHokenMst,
                     data.ptKohi1,
-                    data.ptKohi1Mst?.hokenMst ?? new(),
+                    data.ptKohi1Mst?.hokenMst,
                     data.ptKohi2,
-                    data.ptKohi2Mst?.hokenMst ?? new(),
+                    data.ptKohi2Mst?.hokenMst,
                     data.ptKohi3,
-                    data.ptKohi3Mst?.hokenMst ?? new(),
+                    data.ptKohi3Mst?.hokenMst,
                     data.ptKohi4,
-                    data.ptKohi4Mst?.hokenMst ?? new()
+                    data.ptKohi4Mst?.hokenMst
                 )
             )
             .ToList();
 
-        if (!entities.Any())
-        {
-            return new CoPtHokenInfModel(new PtHokenInf(), new HokenMst(), new PtKohi(), new HokenMst(), new PtKohi(), new HokenMst(), new PtKohi(), new HokenMst(), new PtKohi(), new HokenMst());
-        }
-
-        return entities?.FirstOrDefault() ?? new();
-
+        return entities?.FirstOrDefault();
     }
 }

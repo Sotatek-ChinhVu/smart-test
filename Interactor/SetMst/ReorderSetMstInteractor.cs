@@ -1,6 +1,6 @@
 ﻿using Domain.Models.SetMst;
-using Helper.Constants;
-using UseCase.SetMst.GetList;
+using Interactor.SetMst.CommonSuperSet;
+using Domain.Models.User;
 using UseCase.SetMst.ReorderSetMst;
 
 namespace Interactor.SetMst;
@@ -8,30 +8,42 @@ namespace Interactor.SetMst;
 public class ReorderSetMstInteractor : IReorderSetMstInputPort
 {
     private readonly ISetMstRepository _setMstRepository;
-    public ReorderSetMstInteractor(ISetMstRepository setMstRepository)
+    private readonly ICommonSuperSet _commonSuperSet;
+    private readonly IUserRepository _userRepository;
+
+    public ReorderSetMstInteractor(ISetMstRepository setMstRepository, ICommonSuperSet commonSuperSet, IUserRepository userRepository)
     {
         _setMstRepository = setMstRepository;
+        _commonSuperSet = commonSuperSet;
+        _userRepository = userRepository;
     }
-    public ReorderSetMstOutputData Handle(ReorderSetMstInputData reorderSetMstInputData)
+
+    public ReorderSetMstOutputData Handle(ReorderSetMstInputData inputData)
     {
-        if (reorderSetMstInputData.HpId <= 0)
+        var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+        if (notAllowSave)
+        {
+            return new ReorderSetMstOutputData(ReorderSetMstStatus.MedicalScreenLocked);
+        }
+        else if (inputData.HpId <= 0)
         {
             return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidHpId);
         }
-        else if (reorderSetMstInputData.DragSetCd <= 0)
+        else if (inputData.DragSetCd <= 0)
         {
             return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidDragSetCd);
         }
-        else if (reorderSetMstInputData.DropSetCd < 0)
+        else if (inputData.DropSetCd < 0)
         {
             return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidDropSetCd);
         }
         try
         {
-            var result = _setMstRepository.ReorderSetMst(reorderSetMstInputData.UserId, reorderSetMstInputData.HpId, reorderSetMstInputData.DragSetCd, reorderSetMstInputData.DropSetCd);
+            var result = _setMstRepository.ReorderSetMst(inputData.UserId, inputData.HpId, inputData.DragSetCd, inputData.DropSetCd);
             if (result.status)
             {
-                return new ReorderSetMstOutputData(BuildTreeSetKbn(result.setMstModels), ReorderSetMstStatus.Successed);
+                var data = _commonSuperSet.BuildTreeSetKbn(result.setMstModels);
+                return new ReorderSetMstOutputData(data, ReorderSetMstStatus.Successed);
             }
             return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
         }
@@ -43,70 +55,5 @@ public class ReorderSetMstInteractor : IReorderSetMstInputPort
         {
             _setMstRepository.ReleaseResource();
         }
-    }
-
-    private List<GetSetMstListOutputItem> BuildTreeSetKbn(List<SetMstModel>? datas)
-    {
-        List<GetSetMstListOutputItem> result = new();
-        var topNodes = datas?.Where(c => c.Level2 == 0 && c.Level3 == 0);
-        if (topNodes?.Any() != true) { return result; }
-        var obj = new object();
-
-        Parallel.ForEach(topNodes, item =>
-        {
-            var node = new GetSetMstListOutputItem(
-                item.HpId,
-                item.SetCd,
-                item.SetKbn,
-                item.SetKbnEdaNo,
-                item.GenerationId,
-                item.Level1,
-                item.Level2,
-                item.Level3,
-                item.SetName,
-                item.WeightKbn,
-                item.Color,
-                item.IsGroup,
-                datas?.Where(c => c.Level1 == item.Level1 && c.Level2 != 0 && c.Level3 == 0)?
-                        .Select(c => new GetSetMstListOutputItem(
-                            c.HpId,
-                            c.SetCd,
-                            c.SetKbn,
-                            c.SetKbnEdaNo,
-                            c.GenerationId,
-                            c.Level1,
-                            c.Level2,
-                            c.Level3,
-                            c.SetName,
-                            c.WeightKbn,
-                            c.Color,
-                            c.IsGroup,
-                            datas.Where(m => m.Level3 != 0 && m.Level1 == item.Level1 && m.Level2 == c.Level2)?
-                                .Select(c => new GetSetMstListOutputItem(
-                                    c.HpId,
-                                    c.SetCd,
-                                    c.SetKbn,
-                                    c.SetKbnEdaNo,
-                                    c.GenerationId,
-                                    c.Level1,
-                                    c.Level2,
-                                    c.Level3,
-                                    c.SetName,
-                                    c.WeightKbn,
-                                    c.Color,
-                                    c.IsGroup,
-                                    new List<GetSetMstListOutputItem>() ?? new List<GetSetMstListOutputItem>()
-                                )).OrderBy(s => s.Level1).ThenBy(s => s.Level2).ThenBy(s => s.Level3).ToList() ?? new List<GetSetMstListOutputItem>()
-                        )).OrderBy(s => s.Level1).ThenBy(s => s.Level2).ThenBy(s => s.Level3).ToList() ?? new List<GetSetMstListOutputItem>()
-                );
-
-            lock (obj)
-            {
-                result.Add(node);
-            }
-        });
-        return result.OrderBy(s => s.Level1)
-      .ThenBy(s => s.Level2)
-      .ThenBy(s => s.Level3).ToList();
     }
 }

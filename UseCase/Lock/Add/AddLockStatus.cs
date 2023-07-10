@@ -3,6 +3,7 @@
     public enum AddLockStatus : byte
     {
         Existed = 2,
-        Successed = 1
+        Successed = 1,
+        Failed = 3,
     }
 }

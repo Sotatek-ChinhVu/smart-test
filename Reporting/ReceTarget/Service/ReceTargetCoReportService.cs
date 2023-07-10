@@ -42,7 +42,7 @@ public class ReceTargetCoReportService : IReceTargetCoReportService
     {
         currentPage = 1;
         hasNextPage = true;
-        printoutDateTime = DateTime.Now;
+        printoutDateTime = CIUtil.GetJapanDateTimeNow();
         GetRowCount();
         coModel = GetData(hpId, seikyuYm);
         MakePrintDataList();
