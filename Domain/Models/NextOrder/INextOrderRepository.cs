@@ -15,7 +15,7 @@ namespace Domain.Models.NextOrder
 
         long GetLastNextOrderSeqNo(int hpId, long ptId);
 
-        List<NextOrderModel> GetList(int hpId, long ptId, int rsvkrtKbn, bool isDeleted);
+        List<NextOrderModel> GetList(int hpId, long ptId, bool isDeleted);
 
         long Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels);
 
@@ -26,5 +26,7 @@ namespace Domain.Models.NextOrder
         bool ClearTempData(int hpId, long ptId, List<string> listFileNames);
 
         List<RaiinKbnModel> InitDefaultByNextOrder(int hpId, long ptId, int sinDate, List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds);
+
+        bool CheckNextOrdHaveOdr(int hpId, long ptId, int sinDate);
     }
 }

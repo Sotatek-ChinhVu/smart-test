@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public InsuranceMstModel GetDataInsuranceMst(int hpId, long ptId, int sinDate)
+        public (InsuranceMstModel insurance, int prefNo) GetDataInsuranceMst(int hpId, long ptId, int sinDate)
         {
             // data combobox 1 toki
             var TokkiMsts = NoTrackingDataContext.TokkiMsts.Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
@@ -194,98 +194,32 @@ namespace Infrastructure.Repositories
                                             x.RoudouName ?? string.Empty
                                             )).ToList();
 
-            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, GetHokenMstList(sinDate, true, prefNo), dataComboboxKantokuMst, byomeiMstAftercares, GetHokenMstList(sinDate, false, prefNo), dataRoudouMst, allHokenMst);
+            return (new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, dataComboboxKantokuMst, byomeiMstAftercares, dataRoudouMst, allHokenMst), prefNo);
         }
 
-        private List<HokenMstModel> GetHokenMstList(int today, bool isKohi, int prefNo)
+        private List<HokenMstModel> GetHokenMstList(int today, bool isKohi, List<HokenMstModel> allHokenMst)
         {
-            IQueryable<HokenMst> query;
-
             if (isKohi)
             {
-                query = NoTrackingDataContext.HokenMsts.Where(kohiInf =>
-                    (kohiInf.HokenSbtKbn == 2 || kohiInf.HokenSbtKbn == 5 || kohiInf.HokenSbtKbn == 6 || kohiInf.HokenSbtKbn == 7)
-                    && kohiInf.StartDate < today
-                    && kohiInf.EndDate > today
-                    && (kohiInf.PrefNo == prefNo || kohiInf.PrefNo == 0 || kohiInf.IsOtherPrefValid == 1))
-                        .OrderBy(entity => entity.HpId)
-                        .ThenBy(entity => entity.HokenNo)
+                return allHokenMst.Where(x => (x.HokenSbtKbn == 2 || x.HokenSbtKbn == 5 || x.HokenSbtKbn == 6 || x.HokenSbtKbn == 7) 
+                                        && x.StartDate < today
+                                        && x.EndDate > today)
+                        .OrderBy(entity => entity.HokenNo)
                         .ThenBy(entity => entity.SortNo)
                         .ThenBy(entity => entity.HokenSbtKbn)
-                        .ThenBy(entity => entity.StartDate);
+                        .ThenBy(entity => entity.StartDate).ToList();
+
             }
             else
             {
-                query = NoTrackingDataContext.HokenMsts.Where(hokenInf =>
-                    (hokenInf.HokenSbtKbn == 1 || hokenInf.HokenSbtKbn == 8)
-                    && hokenInf.StartDate < today
-                    && hokenInf.EndDate > today
-                    && (hokenInf.PrefNo == prefNo || hokenInf.PrefNo == 0 || hokenInf.IsOtherPrefValid == 1))
-                        .OrderBy(entity => entity.HpId)
-                        .ThenBy(entity => entity.HokenNo)
+                return allHokenMst.Where(hokenInf => (hokenInf.HokenSbtKbn == 1 || hokenInf.HokenSbtKbn == 8)
+                                         && hokenInf.StartDate < today
+                                         && hokenInf.EndDate > today)
+                        .OrderBy(entity => entity.HokenNo)
                         .ThenBy(entity => entity.SortNo)
                         .ThenBy(entity => entity.HokenSbtKbn)
-                        .ThenBy(entity => entity.StartDate);
+                        .ThenBy(entity => entity.StartDate).ToList();
             }
-
-            IQueryable<RoudouMst> roudouMsts = NoTrackingDataContext.RoudouMsts;
-
-            return (from h in query
-                    join rou in roudouMsts on h.PrefNo.ToString() equals rou.RoudouCd into rouList
-                    from r in rouList.DefaultIfEmpty()
-                    select new HokenMstModel(h.FutanKbn,
-                                            h.FutanRate,
-                                            h.StartDate,
-                                            h.EndDate,
-                                            h.HokenNo,
-                                            h.HokenEdaNo,
-                                            h.HokenSname ?? string.Empty,
-                                            h.Houbetu ?? string.Empty,
-                                            h.HokenSbtKbn,
-                                            h.CheckDigit,
-                                            h.AgeStart,
-                                            h.AgeEnd,
-                                            h.IsFutansyaNoCheck,
-                                            h.IsJyukyusyaNoCheck,
-                                            h.JyukyuCheckDigit,
-                                            h.IsTokusyuNoCheck,
-                                            h.HokenName ?? string.Empty,
-                                            h.HokenNameCd ?? string.Empty,
-                                            h.HokenKohiKbn,
-                                            h.IsOtherPrefValid,
-                                            h.ReceKisai,
-                                            h.IsLimitList,
-                                            h.IsLimitListSum,
-                                            h.EnTen,
-                                            h.KaiLimitFutan,
-                                            h.DayLimitFutan,
-                                            h.MonthLimitFutan,
-                                            h.MonthLimitCount,
-                                            h.LimitKbn,
-                                            h.CountKbn,
-                                            h.FutanYusen,
-                                            h.CalcSpKbn,
-                                            h.MonthSpLimit,
-                                            h.KogakuTekiyo,
-                                            h.KogakuTotalKbn,
-                                            h.KogakuHairyoKbn,
-                                            h.ReceSeikyuKbn,
-                                            h.ReceKisaiKokho,
-                                            h.ReceKisai2,
-                                            h.ReceTenKisai,
-                                            h.ReceFutanRound,
-                                            h.ReceZeroKisai,
-                                            h.ReceSpKbn,
-                                            r.RoudouName ?? string.Empty,
-                                            h.PrefNo,
-                                            h.SortNo,
-                                            h.SeikyuYm,
-                                            h.ReceFutanHide,
-                                            h.ReceFutanKbn,
-                                            h.KogakuTotalAll,
-                                            false,
-                                            0,
-                                            new List<ExceptHokensyaModel>())).ToList();
         }
 
         public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int sinDate, string keyword)
@@ -866,7 +800,7 @@ namespace Infrastructure.Repositories
         {
             var result = new List<SelectMaintenanceModel>();
 
-            int today = CIUtil.DateTimeToInt(DateTime.Now);
+            int today = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
 
             bool CheckOneStartDate = NoTrackingDataContext.HokenMsts.Count(x => x.HpId == hpId &&
                                                                                 x.HokenNo == hokenNo &&

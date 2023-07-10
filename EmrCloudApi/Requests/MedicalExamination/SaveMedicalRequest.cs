@@ -12,6 +12,10 @@ public class SaveMedicalRequest
     // Upsert medical
     public long PtId { get; set; }
 
+    public long RaiinNo { get; set; }
+
+    public int SinDate { get; set; }
+
     public int SyosaiKbn { get; set; }
 
     public int JikanKbn { get; set; }
@@ -31,6 +35,8 @@ public class SaveMedicalRequest
     public string SinEndTime { get; set; } = string.Empty;
 
     public byte Status { get; set; }
+
+    public bool IsSagaku { get; set; }
 
     public List<OdrInfItem> OdrInfs { get; set; } = new();
 

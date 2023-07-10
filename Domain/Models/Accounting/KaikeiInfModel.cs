@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Accounting
+﻿using Helper.Extension;
+
+namespace Domain.Models.Accounting
 {
     public class KaikeiInfModel
     {
@@ -63,6 +65,22 @@
 
         public KaikeiInfModel()
         {
+            ReceSbt = string.Empty;
+            Houbetu = string.Empty;
+            Kohi1Houbetu = string.Empty;
+            Kohi2Houbetu = string.Empty;
+            Kohi3Houbetu = string.Empty;
+            Kohi4Houbetu = string.Empty;
+            Kohi1Priority = string.Empty;
+            Kohi2Priority = string.Empty;
+            Kohi3Priority = string.Empty;
+            Kohi4Priority = string.Empty;
+        }
+
+        public KaikeiInfModel(long ptId, int sinDate)
+        {
+            PtId = ptId;
+            SinDate = sinDate;
             ReceSbt = string.Empty;
             Houbetu = string.Empty;
             Kohi1Houbetu = string.Empty;
@@ -168,5 +186,7 @@
         public string Kohi3Priority { get; private set; }
 
         public string Kohi4Priority { get; private set; }
+
+        public int SinYm => SinDate / 100;
     }
 }

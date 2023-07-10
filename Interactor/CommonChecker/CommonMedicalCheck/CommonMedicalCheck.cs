@@ -1,4 +1,6 @@
-﻿using CommonChecker.DB;
+﻿using CommonChecker.Caches;
+using CommonChecker.Caches.Interface;
+using CommonChecker.DB;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
@@ -9,6 +11,7 @@ using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
 using System.Text;
@@ -48,9 +51,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     private readonly double _currentWeight = 0;
 
     private readonly ITenantProvider _tenantProvider;
+    private readonly IMasterDataCacheService _masterDataCacheService;
 
     public CommonMedicalCheck(ITenantProvider tenantProvider, IRealtimeOrderErrorFinder realtimeOrderErrorFinder)
     {
+        _masterDataCacheService = new MasterDataCacheService(tenantProvider);
         _tenantProvider = tenantProvider;
         _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
         _itemNameDictionary = new();
@@ -71,10 +76,26 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
     public void InitUnitCheck(UnitChecker<OrdInfoModel, OrdInfoDetailModel> unitChecker)
     {
-        unitChecker.DataContext = _tenantProvider.GetNoTrackingDataContext();
         unitChecker.HpID = _hpID;
         unitChecker.PtID = _ptID;
         unitChecker.Sinday = _sinday;
+        unitChecker.InitFinder(_tenantProvider.GetNoTrackingDataContext(), _masterDataCacheService);
+    }
+
+    private void InitTenMstCache(List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
+    {
+        List<string> itemCodeList = new List<string>();
+
+        foreach (var order in currentListOdr)
+        {
+            itemCodeList.AddRange(order.OdrInfDetailModelsIgnoreEmpty.Select(i => i.ItemCd).ToList());
+        }
+
+        foreach (var order in listCheckingOrder)
+        {
+            itemCodeList.AddRange(order.OdrInfDetailModelsIgnoreEmpty.Select(i => i.ItemCd).ToList());
+        }
+        _masterDataCacheService.InitCache(itemCodeList.Distinct().ToList(), _sinday, _ptID);
     }
 
     public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb, RealTimeCheckerCondition realTimeCheckerCondition)
@@ -86,6 +107,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listErrorOfAllOrder = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
         List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
         List<OrdInfoModel> tempCurrentListOdr = new List<OrdInfoModel>(currentListOdr);
+
+        InitTenMstCache(currentListOdr, listCheckingOrder);
 
         listCheckingOrder.ForEach((order) =>
         {
@@ -147,6 +170,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listErrorOfAllOrder = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
         List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
         List<OrdInfoModel> tempCurrentListOdr = new();
+
+        InitTenMstCache(new List<OrdInfoModel>(), listCheckingOrder);
 
         listCheckingOrder.ForEach((order) =>
         {
@@ -731,9 +756,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<ErrorInfoModel> result = new List<ErrorInfoModel>();
 
         var errorGroup = (from a in allergyInfo
-                          group a by new { a.YjCd, a.AllergyYjCd }
+                          group a by new { a.YjCd, a.AllergyYjCd , a.Id}
                           into gcs
-                          select new { gcs.Key.YjCd, gcs.Key.AllergyYjCd }
+                          select new { gcs.Key.YjCd, gcs.Key.AllergyYjCd , gcs.Key.Id}
                           ).ToList();
 
         foreach (var error in errorGroup)
@@ -747,6 +772,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string allergyItemName = _itemNameDictionary.ContainsKey(error.AllergyYjCd) ? _itemNameDictionary[error.AllergyYjCd] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.DrugAllergyChecker,
+                Id = error.Id,
                 FirstCellContent = "アレルギー",
                 ThridCellContent = itemName,
                 FourthCellContent = allergyItemName
@@ -770,6 +797,12 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 if (0 <= item.Level && item.Level <= 4)
                 {
                     StringBuilder comment = new();
+
+                    int level = (error.YjCd == error.AllergyYjCd) ? 0 : item.Level;
+                    levelInfo.BackgroundCode = LevelConfig.DrugAllegySource[level][0];
+                    levelInfo.BorderBrushCode = LevelConfig.DrugAllegySource[level][1];
+                    levelInfo.Title = LevelConfig.DrugAllegySource[level][2];
+
                     if (item.YjCd == item.AllergyYjCd)
                     {
                         comment.Append("※アレルギー登録薬です。" + Environment.NewLine + Environment.NewLine);
@@ -820,6 +853,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string itemName = _itemNameByItemCodeDictionary.ContainsKey(a.ItemCd) ? _itemNameByItemCodeDictionary[a.ItemCd] : string.Empty;
             ErrorInfoModel info = new ErrorInfoModel()
             {
+                ErrorType = CommonCheckerType.DrugAllergyChecker,
                 Id = a.Id,
                 FirstCellContent = "アレルギー",
                 ThridCellContent = itemName,
@@ -864,6 +898,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string foodName = _foodNameDictionary.ContainsKey(error.AlrgyKbn) ? _foodNameDictionary[error.AlrgyKbn] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.FoodAllergyChecker,
                 Id = error.Id,
                 FirstCellContent = "アレルギー",
                 ThridCellContent = itemName,
@@ -884,6 +919,12 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                         Level = level
                     };
                     _listLevelInfo.Add(levelInfo);
+                }
+                if (1 <= level && level <= 3)
+                {
+                    levelInfo.BackgroundCode = LevelConfig.FoodAllegySource[level][0];
+                    levelInfo.BorderBrushCode = LevelConfig.FoodAllegySource[level][1];
+                    levelInfo.Title = LevelConfig.FoodAllegySource[level][2];
                 }
                 levelInfo.Comment += item.AttentionCmt + Environment.NewLine + item.WorkingMechanism + Environment.NewLine + Environment.NewLine;
             }
@@ -916,6 +957,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string itemName = _itemNameDictionary.ContainsKey(error.YjCd) ? _itemNameDictionary[error.YjCd] : string.Empty;
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.AgeChecker,
                 Id = error.Id,
                 FirstCellContent = "投与年齢",
                 ThridCellContent = itemName,
@@ -940,6 +982,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     _listLevelInfo.Add(levelInfo);
                 }
 
+                levelInfo.BackgroundCode = LevelConfig.AgeSource[level][0];
+                levelInfo.BorderBrushCode = LevelConfig.AgeSource[level][1];
+                levelInfo.Title = LevelConfig.AgeSource[level][2];
                 levelInfo.Comment += attention + Environment.NewLine + item.WorkingMechanism + Environment.NewLine + Environment.NewLine;
             }
 
@@ -991,6 +1036,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.DiseaseChecker,
                 Id = drugDiseaseCode.Id,
                 FirstCellContent = DiseaseTypeName(drugDiseaseCode.DiseaseType),
                 ThridCellContent = itemName,
@@ -1013,6 +1059,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     _listLevelInfoModel.Add(LevelInfoModel);
                 }
 
+                LevelInfoModel.BackgroundCode = LevelConfig.DiseaseSource[level][0];
+                LevelInfoModel.BorderBrushCode = LevelConfig.DiseaseSource[level][1];
+                LevelInfoModel.Title = LevelConfig.DiseaseSource[level][2];
                 LevelInfoModel.Comment += _realtimeOrderErrorFinder.FindDiseaseComment(item.CmtCd) + Environment.NewLine + _realtimeOrderErrorFinder.FindDiseaseComment(item.KijyoCd) + Environment.NewLine + Environment.NewLine;
             }
 
@@ -1104,6 +1153,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.KinkiChecker,
                 Id = kikinCode.Id,
                 FirstCellContent = GetCheckingTitle(),
                 ThridCellContent = itemAName,
@@ -1166,6 +1216,10 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     Level = l.Level
                 };
                 listLevelInfoModel.Add(LevelInfoModel);
+
+                LevelInfoModel.BackgroundCode = LevelConfig.KinkiCommonSource[l.Level][0];
+                LevelInfoModel.BorderBrushCode = LevelConfig.KinkiCommonSource[l.Level][1];
+                LevelInfoModel.Title = LevelConfig.KinkiCommonSource[l.Level][2];
 
                 var listItemAsLevel = listDetail.Where(d => l.Level <= d.Level)
                                                 .OrderBy(d => d.Level)
@@ -1236,6 +1290,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel tempModel = new ErrorInfoModel
             {
+                ErrorType = CommonCheckerType.KinkiChecker,
                 Id = k.Id,
                 FirstCellContent = "相互作用",
                 ThridCellContent = itemAName,
@@ -1250,6 +1305,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     FirstItemName = itemAName,
                     SecondItemName = itemBName,
                     Level = 1,
+                    BackgroundCode = LevelConfig.KinkiCommonSource[1][0],
+                    BorderBrushCode = LevelConfig.KinkiCommonSource[1][1],
+                    Title = LevelConfig.KinkiCommonSource[1][2],
                     Comment = "ユーザー設定"
                 }
             };
@@ -1268,12 +1326,14 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             string itemName = _itemNameDictionary.ContainsKey(dayLimit.YjCd) ? _itemNameDictionary[dayLimit.YjCd] : string.Empty;
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
+            errorInfoModel.ErrorType = CommonCheckerType.DayLimitChecker;
             errorInfoModel.Id = dayLimit.Id;
             errorInfoModel.FirstCellContent = "投与日数";
             errorInfoModel.SecondCellContent = "ー";
             errorInfoModel.ThridCellContent = itemName;
             errorInfoModel.FourthCellContent = dayLimit.UsingDay.AsString() + "日";
             errorInfoModel.SuggestedContent = "／" + dayLimit.LimitDay.AsString() + "日";
+            errorInfoModel.HighlightColorCode = "#f12c47";
 
             LevelInfoModel LevelInfoModel = new LevelInfoModel()
             {
@@ -1295,6 +1355,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
             string itemName = _itemNameDictionary.ContainsKey(dosage.YjCd) ? _itemNameDictionary[dosage.YjCd] : string.Empty;
+            errorInfoModel.ErrorType = CommonCheckerType.DosageChecker;
             errorInfoModel.Id = dosage.Id;
             errorInfoModel.FirstCellContent = "投与量";
             errorInfoModel.ThridCellContent = itemName;
@@ -1306,24 +1367,31 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             {
                 case DosageLabelChecking.OneMin:
                     levelTitle = "一回量／最小値";
+                    errorInfoModel.HighlightColorCode = "#0000ff";
                     break;
                 case DosageLabelChecking.OneMax:
                     levelTitle = "一回量／最大値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.OneLimit:
                     levelTitle = "一回量／上限値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.DayMin:
                     levelTitle = "一日量／最小値";
+                    errorInfoModel.HighlightColorCode = "#0000ff";
                     break;
                 case DosageLabelChecking.DayMax:
                     levelTitle = "一日量／最大値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.DayLimit:
                     levelTitle = "一日量／上限値";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
                 case DosageLabelChecking.TermLimit:
                     levelTitle = "期間上限";
+                    errorInfoModel.HighlightColorCode = "#f12c47";
                     break;
             }
             string comment = string.Empty;
@@ -1339,6 +1407,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             LevelInfoModel LevelInfoModel = new LevelInfoModel()
             {
                 Title = levelTitle,
+                BorderBrushCode = "#ff66b3",
+                BackgroundCode = "#ff9fcf",
                 FirstItemName = itemName,
                 Comment = comment
             };
@@ -1359,6 +1429,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
+            errorInfoModel.ErrorType = CommonCheckerType.DuplicationChecker;
             errorInfoModel.Id = duplicationError.Id;
             errorInfoModel.FirstCellContent = duplicationError.IsComponentDuplicated ? "成分重複" : "同一薬剤";
             errorInfoModel.SecondCellContent = "ー";
@@ -1376,8 +1447,12 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             LevelInfoModel LevelInfoModel = new LevelInfoModel()
             {
+                BackgroundCode = LevelConfig.DuplicationCommonSource[duplicationError.Level][0],
+                BorderBrushCode = LevelConfig.DuplicationCommonSource[duplicationError.Level][1],
+                Title = LevelConfig.DuplicationCommonSource[duplicationError.Level][2],
                 FirstItemName = itemName,
-                SecondItemName = duplicationError.IsComponentDuplicated || duplicationError.IsIppanCdDuplicated ? duplicatedItemName : string.Empty
+                SecondItemName = duplicationError.IsComponentDuplicated || duplicationError.IsIppanCdDuplicated ? duplicatedItemName : string.Empty,
+                Level = duplicationError.Level
             };
 
             if (duplicationError.IsIppanCdDuplicated)

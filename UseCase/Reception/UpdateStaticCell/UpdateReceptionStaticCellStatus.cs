@@ -13,5 +13,6 @@ public enum UpdateReceptionStaticCellStatus
     InvalidUketukeSbtId,
     InvalidTantoId,
     InvalidKaId,
-    InvalidCellName
+    InvalidCellName,
+    MedicalScreenLocked
 }

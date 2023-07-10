@@ -706,7 +706,16 @@ namespace Infrastructure.Repositories
             bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter,
             bool isSearch831SuffixOnly)
         {
-            string sBigKeyword = keyword.ToUpper()
+            string kanaKeyword = keyword;
+            if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
+            {
+                var inputKeyword = keyword;
+                kanaKeyword = CIUtil.ToHalfsize(keyword);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
+            }
+
+            string sBigKeyword = kanaKeyword.ToUpper()
                                         .Replace("ｧ", "ｱ")
                                         .Replace("ｨ", "ｲ")
                                         .Replace("ｩ", "ｳ")
@@ -1107,76 +1116,75 @@ namespace Infrastructure.Repositories
                 tenMstQueryForGetlastDate = tenMstQueryForGetlastDate.Where(t => t.IsDeleted == DeleteTypes.None);
             }
 
-            var kensaMstQuery = NoTrackingDataContext.KensaMsts.AsQueryable();
+            var totalCount = queryResult.Count();
 
-            var queryKNTensu = from tenKN in queryResult
-                               join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
-                               where tenKN.ItemCd.StartsWith("KN")
-                               select new { tenKN.ItemCd, ten.Ten };
+            var queryKNTensu = (from tenKN in queryResult
+                                join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
+                                where tenKN.ItemCd.StartsWith("KN")
+                                select new { tenKN.ItemCd, ten.Ten }).ToList();
 
-            var tenJoinYakkaSyusai = from ten in queryResult
-                                     join yakkaSyusaiMstItem in yakkaSyusaiMstList
-                                     on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
-                                     from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
-                                     select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
+            var tenJoinYakkaSyusai = (from ten in queryResult
+                                      join yakkaSyusaiMstItem in yakkaSyusaiMstList
+                                      on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
+                                      from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
+                                      select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem }).ToList();
 
             var sinKouiCollection = new SinkouiCollection();
 
-            var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
-                             join kouiKbnItem in sinKouiCollection
-                             on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
-                             from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
-                             join tenKN in queryKNTensu
-                             on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
-                             from tenKN in tenKNLeft.DefaultIfEmpty()
-                             select new
-                             {
-                                 ten.TenMst,
-                                 KouiName = tenKouiKbn.SinkouiName,
-                                 ten.YakkaSyusaiItem,
-                                 tenKN
-                             };
+            var queryFinal = (from ten in tenJoinYakkaSyusai
+                              join kouiKbnItem in sinKouiCollection
+                              on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
+                              from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
+                              join tenKN in queryKNTensu
+                              on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
+                              from tenKN in tenKNLeft.DefaultIfEmpty()
+                              select new
+                              {
+                                  ten.TenMst,
+                                  KouiName = tenKouiKbn.SinkouiName,
+                                  ten.YakkaSyusaiItem,
+                                  tenKN
+                              }).ToList();
 
-            var queryJoinWithKensa = from q in queryFinal
-                                     join k in kensaMstQuery
-                                     on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
-                                     from kensaMst in kensaMsts.DefaultIfEmpty()
-                                     select new
-                                     {
-                                         q.TenMst,
-                                         q.KouiName,
-                                         q.YakkaSyusaiItem,
-                                         q.tenKN,
-                                         KensaMst = kensaMst
-                                     };
+            var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
+            var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
 
-            var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.StartDate <= sTDDate && u.EndDate >= sTDDate);
-            var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.StartDate <= sTDDate && u.EndDate >= sTDDate);
+            var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u =>
+                                                                                u.HpId == hpId &&
+                                                                                u.StartDate <= sTDDate &&
+                                                                                u.EndDate >= sTDDate).ToList();
+            var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u =>
+                                                                                        u.HpId == hpId &&
+                                                                                        u.StartDate <= sTDDate &&
+                                                                                        u.EndDate >= sTDDate).ToList();
 
             var ipnMinYakka = NoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
                                                                            p.HpId == hpId &&
                                                                            p.StartDate <= sTDDate &&
-                                                                           p.EndDate >= sTDDate);
+                                                                           p.EndDate >= sTDDate).ToList();
 
-            var joinedQuery = from q in queryJoinWithKensa
+            var joinedQuery = from q in queryFinal
+                              join k in NoTrackingDataContext.KensaMsts on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
+                              from kensaMst in kensaMsts.DefaultIfEmpty()
                               join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
                               from ipnExclude in ipnExcludes.DefaultIfEmpty()
                               join ipnItem in ipnKasanExcludeItem on q.TenMst.ItemCd equals ipnItem.ItemCd into ipnExcludesItems
                               from ipnExcludesItem in ipnExcludesItems.DefaultIfEmpty()
                               join yakka in ipnMinYakka on q.TenMst.IpnNameCd equals yakka.IpnNameCd into ipnYakkas
                               from ipnYakka in ipnYakkas.DefaultIfEmpty()
+                              join i in ipnNameMstList on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
+                              from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
                               select new
                               {
                                   q.TenMst,
                                   q.KouiName,
                                   q.YakkaSyusaiItem,
                                   q.tenKN,
-                                  KensaMst = q.KensaMst,
+                                  KensaMst = kensaMst,
+                                  IpnName = ipnNameMst?.IpnName ?? string.Empty,
                                   IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
                                   Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
                               };
-
-            var totalCount = joinedQuery.Count();
 
             joinedQuery = joinedQuery.OrderBy(item => item.TenMst.KanaName1)
                                  .ThenBy(item => item.TenMst.Name)
@@ -1225,7 +1233,7 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.DefaultVal ?? 0,
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
                                                            item.TenMst?.Kokuji2 ?? string.Empty,
-                                                           string.Empty,
+                                                           item.IpnName,
                                                            item.TenMst?.IsDeleted ?? 0,
                                                            item.TenMst?.HandanGrpKbn ?? 0,
                                                            item.KensaMst == null,
@@ -1347,7 +1355,7 @@ namespace Infrastructure.Repositories
             return tenMstModels;
         }
 
-        public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize)
+        public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize, bool isHasFreeByomei = true)
         {
             var keywordHalfSize = keyword != String.Empty ? CIUtil.ToHalfsize(keyword) : "";
 
@@ -1391,6 +1399,11 @@ namespace Infrastructure.Repositories
                                     item.ByomeiCd.StartsWith(keyword)
                                  );
 
+            if (!isHasFreeByomei)
+            {
+                query = query.Where(item => item.ByomeiCd != "0000999");
+            }
+
             query = query.Where(item => (item.DelDate == 0 || item.DelDate >= sindate) && (isMisaiyou || item.IsAdopted == 1));
 
             query = query.Where(item =>
@@ -1413,6 +1426,7 @@ namespace Infrastructure.Repositories
             }
             return listByomeies;
         }
+
         public List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes)
         {
             var listDatas = NoTrackingDataContext.ByomeiMsts.Where(item => keyCodes.Contains(item.ByomeiCd)).ToList();
@@ -1424,6 +1438,7 @@ namespace Infrastructure.Repositories
             }
             return listByomeies;
         }
+
         public bool UpdateAdoptedByomei(int hpId, string byomeiCd, int userId)
         {
             if (hpId <= 0 || string.IsNullOrEmpty(byomeiCd)) return false;
@@ -1681,18 +1696,43 @@ namespace Infrastructure.Repositories
                )).ToList();
         }
 
-        public (int, List<PostCodeMstModel>) PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
+        public (int, List<PostCodeMstModel>) SearchAddress(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
+        {
+            var listPostCode = GetPostCodeMsts(hpId, postCode1, postCode2, address, pageIndex, pageSize);
+
+            if (listPostCode.Item1 == 0)
+            {
+                while (address.Length > 3)
+                {
+                    address = address.Substring(0, address.Length - 3);
+
+                    listPostCode = GetPostCodeMsts(hpId, postCode1, postCode2, address, pageIndex, pageSize);
+                    if (listPostCode.Item1 > 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return (listPostCode.Item1, listPostCode.Item2);
+        }
+
+        private (int, List<PostCodeMstModel>) GetPostCodeMsts(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
         {
             var entities = NoTrackingDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1) && e.PostCd.EndsWith(postCode2));
-
+            {
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
+            }
             else if (!string.IsNullOrEmpty(postCode1))
+            {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
-
+            }
             else if (!string.IsNullOrEmpty(postCode2))
+            {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.EndsWith(postCode2));
+            }
 
             if (!string.IsNullOrEmpty(address))
             {
@@ -1701,9 +1741,19 @@ namespace Infrastructure.Repositories
                                                 || (e.PrefName != null && e.PrefName.Contains(address)));
             }
 
-            var totalCount = entities.Count();
+            var query = entities;
 
-            var result = entities.OrderBy(x => x.PostCd)
+            if (!string.IsNullOrEmpty(address))
+            {
+                query = entities.Where(e =>
+                    (e.PrefName + e.CityName + e.Banti).Contains(address) ||
+                    (e.PrefName + e.CityName).Contains(address) ||
+                    (e.PrefName != null && e.PrefName.Contains(address)));
+            }
+
+            var totalCount = query.Count();
+
+            var result = query.OrderBy(x => x.PostCd)
                                   .ThenBy(x => x.PrefName)
                                   .ThenBy(x => x.CityName)
                                   .ThenBy(x => x.Banti)
@@ -1887,6 +1937,26 @@ namespace Infrastructure.Repositories
                     item.ItemCd == inputCodeItem.ItemCd || item.ItemCd == inputCodeItem.SanteiItemCd)
                     .OrderBy(item => item.ItemNo)
                     .ToList();
+                if (listCommentWithCode.Count == 0)
+                {
+                    inputCodeItem.SetData(listCommentWithCode);
+                    continue;
+                }
+
+                if (!isRecalculation)
+                {
+                    var itemNo = listCommentWithCode[0].ItemNo;
+
+                    listCommentWithCode.AddRange(listComment.Where(item =>
+                            item.ItemCd == "199999999" && item.ItemNo == itemNo)
+                        .ToList());
+                }
+
+                listCommentWithCode = listCommentWithCode.OrderBy(item => item.ItemNo)
+                    .ThenBy(item => item.EdaNo)
+                    .ThenBy(item => item.SortNo)
+                    .ToList();
+
                 inputCodeItem.SetData(listCommentWithCode);
             }
 
@@ -4741,13 +4811,23 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public (List<TenItemModel> tenItemModels, int totalCount) SearchSuggestionTenMstItem(int hpId, int pageIndex, int pageCount, string keyword, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool isDeleted, List<int> drugKbns, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly)
+        public (List<TenItemModel> tenItemModels, int totalCount) SearchSuggestionTenMstItem(int hpId, int pageIndex, int pageCount, string keyword, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeMisai, bool includeRosai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool isDeleted, List<int> drugKbns, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly)
         {
             if (string.IsNullOrEmpty(keyword))
             {
                 return new();
             }
-            string sBigKeyword = keyword.ToUpper()
+
+            string kanaKeyword = keyword;
+            if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
+            {
+                var inputKeyword = keyword;
+                kanaKeyword = CIUtil.ToHalfsize(keyword);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
+            }
+
+            string sBigKeyword = kanaKeyword.ToUpper()
               .Replace("ｧ", "ｱ")
               .Replace("ｨ", "ｲ")
               .Replace("ｩ", "ｳ")
@@ -5010,6 +5090,11 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => t.IsAdopted == 1);
             }
 
+            if (!includeRosai)
+            {
+                queryResult = queryResult.Where(t => t.RousaiKbn != 1);
+            }
+
             queryResult = queryResult.Where(t => t.IsNosearch == 0);
 
             var tenJoinYakkaSyusai = from ten in queryResult.AsEnumerable()
@@ -5019,8 +5104,6 @@ namespace Infrastructure.Repositories
                                      into yakkaSyusaiMstItems
                                      from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
                                      select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
-
-            var kensaMstQuery = NoTrackingDataContext.KensaMsts.AsQueryable();
 
             var queryKNTensu = from tenKN in queryResult
                                join ten in queryResult on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
@@ -5040,7 +5123,7 @@ namespace Infrastructure.Repositories
                              join kouiKbnItem in sinKouiCollection
                              on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
                              from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
-                             join kensa in kensaMstQuery
+                             join kensa in NoTrackingDataContext.KensaMsts
                              on ten.TenMst.KensaItemCd equals kensa.KensaItemCd into kensaMsts
                              from kensaMst in kensaMsts.DefaultIfEmpty()
                              join tenKN in queryKNTensu
@@ -5055,6 +5138,9 @@ namespace Infrastructure.Repositories
                                  TenKN = tenKN
                              };
 
+            var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
+            var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
+
             var joinedQuery = from q in queryFinal
                               join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
                               from ipnExclude in ipnExcludes.DefaultIfEmpty()
@@ -5062,6 +5148,8 @@ namespace Infrastructure.Repositories
                               from ipnExcludesItem in ipnExcludesItems.DefaultIfEmpty()
                               join yakka in ipnMinYakka on q.TenMst.IpnNameCd equals yakka.IpnNameCd into ipnYakkas
                               from ipnYakka in ipnYakkas.DefaultIfEmpty()
+                              join i in ipnNameMstList on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
+                              from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
                               select new
                               {
                                   q.TenMst,
@@ -5069,13 +5157,14 @@ namespace Infrastructure.Repositories
                                   q.YakkaSyusaiItem,
                                   q.TenKN,
                                   KensaMst = q.KensaMst,
+                                  IpnName = ipnNameMst?.IpnName ?? string.Empty,
                                   IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
                                   Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
                               };
 
             var totalCount = joinedQuery.Count();
 
-            var entities = joinedQuery.OrderByDescending(item => item.TenMst.IsAdopted).ThenBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
+            var entities = joinedQuery.OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
 
             tenMstModels = entities.AsEnumerable().Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
@@ -5119,7 +5208,7 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.DefaultVal ?? 0,
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
                                                            item.TenMst?.Kokuji2 ?? string.Empty,
-                                                           string.Empty,
+                                                           item.IpnName,
                                                            item.TenMst?.IsDeleted ?? 0,
                                                            item.TenMst?.HandanGrpKbn ?? 0,
                                                            item.KensaMst == null,

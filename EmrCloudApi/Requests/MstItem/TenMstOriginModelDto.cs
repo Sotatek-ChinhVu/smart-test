@@ -5,13 +5,6 @@
     /// </summary>
     public class TenMstOriginModelDto
     {
-        /// <summary>
-        /// 点数マスタ
-        /// </summary>
-        /// <summary>
-        /// 医療機関識別ID
-        /// </summary>
-        public int HpId { get; set; }
 
         /// <summary>
         /// 診療行為コード

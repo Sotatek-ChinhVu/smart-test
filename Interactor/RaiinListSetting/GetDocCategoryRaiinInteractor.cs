@@ -1,5 +1,4 @@
 ﻿using Domain.Models.Document;
-using Domain.Models.RaiinListSetting;
 using UseCase.RaiinListSetting.GetDocCategory;
 
 namespace Interactor.RaiinListSetting

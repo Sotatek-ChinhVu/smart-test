@@ -21,7 +21,6 @@ namespace EmrCloudApi.Presenters.Accounting
             SaveAccountingStatus.InputDataNull => ResponseMessage.InputDataNull,
             SaveAccountingStatus.InvalidSumAdjust => ResponseMessage.InvalidSumAdjust,
             SaveAccountingStatus.InvalidThisWari => ResponseMessage.InvalidThisWari,
-            SaveAccountingStatus.InvalidCredit => ResponseMessage.InvalidCredit,
             SaveAccountingStatus.InvalidPayType => ResponseMessage.InvalidPayType,
             SaveAccountingStatus.InvalidComment => ResponseMessage.InvalidComment,
             SaveAccountingStatus.InvalidSindate => ResponseMessage.InvalidSinDate,

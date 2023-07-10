@@ -1263,6 +1263,11 @@ namespace TenantMigration.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("IS_PINNED");
 
+                    b.Property<string>("OrderBy")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("ORDER_BY");
+
                     b.Property<int>("Width")
                         .HasColumnType("integer")
                         .HasColumnName("WIDTH");
@@ -7179,6 +7184,10 @@ namespace TenantMigration.Migrations
                         .HasColumnName("USER_ID");
 
                     b.HasKey("HpId", "PtId", "FunctionCd", "SinDate", "RaiinNo", "OyaRaiinNo");
+
+                    b.HasIndex("HpId", "PtId", "UserId")
+                        .IsUnique()
+                        .HasFilter("FunctionCd = \"02000000\"");
 
                     b.ToTable("LOCK_INF");
                 });
@@ -25278,6 +25287,33 @@ namespace TenantMigration.Migrations
                     b.HasKey("HpId", "UserId", "FunctionCd");
 
                     b.ToTable("USER_PERMISSION");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.UserToken", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("USER_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text")
+                        .HasColumnName("REFRESH_TOKEN")
+                        .HasColumnOrder(2);
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("TOKEN_EXPIRY_TIME")
+                        .HasColumnOrder(3);
+
+                    b.Property<bool>("RefreshTokenIsUsed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("REFRESH_TOKEN_IS_USED")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("UserId", "RefreshToken");
+
+                    b.ToTable("USER_TOKEN");
                 });
 
             modelBuilder.Entity("Entity.Tenant.WrkSinKoui", b =>

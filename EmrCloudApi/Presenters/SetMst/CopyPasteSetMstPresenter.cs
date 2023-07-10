@@ -11,7 +11,8 @@ namespace EmrCloudApi.Presenters.SetMst
 
         public void Complete(CopyPasteSetMstOutputData output)
         {
-            Result.Data = new CopyPasteSetMstResponse(output.NewSetCd);
+            var rootSet = output.SetMstModels.OrderBy(s => s.Level1).ThenBy(s => s.Level2).ThenBy(s => s.Level3).FirstOrDefault();
+            Result.Data = new CopyPasteSetMstResponse(rootSet?.SetCd ?? 0);
             Result.Message = GetMessage(output.Status);
             Result.Status = (int)output.Status;
         }
@@ -29,6 +30,7 @@ namespace EmrCloudApi.Presenters.SetMst
             CopyPasteSetMstStatus.InvalidPasteSetKbnEdaNo => ResponseMessage.InvalidPasteSetKbnEdaNo,
             CopyPasteSetMstStatus.InvalidCopySetKbn => ResponseMessage.InvalidCopySetKbn,
             CopyPasteSetMstStatus.InvalidCopySetKbnEdaNo => ResponseMessage.InvalidCopySetKbnEdaNo,
+            CopyPasteSetMstStatus.MedicalScreenLocked => ResponseMessage.MedicalScreenLocked,
             _ => string.Empty
         };
     }

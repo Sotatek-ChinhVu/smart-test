@@ -265,6 +265,29 @@ namespace Helper.Common
             return result;
         }
 
+        public static string GetCmtOpt840(string input)
+        {
+            string cmtOpt = string.Empty;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return cmtOpt;
+            }
+
+            string halfSizeValue = HenkanJ.Instance.ToHalfsize(input);
+            int intConvertValue;
+            if (!int.TryParse(halfSizeValue, out intConvertValue))
+            {
+                return cmtOpt;
+            }
+
+            if (intConvertValue < 0)
+            {
+                return cmtOpt;
+            }
+
+            return input;
+        }
+
         public static string GetCmtOpt850(string input, string itemName)
         {
             string cmtOpt = string.Empty;

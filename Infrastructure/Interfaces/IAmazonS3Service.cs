@@ -20,6 +20,8 @@ public interface IAmazonS3Service
 
     Task<bool> MoveObjectAsync(string sourceFile, string destinationFile);
 
+    Task<bool> CopyObjectAsync(string sourceFile, string destinationFile);
+
     Task<List<string>> GetListObjectAsync(string prefix);
 
     string GetFolderUploadToPtNum(List<string> folders, long ptNum);
@@ -30,5 +32,5 @@ public interface IAmazonS3Service
 
     string GetAccessBaseS3();
 
-    Task<bool> S3FilePathIsExists(string locationFile);
+    Task<(bool valid, string key)> S3FilePathIsExists(string locationFile);
 }

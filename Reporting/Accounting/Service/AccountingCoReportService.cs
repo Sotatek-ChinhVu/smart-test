@@ -313,7 +313,10 @@ public class AccountingCoReportService : IAccountingCoReportService
     /// フォームファイル名
     /// </summary>
     private string formFileName;
-    private readonly List<AccountingOutputModel> accountingOutputModelList = new();
+    private string jobName;
+    private List<AccountingOutputModel> accountingOutputModelList = new();
+    private readonly Dictionary<int, List<AccountingOutputModel>> accountingDicResult = new();
+    private readonly Dictionary<int, string> fileNamePageMap = new();
 
     public Dictionary<string, string> SingleFieldDataResult { get; set; }
     public List<ListTextModel> ListTextModelResult { get; set; }
@@ -359,9 +362,26 @@ public class AccountingCoReportService : IAccountingCoReportService
         var raiinInfModelList = _finder.GetOyaRaiinInfList(hpId, raiinNoList, ptId);
         var raiinInfModelPayList = _finder.GetOyaRaiinInfList(hpId, raiinNoPayList, ptId);
 
+        if (printTypeInput == 4)
+        {
+            for (int printTypeCheck = 0; printTypeCheck <= 1; printTypeCheck++)
+            {
+                coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeCheck, raiinInfModelList, raiinInfModelPayList));
+            }
+        }
+        else
+        {
+            coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeInput, raiinInfModelList, raiinInfModelPayList));
+        }
+        return GetAccountingReportingData(hpId, coAccountingParamModels);
+    }
+
+    private List<CoAccountingParamModel> ConvertToCoAccountingParamModelList(long ptId, bool isCalculateProcess, int printTypeInput, List<RaiinInfModel> raiinInfModelList, List<RaiinInfModel> raiinInfModelPayList)
+    {
+        List<CoAccountingParamModel> result = new();
         List<long> oyaRaiinList;
-        if (isCalculateProcess && ((printType == 0 && _systemConfig.PrintReceiptPay0Yen() == 0)
-                               || (printType == 1 && _systemConfig.PrintDetailPay0Yen() == 0)))
+        if (isCalculateProcess && ((printTypeInput == 0 && _systemConfig.PrintReceiptPay0Yen() == 0)
+                               || (printTypeInput == 1 && _systemConfig.PrintDetailPay0Yen() == 0)))
         {
             oyaRaiinList = raiinInfModelPayList.GroupBy(item => item.OyaRaiinNo).Select(item => item.Key).ToList();
         }
@@ -374,16 +394,18 @@ public class AccountingCoReportService : IAccountingCoReportService
             var listRaiinNoPrint = raiinInfModelList.FindAll(item => item.OyaRaiinNo == oyaRaiinNo).OrderBy(item => item.SinDate).ToList();
             int startDateInput = listRaiinNoPrint.First().SinDate;
             int endDateInput = listRaiinNoPrint.Last().SinDate;
-            coAccountingParamModels.Add(
+            result.Add(
             new CoAccountingParamModel(
                 ptId,
                 startDateInput,
                 endDateInput,
                 listRaiinNoPrint.Select(item => item.RaiinNo).ToList(),
-                printType: printTypeInput));
+                printType: printTypeInput
+                ));
         }
-        return GetAccountingReportingData(hpId, coAccountingParamModels);
+        return result;
     }
+
     public AccountingResponse GetAccountingReportingData(
     int hpId, long ptId, int startDate, int endDate, List<long> raiinNos, int hokenId = 0,
     int miseisanKbn = 0, int saiKbn = 0, int misyuKbn = 0, int seikyuKbn = 1, int hokenKbn = 0,
@@ -414,11 +436,14 @@ public class AccountingCoReportService : IAccountingCoReportService
         this.printType = printType;
         this.formFileName = formFileName;
         PrintOut();
+        accountingDicResult.Add(1, accountingOutputModelList);
+        fileNamePageMap.Add(1, this.formFileName);
         return new AccountingResponse(
-                  this.formFileName,
+                  fileNamePageMap,
+                  jobName,
                   mode,
                   SystemConfigList,
-                  accountingOutputModelList);
+                  accountingDicResult);
     }
 
     public AccountingResponse GetAccountingReportingData(int hpId, int startDate, int endDate, List<(long ptId, int hokenId)> ptConditions, List<(int grpId, string grpCd)> grpConditions,
@@ -446,11 +471,14 @@ public class AccountingCoReportService : IAccountingCoReportService
         printType = 0;
         this.formFileName = formFileName;
         PrintOut();
+        accountingDicResult.Add(1, accountingOutputModelList);
+        fileNamePageMap.Add(1, this.formFileName);
         return new AccountingResponse(
-                  this.formFileName,
+                  fileNamePageMap,
+                  jobName,
                   mode,
                   SystemConfigList,
-                  accountingOutputModelList);
+                  accountingDicResult);
     }
 
     public AccountingResponse GetAccountingReportingData(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
@@ -459,16 +487,99 @@ public class AccountingCoReportService : IAccountingCoReportService
         mode = PrintMode.MultiPrint;
         @params = coAccountingParamModels;
         PrintOut();
+        if (!fileNamePageMap.Any())
+        {
+            SetFormFilePath();
+            fileNamePageMap.Add(1, formFileName);
+        }
         return new AccountingResponse(
-                  formFileName,
+                  fileNamePageMap,
+                  jobName,
                   mode,
                   SystemConfigList,
-                  accountingOutputModelList);
+                  accountingDicResult);
+    }
+
+    public bool CheckOpenReportingForm(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false)
+    {
+        List<CoAccountingParamModel> coAccountingParamModels = new();
+        var raiinInfModelList = _finder.GetOyaRaiinInfList(hpId, raiinNoList, ptId);
+        var raiinInfModelPayList = _finder.GetOyaRaiinInfList(hpId, raiinNoPayList, ptId);
+
+        if (printTypeInput == 4)
+        {
+            for (int printTypeCheck = 0; printTypeCheck <= 1; printTypeCheck++)
+            {
+                coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeCheck, raiinInfModelList, raiinInfModelPayList));
+            }
+        }
+        else
+        {
+            coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeInput, raiinInfModelList, raiinInfModelPayList));
+        }
+        return CheckOpenReportingForm(hpId, coAccountingParamModels);
+    }
+
+    public bool CheckOpenReportingForm(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
+    {
+        this.hpId = hpId;
+        mode = PrintMode.MultiPrint;
+        @params = coAccountingParamModels;
+        var allType = coAccountingParamModels.Select(item => item.PrintType).Distinct().ToList();
+        try
+        {
+            foreach (var type in allType)
+            {
+                this.printType = type;
+                GetParamFromRseFile();
+            }
+        }
+        catch
+        {
+            return false;
+        }
+        int totalSuccess = 0;
+        foreach (CoAccountingParamModel param in @params)
+        {
+            accountingOutputModelList = new();
+            SingleFieldDataResult = new();
+            ListTextModelResult = new();
+            SystemConfigList = new();
+
+            mode = PrintMode.SinglePrint;
+            ptId = param.PtId;
+            startDate = param.StartDate;
+            endDate = param.EndDate;
+            raiinNos = param.RaiinNos;
+            if (raiinNos == null)
+            {
+                raiinNos = new List<long>();
+            }
+            hokenId = param.HokenId;
+            miseisanKbn = param.MiseisanKbn;
+            saiKbn = param.SaiKbn;
+            misyuKbn = param.MisyuKbn;
+            seikyuKbn = param.SeikyuKbn;
+            hokenKbn = param.HokenKbn;
+            hokenSeikyu = param.HokenSeikyu;
+            jihiSeikyu = param.JihiSeikyu;
+            nyukinBase = param.NyukinBase;
+            hakkoDay = param.HakkoDate;
+            memo = param.Memo;
+            printType = param.PrintType;
+            var checkExist = CheckExistData(hpId, ptId, startDate, endDate);
+            if (!checkExist)
+            {
+                continue;
+            }
+            totalSuccess++;
+        }
+
+        return totalSuccess > 0;
     }
 
     private void PrintOut()
     {
-        GetParamFromRseFile();
         if (mode == PrintMode.SinglePrint)
         {
             PrintOutSingle();
@@ -517,21 +628,25 @@ public class AccountingCoReportService : IAccountingCoReportService
             {
                 // 領収証
                 formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingFormType());
+                jobName = !string.IsNullOrEmpty(jobName) ? jobName : "領収証";
             }
             else if (printType == 1)
             {
                 // 明細
                 formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingDetailFormType());
+                jobName = !string.IsNullOrEmpty(jobName) ? jobName : "明細書";
             }
             if (printType == 2)
             {
                 // 月間領収証
                 formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingMonthFormType());
+                jobName = !string.IsNullOrEmpty(jobName) ? jobName : "月間領収証";
             }
             else if (printType == 3)
             {
                 // 月間明細
                 formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingDetailMonthFormType());
+                jobName = !string.IsNullOrEmpty(jobName) ? jobName : "月間明細書";
             }
         }
     }
@@ -577,6 +692,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         {
             return;
         }
+        GetParamFromRseFile();
 
         _sinmeiListPropertysPage1 = new List<(string field, int charCount, int rowCount)>();
         _sinmeiListPropertysPage2 = new List<(string field, int charCount, int rowCount)>();
@@ -594,7 +710,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             _sinmeiListPropertysPage2.AddRange(_sinmeiListPropertysPage1);
         }
 
-        _printoutDateTime = DateTime.Now;
+        _printoutDateTime = CIUtil.GetJapanDateTimeNow();
 
         // 診療明細データを作成する
         MakeSinMeiPrintData();
@@ -604,6 +720,7 @@ public class AccountingCoReportService : IAccountingCoReportService
     private void PrintOutList()
     {
         coModelList = GetDataList(hpId, startDate, endDate, ptConditions, grpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
+        GetParamFromRseFile();
         var objectList = JavaOutputData.objectNames;
         if (objectList.Contains("lsPtNum_1"))
         {
@@ -641,7 +758,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         totalPtFutan = 0;
         totalJihiSbtKingakus = new();
 
-        _printoutDateTime = DateTime.Now;
+        _printoutDateTime = CIUtil.GetJapanDateTimeNow();
         UpdateDrawForm();
     }
 
@@ -649,8 +766,14 @@ public class AccountingCoReportService : IAccountingCoReportService
     {
         if (@params != null && @params.Any())
         {
+            int index = 1;
             foreach (CoAccountingParamModel param in @params)
             {
+                accountingOutputModelList = new();
+                SingleFieldDataResult = new();
+                ListTextModelResult = new();
+                SystemConfigList = new();
+
                 mode = PrintMode.SinglePrint;
                 ptId = param.PtId;
                 startDate = param.StartDate;
@@ -672,13 +795,22 @@ public class AccountingCoReportService : IAccountingCoReportService
                 hakkoDay = param.HakkoDate;
                 memo = param.Memo;
                 printType = param.PrintType;
-                coModel = GetData(hpId, ptId, startDate, endDate);
+                try
+                {
+                    coModel = GetData(hpId, ptId, startDate, endDate);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception GetData RaiiNoList: " + raiinNos);
+                    Console.WriteLine("Exception GetData: " + ex);
+                }
 
-                if (coModel == null)
+                if (coModel.HpId == 0)
                 {
                     continue;
                 }
 
+                GetParamFromRseFile();
                 _sinmeiListPropertysPage1 = new List<(string field, int charCount, int rowCount)>();
                 _sinmeiListPropertysPage2 = new List<(string field, int charCount, int rowCount)>();
 
@@ -695,26 +827,62 @@ public class AccountingCoReportService : IAccountingCoReportService
                     _sinmeiListPropertysPage2.AddRange(_sinmeiListPropertysPage1);
                 }
 
-                _printoutDateTime = DateTime.Now;
+                _printoutDateTime = CIUtil.GetJapanDateTimeNow();
 
                 // 診療明細データを作成する
-                MakeSinMeiPrintData();
-                UpdateDrawForm();
+                try
+                {
+                    MakeSinMeiPrintData();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception MakeSinMeiPrintData: " + ex);
+                }
+
+                try
+                {
+                    UpdateDrawForm();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception UpdateDrawForm: \n" + ex);
+                }
+
+                accountingDicResult.Add(index, accountingOutputModelList);
+                if (!fileNamePageMap.Values.Contains(formFileName))
+                {
+                    fileNamePageMap.Add(index, formFileName);
+                    formFileName = string.Empty;
+                }
+                index++;
             }
         }
     }
 
+
+    private bool hasNextPage;
+    private int currentPage = 1;
     private void UpdateDrawForm()
     {
+        hasNextPage = true;
+        currentPage = 1;
         if (mode == PrintMode.SinglePrint)
         {
-            UpdateDrawFormSingle();
+            while (hasNextPage)
+            {
+                UpdateDrawFormSingle();
+                currentPage++;
+            }
         }
         else
         {
             foreach (var item in @params)
             {
-                UpdateDrawFormSingle();
+                while (hasNextPage)
+                {
+                    UpdateDrawFormSingle();
+                    currentPage++;
+                }
             }
         }
     }
@@ -1072,13 +1240,11 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void UpdateDrawFormSingle()
     {
-        SingleFieldDataResult = new();
-        ListTextModelResult = new();
-        sinmeiPrintDataModels = new();
         // 下位互換
         bool backword = _systemConfig.AccountingUseBackwardFields() == 1;
 
         UpdateFormHeader();
+        UpdateFormBody();
 
         #region SubMethod
         // ヘッダー 
@@ -2714,6 +2880,82 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 領収証定型文
             _printTeikeibun();
         }
+
+        // 本体
+        void UpdateFormBody()
+        {
+            if (sinmeiPrintDataModels == null || sinmeiPrintDataModels.Count == 0)
+            {
+                hasNextPage = false;
+                return;
+            }
+
+            List<(string field, int charCount, int rowCount)> sinmeiListPropertys =
+                _sinmeiListPropertysPage1;
+
+            int sinmeiListIndex = 0;
+
+            if (currentPage > 1)
+            {
+                // 2ページ目以降の場合
+                sinmeiListPropertys = _sinmeiListPropertysPage2;
+            }
+
+            if (!sinmeiListPropertys.Any() || sinmeiListPropertys[0].rowCount <= 0)
+            {
+                if (currentPage == 1 && _sinmeiListPropertysPage2 != null && _sinmeiListPropertysPage2.Any() && sinmeiListPropertys[0].rowCount > 0)
+                {
+                    // 1ページ目で、2ページ目以降にリストが存在する場合は、_hasNextPageはtrueのままにする
+                    return;
+                }
+                else
+                {
+                    // リストのプロパティがない場合はreturn
+                    hasNextPage = false;
+                    return;
+                }
+            }
+
+            if (currentPage > 1)
+            {
+                // 2ページ目以降の場合、1ページ目に出力した行数と、2ページ名以降に出力した行数を求める
+                sinmeiListIndex += _sinmeiListPropertysPage1.Sum(p => p.rowCount);
+                sinmeiListIndex += (currentPage - 2) * sinmeiListPropertys.Sum(p => p.rowCount);
+            }
+
+            for (int listIndex = 0; listIndex < sinmeiListPropertys.Count; listIndex++)
+            {
+
+                int sinmeiRowCount = sinmeiListPropertys[listIndex].rowCount;
+                string field = sinmeiListPropertys[listIndex].field;
+
+                for (short i = 0; i < sinmeiRowCount; i++)
+                {
+                    ListText("lsSinKoui_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].KouiNm);
+                    ListText("lsSinMei_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].MeiData);
+                    ListText("lsSinSuuryo_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Suuryo);
+                    ListText("lsSinTani_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Tani);
+                    ListText("lsSinTensu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Tensu);
+                    ListText("lsSinTotalTen_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].TotalTensu);
+                    ListText("lsSinKaisu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Kaisu);
+                    ListText("lsSinKaisuTani_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].KaisuTani);
+                    ListText("lsSinTensuKaisu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].TenKai);
+
+                    sinmeiListIndex++;
+                    if (sinmeiListIndex >= sinmeiPrintDataModels.Count)
+                    {
+                        hasNextPage = false;
+                        break;
+                    }
+                }
+
+                if (!hasNextPage)
+                {
+                    break;
+                }
+            }
+        }
+
         accountingOutputModelList.Add(new AccountingOutputModel(
                                           SingleFieldDataResult,
                                           ListTextModelResult,
@@ -3555,6 +3797,24 @@ public class AccountingCoReportService : IAccountingCoReportService
             }
         }
         #endregion
+    }
+
+    private bool CheckExistData(int hpId, long ptId, int startDate, int endDate)
+    {
+        int sinDate = endDate;
+
+        List<CoWarningMessage> warningMessages = new();
+
+        List<CoKaikeiInfModel> kaikeiInfModels;
+        if (!nyukinBase)
+        {
+            kaikeiInfModels = _finder.FindKaikeiInf(hpId, ptId, startDate, endDate, raiinNos, hokenId, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn, hokenSeikyu, jihiSeikyu, ref warningMessages);
+        }
+        else
+        {
+            kaikeiInfModels = _finder.FindKaikeiInfNyukinBase(hpId, ptId, startDate, endDate, hokenId, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn, hokenSeikyu, jihiSeikyu, ref warningMessages);
+        }
+        return kaikeiInfModels.Any();
     }
 
     private CoAccountingModel GetData(int hpId, long ptId, int startDate, int endDate)

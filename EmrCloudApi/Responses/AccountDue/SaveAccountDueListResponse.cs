@@ -2,10 +2,10 @@
 
 public class SaveAccountDueListResponse
 {
-    public SaveAccountDueListResponse(bool success)
+    public SaveAccountDueListResponse(List<AccountDueDto> accountDueList)
     {
-        Success = success;
+        AccountDueList = accountDueList;
     }
 
-    public bool Success { get; private set; }
+    public List<AccountDueDto> AccountDueList { get; private set; }
 }
