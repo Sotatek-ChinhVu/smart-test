@@ -4,14 +4,27 @@ namespace UseCase.Insurance.GetDefaultSelectPattern
 {
     public class GetDefaultSelectPatternOutputData : IOutputData
     {
-        public int HokenPid { get; private set; }
+        public List<GetDefaultSelectPatternItem> HokenPids { get; private set; }
 
         public GetDefaultSelectPatternStatus Status { get; private set; }
 
-        public GetDefaultSelectPatternOutputData(int hokenPid, GetDefaultSelectPatternStatus status)
+        public GetDefaultSelectPatternOutputData(List<GetDefaultSelectPatternItem> hokenPids, GetDefaultSelectPatternStatus status)
         {
-            HokenPid = hokenPid;
+            HokenPids = hokenPids;
             Status = status;
         }
+    }
+
+    public class GetDefaultSelectPatternItem
+    {
+        public GetDefaultSelectPatternItem(int hokenPId, int changeHokenPId)
+        {
+            HokenPId = hokenPId;
+            ChangeHokenPId = changeHokenPId;
+        }
+
+        public int HokenPId { get; private set; }
+
+        public int ChangeHokenPId { get; private set; }
     }
 }

@@ -582,6 +582,24 @@ namespace Infrastructure.Repositories
                );
         }
 
+        public List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate)
+        {
+            List<SameVisitModel> result = new();
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                             && item.PtId == ptId
+                                                                             && item.SinDate == sinDate
+                                                                             && item.IsDeleted == 0)
+                                                              .ToList();
+
+            foreach (var raiinInf in raiinInfList)
+            {
+                string sameVisit = raiinInfList.FirstOrDefault(item => item.OyaRaiinNo == raiinInf.OyaRaiinNo && item.RaiinNo != raiinInf.RaiinNo)?.OyaRaiinNo.ToString() ?? string.Empty;
+                var sameItem = new SameVisitModel(raiinInf.SinDate, raiinInf.PtId, raiinInf.RaiinNo, raiinInf.OyaRaiinNo, sameVisit);
+                result.Add(sameItem);
+            }
+            return result;
+        }
+
         public bool CheckListNo(List<long> raininNos)
         {
             var check = NoTrackingDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
@@ -1231,6 +1249,26 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
 
             return result;
+        }
+
+        public ReceptionModel? GetLastKarute(int hpId, long ptNum)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == ptNum && p.IsDelete == DeleteTypes.None);
+
+            if (ptInf != null)
+            {
+                var raiinInf = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptInf.PtId && r.IsDeleted == DeleteTypes.None
+                                                                                    && r.Status >= RaiinState.TempSave).OrderByDescending(r => r.SinDate).FirstOrDefault();
+                if (raiinInf != null)
+                {
+                    return new ReceptionModel(raiinInf.HpId,
+                                              raiinInf.PtId,
+                                              raiinInf.RaiinNo,
+                                              raiinInf.SinDate);
+                }
+            }
+
+            return null;
         }
 
         public void ReleaseResource()

@@ -7,4 +7,6 @@ public class RemoveAllLockPtIdRequest
     public int SinDate { get; set; }
 
     public string FunctionCd { get; set; } = string.Empty;
+
+    public string TabKey { get; set; } = string.Empty;
 }

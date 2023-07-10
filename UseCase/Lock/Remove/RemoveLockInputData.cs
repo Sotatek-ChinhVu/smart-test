@@ -20,6 +20,8 @@ namespace UseCase.Lock.Remove
 
         public bool IsRemoveAllLockPtId { get; private set; }
 
+        public string TabKey { get; private set; }
+
         public RemoveLockInputData(int hpId, long ptId, string functionCode, int sinDate, long raiinNo, int userId, bool isRemoveAllLock, bool isRemoveAllLockPtId)
         {
             HpId = hpId;
@@ -30,6 +32,20 @@ namespace UseCase.Lock.Remove
             UserId = userId;
             IsRemoveAllLock = isRemoveAllLock;
             IsRemoveAllLockPtId = isRemoveAllLockPtId;
+            TabKey = string.Empty;
+        }
+
+        public RemoveLockInputData(int hpId, long ptId, string functionCode, int sinDate, long raiinNo, int userId, bool isRemoveAllLock, bool isRemoveAllLockPtId, string tabKey)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            FunctionCode = functionCode;
+            SinDate = sinDate;
+            RaiinNo = raiinNo;
+            UserId = userId;
+            IsRemoveAllLock = isRemoveAllLock;
+            IsRemoveAllLockPtId = isRemoveAllLockPtId;
+            TabKey = tabKey;
         }
     }
 }

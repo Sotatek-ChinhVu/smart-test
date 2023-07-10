@@ -1,4 +1,5 @@
 ﻿using CloudUnitTest.SampleData;
+using CommonChecker.DB;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
@@ -7,11 +8,20 @@ using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
 using Entity.Tenant;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CloudUnitTest.CommonChecker.Services
 {
     public class KinkiUserCheckerTest : BaseUT
     {
+        /// <summary>
+        /// Test KinkiUserChecker With Setting Value is 5
+        /// </summary>
         [Test]
         public void Test_001_KinkiUserCheckerTest_WhenCurrentOrderCodeConstantAcdAndCheckingOrderCodeConstantBcd()
         {
@@ -256,10 +266,12 @@ namespace CloudUnitTest.CommonChecker.Services
                 };
                 tenantTracking.SystemConfs.Add(systemConf);
             }
+            tenantTracking.SaveChanges();
 
             var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01");
             var kinkiMsts = CommonCheckerData.ReadKinkiMst("K01");
             tenantTracking.TenMsts.AddRange(tenMsts);
+            var kinkiMsts = CommonCheckerData.ReadKinkiMst();
             tenantTracking.KinkiMsts.AddRange(kinkiMsts);
             tenantTracking.SaveChanges();
 

@@ -1,5 +1,7 @@
 ﻿using CommonChecker.Caches.Interface;
+using CommonCheckers;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -15,13 +17,28 @@ namespace CommonChecker.Caches
         private readonly List<M56ExAnalogue> _m56ExAnalogueList = new List<M56ExAnalogue>();
         private readonly List<M56YjDrugClass> _m56YjDrugClassList = new List<M56YjDrugClass>();
         private readonly List<M56DrugClass> _m56DrugClassList = new List<M56DrugClass>();
+        private readonly List<KinkiMst> _kinkiMstList = new List<KinkiMst>();
+        private readonly List<DosageDrug> _dosageDrugList = new List<DosageDrug>();
+        private readonly List<DosageMst> _dosageMstList = new List<DosageMst>();
+        private readonly List<DosageDosage> _dosageDosageList = new List<DosageDosage>();
+        private readonly SystemConfig _systemConfig;
+        
+        private PtInf _ptInf = new PtInf();
+        private int _sinday;
 
         public MasterDataCacheService(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-
+            _systemConfig = new SystemConfig(tenantProvider.GetNoTrackingDataContext());
         }
 
-        public void AddCache(List<string> itemCodeList)
+        public void InitCache(List<string> itemCodeList, int sinday, long ptId)
+        {
+            _sinday = sinday;
+            _ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.PtId == ptId && p.IsDelete == 0) ?? new PtInf();
+            AddCacheList(itemCodeList);
+        }
+
+        private void AddCacheList(List<string> itemCodeList)
         {
             if (itemCodeList == null || itemCodeList.Count == 0)
             {
@@ -30,11 +47,12 @@ namespace CommonChecker.Caches
 
             _itemCodeCacheList.AddRange(itemCodeList);
 
-            var tenMstList = NoTrackingDataContext.TenMsts.Where(t => itemCodeList.Contains(t.ItemCd) && t.IsDeleted == 0).ToList();
+            var tenMstList = NoTrackingDataContext.TenMsts.Where(t => itemCodeList.Contains(t.ItemCd) && t.IsDeleted == 0 && t.StartDate <= _sinday && _sinday <= t.EndDate).ToList();
             _tenMstCacheList.AddRange(tenMstList);
 
             var yjCodeList = tenMstList.Select(t => t.YjCd).Distinct().ToList();
 
+            #region Cache for duplication
             var componentList = NoTrackingDataContext.M56ExEdIngredients.Where(i => yjCodeList.Contains(i.YjCd)).ToList();
             var seibunCdList = componentList.Select(s => s.SeibunCd).ToList();
 
@@ -50,6 +68,56 @@ namespace CommonChecker.Caches
             var classCdList = yjDrugList.Select(y => y.ClassCd).Distinct().ToList();
 
             _m56DrugClassList.AddRange(NoTrackingDataContext.M56DrugClass.Where(d => classCdList.Contains(d.ClassCd)).ToList());
+            #endregion
+
+            #region Cache for kinki
+
+            _kinkiMstList.AddRange(NoTrackingDataContext.KinkiMsts.Where(k => k.IsDeleted == 0 &&
+                                                                            k.BCd != null &&
+                                                                            (
+                                                                                 itemCodeList.Contains(k.ACd) ||
+                                                                                 itemCodeList.Contains(k.BCd)
+                                                                            )).ToList());
+            #endregion
+
+            #region Cache for Dosage
+
+            //on dosageDrug.DoeiCd equals dosageDosage.DoeiCd
+            var dosageDrugListTemp = NoTrackingDataContext.DosageDrugs.Where(d => yjCodeList.Contains(d.YjCd) && d.RikikaUnit != null).ToList();
+            var doeiCdList = dosageDrugListTemp.Select(d => d.DoeiCd).ToList();
+
+            _dosageDrugList.AddRange(dosageDrugListTemp);
+            _dosageMstList.AddRange(NoTrackingDataContext.DosageMsts.Where(d => d.IsDeleted == 0 && itemCodeList.Contains(d.ItemCd)).ToList());
+            _dosageDosageList.AddRange(NoTrackingDataContext.DosageDosages.Where(d => string.IsNullOrEmpty(d.KyugenCd) && 
+                                                                                      d.DosageCheckFlg == "1" &&
+                                                                                      doeiCdList.Contains(d.DoeiCd)).ToList());
+            #endregion
+        }
+
+        public List<DosageDrug> GetDosageDrugList(List<string> itemCodeList)
+        {
+            AddCacheIfNeed(itemCodeList);
+
+            return _dosageDrugList;
+        }
+        
+        public List<DosageMst> GetDosageMstList(List<string> itemCodeList)
+        {
+            AddCacheIfNeed(itemCodeList);
+
+            return _dosageMstList;
+        }
+        
+        public List<DosageDosage> GetDosageDosageList(List<string> itemCodeList)
+        {
+            AddCacheIfNeed(itemCodeList);
+
+            return _dosageDosageList;
+        }
+
+        public SystemConfig GetSystemConfig()
+        {
+            return _systemConfig;
         }
 
         private void AddCacheIfNeed(List<string> itemCodeList)
@@ -60,21 +128,21 @@ namespace CommonChecker.Caches
             {
                 return;
             }
-            AddCache(itemCodeListNotCache);
+            AddCacheList(itemCodeListNotCache);
         }
 
-        public TenMst? GetTenMst(string itemCode, int sinday)
+        public TenMst? GetTenMst(string itemCode)
         {
             AddCacheIfNeed(new List<string>() { itemCode });
 
-            return _tenMstCacheList.FirstOrDefault(t => itemCode == t.ItemCd && t.StartDate <= sinday && sinday <= t.EndDate);
+            return _tenMstCacheList.FirstOrDefault(t => itemCode == t.ItemCd);
         }
 
-        public List<TenMst> GetTenMstList(List<string> itemCodeList, int sinday)
+        public List<TenMst> GetTenMstList(List<string> itemCodeList)
         {
             AddCacheIfNeed(itemCodeList);
 
-            return _tenMstCacheList.Where(t => itemCodeList.Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate).ToList();
+            return _tenMstCacheList.Where(t => itemCodeList.Contains(t.ItemCd)).ToList();
         }
 
         public List<M56ExIngrdtMain> GetM56ExIngrdtMainList(List<string> itemCodeList)
@@ -133,6 +201,18 @@ namespace CommonChecker.Caches
             var seibunCdList = componentList.Select(s => s.SeibunCd).ToList();
 
             return _m56ExAnalogueList.Where(m => seibunCdList.Contains(m.SeibunCd)).ToList();
+        }
+
+        public List<KinkiMst> GetKinkiMstList(List<string> itemCodeList)
+        {
+            AddCacheIfNeed(itemCodeList);
+
+            return _kinkiMstList;
+        }
+
+        public PtInf GetPtInf()
+        {
+            return _ptInf;
         }
     }
 }
