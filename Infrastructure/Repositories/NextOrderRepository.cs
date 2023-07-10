@@ -106,15 +106,6 @@ namespace Infrastructure.Repositories
                 var maxRpNo = GetMaxRpNo(hpId, ptId);
                 var seqNo = GetMaxSeqNo(ptId, hpId, nextOrderModel.RsvkrtNo);
 
-                var checkExistRsvkrtOrder = NoTrackingDataContext.RsvkrtMsts.Any(x =>
-                                                                                    x.HpId == nextOrderModel.HpId &&
-                                                                                    x.PtId == nextOrderModel.PtId &&
-                                                                                    x.RsvkrtKbn == 0 &&
-                                                                                    x.RsvDate == nextOrderModel.RsvDate &&
-                                                                                    x.IsDeleted == DeleteTypes.None);
-
-                if (checkExistRsvkrtOrder) continue;
-
                 if (nextOrderModel.IsDeleted == DeleteTypes.Deleted || nextOrderModel.IsDeleted == DeleteTypes.Confirm)
                 {
                     var rsvkrtMst = TrackingDataContext.RsvkrtMsts.FirstOrDefault(r => r.HpId == nextOrderModel.HpId && r.PtId == nextOrderModel.PtId && r.RsvDate == nextOrderModel.RsvDate && r.RsvkrtNo == nextOrderModel.RsvkrtNo);
@@ -153,6 +144,15 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
+                        var checkExistRsvkrtOrder = NoTrackingDataContext.RsvkrtMsts.Any(x =>
+                                                                                    x.HpId == nextOrderModel.HpId &&
+                                                                                    x.PtId == nextOrderModel.PtId &&
+                                                                                    x.RsvkrtKbn == 0 &&
+                                                                                    x.RsvDate == nextOrderModel.RsvDate &&
+                                                                                    x.IsDeleted == DeleteTypes.None);
+
+                        if (checkExistRsvkrtOrder) continue;
+
                         var nextOrderEntity = ConvertModelToRsvkrtNextOrder(userId, nextOrderModel, oldNextOrder);
                         TrackingDataContext.RsvkrtMsts.Add(nextOrderEntity);
                         TrackingDataContext.SaveChanges();
