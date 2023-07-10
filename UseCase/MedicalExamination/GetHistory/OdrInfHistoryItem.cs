@@ -12,13 +12,13 @@ namespace UseCase.MedicalExamination.GetHistory
         [JsonPropertyName("updateDateDisplay")]
         public string UpdateDateDisplay
         {
-            get => UpdateDate.ToString("yyyy/MM/dd hh:mm");
+            get => UpdateDate.ToString("yyyy/MM/dd HH:mm");
         }
 
         [JsonPropertyName("createDateDisplay")]
         public string CreateDateDisplay
         {
-            get => CreateDate.ToString("yyyy/MM/dd hh:mm");
+            get => CreateDate.ToString("yyyy/MM/dd HH:mm");
         }
     }
 }

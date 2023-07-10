@@ -488,7 +488,7 @@ namespace Interactor.Insurance
                     int intAge = -1;
                     if (ptBirthday != 0)
                     {
-                        intAge = CIUtil.SDateToAge(ptBirthday, Int32.Parse(DateTime.Now.ToString("yyyyMMdd")));
+                        intAge = CIUtil.SDateToAge(ptBirthday, Int32.Parse(CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd")));
                     }
                     if (intAge != -1)
                     {

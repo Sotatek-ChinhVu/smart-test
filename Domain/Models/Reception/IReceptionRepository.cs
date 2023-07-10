@@ -9,7 +9,7 @@ namespace Domain.Models.Reception
 
         bool Update(ReceptionSaveDto dto, int hpId, int userId);
 
-        ReceptionModel Get(long raiinNo);
+        ReceptionModel Get(long raiinNo, bool flag = false);
 
         List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily, int isDeleted = 2, bool searchSameVisit = false);
 
@@ -51,6 +51,8 @@ namespace Domain.Models.Reception
 
         List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted);
 
+        ReceptionModel? GetLastKarute(int hpId, long ptNum);
+
         List<Tuple<int, long, long>> Delete(bool flag, int hpId, long ptId, int userId, int sinDate, List<Tuple<long, long, int>> receptions);
 
         bool CheckExistOfRaiinNos(List<long> raininNos);
@@ -58,5 +60,7 @@ namespace Domain.Models.Reception
         List<ReceptionModel> GetRaiinListWithKanInf(int hpId, long ptId);
 
         ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate);
+
+        List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate);
     }
 }

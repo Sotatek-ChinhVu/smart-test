@@ -43,7 +43,9 @@ public class CheckedDiseaseTest : BaseUT
                 ),
         };
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
-        TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository);
+        UserRepository userRepository = new UserRepository(TenantProvider);
+        ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
+        TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
         // Act
         var iagkutokusitu = todayOdrRepository.GetCheckDiseases(hpId, sinDate, byomeiModelList, ordInfs);
         // Assert
@@ -83,7 +85,9 @@ public class CheckedDiseaseTest : BaseUT
                 ),
         };
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
-        TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository);
+        UserRepository userRepository = new UserRepository(TenantProvider);
+        ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
+        TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CheckedDiseaseData.ReadTenMst("0020020020");
         //var byomeiMsts = CheckedDiseaseData.ReadByomeiMst("0020020");
@@ -131,7 +135,9 @@ public class CheckedDiseaseTest : BaseUT
                 ),
         };
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
-        TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository);
+        UserRepository userRepository = new UserRepository(TenantProvider);
+        ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
+        TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CheckedDiseaseData.ReadTenMst("0030030030");
         var byomeiMsts = CheckedDiseaseData.ReadByomeiMst("0030030");

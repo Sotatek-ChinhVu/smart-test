@@ -22,12 +22,20 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         {
             bool isMinCheck = SystemConfig!.DosageMinCheckSetting;
             double ratioSetting = SystemConfig.DosageRatioSetting;
+            var resultList = new List<DosageResultModel>();
+            var errorOrderList = new List<TOdrInf>();
+            var itemList = new List<DrugInfo>();
 
-            List<DrugInfo> itemList = new List<DrugInfo>();
+            var ptBodyInf = Finder!.GetPtBodyInfo(
+                HpID, 
+                PtID, 
+                Sinday, 
+                CurrentHeight, 
+                CurrentWeight, 
+                unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
 
             foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (checkingOrder.OdrKouiKbn == 21 && !SystemConfig.DosageDrinkingDrugSetting ||
                 checkingOrder.OdrKouiKbn == 22 && !SystemConfig.DosageDrugAsOrderSetting ||
                 checkingOrder.OdrKouiKbn == 23 ||
@@ -36,7 +44,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 {
                     continue;
                 }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                 double usageQuantity = 0;
                 var usageItem = checkingOrder.OdrInfDetailModelsIgnoreEmpty.FirstOrDefault(d => d.IsStandardUsage);
@@ -60,40 +67,33 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                         UsageQuantity = usageQuantity
                     })
                     .ToList());
-            }
 
-            List<DosageResultModel> checkedResult = Finder!.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, CurrentHeight, CurrentWeight, unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
-
-            if (TermLimitCheckingOnly)
-            {
-                checkedResult = checkedResult.Where(r => r.LabelChecking == DosageLabelChecking.TermLimit).ToList();
-            }
-
-            if (checkedResult.Count > 0)
-            {
-                unitCheckerForOrderListResult.ErrorInfo = checkedResult;
-                unitCheckerForOrderListResult.ErrorOrderList = GetErrorOrderList(unitCheckerForOrderListResult.CheckingOrderList, checkedResult);
-            }
-
-            return unitCheckerForOrderListResult;
-        }
-
-        private List<TOdrInf> GetErrorOrderList(List<TOdrInf> checkingOrderList, List<DosageResultModel> checkedResultList)
-        {
-            List<string> listErrorItemCode = checkedResultList.Select(r => r.ItemCd).ToList();
-            List<double> suryoErrorList = checkedResultList.Select(r => r.CurrentValue).ToList();
-
-            List<TOdrInf> resultList = new List<TOdrInf>();
-            foreach (var checkingOrder in checkingOrderList)
-            {
-                var existed = checkingOrder.OdrInfDetailModelsIgnoreEmpty.Any(o => listErrorItemCode.Contains(o.ItemCd) && suryoErrorList.Contains(o.Suryo));
-                if (existed)
+                if (itemList.Count == 0)
                 {
-                    resultList.Add(checkingOrder);
+                    continue;
+                }
+
+                List<DosageResultModel> checkedResult = Finder!.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, ptBodyInf.height, ptBodyInf.weight, unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
+
+                if (TermLimitCheckingOnly)
+                {
+                    checkedResult = checkedResult.Where(r => r.LabelChecking == DosageLabelChecking.TermLimit).ToList();
+                }
+
+                if (checkedResult.Count > 0)
+                {
+                    errorOrderList.Add(checkingOrder);
+                    resultList.AddRange(checkedResult);
                 }
             }
 
-            return resultList;
+            if (resultList.Count > 0)
+            {
+                unitCheckerForOrderListResult.ErrorInfo = resultList;
+                unitCheckerForOrderListResult.ErrorOrderList = errorOrderList;
+            }
+
+            return unitCheckerForOrderListResult;
         }
     }
 }

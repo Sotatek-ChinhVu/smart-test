@@ -21,7 +21,6 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         private SeikyuType _seikyuType;
         private bool _hasNextPage;
         private int _currentPage;
-        private string _formYm = string.Empty;
 
         /// <summary>
         /// CoReport Model
@@ -35,24 +34,27 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         /// <summary>
         /// OutPut Data
         /// </summary>
-        private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
-        private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
-        private readonly Dictionary<string, string> _fileNamePageMap = new Dictionary<string, string>();
-        private readonly string _rowCountFieldName = string.Empty;
-        private readonly int _reportType = (int)CoReportType.KokhoSokatu;
+        private const string _formFileName = "p28KokhoSokatu.rse";
+        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+        private readonly Dictionary<string, string> _singleFieldData;
+        private readonly Dictionary<string, string> _extralData;
+        private readonly Dictionary<int, List<ListTextObject>> _listTextData;
+        private readonly Dictionary<string, bool> _visibleFieldData;
 
         /// <summary>
         /// Finder
         /// </summary>
         private readonly ICoKokhoSokatuFinder _kokhoFinder;
-        private readonly IReadRseReportFileService _readRseReportFileService;
 
 
-        public P28KokhoSokatuCoReportService(ICoKokhoSokatuFinder kokhoFinder, IReadRseReportFileService readRseReportFileService)
+        public P28KokhoSokatuCoReportService(ICoKokhoSokatuFinder kokhoFinder)
         {
             _kokhoFinder = kokhoFinder;
-            _readRseReportFileService = readRseReportFileService;
+            _singleFieldData = new();
+            _singleFieldDataM = new();
+            _listTextData = new();
+            _extralData = new();
+            _visibleFieldData = new();
         }
         #endregion
 
@@ -60,14 +62,11 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         {
             _hpId = hpId;
             _seikyuYm = seikyuYm;
-            _formYm = seikyuYm >= KaiseiDate.m202210 ? "_2210" : string.Empty;
             _seikyuType = seikyuType;
             var getData = GetData();
 
             _hasNextPage = true;
             _currentPage = 1;
-
-            AddFileNamePageMap();
 
             while (getData && _hasNextPage)
             {
@@ -75,8 +74,9 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 _currentPage++;
             }
 
-            _extralData.Add("maxRow", "6");
-            return new KokhoSokatuMapper(_singleFieldData, _tableFieldData, _extralData, _fileNamePageMap, _rowCountFieldName, _reportType).GetData();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
         }
 
         private bool GetData()
@@ -92,15 +92,14 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             return (receInfs?.Count ?? 0) > 0;
         }
 
-        private bool UpdateDrawForm()
+        private void UpdateDrawForm()
         {
-            _hasNextPage = true;
-
             #region SubMethod
 
             #region Header
-            int UpdateFormHeader()
+            void UpdateFormHeader()
             {
+                List<ListTextObject> listDataPerPage = new();
                 //医療機関コード
                 SetFieldData("hpCode", hpInf.ReceHpCd);
                 //医療機関情報
@@ -114,17 +113,14 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 const int maxKaRow = 4;
                 for (int i = 0; i <= kaMsts.Count - 1 && i <= maxKaRow; i++)
                 {
-                    Dictionary<string, CellModel> data = new();
                     if (i == 0)
                     {
                         SetFieldData("kaName", kaMsts[i].KaName);
                     }
                     else
                     {
-                        AddListData(ref data, "kaNames", kaMsts[i].KaName);
+                        listDataPerPage.Add(new("kaNames", 0, (short)(i - 1), kaMsts.Any() ? kaMsts[i].KaName : string.Empty));
                     }
-
-                    _tableFieldData.Add(data);
                 }
 
                 //請求年月
@@ -132,14 +128,13 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 SetFieldData("seikyuGengo", wrkYmd.Gengo);
                 SetFieldData("seikyuYear", wrkYmd.Year.ToString());
                 SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
-
-                return 1;
             }
             #endregion
 
             #region Body
-            int UpdateFormBody()
+            void UpdateFormBody()
             {
+                List<ListTextObject> listDataPerPage = new();
                 #region Body
                 const int maxRow = 6;
 
@@ -149,7 +144,6 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                     for (short rowNo = 0; rowNo < maxRow; rowNo++)
                     {
                         List<CoReceInfModel> wrkReces = null;
-                        Dictionary<string, CellModel> data = new();
                         switch (rowNo)
                         {
                             //国保
@@ -166,10 +160,10 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         countData wrkData = new countData();
                         //件数
                         wrkData.Count = wrkReces.Count;
-                        AddListData(ref data, "count", wrkData.Count.ToString());
+                        listDataPerPage.Add(new("count", 0, rowNo, wrkData.Count.ToString()));
                         //点数
                         wrkData.Tensu = wrkReces.Sum(r => r.Tensu);
-                        AddListData(ref data, "tensu", wrkData.Tensu.ToString());
+                        listDataPerPage.Add(new("tensu", 0, rowNo, wrkData.Tensu.ToString()));
 
                         //請求書枚数
                         if (_seikyuType.IsNormal && _seikyuType.IsDelay && !_seikyuType.IsHenrei && !_seikyuType.IsOnline && !_seikyuType.IsPaper)
@@ -179,10 +173,8 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         else
                         {
                             int seikyuCount = wrkReces.GroupBy(r => r.HokensyaNo).Select(r => r.Key).ToList().Count();
-                            AddListData(ref data, "seikyuCount", seikyuCount.ToString());
+                            listDataPerPage.Add(new("seikyuCount", 0, rowNo, seikyuCount.ToString()));
                         }
-
-                        _tableFieldData.Add(data);
                     }
 
                     //社保福祉医療費請求件数
@@ -200,25 +192,20 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 if (kokhoNos.Count == 0 && koukiNos.Count == 0)
                 {
                     _hasNextPage = false;
-                    return 1;
                 }
 
                 for (short rowNo = 0; rowNo < maxHokRow; rowNo++)
                 {
-                    Dictionary<string, CellModel> data = new();
-
                     if (hokIndex < kokhoNos.Count)
                     {
                         string hokensyaName = hokensyaNames.Find(h => h.HokensyaNo == kokhoNos[hokIndex])?.Name ?? "";
-                        AddListData(ref data, "kokhoHokensyaName", hokensyaName == "" ? kokhoNos[hokIndex] : hokensyaName);
+                        listDataPerPage.Add(new("kokhoHokensyaName", 0, rowNo, hokensyaName == "" ? kokhoNos[hokIndex] : hokensyaName.ToString()));
                     }
                     if (hokIndex < koukiNos.Count)
                     {
-                        string prefName = PrefCode.PrefName(koukiNos[hokIndex].Substring(2, 2).AsInteger());
-                        AddListData(ref data, "koukiHokensyaName", prefName == "" ? koukiNos[hokIndex] : prefName);
+                        string prefName = PrefCode.PrefName(koukiNos.Any() ? koukiNos[hokIndex].Substring(2, 2).AsInteger() : 0);
+                        listDataPerPage.Add(new("koukiHokensyaName", 0, rowNo, prefName == "" ? koukiNos[hokIndex] : prefName.ToString()));
                     }
-
-                    _tableFieldData.Add(data);
 
                     hokIndex++;
                     if (hokIndex >= kokhoNos.Count && hokIndex >= koukiNos.Count)
@@ -227,27 +214,16 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         break;
                     }
                 }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                _listTextData.Add(pageIndex, listDataPerPage);
                 #endregion
-
-                return 1;
             }
             #endregion
 
             #endregion
-
-            try
-            {
-                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-                {
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-
-            return true;
+            UpdateFormHeader();
+            UpdateFormBody();
         }
 
         private void SetFieldData(string field, string value)
@@ -264,11 +240,6 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             {
                 dictionary.Add(field, new CellModel(value));
             }
-        }
-
-        private void AddFileNamePageMap()
-        {
-            _fileNamePageMap.Add("1", string.Concat("p28KokhoSokatu", _formYm + ".rse"));
         }
 
     }

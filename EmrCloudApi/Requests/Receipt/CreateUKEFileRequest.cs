@@ -4,9 +4,8 @@ namespace EmrCloudApi.Requests.Receipt
 {
     public class CreateUKEFileRequest
     {
-        public CreateUKEFileRequest(int hpId, ModeTypeCreateUKE modeType, int seikyuYm, int seikyuYmOutput, bool chkHenreisai, bool chkTogetsu, bool includeOutDrug, bool includeTester, int kaId, int doctorId, int sort, string fileName)
+        public CreateUKEFileRequest(ModeTypeCreateUKE modeType, int seikyuYm, int seikyuYmOutput, bool chkHenreisai, bool chkTogetsu, bool includeOutDrug, bool includeTester, int kaId, int doctorId, int sort, string fileName)
         {
-            HpId = hpId;
             ModeType = modeType;
             SeikyuYm = seikyuYm;
             SeikyuYmOutput = seikyuYmOutput;
@@ -19,8 +18,6 @@ namespace EmrCloudApi.Requests.Receipt
             Sort = sort;
             FileName = fileName;
         }
-
-        public int HpId { get; private set; }
 
         public ModeTypeCreateUKE ModeType { get; private set; }
 

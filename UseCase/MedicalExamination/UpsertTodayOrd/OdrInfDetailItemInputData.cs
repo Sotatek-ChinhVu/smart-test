@@ -41,6 +41,57 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
             CmtOpt = cmtOpt;
             FontColor = fontColor;
             CommentNewline = commentNewline;
+            YjCd = string.Empty;
+            KikakiUnit = string.Empty;
+            YakkaiUnit = string.Empty;
+            RikikaUnit = string.Empty;
+            YoukaiekiCd = string.Empty;
+            MemoItem = string.Empty;
+        }
+
+        public OdrInfDetailItemInputData(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string yjCd, decimal rikikaRate, string kikakiUnit, string yakkaiUnit, string rikikaUnit, string youkaiekiCd, string memoItem)
+        {
+            HpId = hpId;
+            RaiinNo = raiinNo;
+            RpNo = rpNo;
+            RpEdaNo = rpEdaNo;
+            RowNo = rowNo;
+            PtId = ptId;
+            SinDate = sinDate;
+            SinKouiKbn = sinKouiKbn;
+            ItemCd = itemCd;
+            ItemName = itemName;
+            Suryo = suryo;
+            UnitName = unitName;
+            UnitSbt = unitSbt;
+            TermVal = termVal;
+            KohatuKbn = kohatuKbn;
+            SyohoKbn = syohoKbn;
+            SyohoLimitKbn = syohoLimitKbn;
+            DrugKbn = drugKbn;
+            YohoKbn = yohoKbn;
+            Kokuji1 = kokuji1;
+            Kokuji2 = kokuji2;
+            IsNodspRece = isNodspRece;
+            IpnCd = ipnCd;
+            IpnName = ipnName;
+            JissiKbn = jissiKbn;
+            JissiDate = jissiDate;
+            JissiId = jissiId;
+            JissiMachine = jissiMachine;
+            ReqCd = reqCd;
+            Bunkatu = bunkatu;
+            CmtName = cmtName;
+            CmtOpt = cmtOpt;
+            FontColor = fontColor;
+            CommentNewline = commentNewline;
+            YjCd = yjCd;
+            RikikaRate = rikikaRate;
+            KikakiUnit = kikakiUnit;
+            YakkaiUnit = yakkaiUnit;
+            RikikaUnit = rikikaUnit;
+            YoukaiekiCd = youkaiekiCd;
+            MemoItem = memoItem;
         }
 
         public OdrInfDetailItemInputData(int hpId, string itemCd, int sinDate)
@@ -62,6 +113,12 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
             HpId = hpId;
             ItemCd = itemCd;
             SinDate = sinDate;
+            YjCd = string.Empty;
+            KikakiUnit = string.Empty;
+            YakkaiUnit = string.Empty;
+            RikikaUnit = string.Empty;
+            YoukaiekiCd = string.Empty;
+            MemoItem = string.Empty;
         }
 
         public int HpId { get; private set; }
@@ -98,5 +155,19 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
         public string CmtOpt { get; private set; }
         public string FontColor { get; private set; }
         public int CommentNewline { get; private set; }
+
+        public string YjCd { get; private set; }
+
+        public string KikakiUnit { get; private set; }
+
+        public string YakkaiUnit { get; private set; }
+
+        public decimal RikikaRate { get; private set; }
+
+        public string RikikaUnit { get; private set; }
+
+        public string YoukaiekiCd { get; private set; }
+
+        public string MemoItem { get; private set; }
     }
 }

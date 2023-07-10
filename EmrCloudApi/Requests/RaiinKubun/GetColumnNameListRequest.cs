@@ -2,6 +2,5 @@
 {
     public class GetColumnNameListRequest
     {
-        public int HpId { get; set; }
     }
 }

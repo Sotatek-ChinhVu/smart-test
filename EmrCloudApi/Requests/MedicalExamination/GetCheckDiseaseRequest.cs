@@ -5,8 +5,6 @@ namespace EmrCloudApi.Requests.MedicalExamination
 {
     public class GetCheckDiseaseRequest
     {
-        public int HpId { get; set; }
-
         public int SinDate { get; set; }
 
         public List<UpsertPtDiseaseListItem> TodayByomeis { get; set; } = new();

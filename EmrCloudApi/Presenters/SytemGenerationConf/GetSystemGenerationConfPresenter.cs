@@ -2,7 +2,7 @@
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.SystemGenerationConf;
 using UseCase.SystemConf;
-using UseCase.SystemGenerationConf;
+using UseCase.SystemGenerationConf.Get;
 
 namespace EmrCloudApi.Presenters.SytemGenerationConf
 {

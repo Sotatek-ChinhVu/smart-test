@@ -2,6 +2,7 @@
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.TodayOdr;
+using System.Linq;
 using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -112,14 +113,20 @@ namespace Interactor.MedicalExamination
                                 0,
                                 0,
                                 0,
-                                "",
+                                itemDetail.YjCd,
                                 new List<YohoSetMstModel>(),
                                 0,
                                 0,
                                 "",
                                 "",
                                 "",
-                                ""
+                                "",
+                                itemDetail.RikikaRate,
+                                itemDetail.KikakiUnit,
+                                itemDetail.YakkaiUnit,
+                                itemDetail.RikikaUnit,
+                                itemDetail.YoukaiekiCd,
+                                itemDetail.MemoItem
                         )).ToList(),
                         DateTime.MinValue,
                         0,
@@ -215,7 +222,13 @@ namespace Interactor.MedicalExamination
                                         od.CmtCol3,
                                         od.CmtCol4,
                                         od.HandanGrpKbn,
-                                        od.IsKensaMstEmpty
+                                        od.IsKensaMstEmpty,
+                                        od.RikikaRate,
+                                        od.KikakiUnit,
+                                        od.YakkaiUnit,
+                                        od.RikikaUnit,
+                                        od.YoukaiekiCd,
+                                        od.MemoItem
                                     )
                             ).ToList(),
                         o.odrInfModel.CreateDate,
