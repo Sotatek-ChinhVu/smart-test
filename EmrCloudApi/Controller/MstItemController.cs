@@ -369,7 +369,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.ConvertStringChkJISKj)]
         public ActionResult<Response<ConvertStringChkJISKjResponse>> ConvertStringChkJISKj([FromBody] ConvertStringChkJISKjRequest request)
         {
-            var input = new ConvertStringChkJISKjInputData(request.InputString, request.SOut);
+            var input = new ConvertStringChkJISKjInputData(request.InputList);
             var output = _bus.Handle(input);
             var presenter = new ConvertStringChkJISKjPresenter();
             presenter.Complete(output);
