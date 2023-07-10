@@ -173,7 +173,6 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     ptIndex++;
                     if (ptIndex >= receInfs.Count)
                     {
-                        _listTextData.Add(pageIndex, listDataPerPage);
                         _hasNextPage = false;
                         break;
                     }
