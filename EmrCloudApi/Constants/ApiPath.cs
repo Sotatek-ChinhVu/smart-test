@@ -102,6 +102,8 @@
         public const string DrugNoteSeal = "DrugNoteSeal";
         public const string Yakutai = "Yakutai";
         public const string AccountingCard = "AccountingCard";
+        public const string ExportKarte2 = "ExportKarte2";
+        public const string ExportKarte3 = "ExportKarte3";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -153,6 +155,7 @@
         public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
         public const string InitDoctorCombo = "InitDoctorCombo";
         public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
+        public const string GetLastKarute = "GetLastKarute";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
@@ -271,6 +274,7 @@
         public const string SaveReceStatus = "SaveReceStatus";
         public const string GetReceStatus = "GetReceStatus";
         public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
+        public const string GetListSinKoui = "GetListSinKoui";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -336,6 +340,7 @@
         public const string ExtendTtl = "ExtendTtl";
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
+        public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
