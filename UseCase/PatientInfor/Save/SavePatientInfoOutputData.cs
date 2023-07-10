@@ -1,4 +1,5 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.PatientInfor;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.PatientInfor.Save
 {
@@ -10,11 +11,14 @@ namespace UseCase.PatientInfor.Save
 
         public long PtID { get; private set; }
 
-        public SavePatientInfoOutputData(IEnumerable<SavePatientInfoValidationResult> validateDetails, SavePatientInfoStatus status, long ptID)
+        public PatientInforModel PatientInforModel { get; private set; }
+
+        public SavePatientInfoOutputData(IEnumerable<SavePatientInfoValidationResult> validateDetails, SavePatientInfoStatus status, long ptID, PatientInforModel patientInforModel)
         {
             ValidateDetails = validateDetails;
             Status = status;
             PtID = ptID;
+            PatientInforModel = patientInforModel;
         }
     }
 }

@@ -15,6 +15,18 @@ public class DosageDrugModel
         MemoItem = memoItem;
     }
 
+    public DosageDrugModel()
+    {
+        YjCd = string.Empty;
+        DoeiCd = string.Empty;
+        DrugKbn = string.Empty;
+        KikakiUnit = string.Empty;
+        YakkaiUnit = string.Empty;
+        RikikaUnit = string.Empty;
+        YoukaiekiCd = string.Empty;
+        MemoItem = string.Empty;
+    }
+
     public string YjCd { get; private set; }
     public string DoeiCd { get; private set; }
     public string DrugKbn { get; private set; }
