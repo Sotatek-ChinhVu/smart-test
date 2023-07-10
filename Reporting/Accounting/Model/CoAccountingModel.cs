@@ -92,7 +92,7 @@ public class CoAccountingModel
 
             if (taxConfs.Any())
             {
-                AddTaxSum(taxConfs.First().Val, kaikeiInf.JihiFutanOutTaxNr, kaikeiInf.JihiFutanTaxNr, kaikeiInf.JihiOuttaxNr, kaikeiInf.JihiTaxNr);
+                AddTaxSum(taxConfs.FirstOrDefault()?.Val ?? 0, kaikeiInf.JihiFutanOutTaxNr, kaikeiInf.JihiFutanTaxNr, kaikeiInf.JihiOuttaxNr, kaikeiInf.JihiTaxNr);
             }
 
             taxConfs =
@@ -100,7 +100,7 @@ public class CoAccountingModel
 
             if (taxConfs.Any())
             {
-                AddTaxSum(taxConfs.First().Val, kaikeiInf.JihiFutanOutTaxGen, kaikeiInf.JihiFutanTaxGen, kaikeiInf.JihiOuttaxGen, kaikeiInf.JihiTaxGen);
+                AddTaxSum(taxConfs.FirstOrDefault()?.Val ?? 0, kaikeiInf.JihiFutanOutTaxGen, kaikeiInf.JihiFutanTaxGen, kaikeiInf.JihiOuttaxGen, kaikeiInf.JihiTaxGen);
             }
 
         }
@@ -317,9 +317,11 @@ public class CoAccountingModel
         }
     }
 
-    /// <summary>
-    /// 医療機関名
-    /// </summary>
+    public int HpId
+    {
+        get => HpInfModel.HpId;
+    }
+    
     public string HpName
     {
         get => HpInfModel.HpName;
@@ -467,7 +469,7 @@ public class CoAccountingModel
     /// </summary>
     public string HokenSbt
     {
-        get => KaikeiInfModels.First().HokenSyu;
+        get => KaikeiInfModels?.FirstOrDefault()?.HokenSyu ?? string.Empty;
     }
 
     /// <summary>
@@ -501,7 +503,7 @@ public class CoAccountingModel
     /// </summary>
     public int? FutanRate
     {
-        get => KaikeiInfModels.First().FutanRate;
+        get => KaikeiInfModels.FirstOrDefault()?.FutanRate;
     }
     /// <summary>
     /// 負担率（１つでも異なる保険があればnullを返す）
@@ -534,7 +536,7 @@ public class CoAccountingModel
     /// </summary>
     public int? HokenRate
     {
-        get => KaikeiInfModels.First().HokenRate;
+        get => KaikeiInfModels.FirstOrDefault()?.HokenRate;
     }
 
     /// <summary>
@@ -1156,7 +1158,7 @@ public class CoAccountingModel
 
             if (KaikeiInfModels != null && KaikeiInfModels.Any())
             {
-                ret = KaikeiInfModels.First().HokenKbn;
+                ret = KaikeiInfModels.FirstOrDefault()?.HokenKbn ?? 0;
             }
 
             return ret;
@@ -1174,7 +1176,7 @@ public class CoAccountingModel
 
             if (KaikeiInfModels != null && KaikeiInfModels.Any())
             {
-                ret = KaikeiInfModels.First().HokensyaNo;
+                ret = KaikeiInfModels.FirstOrDefault()?.HokensyaNo ?? string.Empty;
             }
 
             return ret;
@@ -1191,7 +1193,7 @@ public class CoAccountingModel
 
             if (KaikeiInfModels != null && KaikeiInfModels.Any())
             {
-                ret = KaikeiInfModels.First().KigoBango;
+                ret = KaikeiInfModels.FirstOrDefault()?.KigoBango ?? string.Empty;
             }
 
             return ret;
@@ -1208,7 +1210,7 @@ public class CoAccountingModel
 
             if (KaikeiInfModels != null && KaikeiInfModels.Any())
             {
-                ret = KaikeiInfModels.First().RousaiKofuNo;
+                ret = KaikeiInfModels.FirstOrDefault()?.RousaiKofuNo ?? string.Empty;
             }
 
             return ret;
@@ -1225,7 +1227,7 @@ public class CoAccountingModel
 
             if (KaikeiInfModels != null && KaikeiInfModels.Any())
             {
-                ret = KaikeiInfModels.First().JibaiHokenName;
+                ret = KaikeiInfModels.FirstOrDefault()?.JibaiHokenName ?? string.Empty;
             }
 
             return ret;
@@ -1242,7 +1244,7 @@ public class CoAccountingModel
 
             if (KaikeiInfModels != null && KaikeiInfModels.Any())
             {
-                ret = KaikeiInfModels.First().Honke;
+                ret = KaikeiInfModels.FirstOrDefault()?.Honke ?? string.Empty;
             }
 
             return ret;
@@ -1257,7 +1259,7 @@ public class CoAccountingModel
 
         if (KaikeiInfModels != null && KaikeiInfModels.Any())
         {
-            ret = KaikeiInfModels.First().KohiFutansyaNo(index);
+            ret = KaikeiInfModels.FirstOrDefault()?.KohiFutansyaNo(index) ?? string.Empty;
         }
 
         return ret;
@@ -1273,7 +1275,7 @@ public class CoAccountingModel
 
         if (KaikeiInfModels != null && KaikeiInfModels.Any())
         {
-            ret = KaikeiInfModels.First().KohiJyukyusyaNo(index);
+            ret = KaikeiInfModels.FirstOrDefault()?.KohiJyukyusyaNo(index) ?? string.Empty;
         }
 
         return ret;
@@ -1320,7 +1322,7 @@ public class CoAccountingModel
 
             if (KaikeiInfDailyModels != null || KaikeiInfDailyModels?.Any() == true)
             {
-                ret = KaikeiInfDailyModels.Max(p => p.SinDate);
+                ret = KaikeiInfDailyModels.Count > 0 ? KaikeiInfDailyModels.Max(p => p.SinDate) : 0;
             }
 
             return ret;

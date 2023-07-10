@@ -27,6 +27,11 @@ namespace Reporting.Kensalrai.Mapper
             return _rowCountFieldName;
         }
 
+        public override string GetJobName()
+        {
+            return "検査依頼書";
+        }
+
         public override Dictionary<string, string> GetSingleFieldData()
         {
             return _singleFieldData;

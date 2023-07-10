@@ -49,12 +49,11 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var allSetByomeis = NoTrackingDataContext.SetByomei.Where(b => b.HpId == hpId && setCds.Contains(b.SetCd) && b.IsDeleted == DeleteTypes.None).ToList();
         var allKarteFiles = NoTrackingDataContext.SetKarteImgInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd)).ToList();
         List<(int setCd, long seqNo)> lastSeqNos = new();
-        foreach (var item in allKarteFiles)
+        foreach (var karte in allKarteFiles)
         {
-            var lastSeq = allKarteFiles.Where(item => item.HpId == hpId && item.SetCd == item.SetCd).Select(item => item.SeqNo)?.DefaultIfEmpty(0).Max() ?? 0;
+            var lastSeq = allKarteFiles.Where(item => item.HpId == hpId && item.SetCd == karte.SetCd).Select(item => item.SeqNo)?.DefaultIfEmpty(0).Max() ?? 0;
             lastSeqNos.Add(new(setCd, lastSeq));
         }
-
 
         List<string> codeLists = new();
         foreach (var item in allSetByomeis)
@@ -82,7 +81,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
                    (ipnCds != null && ipnCds.Contains(p.IpnNameCd))).ToList();
-        var settingValues = GetSettingValues();
+        var settingValues = GetSettingValues(hpId);
         var sinKouiKbns = allSetOrderInfDetails?.Select(od => od.SinKouiKbn).Distinct().ToList() ?? new();
         var yohoSetMsts = NoTrackingDataContext.YohoSetMsts.Where(y => y.HpId == hpId && y.IsDeleted == 0 && y.UserId == userId).ToList();
         var itemCdYohos = yohoSetMsts?.Select(od => od.ItemCd ?? string.Empty);
@@ -1081,24 +1080,31 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 {
                     case 0:
                         // 先発品
-                        odrDetail.SyohoKbn = 0;
-                        odrDetail.SyohoLimitKbn = 0;
+                        syohoKbn = 0;
+                        syohoLimitKbn = 0;
+                        //odrDetail.SyohoKbn = 0;
+                        //odrDetail.SyohoLimitKbn = 0;
                         break;
                     case 1:
                         // 後発品
-                        odrDetail.SyohoKbn = settingValues["autoSetSyohoKbnKohatuDrug"] + 1;
-                        odrDetail.SyohoLimitKbn = settingValues["autoSetSyohoLimitKohatuDrug"];
+                        syohoKbn = settingValues["autoSetSyohoKbnKohatuDrug"] + 1;
+                        syohoLimitKbn = settingValues["autoSetSyohoLimitKohatuDrug"];
+                        //odrDetail.SyohoKbn = settingValues["autoSetSyohoKbnKohatuDrug"] + 1;
+                        //odrDetail.SyohoLimitKbn = settingValues["autoSetSyohoLimitKohatuDrug"];
                         break;
                     case 2:
                         // 後発品のある先発品
-                        odrDetail.SyohoKbn = settingValues["autoSetSyohoKbnSenpatuDrug"] + 1;
-                        odrDetail.SyohoLimitKbn = settingValues["autoSetSyohoLimitSenpatuDrug"];
+                        syohoKbn = settingValues["autoSetSyohoKbnSenpatuDrug"] + 1;
+                        syohoLimitKbn = settingValues["autoSetSyohoLimitSenpatuDrug"];
+                        //odrDetail.SyohoKbn = settingValues["autoSetSyohoKbnSenpatuDrug"] + 1;
+                        //odrDetail.SyohoLimitKbn = settingValues["autoSetSyohoLimitSenpatuDrug"];
                         break;
                 }
                 if (odrDetail.SyohoKbn == 3 && string.IsNullOrEmpty(ipnName))
                 {
                     // 一般名マスタに登録がない
-                    odrDetail.SyohoKbn = 2;
+                    syohoKbn = 2;
+                    //odrDetail.SyohoKbn = 2;
                 }
             }
         }
@@ -1163,7 +1169,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
     private double GetSettingValue(int hpId, int groupCd, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false)
     {
-        var systemConf = new SystemConf();
+        SystemConf? systemConf;
         if (!fromLastestDb)
         {
             systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
@@ -1176,16 +1182,17 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         return systemConf != null ? systemConf.Val : defaultValue;
     }
 
-    private Dictionary<string, int> GetSettingValues()
+    private Dictionary<string, int> GetSettingValues(int hpId)
     {
-        Dictionary<string, int> result = new();
-
-        result.Add("autoSetSyohoKbnKohatuDrug", (int)GetSettingValue(2020, 0));
-        result.Add("autoSetSyohoLimitKohatuDrug", (int)GetSettingValue(2020, 1));
-        result.Add("autoSetSyohoKbnSenpatuDrug", (int)GetSettingValue(2021, 0));
-        result.Add("autoSetSyohoLimitSenpatuDrug", (int)GetSettingValue(2021, 1));
-        result.Add("autoSetKohatu", (int)GetSettingValue(2020, 2));
-        result.Add("autoSetSenpatu", (int)GetSettingValue(2021, 2));
+        Dictionary<string, int> result = new()
+        {
+            { "autoSetSyohoKbnKohatuDrug", (int)GetSettingValue(hpId, 2020, 0) },
+            { "autoSetSyohoLimitKohatuDrug", (int)GetSettingValue(hpId, 2020, 1) },
+            { "autoSetSyohoKbnSenpatuDrug", (int)GetSettingValue(hpId, 2021, 0) },
+            { "autoSetSyohoLimitSenpatuDrug", (int)GetSettingValue(hpId, 2021, 1) },
+            { "autoSetKohatu", (int)GetSettingValue(hpId, 2020, 2) },
+            { "autoSetSenpatu", (int)GetSettingValue(hpId, 2021, 2) }
+        };
 
         return result;
     }
@@ -1229,7 +1236,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             }
             else
             {
-                UpdateSeqNoSetFile(hpId, setCd, listFiles.Select(item => item.LinkFile.Replace(host, string.Empty)).ToList());
+                UpdateSeqNoSetFile(hpId, setCd, listFiles.Select(item => new SetFileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
@@ -1239,8 +1246,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         }
     }
 
-    private void UpdateSeqNoSetFile(int hpId, int setCd, List<string> listFileName)
+    private void UpdateSeqNoSetFile(int hpId, int setCd, List<SetFileInfModel> fileInfModelList)
     {
+        var listFileName = fileInfModelList.Select(item => item.LinkFile).Distinct().ToList();
         int position = 1;
         var lastSeqNo = GetLastSeqNo(hpId, setCd);
         var listOldFile = TrackingDataContext.SetKarteImgInf.Where(item =>
@@ -1260,21 +1268,46 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                                                 && listFileName.Contains(item.FileName)
                                                             ).ToList();
 
-        foreach (var item in listOldFile)
+        foreach (var fileItem in fileInfModelList)
         {
-            SetKarteImgInf newFile = item;
-            newFile.Id = 0;
-            newFile.SeqNo = lastSeqNo + 1;
-            newFile.Position = position;
-            TrackingDataContext.SetKarteImgInf.Add(newFile);
-            position++;
-        }
+            var oldItemConvert = listOldFile.FirstOrDefault(item => item.SeqNo == lastSeqNo
+                                                                    && item.SetCd == setCd
+                                                                    && item.FileName != null
+                                                                    && item.FileName == fileItem.LinkFile);
 
-        foreach (var item in listUpdateFiles)
-        {
-            item.SeqNo = lastSeqNo + 1;
-            item.SetCd = setCd;
-            item.Position = position;
+            if (oldItemConvert != null)
+            {
+                SetKarteImgInf newFile = oldItemConvert;
+                newFile.Id = 0;
+                newFile.SeqNo = lastSeqNo + 1;
+                newFile.Position = position;
+                TrackingDataContext.SetKarteImgInf.Add(newFile);
+                position++;
+                continue;
+            }
+
+            var oldItemUpdateSeqNo = listUpdateFiles.FirstOrDefault(item => item.SetCd == 0
+                                                                            && item.SeqNo == 0
+                                                                            && item.FileName != null
+                                                                            && item.FileName == fileItem.LinkFile);
+            if (oldItemUpdateSeqNo != null)
+            {
+                oldItemUpdateSeqNo.SetCd = setCd;
+                oldItemUpdateSeqNo.SeqNo = lastSeqNo + 1;
+                oldItemUpdateSeqNo.Position = position;
+                position++;
+                continue;
+            }
+
+            SetKarteImgInf newItem = new();
+            newItem.Id = 0;
+            newItem.HpId = hpId;
+            newItem.FileName = fileItem.LinkFile;
+            newItem.SeqNo = lastSeqNo + 1;
+            newItem.Position = position;
+            newItem.KarteKbn = fileItem.IsSchema ? 1 : 0;
+            newItem.SetCd = setCd;
+            TrackingDataContext.SetKarteImgInf.Add(newItem);
             position++;
         }
 

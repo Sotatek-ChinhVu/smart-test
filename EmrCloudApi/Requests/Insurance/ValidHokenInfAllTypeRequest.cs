@@ -4,8 +4,6 @@ namespace EmrCloudApi.Requests.Insurance
 {
     public class ValidHokenInfAllTypeRequest
     {
-        public int HpId { get; set; }
-
         public int HokenKbn { get; set; }
 
         public int SinDate { get;  set; }

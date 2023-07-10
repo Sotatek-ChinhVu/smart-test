@@ -57,7 +57,7 @@ namespace UseCase.PatientInfor.GetListPatient
                 }
                 else
                 {
-                    return CIUtil.SDateToDecodeAge(Birthday.AsString(), DateTime.UtcNow.ToString("yyyyMMdd").AsInteger().AsString());
+                    return CIUtil.SDateToDecodeAge(Birthday.AsString(), CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger().AsString());
                 }
             }
         }

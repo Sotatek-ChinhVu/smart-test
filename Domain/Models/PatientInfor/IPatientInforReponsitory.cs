@@ -5,14 +5,13 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.MaxMoney;
-using Helper.Constants;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Domain.Models.PatientInfor
 {
     public interface IPatientInforRepository : IRepositoryBase
     {
-        PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo);
+        PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo);
 
         (PatientInforModel ptInfModel, bool isFound) SearchExactlyPtNum(long ptNum, int hpId);
 
@@ -40,6 +39,8 @@ namespace Domain.Models.PatientInfor
 
         List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted);
 
+        PtKyuseiInfModel GetDocumentKyuSeiInf(int hpId, long ptId, int sinDay);
+
         bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels, int hpId, int userId);
 
         (bool resultSave, long ptId) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId);
@@ -66,5 +67,7 @@ namespace Domain.Models.PatientInfor
         long GetPtIdFromPtNum(int hpId, long ptNum);
 
         int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus);
+
+        List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex , int birthDay);
     }
 }

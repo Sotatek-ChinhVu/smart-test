@@ -24,9 +24,6 @@ namespace EmrCloudApi.Presenters.NextOrder
                 case GetNextOrderListStatus.InvalidPtId:
                     Result.Message = ResponseMessage.InvalidPtId;
                     break;
-                case GetNextOrderListStatus.InvalidRsvkrtKbn:
-                    Result.Message = ResponseMessage.InvalidRsvkrtKbn;
-                    break;
                 case GetNextOrderListStatus.NoData:
                     Result.Message = ResponseMessage.NoData;
                     break;

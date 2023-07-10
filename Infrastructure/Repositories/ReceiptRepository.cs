@@ -15,7 +15,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -3351,7 +3350,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
-
+    public List<int> GetListKaikeiInf(int hpId, long ptId)
+    {
+        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs
+                                                .Where(x => x.HpId == hpId && x.PtId == ptId)
+                                                .AsEnumerable()
+                                                .Select(x => new KaikeiInfModel(x.PtId, x.SinDate))
+                                                .OrderByDescending(x => x.SinDate);
+        return kaikeiInfs.Select(x => x.SinYm).Distinct().ToList();
+    }
 
     public void ReleaseResource()
     {

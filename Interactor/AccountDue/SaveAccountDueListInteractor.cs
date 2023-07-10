@@ -61,12 +61,13 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
                                                     inputData.PtId,
                                                     inputData.UserId,
                                                     inputData.SinDate,
-                                                    listAccountDueModel
+                                                    listAccountDueModel,
+                                                    inputData.KaikeiTime
                                                 );
-            if (result)
+            if (result.Any())
             {
                 _eventProcessorService.DoEvent(listTraiLogModels);
-                return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Successed);
+                return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Successed, result);
             }
         }
         finally

@@ -92,7 +92,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
         #region 算定条件（調整額・調整率・自動算定）の取得
         var ptSanteis = NoTrackingDataContext.PtSanteiConfs;
-        int nowDate = DateTime.Now.ToString("yyyyMMdd").AsInteger();
+        int nowDate = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
 
         var santeiDatas = (
             from ptSantei in ptSanteis
@@ -1052,7 +1052,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             ptInfs = ptConf.StartBirthday > 0 ? ptInfs.Where(p => p.Birthday >= ptConf.StartBirthday) : ptInfs;
             ptInfs = ptConf.EndBirthday > 0 ? ptInfs.Where(p => p.Birthday <= ptConf.EndBirthday) : ptInfs;
             //年齢 .. (基準の日付 – 誕生日) / 10000
-            int baseDate = ptConf.AgeBaseDate > 0 ? ptConf.AgeBaseDate : DateTime.Now.ToString("yyyyMMdd").AsInteger();
+            int baseDate = ptConf.AgeBaseDate > 0 ? ptConf.AgeBaseDate : CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
             ptInfs = ptConf.StartAge != null ? ptInfs.Where(p => (baseDate - p.Birthday) / 10000 >= ptConf.StartAge) : ptInfs;
             ptInfs = ptConf.EndAge != null ? ptInfs.Where(p => (baseDate - p.Birthday) / 10000 <= ptConf.EndAge) : ptInfs;
             //性別

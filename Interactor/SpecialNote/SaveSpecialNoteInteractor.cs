@@ -1,6 +1,7 @@
 ﻿using Domain.Models.SpecialNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Helper.Common;
 using UseCase.SpecialNote.Save;
 
 namespace Interactor.SpecialNote
@@ -30,7 +31,7 @@ namespace Interactor.SpecialNote
                 {
                     return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.InvalidSinDate);
                 }
-                var result = _specialNoteRepository.SaveSpecialNote(inputData.HpId, inputData.PtId, inputData.SinDate, new SummaryInfModel(inputData.SummaryTab.Id, inputData.SummaryTab.HpId, inputData.SummaryTab.PtId, inputData.SummaryTab.SeqNo, inputData.SummaryTab.Text, inputData.SummaryTab.Rtext, DateTime.UtcNow, DateTime.UtcNow), inputData.ImportantNoteTab, new PatientInfoModel(inputData.PatientInfoTab.PregnancyItems.Select(p => new PtPregnancyModel(
+                var result = _specialNoteRepository.SaveSpecialNote(inputData.HpId, inputData.PtId, inputData.SinDate, new SummaryInfModel(inputData.SummaryTab.Id, inputData.SummaryTab.HpId, inputData.SummaryTab.PtId, inputData.SummaryTab.SeqNo, inputData.SummaryTab.Text, inputData.SummaryTab.Rtext, CIUtil.GetJapanDateTimeNow(), CIUtil.GetJapanDateTimeNow()), inputData.ImportantNoteTab, new PatientInfoModel(inputData.PatientInfoTab.PregnancyItems.Select(p => new PtPregnancyModel(
                         p.Id,
                         p.HpId,
                         p.PtId,
@@ -42,7 +43,7 @@ namespace Interactor.SpecialNote
                         p.OvulationDate,
                         p.OvulationDueDate,
                         p.IsDeleted,
-                        DateTime.UtcNow,
+                        CIUtil.GetJapanDateTimeNow(),
                         inputData.UserId,
                         string.Empty,
                         p.SinDate

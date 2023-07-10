@@ -1,4 +1,6 @@
-﻿namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿using System.Text.Json.Serialization;
+
+namespace CommonCheckers.OrderRealtimeChecker.Models
 {
     public class RealTimeCheckerCondition
     {
@@ -16,6 +18,7 @@
         {
         }
 
+        [JsonConstructor]
         public RealTimeCheckerCondition(bool isCheckingDuplication, bool isCheckingKinki,
             bool isCheckingAllergy, bool isCheckingDosage,
             bool isCheckingDays, bool isCheckingAge,

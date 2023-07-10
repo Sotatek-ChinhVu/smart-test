@@ -1,8 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class PatientManagementRequest
+public class PatientManagementRequest : ReportRequestBase
 {
-    public int HpId { get; set; }
-
     public int MenuId { get; set; }
 }
