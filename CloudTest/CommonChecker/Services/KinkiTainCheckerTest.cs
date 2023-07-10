@@ -6,11 +6,15 @@ using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
+using Entity.Tenant;
 
 namespace CloudUnitTest.CommonChecker.Services
 {
     public class KinkiTainCheckerTest : BaseUT
     {
+        /// <summary>
+        /// Test KinkiTainChecker With Setting Value is 5
+        /// </summary>
         [Test]
         public void Test_001_Finder_CheckKinkiTain_WhenExistingOtherDrug_AndExistingM01Kinki()
         {
@@ -61,6 +65,9 @@ namespace CloudUnitTest.CommonChecker.Services
             {
                 new("6220816T2", "id1")
             };
+                tenantTracking.SystemConfs.Add(systemConf);
+            }
+            tenantTracking.SaveChanges();
 
             ////Act
             var result = realTimeCheckerFinder.CheckKinkiTain(hpId, ptId, sinDay, settingLevel, addedItemCodes, null, true);
