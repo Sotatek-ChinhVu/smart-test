@@ -181,7 +181,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             return result;
         }
 
-        private List<DuplicationResultModel> CheckDuplicatedItemCode(TOdrInf checkingOrder, List<ItemCodeModel> listDrugItemCode)
+        public List<DuplicationResultModel> CheckDuplicatedItemCode(TOdrInf checkingOrder, List<ItemCodeModel> listDrugItemCode)
         {
             List<DuplicationResultModel> listErrorInfo = new List<DuplicationResultModel>();
 
@@ -236,7 +236,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             return listErrorInfo;
         }
 
-        private List<DuplicationResultModel> CheckDuplicatedIppanCode(TOdrInf checkingOrder, List<TOdrDetail> listComparedDrug)
+        public List<DuplicationResultModel> CheckDuplicatedIppanCode(TOdrInf checkingOrder, List<TOdrDetail> listComparedDrug)
         {
             List<DuplicationResultModel> listErrorInfo = new List<DuplicationResultModel>();
 
