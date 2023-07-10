@@ -66,6 +66,11 @@ namespace Reporting.Yakutai.Mapper
             return new();
         }
 
+        public override string GetJobName()
+        {
+            return "薬袋ラベル";
+        }
+
         public override Dictionary<string, string> GetFileNamePageMap()
         {
             return _fileNamePageMap;

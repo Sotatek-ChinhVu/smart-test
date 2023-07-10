@@ -32,7 +32,6 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
     private List<CoReceInfModel> receInfs;
     private CoHpInfModel hpInf;
     private List<string> printHokensyaNos;
-    private readonly IReadRseReportFileService _readRseReportFileService;
     private const string _formFileName = "p28KoukiSeikyu.rse";
 
     /// <summary>
@@ -50,10 +49,9 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
 
     private readonly ICoKoukiSeikyuFinder _finder;
 
-    public P28KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder finder, IReadRseReportFileService readRseReportFileService)
+    public P28KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder finder)
     {
         _finder = finder;
-        _readRseReportFileService = readRseReportFileService;
         _singleFieldData = new();
         _singleFieldDataM = new();
         _listTextData = new();
@@ -107,7 +105,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
             SetFieldData("seikyuMonth", wrkYmd.Month.AsString());
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd"))
             );
             SetFieldData("reportGengo", wrkYmd.Gengo.AsString());
             SetFieldData("reportYear", wrkYmd.Year.AsString());

@@ -7,7 +7,7 @@ namespace Reporting.AccountingCard.Model
     public class CoAccountingCardModel
     {
         List<CoKaikeiInfModel> KaikeiInfModels { get; } = null;
-        CoPtInfModel PtInfModel { get; } = null;
+        public CoPtInfModel PtInfModel { get; } = null;
         public SinMeiViewModel SinMeiViewModel { get; } = null;
         public List<CoPtByomeiModel> PtByomeiModels { get; } = null;
         public List<CoPtKohiModel> PtKohis { get; } = null;

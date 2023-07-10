@@ -138,8 +138,8 @@ namespace Interactor.Receipt
         private RecedenFileInfo GetFileInfo(int index, ModeTypeCreateUKE mode, int raisoRadio)
         {
             string prefix = string.Empty;
-            int createDate = CIUtil.DateTimeToInt(DateTime.Now);
-            string time = DateTime.Now.ToString("HH:mm:ss");
+            int createDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
+            string time = CIUtil.GetJapanDateTimeNow().ToString("HH:mm:ss");
             int createTime = time.Replace(":", "").AsInteger();
             string fileName = GetFileName(mode);
             switch (mode)

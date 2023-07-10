@@ -74,4 +74,8 @@ public interface ISystemConfig
     string YakutaiGaiyoPaperNormalPrinter();
     string YakutaiGaiyoPaperBigPrinter();
     int HikariDiskIsTotalCnt();
+    int PrintReceipt();
+    int PrintDetail();
+    int P13WelfareGreenSeikyuType();
+    int P13WelfareBlueSeikyuType();
 }

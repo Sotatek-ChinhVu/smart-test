@@ -36,21 +36,7 @@ namespace Interactor.MstItem
 
                 string address = CIUtil.ToHalfsize(inputData.Address);
 
-                var listPostCode = _mstItemRepository.PostCodeMstModels(inputData.HpId, postcode1, postcode2, address, inputData.PageIndex, inputData.PageSize);
-
-                if(listPostCode.Item1 == 0)
-                {
-                    while(inputData.Address.Length > 3)
-                    {
-                        address = address.Substring(0, address.Length - 1);
-
-                        listPostCode = _mstItemRepository.PostCodeMstModels(inputData.HpId, postcode1, postcode2, address, inputData.PageIndex, inputData.PageSize);
-                        if (listPostCode.Item1 > 0)
-                        {
-                            break;
-                        }
-                    }
-                }
+                var listPostCode = _mstItemRepository.SearchAddress(inputData.HpId, postcode1, postcode2, address, inputData.PageIndex, inputData.PageSize);
 
                 if (listPostCode.Item1 == 0)
                     return new SearchPostCodeOutputData(0, new List<PostCodeMstModel>(), SearchPostCodeStatus.NoData);

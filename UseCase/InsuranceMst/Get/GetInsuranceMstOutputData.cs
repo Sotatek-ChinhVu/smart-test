@@ -1,9 +1,4 @@
 ﻿using Domain.Models.InsuranceMst;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.InsuranceMst.Get
@@ -14,10 +9,13 @@ namespace UseCase.InsuranceMst.Get
 
         public GetInsuranceMstStatus Status { get; private set; }
 
-        public GetInsuranceMstOutputData(InsuranceMstModel data, GetInsuranceMstStatus status)
+        public int PrefNo { get; private set; }
+
+        public GetInsuranceMstOutputData(InsuranceMstModel data, GetInsuranceMstStatus status, int prefNo)
         {
             InsuranceMstData = data;
             Status = status;
+            PrefNo = prefNo;
         }
     }
 }

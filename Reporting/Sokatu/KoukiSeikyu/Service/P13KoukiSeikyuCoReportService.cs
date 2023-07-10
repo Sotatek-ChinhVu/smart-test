@@ -11,7 +11,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service;
 public class P13KoukiSeikyuCoReportService : IP13KoukiSeikyuCoReportService
 {
     #region Constant
-    private const int MyPrefNo = 13;
+    private const int myPrefNo = 13;
     #endregion
 
     #region Private properties
@@ -112,7 +112,7 @@ public class P13KoukiSeikyuCoReportService : IP13KoukiSeikyuCoReportService
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd"))
             );
             SetFieldData("reportGengo", wrkYmd.Gengo.ToString());
             SetFieldData("reportYear", wrkYmd.Year.ToString());
@@ -184,7 +184,7 @@ public class P13KoukiSeikyuCoReportService : IP13KoukiSeikyuCoReportService
     {
         hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
         //県外分のみ出力する
-        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefOut, MyPrefNo, HokensyaNoKbn.NoSum);
+        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefOut, myPrefNo, HokensyaNoKbn.NoSum);
         //保険者番号の指定がある場合は絞り込み
         var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();

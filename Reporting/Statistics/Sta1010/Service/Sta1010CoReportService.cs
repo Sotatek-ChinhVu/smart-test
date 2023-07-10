@@ -172,8 +172,8 @@ public class Sta1010CoReportService : ISta1010CoReportService
             _extralData.Add("HeaderR_0_0_" + _currentPage, _hpInf.HpName);
             //作成日時
             _extralData.Add("HeaderR_0_1_" + _currentPage, CIUtil.SDateToShowSWDate(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
-            ) + DateTime.Now.ToString(" HH:mm") + "作成");
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
+            ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
             //ページ数
             int totalPage = (int)Math.Ceiling((double)_printDatas.Count / maxRow);
             _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);

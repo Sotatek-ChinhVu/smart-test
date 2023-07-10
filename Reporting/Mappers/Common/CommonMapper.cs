@@ -2,15 +2,16 @@
 {
     public class CommonMapper : CommonReportingRequest
     {
-        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM = new Dictionary<int, Dictionary<string, string>>();
-        private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
-        private readonly Dictionary<int, List<ListTextObject>> _listTextData = new Dictionary<int, List<ListTextObject>>();
-        private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
-        private readonly Dictionary<string, bool> _visibleFieldData = new Dictionary<string, bool>();
+        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+        private readonly Dictionary<string, string> _singleFieldData;
+        private readonly Dictionary<int, List<ListTextObject>> _listTextData;
+        private readonly Dictionary<string, string> _extralData;
+        private readonly Dictionary<string, bool> _visibleFieldData;
+        private readonly string _jobName;
         private readonly string _formFileName;
         private readonly int _reportType;
 
-        public CommonMapper(Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData, int reportType)
+        public CommonMapper(Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData, int reportType, string jobName)
         {
             _singleFieldDataM = singleFieldDataM;
             _listTextData = listTextData;
@@ -19,6 +20,7 @@
             _singleFieldData = singleFieldData;
             _visibleFieldData = visibleFieldData;
             _reportType = reportType;
+            _jobName = jobName;
         }
 
         public override int GetReportType()
@@ -43,7 +45,7 @@
 
         public override string GetJobName()
         {
-            return string.Empty;
+            return _jobName;
         }
 
         public override Dictionary<string, string> GetSingleFieldData()

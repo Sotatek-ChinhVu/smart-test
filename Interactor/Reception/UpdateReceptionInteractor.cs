@@ -1,4 +1,6 @@
 ﻿using Domain.Models.Reception;
+using Domain.Models.User;
+using Entity.Tenant;
 using UseCase.Reception.Update;
 
 namespace Interactor.Reception;
@@ -6,10 +8,12 @@ namespace Interactor.Reception;
 public class UpdateReceptionInteractor : IUpdateReceptionInputPort
 {
     private readonly IReceptionRepository _receptionRepository;
+    private readonly IUserRepository _userRepository;
 
-    public UpdateReceptionInteractor(IReceptionRepository receptionRepository)
+    public UpdateReceptionInteractor(IReceptionRepository receptionRepository, IUserRepository userRepository)
     {
         _receptionRepository = receptionRepository;
+        _userRepository = userRepository;
     }
 
     public UpdateReceptionOutputData Handle(UpdateReceptionInputData input)
@@ -17,15 +21,28 @@ public class UpdateReceptionInteractor : IUpdateReceptionInputPort
         try
         {
             ReceptionSaveDto dto = input.Dto;
+            List<ReceptionRowModel> receptionInfos = new();
+            List<SameVisitModel> sameVisitList = new();
 
-            if (dto!.Insurances.Any(i => !i.IsValidData()))
+            var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(input.HpId, dto.Reception.PtId, dto.Reception.RaiinNo, dto.Reception.SinDate, input.UserId);
+            if (notAllowSave)
             {
-                return new UpdateReceptionOutputData(UpdateReceptionStatus.InvalidInsuranceList);
+                return new UpdateReceptionOutputData(UpdateReceptionStatus.MedicalScreenLocked, receptionInfos, sameVisitList);
+            }
+
+            else if (dto!.Insurances.Any(i => !i.IsValidData()))
+            {
+                return new UpdateReceptionOutputData(UpdateReceptionStatus.InvalidInsuranceList, receptionInfos, sameVisitList);
             }
 
             var success = _receptionRepository.Update(input.Dto, input.HpId, input.UserId);
             var status = success ? UpdateReceptionStatus.Success : UpdateReceptionStatus.NotFound;
-            return new UpdateReceptionOutputData(status);
+            if (success)
+            {
+                receptionInfos = _receptionRepository.GetList(input.HpId, dto.Reception.SinDate, dto.Reception.RaiinNo, dto.Reception.PtId);
+                sameVisitList = _receptionRepository.GetListSameVisit(input.HpId, dto.Reception.PtId, dto.Reception.SinDate);
+            }
+            return new UpdateReceptionOutputData(status, receptionInfos, sameVisitList);
         }
         finally
         {

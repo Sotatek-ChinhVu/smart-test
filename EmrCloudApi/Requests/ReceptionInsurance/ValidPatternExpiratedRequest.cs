@@ -2,8 +2,6 @@
 {
     public class ValidPatternExpiratedRequest
     {
-        public int HpId { get; set; }
-
         public long PtId { get; set; }
 
         public int SinDate { get; set; }
@@ -81,5 +79,7 @@
         public int PatientInfBirthday { get; set; }
 
         public int PatternHokenKbn { get; set; }
+
+        public bool SelectedHokenInfIsEmptyModel { get; set; }
     }
 }

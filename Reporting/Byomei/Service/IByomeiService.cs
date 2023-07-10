@@ -4,5 +4,5 @@ namespace Reporting.Byomei.Service;
 
 public interface IByomeiService
 {
-    CommonReportingRequestModel GetByomeiReportingData(long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds);
+    CommonReportingRequestModel GetByomeiReportingData(int hpId, long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds);
 }

@@ -67,16 +67,30 @@ public class P14KokhoSokatuCoReportService : IP14KokhoSokatuCoReportService
         currentPage = 1;
         var getData = GetData();
         hasNextPage = true;
-
+        int indexPage = 1;
+        var fileName = new Dictionary<string, string>();
         while (getData && hasNextPage)
         {
             UpdateDrawForm();
+            if (currentPage == 2 || currentPage == 3)
+            {
+                switch (currentPage)
+                {
+                    case 2: fileName.Add(indexPage.ToString(), _formFileName2); break;
+                    case 3: fileName.Add(indexPage.ToString(), _formFileName3); break;
+                }
+            }
+            else
+            {
+                fileName.Add(indexPage.ToString(), _formFileName1);
+            }
             currentPage++;
+            indexPage++;
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new P14KokhoSokatuCoReportServiceMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName1, _formFileName2, _formFileName3, _singleFieldData, _visibleFieldData).GetData();
+        return new P14KokhoSokatuCoReportServiceMapper(_singleFieldDataM, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function
