@@ -1,17 +1,18 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
     [Table(name: "IPN_KASAN_EXCLUDE")]
+    [Index(nameof(HpId), nameof(StartDate), nameof(EndDate), nameof(IpnNameCd), Name = "IPN_KASAN_EXCLUDE_IDX01")]
     public class IpnKasanExclude : EmrCloneable<IpnKasanExclude>
     {
         /// <summary>
         /// 医療機関識別ID
         /// 
         /// </summary>
-        
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +21,7 @@ namespace Entity.Tenant
         /// 一般名コード
         /// 
         /// </summary>
-        
+
         [Column("IPN_NAME_CD", Order = 2)]
         [MaxLength(12)]
         public string IpnNameCd { get; set; } = string.Empty;
@@ -29,7 +30,7 @@ namespace Entity.Tenant
         /// 開始日
         /// 
         /// </summary>
-        
+
         [Column("START_DATE", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
@@ -46,7 +47,7 @@ namespace Entity.Tenant
         /// 連番
         /// 同一一般名コード、開始日内の連番
         /// </summary>
-        
+
         [Column("SEQ_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
@@ -95,6 +96,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

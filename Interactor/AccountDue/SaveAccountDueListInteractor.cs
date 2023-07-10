@@ -64,10 +64,10 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
                                                     listAccountDueModel,
                                                     inputData.KaikeiTime
                                                 );
-            if (result)
+            if (result.Any())
             {
                 _eventProcessorService.DoEvent(listTraiLogModels);
-                return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Successed);
+                return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Successed, result);
             }
         }
         finally

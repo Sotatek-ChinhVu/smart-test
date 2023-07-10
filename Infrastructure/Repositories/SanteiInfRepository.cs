@@ -485,7 +485,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                      currentMonthSanteiItemCount,
                                      currentMonthSanteiItemSum,
                                      0,
-                                     listSanteiInfDetails.Where(item => item.ItemCd == santeiInf.ItemCd && item.PtId == santeiInf.PtId).ToList()
+                                     listSanteiInfDetails.Where(item => item.ItemCd == santeiInf.ItemCd).ToList()
                                  );
     }
 

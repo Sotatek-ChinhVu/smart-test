@@ -27,8 +27,9 @@ namespace Interactor.FlowSheet
                     var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, ref totalFlowSheet);
                     var raiinListMst = _flowsheetRepository.GetRaiinListMsts(inputData.HpId);
                     var raiinListInfList = _flowsheetRepository.GetRaiinListInf(inputData.HpId, inputData.PtId);
+                    var raiinListInfForNextOrderList = _flowsheetRepository.GetRaiinListInfForNextOrder(inputData.HpId, inputData.PtId);
 
-                    return new GetListFlowSheetOutputData(flowsheetList, raiinListMst, raiinListInfList, totalFlowSheet);
+                    return new GetListFlowSheetOutputData(flowsheetList, raiinListMst, raiinListInfList, raiinListInfForNextOrderList, totalFlowSheet);
                 }
             }
             finally

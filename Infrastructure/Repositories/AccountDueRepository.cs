@@ -4,6 +4,9 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
+using System.Linq;
+using System.Linq.Dynamic.Core.Tokenizer;
 
 namespace Infrastructure.Repositories;
 
@@ -118,7 +121,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
         return result;
     }
 
-    public bool SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues, string kaikeiTime)
+    public List<AccountDueModel> SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues, string kaikeiTime)
     {
         var listRaiinNo = listAccountDues.Select(item => item.RaiinNo).ToList();
         var raiinLists = TrackingDataContext.RaiinInfs
@@ -147,28 +150,52 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
         {
             var dateTimeNow = CIUtil.GetJapanDateTimeNow();
 
+            var originalList = listAccountDues;
+
+            List<long> raiinUpdateList = new();
+
             foreach (var model in listAccountDues)
             {
                 // Update raiin status
-                UpdateStatusRaiin(userId, dateTimeNow, model, raiinLists, kaikeiTime);
+                var raiinInf = UpdateStatusRaiin(userId, dateTimeNow, model, raiinLists, kaikeiTime);
+                if (raiinInf != null)
+                {
+                    raiinUpdateList.Add(raiinInf.RaiinNo);
+                }
 
                 // Update left table SyunoSeikyu
-                UpdateStatusSyunoSeikyu(userId, dateTimeNow, model, seikyuLists);
+                var syunoSeikyu = UpdateStatusSyunoSeikyu(userId, dateTimeNow, model, seikyuLists);
+                if (syunoSeikyu != null)
+                {
+                    raiinUpdateList.Add(syunoSeikyu.RaiinNo);
+                }
 
                 // Update right table SyunoNyukin
-                UpdateSyunoNyukin(hpId, ptId, userId, dateTimeNow, model, nyukinLists);
+                var syunoNyukin = UpdateSyunoNyukin(hpId, ptId, userId, dateTimeNow, model, nyukinLists);
+                if (syunoNyukin != null)
+                {
+                    raiinUpdateList.Add(syunoNyukin.RaiinNo);
+                }
             }
-
+            raiinUpdateList = raiinUpdateList.Distinct().ToList();
             TrackingDataContext.SaveChanges();
-            return true;
+
+            var result = CompareResultList(originalList, raiinUpdateList);
+            return result;
         }
         catch
         {
-            return false;
+            return new();
         }
     }
 
-    private void UpdateStatusRaiin(int userId, DateTime dateTimeNow, AccountDueModel model, List<RaiinInf> raiinLists, string kaikeiTime)
+    private List<AccountDueModel> CompareResultList(List<AccountDueModel> originalList, List<long> raiinNoUpdateList)
+    {
+        var result = originalList.Where(original => raiinNoUpdateList.Contains(original.RaiinNo)).ToList();
+        return result;
+    }
+
+    private RaiinInf? UpdateStatusRaiin(int userId, DateTime dateTimeNow, AccountDueModel model, List<RaiinInf> raiinLists, string kaikeiTime)
     {
         var raiin = raiinLists.FirstOrDefault(item => item.RaiinNo == model.RaiinNo);
         int tempStatus = model.NyukinKbn == 0 ? RaiinState.Waiting : RaiinState.Settled;
@@ -176,10 +203,15 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
         {
             if (tempStatus != raiin.Status)
             {
-                raiin.Status = tempStatus;
-                raiin.KaikeiTime = kaikeiTime;
                 raiin.UpdateDate = dateTimeNow;
                 raiin.UpdateId = userId;
+                if (raiin.Status != tempStatus
+                    || raiin.KaikeiTime != kaikeiTime)
+                {
+                    raiin.Status = tempStatus;
+                    raiin.KaikeiTime = kaikeiTime;
+                    return raiin;
+                }
             }
 
             // update menjo
@@ -189,26 +221,35 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                 raiin.UpdateId = userId;
             }
         }
+        return null;
     }
 
-    private void UpdateStatusSyunoSeikyu(int userId, DateTime dateTimeNow, AccountDueModel model, List<SyunoSeikyu> seikyuLists)
+    private SyunoSeikyu? UpdateStatusSyunoSeikyu(int userId, DateTime dateTimeNow, AccountDueModel model, List<SyunoSeikyu> seikyuLists)
     {
         var seikyu = seikyuLists.FirstOrDefault(item => item.RaiinNo == model.RaiinNo);
         if (seikyu != null)
         {
-            seikyu.NyukinKbn = model.NyukinKbn;
-            seikyu.SeikyuGaku = model.SeikyuGaku;
-            seikyu.AdjustFutan = model.SeikyuAdjustFutan;
             seikyu.UpdateDate = dateTimeNow;
             seikyu.UpdateId = userId;
+            if (seikyu.NyukinKbn != model.NyukinKbn
+                || seikyu.SeikyuGaku != model.SeikyuGaku
+                || seikyu.AdjustFutan != model.SeikyuAdjustFutan)
+            {
+                seikyu.NyukinKbn = model.NyukinKbn;
+                seikyu.SeikyuGaku = model.SeikyuGaku;
+                seikyu.AdjustFutan = model.SeikyuAdjustFutan;
+                return seikyu;
+            }
         }
+        return null;
     }
 
-    private void UpdateSyunoNyukin(int hpId, long ptId, int userId, DateTime dateTimeNow, AccountDueModel model, List<SyunoNyukin> nyukinLists)
+    private SyunoNyukin? UpdateSyunoNyukin(int hpId, long ptId, int userId, DateTime dateTimeNow, AccountDueModel model, List<SyunoNyukin> nyukinLists)
     {
+        SyunoNyukin? nyukin;
         if (model.SeqNo == 0) // Create new SyunoNyukin
         {
-            SyunoNyukin nyukin = new();
+            nyukin = new();
             nyukin.HpId = hpId;
             nyukin.PtId = ptId;
             nyukin.IsDeleted = 0;
@@ -229,31 +270,48 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
             nyukin.CreateId = userId;
             nyukin.UpdateId = userId;
             TrackingDataContext.SyunoNyukin.Add(nyukin);
+            return nyukin;
         }
         else // Update SyunoNyukin
         {
-            var nyukin = nyukinLists.FirstOrDefault(item => item.SeqNo == model.SeqNo);
+            nyukin = nyukinLists.FirstOrDefault(item => item.SeqNo == model.SeqNo);
             if (nyukin != null)
             {
-                nyukin.SortNo = model.SortNo;
-                nyukin.RaiinNo = model.RaiinNo;
-                nyukin.AdjustFutan = model.AdjustFutan;
-                nyukin.NyukinGaku = model.NyukinGaku;
-                nyukin.PaymentMethodCd = model.PaymentMethodCd;
-                nyukin.NyukinDate = model.NyukinDate;
-                nyukin.UketukeSbt = model.UketukeSbt;
-                nyukin.NyukinCmt = model.NyukinCmt;
-                nyukin.NyukinjiSeikyu = model.SeikyuGaku;
-                nyukin.NyukinjiTensu = model.SeikyuTensu;
-                nyukin.NyukinjiDetail = model.SeikyuDetail;
                 nyukin.UpdateDate = dateTimeNow;
                 nyukin.UpdateId = userId;
-                if (model.IsDelete)
+                if (nyukin.SortNo != model.SortNo
+                    || nyukin.RaiinNo != model.RaiinNo
+                    || nyukin.AdjustFutan != model.AdjustFutan
+                    || nyukin.NyukinGaku != model.NyukinGaku
+                    || nyukin.PaymentMethodCd != model.PaymentMethodCd
+                    || nyukin.NyukinDate != model.NyukinDate
+                    || nyukin.UketukeSbt != model.UketukeSbt
+                    || nyukin.NyukinCmt != model.NyukinCmt
+                    || nyukin.NyukinjiSeikyu != model.SeikyuGaku
+                    || nyukin.NyukinjiTensu != model.SeikyuTensu
+                    || nyukin.NyukinjiDetail != model.SeikyuDetail
+                    || model.IsDelete)
                 {
-                    nyukin.IsDeleted = 1;
+                    nyukin.SortNo = model.SortNo;
+                    nyukin.RaiinNo = model.RaiinNo;
+                    nyukin.AdjustFutan = model.AdjustFutan;
+                    nyukin.NyukinGaku = model.NyukinGaku;
+                    nyukin.PaymentMethodCd = model.PaymentMethodCd;
+                    nyukin.NyukinDate = model.NyukinDate;
+                    nyukin.UketukeSbt = model.UketukeSbt;
+                    nyukin.NyukinCmt = model.NyukinCmt;
+                    nyukin.NyukinjiSeikyu = model.SeikyuGaku;
+                    nyukin.NyukinjiTensu = model.SeikyuTensu;
+                    nyukin.NyukinjiDetail = model.SeikyuDetail;
+                    if (model.IsDelete)
+                    {
+                        nyukin.IsDeleted = 1;
+                    }
+                    return nyukin;
                 }
             }
         }
+        return null;
     }
 
     public List<SyunoSeikyuModel> GetListSyunoSeikyuModel(List<long> listRaiinNo)
@@ -276,6 +334,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                                                              )).ToList();
         return result;
     }
+
     public List<SyunoNyukinModel> GetListSyunoNyukinModel(List<long> listRaiinNo)
     {
         var result = TrackingDataContext.SyunoNyukin.Where(item => listRaiinNo.Contains(item.RaiinNo) && item.IsDeleted == 0)
@@ -297,6 +356,33 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                                                                     item.NyukinjiDetail ?? string.Empty
                                                              )).ToList();
         return result;
+    }
+
+    public bool IsNyukinExisted(int hpId, long ptId, long raiinNo, int sinDate)
+    {
+        var seikyuList = NoTrackingDataContext.SyunoSeikyus
+                         .Where(item => item.HpId == hpId
+                                        && item.PtId == ptId
+                                        && item.RaiinNo == raiinNo
+                                        && item.SinDate == sinDate
+                                        && item.NyukinKbn != 0);
+
+        var nyukinList = NoTrackingDataContext.SyunoNyukin
+                         .Where(item => item.HpId == hpId
+                                        && item.PtId == ptId
+                                        && item.RaiinNo == raiinNo
+                                        && item.SinDate == sinDate
+                                        && item.IsDeleted == 0);
+
+        var query = from seikyu in seikyuList
+                    join nyukin in nyukinList on new { seikyu.HpId, seikyu.PtId, seikyu.SinDate, seikyu.RaiinNo }
+                                              equals new { nyukin.HpId, nyukin.PtId, nyukin.SinDate, nyukin.RaiinNo }
+                    select new
+                    {
+                        Seikyu = seikyu
+                    };
+
+        return query.Any();
     }
 
     public void ReleaseResource()

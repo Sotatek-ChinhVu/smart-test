@@ -38,6 +38,7 @@
         public const string GetCmtCheckMstList = "GetCmtCheckMstList";
         public const string GetJihiMstList = "GetJihiMstList";
         public const string SearchTenMstItem = "SearchTenMstItem";
+        public const string ConvertStringChkJISKj = "ConvertStringChkJISKj";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -90,6 +91,7 @@
         public const string ReceiptCheck = "ReceiptCheck";
         public const string ReceiptList = "ReceiptList";
         public const string ReceiptReport = "ReceiptReport";
+        public const string AccountingReport = "AccountingReport";
         public const string PeriodReceiptReport = "PeriodReceiptReport";
         public const string StaticReport = "StaticReport";
         public const string PatientManagement = "PatientManagement";
@@ -101,6 +103,8 @@
         public const string DrugNoteSeal = "DrugNoteSeal";
         public const string Yakutai = "Yakutai";
         public const string AccountingCard = "AccountingCard";
+        public const string ExportKarte2 = "ExportKarte2";
+        public const string ExportKarte3 = "ExportKarte3";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -112,6 +116,8 @@
         public const string SearchPatientInfoByPtNum = "SearchPatientInfoByPtNum";
         public const string GetTokkiMstList = "GetTokkiMstList";
         public const string DeletePatientInfo = "DeletePatientInfo";
+        public const string CheckValidSamePatient = "CheckValidSamePatient";
+        public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -150,6 +156,7 @@
         public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
         public const string InitDoctorCombo = "InitDoctorCombo";
         public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
+        public const string GetLastKarute = "GetLastKarute";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
@@ -205,6 +212,7 @@
         public const string GetKensaAuditTrailLog = "GetKensaAuditTrailLog";
         public const string GetContainerMst = "GetContainerMst";
         public const string GetSinkouCountInMonth = "GetSinkouCountInMonth";
+        public const string GetHeaderVistitDate = "GetHeaderVistitDate";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -223,6 +231,10 @@
         public const string CheckLockMedicalExamination = "CheckLockMedicalExamination";
         public const string GetPermissionByScreen = "GetPermissionByScreen";
         public const string GetAllPermission = "GetAllPermission";
+        public const string GetListUserByCurrentUser = "GetListUserByCurrentUser";
+        public const string GetListJobMst = "GetListJobMst";
+        public const string GetListFunctionPermission = "GetListFunctionPermission";
+        public const string SaveListUserMst = "SaveListUserMst";
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
@@ -263,6 +275,7 @@
         public const string SaveReceStatus = "SaveReceStatus";
         public const string GetReceStatus = "GetReceStatus";
         public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
+        public const string GetListSinKoui = "GetListSinKoui";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -273,6 +286,7 @@
         public const string GetSystemConfig = "GetSystemConfig";
         public const string GetMeiHoGai = "GetMeiHoGai";
         public const string CheckOpenAccounting = "CheckOpenAccounting";
+        public const string IsNyukinExisted = "IsNyukinExisted";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 
@@ -321,9 +335,13 @@
         public const string AddLock = "AddLock";
         public const string CheckLock = "CheckLock";
         public const string RemoveLock = "RemoveLock";
+        public const string CheckExistFunctionCode = "CheckExistFunctionCode";
         public const string RemoveAllLock = "RemoveAllLock";
+        public const string RemoveAllLockPtId = "RemoveAllLockPtId";
         public const string ExtendTtl = "ExtendTtl";
         public const string GetLockInfo = "GetLockInfo";
+        public const string CheckLockVisiting = "CheckLockVisiting";
+        public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
@@ -346,5 +364,7 @@
 
         //NextOrder
         public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
+
+        public const string Test = "Test";
     }
 }

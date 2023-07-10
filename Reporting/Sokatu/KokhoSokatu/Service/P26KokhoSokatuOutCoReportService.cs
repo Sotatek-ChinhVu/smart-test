@@ -202,7 +202,7 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
         hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
         receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.All, PrefKbn.PrefOut, myPrefNo, HokensyaNoKbn.SumAll);
 
-        return (receInfs?.Count ?? 0) > 0;
+        return true;
     }
 
     private void SetFieldData(string field, string value)

@@ -54,5 +54,6 @@ public enum SaveSuperSetDetailStatus : byte
     InvalidSetOrderCommentNewline = 50,
     RpNoOrRpEdaNoIsNotExist = 51,
     ValidateOrderSuccess = 52,
-    ValidateOrderDetailSuccess = 53
+    ValidateOrderDetailSuccess = 53,
+    MedicalScreenLocked = 55,
 }

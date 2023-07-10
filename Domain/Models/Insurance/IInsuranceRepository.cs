@@ -15,11 +15,13 @@ namespace Domain.Models.Insurance
 
         bool CheckExistHokenId(int hokenId);
 
+        bool CheckExistHokenPids(List<int> hokenPids);
+
         bool CheckExistHokenPid(int hokenPid);
 
         List<HokenInfModel> GetCheckListHokenInf(int hpId, long ptId, List<int> hokenPids);
 
-        int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid);
+        List<(int, int)> GetListHistoryPid(int hpId, long ptId, int sinDate, List<int> historyPids, int selectedHokenPid);
 
         List<InsuranceModel> GetInsuranceList(int hpId, long ptId, int sinDate, bool isDeleted = false);
 

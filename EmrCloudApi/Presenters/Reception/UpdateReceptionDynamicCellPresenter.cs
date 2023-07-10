@@ -24,6 +24,7 @@ public class UpdateReceptionDynamicCellPresenter : IUpdateReceptionDynamicCellOu
         UpdateReceptionDynamicCellStatus.InvalidRaiinNo => ResponseMessage.UpdateReceptionDynamicCellInvalidRaiinNo,
         UpdateReceptionDynamicCellStatus.InvalidPtId => ResponseMessage.UpdateReceptionDynamicCellInvalidPtId,
         UpdateReceptionDynamicCellStatus.InvalidGrpId => ResponseMessage.UpdateReceptionDynamicCellInvalidGrpId,
+        UpdateReceptionDynamicCellStatus.MedicalScreenLocked => ResponseMessage.MedicalScreenLocked,
         _ => string.Empty
     };
 }

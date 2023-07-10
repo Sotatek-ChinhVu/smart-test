@@ -159,7 +159,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         }
 
         // validate EndDate
-        else if (santeiInfDetail.EndDate != 0 && CIUtil.SDateToShowSDate(santeiInfDetail.EndDate) == string.Empty)
+        else if (santeiInfDetail.EndDate != 0 && santeiInfDetail.EndDate != 99999999 && CIUtil.SDateToShowSDate(santeiInfDetail.EndDate) == string.Empty)
         {
             return SaveListSanteiInfStatus.InvalidEndDate;
         }
