@@ -399,9 +399,10 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-        public bool CheckExistHokenPid(int hokenPid)
+        public bool CheckExistHokenPids(List<int> hokenPids)
         {
-            var check = NoTrackingDataContext.PtHokenPatterns.Any(h => h.HokenPid == hokenPid && h.IsDeleted == 0);
+            hokenPids = hokenPids.Distinct().ToList();
+            var check = NoTrackingDataContext.PtHokenPatterns.Any(x => hokenPids.Contains(x.HokenPid));
             return check;
         }
 
@@ -856,7 +857,20 @@ namespace Infrastructure.Repositories
             return listInsurance.FirstOrDefault() ?? new InsuranceModel();
         }
 
-        public int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid)
+        public List<(int, int)> GetListHistoryPid(int hpId, long ptId, int sinDate, List<int> historyPids, int selectedHokenPid)
+        {
+            var distinctHistoryPids = historyPids.Distinct();
+            List<(int, int)> result = new();
+            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate).Where(i => i.StartDate <= sinDate && i.EndDate >= sinDate).ToList();
+            foreach (var historyPid in distinctHistoryPids)
+            {
+                var historyPidList = GetDefaultSelectPattern(hpId, ptId, sinDate, historyPid, selectedHokenPid, hokenPatternModels);
+                result.Add(new(historyPid, historyPidList));
+            }
+            return result;
+        }
+
+        public int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid, List<InsuranceModel> hokenPatternModels)
         {
             bool _isSameKohiHoubetu(InsuranceModel pattern1, InsuranceModel pattern2)
             {
@@ -870,7 +884,6 @@ namespace Infrastructure.Repositories
 
                 return false;
             }
-            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate).Where(i => i.StartDate <= sinDate && i.EndDate >= sinDate).ToList();
             var historyHokenPattern = hokenPatternModels.FirstOrDefault(p => p.HokenPid == historyPid);
             if (historyHokenPattern == null)
             {
@@ -1446,6 +1459,12 @@ namespace Infrastructure.Repositories
                    kohi.Houbetu ?? string.Empty,
                    kohi.SeqNo
                 );
+        }
+
+        public bool CheckExistHokenPid(int hokenPid)
+        {
+            var check = NoTrackingDataContext.PtHokenPatterns.Any(h => h.HokenPid == hokenPid && h.IsDeleted == 0);
+            return check;
         }
     }
 }

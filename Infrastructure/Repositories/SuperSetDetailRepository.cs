@@ -1,5 +1,4 @@
-﻿using Domain.Models.KarteInf;
-using Domain.Models.OrdInfDetails;
+﻿using Domain.Models.OrdInfDetails;
 using Domain.Models.SuperSetDetail;
 using Domain.Types;
 using Entity.Tenant;
@@ -1287,8 +1286,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 continue;
             }
 
-            var oldItemUpdateSeqNo = listUpdateFiles.FirstOrDefault(item => item.SeqNo == lastSeqNo
-                                                                            && item.SetCd == 0
+            var oldItemUpdateSeqNo = listUpdateFiles.FirstOrDefault(item => item.SetCd == 0
                                                                             && item.SeqNo == 0
                                                                             && item.FileName != null
                                                                             && item.FileName == fileItem.LinkFile);
