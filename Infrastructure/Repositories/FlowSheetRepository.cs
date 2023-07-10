@@ -167,7 +167,7 @@ namespace Infrastructure.Repositories
                         false
                     ));
             }
-            stopwatch.Stop();
+            //stopwatch.Stop();
             Console.WriteLine($"End GetListFlowSheet: {ptId} - {stopwatch.ElapsedMilliseconds}");
 
             return result;
