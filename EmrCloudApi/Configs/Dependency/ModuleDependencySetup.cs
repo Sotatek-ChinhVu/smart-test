@@ -616,6 +616,7 @@ using UseCase.AccountDue.IsNyukinExisted;
 using UseCase.Lock.CheckLockOpenAccounting;
 using Reporting.Karte3.Service;
 using Reporting.Karte3.DB;
+using UseCase.Reception.GetLastKarute;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1182,6 +1183,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Reception - Valid Pattern Expirated
             busBuilder.RegisterUseCase<ValidPatternExpiratedInputData, ValidPatternExpiratedInteractor>();
+            busBuilder.RegisterUseCase<GetLastKaruteInputData, GetLastKaruteInteractor>();
 
             //System Conf
             busBuilder.RegisterUseCase<GetSystemConfInputData, GetSystemConfInteractor>();

@@ -1251,6 +1251,26 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public ReceptionModel? GetLastKarute(int hpId, long ptNum)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == ptNum && p.IsDelete == DeleteTypes.None);
+
+            if (ptInf != null)
+            {
+                var raiinInf = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptInf.PtId && r.IsDeleted == DeleteTypes.None
+                                                                                    && r.Status >= RaiinState.TempSave).OrderByDescending(r => r.SinDate).FirstOrDefault();
+                if (raiinInf != null)
+                {
+                    return new ReceptionModel(raiinInf.HpId,
+                                              raiinInf.PtId,
+                                              raiinInf.RaiinNo,
+                                              raiinInf.SinDate);
+                }
+            }
+
+            return null;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();
