@@ -66,8 +66,8 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<LockResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.CheckLock)]
-        public ActionResult<Response<LockResponse>> CheckLock([FromQuery] LockRequest request)
+        [HttpPost(ApiPath.CheckLock)]
+        public ActionResult<Response<LockResponse>> CheckLock([FromBody] LockRequest request)
         {
             var input = new CheckLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
             var output = _bus.Handle(input);
@@ -90,8 +90,8 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<CheckExistFunctionCodeResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.RemoveLock)]
-        public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> RemoveLock([FromQuery] LockRequest request)
+        [HttpPost(ApiPath.RemoveLock)]
+        public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> RemoveLock([FromBody] LockRequest request)
         {
             var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false, false);
             var output = _bus.Handle(input);
