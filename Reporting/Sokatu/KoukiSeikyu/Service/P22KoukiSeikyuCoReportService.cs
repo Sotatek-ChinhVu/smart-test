@@ -246,7 +246,7 @@ public class P22KoukiSeikyuCoReportService : IP22KoukiSeikyuCoReportService
         //保険者番号リストを取得
         hokensyaNos = wrkReceInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();
 
-        return (receInfs?.Count ?? 0) > 0;
+        return true;
     }
 
     private void SetFieldData(string field, string value)
