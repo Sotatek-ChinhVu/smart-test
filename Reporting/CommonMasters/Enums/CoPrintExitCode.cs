@@ -8,5 +8,6 @@ public enum CoPrintExitCode
     EndInvalidArg,
     EndDirectoryNotFound,
     EndError,
-    EndFormFileNotFound
+    EndFormFileNotFound,
+    EndTemplateNotFound
 }
