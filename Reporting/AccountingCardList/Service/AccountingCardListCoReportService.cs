@@ -1,9 +1,10 @@
 ﻿using Helper.Common;
-using Helper.Constants;
 using Reporting.AccountingCardList.DB;
 using Reporting.AccountingCardList.Model;
 using Reporting.Calculate.Receipt.Constants;
+using Reporting.Calculate.Receipt.Models;
 using Reporting.Calculate.Receipt.ViewModels;
+using Reporting.Karte3.Mapper;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -17,26 +18,25 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
 
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
-    private readonly List<Dictionary<string, CellModel>> _tableFieldData;
-    private CoAccountingCardListModel coModel;
+    private readonly Dictionary<int, List<ListTextObject>> _listTextData;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private List<CoAccountingCardListModel> coModels;
-    private List<int> targetSinYms;
     int dataRowCount;
     int byomeiCharCount;
     int dataCharCount;
     private DateTime printoutDateTime;
-    int PrintPage;
+    int printPage;
+    int currentPage;
 
     private List<(long PtId, int SinYm, int HokenId)> targets;
     private int hpId;
     private bool includeOutDrug;
-    private long fromPtNum;
-    private long toPtNum;
     private string kaName;
     private string tantoName;
     private string uketukeSbt;
     private string hoken;
     private int sinYm;
+    private bool hasNextPage;
     private List<CoAccountingCardListPrintDataModel> printOutData;
 
     public AccountingCardListCoReportService(IReadRseReportFileService readRseReportFileService, ICoAccountingCardListFinder finder)
@@ -44,25 +44,72 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
         _readRseReportFileService = readRseReportFileService;
         _finder = finder;
         _singleFieldData = new();
+        _setFieldData = new();
+        _listTextData = new();
         _extralData = new();
-        _tableFieldData = new();
+        targets = new();
         coModels = new();
-        coModel = new();
-        targetSinYms = new();
+        kaName = string.Empty;
+        tantoName = string.Empty;
+        uketukeSbt = string.Empty;
+        hoken = string.Empty;
+        printOutData = new();
+    }
+
+    public CommonReportingRequestModel GetKarte3PrintData(int hpId, List<(long ptId, int sinYm, int hokenId)> targets, bool includeOutDrug, string kaName, string tantoName, string uketukeSbt, string hoken)
+    {
+        this.hpId = hpId;
+        this.targets = targets;
+        this.includeOutDrug = includeOutDrug;
+        this.kaName = kaName;
+        this.tantoName = tantoName;
+        this.uketukeSbt = uketukeSbt;
+        this.hoken = hoken;
+        var targetSinYms = this.targets.GroupBy(p => p.SinYm).Select(p => p.Key).OrderBy(p => p).ToList();
+
+        printPage = 1;
+        coModels = GetData();
+        if (coModels.Any())
+        {
+            GetRowCount();
+            foreach (int sinYmItem in targetSinYms)
+            {
+                //グリッドのパラメータ取得
+                printoutDateTime = CIUtil.GetJapanDateTimeNow();
+
+                // 診療明細データを作成する
+                MakePrintDataList(sinYmItem);
+
+                // 診療年月をメンバ変数へ渡しておく
+                sinYm = sinYmItem;
+
+                currentPage = 1;
+
+                while (hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                    printPage++;
+                }
+            }
+        }
+
+        _extralData.Add("totalPage", (printPage - 1).ToString());
+        return new Karte3Mapper(_singleFieldData, _listTextData, _extralData).GetData();
     }
 
     private void MakePrintDataList(int sinYm)
     {
         #region sub function
         // 病名リストに追加
-        void _addByomeiList(string sinId, string addByomei, string addStartDate, string addByomeiTenki, CoAccountingCardListModel data)
+        void AddByomeiList(string sinId, string addByomei, string addStartDate, string addByomeiTenki, CoAccountingCardListModel data)
         {
             bool first = true;
             string wkline = addByomei;
 
-            if (wkline != "")
+            if (wkline != string.Empty)
             {
-                while (wkline != "")
+                while (wkline != string.Empty)
                 {
                     CoAccountingCardListPrintDataModel addData = new CoAccountingCardListPrintDataModel(data.PtNum, data.Name, data.Birthday, data.Age, data.Nissu);
 
@@ -73,9 +120,9 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
                     }
 
                     string tmp = wkline;
-                    if (CIUtil.LenB(tmp) > _byomeiCharCount)
+                    if (CIUtil.LenB(tmp) > byomeiCharCount)
                     {
-                        tmp = CIUtil.CiCopyStrWidth(tmp, 1, _byomeiCharCount);
+                        tmp = CIUtil.CiCopyStrWidth(tmp, 1, byomeiCharCount);
                     }
 
                     addData.Byomei = tmp;
@@ -87,24 +134,23 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
 
                 printOutData.Last().StartDate = addStartDate;
                 printOutData.Last().Tenki = addByomeiTenki;
-
             }
         }
 
         //摘要欄に追加
-        void _addDataList(string sinId, string addStr, string inout, string suryo, string tensu, string x, string count, CoAccountingCardListModel data)
+        void AddDataList(string sinId, string addStr, string inout, string suryo, string tensu, string x, string count, CoAccountingCardListModel data)
         {
             bool firstLine = true;
             string wkline = addStr;
 
-            if (addStr != "")
+            if (addStr != string.Empty)
             {
-                while (wkline != "")
+                while (wkline != string.Empty)
                 {
                     string tmp = wkline;
-                    if (CIUtil.LenB(tmp) > _dataCharCount)
+                    if (CIUtil.LenB(tmp) > dataCharCount)
                     {
-                        tmp = CIUtil.CiCopyStrWidth(wkline, 1, _dataCharCount);
+                        tmp = CIUtil.CiCopyStrWidth(wkline, 1, dataCharCount);
                     }
 
                     CoAccountingCardListPrintDataModel addData = new CoAccountingCardListPrintDataModel(data.PtNum, data.Name, data.Birthday, data.Age, data.Nissu);
@@ -130,7 +176,6 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
             }
         }
         #endregion
-        int i = 1;
         printOutData = new List<CoAccountingCardListPrintDataModel>();
 
         foreach (CoAccountingCardListModel data in coModels.FindAll(p => p.SinYm == sinYm))
@@ -139,14 +184,14 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
 
             data.PtByomeis?.ForEach(byomei =>
             {
-                string sinid = "";
+                string sinid = string.Empty;
                 if (first)
                 {
                     sinid = "病名";
                     first = false;
                 }
 
-                _addByomeiList(sinid, byomei.Byomei, CIUtil.SDateToShowSDate(byomei.StartDate), byomei.Tenki, data);
+                AddByomeiList(sinid, byomei.Byomei, CIUtil.SDateToShowSDate(byomei.StartDate), byomei.Tenki, data);
 
             }
             );
@@ -159,12 +204,12 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
 
                 foreach (SinMeiDataModel sinMei in data.SinMeiVM.SinMei)
                 {
-                    string sinid = "";
-                    string inout = "";
-                    string suryo = "";
-                    string tensu = "";
-                    string x = "";
-                    string count = "";
+                    string sinid = string.Empty;
+                    string inout = string.Empty;
+                    string suryo = string.Empty;
+                    string tensu = string.Empty;
+                    string x = string.Empty;
+                    string count = string.Empty;
 
                     if (preSinId == 0)
                     {
@@ -187,7 +232,7 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
 
                     }
 
-                    inout = "";
+                    inout = string.Empty;
                     if (sinMei.InOutKbn == 1)
                     {
                         inout = "★外";
@@ -214,13 +259,13 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
                         }
 
                         x = "x";
-                        count = sinMei.Count().ToString();
+                        count = sinMei.Count.ToString();
                     }
-                    _addDataList(sinid, sinMei.ItemName, inout, suryo, tensu, x, count, data);
+                    AddDataList(sinid, sinMei.ItemName, inout, suryo, tensu, x, count, data);
 
                 }
 
-                // 最後の小計                    
+                // 最後の小計
                 printOutData.Add(new CoAccountingCardListPrintDataModel(data.PtNum, data.Name, data.Birthday, data.Age, data.Nissu)
                 {
                     Tensu = syokei.ToString(),
@@ -236,18 +281,18 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
                 }
                 );
 
-                printOutData.AddRange(_appendBlankRows(data.PtNum, data.Name, data.Birthday, data.Age, data.Nissu));
+                printOutData.AddRange(AppendBlankRows(data.PtNum, data.Name, data.Birthday, data.Age, data.Nissu));
             }
         }
     }
 
-    List<CoAccountingCardListPrintDataModel> _appendBlankRows(long ptNum, string ptName, int birthday, int age, int nissu)
+    List<CoAccountingCardListPrintDataModel> AppendBlankRows(long ptNum, string ptName, int birthday, int age, int nissu)
     {
-        List<CoAccountingCardListPrintDataModel> addPrintOutData = new List<CoAccountingCardListPrintDataModel>();
+        List<CoAccountingCardListPrintDataModel> addPrintOutData = new();
 
         // 追加する行数を決定する
-        int appendRowCount = _getRemainingLineCount();
-        if (appendRowCount % _dataRowCount != 0)
+        int appendRowCount = GetRemainingLineCount();
+        if (appendRowCount % dataRowCount != 0)
         {
             for (int j = 0; j < appendRowCount; j++)
             {
@@ -259,189 +304,165 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
 
         return addPrintOutData;
     }
+
     /// <summary>
     /// このページに印字可能な残り行数
     /// 1ページの最大行数 - (既に追加した行数 % 1ページの最大行数)
     /// </summary>
     /// <returns></returns>
-    int _getRemainingLineCount()
+    int GetRemainingLineCount()
     {
-        return _dataRowCount - _getPrintedLineCount();
+        return dataRowCount - GetPrintedLineCount();
     }
+
     /// <summary>
     /// このページの印字済み行数
     /// 既に追加した行数 % 1ページの最大行数
     /// </summary>
     /// <returns></returns>
-    int _getPrintedLineCount()
+    int GetPrintedLineCount()
     {
-        return printOutData.Count() % _dataRowCount;
+        return printOutData.Count % dataRowCount;
     }
 
-    private bool UpdateDrawForm(out bool hasNextPage)
+    private void UpdateDrawForm()
     {
-        bool _hasNextPage = true;
-        #region SubMethod
+        Dictionary<string, string> setFieldDataPerPage = new();
+        List<ListTextObject> listDataPerPage = new();
 
-        int UpdateFormHeader()
+        #region SubMethod
+        void UpdateFormHeader()
         {
-            string _getStr(string str)
+            string GetStr(string str)
             {
                 return string.IsNullOrEmpty(str) ? "全て" : str;
             }
 
             //HEAD印字
             //日付
-            CoRep.SetFieldData("dfSinYm", $"{sinYm / 100}年{sinYm % 100:D2}月");
-            CoRep.SetFieldData("dfKaName", _getStr(kaName));
-            CoRep.SetFieldData("dfTantoName", _getStr(tantoName));
-            CoRep.SetFieldData("dfHokenKbn", _getStr(hoken));
-            CoRep.SetFieldData("dfUketukeSbt", _getStr(uketukeSbt));
-            CoRep.SetFieldData("dfPrintDateTime", _printoutDateTime.ToString("yyyy/MM/dd HH:mm"));
-            CoRep.SetFieldData("dfPrintDateTimeW", CIUtil.SDateToShowWDate3(CIUtil.StrToIntDef(_printoutDateTime.ToString("yyyyMMdd"), 0)).Ymd + _printoutDateTime.ToString(" HH:mm"));
-            CoRep.SetFieldData("dfPage", $"{PrintPage}");
-
-            return 1;
+            setFieldDataPerPage.Add("dfSinYm", $"{sinYm / 100}年{sinYm % 100:D2}月");
+            setFieldDataPerPage.Add("dfKaName", GetStr(kaName));
+            setFieldDataPerPage.Add("dfTantoName", GetStr(tantoName));
+            setFieldDataPerPage.Add("dfHokenKbn", GetStr(hoken));
+            setFieldDataPerPage.Add("dfUketukeSbt", GetStr(uketukeSbt));
+            setFieldDataPerPage.Add("dfPrintDateTime", printoutDateTime.ToString("yyyy/MM/dd HH:mm"));
+            setFieldDataPerPage.Add("dfPrintDateTimeW", CIUtil.SDateToShowWDate3(CIUtil.StrToIntDef(printoutDateTime.ToString("yyyyMMdd"), 0)).Ymd + printoutDateTime.ToString(" HH:mm"));
         }
 
-        int UpdateFormBody()
+        void UpdateFormBody()
         {
-            int dataIndex = (CurrentPage - 1) * _dataRowCount * 3;
+            int dataIndex = (currentPage - 1) * dataRowCount * 3;
 
             for (int listNo = 1; listNo <= 3; listNo++)
             {
-                if (!_hasNextPage) break;
-                for (short i = 0; i < _dataRowCount; i++)
+                if (!hasNextPage) break;
+                for (short i = 0; i < dataRowCount; i++)
                 {
                     CoAccountingCardListPrintDataModel printData = printOutData[dataIndex];
 
                     if (i == 0)
                     {
-                        CoRep.SetFieldData($"dfPtNum{listNo}", printData.PtNum);
-                        CoRep.SetFieldData($"dfPtName{listNo}", printData.PtName);
-                        CoRep.SetFieldData($"dfBirthday{listNo}", printData.Birthday);
-                        CoRep.SetFieldData($"dfNissu{listNo}", printData.Nissu);
+                        setFieldDataPerPage.Add($"dfPtNum{listNo}", printData.PtNum);
+                        setFieldDataPerPage.Add($"dfPtName{listNo}", printData.PtName);
+                        setFieldDataPerPage.Add($"dfBirthday{listNo}", printData.Birthday);
+                        setFieldDataPerPage.Add($"dfNissu{listNo}", printData.Nissu);
                     }
 
-                    CoRep.ListText($"lsSinId{listNo}", 0, i, printData.SinId);
-                    CoRep.ListText($"lsByomei{listNo}", 0, i, printData.Byomei);
-                    CoRep.ListText($"lsStartDate{listNo}", 0, i, printData.StartDate);
-                    CoRep.ListText($"lsTenki{listNo}", 0, i, printData.Tenki);
+                    listDataPerPage.Add(new($"lsSinId{listNo}", 0, i, printData.SinId));
+                    listDataPerPage.Add(new($"lsByomei{listNo}", 0, i, printData.Byomei));
+                    listDataPerPage.Add(new($"lsStartDate{listNo}", 0, i, printData.StartDate));
+                    listDataPerPage.Add(new($"lsTenki{listNo}", 0, i, printData.Tenki));
 
-                    CoRep.ListText($"lsInOut{listNo}", 0, i, printData.InOut);
-                    CoRep.ListText($"lsData{listNo}", 0, i, printData.Data);
-                    CoRep.ListText($"lsSuryo{listNo}", 0, i, printData.Suryo);
-                    CoRep.ListText($"lsTen{listNo}", 0, i, printData.Tensu);
-                    CoRep.ListText($"lsX{listNo}", 0, i, printData.X);
-                    CoRep.ListText($"lsCount{listNo}", 0, i, printData.Count);
+                    listDataPerPage.Add(new($"lsInOut{listNo}", 0, i, printData.InOut));
+                    listDataPerPage.Add(new($"lsData{listNo}", 0, i, printData.Data));
+                    listDataPerPage.Add(new($"lsSuryo{listNo}", 0, i, printData.Suryo));
+                    listDataPerPage.Add(new($"lsTen{listNo}", 0, i, printData.Tensu));
+                    listDataPerPage.Add(new($"lsX{listNo}", 0, i, printData.X));
+                    listDataPerPage.Add(new($"lsCount{listNo}", 0, i, printData.Count));
 
-                    #region セル装飾
+                    //#region セル装飾
+                    //// 行の四方位置を取得する
+                    //if (!string.IsNullOrEmpty(printData.SinId))
+                    //{
+                    //    (long startX, long startY, long endX, long endY) = CoRep.GetListRowBounds($"lsLine{listNo}", i);
 
-                    // 行の四方位置を取得する
+                    //    // 上に線を引く（ただし、先頭行の場合は引かない）
+                    //    if (i != 0)
+                    //    {
+                    //        CoRep.DrawLine(startX, startY, endX, startY, 30);
+                    //    }
 
-
-                    if (string.IsNullOrEmpty(printData.SinId) == false)
-                    {
-                        (long startX, long startY, long endX, long endY) = CoRep.GetListRowBounds($"lsLine{listNo}", i);
-
-                        // 上に線を引く（ただし、先頭行の場合は引かない）
-                        if (i != 0)
-                        {
-                            CoRep.DrawLine(startX, startY, endX, startY, 30);
-                        }
-
-                        if (printData.SinId == "合計")
-                        {
-                            if (i != _dataRowCount - 1)
-                            {
-                                CoRep.DrawLine(startX, endY, endX, endY, 30);
-                            }
-                        }
-                    }
-                    else if (!(string.IsNullOrEmpty(printData.X)) && printData.X == "点")
-                    {
-                        (long startX, long startY, long endX, long endY) = CoRep.GetListCellBounds($"lsLine{listNo}", 1, i);
-                        if (i != 0)
-                        {
-                            CoRep.DrawLine(startX, startY, endX, startY, (long)Hos.CnDraw.Constants.ConLineStyle.Dot);
-                        }
-                    }
-                    #endregion
+                    //    if (printData.SinId == "合計")
+                    //    {
+                    //        if (i != dataRowCount - 1)
+                    //        {
+                    //            CoRep.DrawLine(startX, endY, endX, endY, 30);
+                    //        }
+                    //    }
+                    //}
+                    //else if (!(string.IsNullOrEmpty(printData.X)) && printData.X == "点")
+                    //{
+                    //    (long startX, long startY, long endX, long endY) = CoRep.GetListCellBounds($"lsLine{listNo}", 1, i);
+                    //    if (i != 0)
+                    //    {
+                    //        CoRep.DrawLine(startX, startY, endX, startY, (long)Hos.CnDraw.Constants.ConLineStyle.Dot);
+                    //    }
+                    //}
+                    //#endregion
 
                     dataIndex++;
                     if (dataIndex >= printOutData.Count)
                     {
-                        _hasNextPage = false;
+                        hasNextPage = false;
                         break;
                     }
                 }
             }
-            return dataIndex;
         }
-
         #endregion
 
-        try
-        {
-            if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-            {
-                hasNextPage = _hasNextPage;
-                return false;
-            }
-        }
-        catch (Exception e)
-        {
-            Log.WriteLogError(ModuleName, this, nameof(UpdateDrawForm), e);
-            hasNextPage = _hasNextPage;
-            return false;
-        }
-
-        hasNextPage = _hasNextPage;
-        return true;
+        UpdateFormHeader();
+        UpdateFormBody();
+        _listTextData.Add(printPage, listDataPerPage);
+        _setFieldData.Add(printPage, setFieldDataPerPage);
     }
 
     private List<CoAccountingCardListModel> GetData()
     {
         List<CoAccountingCardListModel> results = new();
 
-        foreach ((long ptId, int sinYm, int hokenId) in targets)
+        foreach ((long ptId, int sinYmItem, int hokenId) in targets)
         {
             // 会計情報
-            List<CoKaikeiInfModel> kaikeiInfModels = _finder.FindKaikeiInf(hpId, ptId, sinYm, hokenId);
+            List<CoKaikeiInfModel> kaikeiInfModels = _finder.FindKaikeiInf(hpId, ptId, sinYmItem, hokenId);
 
             // 患者情報 
-            CoPtInfModel ptInfModel = _finder.FindPtInf(hpId, ptId, sinYm * 100 + 31);
+            CoPtInfModel ptInfModel = _finder.FindPtInf(hpId, ptId, sinYmItem * 100 + 31);
 
             // 診療情報
-            SinMeiViewModel sinMeiViewModel = new SinMeiViewModel(SinMeiMode.AccountingCard, includeOutDrug, hpId, ptId, sinYm, hokenId);
+            SinMeiViewModel sinMeiViewModel = new SinMeiViewModel(SinMeiMode.AccountingCard, includeOutDrug, hpId, ptId, sinYmItem, hokenId);
 
             // 病名
-            List<CoPtByomeiModel> ptByomeiModels = _finder.FindPtByomei(hpId, ptId, sinYm * 100 + 1, sinYm * 100 + 31, hokenId);
-            results.Add(new CoAccountingCardListModel(sinYm, ptInfModel, kaikeiInfModels, sinMeiViewModel, ptByomeiModels));
+            List<CoPtByomeiModel> ptByomeiModels = _finder.FindPtByomei(hpId, ptId, sinYmItem * 100 + 1, sinYmItem * 100 + 31, hokenId);
+            results.Add(new CoAccountingCardListModel(sinYmItem, ptInfModel, kaikeiInfModels, sinMeiViewModel, ptByomeiModels));
         }
 
         return results;
-    }
-
-    private void SetFieldData(string field, string value)
-    {
-        if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
-        {
-            _singleFieldData.Add(field, value);
-        }
     }
 
     private void GetRowCount()
     {
         List<ObjectCalculate> fieldInputList = new()
         {
-            new ObjectCalculate("lsData", (int)CalculateTypeEnum.GetListColCount),
-            new ObjectCalculate("lsData", (int)CalculateTypeEnum.GetListRowCount)
+            new ObjectCalculate("lsSinId1", (int)CalculateTypeEnum.GetListRowCount),
+            new ObjectCalculate("lsData1", (int)CalculateTypeEnum.GetFormatLength),
+            new ObjectCalculate("lsByomei1", (int)CalculateTypeEnum.GetFormatLength),
         };
 
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Karte3, string.Empty, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
-        dataColCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsData" && item.typeInt == (int)CalculateTypeEnum.GetListColCount)?.result ?? 0;
-        dataRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsData" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
+        dataRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsSinId1" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
+        byomeiCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsData1" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result ?? 0;
+        dataCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsByomei1" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result ?? 0;
     }
 }
