@@ -92,7 +92,7 @@ namespace Domain.Models.CalculateModel
         public int Kohi4IchibuFutan { get; set; }
         public int TotalIchibuFutan { get; set; }
         public int TotalIchibuFutan10en { get; set; }
-        public int HokenReceTensu { get; set; }
+        public int? HokenReceTensu { get; set; }
         public int? HokenReceFutan { get; set; }
         public int? kohi1ReceTensu { get; set; }
         public int? Kohi1ReceFutan { get; set; }
@@ -106,7 +106,7 @@ namespace Domain.Models.CalculateModel
         public int? Kohi4ReceTensu { get; set; }
         public int? Kohi4ReceFutan { get; set; }
         public int? Kohi4ReceKyufu { get; set; }
-        public int HokenNissu { get; set; }
+        public int? HokenNissu { get; set; }
         public int? Kohi1Nissu { get; set; }
         public int? Kohi2Nissu { get; set; }
         public int? Kohi3Nissu { get; set; }
@@ -240,7 +240,7 @@ namespace Domain.Models.CalculateModel
         public int Kohi4IchibuFutan { get; set; }
         public int TotalIchibuFutan { get; set; }
         public int TotalIchibuFutan10en { get; set; }
-        public int HokenReceTensu { get; set; }
+        public int? HokenReceTensu { get; set; }
         public int? HokenReceFutan { get; set; }
         public int? kohi1ReceTensu { get; set; }
         public int? Kohi1ReceFutan { get; set; }
@@ -254,7 +254,7 @@ namespace Domain.Models.CalculateModel
         public int? Kohi4ReceTensu { get; set; }
         public int? Kohi4ReceFutan { get; set; }
         public int? Kohi4ReceKyufu { get; set; }
-        public int HokenNissu { get; set; }
+        public int? HokenNissu { get; set; }
         public int? Kohi1Nissu { get; set; }
         public int? Kohi2Nissu { get; set; }
         public int? Kohi3Nissu { get; set; }

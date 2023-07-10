@@ -1,8 +1,6 @@
 ﻿using Domain.Models.DrugInfor;
-using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Interfaces;
-using Microsoft.Extensions.Configuration;
 using UseCase.DrugInfor.Get;
 
 namespace Interactor.DrugInfor
@@ -73,28 +71,22 @@ namespace Interactor.DrugInfor
 
         private string GetPathImagePic(string yjCode, string filePath, string customPath, List<string> listPic)
         {
+            var tasks = new List<Task<(bool vavlid, string key)>>();
+
             string _picStr = " ABCDEFGHIJZ";
             for (int i = 0; i < _picStr.Length - 1; i++)
             {
                 if (!string.IsNullOrEmpty(yjCode))
                 {
                     string imgFile = (filePath + yjCode + _picStr[i].AsString()).Trim() + ".jpg";
-
-                    // check image
-                    var checkExistImage = _amazonS3Service.S3FilePathIsExists(imgFile);
-                    if (checkExistImage != null && checkExistImage.Result)
-                    {
-                        listPic.Add(_amazonS3Service.GetAccessBaseS3() + imgFile);
-                    }
+                    tasks.Add(_amazonS3Service.S3FilePathIsExists(imgFile));
                 }
             }
-
             string customImage = customPath + yjCode + "Z.jpg";
-            if (_amazonS3Service.S3FilePathIsExists(customImage).Result)
-            {
-                listPic.Add(_amazonS3Service.GetAccessBaseS3() + customImage);
-            }
+            tasks.Add(_amazonS3Service.S3FilePathIsExists(customImage));
 
+            var rs = Task.WhenAll(tasks).Result;
+            listPic.AddRange(rs.Where(x => x.vavlid).Select(x => _amazonS3Service.GetAccessBaseS3() + x.key));
             if (listPic.Count > 0)
             {
                 // Image default 

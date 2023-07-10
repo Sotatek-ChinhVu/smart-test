@@ -43,13 +43,13 @@ namespace Interactor.SetKbnMst
                 var setGenarationMst = lowerSetGenarationMsts.FirstOrDefault();
                 if (setGenarationMst == null)
                 {
-                    return new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.NoData);
+                    return new GetSetKbnMstListOutputData(new(), GetSetKbnMstListStatus.NoData);
                 }
                 var setKbnMsts = _setKbnMstRepository.GetList(inputData.HpId, inputData.SetKbnFrom, inputData.SetKbnTo);
 
                 var result = setKbnMsts.Where(r => r.GenerationId == setGenarationMst.GenerationId).OrderBy(r => r.SetKbn).ToList();
 
-                return result?.Count > 0 ? new GetSetKbnMstListOutputData(result.Select(r => new GetSetKbnMstListOutputItem(r)).ToList(), GetSetKbnMstListStatus.Successed) : new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.NoData);
+                return result?.Count > 0 ? new GetSetKbnMstListOutputData(result.Select(r => new GetSetKbnMstListOutputItem(r)).ToList(), GetSetKbnMstListStatus.Successed) : new GetSetKbnMstListOutputData(new(), GetSetKbnMstListStatus.NoData);
 
             }
             finally

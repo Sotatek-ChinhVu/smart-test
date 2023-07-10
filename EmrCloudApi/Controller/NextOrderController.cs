@@ -5,7 +5,9 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.NextOrder;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.Accounting.CheckAccountingStatus;
 using UseCase.Core.Sync;
+using UseCase.NextOrder.CheckNextOrdHaveOdr;
 using UseCase.NextOrder.Get;
 using UseCase.NextOrder.GetList;
 using UseCase.NextOrder.Upsert;
@@ -37,7 +39,7 @@ public class NextOrderController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetNextOrderListResponse>> GetList([FromQuery] GetNextOrderListRequest request)
     {
-        var input = new GetNextOrderListInputData(request.PtId, HpId, request.RsvkrtKbn, request.IsDeleted);
+        var input = new GetNextOrderListInputData(request.PtId, HpId, request.IsDeleted);
         var output = _bus.Handle(input);
 
         var presenter = new GetNextOrderListPresenter();
@@ -68,5 +70,17 @@ public class NextOrderController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<ValidationNextOrderListResponse>>(presenter.Result);
+    } 
+    
+    [HttpGet(ApiPath.CheckNextOrdHaveOdr)]
+    public ActionResult<Response<CheckNextOrdHaveOrdResponse>> CheckNextOrdHaveOdr([FromQuery] CheckNextOrdHaveOdrRequest request)
+    {
+        var input = new CheckNextOrdHaveOdrInputData(request.PtId, HpId, request.SinDate);
+        var output = _bus.Handle(input);
+
+        var presenter = new CheckNextOrdHaveOrdPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<CheckNextOrdHaveOrdResponse>>(presenter.Result);
     }
 }

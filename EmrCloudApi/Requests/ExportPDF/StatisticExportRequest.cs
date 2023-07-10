@@ -2,10 +2,8 @@
 
 namespace EmrCloudApi.Requests.ExportPDF;
 
-public class StatisticExportRequest
+public class StatisticExportRequest : ReportRequestBase
 {
-    public int HpId { get; set; }
-
     public int MenuId { get; set; }
 
     public int MonthFrom { get; set; }
@@ -36,4 +34,5 @@ public class StatisticExportRequest
 
     public long? PtNumTo { get; set; } = 0;
 
+    public string FormName { get; set; } = string.Empty;
 }

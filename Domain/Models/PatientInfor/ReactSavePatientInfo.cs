@@ -21,5 +21,7 @@
         public bool ConfirmInvalidJiscodeCheck { get; set; }
 
         public bool ConfirmHokenPatternSelectedIsInfMainHokenPid { get; set; }
+
+        public bool ConfirmSamePatientInf { get; set; }
     }
 }

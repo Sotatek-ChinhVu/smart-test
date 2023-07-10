@@ -164,7 +164,63 @@ namespace Interactor.MedicalExamination
             if (infoType == InfoType.PtHeaderInfo)
             {
                 header1Property = _userConfRepository.GetSettingParam(hpId, userId, 910, defaultValue: "234");
+                StringBuilder header1StringBuilder = new();
+                header1StringBuilder.Append(header1Property);
+                if (!header1Property.Contains("C"))
+                {
+                    header1StringBuilder.Append("C");
+                }
+                if (!header1Property.Contains("D"))
+                {
+                    header1StringBuilder.Append("D");
+                }
+                if (!header1Property.Contains("E"))
+                {
+                    header1StringBuilder.Append("E");
+                }
+                if (!header1Property.Contains("7"))
+                {
+                    header1StringBuilder.Append("7");
+                }
+                if (!header1Property.Contains("9"))
+                {
+                    header1StringBuilder.Append("9");
+                }
+                if (!header1Property.Contains("A"))
+                {
+                    header1StringBuilder.Append("A");
+                }
+                header1Property = header1StringBuilder.ToString();
+
                 header2Property = _userConfRepository.GetSettingParam(hpId, userId, 911, defaultValue: "567");
+                StringBuilder header2StringBuilder = new();
+                header2StringBuilder.Append(header2Property);
+                if (header2Property.Contains("C"))
+                {
+                    header2StringBuilder.Replace("C", string.Empty);
+                }
+                if (header2Property.Contains("D"))
+                {
+                    header2StringBuilder.Replace("D", string.Empty);
+                }
+                if (header2Property.Contains("E"))
+                {
+                    header2StringBuilder.Replace("E", string.Empty);
+                }
+                if (header2Property.Contains("7"))
+                {
+                    header2StringBuilder.Replace("7", string.Empty);
+                }
+                if (header2Property.Contains("9"))
+                {
+                    header2StringBuilder.Replace("9", string.Empty);
+                }
+                if (header2Property.Contains("A"))
+                {
+                    header2StringBuilder.Replace("A", string.Empty);
+                }
+                header2Property = header2StringBuilder.ToString();
+
                 listUserconfig = _userConfRepository.GetList(hpId, userId, new List<int> { 912 }).ToList();
                 //_notifications = GetNotification(hpId, ptId, sinDate, userId);
                 //_notificationPopUps = GetPopUpNotification(hpId, userId, _notifications);
@@ -351,7 +407,7 @@ namespace Interactor.MedicalExamination
                     grpItemCd = 2;
                     break;
                 case "3":
-                    // 病歴
+                    // 病態
                     summaryInfItem = GetPathologicalStatus(ptId);
                     grpItemCd = 3;
                     break;
@@ -366,8 +422,8 @@ namespace Interactor.MedicalExamination
                     grpItemCd = 5;
                     break;
                 case "6":
-                    //コメント
-                    summaryInfItem = GetComment(hpId, ptId);
+                    //出産予定
+                    summaryInfItem = GetReproductionInfo(ptId, sinDate);
                     grpItemCd = 6;
                     break;
                 case "7":
@@ -377,12 +433,12 @@ namespace Interactor.MedicalExamination
                     grpItemCd = 7;
                     break;
                 case "8":
-                    //出産予定
-                    summaryInfItem = GetReproductionInfo(ptId, sinDate);
+                    //コメント
+                    summaryInfItem = GetComment(hpId, ptId);
                     grpItemCd = 8;
                     break;
                 case "9":
-                    //予約情報
+                    //住所
                     summaryInfItem = GetReservationInf(hpId, ptId, sinDate);
                     grpItemCd = 9;
                     break;
@@ -509,7 +565,7 @@ namespace Interactor.MedicalExamination
                     summaryInfItem = GetPathologicalStatus(ptId);
                     break;
                 case "4":
-                    // 服薬情報
+                    // 相互作用
                     summaryInfItem = GetInteraction(ptId, sinDate);
                     break;
                 case "5":
@@ -686,7 +742,7 @@ namespace Interactor.MedicalExamination
         private SummaryInfItem GetPathologicalStatus(long ptId)
         {
             int grpItemCd = 3;
-            string headerName = "◆病歴";
+            string headerName = "◆病態";
             StringBuilder headerInfo = new StringBuilder();
 
             var taskReki = Task<List<PtKioRekiModel>>.Factory.StartNew(() => _importantNotePathologicalRekiRepository.GetKioRekiList(ptId));
@@ -728,7 +784,7 @@ namespace Interactor.MedicalExamination
         private SummaryInfItem GetInteraction(long ptId, int sinDate)
         {
             int grpItemCd = 4;
-            string headerName = "◆服薬情報";
+            string headerName = "◆相互作用";
             StringBuilder headerInf = new StringBuilder();
 
             var taskOtherDrug = Task<List<PtOtherDrugModel>>.Factory.StartNew(() => _importantNoteInteractionOtherDrugRepository.GetOtherDrugList(ptId, sinDate));
@@ -1129,7 +1185,7 @@ namespace Interactor.MedicalExamination
                         {
                             headerInfo.Append(Environment.NewLine);
                         }
-                        headerInfo.Append($"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){ptFamilyModel.DiseaseName}");
+                        headerInfo.Append($"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){diseaseName}");
                     }
                 }
 
@@ -1186,7 +1242,7 @@ namespace Interactor.MedicalExamination
         private SummaryInfItem GetReceptionComment(int hpId, long ptId, int sinDate, long raiinNo)
         {
             int grpItemCd = 13;
-            string headerName = "◆来院コメント";
+            string headerName = "◆受付コメント";
             string textRaiinCmtInf = _raiinCmtInfRepository.GetRaiinCmtByPtId(hpId, ptId, sinDate, raiinNo);
 
             var splitHeaderInf = textRaiinCmtInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();

@@ -25,4 +25,7 @@ public class ColumnSetting
 
     [Column("WIDTH")]
     public int Width { get; set; }
+
+    [Column("ORDER_BY")]
+    public string OrderBy { get; set; } = null!;
 }

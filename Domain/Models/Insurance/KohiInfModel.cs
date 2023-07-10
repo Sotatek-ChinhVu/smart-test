@@ -102,6 +102,20 @@ namespace Domain.Models.Insurance
             Houbetu = string.Empty;
         }
 
+        public KohiInfModel(int hokenNo, int hokenId, int hokenSbtKbn, string houbetu, long seqNo)
+        {
+            HokenNo = hokenNo;
+            HokenId = hokenId;
+            HokenSbtKbn = hokenSbtKbn;
+            Houbetu = houbetu;
+            SeqNo = seqNo;
+            ConfirmDateList = new();
+            FutansyaNo= string.Empty;
+            JyukyusyaNo= string.Empty;
+            TokusyuNo = string.Empty;
+            HokenMstModel = new();
+        }
+
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }
 
         public string FutansyaNo { get; private set; }

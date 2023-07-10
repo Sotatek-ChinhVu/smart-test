@@ -15,11 +15,13 @@ public class CommonReportingRequest : ICommonReportingRequest
             ExtralData = GetExtralData(),
             ListTextData = GetListTextData(),
             SetFieldData = GetSetFieldData(),
+            ReportConfigPerPage = GetReportConfigModelPerPage(),
             ReportConfigModel = new ReportConfigModel()
             {
                 VisibleFieldList = GetVisibleFieldData(),
                 WrapFieldList = GetWrapFieldData(),
                 RowCountFieldName = GetRowCountFieldName(),
+                VisibleAtPrint = GetVisibleAtPrint(),
             }
         };
         return result;
@@ -48,6 +50,11 @@ public class CommonReportingRequest : ICommonReportingRequest
     public virtual Dictionary<string, bool> GetVisibleFieldData()
     {
         throw new NotImplementedException();
+    }
+
+    public virtual Dictionary<string, bool> GetVisibleAtPrint()
+    {
+        return new();
     }
 
     public virtual Dictionary<string, string> GetSystemConfigList()
@@ -81,6 +88,11 @@ public class CommonReportingRequest : ICommonReportingRequest
     }
 
     public virtual Dictionary<int, Dictionary<string, string>> GetSetFieldData()
+    {
+        return new();
+    }
+
+    public virtual Dictionary<int, ReportConfigModel> GetReportConfigModelPerPage()
     {
         return new();
     }

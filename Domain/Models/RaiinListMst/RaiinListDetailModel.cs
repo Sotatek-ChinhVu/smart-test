@@ -19,7 +19,7 @@ namespace Domain.Models.RaiinListMst
             KouCollection = ObjectExtension.CreateInstance<KouiKbnCollectionModel>();
         }
 
-        public RaiinListDetailModel(int grpId, int kbnCd, int sortNo, string kbnName, string colorCd, int isDeleted, List<RaiinListDocModel> raiinListDoc, List<RaiinListItemModel> raiinListItem, List<RaiinListFileModel> raiinListFile, KouiKbnCollectionModel kouCollection)
+        public RaiinListDetailModel(int grpId, int kbnCd, int sortNo, string kbnName, string colorCd, int isDeleted, bool isOnlySwapSortNo, List<RaiinListDocModel> raiinListDoc, List<RaiinListItemModel> raiinListItem, List<RaiinListFileModel> raiinListFile, KouiKbnCollectionModel kouCollection)
         {
             GrpId = grpId;
             KbnCd = kbnCd;
@@ -27,6 +27,7 @@ namespace Domain.Models.RaiinListMst
             KbnName = kbnName;
             ColorCd = colorCd;
             IsDeleted = isDeleted;
+            IsOnlySwapSortNo = isOnlySwapSortNo;
             RaiinListDoc = raiinListDoc;
             RaiinListItem = raiinListItem;
             RaiinListFile = raiinListFile;
@@ -44,6 +45,11 @@ namespace Domain.Models.RaiinListMst
         public string ColorCd { get; private set; }
 
         public int IsDeleted { get; private set; }
+
+        /// <summary>
+        /// not chage model , only change sortNo && KouiKbnCollection not Changed && RaiinListDoc not Changed && RaiinListFile not Changed && RaiinList not Changed
+        /// </summary>
+        public bool IsOnlySwapSortNo { get; private set; }
 
         public List<RaiinListDocModel> RaiinListDoc { get; private set; }
 

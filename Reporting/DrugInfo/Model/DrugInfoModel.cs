@@ -10,7 +10,7 @@ namespace Reporting.DrugInfo.Model
         public string address1 { get; set; } = string.Empty;
         public string address2 { get; set; } = string.Empty;
         public string phone { get; set; } = string.Empty;
-        public int orderDate { get; set; }
+        public string orderDate { get; set; } = string.Empty;
         public long ptNo { get; set; }
         public string ptName { get; set; } = string.Empty;
         public int intAge { get; set; }

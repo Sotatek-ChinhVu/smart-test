@@ -4,8 +4,9 @@ namespace UseCase.Receipt.GetInsuranceInf
 {
     public class InsuranceInfDto
     {
-        public InsuranceInfDto(string insuranceName, int hokenKbn, int nissu, int tensu, int ichibuFutan, string edaNo, string kigo, string bango, bool kohi1ReceKisai, int kohi1Id, bool kohi2ReceKisai, int kohi2Id, bool kohi3ReceKisai, int kohi3Id, bool kohi4ReceKisai, string kohi1FutansyaNo, string kohi1JyukyusyaNo, string kohi2FutansyaNo, string kohi2JyukyusyaNo, string kohi3FutansyaNo, string kohi3JyukyusyaNo, string kohi4FutansyaNo, string kohi4JyukyusyaNo, string hokensyaNo)
+        public InsuranceInfDto(int hokenId, string insuranceName, int hokenKbn, int nissu, int tensu, int ichibuFutan, string edaNo, string kigo, string bango, bool kohi1ReceKisai, int kohi1Id, bool kohi2ReceKisai, int kohi2Id, bool kohi3ReceKisai, int kohi3Id, bool kohi4ReceKisai, string kohi1FutansyaNo, string kohi1JyukyusyaNo, string kohi2FutansyaNo, string kohi2JyukyusyaNo, string kohi3FutansyaNo, string kohi3JyukyusyaNo, string kohi4FutansyaNo, string kohi4JyukyusyaNo, string hokensyaNo)
         {
+            HokenId = hokenId;
             InsuranceName = insuranceName;
             HokenKbn = hokenKbn;
             Nissu = nissu;
@@ -32,6 +33,7 @@ namespace UseCase.Receipt.GetInsuranceInf
             HokensyaNo = hokensyaNo;
         }
 
+        public int HokenId { get; private set; }
         public string InsuranceName { get; private set; }
         public int HokenKbn { get; private set; }
         public int Nissu { get; private set; }

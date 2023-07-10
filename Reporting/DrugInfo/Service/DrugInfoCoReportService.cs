@@ -7,6 +7,7 @@ using Infrastructure.Interfaces;
 using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Model;
 using System.Drawing;
+using System.Reflection.Emit;
 using System.Text;
 
 namespace Reporting.DrugInfo.Service;
@@ -15,23 +16,29 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
 {
     private readonly ISystemConfRepository _systemConfRepository;
     private readonly ICoDrugInfFinder _coDrugInfFinder;
+    private readonly IAmazonS3Service _amazonS3Service;
     private int configType = 0;
     private int selectedFormType = 0;
     private DrugInfoModel basicInfo = new DrugInfoModel();
     private List<OrderInfoModel> orderInfoModels { get; set; }
     private readonly List<DrugInfoModel> drugInfoList = new();
 
-    public DrugInfoCoReportService(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository, ICoDrugInfFinder coDrugInfFinder) : base(tenantProvider)
+    public DrugInfoCoReportService(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository, ICoDrugInfFinder coDrugInfFinder, IAmazonS3Service amazonS3Service) : base(tenantProvider)
     {
         _systemConfRepository = systemConfRepository;
         _coDrugInfFinder = coDrugInfFinder;
         orderInfoModels = new();
+        _amazonS3Service = amazonS3Service;
     }
 
+    private string _defaultPicHou;
+    private string _defaultPicZai;
     public DrugInfoData SetOrderInfo(int hpId, long ptId, int sinDate, long raiinNo)
     {
         basicInfo = _coDrugInfFinder.GetBasicInfo(hpId, ptId, sinDate);
-        //   LoadPathConf();
+        var partItem = _coDrugInfFinder.GetDefaultPathPicture();
+        _defaultPicHou = partItem.PathPicHou;
+        _defaultPicZai = partItem.PathPicZai;
 
         configType = (int)_systemConfRepository.GetSettingValue(92004, 1, hpId); // 0,1 - 1 Pic; 2 - 2 Pics; 3- No Pic
 
@@ -215,6 +222,17 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
             {
                 SetupUsageComment(orderInfoModel, usage ?? new(), drugInfoModel);
             }
+
+            drugInfoModel.orderDate = basicInfo.orderDate;
+            drugInfoModel.hpName = basicInfo.hpName;
+            drugInfoModel.address1 = basicInfo.address1;
+            drugInfoModel.address2 = basicInfo.address2;
+            drugInfoModel.phone = basicInfo.phone;
+            drugInfoModel.ptNo = basicInfo.ptNo;
+            drugInfoModel.ptName = basicInfo.ptName;
+            drugInfoModel.sex = basicInfo.sex;
+            drugInfoModel.intAge = basicInfo.intAge;
+
             drugInfoList.Add(drugInfoModel);
         }
 
@@ -228,9 +246,9 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         if (images == null || images.Count == 0)
         {
             //Pic House
-            //   GetDefaultImage(drugInfoModel, YJCode, 1);
+            GetDefaultImage(drugInfoModel, YJCode, 1);
             //Pic Zai
-            //   GetDefaultImage(drugInfoModel, YJCode, 0);
+            GetDefaultImage(drugInfoModel, YJCode, 0);
             return;
         }
 
@@ -241,51 +259,61 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         }
         else
         {
-            //  GetDefaultImage(drugInfoModel, YJCode, 1);
+            GetDefaultImage(drugInfoModel, YJCode, 1);
         }
 
-        var picZai = images.Where(i => i.ImageType == 0).FirstOrDefault();
+        var picZai = images.FirstOrDefault(i => i.ImageType == 0);
         if (picZai != null)
         {
             drugInfoModel.picZai = picZai.FileName ?? string.Empty;
         }
         else
         {
-            //  GetDefaultImage(drugInfoModel, YJCode, 0);
+            GetDefaultImage(drugInfoModel, YJCode, 0);
         }
 
     }
 
-    //private void GetDefaultImage(DrugInfoModel drugInfoModel, string yjCd, int imageType)
-    //{
-    //    if (imageType == 0)
-    //    {
-    //        //Pic Zai
-    //        for (int i = 0; i < _picStr.Length - 1; i++)
-    //        {
-    //            string imgFile = (_defaultPicZai + yjCd + _picStr[i].AsString()).Trim() + ".jpg";
-    //            if (CIUtil.IsFileExisting(imgFile))
-    //            {
-    //                drugInfoModel.PicZai = (yjCd + _picStr[i].AsString()).Trim() + ".jpg";
-    //                break;
-    //            }
-    //        }
-    //    }
-    //    else
-    //    {
-    //        //Pic House
-    //        for (int i = 0; i < _picStr.Length - 1; i++)
-    //        {
-    //            string imgFile = (_defaultPicHou + yjCd + _picStr[i].AsString()).Trim() + ".jpg";
-    //            if (CIUtil.IsFileExisting(imgFile))
-    //            {
-    //                drugInfoModel.PicHou = (yjCd + _picStr[i].AsString()).Trim() + ".jpg";
-    //                break;
-    //            }
-    //        }
-    //    }
-
-    //}
+    readonly string _picStr = " ABCDEFGHIJZ";
+    private void GetDefaultImage(DrugInfoModel drugInfoModel, string yjCode, int imageType)
+    {
+        List<string> listPic = new();
+        var tasks = new List<Task<(bool vavlid, string key)>>();
+        if (imageType == 0)
+        {
+            //Pic Zai
+            for (int i = 0; i < _picStr.Length - 1; i++)
+            {
+                if (!string.IsNullOrEmpty(yjCode))
+                {
+                    string imgFile = (_defaultPicZai + yjCode + _picStr[i].AsString()).Trim() + ".jpg";
+                    tasks.Add(_amazonS3Service.S3FilePathIsExists(imgFile));
+                }
+            }
+        }
+        else
+        {
+            //Pic House
+            for (int i = 0; i < _picStr.Length - 1; i++)
+            {
+                if (!string.IsNullOrEmpty(yjCode))
+                {
+                    string imgFile = (_defaultPicHou + yjCode + _picStr[i].AsString()).Trim() + ".jpg";
+                    tasks.Add(_amazonS3Service.S3FilePathIsExists(imgFile));
+                }
+            }
+        }
+        var rs = Task.WhenAll(tasks).Result;
+        listPic.AddRange(rs.Where(x => x.vavlid).Select(x => _amazonS3Service.GetAccessBaseS3() + x.key));
+        if (imageType == 0)
+        {
+            drugInfoModel.picZai = listPic.FirstOrDefault() ?? string.Empty;
+        }
+        else
+        {
+            drugInfoModel.picHou = listPic.FirstOrDefault() ?? string.Empty;
+        }
+    }
 
     private void SetupDrugDocumentType2(int reportType, int hpId, OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel)
     {
@@ -311,7 +339,6 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         drugInfoModel.tyui = tText;
 
     }
-
 
     private List<DocumentLine> GetListDocumentLine(List<DrugInf> drugInfs, int infKbn, int nLen)
     {
