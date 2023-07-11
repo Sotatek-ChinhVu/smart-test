@@ -103,7 +103,9 @@ namespace Interactor.MedicalExamination
                             KarteValidationStatus.Valid,
                             0,
                             0,
-                            0);
+                            0,
+                            new(),
+                            new());
                     }
 
                     raiinInfStatus = CheckRaiinInf(inputDatas);
@@ -141,7 +143,9 @@ namespace Interactor.MedicalExamination
                         validateKarte,
                         0,
                         0,
-                        0);
+                        0,
+                        new(),
+                        new());
                 }
                 var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModel, inputDatas.UserId, inputDatas.Status);
                 if (inputDatas.FileItem.IsUpdateFile)
@@ -171,36 +175,30 @@ namespace Interactor.MedicalExamination
                             0,
                             ""
                         )));
+
+                    var receptionInfos = _receptionRepository.GetList(hpId, sinDate, raiinNo, ptId);
+                    var sameVisitList = _receptionRepository.GetListSameVisit(hpId, ptId, sinDate);
+                    return new UpsertTodayOrdOutputData(
+                         UpsertTodayOrdStatus.Successed,
+                         RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                         new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
+                         sinDate,
+                         raiinNo,
+                         ptId,
+                         receptionInfos,
+                         sameVisitList);
                 }
 
-                return check ?
-                    new UpsertTodayOrdOutputData(
-                        UpsertTodayOrdStatus.Successed,
-                        RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
-                        new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
-                        sinDate,
-                        raiinNo,
-                        ptId)
-                    :
-                    new UpsertTodayOrdOutputData(
+                return new UpsertTodayOrdOutputData(
                         UpsertTodayOrdStatus.Failed,
                         RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
                         new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
                         KarteValidationStatus.Valid,
                         sinDate,
                         raiinNo,
-                        ptId);
-            }
-            catch
-            {
-                return new UpsertTodayOrdOutputData(
-                    UpsertTodayOrdStatus.Failed,
-                    RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
-                    new Dictionary<string, KeyValuePair<string,
-                    OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
-                    0,
-                    0,
-                    0);
+                        ptId,
+                        new(),
+                        new());
             }
             finally
             {
@@ -514,7 +512,7 @@ namespace Interactor.MedicalExamination
                             var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                             if (!check)
                             {
-                                dicValidation.Add(index.ToString(),  new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                                dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
                                 break;
                             }
                         }

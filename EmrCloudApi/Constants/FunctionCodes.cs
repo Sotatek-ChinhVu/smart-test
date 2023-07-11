@@ -5,7 +5,6 @@ public static class FunctionCodes
 {
     public const string ReceptionChanged = "ReceptionChanged";
     public const string PatientInfChanged = "PatientInfChanged";
-    public const string MedicalChanged = "MedicalChanged";
     public const string LockChanged = "LockChanged";
     public const string SupserSetSaveChanged = "SupserSetSaveChanged";
     public const string SupserSetReorderChanged = "SupserSetReorderChanged";

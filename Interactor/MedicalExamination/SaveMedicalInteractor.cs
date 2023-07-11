@@ -95,7 +95,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                        UpsertPtDiseaseListStatus.Valid,
                        0,
                        0,
-                       0
+                       0,
+                       new(),
+                       new()
                        );
             }
 
@@ -142,7 +144,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         UpsertPtDiseaseListStatus.Valid,
                         0,
                         0,
-                        0
+                        0,
+                        new(),
+                        new()
                         );
                 }
 
@@ -232,7 +236,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     validateDisease,
                     0,
                     0,
-                    0
+                    0,
+                    new(),
+                    new()
                     );
             }
 
@@ -321,21 +327,26 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     )));
             }
 
-            return check ?
-                new SaveMedicalOutputData(
-                    SaveMedicalStatus.Successed,
-                    RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
-                    new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
-                    KarteValidationStatus.Valid,
-                    ValidateFamilyListStatus.ValidateSuccess,
-                    UpsertFlowSheetStatus.Valid,
-                    UpsertPtDiseaseListStatus.Valid,
-                    sinDate,
-                    raiinNo,
-                    ptId
-                    )
-                :
-                new SaveMedicalOutputData(
+            if (check)
+            {
+                var receptionInfos = _receptionRepository.GetList(hpId, sinDate, raiinNo, ptId);
+                var sameVisitList = _receptionRepository.GetListSameVisit(hpId, ptId, sinDate);
+                return new SaveMedicalOutputData(
+                         SaveMedicalStatus.Successed,
+                         RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                         new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
+                         KarteValidationStatus.Valid,
+                         ValidateFamilyListStatus.ValidateSuccess,
+                         UpsertFlowSheetStatus.Valid,
+                         UpsertPtDiseaseListStatus.Valid,
+                         sinDate,
+                         raiinNo,
+                         ptId,
+                         receptionInfos,
+                         sameVisitList
+                         );
+            }
+            return new SaveMedicalOutputData(
                     SaveMedicalStatus.Failed,
                     RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
                     new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
@@ -345,7 +356,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     UpsertPtDiseaseListStatus.Valid,
                     sinDate,
                     raiinNo,
-                    ptId
+                    ptId,
+                    new(),
+                    new()
                     );
         }
         finally
