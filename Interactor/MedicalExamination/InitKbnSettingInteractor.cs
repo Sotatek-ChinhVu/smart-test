@@ -156,10 +156,6 @@ namespace Interactor.MedicalExamination
 
                 return new InitKbnSettingOutputData(InitKbnSettingStatus.Successed, raiinKbnModels ?? new());
             }
-            catch
-            {
-                return new InitKbnSettingOutputData(InitKbnSettingStatus.Failed, new());
-            }
             finally
             {
                 _todayOdrRepository.ReleaseResource();

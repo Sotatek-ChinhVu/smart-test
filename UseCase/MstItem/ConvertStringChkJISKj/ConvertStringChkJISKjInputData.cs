@@ -4,13 +4,10 @@ namespace UseCase.MstItem.ConvertStringChkJISKj;
 
 public class ConvertStringChkJISKjInputData : IInputData<ConvertStringChkJISKjOutputData>
 {
-    public ConvertStringChkJISKjInputData(string inputString, string sOut)
+    public ConvertStringChkJISKjInputData(List<string> inputList)
     {
-        InputString = inputString;
-        SOut = sOut;
+        InputList = inputList;
     }
 
-    public string InputString { get; private set; }
-
-    public string SOut { get; private set; }
+    public List<string> InputList { get; private set; }
 }
