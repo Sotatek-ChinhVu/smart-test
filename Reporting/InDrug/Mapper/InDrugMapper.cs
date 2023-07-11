@@ -30,7 +30,7 @@ namespace Reporting.InDrug.Mapper
 
         public override string GetRowCountFieldName()
         {
-            return "院内処方箋";
+            return string.Empty;
         }
 
         public override List<Dictionary<string, CellModel>> GetTableFieldData()
@@ -45,7 +45,7 @@ namespace Reporting.InDrug.Mapper
 
         public override string GetJobName()
         {
-            return string.Empty;
+            return "院内処方箋";
         }
 
         public override Dictionary<string, string> GetSingleFieldData()

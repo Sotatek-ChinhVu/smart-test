@@ -1,13 +1,12 @@
 ﻿using Helper.Common;
 using Helper.Constants;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Reporting.CommonMasters.Enums;
 using Reporting.InDrug.DB;
+using Reporting.InDrug.Mapper;
 using Reporting.InDrug.Model;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
-using Reporting.Sokatu.WelfareSeikyu.Mapper;
 
 namespace Reporting.InDrug.Service
 {
@@ -107,7 +106,7 @@ namespace Reporting.InDrug.Service
                 currentPage = 1;
                 hasNextPage = true;
 
-                printoutDateTime = DateTime.Now;
+                printoutDateTime = CIUtil.GetJapanDateTimeNow();
 
                 // リスト作成
                 MakeOdrDtlList();
@@ -122,7 +121,7 @@ namespace Reporting.InDrug.Service
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
-            return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            return new InDrugMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
 
         #region Private function
@@ -643,6 +642,7 @@ namespace Reporting.InDrug.Service
                         _setFieldData.Add(pageIndex, fieldDataPerPage);
                     }
                 }
+                _listTextData.Add(pageIndex, listDataPerPage);
 
                 return dataIndex;
 
