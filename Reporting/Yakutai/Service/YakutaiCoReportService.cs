@@ -85,36 +85,35 @@ namespace Reporting.Yakutai.Service
             _raiinNo = raiinNo;
             _printoutDateTime = CIUtil.GetJapanDateTimeNow();
             coModels = GetData();
-
-            if (coModels == null || !coModels.Any())
-            {
-                return new();
-            }
             _currentPage = 1;
-            foreach (CoYakutaiModel coYakutaiModel in coModels)
+
+            if (coModels != null && coModels.Any())
             {
-                try
+                foreach (CoYakutaiModel coYakutaiModel in coModels)
                 {
-                    coModel = coYakutaiModel;
-
-                    _formFileName = GetFormFilePrinterName(coYakutaiModel).Item1;
-                    AddFileNamePageMap("1", _formFileName);
-                    _hasNextPage = true;
-
-                    GetRowCount(_formFileName);
-                    MakeOdrDtlList();
-                    //印刷
-                    while (_hasNextPage)
+                    try
                     {
-                        UpdateDrawForm();
-                        _currentPage++;
-                    }
-                }
-                finally
-                {
-                    _currentPage = 1;
-                }
+                        coModel = coYakutaiModel;
 
+                        _formFileName = GetFormFilePrinterName(coYakutaiModel).Item1;
+                        AddFileNamePageMap("1", _formFileName);
+                        _hasNextPage = true;
+
+                        GetRowCount(_formFileName);
+                        MakeOdrDtlList();
+                        //印刷
+                        while (_hasNextPage)
+                        {
+                            UpdateDrawForm();
+                            _currentPage++;
+                        }
+                    }
+                    finally
+                    {
+                        _currentPage = 1;
+                    }
+
+                }
             }
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();

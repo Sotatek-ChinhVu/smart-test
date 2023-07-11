@@ -40,18 +40,6 @@ public class CheckOpenFormController : ControllerBase
         return Ok(data);
     }
 
-    [HttpGet(ApiPath.ExportOrderLabel)]
-    public ActionResult<Response<bool>> GenerateOrderLabelReport([FromQuery] OrderLabelExportRequest request)
-    {
-        List<(int from, int to)> odrKouiKbns = new();
-        foreach (var item in request.OdrKouiKbns)
-        {
-            odrKouiKbns.Add(new(item.From, item.To));
-        }
-        var data = _checkOpenReportingService.CheckOpenOrderLabel(0, request.HpId, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, new());
-        return ConvertToResponse(data);
-    }
-
     #region Private function
     private CoAccountDueListModel ConvertToCoAccountDueListModel(CoAccountDueListRequestModel request)
     {
@@ -62,27 +50,5 @@ public class CheckOpenFormController : ControllerBase
                    request.OyaRaiinNo
                );
     }
-
-    private Response<bool> ConvertToResponse(CoPrintExitCode code)
-    {
-        Response<bool> result = new();
-        result.Data = code == CoPrintExitCode.EndSuccess;
-        result.Message = GetMessage(code);
-        result.Status = (int)code;
-        return result;
-    }
-
-    private string GetMessage(CoPrintExitCode code) => code switch
-    {
-        CoPrintExitCode.EndSuccess => ResponseMessage.Success,
-        CoPrintExitCode.EndNoData => ResponseMessage.Failed,
-        CoPrintExitCode.None => ResponseMessage.Failed,
-        CoPrintExitCode.EndInvalidArg => ResponseMessage.Failed,
-        CoPrintExitCode.EndDirectoryNotFound => ResponseMessage.Failed,
-        CoPrintExitCode.EndError => ResponseMessage.Failed,
-        CoPrintExitCode.EndFormFileNotFound => ResponseMessage.Failed,
-        CoPrintExitCode.EndTemplateNotFound => ResponseMessage.Failed,
-        _ => string.Empty
-    };
     #endregion
 }
