@@ -618,6 +618,7 @@ using Reporting.Karte3.Service;
 using Reporting.Karte3.DB;
 using UseCase.Reception.GetLastKarute;
 using UseCase.MstItem.ConvertStringChkJISKj;
+using UseCase.SpecialNote.GetStdPoint;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1124,6 +1125,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveSpecialNoteInputData, SaveSpecialNoteInteractor>();
             busBuilder.RegisterUseCase<AddAlrgyDrugListInputData, AddAlrgyDrugListInteractor>();
             busBuilder.RegisterUseCase<GetPtWeightInputData, GetPtWeightInteractor>();
+            busBuilder.RegisterUseCase<GetStdPointInputData, GetStdPointInteractor>();
 
             // StickyNote
             busBuilder.RegisterUseCase<GetStickyNoteInputData, GetStickyNoteInteractor>();
