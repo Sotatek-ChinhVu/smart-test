@@ -9,15 +9,17 @@ public class ConvertStringChkJISKjInteractor : IConvertStringChkJISKjInputPort
     {
         var contentStr = string.Empty;
         string result = string.Empty;
+        string itemError = string.Empty;
         foreach (var item in inputData.InputList)
         {
             var errorStr = CIUtil.Chk_JISKj(item, out contentStr);
             if (!string.IsNullOrEmpty(errorStr))
             {
                 result = errorStr;
+                itemError = item;
                 break;
             }
         }
-        return new ConvertStringChkJISKjOutputData(result, contentStr, ConvertStringChkJISKjStatus.Successed);
+        return new ConvertStringChkJISKjOutputData(result, contentStr, itemError, ConvertStringChkJISKjStatus.Successed);
     }
 }
