@@ -16,9 +16,9 @@ public class ConvertStringChkJISKjInteractor : IConvertStringChkJISKjInputPort
             if (!string.IsNullOrEmpty(errorStr))
             {
                 result = errorStr;
+                itemError = item;
                 break;
             }
-            itemError = item;
         }
         return new ConvertStringChkJISKjOutputData(result, contentStr, itemError, ConvertStringChkJISKjStatus.Successed);
     }
