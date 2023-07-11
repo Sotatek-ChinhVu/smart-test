@@ -368,8 +368,11 @@ public class PdfCreatorController : ControllerBase
         }
         if (returnNoData)
         {
-            //return Content("<p style=\"font-family: Osaka;text-align: center;font-size: 25px;font-weight: bold;\">印刷対象が見つかりません。</p>", "text/html");
-            return Content("印刷対象が見つかりません。");
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
         }
 
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
