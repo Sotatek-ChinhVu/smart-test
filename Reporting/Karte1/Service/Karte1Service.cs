@@ -675,7 +675,7 @@ public class Karte1Service : IKarte1Service
 
                 for (int kohiIndex = 1; kohiIndex <= 4; kohiIndex++)
                 {
-                    if (coModel.KohiId(kohiIndex) > 0)
+                    if (coModel.KohiId != null && coModel.KohiId(kohiIndex) > 0)
                     {
                         string futansyaNo = coModel.KohiFutansyaNo(kohiIndex).PadLeft(8, ' ');
                         string jyukyusyaNo = coModel.KohiJyukyusyaNo(kohiIndex).PadLeft(7, ' ');
