@@ -128,5 +128,4 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
             _singleFieldData.Add(field, value);
         }
     }
-
 }

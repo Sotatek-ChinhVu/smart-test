@@ -1,11 +1,7 @@
 ﻿using CloudUnitTest.SampleData;
 using Domain.Models.Santei;
 using Entity.Tenant;
-using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Moq;
-using PostgreDataContext;
 
 namespace CloudUnitTest.Repository.Santei;
 
@@ -88,7 +84,8 @@ public class SanteiInfRepositoryTest : BaseUT
         try
         {
             bool result = false;
-            var santeiInfDetailModel = resultQuery.FirstOrDefault();
+            long id = santeiInfDetails.FirstOrDefault()?.Id ?? 0;
+            var santeiInfDetailModel = resultQuery.FirstOrDefault(item => item.Id == id);
             if (santeiInfDetailModel == null)
             {
                 result = false;

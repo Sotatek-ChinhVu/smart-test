@@ -800,6 +800,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP24KoukiSeikyuCoReportService, P24KoukiSeikyuCoReportService>();
             services.AddTransient<IP25KoukiSeikyuCoReportService, P25KoukiSeikyuCoReportService>();
             services.AddTransient<IP27KoukiSeikyuCoReportService, P27KoukiSeikyuCoReportService>();
+            services.AddTransient<IP14KokhoSokatuCoReportService, P14KokhoSokatuCoReportService>();
             services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
             services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
 

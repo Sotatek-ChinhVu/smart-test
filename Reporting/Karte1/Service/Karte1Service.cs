@@ -79,52 +79,56 @@ public class Karte1Service : IKarte1Service
 
         coModel = GetData();
 
-        ReadRseFileP1();
-        ReadRseFileP2();
+        if (this.ptId != 0 && coModel != null)
+        {
+            ReadRseFileP1();
+            ReadRseFileP2();
 
-        if (SetListProperty("lsByomei", ref dataCharCount, ref dataRowCount))
-        {
-            dataTarget = 1;
-        }
-        else if (SetDataFieldProperty("ByoMei_", ref dataCharCount, ref dataRowCount))
-        {
-            dataTarget = 2;
-        }
-        else if (SetDataFieldProperty("ByoMeiH_", ref dataCharCount, ref dataRowCount))
-        {
-            dataTarget = 3;
-        }
+            if (SetListProperty("lsByomei", ref dataCharCount, ref dataRowCount))
+            {
+                dataTarget = 1;
+            }
+            else if (SetDataFieldProperty("ByoMei_", ref dataCharCount, ref dataRowCount))
+            {
+                dataTarget = 2;
+            }
+            else if (SetDataFieldProperty("ByoMeiH_", ref dataCharCount, ref dataRowCount))
+            {
+                dataTarget = 3;
+            }
 
-        currentPage = 2;
+            currentPage = 2;
 
-        if (SetListProperty("lsByomei", ref dataCharCountP2, ref dataRowCountP2))
-        {
-            dataTargetP2 = 1;
-        }
-        else if (SetDataFieldProperty("ByoMei_", ref dataCharCountP2, ref dataRowCountP2))
-        {
-            dataTargetP2 = 2;
-        }
-        else if (SetDataFieldProperty("ByoMeiH_", ref dataCharCountP2, ref dataRowCountP2))
-        {
-            dataTargetP2 = 3;
-        }
+            if (SetListProperty("lsByomei", ref dataCharCountP2, ref dataRowCountP2))
+            {
+                dataTargetP2 = 1;
+            }
+            else if (SetDataFieldProperty("ByoMei_", ref dataCharCountP2, ref dataRowCountP2))
+            {
+                dataTargetP2 = 2;
+            }
+            else if (SetDataFieldProperty("ByoMeiH_", ref dataCharCountP2, ref dataRowCountP2))
+            {
+                dataTargetP2 = 3;
+            }
 
-        printOutData = new List<CoKarte1PrintDataModel>();
+            printOutData = new List<CoKarte1PrintDataModel>();
 
-        if (dataTarget > 0)
-        {
-            MakePrintDataList();
-        }
+            if (dataTarget > 0)
+            {
+                MakePrintDataList();
+            }
 
-        printoutDateTime = CIUtil.GetJapanDateTimeNow();
-        currentPage = 1;
-        hasNextPage = true;
-        while (hasNextPage)
-        {
-            UpdateDrawForm();
-            currentPage++;
+            printoutDateTime = CIUtil.GetJapanDateTimeNow();
+            currentPage = 1;
+            hasNextPage = true;
+            while (hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
+        
         _extralData.Add("totalPage", (currentPage - 1).ToString());
         return new Karte1Mapper(_extralData, _singleFieldData, _listTextData, _reportConfigModelPerPage).GetData();
     }
@@ -675,7 +679,7 @@ public class Karte1Service : IKarte1Service
 
                 for (int kohiIndex = 1; kohiIndex <= 4; kohiIndex++)
                 {
-                    if (coModel.KohiId(kohiIndex) > 0)
+                    if (coModel.KohiId != null && coModel.KohiId(kohiIndex) > 0)
                     {
                         string futansyaNo = coModel.KohiFutansyaNo(kohiIndex).PadLeft(8, ' ');
                         string jyukyusyaNo = coModel.KohiJyukyusyaNo(kohiIndex).PadLeft(7, ' ');
