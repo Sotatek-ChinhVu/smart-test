@@ -618,6 +618,8 @@ using Reporting.Karte3.Service;
 using Reporting.Karte3.DB;
 using UseCase.Reception.GetLastKarute;
 using UseCase.MstItem.ConvertStringChkJISKj;
+using Reporting.InDrug.Service;
+using Reporting.InDrug.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -798,6 +800,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP24KoukiSeikyuCoReportService, P24KoukiSeikyuCoReportService>();
             services.AddTransient<IP25KoukiSeikyuCoReportService, P25KoukiSeikyuCoReportService>();
             services.AddTransient<IP27KoukiSeikyuCoReportService, P27KoukiSeikyuCoReportService>();
+            services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
+            services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

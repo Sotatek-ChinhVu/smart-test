@@ -9,6 +9,7 @@ using Reporting.DailyStatic.Service;
 using Reporting.DrugInfo.Model;
 using Reporting.DrugInfo.Service;
 using Reporting.DrugNoteSeal.Service;
+using Reporting.InDrug.Service;
 using Reporting.Karte1.Service;
 using Reporting.Karte3.Service;
 using Reporting.Kensalrai.Service;
@@ -59,8 +60,9 @@ public class ReportService : IReportService
     private readonly IAccountingCardCoReportService _accountingCardCoReportService;
     private readonly ICoAccountingFinder _coAccountingFinder;
     private readonly IKarte3CoReportService _karte3CoReportService;
+    private readonly IInDrugCoReportService _inDrugCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IInDrugCoReportService inDrugCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -86,6 +88,7 @@ public class ReportService : IReportService
         _accountingCardCoReportService = accountingCardCoReportService;
         _coAccountingFinder = coAccountingFinder;
         _karte3CoReportService = karte3CoReportService;
+        _inDrugCoReportService = inDrugCoReportService;
     }
 
     //Byomei
@@ -467,5 +470,10 @@ public class ReportService : IReportService
     public CommonReportingRequestModel GetKarte3ReportingData(int hpId, long ptId, int startSinYm, int endSinYm, bool includeHoken, bool includeJihi)
     {
         return _karte3CoReportService.GetKarte3PrintData(hpId, ptId, startSinYm, endSinYm, includeHoken, includeJihi);
+    }
+
+    public CommonReportingRequestModel GetInDrugPrintData(int hpId, long ptId, int sinDate, long raiinNo)
+    {
+        return _inDrugCoReportService.GetInDrugPrintData(hpId, ptId, sinDate, raiinNo);
     }
 }

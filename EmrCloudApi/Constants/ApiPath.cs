@@ -67,6 +67,7 @@
         public const string Recaculation = "Recaculation";
         public const string ConvertItem = "ConvertItem";
         public const string CheckOrdInfInDrug = "CheckOrdInfInDrug";
+        public const string InDrug = "InDrug";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
