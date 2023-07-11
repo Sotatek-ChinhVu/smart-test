@@ -101,22 +101,24 @@ namespace Reporting.InDrug.Service
             this.sinDate = sinDate;
             this.raiinNo = raiinNo;
             coModel = GetData();
-            if (coModel == null) return new();
-            GetRowCount("fmInDrug.rse");
-            currentPage = 1;
-            hasNextPage = true;
-
-            printoutDateTime = DateTime.Now;
-
-            // リスト作成
-            MakeOdrDtlList();
-
-            // 印刷処理
-            while (hasNextPage)
+            if (coModel != null)
             {
-                UpdateDrawForm();
-                currentPage++;
-            }
+                GetRowCount("fmInDrug.rse");
+                currentPage = 1;
+                hasNextPage = true;
+
+                printoutDateTime = DateTime.Now;
+
+                // リスト作成
+                MakeOdrDtlList();
+
+                // 印刷処理
+                while (hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
+            };
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
