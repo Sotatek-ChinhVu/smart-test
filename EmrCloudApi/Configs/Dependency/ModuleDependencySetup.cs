@@ -617,6 +617,7 @@ using UseCase.Lock.CheckLockOpenAccounting;
 using Reporting.Karte3.Service;
 using Reporting.Karte3.DB;
 using UseCase.Reception.GetLastKarute;
+using UseCase.MstItem.ConvertStringChkJISKj;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -795,6 +796,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP22KoukiSeikyuCoReportService, P22KoukiSeikyuCoReportService>();
             services.AddTransient<IP23KoukiSeikyuCoReportService, P23KoukiSeikyuCoReportService>();
             services.AddTransient<IP24KoukiSeikyuCoReportService, P24KoukiSeikyuCoReportService>();
+            services.AddTransient<IP25KoukiSeikyuCoReportService, P25KoukiSeikyuCoReportService>();
+            services.AddTransient<IP27KoukiSeikyuCoReportService, P27KoukiSeikyuCoReportService>();
+            services.AddTransient<IP14KokhoSokatuCoReportService, P14KokhoSokatuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -1142,6 +1146,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateAdoptedItemListInputData, UpdateAdoptedItemListInteractor>();
             busBuilder.RegisterUseCase<GetCmtCheckMstListInputData, GetCmtCheckMstListInteractor>();
             busBuilder.RegisterUseCase<SearchTenMstItemInputData, SearchTenMstItemInteractor>();
+            busBuilder.RegisterUseCase<ConvertStringChkJISKjInputData, ConvertStringChkJISKjInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();

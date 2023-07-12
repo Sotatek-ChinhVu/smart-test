@@ -69,7 +69,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
         private bool hasNextPage;
         #endregion
 
-        public CommonReportingRequestModel GetP08KokhoSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
+        public CommonReportingRequestModel GetP08KokhoSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, List<string> printHokensyaNos)
         {
             this.hpId = hpId;
             this.seikyuYm = seikyuYm;
