@@ -98,18 +98,15 @@ public class Sta3030CoReportService : ISta3030CoReportService
         // get data to print
         GetFieldNameList(formFileName);
         GetRowCount(formFileName);
+        GetData(hpId);
+        hasNextPage = true;
+        currentPage = 1;
 
-        if (GetData(hpId))
+        //印刷
+        while (hasNextPage)
         {
-            hasNextPage = true;
-            currentPage = 1;
-
-            //印刷
-            while (hasNextPage)
-            {
-                UpdateDrawForm();
-                currentPage++;
-            }
+            UpdateDrawForm();
+            currentPage++;
         }
 
         return new Sta3030Mapper(_singleFieldData, _tableFieldData, _extralData, rowCountFieldName, formFileName).GetData();
@@ -230,7 +227,7 @@ public class Sta3030CoReportService : ISta3030CoReportService
         UpdateFormBody();
     }
 
-    private bool GetData(int hpId)
+    private void GetData(int hpId)
     {
         /// <summary>
         /// 明細データ追加
@@ -385,13 +382,11 @@ public class Sta3030CoReportService : ISta3030CoReportService
         ptByomeiInfs = _finder.GetPtByomeiInfs(hpId, printConf);
         if ((ptByomeiInfs?.Count ?? 0) == 0)
         {
-            return false;
+            return;
         }
 
         //印刷用データの作成
         MakePrintData();
-
-        return printDatas.Count > 0;
     }
 
     private void SetFieldData(string field, string value)

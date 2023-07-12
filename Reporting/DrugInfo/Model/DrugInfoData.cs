@@ -9,11 +9,6 @@ public class DrugInfoData
         this.drugInfoList = drugInfoList;
     }
 
-    public DrugInfoData()
-    {
-        drugInfoList = new();
-    }
-
     public int selectedFormType { get; private set; }
 
     public int reportType { get; private set; }

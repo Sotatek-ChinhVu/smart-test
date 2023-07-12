@@ -97,19 +97,17 @@ namespace Reporting.Statistics.Sta2020.Service
             // get data to print
             GetFieldNameList();
             GetRowCount();
+            _hasNextPage = true;
+
+            _currentPage = 1;
 
             var getData = GetData();
 
-            if (getData)
+            //印刷
+            while (_hasNextPage && getData)
             {
-                _hasNextPage = true;
-
-                _currentPage = 1;
-                while (_hasNextPage && getData)
-                {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
+                UpdateDrawForm();
+                _currentPage++;
             }
 
             return new Sta2020Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();

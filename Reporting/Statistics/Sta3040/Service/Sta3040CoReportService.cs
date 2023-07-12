@@ -85,18 +85,15 @@ public class Sta3040CoReportService : ISta3040CoReportService
         // get data to print
         GetFieldNameList(formFileName);
         GetRowCount(formFileName);
+        GetData(hpId);
+        hasNextPage = true;
+        currentPage = 1;
 
-        if (GetData(hpId))
+        //印刷
+        while (hasNextPage)
         {
-            hasNextPage = true;
-            currentPage = 1;
-
-            //印刷
-            while (hasNextPage)
-            {
-                UpdateDrawForm();
-                currentPage++;
-            }
+            UpdateDrawForm();
+            currentPage++;
         }
 
         return new Sta3040Mapper(_singleFieldData, _tableFieldData, _extralData, rowCountFieldName, formFileName).GetData();
@@ -239,7 +236,7 @@ public class Sta3040CoReportService : ISta3040CoReportService
 
     private CountData total = new();
     private CountData subTotal = new();
-    private bool GetData(int hpId)
+    private void GetData(int hpId)
     {
         void MakePrintData()
         {
@@ -463,12 +460,10 @@ public class Sta3040CoReportService : ISta3040CoReportService
         hpInf = _finder.GetHpInf(hpId, CIUtil.DateTimeToInt(DateTime.Today));
 
         usedDrugInfs = _finder.GetUsedDrugInfs(hpId, printConf);
-        if ((usedDrugInfs?.Count ?? 0) == 0) return false;
+        if ((usedDrugInfs?.Count ?? 0) == 0) return;
 
         //印刷用データの作成
         MakePrintData();
-
-        return printDatas.Count > 0;
     }
 
     private void SetFieldData(string field, string value)

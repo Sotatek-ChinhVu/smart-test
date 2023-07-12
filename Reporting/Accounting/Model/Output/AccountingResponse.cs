@@ -4,14 +4,6 @@ namespace Reporting.Accounting.Model.Output;
 
 public class AccountingResponse
 {
-    public AccountingResponse()
-    {
-        JobName = string.Empty;
-        SystemConfigList = new();
-        FileNamePageMap = new();
-        AccountingReportingRequestItems = new();
-    }
-    
     public AccountingResponse(Dictionary<int, string> fileNamePageMap, string jobName, int mode, Dictionary<string, string> systemConfigList, Dictionary<int, List<AccountingOutputModel>> accountingReportingRequestItems)
     {
         FileNamePageMap = fileNamePageMap;

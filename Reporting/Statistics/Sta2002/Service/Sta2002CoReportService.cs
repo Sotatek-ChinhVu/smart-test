@@ -87,20 +87,17 @@ namespace Reporting.Statistics.Sta2002.Service
             // get data to print
             GetFieldNameList();
             GetRowCount();
-            if (GetData())
+            GetData();
+            _hasNextPage = true;
+
+            _currentPage = 1;
+
+            //印刷
+            while (_hasNextPage)
             {
-                _hasNextPage = true;
-
-                _currentPage = 1;
-
-                //印刷
-                while (_hasNextPage)
-                {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
+                UpdateDrawForm();
+                _currentPage++;
             }
-            
 
             return new Sta2002Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
         }

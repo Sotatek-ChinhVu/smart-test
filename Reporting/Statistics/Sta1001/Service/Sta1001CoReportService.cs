@@ -211,16 +211,15 @@ namespace Reporting.Statistics.Sta1001.Service
             {
                 putCurColumns.AddRange(putOptColumns);
             }
-            if (GetData())
+            GetData();
+            _hasNextPage = true;
+            _currentPage = 1;
+            while (_hasNextPage)
             {
-                _hasNextPage = true;
-                _currentPage = 1;
-                while (_hasNextPage)
-                {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
+                UpdateDrawForm();
+                _currentPage++;
             }
+
             return new Sta1001Mapper(_extralData, SingleData, CellData, _rowCountFieldName).GetData();
         }
 
