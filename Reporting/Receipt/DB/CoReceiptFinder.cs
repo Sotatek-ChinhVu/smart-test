@@ -1626,15 +1626,13 @@ namespace Reporting.Receipt.DB
             return ret;
         }
 
-        public Reporting.Calculate.ReceFutan.Models.ReceInfModel GetReceInf(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
+        public ReceInf? GetReceInf(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
         {
-            var receInf = NoTrackingDataContext.ReceInfs.FirstOrDefault(
+            return NoTrackingDataContext.ReceInfs.FirstOrDefault(
                 x => x.HpId == hpId && x.PtId == ptId && x.SeikyuYm == seikyuYm && x.SinYm == sinYm && x.HokenId == hokenId);
-
-            return new Reporting.Calculate.ReceFutan.Models.ReceInfModel(receInf);
         }
 
-        public ReceSeikyu GetReceSeikyu(int hpId, long ptId, int hokenId, int sinYm)
+        public ReceSeikyu? GetReceSeikyu(int hpId, long ptId, int hokenId, int sinYm)
         {
             return NoTrackingDataContext.ReceSeikyus
                                         .FirstOrDefault(item => item.HpId == hpId &&
