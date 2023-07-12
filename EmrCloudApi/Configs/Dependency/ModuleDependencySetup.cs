@@ -618,6 +618,8 @@ using Reporting.Karte3.Service;
 using Reporting.Karte3.DB;
 using UseCase.Reception.GetLastKarute;
 using UseCase.MstItem.ConvertStringChkJISKj;
+using Reporting.KensaLabel.DB;
+using Reporting.KensaLabel.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -903,6 +905,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
             services.AddTransient<ICheckOpenReportingService, CheckOpenReportingService>();
             services.AddTransient<IUserTokenRepository, UserTokenRepository>();
+            services.AddTransient<IKensaLabelCoReportService, KensaLabelCoReportService>();
+            services.AddTransient<IKensaLabelFinder, KensaLabelFinder>();
         }
 
         private void SetupUseCase(IServiceCollection services)
