@@ -25,17 +25,15 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
     }
 
     private readonly ITenantProvider _tenantProvider;
-    private readonly IReadRseReportFileService _readRseReportFileService;
     private CoOrderLabelModel? _coModel = null;
     private List<CoUserMstModel> _userMsts = new();
     private List<CoOrderLabelPrintDataModel> _printOutData = new();
     private readonly ISystemConfig _systemConfig;
 
-    public OrderLabelCoReportService(ITenantProvider tenantProvider, ISystemConfig systemConfig, IReadRseReportFileService readRseReportFileService)
+    public OrderLabelCoReportService(ITenantProvider tenantProvider, ISystemConfig systemConfig)
     {
         _tenantProvider = tenantProvider;
         _systemConfig = systemConfig;
-        _readRseReportFileService = readRseReportFileService;
     }
 
     public CommonReportingRequestModel GetOrderLabelReportingData(int mode, int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, List<RsvkrtOdrInfModel> rsvKrtOdrInfModels)
@@ -53,38 +51,12 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             }
             if (_coModel == null)
             {
-                _coModel = new();
+                return new OrderLabelMapper(_printOutData).GetData();
             }
             _userMsts = finder.FindUserMst(hpId);
             MakeOdrDtlList(sinDate);
             return new OrderLabelMapper(_printOutData).GetData();
         }
-    }
-
-    public CoPrintExitCode CheckOpenOrderLabel(int mode, int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, List<RsvkrtOdrInfModel> rsvKrtOdrInfModels)
-    {
-        var finder = new CoOrderLabelFinder(_tenantProvider);
-        if (mode == 0)
-        {
-            _coModel = GetData(hpId, ptId, sinDate, raiinNo, odrKouiKbns, finder);
-        }
-        else
-        {
-            _coModel = GetDataYoyakuOrder(hpId, ptId, odrKouiKbns, rsvKrtOdrInfModels, finder);
-        }
-        if (_coModel == null)
-        {
-            return CoPrintExitCode.EndNoData;
-        }
-        List<string> templateListCheck = new()
-        {
-            "OrderLabel/fmOrderLabel.rse"
-        };
-        if (_readRseReportFileService.CheckExistTemplate(new(templateListCheck)))
-        {
-            return CoPrintExitCode.EndTemplateNotFound;
-        }
-        return CoPrintExitCode.EndSuccess;
     }
 
     private CoOrderLabelModel? GetData(int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, CoOrderLabelFinder finder)

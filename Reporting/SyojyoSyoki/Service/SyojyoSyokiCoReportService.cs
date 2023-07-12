@@ -56,26 +56,29 @@ namespace Reporting.SyojyoSyoki.Service
             GetRowCount();
             coModels = GetData();
 
-            foreach (CoSyojyoSyokiModel model in coModels)
+            if (coModels != null && coModels.Any()) 
             {
-                coModel = model;
-
-                if (coModel != null && coModel.ReceInf != null)
+                foreach (CoSyojyoSyokiModel model in coModels)
                 {
-                    _hasNextPage = true;
-                    _currentPage = 1;
+                    coModel = model;
 
-                    // 症状詳記リスト
-                    _syojyoSyokiList = new List<string>();
-
-                    MakeSyojyoSyokiList();
-
-                    while (_hasNextPage)
+                    if (coModel != null && coModel.ReceInf != null)
                     {
-                        _hasNextPage = UpdateDrawForm();
-                        _currentPage++;
-                    }
+                        _hasNextPage = true;
+                        _currentPage = 1;
 
+                        // 症状詳記リスト
+                        _syojyoSyokiList = new List<string>();
+
+                        MakeSyojyoSyokiList();
+
+                        while (_hasNextPage)
+                        {
+                            _hasNextPage = UpdateDrawForm();
+                            _currentPage++;
+                        }
+
+                    }
                 }
             }
 
