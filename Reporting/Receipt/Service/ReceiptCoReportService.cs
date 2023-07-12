@@ -181,56 +181,77 @@ namespace Reporting.Receipt.Service
         {
             CoModels = GetData();
 
-            if (CoModels != null && CoModels.Any())
+            int i = 0;
+            while (i < CoModels.Count())
             {
-                int i = 0;
-                while (i < CoModels.Count())
+                CoModel = CoModels[i];
+
+                // フォームチェック
+                if (TargetIsKenpo() ||
+                            (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 0))
                 {
-                    CoModel = CoModels[i];
+                    GetFormParam("fmReceipt.rse");
+                    // 対象が社保国保または、自賠健保準拠
+                    _byomeiCharCount -= 3;
+                    _tekiyoCharCount -= 13;
+                    _tekiyoByoCharCount -= 26;
 
-                    // フォームチェック
-                    if (TargetIsKenpo() ||
-                                (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 0))
+                    if ((int)_systemConfRepository.GetSettingValue(94001, 1, HpId) == 1)
                     {
-                        GetFormParam("fmReceipt.rse");
-                        // 対象が社保国保または、自賠健保準拠
-                        _byomeiCharCount -= 3;
-                        _tekiyoCharCount -= 13;
-                        _tekiyoByoCharCount -= 26;
+                        // 病名欄転帰日記載をする場合
+                        _tekiyoByoCharCount -= 4;
+                    }
 
-                        if ((int)_systemConfRepository.GetSettingValue(94001, 1, HpId) == 1)
+                    // 病名リスト
+                    MakeByoList();
+
+                    // 摘要欄リスト
+                    if (!(new int[]
                         {
-                            // 病名欄転帰日記載をする場合
-                            _tekiyoByoCharCount -= 4;
-                        }
-
-                        // 病名リスト
-                        MakeByoList();
-
-                        // 摘要欄リスト
-                        if (!(new int[]
-                            {
                                         TargetConst.KanagawaRece2,
                                         TargetConst.FukuokaRece2,
                                         TargetConst.SagaRece2,
                                         TargetConst.MiyazakiRece2
-                            }.Contains(Target)))
-                        {
-                            MakeTekiyoList();
-                        }
-
-                    }
-                    else if (new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin, TargetConst.RousaiAfter }.Contains(Target) ||
-                            (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 1, HpId) == 1))
+                        }.Contains(Target)))
                     {
-                        // 労災（短期、年金、アフターケア）、自賠労災準拠
-                        _byomeiCharCount -= 3;
-                        _tekiyoCharCount -= 13;
-                        _tekiyoByoCharCount -= 26;
-                        if ((int)_systemConfRepository.GetSettingValue(94001, 0, HpId) == 1)
-                        {
-                            _tekiyoByoCharCount -= 4;
-                        }
+                        MakeTekiyoList();
+                    }
+
+                }
+                else if (new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin, TargetConst.RousaiAfter }.Contains(Target) ||
+                        (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 1, HpId) == 1))
+                {
+                    // 労災（短期、年金、アフターケア）、自賠労災準拠
+                    _byomeiCharCount -= 3;
+                    _tekiyoCharCount -= 13;
+                    _tekiyoByoCharCount -= 26;
+                    if ((int)_systemConfRepository.GetSettingValue(94001, 0, HpId) == 1)
+                    {
+                        _tekiyoByoCharCount -= 4;
+                    }
+
+                    MakeByoList();
+                    if (Target != TargetConst.RousaiAfter)
+                    {
+                        MakeTekiyoEnListForRousai();
+                    }
+                    MakeTekiyoListForRousai();
+                }
+
+                CurrentPage = 1;
+
+                if (Target == TargetConst.RousaiAfter)
+                {
+                    while (i + 1 < CoModels.Count &&
+                        CoModel.PtId == CoModels[i + 1].PtId &&
+                        CoModel.SinYm == CoModels[i + 1].SinYm &&
+                        CoModel.HokenId == CoModels[i + 1].HokenId
+                        )
+                    {
+                        CoModel = null;
+                        CurrentPage = 1;
+                        i++;
+                        CoModel = CoModels[i];
 
                         MakeByoList();
                         if (Target != TargetConst.RousaiAfter)
@@ -238,37 +259,12 @@ namespace Reporting.Receipt.Service
                             MakeTekiyoEnListForRousai();
                         }
                         MakeTekiyoListForRousai();
+
                     }
-
-                    CurrentPage = 1;
-
-                    if (Target == TargetConst.RousaiAfter)
-                    {
-                        while (i + 1 < CoModels.Count &&
-                            CoModel.PtId == CoModels[i + 1].PtId &&
-                            CoModel.SinYm == CoModels[i + 1].SinYm &&
-                            CoModel.HokenId == CoModels[i + 1].HokenId
-                            )
-                        {
-                            CoModel = null;
-                            CurrentPage = 1;
-                            i++;
-                            CoModel = CoModels[i];
-
-                            MakeByoList();
-                            if (Target != TargetConst.RousaiAfter)
-                            {
-                                MakeTekiyoEnListForRousai();
-                            }
-                            MakeTekiyoListForRousai();
-
-                        }
-                    }
-
-                    i++;
                 }
+
+                i++;
             }
-            
 
         }
 
