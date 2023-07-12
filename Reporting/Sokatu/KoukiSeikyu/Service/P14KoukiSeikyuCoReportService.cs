@@ -71,7 +71,7 @@ public class P14KoukiSeikyuCoReportService : IP14KoukiSeikyuCoReportService
         _seikyuType = seikyuType;
         var getData = GetData();
 
-        if (getData)
+        if(getData)
         {
             foreach (string currentNo in hokensyaNos)
             {
