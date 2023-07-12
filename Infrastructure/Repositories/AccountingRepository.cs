@@ -1247,14 +1247,14 @@ namespace Infrastructure.Repositories
                                                                 x.Status > RaiinState.TempSave &&
                                                                 x.IsDeleted == DeleteTypes.None);
                 if (oyaRaiinNo == null) return new();
-                return raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+                return NoTrackingDataContext.RaiinInfs.Where(x =>
                                                                    x.HpId == hpId &&
                                                                    x.PtId == ptId &&
                                                                    x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo &&
                                                                    x.IsDeleted == DeleteTypes.None
                                                                    ).Select(x => x.RaiinNo).ToList();
             }
-            return raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+            return NoTrackingDataContext.RaiinInfs.Where(x =>
                                                                 x.HpId == hpId &&
                                                                 x.PtId == ptId &&
                                                                 x.IsDeleted == DeleteTypes.None
