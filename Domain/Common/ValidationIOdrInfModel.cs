@@ -189,10 +189,12 @@ namespace Domain.Common
             {
                 return OrdInfValidationStatus.InvalidSuryo;
             }
+
             if (!string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && odrInfDetail.Suryo == 0)
             {
                 return (flag != 1 && flag != 0) ? OrdInfValidationStatus.InvalidSuryo : OrdInfValidationStatus.NoFillSuryo;
             }
+       
             if (!KohatuKbns.ContainsValue(odrInfDetail.KohatuKbn))
             {
                 return OrdInfValidationStatus.InvalidKohatuKbn;
@@ -556,6 +558,10 @@ namespace Domain.Common
             if (odrInfDetail.ItemName.Length > 240)
             {
                 return OrdInfValidationStatus.InvalidItemName;
+            }
+            if (!odrInfDetail.ItemCd.StartsWith("J") && !string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && odrInfDetail.Suryo == -1)
+            {
+                return OrdInfValidationStatus.InvalidPrice;
             }
             if ((odrInfDetail.Suryo < 0 && !odrInfDetail.ItemCd.StartsWith("J")) || odrInfDetail.ItemCd == ItemCdConst.JikanKihon && !(odrInfDetail.Suryo >= 0 && odrInfDetail.Suryo <= 7) || odrInfDetail.ItemCd == ItemCdConst.SyosaiKihon && !(odrInfDetail.Suryo >= 0 && odrInfDetail.Suryo <= 8))
             {

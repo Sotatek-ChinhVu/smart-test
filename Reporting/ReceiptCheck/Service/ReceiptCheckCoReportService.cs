@@ -1,6 +1,7 @@
 ﻿using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReceiptCheck.DB;
 using Reporting.ReceiptCheck.Mapper;
@@ -39,10 +40,13 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
 
             // データ取得
             _coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
-            // レセプト印刷
-            while (_hasNextPage)
+            if (_coModels != null && _coModels.Any())
             {
-                UpdateDrawForm(seikyuYm);
+                // レセプト印刷
+                while (_hasNextPage)
+                {
+                    UpdateDrawForm(seikyuYm);
+                }
             }
 
             return new CoReceiptCheckMapper(_singleFieldData, _tableFieldData).GetData();
@@ -128,5 +132,4 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
             _singleFieldData.Add(field, value);
         }
     }
-
 }

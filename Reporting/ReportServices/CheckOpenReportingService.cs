@@ -2,6 +2,7 @@
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Service;
 using Reporting.CommonMasters.Enums;
+using Reporting.OrderLabel.Service;
 
 namespace Reporting.ReportServices;
 
@@ -50,5 +51,4 @@ public class CheckOpenReportingService : ICheckOpenReportingService
         }
         return _accountingCoReportService.CheckOpenReportingForm(hpId, requestAccountting);
     }
-
 }

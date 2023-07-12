@@ -10,12 +10,13 @@ namespace Entity.Tenant
     [Table("RAIIN_INF")]
     [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(IsDeleted), Name = "RAIIN_INF_IDX01")]
     [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(SyosaisinKbn), nameof(IsDeleted), Name = "RAIIN_INF_IDX02")]
+    [Index(nameof(IsDeleted), nameof(SinDate), nameof(PtId), Name = "RAIIN_INF_IDX03")]
     public class RaiinInf : EmrCloneable<RaiinInf>
     {
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        
+
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -36,7 +37,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 来院番号
         /// </summary>
-        
+
         [Column("RAIIN_NO", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long RaiinNo { get; set; }
