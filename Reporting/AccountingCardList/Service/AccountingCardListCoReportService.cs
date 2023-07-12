@@ -1,10 +1,12 @@
 ﻿using Helper.Common;
+using Infrastructure.Interfaces;
 using Reporting.AccountingCardList.DB;
+using Reporting.AccountingCardList.Mapper;
 using Reporting.AccountingCardList.Model;
+using Reporting.Calculate.Interface;
 using Reporting.Calculate.Receipt.Constants;
 using Reporting.Calculate.Receipt.Models;
 using Reporting.Calculate.Receipt.ViewModels;
-using Reporting.Karte3.Mapper;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -15,6 +17,9 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
 {
     private readonly IReadRseReportFileService _readRseReportFileService;
     private readonly ICoAccountingCardListFinder _finder;
+    private readonly IEmrLogger _emrLogger;
+    private readonly ITenantProvider _tenantProvider;
+    private readonly ISystemConfigProvider _systemConfigProvider;
 
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
@@ -28,7 +33,7 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
     int printPage;
     int currentPage;
 
-    private List<(long PtId, int SinYm, int HokenId)> targets;
+    private List<TargetItem> targets;
     private int hpId;
     private bool includeOutDrug;
     private string kaName;
@@ -39,10 +44,13 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
     private bool hasNextPage;
     private List<CoAccountingCardListPrintDataModel> printOutData;
 
-    public AccountingCardListCoReportService(IReadRseReportFileService readRseReportFileService, ICoAccountingCardListFinder finder)
+    public AccountingCardListCoReportService(IReadRseReportFileService readRseReportFileService, ICoAccountingCardListFinder finder, ISystemConfigProvider systemConfigProvider, ITenantProvider tenantProvider, IEmrLogger emrLogger)
     {
         _readRseReportFileService = readRseReportFileService;
         _finder = finder;
+        _systemConfigProvider = systemConfigProvider;
+        _tenantProvider = tenantProvider;
+        _emrLogger = emrLogger;
         _singleFieldData = new();
         _setFieldData = new();
         _listTextData = new();
@@ -56,7 +64,7 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
         printOutData = new();
     }
 
-    public CommonReportingRequestModel GetKarte3PrintData(int hpId, List<(long ptId, int sinYm, int hokenId)> targets, bool includeOutDrug, string kaName, string tantoName, string uketukeSbt, string hoken)
+    public CommonReportingRequestModel GetAccountingCardListData(int hpId, List<TargetItem> targets, bool includeOutDrug, string kaName, string tantoName, string uketukeSbt, string hoken)
     {
         this.hpId = hpId;
         this.targets = targets;
@@ -95,7 +103,7 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
         }
 
         _extralData.Add("totalPage", (printPage - 1).ToString());
-        return new Karte3Mapper(_singleFieldData, _listTextData, _extralData).GetData();
+        return new CoAccountingCardListMapper(_singleFieldData, _listTextData, _extralData).GetData();
     }
 
     private void MakePrintDataList(int sinYm)
@@ -431,20 +439,20 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
     {
         List<CoAccountingCardListModel> results = new();
 
-        foreach ((long ptId, int sinYmItem, int hokenId) in targets)
+        foreach (var item in targets)
         {
             // 会計情報
-            List<CoKaikeiInfModel> kaikeiInfModels = _finder.FindKaikeiInf(hpId, ptId, sinYmItem, hokenId);
+            List<CoKaikeiInfModel> kaikeiInfModels = _finder.FindKaikeiInf(hpId, item.PtId, item.SinYm, item.HokenId);
 
             // 患者情報 
-            CoPtInfModel ptInfModel = _finder.FindPtInf(hpId, ptId, sinYmItem * 100 + 31);
+            CoPtInfModel ptInfModel = _finder.FindPtInf(hpId, item.PtId, item.SinYm * 100 + 31);
 
             // 診療情報
-            SinMeiViewModel sinMeiViewModel = new SinMeiViewModel(SinMeiMode.AccountingCard, includeOutDrug, hpId, ptId, sinYmItem, hokenId);
+            SinMeiViewModel sinMeiViewModel = new SinMeiViewModel(SinMeiMode.AccountingCard, includeOutDrug, hpId, item.PtId, item.SinYm, item.HokenId, _tenantProvider, _systemConfigProvider, _emrLogger);
 
             // 病名
-            List<CoPtByomeiModel> ptByomeiModels = _finder.FindPtByomei(hpId, ptId, sinYmItem * 100 + 1, sinYmItem * 100 + 31, hokenId);
-            results.Add(new CoAccountingCardListModel(sinYmItem, ptInfModel, kaikeiInfModels, sinMeiViewModel, ptByomeiModels));
+            List<CoPtByomeiModel> ptByomeiModels = _finder.FindPtByomei(hpId, item.PtId, item.SinYm * 100 + 1, item.SinYm * 100 + 31, item.HokenId);
+            results.Add(new CoAccountingCardListModel(item.SinYm, ptInfModel, kaikeiInfModels, sinMeiViewModel, ptByomeiModels));
         }
 
         return results;
@@ -459,7 +467,7 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
             new ObjectCalculate("lsByomei1", (int)CalculateTypeEnum.GetFormatLength),
         };
 
-        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Karte3, string.Empty, fieldInputList);
+        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.AccountingCardList, string.Empty, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         dataRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsSinId1" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
         byomeiCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsData1" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result ?? 0;

@@ -460,55 +460,6 @@ namespace Reporting.Calculate.Receipt.ViewModels
         /// <param name="sinYm"></param>
         /// <param name="hokenId"></param>
         public SinMeiViewModel(
-            int mode, bool includeOutDrg, int hpId, long ptId, int sinYm, int hokenId)
-        {
-            const string conFncName = nameof(SinMeiViewModel);
-
-            int sinDate = CIUtil.GetLastDateOfMonth(sinYm * 100 + 1);
-            List<long> raiinNos = new List<long>();
-
-            try
-            {
-                List<SinRpInfModel> sinRpInfModels = _santeiFinder.FindSinRpInfDataNoTrack(hpId, ptId, sinDate);
-                List<SinKouiModel> sinKouiModels = _santeiFinder.FindSinKouiDataNoTrack(hpId, ptId, sinDate);
-                List<SinKouiDetailModel> sinKouiDetailModels = _santeiFinder.FindSinKouiDetailDataNoTrack(hpId, ptId, sinDate);
-                List<SinKouiCountModel> sinKouiCountModels = _santeiFinder.FindSinKouiCountDataNoTrack(hpId, ptId, sinDate);
-                List<Futan.Models.KaikeiInfModel> kaikeiInfs = _ptFinder.GetKaikeiInf(hpId, ptId, sinDate, hokenId);
-
-                List<ReceInfModel> receInfs = null;
-                if (!(new int[] { SinMeiMode.Kaikei, SinMeiMode.Ryosyu, SinMeiMode.AccountingCard }.Contains(mode)))
-                {
-                    receInfs = _ptFinder.GetReceInf(hpId, ptId, sinDate, 0, 0);
-                }
-                PtInfModel ptInf = _ptFinder.FindPtInf(hpId, ptId, sinDate);
-
-                MakeSinMei(mode, includeOutDrg, hpId, ptId, sinYm * 100 + 1, raiinNos, sinRpInfModels, sinKouiModels, sinKouiCountModels, sinKouiDetailModels, kaikeiInfs, receInfs, ptInf, hokenId);
-            }
-            catch (Exception e)
-            {
-                Log.WriteLogError(ModuleName, this, conFncName, e);
-            }
-        }
-
-        /// <summary>
-        /// 診療明細データ管理クラス（会計カード用）
-        /// </summary>
-        /// <param name="mode"></param>
-        ///     0: レセプト電算
-        ///     1: 紙レセプト
-        ///     2: レセチェック
-        ///     3: 領収証
-        ///     4: アフターケア
-        ///    11: 紙レセプト点数欄
-        ///    12: 労災レセプト点数欄
-        ///    13: アフターケア点数欄
-        ///    21: 会計カード
-        /// <param name="includeOutDrg"></param>
-        /// <param name="hpId"></param>
-        /// <param name="ptId"></param>
-        /// <param name="sinYm"></param>
-        /// <param name="hokenId"></param>
-        public SinMeiViewModel(
             int mode, bool includeOutDrg, int hpId, long ptId, int sinYm, int hokenId,
             ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
