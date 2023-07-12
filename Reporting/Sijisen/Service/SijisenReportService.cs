@@ -73,14 +73,12 @@ public class SijisenReportService : ISijisenReportService
         printoutDateTime = CIUtil.GetJapanDateTimeNow();
         currentPage = 1;
 
-        GetRowCount();
         coModel = GetData() ?? new();
-        MakeOdrDtlList();
-
-        hasNextPage = true;
-
         if (coModel != null)
         {
+            GetRowCount();
+            MakeOdrDtlList();
+            hasNextPage = true;
             while (hasNextPage)
             {
                 UpdateDrawForm();

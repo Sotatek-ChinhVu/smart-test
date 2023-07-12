@@ -242,6 +242,7 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
     {
         var data = _reportService.GetAccountingCardReportingData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.IncludeOutDrug);
+
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -249,6 +250,13 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GetKarte3ReportingData([FromQuery] Karte3ReportingRequest request)
     {
         var data = _reportService.GetKarte3ReportingData(request.HpId, request.PtId, request.StartSinYm, request.EndSinYm, request.IncludeHoken, request.IncludeJihi);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+    
+    [HttpPost(ApiPath.AccountingCardList)]
+    public async Task<IActionResult> GetAccountingCardListReportingData([FromBody] AccountingCardListRequest request)
+    {
+        var data = _reportService.GetAccountingCardListReportingData(request.HpId, request.Targets, request.IncludeOutDrug, request.KaName, request.TantoName, request.UketukeSbt, request.Hoken);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -330,49 +338,40 @@ public class PdfCreatorController : ControllerBase
         return outputStream.ToArray();
     }
 
-    private async Task<IActionResult> RenderPdf(object data, ReportType reportType, string fileName)
+    private async Task<IActionResult> RenderPdf(CommonReportingRequestModel data, ReportType reportType, string fileName)
     {
-        StringContent jsonContent = (reportType == ReportType.DrugInfo)
-          ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
-          new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
-
-        var json = JsonSerializer.Serialize(data);
         bool returnNoData = false;
-        switch (reportType)
+        if (data.ReportType <= 0
+            || (!data.TableFieldData.Any()
+                && !data.ListTextData.Any()
+                && !data.SingleFieldList.Any()
+                && !data.SetFieldData.Any()))
         {
-            case ReportType.Common:
-                CommonReportingRequestModel commonRequest = JsonSerializer.Deserialize<CommonReportingRequestModel>(json) ?? new();
-                if (commonRequest.ReportType <= 0
-                    || (!commonRequest.TableFieldData.Any()
-                        && !commonRequest.ListTextData.Any()
-                        && !commonRequest.SingleFieldList.Any()
-                        && !commonRequest.SetFieldData.Any()))
-                {
-                    returnNoData = true;
-                }
-                break;
-            case ReportType.DrugInfo:
-                DrugInfoData drugInfoData = JsonSerializer.Deserialize<DrugInfoData>(json) ?? new();
-                if (!drugInfoData.drugInfoList.Any())
-                {
-                    returnNoData = true;
-                }
-                break;
-            case ReportType.OutDug:
-                CoOutDrugReportingOutputData outDrugData = JsonSerializer.Deserialize<CoOutDrugReportingOutputData>(json) ?? new();
-                if (!outDrugData.Data.Any())
-                {
-                    returnNoData = true;
-                }
-                break;
-            case ReportType.Accounting:
-                AccountingResponse accountingResponse = JsonSerializer.Deserialize<AccountingResponse>(json) ?? new();
-                if (!accountingResponse.AccountingReportingRequestItems.Any())
-                {
-                    returnNoData = true;
-                }
-                break;
+            returnNoData = true;
         }
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> RenderPdf(DrugInfoData data, ReportType reportType, string fileName)
+    {
+        bool returnNoData = !data.drugInfoList.Any();
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> RenderPdf(CoOutDrugReportingOutputData data, ReportType reportType, string fileName)
+    {
+        bool returnNoData = !data.Data.Any();
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> RenderPdf(AccountingResponse data, ReportType reportType, string fileName)
+    {
+        bool returnNoData = !data.AccountingReportingRequestItems.Any();
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> ActionReturnPDF(bool returnNoData, object data, ReportType reportType, string fileName)
+    {
         if (returnNoData)
         {
             return Content(@"
@@ -382,6 +381,11 @@ public class PdfCreatorController : ControllerBase
             ", "text/html");
         }
 
+        StringContent jsonContent = (reportType == ReportType.DrugInfo)
+          ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
+          new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+
+        var json = JsonSerializer.Serialize(data);
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
         string functionName = reportType switch

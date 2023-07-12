@@ -122,7 +122,6 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
             if (_coModels.Count == 0)
             {
-                result.Add(new CoOutDrugReportingOutputItem());
                 return new CoOutDrugReportingOutputData()
                 {
                     Data = result,

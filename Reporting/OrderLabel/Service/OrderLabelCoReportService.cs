@@ -51,7 +51,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             }
             if (_coModel == null)
             {
-                _coModel = new();
+                return new OrderLabelMapper(_printOutData).GetData();
             }
             _userMsts = finder.FindUserMst(hpId);
             MakeOdrDtlList(sinDate);

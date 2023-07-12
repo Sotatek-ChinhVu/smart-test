@@ -50,11 +50,6 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         {
             SetupPrintData(hpId, orderInfoModel);
         }
-
-        if (!drugInfoList.Any())
-        {
-            drugInfoList.Add(new DrugInfoModel());
-        }
         return new DrugInfoData(
                    selectedFormType,
                    configType,
