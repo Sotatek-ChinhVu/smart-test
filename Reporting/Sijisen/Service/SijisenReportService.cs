@@ -78,17 +78,14 @@ public class SijisenReportService : ISijisenReportService
         MakeOdrDtlList();
 
         hasNextPage = true;
-
-        if (coModel != null)
+        // 指示箋印刷
+        while (hasNextPage)
         {
-            while (hasNextPage)
-            {
-                UpdateDrawForm();
-                currentPage++;
-            }
+            UpdateDrawForm();
+            currentPage++;
         }
 
-        return new SijisenMapper(_singleFieldData, _tableFieldData, "lsOrder", GetJobName(formType, coModel!.PtNum)).GetData();
+        return new SijisenMapper(_singleFieldData, _tableFieldData, "lsOrder", GetJobName(formType, coModel.PtNum)).GetData();
     }
 
     private string GetJobName(int formType, long ptNum)

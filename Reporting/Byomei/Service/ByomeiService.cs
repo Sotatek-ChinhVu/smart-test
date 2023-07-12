@@ -53,27 +53,23 @@ public class ByomeiService : IByomeiService
         this.tenkiIn = tenkiIn;
 
         var coModels = GetData();
-        if(coModels != null && coModels.Any()) 
+        GetRowCount();
+
+        foreach (CoPtByomeiModel ptByomeiModel in coModels)
         {
-            GetRowCount();
+            coModel = ptByomeiModel;
+            currentPage = 1;
+            printOutData = new();
+            MakePrintDataList();
+            hasNextPage = true;
 
-            foreach (CoPtByomeiModel ptByomeiModel in coModels)
+            //病名一覧印刷
+            while (hasNextPage)
             {
-                coModel = ptByomeiModel;
-                currentPage = 1;
-                printOutData = new();
-                MakePrintDataList();
-                hasNextPage = true;
-
-                //病名一覧印刷
-                while (hasNextPage)
-                {
-                    UpdateDrawForm();
-                    currentPage++;
-                }
+                UpdateDrawForm();
+                currentPage++;
             }
-        };
-        
+        }
         return new ByomeiMapper(_singleFieldData, _tableFieldData, _visibleFieldList).GetData();
     }
 

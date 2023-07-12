@@ -90,17 +90,16 @@ namespace Reporting.Statistics.Sta2011.Service
             // get data to print
             GetFieldNameList();
             GetRowCount();
-            if (GetData())
-            {
-                _hasNextPage = true;
-                _currentPage = 1;
+            GetData();
+            _hasNextPage = true;
 
-                //印刷
-                while (_hasNextPage)
-                {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
+            _currentPage = 1;
+
+            //印刷
+            while (_hasNextPage)
+            {
+                UpdateDrawForm();
+                _currentPage++;
             }
 
             return new Sta2011Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
