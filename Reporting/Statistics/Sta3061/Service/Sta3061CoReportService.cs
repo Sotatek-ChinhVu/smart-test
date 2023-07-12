@@ -195,18 +195,15 @@ public class Sta3061CoReportService : ISta3061CoReportService
         // get data to print
         GetFieldNameList(formFileName);
         GetRowCount(formFileName);
+        GetData(hpId);
+        hasNextPage = true;
+        currentPage = 1;
 
-        if (GetData(hpId))
+        //印刷
+        while (hasNextPage)
         {
-            hasNextPage = true;
-            currentPage = 1;
-
-            //印刷
-            while (hasNextPage)
-            {
-                UpdateDrawForm();
-                currentPage++;
-            }
+            UpdateDrawForm();
+            currentPage++;
         }
 
         return new Sta3061Mapper(_singleFieldData, _tableFieldData, _extralData, rowCountFieldName, formFileName).GetData();
@@ -426,7 +423,7 @@ public class Sta3061CoReportService : ISta3061CoReportService
         UpdateFormBody();
     }
 
-    private bool GetData(int hpId)
+    private void GetData(int hpId)
     {
         void MakePrintData()
         {
@@ -714,7 +711,7 @@ public class Sta3061CoReportService : ISta3061CoReportService
 
         //データ取得
         kouiTensus = _finder.GetKouiTensu(hpId, printConf);
-        if ((kouiTensus?.Count ?? 0) == 0) return false;
+        if ((kouiTensus?.Count ?? 0) == 0) return;
 
         hpInf = _finder.GetHpInf(hpId, kouiTensus?.FirstOrDefault()?.SinDate ?? 0);
         jihiSbtMsts = _finder.GetJihiSbtMst(hpId);
@@ -734,8 +731,6 @@ public class Sta3061CoReportService : ISta3061CoReportService
 
         //印刷用データの作成
         MakePrintData();
-
-        return printDatas.Count > 0;
     }
 
     private void SetFieldData(string field, string value)

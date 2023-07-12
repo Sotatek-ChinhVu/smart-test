@@ -102,17 +102,16 @@ namespace Reporting.Statistics.Sta2021.Service
             // get data to print
             GetFieldNameList();
             GetColRowCount();
-            if (GetData())
-            {
-                _hasNextPage = true;
-                _currentPage = 1;
+            GetData();
+            _hasNextPage = true;
 
-                //印刷
-                while (_hasNextPage)
-                {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
+            _currentPage = 1;
+
+            //印刷
+            while (_hasNextPage)
+            {
+                UpdateDrawForm();
+                _currentPage++;
             }
 
             return new Sta2021Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, _visibleFieldData).GetData();

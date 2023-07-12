@@ -261,34 +261,34 @@ namespace Reporting.Karte1.Model
 
                 if (PtHokenInfModel != null)
                 {
-                    if (new int[] { 1, 2 }.Contains(PtHokenInfModel?.HokenKbn ?? 0))
+                    if (new int[] { 1, 2 }.Contains(PtHokenInfModel.HokenKbn))
                     {
 
-                        ret = GetHokenRate(PtHokenInfModel!.Rate, PtHokenInfModel.HokenSbtKbn, PtHokenInfModel.KogakuKbn, PtHokenInfModel.Houbetu);
+                        ret = GetHokenRate(PtHokenInfModel.Rate, PtHokenInfModel.HokenSbtKbn, PtHokenInfModel.KogakuKbn, PtHokenInfModel.Houbetu);
 
                     }
-                    else if (PtHokenInfModel?.HokenKbn == 0)
+                    else if (PtHokenInfModel.HokenKbn == 0)
                     {
                         // 自費
-                        ret = PtHokenInfModel?.Rate;
+                        ret = PtHokenInfModel.Rate;
                     }
                     else
                     {
                         // 労災・自賠
-                        ret = PtHokenInfModel?.Rate;
+                        ret = PtHokenInfModel.Rate;
                     }
 
-                    if (PtHokenInfModel?.PtKohis != null)
+                    if (PtHokenInfModel.PtKohis != null)
                     {
-                        for (int i = 0; i < PtHokenInfModel?.PtKohis.Count; i++)
+                        for (int i = 0; i < PtHokenInfModel.PtKohis.Count; i++)
                         {
-                            if (PtHokenInfModel?.PtKohis[i].HokenMst?.FutanKbn == 0)
+                            if (PtHokenInfModel.PtKohis[i].HokenMst?.FutanKbn == 0)
                             {
                                 ret = 0;
                             }
-                            else if (PtHokenInfModel?.PtKohis[i]?.FutanRate != null && PtHokenInfModel?.PtKohis[i].FutanRate > 0 && (ret == null || ret > PtHokenInfModel?.PtKohis[i].FutanRate))
+                            else if (PtHokenInfModel.PtKohis[i]?.FutanRate != null && PtHokenInfModel.PtKohis[i].FutanRate > 0 && (ret == null || ret > PtHokenInfModel.PtKohis[i].FutanRate))
                             {
-                                ret = PtHokenInfModel?.PtKohis[i].FutanRate;
+                                ret = PtHokenInfModel.PtKohis[i].FutanRate;
                             }
                         }
                     }
@@ -361,7 +361,7 @@ namespace Reporting.Karte1.Model
             get
             {
                 if (PtHokenInfModel == null) return 0;
-                return (100 - PtHokenInfModel?.Rate ?? 0) / 10;
+                return (100 - PtHokenInfModel.Rate) / 10;
             }
         }
         /// <summary>
@@ -371,7 +371,7 @@ namespace Reporting.Karte1.Model
         /// <returns></returns>
         public int KohiId(int index)
         {
-            return PtHokenInfModel?.KohiId(index) ?? 0;
+            return PtHokenInfModel.KohiId(index);
         }
         /// <summary>
         /// 公費負担者番号
@@ -380,7 +380,7 @@ namespace Reporting.Karte1.Model
         /// <returns></returns>
         public string KohiFutansyaNo(int index)
         {
-            return PtHokenInfModel?.KohiFutansyaNo(index) ?? string.Empty;
+            return PtHokenInfModel.KohiFutansyaNo(index);
 
         }
         /// <summary>
@@ -390,7 +390,7 @@ namespace Reporting.Karte1.Model
         /// <returns></returns>
         public string KohiJyukyusyaNo(int index)
         {
-            return PtHokenInfModel?.KohiJyukyusyaNo(index) ?? string.Empty;
+            return PtHokenInfModel.KohiJyukyusyaNo(index);
 
         }
         /// <summary>
@@ -400,7 +400,7 @@ namespace Reporting.Karte1.Model
         /// <returns></returns>
         public int KohiStartDate(int index)
         {
-            return PtHokenInfModel?.KohiStartDate(index) ?? 0;
+            return PtHokenInfModel.KohiStartDate(index);
 
         }
         /// <summary>
@@ -410,7 +410,7 @@ namespace Reporting.Karte1.Model
         /// <returns></returns>
         public int KohiEndDate(int index)
         {
-            return PtHokenInfModel?.KohiEndDate(index) ?? 0;
+            return PtHokenInfModel.KohiEndDate(index);
 
         }
         /// <summary>
@@ -420,7 +420,7 @@ namespace Reporting.Karte1.Model
         /// <returns></returns>
         public int KohiSikakuDate(int index)
         {
-            return PtHokenInfModel?.KohiSikakuDate(index) ?? 0;
+            return PtHokenInfModel.KohiSikakuDate(index);
 
         }
         /// <summary>
@@ -430,7 +430,7 @@ namespace Reporting.Karte1.Model
         /// <returns></returns>
         public int KohiKofuDate(int index)
         {
-            return PtHokenInfModel?.KohiKofuDate(index) ?? 0;
+            return PtHokenInfModel.KohiKofuDate(index);
 
         }
         /// <summary>

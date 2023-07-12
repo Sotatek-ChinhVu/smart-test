@@ -93,23 +93,22 @@ public class Sta1002CoReportService : ISta1002CoReportService
         // get data to print
         GetFieldNameList();
         GetRowCount();
-        if (GetData(hpId))
+        GetData(hpId);
+        _hasNextPage = true;
+
+        _currentPage = 1;
+
+        //印刷
+        while (_hasNextPage)
         {
-            _hasNextPage = true;
-
-            _currentPage = 1;
-
-            //印刷
-            while (_hasNextPage)
-            {
-                UpdateDrawForm();
-                _currentPage++;
-            }
+            UpdateDrawForm();
+            _currentPage++;
         }
+
         return new Sta1002Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
     }
 
-    private bool GetData(int hpId)
+    private void GetData(int hpId)
     {
         void MakePrintData()
         {
@@ -476,7 +475,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
         _syunoInfs = _finder.GetSyunoInfs(hpId, _printConf);
         if ((_syunoInfs?.Count ?? 0) == 0)
         {
-            return false;
+            return;
         }
 
         _jihiSbtMsts = _finder.GetJihiSbtMst(hpId);
@@ -484,7 +483,6 @@ public class Sta1002CoReportService : ISta1002CoReportService
 
         //印刷用データの作成
         MakePrintData();
-        return _printDatas.Count > 0;
     }
 
     private void UpdateDrawForm()
