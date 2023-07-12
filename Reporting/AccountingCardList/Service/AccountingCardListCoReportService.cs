@@ -102,6 +102,7 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
         }
 
         _extralData.Add("totalPage", (printPage - 1).ToString());
+        _extralData.Add("dataRowCount", dataRowCount.ToString());
         return new CoAccountingCardListMapper(_setFieldData, _listTextData, _extralData).GetData();
     }
 
@@ -360,7 +361,7 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
         {
             int dataIndex = (currentPage - 1) * dataRowCount * 3;
 
-            for (int listNo = 1; listNo <= 3; listNo++)
+            for (short listNo = 1; listNo <= 3; listNo++)
             {
                 if (!hasNextPage) break;
                 for (short i = 0; i < dataRowCount; i++)
@@ -387,35 +388,26 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
                     listDataPerPage.Add(new($"lsX{listNo}", 0, i, printData.X));
                     listDataPerPage.Add(new($"lsCount{listNo}", 0, i, printData.Count));
 
-                    //#region セル装飾
-                    //// 行の四方位置を取得する
-                    //if (!string.IsNullOrEmpty(printData.SinId))
-                    //{
-                    //    (long startX, long startY, long endX, long endY) = CoRep.GetListRowBounds($"lsLine{listNo}", i);
-
-                    //    // 上に線を引く（ただし、先頭行の場合は引かない）
-                    //    if (i != 0)
-                    //    {
-                    //        CoRep.DrawLine(startX, startY, endX, startY, 30);
-                    //    }
-
-                    //    if (printData.SinId == "合計")
-                    //    {
-                    //        if (i != dataRowCount - 1)
-                    //        {
-                    //            CoRep.DrawLine(startX, endY, endX, endY, 30);
-                    //        }
-                    //    }
-                    //}
-                    //else if (!(string.IsNullOrEmpty(printData.X)) && printData.X == "点")
-                    //{
-                    //    (long startX, long startY, long endX, long endY) = CoRep.GetListCellBounds($"lsLine{listNo}", 1, i);
-                    //    if (i != 0)
-                    //    {
-                    //        CoRep.DrawLine(startX, startY, endX, startY, (long)Hos.CnDraw.Constants.ConLineStyle.Dot);
-                    //    }
-                    //}
-                    //#endregion
+                    #region セル装飾
+                    // 行の四方位置を取得する
+                    string rowKey = listNo + "_" + i + "_" + printPage;
+                    if (!string.IsNullOrEmpty(printData.SinId))
+                    {
+                        // 上に線を引く（ただし、先頭行の場合は引かない）
+                        if (i != 0)
+                        {
+                            _extralData.Add("GroupDraw1_" + rowKey, "true");
+                        }
+                        if (printData.SinId == "合計" && i != dataRowCount - 1)
+                        {
+                            _extralData.Add("GroupDraw2_" + rowKey, "true");
+                        }
+                    }
+                    else if (!(string.IsNullOrEmpty(printData.X)) && printData.X == "点" && i != 0)
+                    {
+                        _extralData.Add("GroupDraw3_" + rowKey, "true");
+                    }
+                    #endregion
 
                     dataIndex++;
                     if (dataIndex >= printOutData.Count)
@@ -469,7 +461,7 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.AccountingCardList, string.Empty, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         dataRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsSinId1" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
-        byomeiCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsData1" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result ?? 0;
-        dataCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsByomei1" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result ?? 0;
+        dataCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsData1" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result ?? 0;
+        byomeiCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsByomei1" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result ?? 0;
     }
 }
