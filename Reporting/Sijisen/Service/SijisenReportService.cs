@@ -75,12 +75,11 @@ public class SijisenReportService : ISijisenReportService
 
         GetRowCount();
         coModel = GetData() ?? new();
-        MakeOdrDtlList();
-
-        hasNextPage = true;
-
         if (coModel != null)
         {
+            MakeOdrDtlList();
+
+            hasNextPage = true;
             while (hasNextPage)
             {
                 UpdateDrawForm();

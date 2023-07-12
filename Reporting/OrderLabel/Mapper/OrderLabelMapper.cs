@@ -43,14 +43,16 @@ public class OrderLabelMapper : CommonReportingRequest
         List<Dictionary<string, CellModel>> result = new();
         foreach (var item in _printOutData)
         {
-            Dictionary<string, CellModel> data = new Dictionary<string, CellModel>();
-            data.Add("lsOdrKbn", new CellModel(item.InOut));
-            data.Add("lsRpNo", new CellModel(item.RpNo));
-            data.Add("lsOrder", new CellModel(item.Data));
-            data.Add("lsOrderWide", new CellModel(item.DataWide));
-            data.Add("lsComment", new CellModel(item.Comment));
-            data.Add("lsSuryo", new CellModel(item.Suuryo));
-            data.Add("lsTani", new CellModel(item.Tani));
+            Dictionary<string, CellModel> data = new Dictionary<string, CellModel>
+            {
+                { "lsOdrKbn", new CellModel(item.InOut) },
+                { "lsRpNo", new CellModel(item.RpNo) },
+                { "lsOrder", new CellModel(item.Data) },
+                { "lsOrderWide", new CellModel(item.DataWide) },
+                { "lsComment", new CellModel(item.Comment) },
+                { "lsSuryo", new CellModel(item.Suuryo) },
+                { "lsTani", new CellModel(item.Tani) }
+            };
             result.Add(data);
         }
         return result;
