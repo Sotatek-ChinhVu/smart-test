@@ -7,6 +7,10 @@ using Interactor.MedicalExamination.HistoryCommon;
 using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
+using Reporting.Accounting.Model.Output;
+using Reporting.DrugInfo.Model;
+using Reporting.Mappers.Common;
+using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
 using System.Net.Mime;
@@ -195,7 +199,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPrint)]
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
-        var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType);
+        var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -231,6 +235,7 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
     {
         var data = _reportService.GetAccountingCardReportingData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.IncludeOutDrug);
+
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -319,11 +324,50 @@ public class PdfCreatorController : ControllerBase
         return outputStream.ToArray();
     }
 
-    private async Task<IActionResult> RenderPdf(object data, ReportType reportType, string fileName)
+    private async Task<IActionResult> RenderPdf(CommonReportingRequestModel data, ReportType reportType, string fileName)
     {
-        StringContent jsonContent = (reportType ==
-          ReportType.Karte1
-          || reportType == ReportType.DrugInfo)
+        bool returnNoData = false;
+        if (data.ReportType <= 0
+            || (!data.TableFieldData.Any()
+                && !data.ListTextData.Any()
+                && !data.SingleFieldList.Any()
+                && !data.SetFieldData.Any()))
+        {
+            returnNoData = true;
+        }
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> RenderPdf(DrugInfoData data, ReportType reportType, string fileName)
+    {
+        bool returnNoData = !data.drugInfoList.Any();
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> RenderPdf(CoOutDrugReportingOutputData data, ReportType reportType, string fileName)
+    {
+        bool returnNoData = !data.Data.Any();
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> RenderPdf(AccountingResponse data, ReportType reportType, string fileName)
+    {
+        bool returnNoData = !data.AccountingReportingRequestItems.Any();
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> ActionReturnPDF(bool returnNoData, object data, ReportType reportType, string fileName)
+    {
+        if (returnNoData)
+        {
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
+        }
+
+        StringContent jsonContent = (reportType == ReportType.DrugInfo)
           ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
           new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
@@ -332,7 +376,6 @@ public class PdfCreatorController : ControllerBase
 
         string functionName = reportType switch
         {
-            ReportType.Karte1 => "reporting-fm-karte1",
             ReportType.DrugInfo => "reporting-fm-drugInfo",
             ReportType.Common => "common-reporting",
             ReportType.OutDug => "reporting-out-drug",

@@ -97,12 +97,15 @@ namespace Reporting.Statistics.Sta3001.Service
 
             _currentPage = 1;
             var getData = GetData();
-            //印刷
-            while (_hasNextPage && getData)
+            if (getData)
             {
-                UpdateDrawForm();
-                _currentPage++;
+                while (_hasNextPage && getData)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
+            //印刷
 
             return new Sta3001Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
         }

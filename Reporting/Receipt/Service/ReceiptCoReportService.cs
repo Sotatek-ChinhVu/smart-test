@@ -6,6 +6,7 @@ using Infrastructure.Interfaces;
 using Reporting.Calculate.Constants;
 using Reporting.Calculate.Ika.Models;
 using Reporting.Calculate.Interface;
+using Reporting.Calculate.ReceFutan.ViewModels;
 using Reporting.Calculate.Receipt.Constants;
 using Reporting.Calculate.Receipt.Models;
 using Reporting.Calculate.Receipt.ViewModels;
@@ -17,9 +18,8 @@ using Reporting.Receipt.DB;
 using Reporting.Receipt.Mapper;
 using Reporting.Receipt.Models;
 using Reporting.Structs;
-using ReceFutanReceInfModel = Reporting.Calculate.ReceFutan.Models.ReceInfModel;
 using ReceFutanReceFutanKbnModel = Reporting.Calculate.ReceFutan.Models.ReceFutanKbnModel;
-using Reporting.Calculate.ReceFutan.ViewModels;
+using ReceFutanReceInfModel = Reporting.Calculate.ReceFutan.Models.ReceInfModel;
 
 namespace Reporting.Receipt.Service
 {
@@ -118,7 +118,9 @@ namespace Reporting.Receipt.Service
 
             var receInf = _coReceiptFinder.GetReceInf(hpId, ptId, SeikyuYm, sinYm, hokenId);
 
-            // TODO message or somthing process here
+            if (receInf == null) return new();
+
+            // TODO message or something process here
             var target = -1;
             switch (receInf.HokenKbn)
             {

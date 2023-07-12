@@ -14,6 +14,7 @@ using Domain.Models.SpecialNote.SummaryInf;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using System.Reflection;
 using System.Text;
 using UseCase.Family;
 using UseCase.MedicalExamination.SaveMedical;
@@ -254,7 +255,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return listError;
     }
 
-    private List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromListOrder(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromListOrder(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>> listError = new List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>>();
 
@@ -361,7 +362,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckAge(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckAge(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> ageChecker =
            new AgeChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -1323,7 +1324,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<ErrorInfoModel> result = new();
         foreach (DayLimitResultModel dayLimit in dayLimitError)
         {
-            string itemName = _itemNameDictionary.ContainsKey(dayLimit.YjCd) ? _itemNameDictionary[dayLimit.YjCd] : string.Empty;
+            string itemName = _realtimeOrderErrorFinder.FindItemName(dayLimit.YjCd, _sinday);
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
             errorInfoModel.ErrorType = CommonCheckerType.DayLimitChecker;

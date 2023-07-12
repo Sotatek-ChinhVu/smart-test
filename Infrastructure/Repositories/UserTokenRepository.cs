@@ -18,6 +18,7 @@ namespace Infrastructure.Repositories
                 return new UserTokenModel();
 
             UserTokenModel info = new UserTokenModel(instance.UserId, instance.RefreshToken, instance.RefreshTokenExpiryTime, instance.RefreshTokenIsUsed);
+                var expiredToken = DateTime.UtcNow.AddHours(8);
             if (!info.RefreshTokenIsValid)
                 return info;
             else
@@ -26,7 +27,7 @@ namespace Infrastructure.Repositories
                 TrackingDataContext.UserTokens.Add(new UserToken()
                 {
                     RefreshToken = refreshTokenNew,
-                    RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8),
+                    RefreshTokenExpiryTime = expiredToken,
                     UserId = userId
                 });
 
@@ -34,7 +35,7 @@ namespace Infrastructure.Repositories
                 TrackingDataContext.RemoveRange(refreshTokenExpireds);
 
                 if (TrackingDataContext.SaveChanges() > 0)
-                    return new UserTokenModel(instance.UserId, refreshTokenNew, instance.RefreshTokenExpiryTime, false);
+                    return new UserTokenModel(instance.UserId, refreshTokenNew, expiredToken, false);
                 else
                     return new UserTokenModel();
             }

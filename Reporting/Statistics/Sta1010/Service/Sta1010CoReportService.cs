@@ -142,16 +142,19 @@ public class Sta1010CoReportService : ISta1010CoReportService
         // get data to print
         GetFieldNameList(formFileName);
         GetRowCount(formFileName);
-        GetData(hpId);
-        _hasNextPage = true;
-        _currentPage = 1;
-
-        //印刷
-        while (_hasNextPage)
+        if (GetData(hpId))
         {
-            UpdateDrawForm();
-            _currentPage++;
+            _hasNextPage = true;
+            _currentPage = 1;
+
+            //印刷
+            while (_hasNextPage)
+            {
+                UpdateDrawForm();
+                _currentPage++;
+            }
         }
+        
         return new Sta1010Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, formFileName).GetData();
     }
 
@@ -255,7 +258,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
         UpdateFormBody();
     }
 
-    private void GetData(int hpId)
+    private bool GetData(int hpId)
     {
         void MakePrintData()
         {
@@ -476,11 +479,13 @@ public class Sta1010CoReportService : ISta1010CoReportService
         _syunoInfs = _finder.GetSyunoInfs(hpId, _printConf);
         if ((_syunoInfs?.Count ?? 0) == 0)
         {
-            return;
+            return false;
         }
 
         //印刷用データの作成
         MakePrintData();
+
+        return _printDatas.Count > 0;
     }
 
     private void SetFieldData(string field, string value)

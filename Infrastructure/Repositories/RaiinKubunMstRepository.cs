@@ -403,9 +403,9 @@ namespace Infrastructure.Repositories
 
         public List<RaiinKbnModel> GetRaiinKbns(int hpId, long ptId, long raiinNo, int sinDate)
         {
-            var raiinKbnMstRespo = NoTrackingDataContext.RaiinKbnMsts.Where(p => p.IsDeleted == 0 && p.HpId == hpId);
-            var raiinKbnDetailRespo = NoTrackingDataContext.RaiinKbnDetails.Where(p => p.IsDeleted == 0 && p.HpId == hpId);
-            var raiinKbnInfRespo = NoTrackingDataContext.RaiinKbnInfs.Where(p => p.IsDelete == 0 && p.HpId == hpId && p.RaiinNo == raiinNo && p.PtId == ptId && p.SinDate == sinDate);
+            var raiinKbnMstRespo = NoTrackingDataContext.RaiinKbnMsts.Where(p => p.IsDeleted == 0 && p.HpId == hpId).ToList();
+            var raiinKbnDetailRespo = NoTrackingDataContext.RaiinKbnDetails.Where(p => p.IsDeleted == 0 && p.HpId == hpId).ToList();
+            var raiinKbnInfRespo = NoTrackingDataContext.RaiinKbnInfs.Where(p => p.IsDelete == 0 && p.HpId == hpId && p.RaiinNo == raiinNo && p.PtId == ptId && p.SinDate == sinDate).ToList();
             var result = (from kbnMst in raiinKbnMstRespo.AsEnumerable()
                           join kbnDetail in raiinKbnDetailRespo on
                           new { kbnMst.HpId, kbnMst.GrpCd } equals

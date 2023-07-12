@@ -616,6 +616,8 @@ using UseCase.AccountDue.IsNyukinExisted;
 using UseCase.Lock.CheckLockOpenAccounting;
 using Reporting.Karte3.Service;
 using Reporting.Karte3.DB;
+using UseCase.Reception.GetLastKarute;
+using UseCase.MstItem.ConvertStringChkJISKj;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -790,6 +792,13 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP22WelfareSeikyuCoReportService, P22WelfareSeikyuCoReportService>();
             services.AddTransient<IKarte3CoReportService, Karte3CoReportService>();
             services.AddTransient<ICoKarte3Finder, CoKarte3Finder>();
+            services.AddTransient<IP21KoukiSeikyuCoReportService, P21KoukiSeikyuCoReportService>();
+            services.AddTransient<IP22KoukiSeikyuCoReportService, P22KoukiSeikyuCoReportService>();
+            services.AddTransient<IP23KoukiSeikyuCoReportService, P23KoukiSeikyuCoReportService>();
+            services.AddTransient<IP24KoukiSeikyuCoReportService, P24KoukiSeikyuCoReportService>();
+            services.AddTransient<IP25KoukiSeikyuCoReportService, P25KoukiSeikyuCoReportService>();
+            services.AddTransient<IP27KoukiSeikyuCoReportService, P27KoukiSeikyuCoReportService>();
+            services.AddTransient<IP14KokhoSokatuCoReportService, P14KokhoSokatuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -1137,6 +1146,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateAdoptedItemListInputData, UpdateAdoptedItemListInteractor>();
             busBuilder.RegisterUseCase<GetCmtCheckMstListInputData, GetCmtCheckMstListInteractor>();
             busBuilder.RegisterUseCase<SearchTenMstItemInputData, SearchTenMstItemInteractor>();
+            busBuilder.RegisterUseCase<ConvertStringChkJISKjInputData, ConvertStringChkJISKjInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -1182,6 +1192,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Reception - Valid Pattern Expirated
             busBuilder.RegisterUseCase<ValidPatternExpiratedInputData, ValidPatternExpiratedInteractor>();
+            busBuilder.RegisterUseCase<GetLastKaruteInputData, GetLastKaruteInteractor>();
 
             //System Conf
             busBuilder.RegisterUseCase<GetSystemConfInputData, GetSystemConfInteractor>();
