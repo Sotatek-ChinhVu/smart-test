@@ -245,6 +245,13 @@ public class PdfCreatorController : ControllerBase
         var data = _reportService.GetKarte3ReportingData(request.HpId, request.PtId, request.StartSinYm, request.EndSinYm, request.IncludeHoken, request.IncludeJihi);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
+    
+    [HttpPost(ApiPath.AccountingCardList)]
+    public async Task<IActionResult> GetAccountingCardListReportingData([FromBody] AccountingCardListRequest request)
+    {
+        var data = _reportService.GetAccountingCardListReportingData(request.HpId, request.Targets, request.IncludeOutDrug, request.KaName, request.TantoName, request.UketukeSbt, request.Hoken);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
 
     [HttpGet(ApiPath.ExportKarte2)]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)

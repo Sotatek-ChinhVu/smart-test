@@ -616,6 +616,8 @@ using UseCase.AccountDue.IsNyukinExisted;
 using UseCase.Lock.CheckLockOpenAccounting;
 using Reporting.Karte3.Service;
 using Reporting.Karte3.DB;
+using Reporting.AccountingCardList.Service;
+using Reporting.AccountingCardList.DB;
 using UseCase.Reception.GetLastKarute;
 using UseCase.MstItem.ConvertStringChkJISKj;
 
@@ -792,6 +794,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP22WelfareSeikyuCoReportService, P22WelfareSeikyuCoReportService>();
             services.AddTransient<IKarte3CoReportService, Karte3CoReportService>();
             services.AddTransient<ICoKarte3Finder, CoKarte3Finder>();
+            services.AddTransient<IAccountingCardListCoReportService, AccountingCardListCoReportService>();
+            services.AddTransient<ICoAccountingCardListFinder, CoAccountingCardListFinder>();
             services.AddTransient<IP21KoukiSeikyuCoReportService, P21KoukiSeikyuCoReportService>();
             services.AddTransient<IP22KoukiSeikyuCoReportService, P22KoukiSeikyuCoReportService>();
             services.AddTransient<IP23KoukiSeikyuCoReportService, P23KoukiSeikyuCoReportService>();
