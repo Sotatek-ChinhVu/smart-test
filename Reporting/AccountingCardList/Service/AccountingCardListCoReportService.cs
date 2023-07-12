@@ -21,7 +21,6 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
     private readonly ITenantProvider _tenantProvider;
     private readonly ISystemConfigProvider _systemConfigProvider;
 
-    private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
@@ -51,7 +50,6 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
         _systemConfigProvider = systemConfigProvider;
         _tenantProvider = tenantProvider;
         _emrLogger = emrLogger;
-        _singleFieldData = new();
         _setFieldData = new();
         _listTextData = new();
         _extralData = new();
@@ -92,6 +90,7 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
                 sinYm = sinYmItem;
 
                 currentPage = 1;
+                hasNextPage = true;
 
                 while (hasNextPage)
                 {
@@ -103,7 +102,7 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
         }
 
         _extralData.Add("totalPage", (printPage - 1).ToString());
-        return new CoAccountingCardListMapper(_singleFieldData, _listTextData, _extralData).GetData();
+        return new CoAccountingCardListMapper(_setFieldData, _listTextData, _extralData).GetData();
     }
 
     private void MakePrintDataList(int sinYm)

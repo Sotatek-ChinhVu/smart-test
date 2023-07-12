@@ -4,13 +4,13 @@ namespace Reporting.AccountingCardList.Mapper;
 
 public class CoAccountingCardListMapper : CommonReportingRequest
 {
-    private readonly Dictionary<string, string> _singleFieldData;
+    Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, string> _extralData;
 
-    public CoAccountingCardListMapper(Dictionary<string, string> singleFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData)
+    public CoAccountingCardListMapper(Dictionary<int, Dictionary<string, string>> setFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData)
     {
-        _singleFieldData = singleFieldData;
+        _setFieldData = setFieldData;
         _listTextData = listTextData;
         _extralData = extralData;
     }
@@ -37,7 +37,12 @@ public class CoAccountingCardListMapper : CommonReportingRequest
 
     public override Dictionary<string, string> GetSingleFieldData()
     {
-        return _singleFieldData;
+        return new();
+    }
+
+    public override Dictionary<int, Dictionary<string, string>> GetSetFieldData()
+    {
+        return _setFieldData;
     }
 
     public override List<Dictionary<string, CellModel>> GetTableFieldData()
