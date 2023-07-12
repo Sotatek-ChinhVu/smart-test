@@ -29,16 +29,18 @@ namespace Reporting.Statistics.Sta2010.Service
             // get data to print
             GetFieldNameList();
             GetRowCount();
-            GetData();
-            _hasNextPage = true;
 
-            _currentPage = 1;
-
-            //印刷
-            while (_hasNextPage)
+            if (GetData())
             {
-                UpdateDrawForm();
-                _currentPage++;
+                _hasNextPage = true;
+                _currentPage = 1;
+
+                //印刷
+                while (_hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
 
             return new Sta2010Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();

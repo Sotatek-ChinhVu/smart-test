@@ -47,12 +47,15 @@ public class ReceTargetCoReportService : IReceTargetCoReportService
         coModel = GetData(hpId, seikyuYm);
         MakePrintDataList();
 
-        while (hasNextPage)
+        if (coModel != null)
         {
-            UpdateDrawForm(seikyuYm);
-            currentPage++;
+            while (hasNextPage)
+            {
+                UpdateDrawForm(seikyuYm);
+                currentPage++;
+            }
+            _extralData.Add("totalPage", (currentPage - 1).ToString());
         }
-        _extralData.Add("totalPage", (currentPage - 1).ToString());
 
         return new ReceTargetMapper(_singleFieldData, _listTextData, _extralData, formFileName).GetData();
     }

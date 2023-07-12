@@ -2,7 +2,6 @@
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Service;
 using Reporting.CommonMasters.Enums;
-using Reporting.OrderLabel.Model;
 using Reporting.OrderLabel.Service;
 
 namespace Reporting.ReportServices;
@@ -11,15 +10,13 @@ public class CheckOpenReportingService : ICheckOpenReportingService
 {
     private readonly ICoAccountingFinder _coAccountingFinder;
     private readonly IAccountingCoReportService _accountingCoReportService;
-    private readonly IOrderLabelCoReportService _orderLabelCoReportService;
     private readonly IReportService _reportService;
 
-    public CheckOpenReportingService(ICoAccountingFinder coAccountingFinder, IAccountingCoReportService accountingCoReportService, IReportService reportService, IOrderLabelCoReportService orderLabelCoReportService)
+    public CheckOpenReportingService(ICoAccountingFinder coAccountingFinder, IAccountingCoReportService accountingCoReportService, IReportService reportService)
     {
         _coAccountingFinder = coAccountingFinder;
         _accountingCoReportService = accountingCoReportService;
         _reportService = reportService;
-        _orderLabelCoReportService = orderLabelCoReportService;
     }
 
     public bool CheckOpenAccountingForm(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false)
@@ -53,10 +50,5 @@ public class CheckOpenReportingService : ICheckOpenReportingService
             }
         }
         return _accountingCoReportService.CheckOpenReportingForm(hpId, requestAccountting);
-    }
-
-    public CoPrintExitCode CheckOpenOrderLabel(int mode, int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, List<RsvkrtOdrInfModel> rsvKrtOdrInfModels)
-    {
-        return _orderLabelCoReportService.CheckOpenOrderLabel(mode, hpId, ptId, sinDate, raiinNo, odrKouiKbns, rsvKrtOdrInfModels);
     }
 }

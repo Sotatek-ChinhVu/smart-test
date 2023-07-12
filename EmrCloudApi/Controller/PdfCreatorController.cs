@@ -7,6 +7,10 @@ using Interactor.MedicalExamination.HistoryCommon;
 using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
+using Reporting.Accounting.Model.Output;
+using Reporting.DrugInfo.Model;
+using Reporting.Mappers.Common;
+using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
 using System.Net.Mime;
@@ -321,18 +325,60 @@ public class PdfCreatorController : ControllerBase
 
     private async Task<IActionResult> RenderPdf(object data, ReportType reportType, string fileName)
     {
-        StringContent jsonContent = (reportType ==
-          ReportType.Karte1
-          || reportType == ReportType.DrugInfo)
+        StringContent jsonContent = (reportType == ReportType.DrugInfo)
           ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
           new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
         var json = JsonSerializer.Serialize(data);
+        bool returnNoData = false;
+        switch (reportType)
+        {
+            case ReportType.Common:
+                CommonReportingRequestModel commonRequest = JsonSerializer.Deserialize<CommonReportingRequestModel>(json) ?? new();
+                if (commonRequest.ReportType <= 0
+                    || (!commonRequest.TableFieldData.Any()
+                        && !commonRequest.ListTextData.Any()
+                        && !commonRequest.SingleFieldList.Any()
+                        && !commonRequest.SetFieldData.Any()))
+                {
+                    returnNoData = true;
+                }
+                break;
+            case ReportType.DrugInfo:
+                DrugInfoData drugInfoData = JsonSerializer.Deserialize<DrugInfoData>(json) ?? new();
+                if (!drugInfoData.drugInfoList.Any())
+                {
+                    returnNoData = true;
+                }
+                break;
+            case ReportType.OutDug:
+                CoOutDrugReportingOutputData outDrugData = JsonSerializer.Deserialize<CoOutDrugReportingOutputData>(json) ?? new();
+                if (!outDrugData.Data.Any())
+                {
+                    returnNoData = true;
+                }
+                break;
+            case ReportType.Accounting:
+                AccountingResponse accountingResponse = JsonSerializer.Deserialize<AccountingResponse>(json) ?? new();
+                if (!accountingResponse.AccountingReportingRequestItems.Any())
+                {
+                    returnNoData = true;
+                }
+                break;
+        }
+        if (returnNoData)
+        {
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
+        }
+
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
         string functionName = reportType switch
         {
-            ReportType.Karte1 => "reporting-fm-karte1",
             ReportType.DrugInfo => "reporting-fm-drugInfo",
             ReportType.Common => "common-reporting",
             ReportType.OutDug => "reporting-out-drug",
