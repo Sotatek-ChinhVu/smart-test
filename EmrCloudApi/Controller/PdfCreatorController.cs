@@ -224,6 +224,13 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
+    [HttpGet(ApiPath.InDrug)]
+    public async Task<IActionResult> GetInDrugPrintData([FromQuery] InDrugPrintDataRequest request)
+    {
+        var data = _reportService.GetInDrugPrintData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
     [HttpGet(ApiPath.Yakutai)]
     public async Task<IActionResult> Yakutai([FromQuery] YakutaiRequest request)
     {
