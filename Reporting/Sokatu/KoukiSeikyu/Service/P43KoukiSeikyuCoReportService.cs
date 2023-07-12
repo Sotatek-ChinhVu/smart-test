@@ -73,17 +73,21 @@ public class P43KoukiSeikyuCoReportService : IP43KoukiSeikyuCoReportService
         _seikyuType = seikyuType;
         var getData = GetData();
 
-        foreach (string currentNo in hokensyaNos)
+        if(getData)
         {
-            _currentPage = 1;
-            _currentHokensyaNo = currentNo;
-            _hasNextPage = true;
-            while (getData && _hasNextPage)
+            foreach (string currentNo in hokensyaNos)
             {
-                UpdateDrawForm();
-                _currentPage++;
+                _currentPage = 1;
+                _currentHokensyaNo = currentNo;
+                _hasNextPage = true;
+                while (getData && _hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
         }
+        
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
         return new KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();

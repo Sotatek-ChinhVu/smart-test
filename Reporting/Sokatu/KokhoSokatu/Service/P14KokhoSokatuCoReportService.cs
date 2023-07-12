@@ -69,23 +69,27 @@ public class P14KokhoSokatuCoReportService : IP14KokhoSokatuCoReportService
         hasNextPage = true;
         int indexPage = 1;
         var fileName = new Dictionary<string, string>();
-        while (getData && hasNextPage)
+
+        if (getData)
         {
-            UpdateDrawForm();
-            if (currentPage == 2 || currentPage == 3)
+            while (getData && hasNextPage)
             {
-                switch (currentPage)
+                UpdateDrawForm();
+                if (currentPage == 2 || currentPage == 3)
                 {
-                    case 2: fileName.Add(indexPage.ToString(), _formFileName2); break;
-                    case 3: fileName.Add(indexPage.ToString(), _formFileName3); break;
+                    switch (currentPage)
+                    {
+                        case 2: fileName.Add(indexPage.ToString(), _formFileName2); break;
+                        case 3: fileName.Add(indexPage.ToString(), _formFileName3); break;
+                    }
                 }
+                else
+                {
+                    fileName.Add(indexPage.ToString(), _formFileName1);
+                }
+                currentPage++;
+                indexPage++;
             }
-            else
-            {
-                fileName.Add(indexPage.ToString(), _formFileName1);
-            }
-            currentPage++;
-            indexPage++;
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();

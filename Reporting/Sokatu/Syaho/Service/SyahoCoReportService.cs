@@ -49,14 +49,17 @@ public class SyahoCoReportService : ISyahoCoReportService
         this.seikyuType = seikyuType;
         currentPage = 1;
         hasNextPage = true;
+        var getData = GetData();
 
-        GetData();
-
-        while (hasNextPage)
+        if(getData)
         {
-            UpdateDrawForm();
-            currentPage++;
+            while (hasNextPage && getData)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
+        
         _extralData.Add("totalPage", (currentPage - 1).ToString());
         _fileNamePageMap.Add("1", "p99SyahoSokatuP1.rse");
         _fileNamePageMap.Add("2", "p99SyahoSokatuP2.rse");
@@ -440,10 +443,12 @@ public class SyahoCoReportService : ISyahoCoReportService
         }
     }
 
-    private void GetData()
+    private bool GetData()
     {
         receInfs = _finder.GetReceInf(hpId, seikyuYm, seikyuType);
         hpInf = _finder.GetHpInf(hpId, seikyuYm);
+
+        return (receInfs?.Count ?? 0) > 0;
     }
 
     private void SetFieldData(string field, string value)
