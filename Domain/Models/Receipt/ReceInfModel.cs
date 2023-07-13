@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Receipt;
+﻿using Domain.Models.Insurance;
+
+namespace Domain.Models.Receipt;
 
 public class ReceInfModel
 {
@@ -152,4 +154,72 @@ public class ReceInfModel
     public int Kohi4ReceTensu { get; private set; }
 
     public int Kohi4ReceFutan { get; private set; }
+
+    public HokenInfModel PtHokenInf { get; private set; }
+
+    public KohiInfModel PtKohi1 { get; private set; }
+
+    public KohiInfModel PtKohi2 { get; private set; }
+
+    public KohiInfModel PtKohi3 { get; private set; }
+
+    public KohiInfModel PtKohi4 { get; private set; }
+
+    public List<ConfirmDateModel> HokenChecks { get; private set; }
+
+    public List<ConfirmDateModel> Kohi1Checks { get; private set; }
+
+    public List<ConfirmDateModel> Kohi2Checks { get; private set; }
+
+    public List<ConfirmDateModel> Kohi3Checks { get; private set; }
+
+    public List<ConfirmDateModel> Kohi4Checks { get; private set; }
+
+    public ReceInfModel(ReceInfModel receInf, HokenInfModel ptHokenInf, KohiInfModel ptKohi1, KohiInfModel ptKohi2, KohiInfModel PtKohi3, KohiInfModel PtKohi4, List<ConfirmDateModel> HokenChecks, List<ConfirmDateModel> Kohi1Checks, List<ConfirmDateModel> Kohi2Checks, List<ConfirmDateModel> Kohi3Checks, List<ConfirmDateModel> Kohi4Checks)
+    {
+        SeikyuYm = receInf.SeikyuYm;
+        PtId = receInf.PtId;
+        SinYm = receInf.SinYm;
+        HokenId = receInf.HokenId;
+        HokenId2 = receInf.HokenId2;
+        KaId = receInf.KaId;
+        TantoId = receInf.TantoId;
+        ReceSbt = receInf.ReceSbt;
+        HokenKbn = receInf.HokenKbn;
+        HokenSbtCd = receInf.HokenSbtCd;
+        Houbetu = receInf.Houbetu;
+        Kohi1Id = receInf.Kohi1Id;
+        Kohi2Id = receInf.Kohi2Id;
+        Kohi3Id = receInf.Kohi3Id;
+        Kohi4Id = receInf.Kohi4Id;
+        Kohi1Houbetu = receInf.Kohi1Houbetu;
+        Kohi2Houbetu = receInf.Kohi2Houbetu;
+        Kohi3Houbetu = receInf.Kohi3Houbetu;
+        Kohi4Houbetu = receInf.Kohi4Houbetu;
+        HonkeKbn = receInf.HonkeKbn;
+        Tokki1 = receInf.Tokki1;
+        Tokki2 = receInf.Tokki2;
+        Tokki3 = receInf.Tokki3;
+        Tokki4 = receInf.Tokki4;
+        Tokki5 = receInf.Tokki5;
+        HokenNissu = receInf.HokenNissu;
+        Kohi1Nissu = receInf.Kohi1Nissu;
+        Kohi2Nissu = receInf.Kohi2Nissu;
+        Kohi3Nissu = receInf.Kohi3Nissu;
+        Kohi4Nissu = receInf.Kohi4Nissu;
+        Kohi1ReceKyufu = receInf.Kohi1ReceKyufu;
+        Kohi2ReceKyufu = receInf.Kohi2ReceKyufu;
+        Kohi3ReceKyufu = receInf.Kohi3ReceKyufu;
+        Kohi4ReceKyufu = receInf.Kohi4ReceKyufu;
+        HokenReceTensu = receInf.HokenReceTensu;
+        HokenReceFutan = receInf.HokenReceFutan;
+        Kohi1ReceTensu = receInf.Kohi1ReceTensu;
+        Kohi1ReceFutan = receInf.Kohi1ReceFutan;
+        Kohi2ReceTensu = receInf.Kohi2ReceTensu;
+        Kohi2ReceFutan = receInf.Kohi2ReceFutan;
+        Kohi3ReceTensu = receInf.Kohi3ReceTensu;
+        Kohi3ReceFutan = receInf.Kohi3ReceFutan;
+        Kohi4ReceTensu = receInf.Kohi4ReceTensu;
+        Kohi4ReceFutan = receInf.Kohi4ReceFutan;
+    }
 }
