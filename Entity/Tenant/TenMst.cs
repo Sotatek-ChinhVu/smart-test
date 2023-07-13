@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -7,6 +8,9 @@ namespace Entity.Tenant
     /// 点数マスタ
     /// </summary>
     [Table("TEN_MST")]
+    [Index(nameof(HpId), nameof(ItemCd), nameof(StartDate),nameof(EndDate), nameof(Name), nameof(KanaName1), nameof(KanaName2), nameof(KanaName3), nameof(KanaName4), nameof(KanaName5),
+        nameof(KanaName6), nameof(KanaName7), nameof(IsDeleted), nameof(IsAdopted), Name = "TEN_MST_IDX08")]
+
     public class TenMst : EmrCloneable<TenMst>
     {
         /// <summary>
@@ -24,7 +28,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 診療行為コード
         /// </summary>
-        
+
         [Column("ITEM_CD", Order = 2)]
         //[Index("TEN_MST_IDX01", 2)]
         //[Index("TEN_MST_IDX05", 1)]
@@ -35,7 +39,7 @@ namespace Entity.Tenant
         /// 有効開始年月日
         ///     yyyymmdd
         /// </summary>
-        
+
         [Column("START_DATE", Order = 3)]
         //[Index("TEN_MST_IDX01", 3)]
         //[Index("TEN_MST_IDX03", 2)]

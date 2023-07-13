@@ -32,10 +32,11 @@ public class ReceiptListCoReportService : IReceiptListCoReportService
         {
             var finder = new CoReceiptListFinder(_tenantProvider, _systemConfig);
             _receiptListModels = finder.GetDataReceReport(hpId, seikyuYm, receiptListModels);
-
-            _printoutDateTime = CIUtil.GetJapanDateTimeNow();
-
-            UpdateDrawForm(seikyuYm);
+            if (_receiptListModels.Any())
+            {
+                _printoutDateTime = CIUtil.GetJapanDateTimeNow();
+                UpdateDrawForm(seikyuYm);
+            }
             return new ReceiptListMapper(_singleFieldData, _tableFieldData).GetData();
         }
     }

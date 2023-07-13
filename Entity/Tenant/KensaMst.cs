@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -6,13 +6,14 @@ namespace Entity.Tenant
 {
     [Table(name: "KENSA_MST")]
     [Serializable]
+    [Index(nameof(KensaItemCd), Name = "KENSA_MST_IDX01")]
     public class KensaMst : EmrCloneable<KensaMst>
     {
         /// <summary>
         /// 医療機関識別ID
         /// 
         /// </summary>
-        
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -21,7 +22,7 @@ namespace Entity.Tenant
         /// 検査項目コード
         /// 
         /// </summary>
-        
+
         [Column("KENSA_ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string KensaItemCd { get; set; } = string.Empty;
@@ -30,7 +31,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        
+
         [Column("KENSA_ITEM_SEQ_NO", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int KensaItemSeqNo { get; set; }
@@ -235,6 +236,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

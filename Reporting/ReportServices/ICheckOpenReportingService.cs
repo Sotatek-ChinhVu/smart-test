@@ -1,5 +1,6 @@
 ﻿using Reporting.Accounting.Model;
 using Reporting.CommonMasters.Enums;
+using Reporting.OrderLabel.Model;
 
 namespace Reporting.ReportServices;
 

@@ -85,7 +85,7 @@ public class Karte3CoReportService : IKarte3CoReportService
 
         CoKarte3DailyDataModel addDailyData = null;
 
-        foreach (CoSinKouiModel sinKoui in coModel.SinKouis.FindAll(p => p.TotalTen != 0))
+        foreach (CoSinKouiModel sinKoui in coModel!.SinKouis.FindAll(p => p.TotalTen != 0))
         {
             if (sinDate != sinKoui.SinDate)
             {

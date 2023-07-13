@@ -38,6 +38,7 @@
         public const string GetCmtCheckMstList = "GetCmtCheckMstList";
         public const string GetJihiMstList = "GetJihiMstList";
         public const string SearchTenMstItem = "SearchTenMstItem";
+        public const string ConvertStringChkJISKj = "ConvertStringChkJISKj";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -66,6 +67,7 @@
         public const string Recaculation = "Recaculation";
         public const string ConvertItem = "ConvertItem";
         public const string CheckOrdInfInDrug = "CheckOrdInfInDrug";
+        public const string InDrug = "InDrug";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -104,6 +106,7 @@
         public const string AccountingCard = "AccountingCard";
         public const string ExportKarte2 = "ExportKarte2";
         public const string ExportKarte3 = "ExportKarte3";
+        public const string AccountingCardList = "AccountingCardList";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -155,6 +158,7 @@
         public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
         public const string InitDoctorCombo = "InitDoctorCombo";
         public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
+        public const string GetLastKarute = "GetLastKarute";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";

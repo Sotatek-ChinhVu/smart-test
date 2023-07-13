@@ -14,7 +14,7 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly List<Dictionary<string, CellModel>> _tableFieldData;
 
-    private CoDrugNoteSealModel coModel;
+    private CoDrugNoteSealModel? coModel;
     private int currentPage;
     private bool hasNextPage;
     private List<CoDrugNoteSealPrintDataModel> printOutData;
@@ -53,12 +53,14 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
         printoutDateTime = CIUtil.GetJapanDateTimeNow();
         coModel = GetData();
         string rowCountFieldName = "lsOrder";
-        MakeOdrDtlList();
-
-        while (hasNextPage)
+        if (coModel != null)
         {
-            UpdateDrawForm();
-            currentPage++;
+            MakeOdrDtlList();
+            while (hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
         return new DrugNoteSealMapper(_singleFieldData, _tableFieldData, rowCountFieldName).GetData();
     }
@@ -270,7 +272,7 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
         UpdateFormBody();
     }
 
-    private CoDrugNoteSealModel GetData()
+    private CoDrugNoteSealModel? GetData()
     {
         // 病院情報
         CoHpInfModel hpInf = _finder.FindHpInf(hpId, sinDate);
@@ -299,7 +301,7 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
         }
         else
         {
-            return new();
+            return null;
         }
     }
 
@@ -311,7 +313,7 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
 
         int rpNo = 0;
 
-        for (int i = 0; i < coModel.OdrInfModels.Count; i++)
+        for (int i = 0; i < coModel!.OdrInfModels.Count; i++)
         {
             CoOdrInfModel odrInf = coModel.OdrInfModels[i];
 

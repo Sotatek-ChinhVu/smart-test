@@ -70,21 +70,22 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             _hpId = hpId;
             _seikyuYm = seikyuYm;
             _seikyuType = seikyuType;
-
             currentKbnIndex = 0;
             currentHokIndex = 0;
             currentPrefIndex = 0;
             currentKohiIndex = 0;
-
             var getData = GetData();
 
-            _hasNextPage = true;
-            _currentPage = 1;
-
-            while (getData && _hasNextPage)
+            if (getData)
             {
-                UpdateDrawForm();
-                _currentPage++;
+                _hasNextPage = true;
+                _currentPage = 1;
+
+                while (getData && _hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();

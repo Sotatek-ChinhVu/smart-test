@@ -1,6 +1,7 @@
 ﻿using Domain.Models.AccountDue;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
+using Reporting.AccountingCardList.Model;
 using Reporting.CommonMasters.Enums;
 using Reporting.DrugInfo.Model;
 using Reporting.Karte1.Mapper;
@@ -61,11 +62,13 @@ public interface IReportService
 
     CommonReportingRequestModel GetMemoMsgReportingData(string reportName, string title, List<string> listMessage);
 
-    CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType);
+    CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos);
 
     CommonReportingRequestModel GetReceTargetPrint(int hpId, int seikyuYm);
 
     CommonReportingRequestModel GetDrugNoteSealPrintData(int hpId, long ptId, int sinDate, long raiinNo);
+
+    CommonReportingRequestModel GetInDrugPrintData(int hpId, long ptId, int sinDate, long raiinNo);
 
     CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, int raiinNo);
 
@@ -74,4 +77,6 @@ public interface IReportService
     List<CoAccountingParamModel> PrintWithoutThread(bool ryoshusho, bool meisai, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isPrintMonth, int sinDate, long oyaRaiinNo, List<CoAccountDueListModel>? nyukinModels = null);
 
     CommonReportingRequestModel GetKarte3ReportingData(int hpId, long ptId, int startSinYm, int endSinYm, bool includeHoken, bool includeJihi);
+
+    CommonReportingRequestModel GetAccountingCardListReportingData(int hpId, List<TargetItem> targets, bool includeOutDrug, string kaName, string tantoName, string uketukeSbt, string hoken);
 }
