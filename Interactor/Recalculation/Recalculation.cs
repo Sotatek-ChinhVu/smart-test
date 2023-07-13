@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.CalculationInf;
 
 namespace Interactor.Recalculation
 {
-    public class Recalculation: IRecalculation
+    public class Recalculation : IRecalculation
     {
+        private readonly ICalculationInfRepository _calculation;
+
+        public Recalculation(ICalculationInfRepository calculation)
+        {
+            _calculation = calculation;
+        }
+
         public void CheckErrorInMonth(int seikyuYm, List<long> ptIds)
         {
-            Log.WriteLogStart(ModuleNameConst.EmrCommonView, this, nameof(CheckErrorInMonth), "", ICDebugConf.logLevel);
-
             try
             {
                 IsStopCalc = false;

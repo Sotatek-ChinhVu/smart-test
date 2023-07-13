@@ -1,11 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Models.CalculationInf;
+using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.CalculationInf
 {
@@ -16,5 +12,7 @@ namespace Domain.CalculationInf
         int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm);
 
         List<ReceCheckOptModel> GetReceCheckOpts(int hpId);
+
+        List<ReceInfModel> GetReceInfModels(int hpId, List<long> ptIds, int sinYM);
     }
 }

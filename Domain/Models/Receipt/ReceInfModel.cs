@@ -175,7 +175,7 @@ public class ReceInfModel
 
     public List<ConfirmDateModel> Kohi4Checks { get; private set; }
 
-    public ReceInfModel(ReceInfModel receInf, HokenInfModel ptHokenInf, KohiInfModel ptKohi1, KohiInfModel ptKohi2, KohiInfModel PtKohi3, KohiInfModel PtKohi4, List<ConfirmDateModel> HokenChecks, List<ConfirmDateModel> Kohi1Checks, List<ConfirmDateModel> Kohi2Checks, List<ConfirmDateModel> Kohi3Checks, List<ConfirmDateModel> Kohi4Checks)
+    public ReceInfModel(ReceInfModel receInf)
     {
         SeikyuYm = receInf.SeikyuYm;
         PtId = receInf.PtId;
