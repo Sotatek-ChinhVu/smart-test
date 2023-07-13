@@ -495,8 +495,7 @@ namespace EmrCloudApi.Controllers
 
             if (output.Status == SaveMedicalStatus.Successed)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.MedicalChanged,
-                    new CommonMessage { PtId = output.PtId, SinDate = output.SinDate, RaiinNo = output.RaiinNo });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new SaveMedicalPresenter();

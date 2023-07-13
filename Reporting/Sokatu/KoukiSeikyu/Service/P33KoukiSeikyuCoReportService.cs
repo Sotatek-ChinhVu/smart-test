@@ -66,15 +66,18 @@ public class P33KoukiSeikyuCoReportService : IP33KoukiSeikyuCoReportService
         _seikyuType = seikyuType;
         var getData = GetData();
 
-        foreach (string currentNo in hokensyaNos)
+        if(getData)
         {
-            _currentHokensyaNo = currentNo;
-            _hasNextPage = true;
-            _currentPage = 1;
-            while (getData && _hasNextPage)
+            foreach (string currentNo in hokensyaNos)
             {
-                UpdateDrawForm();
-                _currentPage++;
+                _currentHokensyaNo = currentNo;
+                _hasNextPage = true;
+                _currentPage = 1;
+                while (getData && _hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
         }
 

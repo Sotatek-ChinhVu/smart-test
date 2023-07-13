@@ -60,25 +60,30 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
         var getData = GetData();
+
         if (_seikyuYm >= 202210)
         {
             _formFileName = "p29KoukiSeikyu_2210";
         }
-        for (int zaiFlg = 0; zaiFlg <= 1; zaiFlg++)
-        {
-            printZaiiso = zaiFlg == 1;
-            foreach (string currentNo in hokensyaNos)
-            {
-                _currentHokensyaNo = currentNo;
-                curReceInfs = receInfs.Where(r => r.IsZaiiso == zaiFlg && r.HokensyaNo == _currentHokensyaNo).ToList();
-                if (curReceInfs.Count() == 0) continue;
 
-                _hasNextPage = true;
-                _currentPage = 1;
-                while (getData && _hasNextPage)
+        if(getData)
+        {
+            for (int zaiFlg = 0; zaiFlg <= 1; zaiFlg++)
+            {
+                printZaiiso = zaiFlg == 1;
+                foreach (string currentNo in hokensyaNos)
                 {
-                    UpdateDrawForm();
-                    _currentPage++;
+                    _currentHokensyaNo = currentNo;
+                    curReceInfs = receInfs.Where(r => r.IsZaiiso == zaiFlg && r.HokensyaNo == _currentHokensyaNo).ToList();
+                    if (curReceInfs.Count() == 0) continue;
+
+                    _hasNextPage = true;
+                    _currentPage = 1;
+                    while (getData && _hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
                 }
             }
         }
