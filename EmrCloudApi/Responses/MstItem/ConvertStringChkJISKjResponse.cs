@@ -8,9 +8,12 @@ public class ConvertStringChkJISKjResponse
     {
         Result = outputData.Result;
         SOut = outputData.SOut;
+        ItemError = outputData.ItemError;
     }
 
     public string Result { get; private set; }
 
     public string SOut { get; private set; }
+
+    public string ItemError { get; private set; }
 }
