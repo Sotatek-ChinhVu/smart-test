@@ -587,7 +587,7 @@ namespace Infrastructure.Repositories
             List<SameVisitModel> result = new();
             var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
                                                                              && item.PtId == ptId
-                                                                             && item.SinDate == sinDate
+                                                                             && (sinDate == 0 || item.SinDate == sinDate)
                                                                              && item.IsDeleted == 0)
                                                               .ToList();
 

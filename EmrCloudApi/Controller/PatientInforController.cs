@@ -648,8 +648,7 @@ namespace EmrCloudApi.Controller
 
             if (output.Status == DeletePatientInfoStatus.Successful)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.DeletePtInfChanged,
-                    new CommonMessage { PtId = input.PtId, SinDate = 0, RaiinNo = 0 });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new DeletePatientInfoPresenter();

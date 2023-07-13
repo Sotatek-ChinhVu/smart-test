@@ -224,6 +224,13 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
+    [HttpGet(ApiPath.InDrug)]
+    public async Task<IActionResult> GetInDrugPrintData([FromQuery] InDrugPrintDataRequest request)
+    {
+        var data = _reportService.GetInDrugPrintData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
     [HttpGet(ApiPath.Yakutai)]
     public async Task<IActionResult> Yakutai([FromQuery] YakutaiRequest request)
     {
@@ -243,6 +250,13 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GetKarte3ReportingData([FromQuery] Karte3ReportingRequest request)
     {
         var data = _reportService.GetKarte3ReportingData(request.HpId, request.PtId, request.StartSinYm, request.EndSinYm, request.IncludeHoken, request.IncludeJihi);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+    
+    [HttpPost(ApiPath.AccountingCardList)]
+    public async Task<IActionResult> GetAccountingCardListReportingData([FromBody] AccountingCardListRequest request)
+    {
+        var data = _reportService.GetAccountingCardListReportingData(request.HpId, request.Targets, request.IncludeOutDrug, request.KaName, request.TantoName, request.UketukeSbt, request.Hoken);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 

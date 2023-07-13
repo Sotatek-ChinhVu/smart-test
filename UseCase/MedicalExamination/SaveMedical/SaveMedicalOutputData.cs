@@ -1,4 +1,5 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.Reception;
+using UseCase.Core.Sync.Core;
 using UseCase.Diseases.Upsert;
 using UseCase.Family;
 using UseCase.FlowSheet.Upsert;
@@ -20,7 +21,9 @@ public class SaveMedicalOutputData : IOutputData
            UpsertPtDiseaseListStatus validationPtDiseaseListStatus,
            int sinDate,
            long raiinNo,
-           long ptId)
+           long ptId,
+           List<ReceptionRowModel> receptionInfos,
+           List<SameVisitModel> sameVisitList)
     {
         Status = status;
         ValidationRaiinInf = validationRaiinInf;
@@ -32,6 +35,8 @@ public class SaveMedicalOutputData : IOutputData
         PtId = ptId;
         ValidationFlowSheetStatus = validationFlowSheetStatus;
         ValidationPtDiseaseListStatus = validationPtDiseaseListStatus;
+        ReceptionInfos = receptionInfos;
+        SameVisitList = sameVisitList;
     }
 
     public int SinDate { get; private set; }
@@ -53,4 +58,8 @@ public class SaveMedicalOutputData : IOutputData
     public UpsertFlowSheetStatus ValidationFlowSheetStatus { get; private set; }
 
     public UpsertPtDiseaseListStatus ValidationPtDiseaseListStatus { get; private set; }
+
+    public List<ReceptionRowModel> ReceptionInfos { get; private set; }
+
+    public List<SameVisitModel> SameVisitList { get; private set; }
 }
