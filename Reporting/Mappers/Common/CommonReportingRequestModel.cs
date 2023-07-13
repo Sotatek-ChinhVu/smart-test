@@ -36,6 +36,9 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("reportConfigPerPage")]
         public Dictionary<int, ReportConfigModel> ReportConfigPerPage { get; set; } = new();
+
+        [JsonPropertyName("drawTextData")]
+        public Dictionary<int, List<ListDrawTextObject>>? DrawTextData { get; internal set; }
     }
 
     public class CellModel
@@ -108,5 +111,36 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("data")]
         public string Data { get; set; }
+    }
+
+    public class ListDrawTextObject
+    {
+        public ListDrawTextObject(double startX, double startY, double width, double heigth, long hanFontHeight, string text)
+        {
+            StartX = startX;
+            StartY = startY;
+            Width = width;
+            Heigth = heigth;
+            HanFontHeight = hanFontHeight;
+            Text = text;
+        }
+
+        [JsonPropertyName("startX")]
+        public double StartX { get; set; }
+
+        [JsonPropertyName("startY")]
+        public double StartY { get; set; }
+
+        [JsonPropertyName("width")]
+        public double Width { get; set; }
+
+        [JsonPropertyName("heigth")]
+        public double Heigth { get; set; }
+
+        [JsonPropertyName("hanFontHeight")]
+        public double HanFontHeight { get; set; }
+
+        [JsonPropertyName("text")]
+        public string Text { get; set; }
     }
 }

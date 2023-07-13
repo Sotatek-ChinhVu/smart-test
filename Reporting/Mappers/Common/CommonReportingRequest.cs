@@ -15,6 +15,7 @@ public class CommonReportingRequest : ICommonReportingRequest
             ExtralData = GetExtralData(),
             ListTextData = GetListTextData(),
             SetFieldData = GetSetFieldData(),
+            DrawTextData = GetDrawTextData(),
             ReportConfigPerPage = GetReportConfigModelPerPage(),
             ReportConfigModel = new ReportConfigModel()
             {
@@ -80,6 +81,11 @@ public class CommonReportingRequest : ICommonReportingRequest
     public virtual string GetJobName()
     {
         return string.Empty;
+    }
+
+    public virtual Dictionary<int, List<ListDrawTextObject>> GetDrawTextData()
+    {
+        return new();
     }
 
     public virtual Dictionary<int, List<ListTextObject>> GetListTextData()
