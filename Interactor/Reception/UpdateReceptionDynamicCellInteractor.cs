@@ -18,7 +18,6 @@ public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellI
 
     public UpdateReceptionDynamicCellOutputData Handle(UpdateReceptionDynamicCellInputData input)
     {
-        List<ReceptionRowModel> receptionInfos = new();
         List<SameVisitModel> sameVisitList = new();
         if (input.HpId <= 0)
         {
@@ -40,11 +39,10 @@ public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellI
         {
             return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidGrpId);
         }
-
         try
         {
             UpdateDynamicCell(input);
-            receptionInfos = _receptionRepository.GetList(input.HpId, input.SinDate, input.RaiinNo, input.PtId);
+            var receptionInfos = _receptionRepository.GetList(input.HpId, input.SinDate, input.RaiinNo, input.PtId, isDeleted: 0);
             return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.Success, receptionInfos, sameVisitList);
         }
         finally

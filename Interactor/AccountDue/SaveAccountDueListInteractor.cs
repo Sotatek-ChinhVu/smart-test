@@ -70,7 +70,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
             if (result.Any())
             {
                 _eventProcessorService.DoEvent(listTraiLogModels);
-                var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, CommonConstants.InvalidId, inputData.PtId);
+                var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, CommonConstants.InvalidId, inputData.PtId, isDeleted: 0);
                 var sameVisitList = _receptionRepository.GetListSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
                 return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Successed, result, receptionInfos, sameVisitList);
             }

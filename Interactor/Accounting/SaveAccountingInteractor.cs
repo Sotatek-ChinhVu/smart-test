@@ -72,7 +72,7 @@ namespace Interactor.Accounting
                                                                 inputData.PayType, inputData.Comment, inputData.IsDisCharged, inputData.KaikeiTime);
                 if (save)
                 {
-                    var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, CommonConstants.InvalidId, inputData.PtId);
+                    var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, CommonConstants.InvalidId, inputData.PtId, isDeleted: 0);
                     var sameVisitList = _receptionRepository.GetListSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
                     return new SaveAccountingOutputData(SaveAccountingStatus.Success, receptionInfos, sameVisitList);
                 }
