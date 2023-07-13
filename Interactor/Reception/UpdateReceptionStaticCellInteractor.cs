@@ -78,7 +78,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
             }
             if (status == UpdateReceptionStaticCellStatus.RaiinInfUpdated || status == UpdateReceptionStaticCellStatus.RaiinCmtUpdated)
             {
-                receptionInfos = _receptionRepository.GetList(input.HpId, input.SinDate, input.RaiinNo, input.PtId);
+                receptionInfos = _receptionRepository.GetList(input.HpId, input.SinDate, input.RaiinNo, input.PtId, isDeleted: 0);
             }
             if (status == UpdateReceptionStaticCellStatus.PatientCmtUpdated)
             {
