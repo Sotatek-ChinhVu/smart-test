@@ -102,4 +102,9 @@ public class CommonReportingRequest : ICommonReportingRequest
     {
         return new();
     }
+
+    public virtual Dictionary<int, List<ListDrawLineObject>> GetDrawLineData()
+    {
+        return new();
+    }
 }

@@ -38,7 +38,10 @@ namespace Reporting.Mappers.Common
         public Dictionary<int, ReportConfigModel> ReportConfigPerPage { get; set; } = new();
 
         [JsonPropertyName("drawTextData")]
-        public Dictionary<int, List<ListDrawTextObject>>? DrawTextData { get; internal set; }
+        public Dictionary<int, List<ListDrawTextObject>> DrawTextData { get; set; } = new();
+
+        [JsonPropertyName("drawLineObject")]
+        public Dictionary<int, List<ListDrawLineObject>> DrawLineData { get; set; } = new();
     }
 
     public class CellModel
@@ -142,5 +145,50 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("text")]
         public string Text { get; set; }
+    }
+
+    public class ListDrawLineObject
+    {
+        public ListDrawLineObject(double startX, double startY, double endX, double endY, long width, ConLineStyle style, string color)
+        {
+            StartX = startX;
+            StartY = startY;
+            EndX = endX;
+            EndY = endY;
+            Width = width;
+            Style = style;
+            Color = color;
+        }
+
+        [JsonPropertyName("startX")]
+        public double StartX { get; set; }
+
+        [JsonPropertyName("startY")]
+        public double StartY { get; set; }
+
+        [JsonPropertyName("endX")]
+        public double EndX { get; set; }
+
+        [JsonPropertyName("endY")]
+        public double EndY { get; set; }
+
+        [JsonPropertyName("width")]
+        public long Width { get; set; }
+
+        [JsonPropertyName("style")]
+        public ConLineStyle Style { get; set; }
+
+        [JsonPropertyName("color")]
+        public string Color { get; set; }
+    }
+
+    public enum ConLineStyle
+    {
+        None = 0,
+        Solid = 1,
+        Dash = 2,
+        Dot = 3,
+        DashDot = 4,
+        DashDotDot = 5
     }
 }
