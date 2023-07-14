@@ -68,6 +68,7 @@
         public const string Recaculation = "Recaculation";
         public const string ConvertItem = "ConvertItem";
         public const string CheckOrdInfInDrug = "CheckOrdInfInDrug";
+        public const string InDrug = "InDrug";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -106,6 +107,7 @@
         public const string AccountingCard = "AccountingCard";
         public const string ExportKarte2 = "ExportKarte2";
         public const string ExportKarte3 = "ExportKarte3";
+        public const string AccountingCardList = "AccountingCardList";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -158,7 +160,7 @@
         public const string InitDoctorCombo = "InitDoctorCombo";
         public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
         public const string GetLastKarute = "GetLastKarute";
-
+        public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
 

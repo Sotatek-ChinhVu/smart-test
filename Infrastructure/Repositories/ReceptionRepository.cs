@@ -587,7 +587,7 @@ namespace Infrastructure.Repositories
             List<SameVisitModel> result = new();
             var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
                                                                              && item.PtId == ptId
-                                                                             && item.SinDate == sinDate
+                                                                             && (sinDate == 0 || item.SinDate == sinDate)
                                                                              && item.IsDeleted == 0)
                                                               .ToList();
 
@@ -884,6 +884,26 @@ namespace Infrastructure.Repositories
             updateEntity(raiinInf);
             raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
             raiinInf.UpdateId = userId;
+            NoTrackingDataContext.SaveChanges();
+            return true;
+        }
+
+        public bool UpdateIsDeleted(int hpId, long raiinNo)
+        {
+            return Update(hpId, raiinNo, r => r.IsDeleted = 0);
+        }
+
+        private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
+                r.HpId == hpId
+                && r.RaiinNo == raiinNo).FirstOrDefault();
+            if (raiinInf is null)
+            {
+                return false;
+            }
+
+            updateEntity(raiinInf);
             NoTrackingDataContext.SaveChanges();
             return true;
         }

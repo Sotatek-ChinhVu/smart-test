@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.Reception;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.MaxMoney;
 using EmrCloudApi.Presenters.RaiinKubun;
@@ -38,6 +39,7 @@ using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
+using UseCase.Reception.RevertDeleteNoRecept;
 using UseCase.Reception.Update;
 using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
@@ -295,11 +297,20 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetLastKaruteResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.Test)]
-        public ActionResult<Response<DeleteReceptionResponse>> Test(DeleteReceptionRequest request)
+        [HttpPut(ApiPath.RevertDeleteNoRecept)]
+        public async Task<ActionResult<Response<RevertDeleteNoReceptResponse>>> RevertDeleteNoRecept(RevertDeleteNoReceptRequest request)
         {
-            return Ok();
-        }
+            var input = new RevertDeleteNoReceptInputData(HpId, request.RaiinNo, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
 
+            if (output.Status == RevertDeleteNoReceptStatus.Success)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.receptionModel, new()));
+            }
+
+            var presenter = new RevertDeleteNoReceptPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<RevertDeleteNoReceptResponse>>(presenter.Result);
+        }
     }
 }

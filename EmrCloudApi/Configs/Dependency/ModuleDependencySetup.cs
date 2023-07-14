@@ -161,6 +161,8 @@ using Reporting.Accounting.DB;
 using Reporting.Accounting.Service;
 using Reporting.AccountingCard.DB;
 using Reporting.AccountingCard.Service;
+using Reporting.AccountingCardList.DB;
+using Reporting.AccountingCardList.Service;
 using Reporting.Byomei.DB;
 using Reporting.Byomei.Service;
 using Reporting.Calculate.Implementation;
@@ -174,8 +176,12 @@ using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
 using Reporting.DrugNoteSeal.DB;
 using Reporting.DrugNoteSeal.Service;
+using Reporting.InDrug.DB;
+using Reporting.InDrug.Service;
 using Reporting.Karte1.DB;
 using Reporting.Karte1.Service;
+using Reporting.Karte3.DB;
+using Reporting.Karte3.Service;
 using Reporting.Kensalrai.DB;
 using Reporting.Kensalrai.Service;
 using Reporting.MedicalRecordWebId.DB;
@@ -359,6 +365,7 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
+using UseCase.Lock.CheckLockOpenAccounting;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
@@ -404,6 +411,7 @@ using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
@@ -506,6 +514,7 @@ using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ValidateCreateUKEFile;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetLastKarute;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetListRaiinInf;
@@ -515,6 +524,7 @@ using UseCase.Reception.GetSettings;
 using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
+using UseCase.Reception.RevertDeleteNoRecept;
 using UseCase.Reception.Update;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
@@ -608,17 +618,6 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.Lock.CheckExistFunctionCode;
-using CommonChecker.Caches.Interface;
-using CommonChecker.Caches;
-using Reporting.Sokatu.KokhoSeikyu.Service;
-using UseCase.AccountDue.IsNyukinExisted;
-using UseCase.Lock.CheckLockOpenAccounting;
-using Reporting.Karte3.Service;
-using Reporting.Karte3.DB;
-using UseCase.Reception.GetLastKarute;
-using UseCase.MstItem.ConvertStringChkJISKj;
-using UseCase.SpecialNote.GetStdPoint;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -651,7 +650,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             //Cache data
-            services.AddScoped<IUserInfoService, UserInfoService>();
+            services.AddTransient<IUserInfoService, UserInfoService>();
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
@@ -793,6 +792,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP22WelfareSeikyuCoReportService, P22WelfareSeikyuCoReportService>();
             services.AddTransient<IKarte3CoReportService, Karte3CoReportService>();
             services.AddTransient<ICoKarte3Finder, CoKarte3Finder>();
+            services.AddTransient<IAccountingCardListCoReportService, AccountingCardListCoReportService>();
+            services.AddTransient<ICoAccountingCardListFinder, CoAccountingCardListFinder>();
             services.AddTransient<IP21KoukiSeikyuCoReportService, P21KoukiSeikyuCoReportService>();
             services.AddTransient<IP22KoukiSeikyuCoReportService, P22KoukiSeikyuCoReportService>();
             services.AddTransient<IP23KoukiSeikyuCoReportService, P23KoukiSeikyuCoReportService>();
@@ -800,6 +801,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP25KoukiSeikyuCoReportService, P25KoukiSeikyuCoReportService>();
             services.AddTransient<IP27KoukiSeikyuCoReportService, P27KoukiSeikyuCoReportService>();
             services.AddTransient<IP14KokhoSokatuCoReportService, P14KokhoSokatuCoReportService>();
+            services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
+            services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -961,6 +964,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetMedicalDetailsInputData, GetMedicalDetailsInteractor>();
             busBuilder.RegisterUseCase<DeleteReceptionInputData, DeleteReceptionInteractor>();
             busBuilder.RegisterUseCase<GetRaiinListWithKanInfInputData, GetRaiinListWithKanInfInteractor>();
+            busBuilder.RegisterUseCase<RevertDeleteNoReceptInputData, RevertDeleteNoReceptInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
