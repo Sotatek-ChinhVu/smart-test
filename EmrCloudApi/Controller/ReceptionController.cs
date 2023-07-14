@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.Reception;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.MaxMoney;
 using EmrCloudApi.Presenters.RaiinKubun;
@@ -299,12 +300,12 @@ namespace EmrCloudApi.Controller
         [HttpPut(ApiPath.RevertDeleteNoRecept)]
         public async Task<ActionResult<Response<RevertDeleteNoReceptResponse>>> RevertDeleteNoRecept(RevertDeleteNoReceptRequest request)
         {
-            var input = new RevertDeleteNoReceptInputData(HpId, request.RaiinNo);
+            var input = new RevertDeleteNoReceptInputData(HpId, request.RaiinNo, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             if (output.Status == RevertDeleteNoReceptStatus.Success)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionRevertMessage(output.receptionModel));
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.receptionModel, new()));
             }
 
             var presenter = new RevertDeleteNoReceptPresenter();

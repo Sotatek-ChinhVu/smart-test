@@ -1,5 +1,7 @@
-﻿using Domain.Models.Reception;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Domain.Models.Reception;
 using Entity.Tenant;
+using Microsoft.Extensions.Options;
 using UseCase.Reception.RevertDeleteNoRecept;
 
 namespace Interactor.Reception;
@@ -27,10 +29,9 @@ public class RevertDeleteNoReceptInteractor : IRevertDeleteNoReceptInputPort
             }
 
             var result = _receptionRepository.UpdateIsDeleted(inputData.HpId, inputData.RaiinNo);
-
             if (result)
             {
-                var reception = _receptionRepository.Get(inputData.RaiinNo);
+                var reception = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId, isDeleted: 0);
                 return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.Success, reception);
             }
 
