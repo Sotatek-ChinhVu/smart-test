@@ -103,7 +103,7 @@ namespace Infrastructure.Repositories
                     from lockedRaiinInf in rfg.DefaultIfEmpty()
                     join lockMst in NoTrackingDataContext.LockMsts.Where(m => m.FunctionCdB == functionCd && m.IsInvalid == 0)
                     on lockInf.FunctionCd equals lockMst.FunctionCdA
-                    join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted != 1 && u.StartDate <= sinDate && sinDate <= u.EndDate)
+                    join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId)
                     on lockInf.UserId equals userMst.UserId into gj
                     from lockedUserInf in gj.DefaultIfEmpty()
                     join functionMst in NoTrackingDataContext.FunctionMsts
