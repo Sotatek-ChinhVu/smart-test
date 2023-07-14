@@ -159,7 +159,7 @@
         public const string InitDoctorCombo = "InitDoctorCombo";
         public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
         public const string GetLastKarute = "GetLastKarute";
-
+        public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
 

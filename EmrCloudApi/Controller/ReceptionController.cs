@@ -38,6 +38,7 @@ using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
+using UseCase.Reception.RevertDeleteNoRecept;
 using UseCase.Reception.Update;
 using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
@@ -295,11 +296,14 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetLastKaruteResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.Test)]
-        public ActionResult<Response<DeleteReceptionResponse>> Test(DeleteReceptionRequest request)
+        [HttpPut(ApiPath.RevertDeleteNoRecept)]
+        public ActionResult<Response<RevertDeleteNoReceptResponse>> RevertDeleteNoRecept(RevertDeleteNoReceptRequest request)
         {
-            return Ok();
+            var input = new RevertDeleteNoReceptInputData(HpId, request.RaiinNo);
+            var output = _bus.Handle(input);
+            var presenter = new RevertDeleteNoReceptPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<RevertDeleteNoReceptResponse>>(presenter.Result);
         }
-
     }
 }
