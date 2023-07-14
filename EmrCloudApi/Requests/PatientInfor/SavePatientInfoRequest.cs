@@ -8,7 +8,7 @@ namespace EmrCloudApi.Requests.PatientInfor
 {
     public class SavePatientInfoRequest
     {
-        public SavePatientInfoRequest(PatientInforDto patient, List<HokenPartternDto> insurances, List<HokenInfDto> hokenInfs, List<HokenKohiDto> hokenKohis, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<GroupInfDto> ptGrps, List<LimitListModel> maxMoneys, ReactSavePatientInfo reactSave)
+        public SavePatientInfoRequest(PatientInforDto patient, List<HokenPartternDto> insurances, List<HokenInfDto> hokenInfs, List<HokenKohiDto> hokenKohis, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<GroupInfDto> ptGrps, List<LimitListModel> maxMoneys, ReactSavePatientInfo reactSave, List<int> hokenIdList)
         {
             Patient = patient;
             Insurances = insurances;
@@ -19,6 +19,7 @@ namespace EmrCloudApi.Requests.PatientInfor
             PtGrps = ptGrps;
             MaxMoneys = maxMoneys;
             ReactSave = reactSave;
+            HokenIdList = hokenIdList;
         }
 
         public PatientInforDto Patient { get; private set; }
@@ -38,5 +39,7 @@ namespace EmrCloudApi.Requests.PatientInfor
         public List<LimitListModel> MaxMoneys { get; private set; }
 
         public ReactSavePatientInfo ReactSave { get; private set; }
+
+        public List<int> HokenIdList { get; private set; }
     }
 }
