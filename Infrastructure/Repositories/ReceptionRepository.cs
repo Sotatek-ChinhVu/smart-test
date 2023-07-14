@@ -800,7 +800,7 @@ namespace Infrastructure.Repositories
                 r.raiinInf.ConfirmationResult ?? string.Empty,
                 grpIds,
                 dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName ?? string.Empty, d.ColorCd?.Length > 0 ? "#" + d.ColorCd : string.Empty)).ToList(),
-                sinDate,
+                r.raiinInf.SinDate,
                 // Fields needed to create Hoken name
                 r.relatedPtHokenPattern?.HokenPid ?? CommonConstants.InvalidId,
                 r.relatedPtHokenPattern?.StartDate ?? 0,
@@ -1164,7 +1164,7 @@ namespace Infrastructure.Repositories
             }
 
             //delete raiinInf
-            var raiinInf = TrackingDataContext.RaiinInfs.FirstOrDefault(r => r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
+            var raiinInf = TrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
             if (raiinInf == null) return new(0, 0, 0);
 
             raiinInf.UpdateId = userId;
@@ -1172,7 +1172,7 @@ namespace Infrastructure.Repositories
             raiinInf.IsDeleted = deleteFlag;
 
             // Update oyaRaiinNo of other raiinInf
-            var listRaiinInf = TrackingDataContext.RaiinInfs.Where(r => r.OyaRaiinNo == raiinNo && r.RaiinNo != raiinNo && r.IsDeleted == DeleteTypes.None).ToList();
+            var listRaiinInf = TrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.OyaRaiinNo == raiinNo && r.RaiinNo != raiinNo && r.IsDeleted == DeleteTypes.None).ToList();
             if (listRaiinInf.Count > 0)
             {
                 long minRaiinNo = listRaiinInf.Min(r => r.RaiinNo);
@@ -1185,16 +1185,17 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
 
             // Delete reservation info
-            var rsvInf = TrackingDataContext.RsvInfs.FirstOrDefault(r => r.RaiinNo == raiinNo && r.SinDate == sinDate && r.PtId == ptId);
+            var rsvInf = TrackingDataContext.RsvInfs.FirstOrDefault(r => r.HpId == hpId && r.RaiinNo == raiinNo && r.SinDate == sinDate && r.PtId == ptId);
             if (rsvInf != null) TrackingDataContext.RsvInfs.Remove(rsvInf);
 
             var rsvFrameInf = TrackingDataContext.RsvFrameInfs.FirstOrDefault(r => r.Number == raiinNo);
             if (rsvFrameInf != null) TrackingDataContext.RsvFrameInfs.Remove(rsvFrameInf);
 
             //delete order
-            var odrInfs = TrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId
-                                                                           && odr.RaiinNo == raiinNo
-                                                                           && odr.SinDate == sinDate);
+            var odrInfs = TrackingDataContext.OdrInfs.Where(odr => odr.HpId == hpId
+                                                                   && odr.PtId == ptId
+                                                                   && odr.RaiinNo == raiinNo
+                                                                   && odr.SinDate == sinDate);
             if (odrInfs != null)
             {
                 var updateId = userId;
@@ -1203,7 +1204,6 @@ namespace Infrastructure.Repositories
                 foreach (var odrInf in odrInfs)
                 {
                     odrInf.IsDeleted = deleteFlag;
-
                     odrInf.UpdateId = updateId;
                     odrInf.UpdateDate = updateDate;
                 }
@@ -1211,9 +1211,9 @@ namespace Infrastructure.Repositories
 
             //delete karte
             var karteInfs = NoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId
-                                                                             && k.PtId == ptId
-                                                                             && k.RaiinNo == raiinNo
-                                                                             && k.SinDate == sinDate);
+                                                                       && k.PtId == ptId
+                                                                       && k.RaiinNo == raiinNo
+                                                                       && k.SinDate == sinDate);
             if (karteInfs != null)
             {
                 var updateId = userId;
@@ -1222,47 +1222,68 @@ namespace Infrastructure.Repositories
                 foreach (var karteInf in karteInfs)
                 {
                     karteInf.IsDeleted = deleteFlag;
-
                     karteInf.UpdateId = updateId;
                     karteInf.UpdateDate = updateDate;
                 }
             }
 
             // Delete KENSA_INF,KENSA_INF_DETAIL
-            var listKendaInf = TrackingDataContext.KensaInfs.Where(k => k.PtId == ptId &&
-                                                                                   k.RaiinNo == raiinNo).ToList();
+            var listKendaInf = TrackingDataContext.KensaInfs.Where(k => k.HpId == hpId
+                                                                        && k.PtId == ptId
+                                                                        && k.RaiinNo == raiinNo)
+                                                            .ToList();
             listKendaInf.ForEach((k) =>
             {
                 k.IsDeleted = DeleteTypes.Deleted;
+                k.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                k.UpdateId = userId;
             });
 
-            var listKendaInfDetail = TrackingDataContext.KensaInfs.Where(k => k.PtId == ptId &&
-                                                                                               k.RaiinNo == raiinNo).ToList();
+            var listKendaInfDetail = TrackingDataContext.KensaInfs.Where(k => k.HpId == hpId
+                                                                              && k.PtId == ptId
+                                                                              && k.RaiinNo == raiinNo)
+                                                                  .ToList();
             listKendaInfDetail.ForEach((k) =>
             {
                 k.IsDeleted = DeleteTypes.Deleted;
+                k.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                k.UpdateId = userId;
             });
 
             // Delete LIMIT_LIST_INF、LIMIT_CNT_LIST_INF
-            var listLimitListInf = TrackingDataContext.LimitListInfs.Where(k => k.PtId == ptId &&
-                                                                                       k.RaiinNo == raiinNo).ToList();
+            var listLimitListInf = TrackingDataContext.LimitListInfs.Where(k => k.HpId == hpId
+                                                                                && k.PtId == ptId
+                                                                                && k.RaiinNo == raiinNo)
+                                                                    .ToList();
             listLimitListInf.ForEach((k) =>
             {
                 k.IsDeleted = DeleteTypes.Deleted;
+                k.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                k.UpdateId = userId;
             });
 
-            var listLimitCntListInf = TrackingDataContext.LimitCntListInfs.Where(k => k.PtId == ptId &&
-                                                                                                 k.OyaRaiinNo == oyaRaiinNo).ToList();
+            var listLimitCntListInf = TrackingDataContext.LimitCntListInfs.Where(k => k.HpId == hpId
+                                                                                      && k.PtId == ptId
+                                                                                      && k.OyaRaiinNo == oyaRaiinNo)
+                                                                          .ToList();
             listLimitCntListInf.ForEach((k) =>
             {
                 k.IsDeleted = DeleteTypes.Deleted;
+                k.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                k.UpdateId = userId;
             });
 
             // Delete Monshin
-            var listMonshinInf = TrackingDataContext.MonshinInfo.Where(m => m.PtId == ptId && m.RaiinNo == raiinNo && m.SinDate == sinDate).ToList();
+            var listMonshinInf = TrackingDataContext.MonshinInfo.Where(m => m.HpId == hpId
+                                                                            && m.PtId == ptId 
+                                                                            && m.RaiinNo == raiinNo 
+                                                                            && m.SinDate == sinDate)
+                                                                .ToList();
             listMonshinInf.ForEach((m) =>
             {
                 m.IsDeleted = DeleteTypes.Deleted;
+                m.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                m.UpdateId = userId;
             });
             var result = new Tuple<int, long, long>(raiinInf.SinDate, raiinInf.RaiinNo, raiinInf.PtId);
 
