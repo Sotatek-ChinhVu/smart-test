@@ -10,7 +10,7 @@ public class CheckLockOpenAccountingPresenter
 
     public void Complete(CheckLockOpenAccountingOutputData outputData)
     {
-        Result.Data = new CheckLockOpenAccountingResponse(outputData.Status == CheckLockOpenAccountingStatus.Locked);
+        Result.Data = new CheckLockOpenAccountingResponse(outputData.Status == CheckLockOpenAccountingStatus.Locked, outputData.LockInfs);
         Result.Message = outputData.Status == CheckLockOpenAccountingStatus.Locked ? "Locked" : "Not lock";
         Result.Status = (int)outputData.Status;
     }

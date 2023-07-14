@@ -27,18 +27,20 @@ namespace Interactor.Lock
                 if (inputData.IsRemoveAllLock)
                 {
                     result = _lockRepository.RemoveAllLock(hpId, userId);
+                    raiinNo = 0;
                 }
                 else if (inputData.IsRemoveAllLockPtId)
                 {
                     result = _lockRepository.RemoveAllLock(hpId, userId, ptId, sinDate, functionCode, tabKey);
+                    raiinNo = 0;
                 }
                 else
                 {
-                    result = _lockRepository.RemoveLock(hpId, functionCode, ptId, sinDate, raiinNo, userId);
+                    result = _lockRepository.RemoveLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, tabKey);
                 }
                 if (result.Any())
                 {
-                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate);
+                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate, raiinNo);
                     return new RemoveLockOutputData(RemoveLockStatus.Successed, responseLockList);
                 }
                 return new RemoveLockOutputData(RemoveLockStatus.Failed, new());
