@@ -888,6 +888,26 @@ namespace Infrastructure.Repositories
             return true;
         }
 
+        public bool UpdateIsDeleted(int hpId, long raiinNo)
+        {
+            return Update(hpId, raiinNo, r => r.IsDeleted = 0);
+        }
+
+        private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
+                r.HpId == hpId
+                && r.RaiinNo == raiinNo).FirstOrDefault();
+            if (raiinInf is null)
+            {
+                return false;
+            }
+
+            updateEntity(raiinInf);
+            NoTrackingDataContext.SaveChanges();
+            return true;
+        }
+
         public ReceptionModel GetReceptionComments(int hpId, long raiinNo)
         {
             var receptionComment = NoTrackingDataContext.RaiinCmtInfs

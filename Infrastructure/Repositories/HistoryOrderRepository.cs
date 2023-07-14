@@ -82,7 +82,6 @@ namespace Infrastructure.Repositories
                             hokenPidListByCondition.Contains(r.HokenPid) &&
                             (karteFilter.IsAllDepartment || karteFilter.ListDepartmentCode.Contains(r.KaId)) &&
                             (karteFilter.IsAllDoctor || karteFilter.ListDoctorCode.Contains(r.TantoId)));
-            var temp = raiinInfListQueryable.ToList();
             IEnumerable<RaiinInf> raiinInfEnumerable;
             if (karteFilter.OnlyBookmark)
             {
