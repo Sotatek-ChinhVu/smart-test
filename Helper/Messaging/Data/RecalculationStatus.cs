@@ -4,20 +4,20 @@ public class RecalculationStatus
 {
     public RecalculationStatus(bool done, int type, int length, int successCount, string message)
     {
-        Done = done;
-        Type = type;
-        Length = length;
-        SuccessCount = successCount;
-        Message = message;
+        this.done = done;
+        this.type = type;
+        this.length = length;
+        this.successCount = successCount;
+        this.message = message;
     }
 
-    public bool Done { get; private set; }
+    public bool done { get; private set; }
 
-    public int Type { get; private set; }
+    public int type { get; private set; }
 
-    public int Length { get; private set; }
+    public int length { get; private set; }
 
-    public int SuccessCount { get; private set; }
+    public int successCount { get; private set; }
 
-    public string Message { get; private set; }
+    public string message { get; private set; }
 }
