@@ -297,10 +297,16 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPut(ApiPath.RevertDeleteNoRecept)]
-        public ActionResult<Response<RevertDeleteNoReceptResponse>> RevertDeleteNoRecept(RevertDeleteNoReceptRequest request)
+        public async Task<ActionResult<Response<RevertDeleteNoReceptResponse>>> RevertDeleteNoRecept(RevertDeleteNoReceptRequest request)
         {
             var input = new RevertDeleteNoReceptInputData(HpId, request.RaiinNo);
             var output = _bus.Handle(input);
+
+            if (output.Status == RevertDeleteNoReceptStatus.Success)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionRevertMessage(output.receptionModel));
+            }
+
             var presenter = new RevertDeleteNoReceptPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<RevertDeleteNoReceptResponse>>(presenter.Result);

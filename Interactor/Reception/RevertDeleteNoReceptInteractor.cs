@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Reception;
+using Entity.Tenant;
 using UseCase.Reception.RevertDeleteNoRecept;
 
 namespace Interactor.Reception;
@@ -18,21 +19,22 @@ public class RevertDeleteNoReceptInteractor : IRevertDeleteNoReceptInputPort
         {
             if (inputData.HpId < 0)
             {
-                return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.InvalidHpId);
+                return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.InvalidHpId, new());
             }
             if (inputData.RaiinNo <= 0)
             {
-                return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.InvalidRaiinNo);
+                return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.InvalidRaiinNo, new());
             }
 
             var result = _receptionRepository.UpdateIsDeleted(inputData.HpId, inputData.RaiinNo);
 
             if (result)
             {
-                return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.Success);
+                var reception = _receptionRepository.Get(inputData.RaiinNo);
+                return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.Success, reception);
             }
 
-            return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.Failed);
+            return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.Failed, new());
         }
         finally
         {

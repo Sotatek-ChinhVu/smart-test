@@ -31,3 +31,13 @@ public class PatientInforMessage
 
     public PatientInforModel PatientInforModel { get; set; }
 }
+
+public class ReceptionRevertMessage
+{
+    public ReceptionRevertMessage(ReceptionModel receptionModel)
+    {
+        ReceptionModel = receptionModel;
+    }
+
+    public ReceptionModel ReceptionModel { get; private set; }
+}
