@@ -11,7 +11,7 @@ public class CheckLockVisitingResponse
         LockInfs = lockInfs;
     }
 
-    public CheckLockVisitingStatus Status { get; set; }
+    public CheckLockVisitingStatus Status { get; private set; }
 
     public List<LockModel> LockInfs { get; private set; }
 }
