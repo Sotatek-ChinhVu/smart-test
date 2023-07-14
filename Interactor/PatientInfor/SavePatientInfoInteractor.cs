@@ -1,7 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
-using Domain.Models.Lock;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper;
@@ -9,7 +8,6 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
-using UseCase.PatientInfor.CheckValidSamePatient;
 using UseCase.PatientInfor.Save;
 
 namespace Interactor.PatientInfor
@@ -33,10 +31,14 @@ namespace Interactor.PatientInfor
             var validations = Validation(inputData);
             if (validations.Any())
             {
-                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0, patientInforModel);
+                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0, patientInforModel, false);
             }
             try
             {
+                if ()
+                {
+                    return CloneByomei(inputData);
+                }
                 IEnumerable<InsuranceScanModel> HandlerInsuranceScan(int hpId, long ptNum, long ptId)
                 {
                     var listReturn = new List<InsuranceScanModel>();
@@ -91,15 +93,47 @@ namespace Interactor.PatientInfor
                 if (result.resultSave)
                 {
                     patientInforModel = _patientInforRepository.GetById(inputData.HpId, result.ptId, 0, 0) ?? new();
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId, patientInforModel);
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId, patientInforModel, false);
                 }
                 else
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0, patientInforModel);
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0, patientInforModel, false);
             }
             finally
             {
                 _patientInforRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
+            }
+        }
+
+        private SavePatientInfoOutputData CloneByomei(SavePatientInfoInputData inputData)
+        {
+            bool shouldCheckByomei = false;
+            if (!inputData.ReactSave.ConfirmCloneByomei)
+            {
+                //if add new hoken => confirm clone byomei
+                var newHokenInfs = HokenInfsBinding.OrderBy(p => p.HokenId).Where(p => p.IsDeleted == DeleteTypes.None && p.IsAddNew && !p.IsEmptyModel);
+                if (newHokenInfs.Count() > 0)
+                {
+                    var hokenInf = HokenInfsBinding.OrderByDescending(p => p.EndDateSort).ThenByDescending(p => p.HokenId)
+                                               .FirstOrDefault(p => p.IsDeleted == DeleteTypes.None && !p.IsAddNew);
+                    if (hokenInf != null)
+                    {
+                        var ptByomeis = _hokenFinder.GetPtByomeisByHokenId(PtId, hokenInf.HokenId);
+                        if (ptByomeis.Count > 0)
+                        {
+                            foreach (var newHokenInf in newHokenInfs)
+                            {
+                                var receiver = new EmrDialogMessage(EmrMessageType.mFree00010, "'" + hokenInf.HokenSentaku + "'" + " の継続病名を" + Environment.NewLine +
+                                                                                               "'" + newHokenInf.HokenSentaku + "'" + " にコピーしますか？",
+                                                                    new EmrMessageButtons[] { EmrMessageButtons.mbYes, EmrMessageButtons.mbNo }, 0).SendAsync().Result;
+                                if (receiver.Success && receiver.Result.ResultButton == EmrMessageButtons.mbYes)
+                                {
+                                    _saveHokenCommandHandler.CloneByomeiWithNewHokenId(ptByomeis, newHokenInf.HokenId);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
