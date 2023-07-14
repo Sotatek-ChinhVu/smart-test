@@ -1302,6 +1302,78 @@ namespace Infrastructure.Repositories
             return checkedOrderModelList;
         }
 
+        public List<CheckedOrderModel> TrialIryoJyohoKibanCalculation(int hpId, int sinDate, List<OrdInfDetailModel> allOdrInfDetail)
+        {
+            List<CheckedOrderModel> checkingOrderModelList = new List<CheckedOrderModel>();
+            var autoSanteiItem = FindAutoSanteiMst(hpId, ItemCdConst.SyosinIryoJyohoKiban1, sinDate);
+            if (!autoSanteiItem)
+            {
+                return checkingOrderModelList;
+            }
+
+            var existAutoItem = allOdrInfDetail.Any(detail => ItemCdConst.IryoJyohoKibanList.Contains(detail.ItemCd));
+            if (existAutoItem)
+            {
+                return checkingOrderModelList;
+            }
+            bool isExistFirstVisit = allOdrInfDetail.Any(x => x.ItemCd == ItemCdConst.SyosaiKihon && x.Suryo == 1);
+            bool isExistReturnVisit = HeaderOdrInf.OdrInfDetailModelsIgnoreEmpty.Any(x => x.ItemCd == ItemCdConst.SyosaiKihon && x.Suryo == 3);
+            bool isGairaiRiha = CheckGairaiRiha(allOdrInfDetail);
+            if (isExistFirstVisit)
+            {
+                TenMstModel FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.SyosinIryoJyohoKiban1, sinDate);
+                if (FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel != null)
+                {
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel();
+                    checkingOrderModel.CheckingType = CheckingType.MissingCalculate;
+                    checkingOrderModel.Santei = true;
+                    checkingOrderModel.CheckingContent = FormatSanteiMessage(FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.Name);
+                    checkingOrderModel.TenMstItem = FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel;
+
+                    checkingOrderModelList.Add(checkingOrderModel);
+                }
+
+                TenMstModel MedicalDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban1, sinDate);
+                if (MedicalDevelopmentSystemEnhanceAdd1TenMstModel != null)
+                {
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel();
+                    checkingOrderModel.CheckingType = CheckingType.MissingCalculate;
+                    checkingOrderModel.Santei = true;
+                    checkingOrderModel.CheckingContent = FormatSanteiMessage(MedicalDevelopmentSystemEnhanceAdd1TenMstModel.Name);
+                    checkingOrderModel.TenMstItem = MedicalDevelopmentSystemEnhanceAdd1TenMstModel;
+
+                    checkingOrderModelList.Add(checkingOrderModel);
+                }
+            }
+            else if (isExistReturnVisit || isGairaiRiha)
+            {
+                TenMstModel VisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.SaisinIryoJyohoKiban3, sinDate);
+                if (VisitDevelopmentSystemEnhanceAdd3TenMstModel != null)
+                {
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel();
+                    checkingOrderModel.CheckingType = CheckingType.MissingCalculate;
+                    checkingOrderModel.Santei = true;
+                    checkingOrderModel.CheckingContent = FormatSanteiMessage(VisitDevelopmentSystemEnhanceAdd3TenMstModel.Name);
+                    checkingOrderModel.TenMstItem = VisitDevelopmentSystemEnhanceAdd3TenMstModel;
+
+                    checkingOrderModelList.Add(checkingOrderModel);
+                }
+
+                TenMstModel ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban3, sinDate);
+                if (ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel != null)
+                {
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel();
+                    checkingOrderModel.CheckingType = CheckingType.MissingCalculate;
+                    checkingOrderModel.Santei = true;
+                    checkingOrderModel.CheckingContent = FormatSanteiMessage(ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.Name);
+                    checkingOrderModel.TenMstItem = ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel;
+
+                    checkingOrderModelList.Add(checkingOrderModel);
+                }
+            }
+            return checkingOrderModelList;
+        }
+
         public (List<string>, List<SinKouiCountModel>) GetCheckedAfter327Screen(int hpId, long ptId, int sinDate, List<CheckedOrderModel> checkedTenMstResult, bool isTokysyoOrder, bool isTokysyosenOrder)
         {
             #region Checking

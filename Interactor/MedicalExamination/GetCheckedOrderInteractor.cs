@@ -199,6 +199,7 @@ namespace Interactor.MedicalExamination
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.ChikiHokatu(inputData.HpId, inputData.PtId, inputData.UserId, inputData.SinDate, inputData.PrimaryDoctor, inputData.TantoId, allOdrInfDetail, inputData.SyosaisinKbn));
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.YakkuZai(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.IBirthDay, allOdrInfDetail, ordInfs));
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.SiIkuji(inputData.HpId, inputData.SinDate, inputData.IBirthDay, allOdrInfDetail, isJouhou, inputData.SyosaisinKbn));
+                    checkedOrderModelList.AddRange(_medicalExaminationRepository.TrialIryoJyohoKibanCalculation(allOdrInfDetail));
 
                     var odrItems = ordInfs.Select(o => new OdrInfItem(
                             o.HpId,
