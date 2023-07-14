@@ -166,7 +166,7 @@ namespace Infrastructure.Repositories
             }
             TrackingDataContext.LockInfs.Remove(lockInf);
             TrackingDataContext.SaveChanges();
-            return new() { lockInf.RaiinNo };
+            return new() { raiinNo };
         }
 
         public List<long> RemoveAllLock(int hpId, int userId)

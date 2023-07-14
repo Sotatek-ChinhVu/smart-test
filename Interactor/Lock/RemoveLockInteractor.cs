@@ -37,6 +37,7 @@ namespace Interactor.Lock
                 else
                 {
                     result = _lockRepository.RemoveLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, tabKey);
+                    raiinNo = 0;
                 }
                 if (result.Any())
                 {
