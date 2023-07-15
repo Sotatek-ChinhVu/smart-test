@@ -3,8 +3,8 @@ using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System.Text;
+using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.Receipt.Recalculation;
 
@@ -71,7 +71,7 @@ public class RecalculationController : AuthorizeControllerBase
 
     private void AddMessageCheckErrorInMonth(RecalculationStatus status)
     {
-        string result = "\n" + JsonConvert.SerializeObject(status);
+        string result = "\n" + JsonSerializer.Serialize(status);
         var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
         HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
         HttpContext.Response.Body.FlushAsync();
