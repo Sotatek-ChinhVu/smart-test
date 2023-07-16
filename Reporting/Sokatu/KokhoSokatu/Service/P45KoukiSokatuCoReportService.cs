@@ -68,11 +68,19 @@ public class P45KoukiSokatuCoReportService : IP45KoukiSokatuCoReportService
         var getData = GetData();
         hasNextPage = true;
 
-        while (getData && hasNextPage)
+        for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
         {
-            UpdateDrawForm();
-            currentPage++;
-        }
+            prefInOut = prefCnt;
+
+            curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
+            if (curReceInfs.Count() == 0) continue;
+
+            while (getData && hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
+        }    
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
