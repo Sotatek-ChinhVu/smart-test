@@ -31,17 +31,14 @@ namespace Interactor.PatientInfor
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
         {
             PatientInforModel patientInforModel = new();
+            bool cloneByomei = CloneByomei(inputData);
             var validations = Validation(inputData);
             if (validations.Any())
             {
-                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0, patientInforModel, false);
+                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0, patientInforModel, cloneByomei);
             }
             try
             {
-                if (!inputData.ReactSave.ConfirmCloneByomei && CloneByomei(inputData))
-                {
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, 0, new(), true);
-                }
                 IEnumerable<InsuranceScanModel> HandlerInsuranceScan(int hpId, long ptNum, long ptId)
                 {
                     var listReturn = new List<InsuranceScanModel>();
