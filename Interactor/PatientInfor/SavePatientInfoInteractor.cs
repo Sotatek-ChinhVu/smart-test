@@ -33,7 +33,7 @@ namespace Interactor.PatientInfor
             PatientInforModel patientInforModel = new();
             bool cloneByomei = CloneByomei(inputData);
             var validations = Validation(inputData);
-            if (validations.Any() || !inputData.ReactSave.ConfirmCloneByomei)
+            if (validations.Any() || (!inputData.ReactSave.ConfirmCloneByomei && cloneByomei))
             {
                 return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0, patientInforModel, cloneByomei);
             }
