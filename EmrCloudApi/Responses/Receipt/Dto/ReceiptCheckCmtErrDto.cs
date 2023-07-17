@@ -13,6 +13,9 @@ public class ReceiptCheckCmtErrDto
         TextDisplay2 = output.TextDisplay2;
         StatusColor = output.StatusColor;
         ReceiptCheckIsErrItem = output.ReceiptCheckIsErrItem;
+        ErrorCd = output.ErrorCd;
+        ACd = output.ACd;
+        BCd = output.BCd;
     }
 
     public int SeqNo { get; private set; }
@@ -24,6 +27,12 @@ public class ReceiptCheckCmtErrDto
     public string TextDisplay1 { get; private set; }
 
     public string TextDisplay2 { get; private set; }
+
+    public string ErrorCd { get; private set; }
+
+    public string ACd { get; private set; }
+
+    public string BCd { get; private set; }
 
     public int StatusColor { get; private set; }
 

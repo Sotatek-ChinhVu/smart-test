@@ -13,9 +13,12 @@ public class ReceiptCheckCmtErrListItem
         TextDisplay2 = string.Empty;
         StatusColor = isPending;
         ReceiptCheckIsErrItem = false;
+        ErrorCd = string.Empty;
+        ACd = string.Empty;
+        BCd = string.Empty;
     }
 
-    public ReceiptCheckCmtErrListItem(bool isChecked, string textDisplay1, string textDisplay2)
+    public ReceiptCheckCmtErrListItem(bool isChecked, string textDisplay1, string textDisplay2, string errorCd, string acd, string bcd)
     {
         SeqNo = 0;
         SortNo = 0;
@@ -24,6 +27,9 @@ public class ReceiptCheckCmtErrListItem
         TextDisplay2 = textDisplay2;
         StatusColor = (int)ReceiptCheckCmtStatusColorEnum.SystemHold;
         ReceiptCheckIsErrItem = true;
+        ErrorCd = errorCd;
+        ACd= acd;
+        BCd = bcd;
     }
 
     public int SeqNo { get; private set; }
@@ -35,6 +41,12 @@ public class ReceiptCheckCmtErrListItem
     public string TextDisplay1 { get; private set; }
 
     public string TextDisplay2 { get; private set; }
+
+    public string ErrorCd { get; private set; }
+
+    public string ACd { get; private set; }
+
+    public string BCd { get; private set; }
 
     public int StatusColor { get; private set; }
 
