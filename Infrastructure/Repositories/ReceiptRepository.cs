@@ -1325,7 +1325,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                && item.PtId == ptId
                                                                                && (hokenId == 0 || item.HokenId == hokenId)
                                                                                && item.IsDeleted == DeleteTypes.None
-                                                                               && ((hokenKbn == 13 && item.SinDay > 0)
+                                                                               && (hokenId == 0
+                                                                                   || (hokenKbn == 13 && item.SinDay > 0)
                                                                                    || (hokenKbn != 13 && item.SinDay == 0)))
                                                                 .OrderBy(item => item.SinDay)
                                                                 .ThenByDescending(item => item.SeqNo)
