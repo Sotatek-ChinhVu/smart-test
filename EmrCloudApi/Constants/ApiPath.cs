@@ -50,6 +50,7 @@
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
         public const string GetPtWeight = "GetPtWeight";
+        public const string GetStdPoint = "GetStdPoint";
 
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
