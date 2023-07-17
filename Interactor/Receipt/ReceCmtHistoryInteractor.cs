@@ -40,7 +40,7 @@ public class ReceCmtHistoryInteractor : IReceCmtHistoryInputPort
         var sinYmList = receCmtList.Select(item => item.SinYm).Distinct().OrderByDescending(item => item).ToList();
         foreach (var sinYm in sinYmList)
         {
-            var hokenIdList = receCmtList.Where(item => item.SinYm == sinYm).Select(item => item.HokenId).Distinct().ToList();
+            var hokenIdList = receCmtList.Where(item => item.SinYm == sinYm).Select(item => item.HokenId).OrderByDescending(item => item).Distinct().ToList();
             foreach (var hokenId in hokenIdList)
             {
                 var outputItem = new ReceCmtHistoryOutputItem(
