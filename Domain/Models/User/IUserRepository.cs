@@ -75,5 +75,7 @@ namespace Domain.Models.User
         List<JobMstModel> GetListJob(int hpId);
 
         List<FunctionMstModel> GetListFunctionPermission();
+
+        UserMstModel GetUserInfo(int hpId, int userId);
     }
 }

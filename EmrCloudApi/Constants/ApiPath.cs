@@ -237,6 +237,7 @@
         public const string GetListJobMst = "GetListJobMst";
         public const string GetListFunctionPermission = "GetListFunctionPermission";
         public const string SaveListUserMst = "SaveListUserMst";
+        public const string GetUserInfo = "GetUserInfo";
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
