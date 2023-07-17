@@ -54,7 +54,8 @@ public class GetReceiCheckListInteractor : IGetReceiCheckListInputPort
                                         err.Message2,
                                         err.ErrCd,
                                         err.ACd,
-                                        err.BCd
+                                        err.BCd,
+                                        err.SinDate
                                        );
             result.Add(receCheckErrItem);
         }

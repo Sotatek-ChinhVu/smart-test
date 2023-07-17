@@ -18,7 +18,7 @@ public class ReceiptCheckCmtErrListItem
         BCd = string.Empty;
     }
 
-    public ReceiptCheckCmtErrListItem(bool isChecked, string textDisplay1, string textDisplay2, string errorCd, string acd, string bcd)
+    public ReceiptCheckCmtErrListItem(bool isChecked, string textDisplay1, string textDisplay2, string errorCd, string acd, string bcd, int sinDate)
     {
         SeqNo = 0;
         SortNo = 0;
@@ -28,8 +28,9 @@ public class ReceiptCheckCmtErrListItem
         StatusColor = (int)ReceiptCheckCmtStatusColorEnum.SystemHold;
         ReceiptCheckIsErrItem = true;
         ErrorCd = errorCd;
-        ACd= acd;
+        ACd = acd;
         BCd = bcd;
+        SinDate = sinDate;
     }
 
     public int SeqNo { get; private set; }
@@ -47,6 +48,8 @@ public class ReceiptCheckCmtErrListItem
     public string ACd { get; private set; }
 
     public string BCd { get; private set; }
+
+    public int SinDate { get; private set; }
 
     public int StatusColor { get; private set; }
 

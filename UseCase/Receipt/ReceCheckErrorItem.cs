@@ -2,11 +2,8 @@
 
 public class ReceCheckErrorItem
 {
-    public ReceCheckErrorItem(long ptId, int sinYm, int hokenId, string errCd, int sinDate, string aCd, string bCd, string message1, string message2, int isChecked)
+    public ReceCheckErrorItem(string errCd, int sinDate, string aCd, string bCd, string message1, string message2, int isChecked)
     {
-        PtId = ptId;
-        SinYm = sinYm;
-        HokenId = hokenId;
         ErrCd = errCd;
         SinDate = sinDate;
         ACd = aCd;
@@ -15,12 +12,6 @@ public class ReceCheckErrorItem
         Message2 = message2;
         IsChecked = isChecked;
     }
-
-    public long PtId { get; private set; }
-
-    public int SinYm { get; private set; }
-
-    public int HokenId { get; private set; }
 
     public string ErrCd { get; private set; }
 

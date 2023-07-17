@@ -26,6 +26,7 @@ public class SaveReceCheckCmtListPresenter : ISaveReceCheckCmtListOutputPort
         SaveReceCheckCmtListStatus.InvalidHokenId => ResponseMessage.InvalidHokenId,
         SaveReceCheckCmtListStatus.InvalidSeqNo => ResponseMessage.InvalidSeqNo,
         SaveReceCheckCmtListStatus.InvalidStatusColor => ResponseMessage.InvalidStatusColor,
+        SaveReceCheckCmtListStatus.InvalidReceCheckErrorItem => ResponseMessage.InvalidReceCheckErrorItem,
         _ => string.Empty
     };
 }
