@@ -36,7 +36,8 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
             var receCheckCmtList = inputData.ReceCheckCmtList.Select(item => ConvertToReceCheckCmtModel(item))
                                                              .ToList();
 
-            if (_receiptRepository.SaveReceCheckCmtList(inputData.HpId, inputData.UserId, inputData.HokenId, inputData.SinYm, inputData.PtId, receCheckCmtList))
+            if (_receiptRepository.SaveReceCheckCmtList(inputData.HpId, inputData.UserId, inputData.HokenId, inputData.SinYm, inputData.PtId, receCheckCmtList)
+                && _receiptRepository.SaveReceCheckErrList(inputData.HpId, inputData.UserId, inputData.HokenId, inputData.SinYm, inputData.PtId, receCheckErrorList))
             {
                 return new SaveReceCheckCmtListOutputData(SaveReceCheckCmtListStatus.Successed);
             }
@@ -88,7 +89,7 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
         {
             return SaveReceCheckCmtListStatus.InvalidHokenId;
         }
-        else if (!inputData.ReceCheckCmtList.Any())
+        else if (!inputData.ReceCheckCmtList.Any() && !receCheckErrorList.Any())
         {
             return SaveReceCheckCmtListStatus.Failed;
         }
@@ -105,9 +106,9 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
         {
             return SaveReceCheckCmtListStatus.InvalidSeqNo;
         }
-        if (receCheckErrorList.Any() && !_receiptRepository.CheckExistSeqNoReceCheckErrorList(inputData.HpId, inputData.HokenId, inputData.SinYm, inputData.PtId, receCheckErrorList))
+        else if (receCheckErrorList.Any() && !_receiptRepository.CheckExistSeqNoReceCheckErrorList(inputData.HpId, inputData.HokenId, inputData.SinYm, inputData.PtId, receCheckErrorList))
         {
-            return SaveReceCheckCmtListStatus.InvalidSeqNo;
+            return SaveReceCheckCmtListStatus.InvalidReceCheckErrorItem;
         }
         return SaveReceCheckCmtListStatus.ValidateSuccess;
     }

@@ -1490,6 +1490,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public bool SaveReceCheckCmtList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckCmtModel> receCheckCmtList)
     {
+        if (!receCheckCmtList.Any())
+        {
+            return true;
+        }
         var receCheckCmtUpdateList = receCheckCmtList.Where(item => item.SeqNo > 0).ToList();
         var receCheckCmtUpdateDBList = TrackingDataContext.ReceCheckCmts.Where(item => item.HpId == hpId
                                                                                        && item.SinYm == sinYm
@@ -3358,6 +3362,60 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                 .Select(x => new KaikeiInfModel(x.PtId, x.SinDate))
                                                 .OrderByDescending(x => x.SinDate);
         return kaikeiInfs.Select(x => x.SinYm).Distinct().ToList();
+    }
+
+    public bool CheckExistSeqNoReceCheckErrorList(int hpId, int hokenId, int sinYm, long ptId, List<ReceCheckErrModel> receCheckErrorList)
+    {
+        var errorCdList = receCheckErrorList.Select(item => item.ErrCd).Distinct().ToList();
+        var aCdList = receCheckErrorList.Select(item => item.ACd).Distinct().ToList();
+        var bCdList = receCheckErrorList.Select(item => item.BCd).Distinct().ToList();
+        var sinDateList = receCheckErrorList.Select(item => item.SinDate).Distinct().ToList();
+        var receCheckErrorDBList = NoTrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
+                                                                                     && item.HokenId == hokenId
+                                                                                     && item.SinYm == sinYm
+                                                                                     && item.PtId == ptId
+                                                                                     && errorCdList.Contains(item.ErrCd)
+                                                                                     && aCdList.Contains(item.ACd)
+                                                                                     && bCdList.Contains(item.BCd)
+                                                                                     && sinDateList.Contains(item.SinDate))
+                                                                      .ToList();
+        return receCheckErrorDBList.Count == receCheckErrorList.Distinct().Count();
+    }
+
+    public bool SaveReceCheckErrList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckErrModel> receCheckErrorList)
+    {
+        if (!receCheckErrorList.Any())
+        {
+            return true;
+        }
+        var errorCdList = receCheckErrorList.Select(item => item.ErrCd).Distinct().ToList();
+        var aCdList = receCheckErrorList.Select(item => item.ACd).Distinct().ToList();
+        var bCdList = receCheckErrorList.Select(item => item.BCd).Distinct().ToList();
+        var sinDateList = receCheckErrorList.Select(item => item.SinDate).Distinct().ToList();
+        var receCheckErrorDBList = TrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
+                                                                                   && item.HokenId == hokenId
+                                                                                   && item.SinYm == sinYm
+                                                                                   && item.PtId == ptId
+                                                                                   && errorCdList.Contains(item.ErrCd)
+                                                                                   && aCdList.Contains(item.ACd)
+                                                                                   && bCdList.Contains(item.BCd)
+                                                                                   && sinDateList.Contains(item.SinDate))
+                                                                    .ToList();
+        foreach (var errorItem in receCheckErrorList)
+        {
+            var itemErrorUpdate = receCheckErrorDBList.FirstOrDefault(item => item.ErrCd == errorItem.ErrCd
+                                                                              && item.ACd == errorItem.ACd
+                                                                              && item.BCd == errorItem.BCd
+                                                                              && item.SinDate == errorItem.SinDate);
+            if (itemErrorUpdate == null)
+            {
+                continue;
+            }
+            itemErrorUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            itemErrorUpdate.UpdateId = userId;
+            itemErrorUpdate.IsChecked = errorItem.IsChecked;
+        }
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     public void ReleaseResource()

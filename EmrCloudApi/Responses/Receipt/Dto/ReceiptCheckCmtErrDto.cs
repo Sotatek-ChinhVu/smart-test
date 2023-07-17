@@ -16,6 +16,7 @@ public class ReceiptCheckCmtErrDto
         ErrorCd = output.ErrorCd;
         ACd = output.ACd;
         BCd = output.BCd;
+        SinDate = output.SinDate;
     }
 
     public int SeqNo { get; private set; }
@@ -33,6 +34,8 @@ public class ReceiptCheckCmtErrDto
     public string ACd { get; private set; }
 
     public string BCd { get; private set; }
+
+    public int SinDate { get; private set; }
 
     public int StatusColor { get; private set; }
 
