@@ -1,14 +1,17 @@
-﻿using UseCase.Lock.Get;
+﻿using Domain.Models.Lock;
+using UseCase.Lock.Get;
 
-namespace EmrCloudApi.Responses.Lock
+namespace EmrCloudApi.Responses.Lock;
+
+public class CheckLockVisitingResponse
 {
-    public class CheckLockVisitingResponse
+    public CheckLockVisitingResponse(CheckLockVisitingStatus status, List<LockModel> lockInfs)
     {
-        public CheckLockVisitingResponse(CheckLockVisitingStatus status)
-        {
-            Status = status;
-        }
-
-        public CheckLockVisitingStatus Status { get; set; }
+        Status = status;
+        LockInfs = lockInfs;
     }
+
+    public CheckLockVisitingStatus Status { get; private set; }
+
+    public List<LockModel> LockInfs { get; private set; }
 }

@@ -252,7 +252,7 @@ public class PdfCreatorController : ControllerBase
         var data = _reportService.GetKarte3ReportingData(request.HpId, request.PtId, request.StartSinYm, request.EndSinYm, request.IncludeHoken, request.IncludeJihi);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
-    
+
     [HttpPost(ApiPath.AccountingCardList)]
     public async Task<IActionResult> GetAccountingCardListReportingData([FromBody] AccountingCardListRequest request)
     {
@@ -345,7 +345,8 @@ public class PdfCreatorController : ControllerBase
             || (!data.TableFieldData.Any()
                 && !data.ListTextData.Any()
                 && !data.SingleFieldList.Any()
-                && !data.SetFieldData.Any()))
+                && !data.SetFieldData.Any()
+                && data.ReportType != (int)CoReportType.MemoMsg))
         {
             returnNoData = true;
         }
