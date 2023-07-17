@@ -1323,52 +1323,68 @@ namespace Infrastructure.Repositories
             bool isGairaiRiha = CheckGairaiRiha(hpId, ptId, sinDate, raiinNo, allOdrInfDetail);
             if (isExistFirstVisit)
             {
-                TenMstModel FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.SyosinIryoJyohoKiban1, sinDate);
+                var FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.SyosinIryoJyohoKiban1, sinDate);
                 if (FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel != null)
                 {
-                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel();
-                    checkingOrderModel.CheckingType = CheckingType.MissingCalculate;
-                    checkingOrderModel.Santei = true;
-                    checkingOrderModel.CheckingContent = FormatSanteiMessage(FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.Name);
-                    checkingOrderModel.TenMstItem = FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel;
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
+                        CheckingType.MissingCalculate,
+                        santei: true,
+                        checkingContent: FormatSanteiMessage(FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty),
+                        itemCd: FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.ItemCd,
+                        sinKouiKbn: FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.SinKouiKbn,
+                        itemName: FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty,
+                        inOutKbn: 0
+                        );
 
                     checkingOrderModelList.Add(checkingOrderModel);
                 }
 
-                TenMstModel MedicalDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban1, sinDate);
+                var MedicalDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban1, sinDate);
                 if (MedicalDevelopmentSystemEnhanceAdd1TenMstModel != null)
                 {
-                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel();
-                    checkingOrderModel.CheckingType = CheckingType.MissingCalculate;
-                    checkingOrderModel.Santei = true;
-                    checkingOrderModel.CheckingContent = FormatSanteiMessage(MedicalDevelopmentSystemEnhanceAdd1TenMstModel.Name);
-                    checkingOrderModel.TenMstItem = MedicalDevelopmentSystemEnhanceAdd1TenMstModel;
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
+                        CheckingType.MissingCalculate,
+                        santei: true,
+                        checkingContent: FormatSanteiMessage(MedicalDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty),
+                        itemCd: MedicalDevelopmentSystemEnhanceAdd1TenMstModel.ItemCd,
+                        sinKouiKbn: MedicalDevelopmentSystemEnhanceAdd1TenMstModel.SinKouiKbn,
+                        itemName: MedicalDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty,
+                        inOutKbn: 0
+                        );
 
                     checkingOrderModelList.Add(checkingOrderModel);
                 }
             }
             else if (isExistReturnVisit || isGairaiRiha)
             {
-                TenMstModel VisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.SaisinIryoJyohoKiban3, sinDate);
+                var VisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.SaisinIryoJyohoKiban3, sinDate);
                 if (VisitDevelopmentSystemEnhanceAdd3TenMstModel != null)
                 {
-                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel();
-                    checkingOrderModel.CheckingType = CheckingType.MissingCalculate;
-                    checkingOrderModel.Santei = true;
-                    checkingOrderModel.CheckingContent = FormatSanteiMessage(VisitDevelopmentSystemEnhanceAdd3TenMstModel.Name);
-                    checkingOrderModel.TenMstItem = VisitDevelopmentSystemEnhanceAdd3TenMstModel;
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
+                        CheckingType.MissingCalculate,
+                        santei: true,
+                        checkingContent: FormatSanteiMessage(VisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty),
+                        itemCd: VisitDevelopmentSystemEnhanceAdd3TenMstModel.ItemCd,
+                        sinKouiKbn: VisitDevelopmentSystemEnhanceAdd3TenMstModel.SinKouiKbn,
+                        itemName: VisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty,
+                        inOutKbn: 0
+                        );
 
                     checkingOrderModelList.Add(checkingOrderModel);
                 }
 
-                TenMstModel ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban3, sinDate);
+                var ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban3, sinDate);
                 if (ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel != null)
                 {
-                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel();
-                    checkingOrderModel.CheckingType = CheckingType.MissingCalculate;
-                    checkingOrderModel.Santei = true;
-                    checkingOrderModel.CheckingContent = FormatSanteiMessage(ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.Name);
-                    checkingOrderModel.TenMstItem = ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel;
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
+                        CheckingType.MissingCalculate,
+                        santei: true,
+                        checkingContent: FormatSanteiMessage(ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty),
+                        itemCd: ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.ItemCd,
+                        sinKouiKbn: ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.SinKouiKbn,
+                        itemName: ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty,
+                        inOutKbn: 0
+                        );
 
                     checkingOrderModelList.Add(checkingOrderModel);
                 }
