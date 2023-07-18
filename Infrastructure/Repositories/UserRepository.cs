@@ -228,7 +228,7 @@ namespace Infrastructure.Repositories
                 u.Sname ?? string.Empty,
                 u.DrName ?? string.Empty,
                 u.LoginId ?? string.Empty,
-                u.LoginPass ?? string.Empty,
+                string.Empty,
                 u.MayakuLicenseNo ?? string.Empty,
                 u.StartDate,
                 u.EndDate,
