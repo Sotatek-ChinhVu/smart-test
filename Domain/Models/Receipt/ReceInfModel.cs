@@ -1,4 +1,6 @@
 ﻿using Domain.Models.Insurance;
+using Helper.Common;
+using Helper.Constants;
 
 namespace Domain.Models.Receipt;
 
@@ -176,6 +178,20 @@ public class ReceInfModel
     public List<ConfirmDateModel> Kohi3Checks { get; private set; }
 
     public List<ConfirmDateModel> Kohi4Checks { get; private set; }
+
+    public bool IsNashi => Houbetu == HokenConstant.HOUBETU_NASHI;
+
+    public bool IsJihi => HokenKbn == 0 && (Houbetu == HokenConstant.HOUBETU_JIHI_108 || Houbetu == HokenConstant.HOUBETU_JIHI_109);
+
+    public bool IsHokenConfirmed => IsJihi || IsNashi || (HokenChecks.Exists(p => CIUtil.DateTimeToInt(DateTime.SpecifyKind(CIUtil.IntToDate(p.ConfirmDate), DateTimeKind.Utc)) / 100 == SinYm));
+
+    public bool IsKohi1Confirmed => Kohi1Checks.Exists(p => p.ConfirmDate / 100 == SinYm);
+
+    public bool IsKohi2Confirmed => Kohi2Checks.Exists(p => p.ConfirmDate / 100 == SinYm);
+
+    public bool IsKohi3Confirmed => Kohi3Checks.Exists(p => p.ConfirmDate / 100 == SinYm);
+
+    public bool IsKohi4Confirmed => Kohi4Checks.Exists(p => p.ConfirmDate / 100 == SinYm);
 
     public ReceInfModel(ReceInfModel receInf)
     {

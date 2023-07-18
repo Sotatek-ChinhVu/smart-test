@@ -1,8 +1,13 @@
 ﻿using Domain.CalculationInf;
+using Domain.Constant;
 using Domain.Models.CalculationInf;
+using Domain.Models.Diseases;
 using Domain.Models.Medical;
+using Domain.Models.OrdInfDetails;
+using Domain.Models.OrdInfs;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
+using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -26,9 +31,11 @@ namespace Infrastructure.Repositories
         private const string BOTH = "両";
         private const string LEFT_RIGHT = "左右";
         private const string RIGHT_LEFT = "右左";
-
-        public CalculationInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private List<BuiErrorModel> errorOdrInfDetails = new List<BuiErrorModel>();
+        private readonly ISystemConfRepository _systemConfRepository;
+        public CalculationInfRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository) : base(tenantProvider)
         {
+            _systemConfRepository = systemConfRepository;
         }
 
         public IEnumerable<CalculationInfModel> GetListDataCalculationInf(int hpId, long ptId)
@@ -71,7 +78,7 @@ namespace Infrastructure.Repositories
                     var sinKouiCounts = GetSinKouiCounts(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
 
                     CheckHoken(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
-                    CheckByomei(receInfModel);
+                    CheckByomei(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
                     CheckOrder(receInfModel);
                     CheckRosai(receInfModel);
                     CheckAftercare(receInfModel);
@@ -92,210 +99,515 @@ namespace Infrastructure.Repositories
             //expired
             if (receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ExpiredEndDateHokenErrCd))
             {
-                try
+                if (sinKouiCounts.Count > 0)
                 {
-                    if (sinKouiCounts.Count > 0)
+                    //hoken
+                    if (receInfModel.HokenId > 0 && receInfModel.Houbetu.AsInteger() != 0)
                     {
-                        //hoken
-                        if (receInfModel.HokenId > 0 && receInfModel.Houbetu.AsInteger() != 0)
+                        //E1002 start date
+                        var firstSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns.Any(q => q.HokenId == receInfModel.HokenId));
+                        if (firstSinKouiCount != null)
                         {
-                            //E1002 start date
-                            var firstSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns.Any(q => q.HokenId == receInfModel.HokenId));
-                            if (firstSinKouiCount != null)
+                            if (receInfModel.PtHokenInf.StartDate > 0 && receInfModel.PtHokenInf.StartDate > firstSinKouiCount.SinDate)
                             {
-                                if (receInfModel.PtHokenInf.StartDate > 0 && receInfModel.PtHokenInf.StartDate > firstSinKouiCount.SinDate)
-                                {
-                                    InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtHokenInf.StartDate) + "～）", HOKEN_CHAR);
-                                }
-                            }
-
-                            //E1001 end date
-                            var lastSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns.Any(q => q.HokenId == receInfModel.HokenId));
-                            if (lastSinKouiCount != null)
-                            {
-                                if (receInfModel.PtHokenInf.EndDate > 0 && receInfModel.PtHokenInf.EndDate < lastSinKouiCount.SinDate)
-                                {
-                                    InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtHokenInf.EndDate) + "）", HOKEN_CHAR);
-                                }
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                    ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtHokenInf.StartDate) + "～）", HOKEN_CHAR);
                             }
                         }
-                        //kohi1
-                        if (receInfModel.Kohi1Id > 0 && receInfModel.Kohi1Houbetu.AsInteger() != 102)
-                        {
-                            var firstSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
-                                .Any(q => q.Kohi1Id == receInfModel.Kohi1Id || q.Kohi2Id == receInfModel.Kohi1Id || q.Kohi3Id == receInfModel.Kohi1Id || q.Kohi4Id == receInfModel.Kohi1Id));
-                            if (firstSinKouiCount != null)
-                            {
-                                if (receInfModel.PtKohi1.StartDate > 0 && receInfModel.PtKohi1.StartDate > firstSinKouiCount.SinDate)
-                                {
-                                    InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi1.StartDate) + "～）", KOHI1_CHAR);
-                                }
-                            }
 
-                            var lastSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
-                                .Any(q => q.Kohi1Id == receInfModel.Kohi1Id || q.Kohi2Id == receInfModel.Kohi1Id || q.Kohi3Id == receInfModel.Kohi1Id || q.Kohi4Id == receInfModel.Kohi1Id));
-                            if (lastSinKouiCount != null)
-                            {
-                                if (receInfModel.PtKohi1.EndDate > 0 && receInfModel.PtKohi1.EndDate < lastSinKouiCount.SinDate)
-                                {
-                                    InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi1.EndDate) + "）", KOHI1_CHAR);
-                                }
-                            }
-                        }
-                        //kohi2
-                        if (receInfModel.Kohi2Id > 0 && receInfModel.Kohi2Houbetu.AsInteger() != 102)
+                        //E1001 end date
+                        var lastSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns.Any(q => q.HokenId == receInfModel.HokenId));
+                        if (lastSinKouiCount != null)
                         {
-                            var firstSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
-                                .Any(q => q.Kohi1Id == receInfModel.Kohi2Id || q.Kohi2Id == receInfModel.Kohi2Id || q.Kohi3Id == receInfModel.Kohi2Id || q.Kohi4Id == receInfModel.Kohi2Id));
-                            if (firstSinKouiCount != null)
+                            if (receInfModel.PtHokenInf.EndDate > 0 && receInfModel.PtHokenInf.EndDate < lastSinKouiCount.SinDate)
                             {
-                                if (receInfModel.Kohi2StartDate > 0 && receInfModel.Kohi2StartDate > firstSinKouiCount.SinDate)
-                                {
-                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.Kohi2StartDate) + "～）", KOHI2_CHAR);
-                                }
-                            }
-
-                            var lastSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
-                                .Any(q => q.Kohi1Id == receInfModel.Kohi2Id || q.Kohi2Id == receInfModel.Kohi2Id || q.Kohi3Id == receInfModel.Kohi2Id || q.Kohi4Id == receInfModel.Kohi2Id));
-                            if (lastSinKouiCount != null)
-                            {
-                                if (receInfModel.Kohi2EndDate > 0 && receInfModel.Kohi2EndDate < lastSinKouiCount.SinDate)
-                                {
-                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.Kohi2EndDate) + "）", KOHI2_CHAR);
-                                }
-                            }
-                        }
-                        //kohi3
-                        if (receInfModel.Kohi3Id > 0 && receInfModel.Kohi3Houbetu.AsInteger() != 102)
-                        {
-                            var firstSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
-                                .Any(q => q.Kohi1Id == receInfModel.Kohi3Id || q.Kohi2Id == receInfModel.Kohi3Id || q.Kohi3Id == receInfModel.Kohi3Id || q.Kohi4Id == receInfModel.Kohi3Id));
-                            if (firstSinKouiCount != null)
-                            {
-                                if (receInfModel.Kohi3StartDate > 0 && receInfModel.Kohi3StartDate > firstSinKouiCount.SinDate)
-                                {
-                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.Kohi3StartDate) + "～）", KOHI3_CHAR);
-                                }
-                            }
-
-                            var lastSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
-                                .Any(q => q.Kohi1Id == receInfModel.Kohi3Id || q.Kohi2Id == receInfModel.Kohi3Id || q.Kohi3Id == receInfModel.Kohi3Id || q.Kohi4Id == receInfModel.Kohi3Id));
-                            if (lastSinKouiCount != null)
-                            {
-                                if (receInfModel.Kohi3EndDate > 0 && receInfModel.Kohi3EndDate < lastSinKouiCount.SinDate)
-                                {
-                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.Kohi3EndDate) + "）", KOHI3_CHAR);
-                                }
-                            }
-                        }
-                        //kohi4
-                        if (receInfModel.Kohi4Id > 0 && receInfModel.Kohi4Houbetu.AsInteger() != 102)
-                        {
-                            var firstSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
-                                .Any(q => q.Kohi1Id == receInfModel.Kohi4Id || q.Kohi2Id == receInfModel.Kohi4Id || q.Kohi3Id == receInfModel.Kohi4Id || q.Kohi4Id == receInfModel.Kohi4Id));
-                            if (firstSinKouiCount != null)
-                            {
-                                if (receInfModel.Kohi4StartDate > 0 && receInfModel.Kohi4StartDate > firstSinKouiCount.SinDate)
-                                {
-                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.Kohi4StartDate) + "～）", KOHI4_CHAR);
-                                }
-                            }
-
-                            var lastSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
-                                .Any(q => q.Kohi1Id == receInfModel.Kohi4Id || q.Kohi2Id == receInfModel.Kohi4Id || q.Kohi3Id == receInfModel.Kohi4Id || q.Kohi4Id == receInfModel.Kohi4Id));
-                            if (lastSinKouiCount != null)
-                            {
-                                if (receInfModel.Kohi4EndDate > 0 && receInfModel.Kohi4EndDate < lastSinKouiCount.SinDate)
-                                {
-                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.Kohi4EndDate) + "）", KOHI4_CHAR);
-                                }
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                    ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtHokenInf.EndDate) + "）", HOKEN_CHAR);
                             }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Log.WriteLogError(_modulName, this, nameof(CheckHoken), ex, $"CheckErrCd: {ReceErrCdConst.ExpiredEndDateHokenErrCd}, PtId: {receInfModel.PtId}");
+                    //kohi1
+                    if (receInfModel.Kohi1Id > 0 && receInfModel.Kohi1Houbetu.AsInteger() != 102)
+                    {
+                        var firstSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
+                            .Any(q => q.Kohi1Id == receInfModel.Kohi1Id || q.Kohi2Id == receInfModel.Kohi1Id || q.Kohi3Id == receInfModel.Kohi1Id || q.Kohi4Id == receInfModel.Kohi1Id));
+                        if (firstSinKouiCount != null)
+                        {
+                            if (receInfModel.PtKohi1.StartDate > 0 && receInfModel.PtKohi1.StartDate > firstSinKouiCount.SinDate)
+                            {
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                    ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi1.StartDate) + "～）", KOHI1_CHAR);
+                            }
+                        }
+
+                        var lastSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
+                            .Any(q => q.Kohi1Id == receInfModel.Kohi1Id || q.Kohi2Id == receInfModel.Kohi1Id || q.Kohi3Id == receInfModel.Kohi1Id || q.Kohi4Id == receInfModel.Kohi1Id));
+                        if (lastSinKouiCount != null)
+                        {
+                            if (receInfModel.PtKohi1.EndDate > 0 && receInfModel.PtKohi1.EndDate < lastSinKouiCount.SinDate)
+                            {
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                    ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi1.EndDate) + "）", KOHI1_CHAR);
+                            }
+                        }
+                    }
+                    //kohi2
+                    if (receInfModel.Kohi2Id > 0 && receInfModel.Kohi2Houbetu.AsInteger() != 102)
+                    {
+                        var firstSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
+                            .Any(q => q.Kohi1Id == receInfModel.Kohi2Id || q.Kohi2Id == receInfModel.Kohi2Id || q.Kohi3Id == receInfModel.Kohi2Id || q.Kohi4Id == receInfModel.Kohi2Id));
+                        if (firstSinKouiCount != null)
+                        {
+                            if (receInfModel.PtKohi2.StartDate > 0 && receInfModel.PtKohi2.StartDate > firstSinKouiCount.SinDate)
+                            {
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                    ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi2.StartDate) + "～）", KOHI2_CHAR);
+                            }
+                        }
+
+                        var lastSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
+                            .Any(q => q.Kohi1Id == receInfModel.Kohi2Id || q.Kohi2Id == receInfModel.Kohi2Id || q.Kohi3Id == receInfModel.Kohi2Id || q.Kohi4Id == receInfModel.Kohi2Id));
+                        if (lastSinKouiCount != null)
+                        {
+                            if (receInfModel.PtKohi2.EndDate > 0 && receInfModel.PtKohi2.EndDate < lastSinKouiCount.SinDate)
+                            {
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                    ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi2.EndDate) + "）", KOHI2_CHAR);
+                            }
+                        }
+                    }
+                    //kohi3
+                    if (receInfModel.Kohi3Id > 0 && receInfModel.Kohi3Houbetu.AsInteger() != 102)
+                    {
+                        var firstSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
+                            .Any(q => q.Kohi1Id == receInfModel.Kohi3Id || q.Kohi2Id == receInfModel.Kohi3Id || q.Kohi3Id == receInfModel.Kohi3Id || q.Kohi4Id == receInfModel.Kohi3Id));
+                        if (firstSinKouiCount != null)
+                        {
+                            if (receInfModel.PtKohi3.StartDate > 0 && receInfModel.PtKohi3.StartDate > firstSinKouiCount.SinDate)
+                            {
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                    ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi3.StartDate) + "～）", KOHI3_CHAR);
+                            }
+                        }
+
+                        var lastSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
+                            .Any(q => q.Kohi1Id == receInfModel.Kohi3Id || q.Kohi2Id == receInfModel.Kohi3Id || q.Kohi3Id == receInfModel.Kohi3Id || q.Kohi4Id == receInfModel.Kohi3Id));
+                        if (lastSinKouiCount != null)
+                        {
+                            if (receInfModel.PtKohi3.EndDate > 0 && receInfModel.PtKohi3.EndDate < lastSinKouiCount.SinDate)
+                            {
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                     ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi3.EndDate) + "）", KOHI3_CHAR);
+                            }
+                        }
+                    }
+                    //kohi4
+                    if (receInfModel.Kohi4Id > 0 && receInfModel.Kohi4Houbetu.AsInteger() != 102)
+                    {
+                        var firstSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
+                            .Any(q => q.Kohi1Id == receInfModel.Kohi4Id || q.Kohi2Id == receInfModel.Kohi4Id || q.Kohi3Id == receInfModel.Kohi4Id || q.Kohi4Id == receInfModel.Kohi4Id));
+                        if (firstSinKouiCount != null)
+                        {
+                            if (receInfModel.PtKohi4.StartDate > 0 && receInfModel.PtKohi4.StartDate > firstSinKouiCount.SinDate)
+                            {
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                    ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi4.StartDate) + "～）", KOHI4_CHAR);
+                            }
+                        }
+
+                        var lastSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
+                            .Any(q => q.Kohi1Id == receInfModel.Kohi4Id || q.Kohi2Id == receInfModel.Kohi4Id || q.Kohi3Id == receInfModel.Kohi4Id || q.Kohi4Id == receInfModel.Kohi4Id));
+                        if (lastSinKouiCount != null)
+                        {
+                            if (receInfModel.PtKohi4.EndDate > 0 && receInfModel.PtKohi4.EndDate < lastSinKouiCount.SinDate)
+                            {
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                    ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi4.EndDate) + "）", KOHI4_CHAR);
+                            }
+                        }
+                    }
                 }
             }
 
             //E1003 unconfirmed
-            if (_receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.UnConfirmedHokenErrCd))
+            if (receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.UnConfirmedHokenErrCd))
             {
-                try
+                if (receInfModel.HokenId > 0 && !receInfModel.IsHokenConfirmed)
                 {
-                    if (receInfModel.HokenId > 0 && !receInfModel.IsHokenConfirmed)
+                    string latestConfirmedDate = string.Empty;
+                    if (receInfModel.HokenChecks?.Count > 0)
                     {
-                        string latestConfirmedDate = string.Empty;
-                        if (receInfModel.HokenChecks?.Count > 0)
-                        {
-                            latestConfirmedDate = CIUtil.SDateToShowSWDate(CIUtil.DateTimeToInt(receInfModel.HokenChecks.OrderByDescending(p => p.CheckDate).FirstOrDefault().CheckDate));
-                        }
-                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                                ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", HOKEN_CHAR);
+                        latestConfirmedDate = CIUtil.SDateToShowSWDate(receInfModel.HokenChecks.OrderByDescending(p => p.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0);
                     }
-                    if (receInfModel.Kohi1Id > 0 && !receInfModel.IsKohi1Confirmed)
-                    {
-                        string latestConfirmedDate = string.Empty;
-                        if (receInfModel.Kohi1Checks?.Count > 0)
-                        {
-                            latestConfirmedDate = CIUtil.SDateToShowSWDate(CIUtil.DateTimeToInt(receInfModel.Kohi1Checks.OrderByDescending(p => p.CheckDate).FirstOrDefault().CheckDate));
-                        }
-                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                                ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI1_CHAR);
-                    }
-                    if (receInfModel.Kohi2Id > 0 && !receInfModel.IsKohi2Confirmed)
-                    {
-                        string latestConfirmedDate = string.Empty;
-                        if (receInfModel.Kohi2Checks?.Count > 0)
-                        {
-                            latestConfirmedDate = CIUtil.SDateToShowSWDate(CIUtil.DateTimeToInt(receInfModel.Kohi2Checks.OrderByDescending(p => p.CheckDate).FirstOrDefault().CheckDate));
-                        }
-                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                                ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI2_CHAR);
-                    }
-                    if (receInfModel.Kohi3Id > 0 && !receInfModel.IsKohi3Confirmed)
-                    {
-                        string latestConfirmedDate = string.Empty;
-                        if (receInfModel.Kohi3Checks?.Count > 0)
-                        {
-                            latestConfirmedDate = CIUtil.SDateToShowSWDate(CIUtil.DateTimeToInt(receInfModel.Kohi3Checks.OrderByDescending(p => p.CheckDate).FirstOrDefault().CheckDate));
-                        }
-                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                                ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI3_CHAR);
-                    }
-                    if (receInfModel.Kohi4Id > 0 && !receInfModel.IsKohi4Confirmed)
-                    {
-                        string latestConfirmedDate = string.Empty;
-                        if (receInfModel.Kohi4Checks?.Count > 0)
-                        {
-                            latestConfirmedDate = CIUtil.SDateToShowSWDate(CIUtil.DateTimeToInt(receInfModel.Kohi4Checks.OrderByDescending(p => p.CheckDate).FirstOrDefault().CheckDate));
-                        }
-                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                                ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI4_CHAR);
-                    }
+                    InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                            ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", HOKEN_CHAR);
                 }
-                catch (Exception ex)
+                if (receInfModel.Kohi1Id > 0 && !receInfModel.IsKohi1Confirmed)
                 {
-                    Log.WriteLogError(_modulName, this, nameof(CheckHoken), ex, $"CheckErrCd: {ReceErrCdConst.UnConfirmedHokenErrCd}, PtId: {receInfModel.PtId}");
+                    string latestConfirmedDate = string.Empty;
+                    if (receInfModel.Kohi1Checks?.Count > 0)
+                    {
+                        latestConfirmedDate = CIUtil.SDateToShowSWDate(receInfModel.Kohi1Checks.OrderByDescending(p => p.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0);
+                    }
+                    InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                             ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI1_CHAR);
+                }
+                if (receInfModel.Kohi2Id > 0 && !receInfModel.IsKohi2Confirmed)
+                {
+                    string latestConfirmedDate = string.Empty;
+                    if (receInfModel.Kohi2Checks?.Count > 0)
+                    {
+                        latestConfirmedDate = CIUtil.SDateToShowSWDate(receInfModel.Kohi2Checks.OrderByDescending(p => p.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0);
+                    }
+                    InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                            ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI2_CHAR);
+                }
+                if (receInfModel.Kohi3Id > 0 && !receInfModel.IsKohi3Confirmed)
+                {
+                    string latestConfirmedDate = string.Empty;
+                    if (receInfModel.Kohi3Checks?.Count > 0)
+                    {
+                        latestConfirmedDate = CIUtil.SDateToShowSWDate(receInfModel.Kohi3Checks.OrderByDescending(p => p.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0);
+                    }
+                    InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                            ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI3_CHAR);
+                }
+                if (receInfModel.Kohi4Id > 0 && !receInfModel.IsKohi4Confirmed)
+                {
+                    string latestConfirmedDate = string.Empty;
+                    if (receInfModel.Kohi4Checks?.Count > 0)
+                    {
+                        latestConfirmedDate = CIUtil.SDateToShowSWDate(receInfModel.Kohi4Checks.OrderByDescending(p => p.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0);
+                    }
+                    InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                            ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI4_CHAR);
                 }
             }
-            Log.WriteLogEnd(ModuleNameConst.EmrCommonView, this, nameof(CheckHoken), ICDebugConf.logLevel);
+        }
+
+        private void CheckByomei(int hpId, int userId, string userName, ReceInfModel receInfModel, List<ReceCheckOptModel> receCheckOpts, List<SinKouiCountModel> sinKouiCounts, List<ReceCheckErr> oldReceCheckErrs, List<ReceCheckErr> newReceCheckErrs)
+        {
+            var ptByomeis = GetByomeiInThisMonth(hpId, receInfModel.SinYm, receInfModel.PtId, receInfModel.HokenId);
+            if (ptByomeis.Count == 0)
+            {
+                //E2001 not exist byomei in month
+                if (receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.NotExistByomeiErrCd))
+                {
+                    var sinKouiDetail = sinKouiCounts.FirstOrDefault(p => p.IsFirstVisit);
+                    if (sinKouiDetail != null)
+                    {
+                        string msg2 = string.Format("（初診: {0}）", CIUtil.SDateToShowSWDate(sinKouiDetail.SinDate));
+                        InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.NotExistByomeiErrCd, ReceErrCdConst.NotExistByomeiErrMsg, msg2, sinDate: sinKouiDetail.SinDate);
+                    }
+                    else
+                    {
+                        InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.NotExistByomeiErrCd, ReceErrCdConst.NotExistByomeiErrMsg);
+                    }
+                }
+
+                //E2011 Bui Order Byomei
+                if (_systemConfRepository.GetSettingValue(6003, 0, hpId) == 1 && receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.BuiOrderByomeiErrCd))
+                {
+                    foreach (var sinKouiCount in sinKouiCounts)
+                    {
+                        var odrInfs = GetOdrInfsBySinDate(hpId, receInfModel.PtId, sinKouiCount.SinDate, receInfModel.HokenId);
+                        var buiOdrItemMsts = GetBuiOdrItemMsts(hpId);
+                        var buiOdrItemByomeiMsts = GetBuiOdrItemByomeiMsts(hpId);
+                        List<string> msgErrors = CheckBuiOrderByomei(buiOdrItemMsts, buiOdrItemByomeiMsts, odrInfs, ptByomeis);
+                        if (msgErrors.Count > 0)
+                        {
+                            foreach (var msgError in msgErrors)
+                            {
+
+                                string itemName = odrInfs.FirstOrDefault(p => p.ItemCd == msgError)?.ItemName ?? string.Empty;
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.BuiOrderByomeiErrCd,
+                                                                           ReceErrCdConst.BuiOrderByomeiErrMsg,
+                                                                           itemName + " : " +
+                                                                           CIUtil.SDateToShowSWDate(sinKouiCount.SinDate) + "）",
+                                                                           msgError, sinDate: sinKouiCount.SinDate);
+                            }
+                        }
+                    }
+                }
+
+                //E2010 Bui Order Byomei
+                if (_systemConfRepository.GetSettingValue(6003, 0, hpId) == 1 && receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrCd))
+                {
+                    var odrInfModels = GetOdrInfModels(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
+                    var buiOdrMsts = NoTrackingDataContext.BuiOdrMsts.Where(x => x.HpId == hpId);
+                    var buiOdrByomeiMsts = NoTrackingDataContext.BuiOdrByomeiMsts.Where(x => x.HpId == hpId);
+                    List<string> errorMsgs = CheckByomeiWithBuiOdr(odrInfModels, buiOdrMsts.ToList(), buiOdrByomeiMsts.ToList(), ptByomeis);
+                    foreach (var errorOdrInfDetail in errorOdrInfDetails)
+                    {
+                        foreach (var msg in errorOdrInfDetail.Errors)
+                        {
+                            InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrCd, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrMsg, msg, aCd: errorOdrInfDetail.ItemName, bCd: errorOdrInfDetail.OdrKouiKbn.ToString(), sinDate: errorOdrInfDetail.SinDate);
+                        }
+                    }
+                }
+            }
+            else
+            {
+
+                //check if exist continous byomei in first visit or revisit
+                if (receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.NotExistByomeiErrCd) || receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.CheckFirstVisit2003ByomeiErrCd))
+                {
+                    string format = string.Empty;
+                    string msg2 = string.Empty;
+                    foreach (var sinKouiDetail in sinKouiCounts)
+                    {
+                        //E2002 revisit
+                        if (receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.NotExistByomeiErrCd) &&
+                            sinKouiDetail.IsReVisit && !ptByomeis.Any(p => p.StartDate <= sinKouiDetail.SinDate &&
+                            (p.TenkiDate >= sinKouiDetail.SinDate || p.IsContinous)))
+                        {
+                            format = "（再診: {0}）";
+                            msg2 = string.Format(format, CIUtil.SDateToShowSWDate(sinKouiDetail.SinDate));
+                            InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.CheckReVisitContiByomeiErrCd, ReceErrCdConst.CheckReVisitContiByomeiErrMsg, msg2, sinDate: sinKouiDetail.SinDate);
+                        }
+                        //first visit
+                        else if (receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.CheckFirstVisit2003ByomeiErrCd) && sinKouiDetail.IsFirstVisit)
+                        {
+                            //E2004
+                            var checkedPtByomeis = new List<PtDiseaseModel>();
+                            if (!sinKouiCounts.Any(p => p.SinDate == sinKouiDetail.SinDate && p.ExistSameFirstVisit))
+                            {
+                                foreach (var ptByomei in ptByomeis)
+                                {
+                                    if (ptByomei.StartDate < sinKouiDetail.SinDate && (ptByomei.TenkiDate >= sinKouiDetail.SinDate || ptByomei.IsContinous))
+                                    {
+                                        checkedPtByomeis.Add(ptByomei);
+                                        format = "（初診: {0} {1}: {2}～）";
+                                        string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 100);
+                                        msg2 = string.Format(format, CIUtil.SDateToShowSWDate(sinKouiDetail.SinDate),
+                                                            cutByomei, CIUtil.SDateToShowSWDate(ptByomei.StartDate));
+                                        InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.CheckFirstVisit2003ByomeiErrCd, ReceErrCdConst.CheckFirstVisit2004ByomeiErrMsg,
+                                                                         msg2, cutByomei, sinDate: sinKouiDetail.SinDate);
+                                    }
+                                }
+                            }
+                            //E2003
+                            if (!ptByomeis.Any(p => !checkedPtByomeis.Contains(p) &&
+                             p.StartDate <= sinKouiDetail.SinDate && (p.TenkiDate >= sinKouiDetail.SinDate || p.IsContinous)))
+                            {
+                                format = "（初診: {0}）";
+                                msg2 = string.Format(format, CIUtil.SDateToShowSWDate(sinKouiDetail.SinDate));
+                                InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.CheckFirstVisit2003ByomeiErrCd, ReceErrCdConst.CheckFirstVisit2003ByomeiErrMsg, msg2, sinDate: sinKouiDetail.SinDate);
+                            }
+                        }
+                    }
+                }
+
+
+
+                //E2005 check if has not main byomei 
+                if (receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.HasNotMainByomeiErrCd) && !ptByomeis.Any(p => p.IsMain))
+                {
+                    InsertReceCmtErr(receInfModel, ReceErrCdConst.HasNotMainByomeiErrCd, ReceErrCdConst.HasNotMainByomeiErrMsg);
+                }
+
+                //E2006 check abandonment byomei
+                if (receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.InvalidByomeiErrCd))
+                {
+                    foreach (var ptByomei in ptByomeis)
+                    {
+                        if (!ptByomei.IsFree && ptByomei.DelDate > 0 && ptByomei.DelDate < receInfModel.FirstDateOfThisMonth &&
+                            (ptByomei.TenkiDate > ptByomei.DelDate || ptByomei.IsContinous))
+                        {
+                            string format = "（{0}: ～{1}）";
+                            string msg2 = string.Format(format, ptByomei.Byomei, CIUtil.SDateToShowSWDate(ptByomei.DelDate));
+                            InsertReceCmtErr(receInfModel, ReceErrCdConst.InvalidByomeiErrCd, ReceErrCdConst.InvalidByomeiErrMsg,
+                                                                       msg2, ptByomei.ByomeiCd);
+                        }
+                    }
+                }
+
+                //E2007 check free text char count > 20
+                if (receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.FreeTextLengthByomeiErrCd))
+                {
+                    foreach (var ptByomei in ptByomeis)
+                    {
+                        if (ptByomei.IsFree && ptByomei.Byomei.Length > 20)
+                        {
+                            string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 100);
+                            string msg2 = string.Format("({0}: {1}/20文字)", cutByomei, ptByomei.Byomei.Length);
+                            InsertReceCmtErr(receInfModel, ReceErrCdConst.FreeTextLengthByomeiErrCd, ReceErrCdConst.FreeTextLengthByomeiErrMsg, msg2, cutByomei);
+                        }
+                    }
+                }
+
+                //E2008 check suspected byomei
+                var receCheckOpt = receCheckOpts.FirstOrDefault(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.CheckSuspectedByomeiErrCd);
+                if (receCheckOpt != null)
+                {
+                    foreach (var ptByomei in ptByomeis)
+                    {
+                        if (ptByomei.Byomei.AsString().Contains(SUSPECTED_SUFFIX) &&
+                            CIUtil.DateTimeToInt(CIUtil.IntToDate(ptByomei.StartDate).AddMonths(receCheckOpt.CheckOpt)) <= receInfModel.LastDateOfThisMonth)
+                        {
+                            string format = "（{0}: {1}～）";
+                            string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 100);
+                            string msg2 = string.Format(format, cutByomei, CIUtil.SDateToShowSWDate(ptByomei.StartDate));
+                            InsertReceCmtErr(receInfModel, ReceErrCdConst.CheckSuspectedByomeiErrCd,
+                                ReceErrCdConst.CheckSuspectedByomeiErrMsg.Replace("xx", receCheckOpt.CheckOpt.AsString()), msg2, cutByomei);
+                        }
+                    }
+                }
+
+
+
+                bool checkDuplicateByomei = receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.DuplicateByomeiCheckErrCd);
+                bool checkDuplicateSyusyokuByomei = receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.DuplicateSyusyokuByomeiCheckErrCd);
+                if (checkDuplicateByomei)
+                {
+                    var checkedByomeiList = new List<PtDiseaseModel>();
+                    foreach (var ptByomei in ptByomeis)
+                    {
+                        if (ptByomei.IsFree || checkedByomeiList.Any(p => p.Id == ptByomei.Id))
+                        {
+                            continue;
+                        }
+                        foreach (var comparedPtByomei in ptByomeis)
+                        {
+                            if (comparedPtByomei.Id == ptByomei.Id || comparedPtByomei.IsFree)
+                            {
+                                continue;
+                            }
+                            bool isDuplicate = CheckDuplicateByomei(checkDuplicateByomei, checkDuplicateSyusyokuByomei, ptByomei, comparedPtByomei, receInfModel.HokenId);
+                            if (isDuplicate)
+                            {
+                                checkedByomeiList.Add(ptByomei);
+                                break;
+                            }
+                        }
+                    }
+                    foreach (var ptByomei in checkedByomeiList)
+                    {
+                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.DuplicateByomeiCheckErrCd,
+                                                                              ReceErrCdConst.DuplicateByomeiCheckErrMsg,
+                                                                              "（" + ptByomei.Byomei + " : " + CIUtil.SDateToShowSWDate(ptByomei.StartDate) + "）",
+                                                                              ptByomei.ByomeiCd, string.Join(string.Empty, ptByomei.GetAllSyusyokuCds().ToArray()));
+                    }
+                }
+
+
+
+                bool checkByomeiResponding = _receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.HasNotByomeiWithOdrErrCd);
+                bool checkBuiOrderByomei = _receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.BuiOrderByomeiErrCd);
+                if (checkByomeiResponding || checkBuiOrderByomei)
+                {
+                    foreach (var sinKouiCount in _sinKouiCounts)
+                    {
+                        var odrInfs = _receByomeiCheckingFinder.GetOdrInfsBySinDate(receInfModel.PtId, sinKouiCount.SinDate, receInfModel.HokenId);
+
+                        //E2009 check if exist byomei corresponding with order
+                        if (checkByomeiResponding)
+                        {
+                            List<string> checkedItemCds = new List<string>();
+                            foreach (var odrInf in odrInfs)
+                            {
+                                string itemCd = odrInf.ItemCd;
+                                if (string.IsNullOrEmpty(itemCd) ||
+                                    itemCd == ItemCdConst.Con_TouyakuOrSiBunkatu ||
+                                    itemCd == ItemCdConst.Con_Refill) continue;
+
+                                string santeiItemCd = _recalculationFinder.GetSanteiItemCd(itemCd, sinKouiCount.SinDate);
+
+                                List<string> tekiouByomeiCds = _recalculationFinder.GetTekiouByomei(new List<string>() { itemCd, santeiItemCd });
+                                if (tekiouByomeiCds.Count == 0) continue;
+
+                                if (!ptByomeis.Where(p => p.StartDate <= odrInf.SinDate && (!odrInf.IsDrug || !p.Byomei.AsString().Contains(SUSPECTED_SUFFIX)))
+                                             .Any(p => tekiouByomeiCds.Contains(p.ByomeiCd)))
+                                {
+                                    checkedItemCds.Add(odrInf.ItemCd);
+                                    if (checkedItemCds.Count(p => p == odrInf.ItemCd) == 1)
+                                    {
+                                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.HasNotByomeiWithOdrErrCd,
+                                                                                   ReceErrCdConst.HasNotByomeiWithOdrErrMsg,
+                                                                                   "（" + odrInf.ItemName + " : " +
+                                                                                   CIUtil.SDateToShowSWDate(sinKouiCount.SinDate) + "）",
+                                                                                   odrInf.ItemCd);
+                                    }
+                                }
+                            }
+                        }
+
+
+                        //E2011 check bui order byomei
+                        if (SystemConfig.Instance.VisibleBuiOrderCheck && checkBuiOrderByomei)
+                        {
+                            var buiOdrItemMsts = _recalculationFinder.GetBuiOdrItemMsts();
+                            var buiOdrItemByomeiMsts = _recalculationFinder.GetBuiOdrItemByomeiMsts();
+                            List<string> msgErrors = CheckBuiOrderByomei(buiOdrItemMsts, buiOdrItemByomeiMsts, odrInfs, ptByomeis);
+                            if (msgErrors.Count > 0)
+                            {
+                                foreach (var msgError in msgErrors)
+                                {
+                                    string itemName = odrInfs.FirstOrDefault(p => p.ItemCd == msgError)?.ItemName;
+                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.BuiOrderByomeiErrCd,
+                                                                               ReceErrCdConst.BuiOrderByomeiErrMsg,
+                                                                               itemName + " : " +
+                                                                               CIUtil.SDateToShowSWDate(sinKouiCount.SinDate) + "）",
+                                                                               msgError, sinDate: sinKouiCount.SinDate);
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                if (SystemConfig.Instance.VisibleBuiOrderCheck && _receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrCd))
+                {
+                    var odrInfModels = _recalculationFinder.GetOdrInfModels(receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
+                    var buiOdrMsts = _dbService.BuiOdrMstRepository.FindListNoTrack(x => x.HpId == hpId);
+                    var buiOdrByomeiMsts = _dbService.BuiOdrByomeiMstRepository.FindListNoTrack(x => x.HpId == hpId);
+                    List<string> errorMsgs = CheckByomeiWithBuiOdr(odrInfModels, buiOdrMsts, buiOdrByomeiMsts, ptByomeis);
+                    foreach (var errorOdrInfDetail in errorOdrInfDetails)
+                    {
+                        foreach (var msg in errorOdrInfDetail.Errors)
+                        {
+                            _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrCd, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrMsg, msg, aCd: errorOdrInfDetail.ItemName, bCd: errorOdrInfDetail.OdrKouiKbn.ToString(), sinDate: errorOdrInfDetail.SinDate);
+                        }
+                    }
+                }
+
+            }
+        }
+
+        private List<PtDiseaseModel> GetByomeiInThisMonth(int hpId, int sinYm, long ptId, int hokenId)
+        {
+            var result = new List<PtDiseaseModel>();
+            int firstDateOfThisMonth = (sinYm + "01").AsInteger();
+            int endDateOfThisMonth = (sinYm + "31").AsInteger();
+            var ptByomeis = NoTrackingDataContext.PtByomeis.Where(p => p.HpId == hpId &&
+                                                                                       p.PtId == ptId &&
+                                                                                       p.IsDeleted == DeleteTypes.None &&
+                                                                                       p.IsNodspRece == 0 &&
+                                                                                       (p.TenkiKbn == TenkiKbnConst.Continued ||
+                                                                                       p.StartDate <= endDateOfThisMonth && p.TenkiDate >= firstDateOfThisMonth) &&
+                                                                                       (p.HokenPid == hokenId || p.HokenPid == 0));
+
+            var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where(p => p.HpId == hpId);
+
+            var query = from ptByomei in ptByomeis
+                        join byomeiMst in byomeiMsts
+                        on ptByomei.ByomeiCd equals byomeiMst.ByomeiCd into ByomeiMstList
+                        from byomei in ByomeiMstList.DefaultIfEmpty()
+                        select new
+                        {
+                            PtByomei = ptByomei,
+                            ByomeiMst = byomei
+                        };
+            foreach (var entity in query)
+            {
+                result.Add(new PtDiseaseModel(entity.PtByomei, entity.ByomeiMst));
+            }
+            return result;
         }
 
         private int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm)
         {
-            return NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYm && (ptIds.Count == 0 || ptIds.Contains(p.PtId))).Count();
+            return NoTrackingDataContext.ReceInfs.Count(p => p.HpId == hpId && p.SeikyuYm == sinYm && (ptIds.Count == 0 || ptIds.Contains(p.PtId)));
         }
 
         private List<ReceCheckOptModel> GetReceCheckOpts(int hpId)
@@ -822,6 +1134,382 @@ namespace Infrastructure.Repositories
                 newReceCheckErr.IsChecked = existedReceCheckErr.IsChecked;
             }
             newReceCheckErrs.Add(newReceCheckErr);
+        }
+
+        private List<OrdInfDetailModel> GetOdrInfsBySinDate(int hpId, long ptId, int sinDate, int hokenId)
+        {
+            var result = new List<OrdInfDetailModel>();
+
+            var hokenPids = NoTrackingDataContext.PtHokenPatterns.Where(p => p.HpId == hpId &&
+                                                                                              p.PtId == ptId &&
+                                                                                              p.HokenId == hokenId &&
+                                                                                              p.IsDeleted == DeleteTypes.None)
+                                                                        .Select(p => p.HokenPid).ToList();
+
+            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId);
+
+            var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(odrDetail => odrDetail.HpId == hpId &&
+                                                                                       odrDetail.PtId == ptId &&
+                                                                                       odrDetail.SinDate == sinDate);
+
+            var odrInfs = NoTrackingDataContext.OdrInfs.Where(odr => odr.HpId == hpId &&
+                                                                     odr.PtId == ptId &&
+                                                                     odr.SinDate == sinDate &&
+                                                                     odr.SanteiKbn == 0 &&
+                                                                     hokenPids.Contains(odr.HokenPid) &&
+                                                                     odr.IsDeleted == DeleteTypes.None &&
+                                                                     odr.OdrKouiKbn != 10);
+
+            var odrInfJoinDetailQuery = from odrInf in odrInfs
+                                        join odrInfDetail in odrInfDetails
+                                        on new { odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo }
+                                        equals new { odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
+                                        into tempOdrDetails
+                                        select new
+                                        {
+                                            OdrInf = odrInf,
+                                            OdrInfDetails = tempOdrDetails,
+                                        };
+            var odrInfJoinDetails = odrInfJoinDetailQuery.ToList();
+            foreach (var odrInfJoinDetail in odrInfJoinDetails)
+            {
+                result.AddRange(odrInfJoinDetail.OdrInfDetails.Select(p => new OrdInfDetailModel(p)));
+            }
+            return result;
+        }
+
+        private List<BuiOdrItemMst> GetBuiOdrItemMsts(int hpId)
+        {
+            return NoTrackingDataContext.BuiOdrItemMsts.Where(x => x.HpId == hpId).ToList();
+        }
+
+        private List<BuiOdrItemByomeiMst> GetBuiOdrItemByomeiMsts(int hpId)
+        {
+            return NoTrackingDataContext.BuiOdrItemByomeiMsts.Where(x => x.HpId == hpId).ToList();
+        }
+
+        private List<string> CheckBuiOrderByomei(List<BuiOdrItemMst> buiOdrItemMsts, List<BuiOdrItemByomeiMst> buiOdrItemByomeiMsts, List<OrdInfDetailModel> todayOrderInfModels, List<PtDiseaseModel> ptByomeiModels)
+        {
+            List<string> msgErrors = new List<string>();
+            foreach (var todayOrderInfModel in todayOrderInfModels)
+            {
+                if (!buiOdrItemMsts.Any(p => p.ItemCd == todayOrderInfModel.ItemCd)) continue;
+
+                var buiOdrByomeiMsts = buiOdrItemByomeiMsts.FindAll(p => p.ItemCd == todayOrderInfModel.ItemCd);
+                if (buiOdrByomeiMsts.Count > 0)
+                {
+                    bool hasError = true;
+                    foreach (var buiOdrByomeiMst in buiOdrByomeiMsts)
+                    {
+                        if (buiOdrByomeiMst.LrKbn == 0 && buiOdrByomeiMst.BothKbn == 0)
+                        {
+                            if (ptByomeiModels.Any(p => buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
+                            {
+                                hasError = false;
+                                break;
+                            }
+                        }
+                        else if (buiOdrByomeiMst.LrKbn == 1 && buiOdrByomeiMst.BothKbn == 1)
+                        {
+                            if (ptByomeiModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(LEFT) || p.ByomeiHankToZen.AsString().Contains(RIGHT) ||
+                                p.ByomeiHankToZen.AsString().Contains(BOTH)) && buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
+                            {
+                                hasError = false;
+                                break;
+                            }
+                        }
+                        else if (buiOdrByomeiMst.LrKbn == 1 && buiOdrByomeiMst.BothKbn == 0)
+                        {
+                            if (ptByomeiModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(LEFT) || p.ByomeiHankToZen.AsString().Contains(RIGHT))
+                                && !p.ByomeiHankToZen.AsString().Contains(LEFT_RIGHT) && !p.ByomeiHankToZen.AsString().Contains(RIGHT_LEFT) && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
+                            {
+                                hasError = false;
+                                break;
+                            }
+                        }
+                        else if (buiOdrByomeiMst.LrKbn == 0 && buiOdrByomeiMst.BothKbn == 1)
+                        {
+                            if (ptByomeiModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(BOTH) || p.ByomeiHankToZen.AsString().Contains(LEFT_RIGHT) || p.ByomeiHankToZen.AsString().Contains(RIGHT_LEFT))
+                                && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
+                            {
+                                hasError = false;
+                                break;
+                            }
+                        }
+
+                    }
+                    if (hasError)
+                    {
+                        msgErrors.Add(todayOrderInfModel.ItemCd);
+                    }
+                }
+            }
+
+            return msgErrors;
+        }
+
+        public List<OrdInfModel> GetOdrInfModels(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            List<OrdInfModel> result = new List<OrdInfModel>();
+
+            List<int> hokenPIds = NoTrackingDataContext.SinKouis.Where(p => p.HpId == hpId &&
+                                                                            p.PtId == ptId &&
+                                                                            p.SinYm == sinYm &&
+                                                                            p.HokenId == hokenId &&
+                                                                            p.IsNodspRece == 0 &&
+                                                                            p.IsDeleted == DeleteTypes.None)
+                                                             .Select(p => p.HokenPid).Distinct().ToList();
+
+            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId);
+
+            var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(odrDetail => odrDetail.HpId == hpId &&
+                                                                                                odrDetail.PtId == ptId);
+
+            var detailJoinTenMstQuery = from odrDetail in odrInfDetails
+                                        join tenMst in tenMstQuery on odrDetail.ItemCd equals tenMst.ItemCd into tempTenMsts
+                                        select new
+                                        {
+                                            OdrDetail = odrDetail,
+                                            TenMsts = tempTenMsts
+                                        };
+            var odrInfs = NoTrackingDataContext.OdrInfs.Where(odr => odr.HpId == hpId &&
+                                                                     odr.PtId == ptId &&
+                                                                     odr.SinDate / 100 == sinYm &&
+                                                                     hokenPIds.Contains(odr.HokenPid) &&
+                                                                     odr.IsDeleted == DeleteTypes.None &&
+                                                                     odr.OdrKouiKbn != 10);
+            var odrInfJoinDetailQuery = from odrInf in odrInfs
+                                        join detailJoinTenMst in detailJoinTenMstQuery
+                                        on new { odrInf.RaiinNo, odrInf.SinDate, odrInf.RpNo, odrInf.RpEdaNo }
+                                        equals new { detailJoinTenMst.OdrDetail.RaiinNo, detailJoinTenMst.OdrDetail.SinDate, detailJoinTenMst.OdrDetail.RpNo, detailJoinTenMst.OdrDetail.RpEdaNo }
+                                        into tempOdrDetails
+                                        select new
+                                        {
+                                            OdrInf = odrInf,
+                                            OdrInfDetails = tempOdrDetails,
+                                        };
+            var odrInfJoinDetails = odrInfJoinDetailQuery.ToList();
+            foreach (var odrInfJoinDetail in odrInfJoinDetails)
+            {
+                var odrInfDetailModels = new List<OrdInfDetailModel>();
+                foreach (var odrInfDetail in odrInfJoinDetail.OdrInfDetails)
+                {
+                    odrInfDetailModels.Add(new OrdInfDetailModel(odrInfDetail.OdrDetail, odrInfDetail.TenMsts.ToList()));
+                }
+                result.Add(new OrdInfModel(odrInfJoinDetail.OdrInf, odrInfDetailModels));
+            }
+
+            return result;
+        }
+
+        public List<string> CheckByomeiWithBuiOdr(List<OrdInfModel> odrInfModels, List<BuiOdrMst> buiOdrMsts, List<BuiOdrByomeiMst> buiOdrByomeiMsts, List<PtDiseaseModel> ptByomeis)
+        {
+            bool IsSpecialComment(OrdInfDetailModel detail)
+            {
+                return detail.SinKouiKbn == 99 && !string.IsNullOrEmpty(detail.CmtOpt);
+            }
+
+            errorOdrInfDetails = new List<BuiErrorModel>();
+            List<string> errorMsgs = new List<string>();
+            foreach (var odrInf in odrInfModels)
+            {
+                var odrInfDetailModels = odrInf.OrdInfDetails.Where(x => string.IsNullOrEmpty(x.ItemCd) || x.ItemCd.Length == 4 || x.SinKouiKbn == 99);
+                foreach (var detail in odrInfDetailModels)
+                {
+
+                    var buiOdrMstCheckList = new List<BuiOdrMst>();
+                    var filteredBuiOdrMsts = new List<BuiOdrMst>();
+                    string compareName = IsSpecialComment(detail) ? detail.ItemName.Replace(detail.CmtName, "") : detail.ItemName;
+                    compareName = HenkanJ.Instance.ToFullsize(compareName);
+                    List<BuiOdrMst> buiOdrMstContainItemNames = new List<BuiOdrMst>();
+                    foreach (var buiOdrMst in buiOdrMsts)
+                    {
+                        List<string> odrBuiPatterns = new List<string>();
+                        if (buiOdrMst.MustLrKbn == 1)
+                        {
+                            if (buiOdrMst.LrKbn == 1 && buiOdrMst.BothKbn == 1)
+                            {
+                                odrBuiPatterns.Add($"{BOTH}{buiOdrMst.OdrBui}");
+                                odrBuiPatterns.Add($"{LEFT}{buiOdrMst.OdrBui}");
+                                odrBuiPatterns.Add($"{RIGHT}{buiOdrMst.OdrBui}");
+                                odrBuiPatterns.Add($"{LEFT_RIGHT}{buiOdrMst.OdrBui}");
+                                odrBuiPatterns.Add($"{RIGHT_LEFT}{buiOdrMst.OdrBui}");
+                            }
+                            else if (buiOdrMst.LrKbn == 1 && buiOdrMst.BothKbn == 0)
+                            {
+                                odrBuiPatterns.Add($"{LEFT}{buiOdrMst.OdrBui}");
+                                odrBuiPatterns.Add($"{RIGHT}{buiOdrMst.OdrBui}");
+                            }
+                            else if (buiOdrMst.LrKbn == 0 && buiOdrMst.BothKbn == 1)
+                            {
+                                odrBuiPatterns.Add($"{BOTH}{buiOdrMst.OdrBui}");
+                                odrBuiPatterns.Add($"{LEFT_RIGHT}{buiOdrMst.OdrBui}");
+                                odrBuiPatterns.Add($"{RIGHT_LEFT}{buiOdrMst.OdrBui}");
+                            }
+                        }
+                        else
+                        {
+                            odrBuiPatterns.Add(buiOdrMst.OdrBui);
+                        }
+                        foreach (var pattern in odrBuiPatterns)
+                        {
+                            if (compareName.Contains(HenkanJ.Instance.ToFullsize(pattern)))
+                            {
+                                buiOdrMstContainItemNames.Add(buiOdrMst);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (30 <= odrInf.OdrKouiKbn && odrInf.OdrKouiKbn <= 39)
+                    {
+                        buiOdrMstCheckList.AddRange(buiOdrMstContainItemNames.Where(mst => mst.Koui30 == 1));
+                    }
+                    else if (40 <= odrInf.OdrKouiKbn && odrInf.OdrKouiKbn <= 49)
+                    {
+                        buiOdrMstCheckList.AddRange(buiOdrMstContainItemNames.Where(mst => mst.Koui40 == 1));
+                    }
+                    else if (50 <= odrInf.OdrKouiKbn && odrInf.OdrKouiKbn <= 59)
+                    {
+                        buiOdrMstCheckList.AddRange(buiOdrMstContainItemNames.Where(mst => mst.Koui50 == 1));
+                    }
+                    else if (60 <= odrInf.OdrKouiKbn && odrInf.OdrKouiKbn <= 69)
+                    {
+                        buiOdrMstCheckList.AddRange(buiOdrMstContainItemNames.Where(mst => mst.Koui60 == 1));
+                    }
+                    else if (70 <= odrInf.OdrKouiKbn && odrInf.OdrKouiKbn <= 79)
+                    {
+                        buiOdrMstCheckList.AddRange(buiOdrMstContainItemNames.Where(mst => mst.Koui70 == 1));
+                    }
+                    else if (80 <= odrInf.OdrKouiKbn && odrInf.OdrKouiKbn <= 89)
+                    {
+                        buiOdrMstCheckList.AddRange(buiOdrMstContainItemNames.Where(mst => mst.Koui80 == 1));
+                    }
+
+                    var buiOdrMstWithMaxLength = buiOdrMstCheckList.OrderByDescending(x => x.OdrBui.Length).FirstOrDefault();
+                    if (buiOdrMstWithMaxLength == null) continue;
+                    filteredBuiOdrMsts.Add(buiOdrMstWithMaxLength);
+                    var buiOdrMstsWithSameLength = buiOdrMstCheckList.Where(x => x.OdrBui.Length == buiOdrMstWithMaxLength.OdrBui.Length && x != buiOdrMstWithMaxLength);
+                    filteredBuiOdrMsts.AddRange(buiOdrMstsWithSameLength);
+
+                    foreach (var buiOdrMst in filteredBuiOdrMsts)
+                    {
+                        bool isValid = false;
+                        var filteredBuiOdrByomeiMsts = buiOdrByomeiMsts.Where(mst => mst.BuiId == buiOdrMst.BuiId);
+                        var ptByomeisContainByomeiBui = new List<PtDiseaseModel>();
+                        foreach (var ptByomei in ptByomeis)
+                        {
+                            foreach (var mst in filteredBuiOdrByomeiMsts)
+                            {
+                                if (HenkanJ.Instance.ToFullsize(ptByomei.Byomei).Contains(HenkanJ.Instance.ToFullsize(mst.ByomeiBui)))
+                                {
+                                    ptByomeisContainByomeiBui.Add(ptByomei);
+                                    break;
+                                }
+                            }
+                        }
+                        foreach (var ptByomei in ptByomeisContainByomeiBui)
+                        {
+                            isValid = ValidateByomeiReflectOdrSite(compareName, HenkanJ.Instance.ToFullsize(ptByomei.Byomei), buiOdrMst.LrKbn, buiOdrMst.BothKbn);
+                            if (isValid) break;
+                        }
+                        if (!isValid)
+                        {
+                            string format = "（{0}／{1}：{2}）";
+                            string output = IsSpecialComment(detail) ? detail.ItemName.Replace(detail.CmtName, "") : detail.ItemName;
+                            string msg2 = string.Format(format, OdrKouiKbnToString(odrInf.OdrKouiKbn), output, CIUtil.SDateToShowSWDate(odrInf.SinDate));
+                            errorMsgs.Add(msg2);
+                            if (!errorOdrInfDetails.Any(d => d.OdrInfDetail == detail))
+                            {
+                                errorOdrInfDetails.Add(new BuiErrorModel(detail, odrInf.OdrKouiKbn, odrInf.SinDate, output));
+                            }
+                            errorOdrInfDetails.First(x => x.OdrInfDetail == detail).Errors.Add(msg2);
+                        }
+                    }
+                }
+            }
+            return errorMsgs;
+        }
+
+        public bool ValidateByomeiReflectOdrSite(string buiOdr, string byomeiName, int LrKbn, int BothKbn)
+        {
+            string GetDirection(string name)
+            {
+                string str = name.Length >= 2 ? name.Substring(0, 2) : name;
+                if (str.Contains(BOTH))
+                {
+                    return BOTH;
+                }
+                else if (str == $"{LEFT}{RIGHT}" || str == $"{RIGHT}{LEFT}")
+                {
+                    return str;
+                }
+                else if (str.Contains(LEFT))
+                {
+                    return LEFT;
+                }
+                else if (str.Contains(RIGHT))
+                {
+                    return RIGHT;
+                }
+                return "";
+            }
+            if (LrKbn == 0 && BothKbn == 0)
+            {
+                return true;
+            }
+            else if ((LrKbn == 1 && BothKbn == 1) || (LrKbn == 0 && BothKbn == 1))
+            {
+                string buiOdrDirection = GetDirection(buiOdr);
+                string byomeiNameDirection = GetDirection(byomeiName);
+                // Convert names to the left-right direction if they contain 両 character or right-left direction.
+                string buiOdrLeftRight = buiOdrDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
+                string byomeiNameLeftRight = byomeiNameDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
+                return byomeiNameLeftRight.Contains(buiOdrLeftRight);
+            }
+            else if (LrKbn == 1 && BothKbn == 0)
+            {
+                string buiOdrDirection = GetDirection(buiOdr);
+                string byomeiNameDirection = GetDirection(byomeiName);
+                // Convert names to the left-right direction if they contain 両 character or right-left direction.
+                string buiOdrLeftRight = buiOdrDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
+                string byomeiNameLeftRight = byomeiNameDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
+                if (byomeiNameLeftRight.Contains($"{LEFT}{RIGHT}") && (buiOdrLeftRight == LEFT || buiOdrLeftRight == RIGHT))
+                {
+                    return false;
+                }
+                return byomeiNameLeftRight.Contains(buiOdrLeftRight);
+            }
+            return true;
+        }
+
+        private string OdrKouiKbnToString(int odrKouiKbn)
+        {
+            if (30 <= odrKouiKbn && odrKouiKbn <= 39)
+            {
+                return "注射";
+            }
+            else if (40 <= odrKouiKbn && odrKouiKbn <= 49)
+            {
+                return "処置";
+            }
+            else if (50 <= odrKouiKbn && odrKouiKbn <= 59)
+            {
+                return "手術";
+            }
+            else if (60 <= odrKouiKbn && odrKouiKbn <= 69)
+            {
+                return "検査";
+            }
+            else if (70 <= odrKouiKbn && odrKouiKbn <= 79)
+            {
+                return "画像";
+            }
+            else if (80 <= odrKouiKbn && odrKouiKbn <= 89)
+            {
+                return "その他";
+            }
+            return "";
         }
 
         public void ReleaseResource()

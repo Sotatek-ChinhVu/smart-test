@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Receipt.Recalculation;
+using Helper.Constants;
 
 namespace Domain.Models.Medical
 {
@@ -36,5 +37,13 @@ namespace Domain.Models.Medical
         public int Count { get; private set; }
 
         public List<PtHokenPatternModel> PtHokenPatterns { get; set; }
+
+        public List<SinKouiDetailModel> SinKouiDetailModels { get; set; }
+
+        public bool IsFirstVisit => SinKouiDetailModels?.Count > 0 && SinKouiDetailModels.Exists(p => ReceErrCdConst.IsFirstVisitCd.Contains(p.ItemCd));
+
+        public bool IsReVisit => SinKouiDetailModels?.Count > 0 && SinKouiDetailModels.Exists(p => ReceErrCdConst.IsReVisitCd.Contains(p.ItemCd));
+
+        public bool ExistSameFirstVisit => SinKouiDetailModels?.Count > 0 && SinKouiDetailModels.Exists(p => p.ItemCd == "101110040" || p.ItemCd == "111011810");
     }
 }
