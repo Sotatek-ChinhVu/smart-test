@@ -19,8 +19,9 @@ public class ReceInfModel
         Tokki5 = string.Empty;
     }
 
-    public ReceInfModel(int seikyuYm, long ptId, int sinYm, int hokenId, int hokenId2, int kaId, int tantoId, string receSbt, int hokenKbn, int hokenSbtCd, string houbetu, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int honkeKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int hokenNissu, int kohi1Nissu, int kohi2Nissu, int kohi3Nissu, int kohi4Nissu, int kohi1ReceKyufu, int kohi2ReceKyufu, int kohi3ReceKyufu, int kohi4ReceKyufu, int hokenReceTensu, int hokenReceFutan, int kohi1ReceTensu, int kohi1ReceFutan, int kohi2ReceTensu, int kohi2ReceFutan, int kohi3ReceTensu, int kohi3ReceFutan, int kohi4ReceTensu, int kohi4ReceFutan)
+    public ReceInfModel(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId, int hokenId2, int kaId, int tantoId, string receSbt, int hokenKbn, int hokenSbtCd, string houbetu, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int honkeKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int hokenNissu, int kohi1Nissu, int kohi2Nissu, int kohi3Nissu, int kohi4Nissu, int kohi1ReceKyufu, int kohi2ReceKyufu, int kohi3ReceKyufu, int kohi4ReceKyufu, int hokenReceTensu, int hokenReceFutan, int kohi1ReceTensu, int kohi1ReceFutan, int kohi2ReceTensu, int kohi2ReceFutan, int kohi3ReceTensu, int kohi3ReceFutan, int kohi4ReceTensu, int kohi4ReceFutan)
     {
+        HpId = HpId;
         SeikyuYm = seikyuYm;
         PtId = ptId;
         SinYm = sinYm;
@@ -67,6 +68,7 @@ public class ReceInfModel
         Kohi4ReceFutan = kohi4ReceFutan;
     }
 
+    public int HpId { get; private set; }
     public int SeikyuYm { get; private set; }
 
     public long PtId { get; private set; }

@@ -1,5 +1,5 @@
-﻿using Interactor.CalculateService;
-using Interactor.Recalculation;
+﻿using Domain.CalculationInf;
+using Interactor.CalculateService;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.ReceiptCheck;
 using Request = UseCase.Receipt.Recalculation;
@@ -9,12 +9,12 @@ namespace Interactor.ReceiptCheck
     public class RecalculationInteractor : IRecalculationInputPort
     {
         private readonly ICalculateService _calculateService;
-        private readonly IRecalculation _recalculation;
+        private readonly ICalculationInfRepository _calculationInfRepository;
 
-        public RecalculationInteractor(ICalculateService calculateService, IRecalculation recalculation)
+        public RecalculationInteractor(ICalculateService calculateService, ICalculationInfRepository calculationInfRepository)
         {
             _calculateService = calculateService;
-            _recalculation = recalculation;
+            _calculationInfRepository = calculationInfRepository;
         }
 
         public RecalculationOutputData Handle(RecalculationInputData inputData)
@@ -30,7 +30,7 @@ namespace Interactor.ReceiptCheck
 
             _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm));
 
-            _calculateService.CheckErrorInMonth()
+            _calculationInfRepository.CheckErrorInMonth(inputData.HpId, inputData.SeikyuYm, inputData.PtIds);
         }
 
     }

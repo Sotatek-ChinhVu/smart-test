@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Medical
+﻿using Domain.Models.Receipt.Recalculation;
+
+namespace Domain.Models.Medical
 {
     public class SinKouiCountModel
     {
@@ -32,5 +34,7 @@
         public int SeqNo { get; private set; }
 
         public int Count { get; private set; }
+
+        public List<PtHokenPatternModel> PtHokenPatterns { get; set; }
     }
 }

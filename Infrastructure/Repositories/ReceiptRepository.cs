@@ -3074,6 +3074,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     private ReceInfModel ConvertToReceInfModel(ReceInf receInf)
     {
         return new ReceInfModel(
+                   receInf.HpId,
                    receInf.SeikyuYm,
                    receInf.PtId,
                    receInf.SinYm,

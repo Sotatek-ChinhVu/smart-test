@@ -4,7 +4,9 @@ using Domain.Models.Medical;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -12,6 +14,19 @@ namespace Infrastructure.Repositories
 {
     public class CalculationInfRepository : RepositoryBase, ICalculationInfRepository
     {
+        private const string HOKEN_CHAR = "0";
+        private const string KOHI1_CHAR = "1";
+        private const string KOHI2_CHAR = "2";
+        private const string KOHI3_CHAR = "3";
+        private const string KOHI4_CHAR = "4";
+        private const string FREE_WORD = "0000999";
+        private const string SUSPECTED_SUFFIX = "の疑い";
+        private const string LEFT = "左";
+        private const string RIGHT = "右";
+        private const string BOTH = "両";
+        private const string LEFT_RIGHT = "左右";
+        private const string RIGHT_LEFT = "右左";
+
         public CalculationInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
         }
@@ -35,12 +50,255 @@ namespace Infrastructure.Repositories
 
         }
 
-        public int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm)
+        public void CheckErrorInMonth(int hpId, int userId, string userName, int seikyuYm, List<long> ptIds)
+        {
+            try
+            {
+                IsStopCalc = false;
+                var AllCheckCount = GetCountReceInfs(hpId, ptIds, seikyuYm);
+                var CheckedCount = 0;
+
+                var receCheckOpts = GetReceCheckOpts(hpId);
+                var receInfModels = GetReceInfModels(hpId, ptIds, seikyuYm);
+
+                var newReceCheckErrs = new List<ReceCheckErr>();
+
+                foreach (var receInfModel in receInfModels)
+                {
+                    if (IsStopCalc) break;
+                    if (CancellationToken.IsCancellationRequested) return;
+                    var oldReceCheckErrs = ClearReceCmtErr(hpId, receInfModel.PtId, receInfModel.HokenId, receInfModel.SinYm);
+                    var sinKouiCounts = GetSinKouiCounts(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
+
+                    CheckHoken(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
+                    CheckByomei(receInfModel);
+                    CheckOrder(receInfModel);
+                    CheckRosai(receInfModel);
+                    CheckAftercare(receInfModel);
+
+                    CheckedCount++;
+                }
+                _commandHandler.SaveChanged();
+                PrintReceCheck(seikyuYm, ptIds);
+            }
+            finally
+            {
+                Log.WriteLogEnd(ModuleNameConst.EmrCommonView, this, nameof(CheckErrorInMonth), ICDebugConf.logLevel);
+            }
+        }
+
+        private void CheckHoken(int hpId, int userId, string userName, ReceInfModel receInfModel, List<ReceCheckOptModel> receCheckOpts, List<SinKouiCountModel> sinKouiCounts, List<ReceCheckErr> oldReceCheckErrs, List<ReceCheckErr> newReceCheckErrs)
+        {
+            //expired
+            if (receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ExpiredEndDateHokenErrCd))
+            {
+                try
+                {
+                    if (sinKouiCounts.Count > 0)
+                    {
+                        //hoken
+                        if (receInfModel.HokenId > 0 && receInfModel.Houbetu.AsInteger() != 0)
+                        {
+                            //E1002 start date
+                            var firstSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns.Any(q => q.HokenId == receInfModel.HokenId));
+                            if (firstSinKouiCount != null)
+                            {
+                                if (receInfModel.PtHokenInf.StartDate > 0 && receInfModel.PtHokenInf.StartDate > firstSinKouiCount.SinDate)
+                                {
+                                    InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtHokenInf.StartDate) + "～）", HOKEN_CHAR);
+                                }
+                            }
+
+                            //E1001 end date
+                            var lastSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns.Any(q => q.HokenId == receInfModel.HokenId));
+                            if (lastSinKouiCount != null)
+                            {
+                                if (receInfModel.PtHokenInf.EndDate > 0 && receInfModel.PtHokenInf.EndDate < lastSinKouiCount.SinDate)
+                                {
+                                    InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtHokenInf.EndDate) + "）", HOKEN_CHAR);
+                                }
+                            }
+                        }
+                        //kohi1
+                        if (receInfModel.Kohi1Id > 0 && receInfModel.Kohi1Houbetu.AsInteger() != 102)
+                        {
+                            var firstSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
+                                .Any(q => q.Kohi1Id == receInfModel.Kohi1Id || q.Kohi2Id == receInfModel.Kohi1Id || q.Kohi3Id == receInfModel.Kohi1Id || q.Kohi4Id == receInfModel.Kohi1Id));
+                            if (firstSinKouiCount != null)
+                            {
+                                if (receInfModel.PtKohi1.StartDate > 0 && receInfModel.PtKohi1.StartDate > firstSinKouiCount.SinDate)
+                                {
+                                    InsertReceCmtErr(hpId, userId, userName, oldReceCheckErrs, newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi1.StartDate) + "～）", KOHI1_CHAR);
+                                }
+                            }
+
+                            var lastSinKouiCount = sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
+                                .Any(q => q.Kohi1Id == receInfModel.Kohi1Id || q.Kohi2Id == receInfModel.Kohi1Id || q.Kohi3Id == receInfModel.Kohi1Id || q.Kohi4Id == receInfModel.Kohi1Id));
+                            if (lastSinKouiCount != null)
+                            {
+                                if (receInfModel.PtKohi1.EndDate > 0 && receInfModel.PtKohi1.EndDate < lastSinKouiCount.SinDate)
+                                {
+                                    InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi1.EndDate) + "）", KOHI1_CHAR);
+                                }
+                            }
+                        }
+                        //kohi2
+                        if (receInfModel.Kohi2Id > 0 && receInfModel.Kohi2Houbetu.AsInteger() != 102)
+                        {
+                            var firstSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
+                                .Any(q => q.Kohi1Id == receInfModel.Kohi2Id || q.Kohi2Id == receInfModel.Kohi2Id || q.Kohi3Id == receInfModel.Kohi2Id || q.Kohi4Id == receInfModel.Kohi2Id));
+                            if (firstSinKouiCount != null)
+                            {
+                                if (receInfModel.Kohi2StartDate > 0 && receInfModel.Kohi2StartDate > firstSinKouiCount.SinDate)
+                                {
+                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.Kohi2StartDate) + "～）", KOHI2_CHAR);
+                                }
+                            }
+
+                            var lastSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
+                                .Any(q => q.Kohi1Id == receInfModel.Kohi2Id || q.Kohi2Id == receInfModel.Kohi2Id || q.Kohi3Id == receInfModel.Kohi2Id || q.Kohi4Id == receInfModel.Kohi2Id));
+                            if (lastSinKouiCount != null)
+                            {
+                                if (receInfModel.Kohi2EndDate > 0 && receInfModel.Kohi2EndDate < lastSinKouiCount.SinDate)
+                                {
+                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.Kohi2EndDate) + "）", KOHI2_CHAR);
+                                }
+                            }
+                        }
+                        //kohi3
+                        if (receInfModel.Kohi3Id > 0 && receInfModel.Kohi3Houbetu.AsInteger() != 102)
+                        {
+                            var firstSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
+                                .Any(q => q.Kohi1Id == receInfModel.Kohi3Id || q.Kohi2Id == receInfModel.Kohi3Id || q.Kohi3Id == receInfModel.Kohi3Id || q.Kohi4Id == receInfModel.Kohi3Id));
+                            if (firstSinKouiCount != null)
+                            {
+                                if (receInfModel.Kohi3StartDate > 0 && receInfModel.Kohi3StartDate > firstSinKouiCount.SinDate)
+                                {
+                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.Kohi3StartDate) + "～）", KOHI3_CHAR);
+                                }
+                            }
+
+                            var lastSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
+                                .Any(q => q.Kohi1Id == receInfModel.Kohi3Id || q.Kohi2Id == receInfModel.Kohi3Id || q.Kohi3Id == receInfModel.Kohi3Id || q.Kohi4Id == receInfModel.Kohi3Id));
+                            if (lastSinKouiCount != null)
+                            {
+                                if (receInfModel.Kohi3EndDate > 0 && receInfModel.Kohi3EndDate < lastSinKouiCount.SinDate)
+                                {
+                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.Kohi3EndDate) + "）", KOHI3_CHAR);
+                                }
+                            }
+                        }
+                        //kohi4
+                        if (receInfModel.Kohi4Id > 0 && receInfModel.Kohi4Houbetu.AsInteger() != 102)
+                        {
+                            var firstSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).FirstOrDefault(p => p.PtHokenPatterns
+                                .Any(q => q.Kohi1Id == receInfModel.Kohi4Id || q.Kohi2Id == receInfModel.Kohi4Id || q.Kohi3Id == receInfModel.Kohi4Id || q.Kohi4Id == receInfModel.Kohi4Id));
+                            if (firstSinKouiCount != null)
+                            {
+                                if (receInfModel.Kohi4StartDate > 0 && receInfModel.Kohi4StartDate > firstSinKouiCount.SinDate)
+                                {
+                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.Kohi4StartDate) + "～）", KOHI4_CHAR);
+                                }
+                            }
+
+                            var lastSinKouiCount = _sinKouiCounts.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
+                                .Any(q => q.Kohi1Id == receInfModel.Kohi4Id || q.Kohi2Id == receInfModel.Kohi4Id || q.Kohi3Id == receInfModel.Kohi4Id || q.Kohi4Id == receInfModel.Kohi4Id));
+                            if (lastSinKouiCount != null)
+                            {
+                                if (receInfModel.Kohi4EndDate > 0 && receInfModel.Kohi4EndDate < lastSinKouiCount.SinDate)
+                                {
+                                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.Kohi4EndDate) + "）", KOHI4_CHAR);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.WriteLogError(_modulName, this, nameof(CheckHoken), ex, $"CheckErrCd: {ReceErrCdConst.ExpiredEndDateHokenErrCd}, PtId: {receInfModel.PtId}");
+                }
+            }
+
+            //E1003 unconfirmed
+            if (_receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.UnConfirmedHokenErrCd))
+            {
+                try
+                {
+                    if (receInfModel.HokenId > 0 && !receInfModel.IsHokenConfirmed)
+                    {
+                        string latestConfirmedDate = string.Empty;
+                        if (receInfModel.HokenChecks?.Count > 0)
+                        {
+                            latestConfirmedDate = CIUtil.SDateToShowSWDate(CIUtil.DateTimeToInt(receInfModel.HokenChecks.OrderByDescending(p => p.CheckDate).FirstOrDefault().CheckDate));
+                        }
+                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                                ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", HOKEN_CHAR);
+                    }
+                    if (receInfModel.Kohi1Id > 0 && !receInfModel.IsKohi1Confirmed)
+                    {
+                        string latestConfirmedDate = string.Empty;
+                        if (receInfModel.Kohi1Checks?.Count > 0)
+                        {
+                            latestConfirmedDate = CIUtil.SDateToShowSWDate(CIUtil.DateTimeToInt(receInfModel.Kohi1Checks.OrderByDescending(p => p.CheckDate).FirstOrDefault().CheckDate));
+                        }
+                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                                ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI1_CHAR);
+                    }
+                    if (receInfModel.Kohi2Id > 0 && !receInfModel.IsKohi2Confirmed)
+                    {
+                        string latestConfirmedDate = string.Empty;
+                        if (receInfModel.Kohi2Checks?.Count > 0)
+                        {
+                            latestConfirmedDate = CIUtil.SDateToShowSWDate(CIUtil.DateTimeToInt(receInfModel.Kohi2Checks.OrderByDescending(p => p.CheckDate).FirstOrDefault().CheckDate));
+                        }
+                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                                ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI2_CHAR);
+                    }
+                    if (receInfModel.Kohi3Id > 0 && !receInfModel.IsKohi3Confirmed)
+                    {
+                        string latestConfirmedDate = string.Empty;
+                        if (receInfModel.Kohi3Checks?.Count > 0)
+                        {
+                            latestConfirmedDate = CIUtil.SDateToShowSWDate(CIUtil.DateTimeToInt(receInfModel.Kohi3Checks.OrderByDescending(p => p.CheckDate).FirstOrDefault().CheckDate));
+                        }
+                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                                ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI3_CHAR);
+                    }
+                    if (receInfModel.Kohi4Id > 0 && !receInfModel.IsKohi4Confirmed)
+                    {
+                        string latestConfirmedDate = string.Empty;
+                        if (receInfModel.Kohi4Checks?.Count > 0)
+                        {
+                            latestConfirmedDate = CIUtil.SDateToShowSWDate(CIUtil.DateTimeToInt(receInfModel.Kohi4Checks.OrderByDescending(p => p.CheckDate).FirstOrDefault().CheckDate));
+                        }
+                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                                ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI4_CHAR);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.WriteLogError(_modulName, this, nameof(CheckHoken), ex, $"CheckErrCd: {ReceErrCdConst.UnConfirmedHokenErrCd}, PtId: {receInfModel.PtId}");
+                }
+            }
+            Log.WriteLogEnd(ModuleNameConst.EmrCommonView, this, nameof(CheckHoken), ICDebugConf.logLevel);
+        }
+
+        private int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm)
         {
             return NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYm && (ptIds.Count == 0 || ptIds.Contains(p.PtId))).Count();
         }
 
-        public List<ReceCheckOptModel> GetReceCheckOpts(int hpId)
+        private List<ReceCheckOptModel> GetReceCheckOpts(int hpId)
         {
             var receCheckOpts = NoTrackingDataContext.ReceCheckOpts.Where(p => p.HpId == hpId)
                     .Select(x => new ReceCheckOptModel(x.ErrCd, x.CheckOpt, x.Biko ?? string.Empty, x.IsInvalid)).ToList();
@@ -147,7 +405,7 @@ namespace Infrastructure.Repositories
             return new ReceCheckOptModel(defaultReceCheckOpt.ErrCd, defaultReceCheckOpt.CheckOpt, defaultReceCheckOpt.Biko ?? string.Empty, defaultReceCheckOpt.IsInvalid);
         }
 
-        public List<ReceInfModel> GetReceInfModels(int hpId, List<long> ptIds, int sinYM)
+        private List<ReceInfModel> GetReceInfModels(int hpId, List<long> ptIds, int sinYM)
         {
             List<ReceInfModel> receInfModels = new List<ReceInfModel>();
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
@@ -346,13 +604,64 @@ namespace Infrastructure.Repositories
             foreach (var entity in query10)
             {
                 receInfModels.Add(new ReceInfModel(
-                    **************************************************************************************************
+                    ConvertToReceInfModel(entity.ReceInf)
                     ));
             }
             return receInfModels;
         }
 
-        public List<SinKouiCountModel> GetSinKouiCounts(int hpId, long ptId, int sinYm, int hokenId)
+        private ReceInfModel ConvertToReceInfModel(ReceInf receInf)
+        {
+            return new ReceInfModel(
+                       receInf.HpId,
+                       receInf.SeikyuYm,
+                       receInf.PtId,
+                       receInf.SinYm,
+                       receInf.HokenId,
+                       receInf.HokenId2,
+                       receInf.KaId,
+                       receInf.TantoId,
+                       receInf.ReceSbt ?? string.Empty,
+                       receInf.HokenKbn,
+                       receInf.HokenSbtCd,
+                       receInf.Houbetu ?? string.Empty,
+                       receInf.Kohi1Id,
+                       receInf.Kohi2Id,
+                       receInf.Kohi3Id,
+                       receInf.Kohi4Id,
+                       receInf.Kohi1Houbetu ?? string.Empty,
+                       receInf.Kohi2Houbetu ?? string.Empty,
+                       receInf.Kohi3Houbetu ?? string.Empty,
+                       receInf.Kohi4Houbetu ?? string.Empty,
+                       receInf.HonkeKbn,
+                       receInf.Tokki1 ?? string.Empty,
+                       receInf.Tokki2 ?? string.Empty,
+                       receInf.Tokki3 ?? string.Empty,
+                       receInf.Tokki4 ?? string.Empty,
+                       receInf.Tokki5 ?? string.Empty,
+                       receInf?.HokenNissu ?? -1,
+                       receInf?.Kohi1Nissu ?? -1,
+                       receInf?.Kohi2Nissu ?? -1,
+                       receInf?.Kohi3Nissu ?? -1,
+                       receInf?.Kohi4Nissu ?? -1,
+                       receInf?.Kohi1ReceKyufu ?? -1,
+                       receInf?.Kohi2ReceKyufu ?? -1,
+                       receInf?.Kohi3ReceKyufu ?? -1,
+                       receInf?.Kohi4ReceKyufu ?? -1,
+                       receInf?.HokenReceTensu ?? -1,
+                       receInf?.HokenReceFutan ?? -1,
+                       receInf?.Kohi1ReceTensu ?? -1,
+                       receInf?.Kohi1ReceFutan ?? -1,
+                       receInf?.Kohi2ReceTensu ?? -1,
+                       receInf?.Kohi2ReceFutan ?? -1,
+                       receInf?.Kohi3ReceTensu ?? -1,
+                       receInf?.Kohi3ReceFutan ?? -1,
+                       receInf?.Kohi4ReceTensu ?? -1,
+                       receInf?.Kohi4ReceFutan ?? -1
+                );
+        }
+
+        private List<SinKouiCountModel> GetSinKouiCounts(int hpId, long ptId, int sinYm, int hokenId)
         {
             var result = new List<SinKouiCountModel>();
 
@@ -436,6 +745,83 @@ namespace Infrastructure.Repositories
                 result.Add(new SinKouiCountModel(entities.Select(p => p.ptHokenPattern).Distinct().ToList(), groupKey.SinKouiCount, sinKouiDetailModels));
             }
             return result;
+        }
+
+        private List<ReceCheckErr> ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
+        {
+            var oldReceCheckErrs = NoTrackingDataContext.ReceCheckErrs
+                                                        .Where(p => p.HpId == hpId &&
+                                                                    p.SinYm == sinYm &&
+                                                                    p.PtId == ptId &&
+                                                                    p.HokenId == hokenId)
+                                                        .ToList();
+            TrackingDataContext.ReceCheckErrs.RemoveRange(oldReceCheckErrs);
+
+            return oldReceCheckErrs;
+        }
+
+        private void InsertReceCmtErr(int hpId, int userId, string userName, List<ReceCheckErr> oldReceCheckErrs, List<ReceCheckErr> newReceCheckErrs, ReceInfModel receInfModel, string errCd, string errMsg1, string errMsg2 = "", string aCd = " ", string bCd = " ", int sinDate = 0)
+        {
+            if (!string.IsNullOrEmpty(errMsg1) && errMsg1.Length > 100)
+            {
+                errMsg1 = CIUtil.Copy(errMsg1, 1, 99) + "…";
+            }
+            if (!string.IsNullOrEmpty(errMsg2) && errMsg2.Length > 100)
+            {
+                errMsg2 = CIUtil.Copy(errMsg2, 1, 99) + "…";
+            }
+
+            var existNewReceCheckErr = newReceCheckErrs.FirstOrDefault(p => p.HpId == hpId &&
+                                           p.PtId == receInfModel.PtId &&
+                                           p.SinYm == receInfModel.SinYm &&
+                                           p.SinDate == sinDate &&
+                                           p.HokenId == receInfModel.HokenId &&
+                                           p.ErrCd == errCd &&
+                                           p.ACd == aCd &&
+                                           p.BCd == bCd);
+
+            if (existNewReceCheckErr != null)
+            {
+                if (errCd == ReceErrCdConst.SanteiCountCheckErrCd)
+                {
+                    existNewReceCheckErr.Message1 = errMsg1;
+                    existNewReceCheckErr.Message2 = errMsg2;
+                }
+                return;
+            }
+
+            var newReceCheckErr = new ReceCheckErr()
+            {
+                HpId = hpId,
+                PtId = receInfModel.PtId,
+                SinYm = receInfModel.SinYm,
+                SinDate = sinDate,
+                HokenId = receInfModel.HokenId,
+                ACd = aCd,
+                BCd = bCd,
+                ErrCd = errCd,
+                Message1 = errMsg1,
+                Message2 = errMsg2,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                CreateMachine = userName,
+                UpdateMachine = userName
+            };
+            var existedReceCheckErr = oldReceCheckErrs.FirstOrDefault(p => p.HpId == newReceCheckErr.HpId &&
+                                                                            p.PtId == newReceCheckErr.PtId &&
+                                                                            p.SinYm == newReceCheckErr.SinYm &&
+                                                                            p.SinDate == newReceCheckErr.SinDate &&
+                                                                            p.HokenId == newReceCheckErr.HokenId &&
+                                                                            p.ErrCd == newReceCheckErr.ErrCd &&
+                                                                            p.ACd == newReceCheckErr.ACd &&
+                                                                            p.BCd == newReceCheckErr.BCd);
+            if (existedReceCheckErr != null)
+            {
+                newReceCheckErr.IsChecked = existedReceCheckErr.IsChecked;
+            }
+            newReceCheckErrs.Add(newReceCheckErr);
         }
 
         public void ReleaseResource()
