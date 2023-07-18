@@ -2605,6 +2605,7 @@ namespace Infrastructure.Repositories
                 cloneByomei.CreateDate = CIUtil.GetJapanDateTimeNow();
                 cloneByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 cloneByomei.HokenPid = hokenId;
+                cloneByomei.Id = 0;
                 newCloneByomeis.Add(cloneByomei);
             }
             TrackingDataContext.PtByomeis.AddRange(newCloneByomeis);
