@@ -614,6 +614,12 @@ namespace EmrCloudApi.Controller
                                                                     x.IsDeleted,
                                                                     string.Empty)).ToList();
 
+            List<int> hokenIdList = new();
+            if (patientInfo.ReactSave.ConfirmCloneByomei)
+            {
+                hokenIdList = patientInfo.HokenIdList;
+            }
+
             var input = new SavePatientInfoInputData(patient,
                  patientInfo.PtKyuseis,
                  patientInfo.PtSanteis,
@@ -624,6 +630,7 @@ namespace EmrCloudApi.Controller
                  patientInfo.ReactSave,
                  patientInfo.MaxMoneys,
                  insuranceScans,
+                 hokenIdList,
                  UserId,
                  HpId
                  );

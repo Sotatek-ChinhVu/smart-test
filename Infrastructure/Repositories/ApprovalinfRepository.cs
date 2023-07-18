@@ -199,7 +199,7 @@ namespace Infrastructure.Repositories
                 foreach (var approvedInf in approvedInfs)
                 {
                     approvedInf.IsDeleted = 1;
-                    approvedInf.UpdateId = Session.UserID;
+                    approvedInf.UpdateId = userId;
                     approvedInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 }
             }
