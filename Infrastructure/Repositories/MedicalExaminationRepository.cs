@@ -1318,6 +1318,7 @@ namespace Infrastructure.Repositories
             {
                 return checkingOrderModelList;
             }
+
             bool isExistFirstVisit = allOdrInfDetail.Any(x => x.ItemCd == ItemCdConst.SyosaiKihon && x.Suryo == 1);
             bool isExistReturnVisit = allOdrInfDetail.Any(x => x.ItemCd == ItemCdConst.SyosaiKihon && x.Suryo == 3);
             bool isGairaiRiha = CheckGairaiRiha(hpId, ptId, sinDate, raiinNo, allOdrInfDetail);
