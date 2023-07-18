@@ -430,11 +430,7 @@ namespace PostgreDataContext
                 .HasQueryFilter(p => p.IsDeleted == 0);
 
             modelBuilder.Entity<LockInf>()
-           .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter("FunctionCd = \"02000000\"").IsUnique();
-            modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
-
-            modelBuilder.Entity<LockInf>()
-           .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter("FunctionCd = \"03000000\"").IsUnique();
+           .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter($"{nameof(LockInf.FunctionCd)} IN (02000000, 03000000)").IsUnique();
             modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
         }
 
