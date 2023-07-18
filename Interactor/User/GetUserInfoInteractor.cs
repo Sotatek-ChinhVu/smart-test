@@ -18,7 +18,7 @@ namespace Interactor.User
             {
                 var userInfo = _userRepository.GetUserInfo(inputData.HpId, inputData.UserId);
 
-                return new GetUserInfoOutputData(GetUserInfoStatus.Success, userInfo);
+                return new GetUserInfoOutputData(GetUserInfoStatus.Success, new UserMstDto(userInfo.Id, userInfo.UserId, userInfo.JobCd, userInfo.ManagerKbn, userInfo.KaId, userInfo.KaSName, userInfo.KanaName, userInfo.Name, userInfo.Sname, userInfo.LoginId, userInfo.MayakuLicenseNo, userInfo.StartDate, userInfo.EndDate, userInfo.SortNo, userInfo.RenkeiCd1, userInfo.DrName, userInfo.HpId, userInfo.Permissions));
             }
             finally
             {

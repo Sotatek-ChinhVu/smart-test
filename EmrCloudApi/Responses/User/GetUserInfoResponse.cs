@@ -1,14 +1,14 @@
-﻿using Domain.Models.User;
+﻿using UseCase.User.UserInfo;
 
 namespace EmrCloudApi.Responses.User
 {
     public class GetUserInfoResponse
     {
-        public GetUserInfoResponse(UserMstModel userInfo)
+        public GetUserInfoResponse(UserMstDto userInfo)
         {
             UserInfo = userInfo;
         }
 
-        public UserMstModel UserInfo { get; private set; }
+        public UserMstDto UserInfo { get; private set; }
     }
 }

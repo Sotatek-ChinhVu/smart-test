@@ -96,8 +96,6 @@ namespace Domain.Models.User
             Permissions = permissions;
         }
 
-
-
         public long Id { get; private set; }
 
         public int UserId { get; private set; }

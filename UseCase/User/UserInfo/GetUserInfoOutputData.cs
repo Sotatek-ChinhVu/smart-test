@@ -5,13 +5,13 @@ namespace UseCase.User.UserInfo
 {
     public class GetUserInfoOutputData : IOutputData
     {
-        public GetUserInfoOutputData(GetUserInfoStatus status, UserMstModel userInfo)
+        public GetUserInfoOutputData(GetUserInfoStatus status, UserMstDto userInfo)
         {
             Status = status;
             UserInfo = userInfo;
         }
 
         public GetUserInfoStatus Status { get; private set; }
-        public UserMstModel UserInfo { get; private set; }
+        public UserMstDto UserInfo { get; private set; }
     }
 }
