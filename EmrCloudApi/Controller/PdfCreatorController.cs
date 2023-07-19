@@ -346,7 +346,8 @@ public class PdfCreatorController : ControllerBase
                 && !data.ListTextData.Any()
                 && !data.SingleFieldList.Any()
                 && !data.SetFieldData.Any()
-                && data.ReportType != (int)CoReportType.MemoMsg))
+                && data.ReportType != (int)CoReportType.MemoMsg
+                && data.ReportType != (int)CoReportType.Receipt))
         {
             returnNoData = true;
         }
