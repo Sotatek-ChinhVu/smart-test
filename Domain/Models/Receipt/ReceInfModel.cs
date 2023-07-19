@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Insurance;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 
 namespace Domain.Models.Receipt;
 
@@ -192,6 +193,10 @@ public class ReceInfModel
     public bool IsKohi3Confirmed => Kohi3Checks.Exists(p => p.ConfirmDate / 100 == SinYm);
 
     public bool IsKohi4Confirmed => Kohi4Checks.Exists(p => p.ConfirmDate / 100 == SinYm);
+
+    public int FirstDateOfThisMonth => (SinYm + "01").AsInteger();
+
+    public int LastDateOfThisMonth => (SinYm + "31").AsInteger();
 
     public ReceInfModel(ReceInfModel receInf)
     {

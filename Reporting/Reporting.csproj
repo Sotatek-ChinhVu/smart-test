@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="CommonMasters\Extension\" />
     <Folder Include="ReceiptCheck\DB\" />
     <Folder Include="Statistics\Sta2020\Service\" />
     <Folder Include="Statistics\Sta3010\DB\" />

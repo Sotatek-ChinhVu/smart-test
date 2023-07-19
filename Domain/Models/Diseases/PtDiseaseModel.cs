@@ -1,6 +1,6 @@
 ﻿using Domain.Constant;
 using Helper.Common;
-using Helper.Constants;
+using Helper.Extension;
 using System.Text.Json.Serialization;
 using static Helper.Constants.PtDiseaseConst;
 
@@ -8,6 +8,7 @@ namespace Domain.Models.Diseases
 {
     public class PtDiseaseModel
     {
+        private const string MODIFIER_CD = "SyusyokuCd";
         private const string FREE_WORD = "0000999";
 
         [JsonConstructor]
@@ -596,6 +597,8 @@ namespace Domain.Models.Diseases
             get => IsContinous || (StartDate <= (SinDate / 100 * 100 + 31) && TenkiDate >= (SinDate / 100 * 100 + 1));
         }
 
+        public int HokenId { get; private set; }
+
         public int HokenPid { get; private set; }
 
         public string Icd10 { get; set; }
@@ -710,5 +713,22 @@ namespace Domain.Models.Diseases
             SikkanCd = sikkanCd;
             return this;
         }
+
+        public List<string> GetAllSyusyokuCds()
+        {
+            List<string> syusyokuCds = new List<string>();
+            for (int i = 1; i <= 21; i++)
+            {
+                if (PrefixSuffixList.GetMemberValue(MODIFIER_CD + i) == null ||
+                    string.IsNullOrEmpty(PrefixSuffixList.GetMemberValue(MODIFIER_CD + i).AsString()))
+                {
+                    continue;
+                }
+                syusyokuCds.Add(PrefixSuffixList.GetMemberValue(MODIFIER_CD + i).AsString());
+            }
+            syusyokuCds.Sort();
+            return syusyokuCds;
+        }
+
     }
 }

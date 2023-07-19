@@ -70,5 +70,7 @@ public class SinKouiDetailModel
 
     public bool TenMstIsNotNull { get; private set; }
 
+    public TenItemModel TenMst { get; private set; }
+
     public List<ItemCommentSuggestionModel> CmtSelectList { get; private set; }
 }
