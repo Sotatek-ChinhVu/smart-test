@@ -4,11 +4,13 @@ using CommonCheckers.OrderRealtimeChecker.Models;
 using Domain.CalculationInf;
 using Domain.Models.Diseases;
 using Domain.Models.Medical;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.SystemConf;
+using Domain.Models.TodayOdr;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -845,9 +847,9 @@ namespace Interactor.ReceiptCheck
                             }
                             #endregion
 
-                            List<DensiSanteiKaisuModel> densiSanteiKaisuModels = _masterFinder.FindDensiSanteiKaisuList(sinDate, itemCd);
+                            List<DensiSanteiKaisuModel> densiSanteiKaisuModels = _calculationInfRepository.FindDensiSanteiKaisuList(hpId, sinDate, itemCd);
                             if (hokenInf != null && (hokenInf.HokenKbn == 11 || hokenInf.HokenKbn == 12 || hokenInf.HokenKbn == 13
-                                || (hokenInf.HokenKbn == 14 && SystemConfig.Instance.JibaiJunkyo == 1)))
+                                || (hokenInf.HokenKbn == 14 && _systemConfRepository.GetSettingValue(3001, 0, hpId) == 1)))
                             {
                                 densiSanteiKaisuModels = densiSanteiKaisuModels.FindAll(p => p.TargetKbn == 2 || p.TargetKbn == 0);
                             }
@@ -993,7 +995,7 @@ namespace Interactor.ReceiptCheck
                                 if (densiSanteiKaisu.ItemGrpCd > 0)
                                 {
                                     // 項目グループの設定がある場合
-                                    itemGrpMsts = _recalculationFinder.FindItemGrpMst(sinDate, 1, densiSanteiKaisu.ItemGrpCd);
+                                    itemGrpMsts = _calculationInfRepository.FindItemGrpMst(hpId, sinDate, 1, densiSanteiKaisu.ItemGrpCd);
                                 }
 
                                 if (itemGrpMsts != null && itemGrpMsts.Any())
@@ -1009,14 +1011,14 @@ namespace Interactor.ReceiptCheck
                                 double santeiCount = 0;
                                 if (startDate >= 0)
                                 {
-                                    santeiCount = _masterFinder.SanteiCount(receInfModel.PtId, startDate, sinDate,
+                                    santeiCount = _calculationInfRepository.SanteiCount(hpId, receInfModel.PtId, startDate, sinDate,
                                                                    sinDate, 0, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
                                 }
 
                                 if (santeiCount > densiSanteiKaisu.MaxCount)
                                 {
                                     string msg2 = string.Format("({0}: {1}回 [{2}回/{3}])", sinKouiDetailModel.ItemName, santeiCount, densiSanteiKaisu.MaxCount, sTerm);
-                                    _commandHandler._calculationInfRepository.InsertReceCmtErr(receInfModel, ReceErrCdConst.SanteiCountCheckErrCd, ReceErrCdConst.SanteiCountCheckErrMsg, msg2, itemCd);
+                                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, userName, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.SanteiCountCheckErrCd, ReceErrCdConst.SanteiCountCheckErrMsg, msg2, itemCd);
                                 }
                             }
                             checkedItemCds.Add(itemCd);
@@ -1033,7 +1035,7 @@ namespace Interactor.ReceiptCheck
             {
                 double suryoSum = 0;
                 string msg2 = string.Empty;
-                foreach (var sinKouiCount in __sinKouiCounts)
+                foreach (var sinKouiCount in _sinKouiCounts)
                 {
                     if (sinKouiCount.IsFirstVisit)
                     {
@@ -1052,7 +1054,7 @@ namespace Interactor.ReceiptCheck
                 }
                 if (suryoSum > 1)
                 {
-                    _commandHandler._calculationInfRepository.InsertReceCmtErr(receInfModel, ReceErrCdConst.FirstExamFeeCheckErrCd, ReceErrCdConst.FirstExamFeeCheckErrMsg, msg2);
+                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, userName, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.FirstExamFeeCheckErrCd, ReceErrCdConst.FirstExamFeeCheckErrMsg, msg2);
                 }
             }
 
@@ -1078,7 +1080,7 @@ namespace Interactor.ReceiptCheck
                 {
                     List<string> checkedItemCds = new List<string>();
                     int iBirthDay = receInfModel.Birthday;
-                    foreach (var sinKouiCount in __sinKouiCounts)
+                    foreach (var sinKouiCount in _sinKouiCounts)
                     {
                         foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
                         {

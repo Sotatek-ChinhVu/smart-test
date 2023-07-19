@@ -75,7 +75,7 @@
 
         public int IsInvalid { get; private set; }
 
-        public long ItemGrpCd { get; private set; }
+        public int ItemGrpCd { get; private set; }
 
         public bool IsModified { get; private set; }
 

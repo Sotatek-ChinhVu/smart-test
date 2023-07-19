@@ -16,7 +16,6 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -49,39 +48,32 @@ namespace Infrastructure.Repositories
 
         public void CheckErrorInMonth(int hpId, int userId, string userName, int seikyuYm, List<long> ptIds)
         {
-            try
+            IsStopCalc = false;
+            var AllCheckCount = GetCountReceInfs(hpId, ptIds, seikyuYm);
+            var CheckedCount = 0;
+
+            var receCheckOpts = GetReceCheckOpts(hpId);
+            var receInfModels = GetReceInfModels(hpId, ptIds, seikyuYm);
+
+            var newReceCheckErrs = new List<ReceCheckErr>();
+
+            foreach (var receInfModel in receInfModels)
             {
-                IsStopCalc = false;
-                var AllCheckCount = GetCountReceInfs(hpId, ptIds, seikyuYm);
-                var CheckedCount = 0;
+                if (IsStopCalc) break;
+                if (CancellationToken.IsCancellationRequested) return;
+                var oldReceCheckErrs = ClearReceCmtErr(hpId, receInfModel.PtId, receInfModel.HokenId, receInfModel.SinYm);
+                var sinKouiCounts = GetSinKouiCounts(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
 
-                var receCheckOpts = GetReceCheckOpts(hpId);
-                var receInfModels = GetReceInfModels(hpId, ptIds, seikyuYm);
+                CheckHoken(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
+                CheckByomei(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
+                CheckOrder(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
+                CheckRosai(receInfModel);
+                CheckAftercare(receInfModel);
 
-                var newReceCheckErrs = new List<ReceCheckErr>();
-
-                foreach (var receInfModel in receInfModels)
-                {
-                    if (IsStopCalc) break;
-                    if (CancellationToken.IsCancellationRequested) return;
-                    var oldReceCheckErrs = ClearReceCmtErr(hpId, receInfModel.PtId, receInfModel.HokenId, receInfModel.SinYm);
-                    var sinKouiCounts = GetSinKouiCounts(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
-
-                    CheckHoken(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
-                    CheckByomei(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
-                    CheckOrder(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
-                    CheckRosai(receInfModel);
-                    CheckAftercare(receInfModel);
-
-                    CheckedCount++;
-                }
-                _commandHandler.SaveChanged();
-                PrintReceCheck(seikyuYm, ptIds);
+                CheckedCount++;
             }
-            finally
-            {
-                Log.WriteLogEnd(ModuleNameConst.EmrCommonView, this, nameof(CheckErrorInMonth), ICDebugConf.logLevel);
-            }
+            _commandHandler.SaveChanged();
+            PrintReceCheck(seikyuYm, ptIds);
         }
 
         public List<PtDiseaseModel> GetByomeiInThisMonth(int hpId, int sinYm, long ptId, int hokenId)
@@ -928,10 +920,168 @@ namespace Infrastructure.Repositories
             List<DensiSanteiKaisuModel> results = new List<DensiSanteiKaisuModel>();
             entities?.ForEach(entity =>
             {
-                results.Add(new DensiSanteiKaisuModel(entity));
+                results.Add(new DensiSanteiKaisuModel(entity.Id,
+                                                      entity.HpId,
+                                                      entity.ItemCd,
+                                                      entity.MaxCount,
+                                                      entity.MaxCount,
+                                                      entity.SpJyoken,
+                                                      entity.StartDate,
+                                                      entity.EndDate,
+                                                      entity.SeqNo,
+                                                      entity.UserSetting,
+                                                      entity.TargetKbn,
+                                                      entity.TermCount,
+                                                      entity.TermSbt,
+                                                      entity.IsInvalid,
+                                                      entity.ItemGrpCd));
             });
 
             return results;
+        }
+
+        public List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, int itemGrpCd)
+        {
+            List<ItemGrpMstModel> result = new List<ItemGrpMstModel>();
+            var query = NoTrackingDataContext.itemGrpMsts.Where(p =>
+                    p.HpId == hpId &&
+                    p.GrpSbt == grpSbt &&
+                    p.ItemGrpCd == itemGrpCd &&
+                    p.StartDate <= sinDate &&
+                    p.EndDate >= sinDate)
+                .OrderBy(p => p.HpId)
+                .ThenBy(p => p.ItemCd)
+                .ThenBy(p => p.SeqNo)
+                .ToList();
+            foreach (var entity in query)
+            {
+                result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd, entity.SeqNo));
+            }
+            return result;
+        }
+
+        public double SanteiCount(int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, List<string> itemCds, List<int> santeiKbns, List<int> hokenKbns)
+        {
+            int startYm = startDate / 100;
+            int endYm = endDate / 100;
+
+            List<int> checkHokenKbn = new List<int>();
+
+            if (hokenKbns != null)
+            {
+                checkHokenKbn = hokenKbns;
+            }
+
+            List<int> checkSanteiKbn = new List<int>();
+
+            if (santeiKbns != null)
+            {
+                checkSanteiKbn = santeiKbns;
+            }
+
+            var sinRpInfs = NoTrackingDataContext.SinRpInfs.Where(o =>
+                o.HpId == hpId &&
+                o.PtId == ptId &&
+                o.SinYm >= startYm &&
+                o.SinYm <= endYm &&
+                o.IsDeleted == DeleteStatus.None &&
+                checkHokenKbn.Contains(o.HokenKbn) &&
+                checkSanteiKbn.Contains(o.SanteiKbn)
+            );
+            var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(o =>
+                o.HpId == hpId &&
+                o.PtId == ptId &&
+                o.SinDate >= startDate &&
+                o.SinDate <= endDate &&
+                o.RaiinNo != raiinNo);
+            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p =>
+                p.HpId == hpId &&
+                p.PtId == ptId &&
+                p.SinYm >= startYm &&
+                p.SinYm <= endYm &&
+                p.IsDeleted == DeleteStatus.None &&
+                itemCds.Contains(p.ItemCd ?? string.Empty) &&
+                p.FmtKbn != 10  // 在がん医総のダミー項目を除く
+                );
+
+            //from rece
+            if (raiinNo == 0)
+            {
+                var sinKouis = NoTrackingDataContext.SinKouis.Where(o =>
+                    o.HpId == hpId &&
+                    o.PtId == ptId &&
+                    o.IsDeleted == 0);
+
+                var joinSinkouiWithSinKouiCount = from sinKouiCount in sinKouiCounts
+                                                  join sinKoui in sinKouis on
+                    new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo } equals
+                    new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo }
+                                                  select new
+                                                  {
+                                                      SinKouiCount = sinKouiCount,
+                                                      SinKoui = sinKoui
+                                                  };
+                var joinQuery = from sinKouiDetail in sinKouiDetails
+                                join joinSinkouiCount in joinSinkouiWithSinKouiCount.Where(p => p.SinKoui.IsNodspRece == 0) on
+                                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                                    new { joinSinkouiCount.SinKouiCount.HpId, joinSinkouiCount.SinKouiCount.PtId, joinSinkouiCount.SinKouiCount.SinYm, joinSinkouiCount.SinKouiCount.RpNo, joinSinkouiCount.SinKouiCount.SeqNo }
+                                join sinRpInf in sinRpInfs on
+                                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
+                                    new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
+                                where
+                                    sinKouiDetail.HpId == hpId &&
+                                    sinKouiDetail.PtId == ptId &&
+                                    sinKouiDetail.SinYm >= startYm &&
+                                    sinKouiDetail.SinYm <= endYm &&
+                                    itemCds.Contains(sinKouiDetail.ItemCd ?? string.Empty) &&
+                                    joinSinkouiCount.SinKouiCount.SinDate >= startDate &&
+                                    joinSinkouiCount.SinKouiCount.SinDate <= endDate
+                                group new { sinKouiDetail, joinSinkouiCount } by new { joinSinkouiCount.SinKouiCount.HpId } into A
+                                select new { sum = A.Sum(a => (double)a.joinSinkouiCount.SinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd) ? 1 : a.sinKouiDetail.Suryo)) };
+
+                var result = joinQuery.ToList();
+                if (result.Any())
+                {
+                    return result.FirstOrDefault()?.sum ?? 0;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                var joinQuery = (
+                from sinKouiDetail in sinKouiDetails
+                join sinKouiCount in sinKouiCounts on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                    new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                join sinRpInf in sinRpInfs on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
+                    new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
+                where
+                    sinKouiDetail.HpId == hpId &&
+                    sinKouiDetail.PtId == ptId &&
+                    sinKouiDetail.SinYm >= startYm &&
+                    sinKouiDetail.SinYm <= endYm &&
+                    itemCds.Contains(sinKouiDetail.ItemCd ?? string.Empty) &&
+                    sinKouiCount.SinDate >= startDate &&
+                    sinKouiCount.SinDate <= endDate &&
+                    sinKouiCount.RaiinNo != raiinNo
+                group new { sinKouiDetail, sinKouiCount } by new { sinKouiCount.HpId } into A
+                select new { sum = A.Sum(a => (double)a.sinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd) ? 1 : a.sinKouiDetail.Suryo)) }
+            );
+
+                var result = joinQuery.ToList();
+                if (result.Any())
+                {
+                    return result.FirstOrDefault()?.sum ?? 0;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
         }
 
         public void ReleaseResource()

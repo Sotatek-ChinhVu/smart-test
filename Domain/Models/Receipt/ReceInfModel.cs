@@ -160,6 +160,8 @@ public class ReceInfModel
 
     public int Kohi4ReceFutan { get; private set; }
 
+    public PatientInfor PtInf { get; private set; }
+
     public HokenInfModel PtHokenInf { get; private set; }
 
     public KohiInfModel PtKohi1 { get; private set; }

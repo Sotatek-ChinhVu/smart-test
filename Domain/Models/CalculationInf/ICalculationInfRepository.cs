@@ -7,6 +7,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
+using Domain.Models.TodayOdr;
 
 namespace Domain.CalculationInf
 {
@@ -49,5 +50,11 @@ namespace Domain.CalculationInf
         TenItemModel? FindLastTenMst(int hpId, string itemCd);
 
         TenItemModel? FindFirstTenMst(int hpId, string itemCd);
+
+        List<DensiSanteiKaisuModel> FindDensiSanteiKaisuList(int hpId, int sinDate, string itemCd);
+
+        List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, int itemGrpCd);
+
+        double SanteiCount(int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, List<string> itemCds, List<int> santeiKbns, List<int> hokenKbns);
     }
 }
