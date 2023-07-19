@@ -912,12 +912,12 @@ namespace Infrastructure.Repositories
             return null;
         }
 
-        public List<DensiSanteiKaisuModel> FindDensiSanteiKaisuList(int sinDate, string itemCd)
+        public List<DensiSanteiKaisuModel> FindDensiSanteiKaisuList(int hpId, int sinDate, string itemCd)
         {
             List<int> unitCds = new List<int> { 53, 121, 131, 138, 141, 142, 143, 144, 145, 146, 147, 148, 997, 998, 999 };
 
-            var entities = dbService.DensiSanteiKaisuRepository.FindListQueryableNoTrack((x) =>
-                    x.HpId == Session.HospitalID &&
+            var entities = NoTrackingDataContext.DensiSanteiKaisus.Where((x) =>
+                    x.HpId == hpId &&
                     x.ItemCd == itemCd &&
                     x.StartDate <= sinDate &&
                     x.EndDate >= sinDate &&
