@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Insurance;
+using Domain.Models.PatientInfor;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
@@ -72,6 +73,9 @@ public class ReceInfModel
     }
 
     public int HpId { get; private set; }
+
+    public int SeikyuKbn { get; private set; }
+
     public int SeikyuYm { get; private set; }
 
     public long PtId { get; private set; }
@@ -160,7 +164,7 @@ public class ReceInfModel
 
     public int Kohi4ReceFutan { get; private set; }
 
-    public PatientInfor PtInf { get; private set; }
+    public PatientInforModel PtInf { get; private set; }
 
     public HokenInfModel PtHokenInf { get; private set; }
 
@@ -182,6 +186,8 @@ public class ReceInfModel
 
     public List<ConfirmDateModel> Kohi4Checks { get; private set; }
 
+    public ReceStatusModel ReceStatus { get; private set; }
+
     public bool IsNashi => Houbetu == HokenConstant.HOUBETU_NASHI;
 
     public bool IsJihi => HokenKbn == 0 && (Houbetu == HokenConstant.HOUBETU_JIHI_108 || Houbetu == HokenConstant.HOUBETU_JIHI_109);
@@ -199,6 +205,8 @@ public class ReceInfModel
     public int FirstDateOfThisMonth => (SinYm + "01").AsInteger();
 
     public int LastDateOfThisMonth => (SinYm + "31").AsInteger();
+
+    public int IsPaperRece => (ReceStatus != null && ReceStatus.IsPaperRece) ? 1 : 0;
 
     public ReceInfModel(ReceInfModel receInf)
     {

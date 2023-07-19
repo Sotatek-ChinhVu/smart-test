@@ -1,4 +1,6 @@
 ﻿
+using Domain.Models.Receipt.Recalculation;
+
 namespace Domain.Models.MstItem
 {
     public class SinKouiModel
@@ -7,11 +9,33 @@ namespace Domain.Models.MstItem
         {
             SinKouiCd = sinKouiCd;
             SinkouiName = sinkouiName;
+            SinKouiDetailModels = new();
         }
 
-        public int SinKouiCd { get; set; }
+        public SinKouiModel(int sinKouiCd, string sinkouiName, List<SinKouiDetailModel> sinKouiDetailModels)
+        {
+            SinKouiCd = sinKouiCd;
+            SinkouiName = sinkouiName;
+            SinKouiDetailModels = sinKouiDetailModels;
+        }
 
-        public string SinkouiName { get; set; }
+        public int SinKouiCd { get; private set; }
+
+        public string SinkouiName { get; private set; }
+
+        public List<SinKouiDetailModel> SinKouiDetailModels { get; private set; }
+
+        public bool ExistItemWithCommentSelect
+        {
+            get
+            {
+                if (SinKouiDetailModels == null || SinKouiDetailModels.Count == 0)
+                {
+                    return false;
+                }
+                return SinKouiDetailModels.Any(s => s.CmtSelectList != null && s.CmtSelectList.Count > 0);
+            }
+        }
     }
 
     public class SinkouiCollection : List<SinKouiModel>

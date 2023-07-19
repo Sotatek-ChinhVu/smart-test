@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.Accounting;
 using Domain.Models.CalculationInf;
 using Domain.Models.Diseases;
 using Domain.Models.Medical;
@@ -7,6 +8,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
+using Domain.Models.ReceSeikyu;
 using Domain.Models.TodayOdr;
 
 namespace Domain.CalculationInf
@@ -56,5 +58,31 @@ namespace Domain.CalculationInf
         List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, int itemGrpCd);
 
         double SanteiCount(int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, List<string> itemCds, List<int> santeiKbns, List<int> hokenKbns);
+
+        List<SinKouiModel> GetListSinKoui(int hpId, long ptId, int sinYm, int hokenId);
+
+        List<string> GetListReceCmtItemCode(int hpId, long ptId, int sinYm, int hokenId);
+
+        List<CalcLogModel> GetAddtionItems(int hpId, long ptId, int sinYm, int hokenId);
+
+        bool IsKantokuCdValid(int hpId, int hokenId, long ptId);
+
+        bool ExistSyobyoKeikaData(int hpId, long ptId, int sinYm, int hokenId);
+
+        void ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
+
+        List<ReceSeikyuModel> GetReceSeikyus(int hpId, List<long> ptIds, int seikyuYm);
+
+        List<TenItemModel> GetZaiganIsoItems(int hpId, int seikyuYm);
+
+        List<SinKouiDetailModel> GetKouiDetailToCheckSantei(int hpId, List<long> ptIds, int seikyuYm, List<string> zaiganIsoItemCds, bool isCheckPartOfNextMonth);
+
+        int GetSanteiStartDate(int hpId, long ptId, int seikyuYm);
+
+        bool HasErrorWithSanteiByEndDate(int hpId, long ptId, int seikyuYm, int endDate, string itemCd);
+
+        bool HasErrorWithSanteiByStartDate(int hpId, long ptId, int seikyuYm, int startDate, string itemCd);
+
+        int GetSanteiEndDate(int hpId, long ptId, int seikyuYm);
     }
 }

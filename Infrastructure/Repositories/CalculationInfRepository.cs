@@ -1,5 +1,6 @@
 ﻿using Domain.CalculationInf;
 using Domain.Constant;
+using Domain.Models.Accounting;
 using Domain.Models.CalculationInf;
 using Domain.Models.Diseases;
 using Domain.Models.Medical;
@@ -8,6 +9,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
+using Domain.Models.ReceSeikyu;
 using Domain.Models.SystemConf;
 using Domain.Models.TodayOdr;
 using Entity.Tenant;
@@ -16,6 +18,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -44,36 +47,6 @@ namespace Infrastructure.Repositories
 
             return dataCalculation;
 
-        }
-
-        public void CheckErrorInMonth(int hpId, int userId, string userName, int seikyuYm, List<long> ptIds)
-        {
-            IsStopCalc = false;
-            var AllCheckCount = GetCountReceInfs(hpId, ptIds, seikyuYm);
-            var CheckedCount = 0;
-
-            var receCheckOpts = GetReceCheckOpts(hpId);
-            var receInfModels = GetReceInfModels(hpId, ptIds, seikyuYm);
-
-            var newReceCheckErrs = new List<ReceCheckErr>();
-
-            foreach (var receInfModel in receInfModels)
-            {
-                if (IsStopCalc) break;
-                if (CancellationToken.IsCancellationRequested) return;
-                var oldReceCheckErrs = ClearReceCmtErr(hpId, receInfModel.PtId, receInfModel.HokenId, receInfModel.SinYm);
-                var sinKouiCounts = GetSinKouiCounts(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
-
-                CheckHoken(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
-                CheckByomei(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
-                CheckOrder(hpId, userId, userName, receInfModel, receCheckOpts, sinKouiCounts, oldReceCheckErrs, newReceCheckErrs);
-                CheckRosai(receInfModel);
-                CheckAftercare(receInfModel);
-
-                CheckedCount++;
-            }
-            _commandHandler.SaveChanged();
-            PrintReceCheck(seikyuYm, ptIds);
         }
 
         public List<PtDiseaseModel> GetByomeiInThisMonth(int hpId, int sinYm, long ptId, int hokenId)
@@ -561,7 +534,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<ReceCheckErr> ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
+        public void ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
         {
             var oldReceCheckErrs = NoTrackingDataContext.ReceCheckErrs
                                                         .Where(p => p.HpId == hpId &&
@@ -570,8 +543,6 @@ namespace Infrastructure.Repositories
                                                                     p.HokenId == hokenId)
                                                         .ToList();
             TrackingDataContext.ReceCheckErrs.RemoveRange(oldReceCheckErrs);
-
-            return oldReceCheckErrs;
         }
 
         public void InsertReceCmtErr(int hpId, int userId, string userName, List<ReceCheckErrModel> oldReceCheckErrs, List<ReceCheckErrModel> newReceCheckErrs, ReceInfModel receInfModel, string errCd, string errMsg1, string errMsg2 = "", string aCd = " ", string bCd = " ", int sinDate = 0)
@@ -729,87 +700,6 @@ namespace Infrastructure.Repositories
             }
 
             return result;
-        }
-
-        public bool ValidateByomeiReflectOdrSite(string buiOdr, string byomeiName, int LrKbn, int BothKbn)
-        {
-            string GetDirection(string name)
-            {
-                string str = name.Length >= 2 ? name.Substring(0, 2) : name;
-                if (str.Contains(BOTH))
-                {
-                    return BOTH;
-                }
-                else if (str == $"{LEFT}{RIGHT}" || str == $"{RIGHT}{LEFT}")
-                {
-                    return str;
-                }
-                else if (str.Contains(LEFT))
-                {
-                    return LEFT;
-                }
-                else if (str.Contains(RIGHT))
-                {
-                    return RIGHT;
-                }
-                return "";
-            }
-            if (LrKbn == 0 && BothKbn == 0)
-            {
-                return true;
-            }
-            else if ((LrKbn == 1 && BothKbn == 1) || (LrKbn == 0 && BothKbn == 1))
-            {
-                string buiOdrDirection = GetDirection(buiOdr);
-                string byomeiNameDirection = GetDirection(byomeiName);
-                // Convert names to the left-right direction if they contain 両 character or right-left direction.
-                string buiOdrLeftRight = buiOdrDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
-                string byomeiNameLeftRight = byomeiNameDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
-                return byomeiNameLeftRight.Contains(buiOdrLeftRight);
-            }
-            else if (LrKbn == 1 && BothKbn == 0)
-            {
-                string buiOdrDirection = GetDirection(buiOdr);
-                string byomeiNameDirection = GetDirection(byomeiName);
-                // Convert names to the left-right direction if they contain 両 character or right-left direction.
-                string buiOdrLeftRight = buiOdrDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
-                string byomeiNameLeftRight = byomeiNameDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
-                if (byomeiNameLeftRight.Contains($"{LEFT}{RIGHT}") && (buiOdrLeftRight == LEFT || buiOdrLeftRight == RIGHT))
-                {
-                    return false;
-                }
-                return byomeiNameLeftRight.Contains(buiOdrLeftRight);
-            }
-            return true;
-        }
-
-        public string OdrKouiKbnToString(int odrKouiKbn)
-        {
-            if (30 <= odrKouiKbn && odrKouiKbn <= 39)
-            {
-                return "注射";
-            }
-            else if (40 <= odrKouiKbn && odrKouiKbn <= 49)
-            {
-                return "処置";
-            }
-            else if (50 <= odrKouiKbn && odrKouiKbn <= 59)
-            {
-                return "手術";
-            }
-            else if (60 <= odrKouiKbn && odrKouiKbn <= 69)
-            {
-                return "検査";
-            }
-            else if (70 <= odrKouiKbn && odrKouiKbn <= 79)
-            {
-                return "画像";
-            }
-            else if (80 <= odrKouiKbn && odrKouiKbn <= 89)
-            {
-                return "その他";
-            }
-            return "";
         }
 
         public string GetSanteiItemCd(int hpId, string itemCd, int sinDate)
@@ -1082,6 +972,454 @@ namespace Infrastructure.Repositories
                     return 0;
                 }
             }
+        }
+
+        public List<SinKouiModel> GetListSinKoui(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            int maxSinDate = sinYm * 100 + 31;
+            List<SinKouiModel> result = new List<SinKouiModel>();
+            List<SinKoui> listSinKoui = NoTrackingDataContext.SinKouis.Where(p => p.HpId == hpId &&
+                                                                                                  p.PtId == ptId &&
+                                                                                                  p.SinYm == sinYm &&
+                                                                                                  p.HokenId == hokenId &&
+                                                                                                  p.IsNodspRece == 0)
+                                                                    .ToList();
+            listSinKoui.ForEach((sinKoui) =>
+            {
+                var listSinKouiDetailEntity = (from sinKouiDetail in NoTrackingDataContext.SinKouiDetails.Where(s => s.HpId == hpId &&
+                                                                                                       s.PtId == ptId &&
+                                                                                                       s.SinYm == sinYm &&
+                                                                                                       s.IsNodspRece == 0 &&
+                                                                                                       s.RpNo == sinKoui.RpNo &&
+                                                                                                       s.SeqNo == sinKoui.SeqNo)
+                                               join sinKouiCount in NoTrackingDataContext.SinKouiCounts.Where(s => s.HpId == hpId &&
+                                                                                                       s.PtId == ptId &&
+                                                                                                       s.SinYm == sinYm)
+                                               on new { sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals new { sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                                               select new
+                                               {
+                                                   sinKouiDetail,
+                                                   sinKouiCount
+                                               })
+                                              .ToList();
+
+                List<SinKouiDetailModel> listSinKouiDetailModel = new List<SinKouiDetailModel>();
+                listSinKouiDetailEntity.ForEach((sinKouiDetail) =>
+                {
+                    string itemCd = sinKouiDetail.sinKouiDetail.ItemCd ?? string.Empty;
+                    int sinDate = sinKouiDetail.sinKouiCount.SinDate;
+                    List<ItemCommentSuggestionModel> listCmtSelect = GetListComment(hpId, new List<string> { itemCd }, sinDate, new List<int> { 0 }, true);
+                    listSinKouiDetailModel.Add(new SinKouiDetailModel(sinKouiDetail.sinKouiDetail, sinKouiDetail.sinKouiCount, listCmtSelect));
+                });
+                result.Add(new SinKouiModel(sinKoui, listSinKouiDetailModel));
+            });
+
+            return result;
+        }
+
+        public List<ItemCommentSuggestionModel> GetListComment(int hpCd, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false)
+        {
+            List<ItemCommentSuggestionModel> result = NoTrackingDataContext.TenMsts
+                                                 .Where(item => listItemCd.Contains(item.ItemCd) &&
+                                                                              item.StartDate <= sinDate &&
+                                                                              sinDate <= item.EndDate)
+                                                 .AsEnumerable()
+                                                 .Select(item => new ItemCommentSuggestionModel(item.ItemCd, "【" + item.Name + "】", item.SanteiItemCd ?? string.Empty, new()))
+                                                 .ToList();
+
+            if (result.Count <= 0)
+                return new List<ItemCommentSuggestionModel>();
+
+            var listItemCdCmtSelect = result.Select(item => item.SanteiItemCd).ToList();
+            listItemCdCmtSelect.AddRange(listItemCd);
+            listItemCdCmtSelect = listItemCdCmtSelect.Distinct().ToList();
+
+            var listRecedenCmtSelectAll = NoTrackingDataContext.RecedenCmtSelects
+                .Where(item => item.HpId == hpCd &&
+                                               listItemCdCmtSelect.Contains(item.ItemCd) &&
+                                               item.StartDate <= sinDate &&
+                                               sinDate <= item.EndDate &&
+                                               isInvalidList.Contains(item.IsInvalid))
+                .ToList();
+
+            if (listRecedenCmtSelectAll.Count <= 0)
+                return new List<ItemCommentSuggestionModel>();
+
+            var listItemNo = listRecedenCmtSelectAll.GroupBy(item => new { item.ItemCd, item.CommentCd })
+                .Select(grp => grp.OrderBy(r => r.ItemNo).First())
+                .Select(item => item.ItemNo)
+                .Distinct()
+                .ToList();
+
+            List<RecedenCmtSelect> listRecedenCmtMinEda = new List<RecedenCmtSelect>();
+
+            var listRecedenCmtSelect = NoTrackingDataContext.RecedenCmtSelects
+               .Where(item => item.HpId == hpCd &&
+                                              listItemCdCmtSelect.Contains(item.ItemCd) &&
+                                              listItemNo.Contains(item.ItemNo) &&
+                                              item.StartDate <= sinDate &&
+                                              sinDate <= item.EndDate &&
+                                              isInvalidList.Contains(item.IsInvalid))
+               .ToList();
+            listRecedenCmtMinEda.AddRange(listRecedenCmtSelect);
+
+            if (!isRecalculation)
+            {
+                var listRecedenCmtSelectShinryo = NoTrackingDataContext.RecedenCmtSelects
+                .Where(item => item.HpId == hpCd &&
+                                      item.ItemCd == "199999999" &&
+                                      listItemNo.Contains(item.ItemNo) &&
+                                      item.StartDate <= sinDate &&
+                                      sinDate <= item.EndDate &&
+                                      isInvalidList.Contains(item.IsInvalid));
+                listRecedenCmtMinEda.AddRange(listRecedenCmtSelectShinryo);
+            }
+
+            var listCommentCd = listRecedenCmtMinEda.Select(item => item.CommentCd).Distinct();
+
+            var listTenMst = NoTrackingDataContext.TenMsts
+                .Where(item => item.HpId == hpCd &&
+                                         listCommentCd.Contains(item.ItemCd) &&
+                                         item.StartDate <= sinDate &&
+                                         sinDate <= item.EndDate);
+
+            var listComment = (from recedenCmtSelect in listRecedenCmtMinEda
+                               join tenMst in listTenMst on
+                                   recedenCmtSelect.CommentCd equals tenMst.ItemCd
+                               select new RecedenCmtSelectModel(tenMst.CmtSbt,
+                                                               recedenCmtSelect.ItemCd,
+                                                               recedenCmtSelect.CommentCd ?? string.Empty,
+                                                               tenMst.Name ?? string.Empty,
+                                                               recedenCmtSelect.ItemNo,
+                                                               recedenCmtSelect.EdaNo,
+                                                               tenMst.Name ?? string.Empty,
+                                                               recedenCmtSelect.SortNo,
+                                                               recedenCmtSelect.CondKbn,
+                                                               ConvertTenMstToModel(tenMst)
+                                                               )).ToList();
+
+            foreach (var inputCodeItem in result)
+            {
+                var listCommentWithCode = listComment.Where(item =>
+                    item.ItemCd == inputCodeItem.ItemCd || item.ItemCd == inputCodeItem.SanteiItemCd)
+                    .OrderBy(item => item.ItemNo)
+                    .ToList();
+
+                if (listCommentWithCode.Count <= 0)
+                {
+                    inputCodeItem.SetData(new List<RecedenCmtSelectModel>());
+                    continue;
+                }
+
+                if (!isRecalculation)
+                {
+                    var itemNo = listCommentWithCode[0].ItemNo;
+
+                    listCommentWithCode.AddRange(listComment.Where(item =>
+                            item.ItemCd == "199999999" && item.ItemNo == itemNo)
+                        .ToList());
+                }
+
+                listCommentWithCode = listCommentWithCode.OrderBy(item => item.ItemNo)
+                    .ThenBy(item => item.EdaNo)
+                    .ThenBy(item => item.SortNo)
+                    .ToList();
+
+                inputCodeItem.SetData(listCommentWithCode);
+            }
+
+            return result ?? new List<ItemCommentSuggestionModel>();
+        }
+
+        private TenItemModel ConvertTenMstToModel(TenMst tenMst)
+        {
+            return new TenItemModel(
+                        tenMst?.HpId ?? 0,
+                        tenMst?.ItemCd ?? string.Empty,
+                        tenMst?.RousaiKbn ?? 0,
+                        tenMst?.KanaName1 ?? string.Empty,
+                        tenMst?.Name ?? string.Empty,
+                        tenMst?.KohatuKbn ?? 0,
+                        tenMst?.MadokuKbn ?? 0,
+                        tenMst?.KouseisinKbn ?? 0,
+                        tenMst?.OdrUnitName ?? string.Empty,
+                        tenMst?.EndDate ?? 0,
+                        tenMst?.DrugKbn ?? 0,
+                        tenMst?.MasterSbt ?? string.Empty,
+                        tenMst?.BuiKbn ?? 0,
+                        tenMst?.IsAdopted ?? 0,
+                        tenMst?.Ten ?? 0,
+                        tenMst?.TenId ?? 0,
+                        "",
+                        "",
+                        tenMst?.CmtCol1 ?? 0,
+                        tenMst?.IpnNameCd ?? string.Empty,
+                        tenMst?.SinKouiKbn ?? 0,
+                        tenMst?.YjCd ?? string.Empty,
+                        tenMst?.CnvUnitName ?? string.Empty,
+                        tenMst?.StartDate ?? 0,
+                        tenMst?.YohoKbn ?? 0,
+                        tenMst?.CmtColKeta1 ?? 0,
+                        tenMst?.CmtColKeta2 ?? 0,
+                        tenMst?.CmtColKeta3 ?? 0,
+                        tenMst?.CmtColKeta4 ?? 0,
+                        tenMst?.CmtCol2 ?? 0,
+                        tenMst?.CmtCol3 ?? 0,
+                        tenMst?.CmtCol4 ?? 0,
+                        tenMst?.IpnNameCd ?? string.Empty,
+                        tenMst?.MinAge ?? string.Empty,
+                        tenMst?.MaxAge ?? string.Empty,
+                        tenMst?.SanteiItemCd ?? string.Empty,
+                        0,
+                        0,
+                        tenMst?.DefaultVal ?? 0,
+                        tenMst?.Kokuji1 ?? string.Empty,
+                        tenMst?.Kokuji2 ?? string.Empty,
+                        string.Empty,
+                        0,
+                        0,
+                        true
+                        );
+        }
+
+        public List<string> GetListReceCmtItemCode(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            return NoTrackingDataContext.ReceCmts
+                                    .Where(p => p.HpId == hpId &&
+                                                p.SinYm == sinYm &&
+                                                p.PtId == ptId &&
+                                                p.HokenId == hokenId &&
+                                                p.IsDeleted == DeleteTypes.None)
+                                    .Select(r => r.ItemCd ?? string.Empty)
+                                    .Distinct()
+                                    .ToList();
+        }
+
+        public List<CalcLogModel> GetAddtionItems(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            return NoTrackingDataContext.CalcLogs.Where(p => p.HpId == hpId
+                                                                 && p.DelSbt == 13
+                                                                 && p.PtId == ptId
+                                                                 && p.SinDate / 100 == sinYm
+                                                                 && p.HokenId == hokenId)
+                                                   .Select(x => new CalcLogModel(x.RaiinNo, x.LogSbt, x.Text ?? string.Empty))
+                                                   .ToList();
+        }
+
+        public bool IsKantokuCdValid(int hpId, int hokenId, long ptId)
+        {
+            var hoken = NoTrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                        && item.IsDeleted == DeleteTypes.None
+                                                                                        && item.PtId == ptId
+                                                                                        && item.HokenId == hokenId);
+            if (hoken == null) return false;
+            var kantoku = NoTrackingDataContext.KantokuMsts.FirstOrDefault(item => item.RoudouCd == hoken.RousaiRoudouCd && item.KantokuCd == hoken.RousaiKantokuCd);
+            return kantoku != null;
+        }
+
+        public bool ExistSyobyoKeikaData(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            var syobyoKeika = NoTrackingDataContext.SyobyoKeikas.FirstOrDefault(p => p.HpId == hpId &&
+                                                                                 p.IsDeleted == DeleteTypes.None &&
+                                                                                 p.PtId == ptId &&
+                                                                                 p.SinYm == sinYm &&
+                                                                                 p.HokenId == hokenId);
+            return syobyoKeika != null && !string.IsNullOrEmpty(syobyoKeika.Keika);
+        }
+
+        public List<ReceSeikyuModel> GetReceSeikyus(int hpId, List<long> ptIds, int seikyuYm)
+        {
+            List<ReceSeikyuModel> result = new List<ReceSeikyuModel>();
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId &&
+                                                                                  p.IsDelete == DeleteTypes.None &&
+                                                                                  (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true))
+                                                      .ToList();
+            var receSeikyus = NoTrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId &&
+                                                                                           p.SeikyuYm == seikyuYm &&
+                                                                                           p.IsDeleted == DeleteTypes.None &&
+                                                                                           (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true))
+                                                               .ToList();
+            var query = from receSeikyu in receSeikyus
+                        join ptInf in ptInfs
+                        on receSeikyu.PtId equals ptInf.PtId
+                        select new
+                        {
+                            ReceSeikyu = receSeikyu,
+                            PtInf = ptInf
+                        };
+            foreach (var entity in query)
+            {
+                result.Add(new ReceSeikyuModel(entity.PtInf, entity.ReceSeikyu));
+            }
+            return result;
+        }
+
+        public List<TenItemModel> GetZaiganIsoItems(int hpId, int seikyuYm)
+        {
+            int firstDateOfMonth = seikyuYm * 100 + 1;
+            int lastDateOfMonth = seikyuYm * 100 + 31;
+            var tenMst = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId &&
+                                                                   p.StartDate <= lastDateOfMonth &&
+                                                                   p.EndDate >= firstDateOfMonth &&
+                                                                   p.CdKbn == "C" &&
+                                                                   p.CdKbnno == 3 &&
+                                                                   p.CdEdano == 0 &&
+                                                                   (p.CdKouno == 1 || p.CdKouno == 2 || p.CdKouno == 4) &&
+                                                                   p.IsDeleted == DeleteTypes.None)
+                                                        .Select(x => ConvertTenMstToModel(x))
+                                                        .ToList();
+            return tenMst;
+        }
+
+        public List<SinKouiDetailModel> GetKouiDetailToCheckSantei(int hpId, List<long> ptIds, int seikyuYm, List<string> zaiganIsoItemCds, bool isCheckPartOfNextMonth)
+        {
+            var result = new List<SinKouiDetailModel>();
+            int firstDateOfWeek = 0;
+            int lastDateOfWeek = 0;
+            int checkMonth = 0;
+
+            if (isCheckPartOfNextMonth)
+            {
+                var firstDateOfNextMonth = new DateTime(seikyuYm / 100, seikyuYm % 100, 1).AddMonths(1);
+                checkMonth = firstDateOfNextMonth.ToString("yyyyMM").AsInteger();
+                firstDateOfWeek = CIUtil.DateTimeToInt(firstDateOfNextMonth);
+                lastDateOfWeek = CIUtil.DateTimeToInt(firstDateOfNextMonth.AddDays(6 - (int)firstDateOfNextMonth.DayOfWeek));
+            }
+            else
+            {
+                var endDateOfLastMonth = new DateTime(seikyuYm / 100, seikyuYm % 100, 1).AddDays(-1);
+                checkMonth = endDateOfLastMonth.ToString("yyyyMM").AsInteger();
+                firstDateOfWeek = CIUtil.DateTimeToInt(endDateOfLastMonth.AddDays(-(int)endDateOfLastMonth.DayOfWeek));
+                lastDateOfWeek = CIUtil.DateTimeToInt(endDateOfLastMonth);
+            }
+
+
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None);
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId &&
+                                                                                       p.IsDelete == DeleteTypes.None &&
+                                                                                       (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+
+            var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(p => p.HpId == hpId &&
+                                                                                               p.SinYm == checkMonth &&
+                                                                                               p.SinDate >= firstDateOfWeek &&
+                                                                                               p.SinDate <= lastDateOfWeek &&
+                                                                                               (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+
+            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.HpId == hpId &&
+                                                                                                 p.SinYm == checkMonth &&
+                                                                                                 zaiganIsoItemCds.Contains(p.ItemCd ?? string.Empty) &&
+                                                                                                 (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+
+            var joinKouiCountWithDetailQuery = from sinKouiCount in sinKouiCounts
+                                               join sinKouiDetail in sinKouiDetails
+                                               on new { sinKouiCount.PtId, sinKouiCount.RpNo, sinKouiCount.SeqNo } equals new { sinKouiDetail.PtId, sinKouiDetail.RpNo, sinKouiDetail.SeqNo }
+                                               select new
+                                               {
+                                                   SinKouiCount = sinKouiCount,
+                                                   SinKouiDetail = sinKouiDetail
+                                               };
+
+            var joinTenMstQuery = from kouiCountDetail in joinKouiCountWithDetailQuery
+                                  join tenMst in tenMsts
+                                  on kouiCountDetail.SinKouiDetail.ItemCd equals tenMst.ItemCd
+                                  where tenMst.StartDate <= kouiCountDetail.SinKouiCount.SinDate &&
+                                  tenMst.EndDate >= kouiCountDetail.SinKouiCount.SinDate
+                                  select new
+                                  {
+                                      SinKouiDetail = kouiCountDetail.SinKouiDetail,
+                                      TenMst = tenMst
+                                  };
+
+            var joinWithPtInf = from joinTenMst in joinTenMstQuery
+                                join ptInf in ptInfs
+                                on joinTenMst.SinKouiDetail.PtId equals ptInf.PtId
+                                select new
+                                {
+                                    SinKouiDetail = joinTenMst.SinKouiDetail,
+                                    TenMst = joinTenMst.TenMst,
+                                    PtInf = ptInf
+                                };
+
+            foreach (var entity in joinWithPtInf)
+            {
+                result.Add(new SinKouiDetailModel(entity.PtInf, entity.TenMst, entity.SinKouiDetail));
+            }
+            return result;
+        }
+
+        public int GetSanteiStartDate(int hpId, long ptId, int seikyuYm)
+        {
+            var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(p => p.HpId == hpId &&
+                                                                                               p.PtId == ptId &&
+                                                                                               p.SinYm == seikyuYm);
+            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.HpId == hpId &&
+                                                                                                 p.PtId == ptId &&
+                                                                                                 p.SinYm == seikyuYm &&
+                                                                                                 p.ItemCd == "X00013");
+            var query = from sinKouiCount in sinKouiCounts
+                        join sinKouiDetail in sinKouiDetails
+                        on new { sinKouiCount.RpNo, sinKouiCount.SeqNo } equals new { sinKouiDetail.RpNo, sinKouiDetail.SeqNo }
+                        select new
+                        {
+                            SinKouiCount = sinKouiCount
+                        };
+            if (query.Count() > 0)
+            {
+                var entity = query.FirstOrDefault();
+                return entity.SinKouiCount.SinDate;
+            }
+            return seikyuYm * 100 + 1;
+        }
+
+        public bool HasErrorWithSanteiByStartDate(int hpId, long ptId, int seikyuYm, int startDate, string itemCd)
+        {
+            var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(p => p.HpId == hpId &&
+                                                                                               p.PtId == ptId &&
+                                                                                               p.SinYm == seikyuYm &&
+                                                                                               p.SinDate >= startDate);
+            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.HpId == hpId &&
+                                                                                                 p.PtId == ptId &&
+                                                                                                 p.SinYm == seikyuYm &&
+                                                                                                 p.ItemCd == itemCd);
+            var query = from sinKouiCount in sinKouiCounts
+                        join sinKouiDetail in sinKouiDetails
+                        on new { sinKouiCount.RpNo, sinKouiCount.SeqNo } equals new { sinKouiDetail.RpNo, sinKouiDetail.SeqNo }
+                        select new
+                        {
+                            SinKouiCount = sinKouiCount
+                        };
+            return query.Count() == 0;
+        }
+
+        public bool HasErrorWithSanteiByEndDate(int hpId, long ptId, int seikyuYm, int endDate, string itemCd)
+        {
+            var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(p => p.HpId == hpId &&
+                                                                                               p.PtId == ptId &&
+                                                                                               p.SinYm == seikyuYm &&
+                                                                                               p.SinDate <= endDate);
+            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.HpId == hpId &&
+                                                                                                 p.PtId == ptId &&
+                                                                                                 p.SinYm == seikyuYm &&
+                                                                                                 p.ItemCd == itemCd);
+            var query = from sinKouiCount in sinKouiCounts
+                        join sinKouiDetail in sinKouiDetails
+                        on new { sinKouiCount.RpNo, sinKouiCount.SeqNo } equals new { sinKouiDetail.RpNo, sinKouiDetail.SeqNo }
+                        select new
+                        {
+                            SinKouiCount = sinKouiCount
+                        };
+            return query.Count() == 0;
+        }
+
+        public int GetSanteiEndDate(int hpId, long ptId, int seikyuYm)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId);
+            if (ptInf.DeathDate > 0 && ptInf.DeathDate < seikyuYm * 100 + 1)
+            {
+                return ptInf.DeathDate;
+            }
+            //get end date of current month
+            return CIUtil.DateTimeToInt(new DateTime(seikyuYm / 100, seikyuYm % 100, 1).AddMonths(1).AddDays(-1));
         }
 
         public void ReleaseResource()
