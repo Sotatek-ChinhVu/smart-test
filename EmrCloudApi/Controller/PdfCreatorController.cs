@@ -346,7 +346,7 @@ public class PdfCreatorController : ControllerBase
                 htmlData = _commonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
         }
-        var outputData = new GetDataPrintDrugInfoOutputData(drugInfo, htmlData);
+        var outputData = new GetDataPrintDrugInfoOutputData(drugInfo, htmlData, inputData.DrugName);
 
         var present = new GetDataPrintDrugInfoPresenter();
         present.Complete(outputData);

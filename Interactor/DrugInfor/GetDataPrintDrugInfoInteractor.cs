@@ -30,7 +30,7 @@ public class GetDataPrintDrugInfoInteractor : IGetDataPrintDrugInfoInputPort
                     htmlData = _getCommonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                     break;
             }
-            return new GetDataPrintDrugInfoOutputData(drugInfo, htmlData);
+            return new GetDataPrintDrugInfoOutputData(drugInfo, htmlData, inputData.DrugName);
         }
         finally
         {
