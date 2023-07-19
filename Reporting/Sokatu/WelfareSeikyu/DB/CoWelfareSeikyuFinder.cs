@@ -1,4 +1,5 @@
-﻿using Helper.Constants;
+﻿using Domain.Constant;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -45,16 +46,16 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
         private List<CoWelfareReceInfModel> getReceInf(int hpId, int seikyuYm, SeikyuType seikyuType, List<int> kohiHokenNos, List<string> kohiHoubetus,
             FutanCheck futanCheck, int hokenKbn, bool isReceKisai)
         {
-            var receInfs = NoTrackingDataContext.ReceInfs.FindListNoTrack();
-            var receStatuses = NoTrackingDataContext.ReceStatuses.FindListNoTrack();
-            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.FindListNoTrack(
-                p => p.IsDeleted == 0
+            var receInfs = NoTrackingDataContext.ReceInfs.FindListQueryableNoTrack();
+            var receStatuses = NoTrackingDataContext.ReceStatuses.FindListQueryableNoTrack();
+            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.FindListQueryableNoTrack(
+                p => p.IsDeleted == DeleteStatus.None
             );
-            var ptKohis = NoTrackingDataContext.PtHokenInfs.FindListNoTrack(
-                p => p.IsDeleted == 0
+            var ptKohis = NoTrackingDataContext.PtKohis.FindListQueryableNoTrack(
+                p => p.IsDeleted == DeleteStatus.None
             );
-            var ptInfs = NoTrackingDataContext.PtInfs.FindListNoTrack(
-                p => p.IsDelete == 0
+            var ptInfs = NoTrackingDataContext.PtInfs.FindListQueryableNoTrack(
+                p => p.IsDelete == DeleteStatus.None
             );
 
             var joinQuery = (
@@ -173,7 +174,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                     );
                 }
             }
-
+            
             //社保国保
             if (hokenKbn == HokenKbn.Syaho)
             {

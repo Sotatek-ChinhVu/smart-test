@@ -51,6 +51,8 @@ namespace Domain.Models.Reception
 
         List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted);
 
+        ReceptionModel? GetLastKarute(int hpId, long ptNum);
+
         List<Tuple<int, long, long>> Delete(bool flag, int hpId, long ptId, int userId, int sinDate, List<Tuple<long, long, int>> receptions);
 
         bool CheckExistOfRaiinNos(List<long> raininNos);
@@ -58,5 +60,9 @@ namespace Domain.Models.Reception
         List<ReceptionModel> GetRaiinListWithKanInf(int hpId, long ptId);
 
         ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate);
+
+        List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate);
+
+        bool UpdateIsDeleted(int hpId, long raiinNo);
     }
 }

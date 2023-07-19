@@ -52,6 +52,7 @@
         public static readonly string InvalidGrpKouiKbn = "Invalid GrpKouiKbn";
         public static readonly string InvalidDocCd = "Invalid DocCd";
         public static readonly string InvalidRenkeiId = "Invalid RenkeiId";
+        public static readonly string ErrorBunkatuOdrDetail = "入力できる文字を超えました。\r\n 合計10文字以内に入力してください。";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -62,6 +63,7 @@
         public static readonly string ExistedId = "ExistedId";
         public static readonly string InputDataNull = "Input data is null";
         public static readonly string Valid = "Valid";
+        public static readonly string MedicalScreenLocked = "Medical Screen Locked!";
         public static readonly string None = "None";
         public static readonly string Locked = "Locked";
 
@@ -173,6 +175,8 @@
         public static readonly string InvalidSelectedHokenPid = "Invalid SelectedHokenPid";
         public static readonly string InvalidException = "Invalid Exception";
         public static readonly string InvalidNoDataSave = "Does not exist data to save";
+        public static readonly string InvalidHistoryPidExistedInputData = "Invalid HistoryPid Existed InputData";
+        public static readonly string HokenPidInvalidNoExisted = "HokenPid Invalid NoExisted";
 
         // Validate Pattern
         public static readonly string InvalidPatternJihiSelectedHokenInfHokenNoEquals0 = "Invalid SelectedHokenInf HokenNo Equals 0";
@@ -880,7 +884,7 @@
         public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
 
         // Document
-        public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
+        public static readonly string InvalidDocumentCategoryCd = "指定されたカテゴリーは存在しないため、変更できません。";
         public static readonly string MoveDocCategoryNotFound = "Invalid Document MoveCategoryCd!";
         public static readonly string InvalidDocumentCategoryName = "Invalid Document CategoryName, CategoryName is required and not duplicate!";
         public static readonly string InvalidMoveInDocCategoryCd = "Invalid Document move in CategoryCd, CategoryCd is required and exist in DB!";
@@ -970,7 +974,6 @@
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";
         public static readonly string InvalidThisWari = "Invalid ThisWari";
-        public static readonly string InvalidCredit = "Invalid Credit";
         public static readonly string InvalidPayType = "Invalid PayType";
         public static readonly string InvalidComment = "Invalid Comment";
         public static readonly string StateChanged = "State Changed";

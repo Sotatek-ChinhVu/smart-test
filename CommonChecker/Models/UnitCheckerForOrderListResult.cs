@@ -2,6 +2,7 @@
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using Domain.Models.Diseases;
 using Domain.Models.Family;
+using Domain.Models.RaiinKubunMst;
 using SpecialNoteFull = Domain.Models.SpecialNote.SpecialNoteModel;
 
 namespace CommonCheckers.OrderRealtimeChecker.Models

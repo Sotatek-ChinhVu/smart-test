@@ -42,14 +42,12 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, bool> _visibleFieldData;
-    private readonly IReadRseReportFileService _readRseReportFileService;
-    private const string _formFileName = "p29KoukiSeikyu.rse";
+    private string _formFileName = "p29KoukiSeikyu.rse";
     #endregion
 
-    public P29KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder finder, IReadRseReportFileService readRseReportFileService)
+    public P29KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder finder)
     {
         _kokhofinder = finder;
-        _readRseReportFileService = readRseReportFileService;
         _singleFieldDataM = new();
         _singleFieldData = new();
         _listTextData = new();
@@ -62,21 +60,30 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
         var getData = GetData();
-        for (int zaiFlg = 0; zaiFlg <= 1; zaiFlg++)
-        {
-            printZaiiso = zaiFlg == 1;
-            foreach (string currentNo in hokensyaNos)
-            {
-                _currentHokensyaNo = currentNo;
-                curReceInfs = receInfs.Where(r => r.IsZaiiso == zaiFlg && r.HokensyaNo == _currentHokensyaNo).ToList();
-                if (curReceInfs.Count() == 0) continue;
 
-                _hasNextPage = true;
-                _currentPage = 1;
-                while (getData && _hasNextPage)
+        if (_seikyuYm >= 202210)
+        {
+            _formFileName = "p29KoukiSeikyu_2210";
+        }
+
+        if(getData)
+        {
+            for (int zaiFlg = 0; zaiFlg <= 1; zaiFlg++)
+            {
+                printZaiiso = zaiFlg == 1;
+                foreach (string currentNo in hokensyaNos)
                 {
-                    UpdateDrawForm();
-                    _currentPage++;
+                    _currentHokensyaNo = currentNo;
+                    curReceInfs = receInfs.Where(r => r.IsZaiiso == zaiFlg && r.HokensyaNo == _currentHokensyaNo).ToList();
+                    if (curReceInfs.Count() == 0) continue;
+
+                    _hasNextPage = true;
+                    _currentPage = 1;
+                    while (getData && _hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
                 }
             }
         }
@@ -107,7 +114,7 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd"))
             );
             SetFieldData("reportGengo", wrkYmd.Gengo);
             SetFieldData("reportYear", wrkYmd.Year.ToString());

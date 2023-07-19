@@ -1,7 +1,7 @@
 ﻿using Domain.Constant;
+using Domain.Models.Diseases;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
-using Domain.Models.Lock;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper;
@@ -17,23 +17,25 @@ namespace Interactor.PatientInfor
     {
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly ISystemConfRepository _systemConfRepository;
-        private readonly ILockRepository _lockRepository;
+        private readonly IPtDiseaseRepository _ptDiseaseRepository;
         private readonly IAmazonS3Service _amazonS3Service;
 
-        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service, ILockRepository lockRepository)
+        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service, IPtDiseaseRepository ptDiseaseRepository)
         {
             _patientInforRepository = patientInforRepository;
             _systemConfRepository = systemConfRepository;
             _amazonS3Service = amazonS3Service;
-            _lockRepository = lockRepository;
+            _ptDiseaseRepository = ptDiseaseRepository;
         }
 
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
         {
+            PatientInforModel patientInforModel = new();
+            bool cloneByomei = CloneByomei(inputData);
             var validations = Validation(inputData);
-            if (validations.Any())
+            if (validations.Any() || (!inputData.ReactSave.ConfirmCloneByomei && cloneByomei))
             {
-                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0);
+                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0, patientInforModel, cloneByomei);
             }
             try
             {
@@ -75,10 +77,6 @@ namespace Interactor.PatientInfor
                                     _amazonS3Service.DeleteObjectAsync(item.FileName);
                                 }
                             }
-                            else
-                            {
-                                continue;
-                            }
                         }
                     }
                     return listReturn;
@@ -90,26 +88,46 @@ namespace Interactor.PatientInfor
                     result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
                 }
                 else
-                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId, inputData.HokenIdList);
 
                 if (result.resultSave)
                 {
-                    _lockRepository.RemoveLock(inputData.HpId, FunctionCode.PatientInfo, result.ptId, 0, 0, inputData.UserId);
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId);
+                    patientInforModel = _patientInforRepository.GetById(inputData.HpId, result.ptId, 0, 0) ?? new();
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId, patientInforModel, false);
                 }
                 else
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
-            }
-            catch
-            {
-                return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0, patientInforModel, false);
             }
             finally
             {
                 _patientInforRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
-                _lockRepository.ReleaseResource();
             }
+        }
+
+        private bool CloneByomei(SavePatientInfoInputData inputData)
+        {
+            if (!inputData.ReactSave.ConfirmCloneByomei)
+            {
+                //if add new hoken => confirm clone byomei
+                var newHokenInfs = inputData.HokenInfs.OrderBy(p => p.HokenId)
+                                                      .Where(p => p.IsDeleted == DeleteTypes.None && p.IsAddNew && !p.IsEmptyModel);
+                if (newHokenInfs.Any())
+                {
+                    var hokenInf = inputData.HokenInfs.OrderByDescending(p => p.EndDateSort)
+                                                      .ThenByDescending(p => p.HokenId)
+                                                      .FirstOrDefault(p => p.IsDeleted == DeleteTypes.None && !p.IsAddNew);
+                    if (hokenInf != null)
+                    {
+                        var ptByomeis = _ptDiseaseRepository.GetPtByomeisByHokenId(inputData.HpId, inputData.Patient.PtId, hokenInf.HokenId);
+                        if (ptByomeis.Count > 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         private IEnumerable<SavePatientInfoValidationResult> Validation(SavePatientInfoInputData model)
@@ -122,6 +140,26 @@ namespace Interactor.PatientInfor
 
             #region Patient Info
             string message = string.Empty;
+            if (!model.ReactSave.ConfirmSamePatientInf)
+            {
+                var samePatientInf = _patientInforRepository.FindSamePatient(hpId, model.Patient.Name, model.Patient.Sex, model.Patient.Birthday).Where(item => item.PtId != model.Patient.PtId).ToList();
+                if (samePatientInf.Count > 0)
+                {
+                    string msg = string.Empty;
+                    samePatientInf.ForEach(ptInf =>
+                    {
+                        if (!string.IsNullOrEmpty(msg))
+                        {
+                            msg = msg + Environment.NewLine;
+                        }
+                        msg = msg + "患者番号：" + string.Format("{0,-9}", ptInf.PtNum.AsString());
+                    });
+                    message = string.Format(ErrorMessage.MessageType_mEnt00020, "同姓同名の患者") + Environment.NewLine;
+                    message += msg;
+                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidSamePatient, TypeMessage.TypeMessageWarning));
+                }
+            }
+
             if (model.Patient.PtId == 0 && model.Patient.PtNum != 0)
             {
                 if (_systemConfRepository.GetSettingValue(1001, 0, model.Patient.HpId) == 1)
@@ -159,7 +197,7 @@ namespace Interactor.PatientInfor
             }
 
             resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName ?? string.Empty, model.Patient.Name ?? string.Empty, model.Patient.HpId, model.ReactSave));
-            int sinDay = DateTime.Now.ToString("yyyyMMdd").AsInteger();
+            int sinDay = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
             resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, isUpdate, model.Patient.Birthday, sinDay, hpId, model.ReactSave, model.Patient.MainHokenPid));
 
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)

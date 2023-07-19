@@ -14,6 +14,7 @@ using EmrCloudApi.Responses.DrugInfor;
 using EmrCloudApi.Responses.UsageTreeSetResponse;
 using EmrCloudApi.Responses.YohoSetMst;
 using EmrCloudApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.DrugDetail;

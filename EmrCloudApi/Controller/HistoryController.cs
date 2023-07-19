@@ -22,10 +22,10 @@ namespace EmrCloudApi.Controller
             _bus = bus;
         }
 
-        [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request)
+        [HttpPost(ApiPath.GetList)]
+        public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromBody] GetMedicalExaminationHistoryRequest request)
         {
-            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.FilterId, UserId, request.IsShowApproval);
+            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.FilterId, UserId, request.IsShowApproval, request.RaiinBookmarked.Select(r => new Tuple<long, bool>(r.RaiinNo, r.Flag)).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new GetMedicalExaminationHistoryPresenter();
@@ -38,7 +38,7 @@ namespace EmrCloudApi.Controller
         [HttpGet("GetDataPrintKarte2")]
         public ActionResult<Response<GetDataPrintKarte2Response>> GetDataPrintKarte2([FromQuery] GetDataPrintKarte2Request request)
         {
-            var input = new GetDataPrintKarte2InputData(request.PtId, HpId, request.SinDate, request.StartDate, request.EndDate, request.IsCheckedHoken, request.IsCheckedJihi, request.IsCheckedHokenJihi, request.IsCheckedJihiRece, request.IsCheckedHokenRousai, request.IsCheckedHokenJibai, request.IsCheckedDoctor, request.IsCheckedStartTime, request.IsCheckedVisitingTime, request.IsCheckedEndTime, request.IsUketsukeNameChecked, request.IsCheckedSyosai, request.IsIncludeTempSave, request.IsCheckedApproved, request.IsCheckedInputDate, request.IsCheckedSetName, request.DeletedOdrVisibilitySetting, request.IsIppanNameChecked, request.IsCheckedHideOrder);
+            var input = new GetDataPrintKarte2InputData(request.PtId, HpId, request.SinDate, request.StartDate, request.EndDate, request.IsCheckedHoken, request.IsCheckedJihi, request.IsCheckedHokenJihi, request.IsCheckedJihiRece, request.IsCheckedHokenRousai, request.IsCheckedHokenJibai, request.IsCheckedDoctor, request.IsCheckedStartTime, request.IsCheckedVisitingTime, request.IsCheckedEndTime, request.IsUketsukeNameChecked, request.IsCheckedSyosai, request.IsIncludeTempSave, request.IsCheckedApproved, request.IsCheckedInputDate, request.IsCheckedSetName, request.DeletedOdrVisibilitySetting, request.IsIppanNameChecked, request.IsCheckedHideOrder, request.EmptyMode);
             var output = _bus.Handle(input);
 
             var presenter = new GetDataPrintKarte2Presenter();
@@ -48,10 +48,10 @@ namespace EmrCloudApi.Controller
             return result;
         }
 
-        [HttpGet(ApiPath.Search)]
-        public ActionResult<Response<SearchHistoryResponse>> Search([FromQuery] SearchHistoryRequest request)
+        [HttpPost(ApiPath.Search)]
+        public ActionResult<Response<SearchHistoryResponse>> Search([FromBody] SearchHistoryRequest request)
         {
-            var input = new SearchHistoryInputData(HpId, UserId, request.PtId, request.SinDate, request.CurrentIndex, request.FilterId, request.IsDeleted, request.KeyWord, request.SearchType, request.IsNext);
+            var input = new SearchHistoryInputData(HpId, UserId, request.PtId, request.SinDate, request.CurrentIndex, request.FilterId, request.IsDeleted, request.KeyWord, request.SearchType, request.IsNext, request.RaiinBookmarked.Select(r => new Tuple<long, bool>(r.RaiinNo, r.Flag)).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new SearchHistoryPresenter();
@@ -61,10 +61,10 @@ namespace EmrCloudApi.Controller
             return result;
         }
 
-        [HttpGet(ApiPath.GetHistoryIndex)]
-        public ActionResult<Response<GetHistoryIndexResponse>> GetHistoryIndex([FromQuery] GetHistoryIndexRequest request)
+        [HttpPost(ApiPath.GetHistoryIndex)]
+        public ActionResult<Response<GetHistoryIndexResponse>> GetHistoryIndex([FromBody] GetHistoryIndexRequest request)
         {
-            var input = new GetHistoryIndexInputData(HpId, UserId, request.PtId, request.FilterId, request.IsDeleted, request.RaiinNo);
+            var input = new GetHistoryIndexInputData(HpId, UserId, request.PtId, request.FilterId, request.IsDeleted, request.RaiinNo, request.RaiinBookmarked.Select(r => new Tuple<long, bool>(r.RaiinNo, r.Flag)).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new GetHistoryIndexPresenter();
