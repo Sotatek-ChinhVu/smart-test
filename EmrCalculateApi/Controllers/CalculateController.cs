@@ -1,8 +1,12 @@
 ﻿using Domain.Models.Futan;
+using EmrCalculateApi.Helper.Messaging;
+using EmrCalculateApi.Helper.Messaging.Data;
 using EmrCalculateApi.Interface;
 using EmrCalculateApi.Requests;
 using EmrCalculateApi.Responses;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.Text.Json;
 
 namespace EmrCalculateApi.Controllers
 {
@@ -11,6 +15,8 @@ namespace EmrCalculateApi.Controllers
     public class CalculateController : ControllerBase
     {
         private readonly IIkaCalculateViewModel _ikaCalculate;
+        private CancellationToken? _cancellationToken;
+
         public CalculateController(IIkaCalculateViewModel ikaCalculate)
         {
             _ikaCalculate = ikaCalculate;
@@ -52,15 +58,60 @@ namespace EmrCalculateApi.Controllers
         }
 
         [HttpPost("RunCalculateMonth")]
-        public ActionResult RunCalculateMonth([FromBody] RunCalculateMonthRequest monthRequest)
+        public void RunCalculateMonth([FromBody] RunCalculateMonthRequest monthRequest, CancellationToken cancellationToken)
         {
-            _ikaCalculate.RunCalculateMonth(
-                monthRequest.HpId,
-                monthRequest.SeikyuYm,
-                monthRequest.PtIds,
-                monthRequest.PreFix);
+            _cancellationToken = cancellationToken;
+            try
+            {
+                Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
+                Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
 
-            return Ok();
+                HttpContext.Response.ContentType = "application/json";
+                HttpResponse response = HttpContext.Response;
+
+                _ikaCalculate.RunCalculateMonth(
+                             monthRequest.HpId,
+                             monthRequest.SeikyuYm,
+                             monthRequest.PtIds,
+                             monthRequest.PreFix);
+            }
+            catch
+            {
+                var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
+                HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+                HttpContext.Response.Body.FlushAsync();
+            }
+            finally
+            {
+                Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+                Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
+                HttpContext.Response.Body.Close();
+            }
+        }
+
+        private void StopCalculation(StopCalcStatus stopCalcStatus)
+        {
+            if (!_cancellationToken.HasValue)
+            {
+                stopCalcStatus.CallFailCallback(false);
+            }
+            else
+            {
+                stopCalcStatus.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+            }
+        }
+
+        private void UpdateRecalculationStatus(RecalculationStatus status)
+        {
+            AddMessageCheckErrorInMonth(status);
+        }
+
+        private void AddMessageCheckErrorInMonth(RecalculationStatus status)
+        {
+            string result = "\n" + JsonSerializer.Serialize(status);
+            var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
         }
     }
 }

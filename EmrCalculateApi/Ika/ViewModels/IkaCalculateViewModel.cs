@@ -1,6 +1,8 @@
 ﻿using Domain.Constant;
 using EmrCalculateApi.Constants;
 using EmrCalculateApi.Futan.ViewModels;
+using EmrCalculateApi.Helper.Messaging;
+using EmrCalculateApi.Helper.Messaging.Data;
 using EmrCalculateApi.Ika.Constants;
 using EmrCalculateApi.Ika.DB.CommandHandler;
 using EmrCalculateApi.Ika.DB.Finder;
@@ -236,7 +238,6 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <param name="seikyuUp">請求UP情報</param>
         public void RunCalculate(int hpId, long ptId, int sinDate, int seikyuUp, string preFix)
         {
-            CalculatedCount = 0;
             const string conFncName = nameof(RunCalculate);
 
             // 電子算定回数マスタのキャッシュ
@@ -253,9 +254,16 @@ namespace EmrCalculateApi.Ika.ViewModels
             // 要求登録           
             AddCalcStatus(hpId, ptId, sinDate, seikyuUp, preFix);
 
+            int successCount = 1;
             // 要求がある限りループ
             while (!IsStopCalc && GetCalcStatus(hpId, ptId, sinDate, ref calcStatus, preFix))
             {
+                var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                IsStopCalc = statusCallBack.Result.Result;
+                if (IsStopCalc)
+                {
+                    break;
+                }
                 if (CancellationToken.IsCancellationRequested) return;
                 _emrLogger.WriteLogMsg(this, conFncName, "req start");
 
@@ -488,7 +496,12 @@ namespace EmrCalculateApi.Ika.ViewModels
                     }
                 }
 
-                CalculatedCount++;
+                if (AllCalcCount == successCount)
+                {
+                    break;
+                }
+                SendMessager(new RecalculationStatus(false, 1, AllCalcCount, successCount, string.Empty));
+                successCount++;
             }
         }
         /// <summary>
@@ -508,12 +521,19 @@ namespace EmrCalculateApi.Ika.ViewModels
             AddCalcStatusMonth(hpId, seikyuYm, ptIds, preFix);
 
             AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(preFix);
+            SendMessager(new RecalculationStatus(false, 1, AllCalcCount, 0, string.Empty));
 
             //計算処理
             RunCalculate(hpId, 0, 0, 0, preFix);
 
             _emrLogger.WriteLogEnd(this, conFncName, "");
         }
+
+        private void SendMessager(RecalculationStatus status)
+        {
+            Messenger.Instance.Send(status);
+        }
+
         /// <summary>
         /// 計算処理（指定の診療日のみ）
         /// </summary>
