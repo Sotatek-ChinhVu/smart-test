@@ -61,6 +61,7 @@ public class ReceTargetMapper : CommonReportingRequest
     {
         return _listTextData;
     }
+
     public override Dictionary<string, string> GetFileNamePageMap()
     {
         var fileName = new Dictionary<string, string>
@@ -69,5 +70,4 @@ public class ReceTargetMapper : CommonReportingRequest
         };
         return fileName;
     }
-
 }

@@ -26,7 +26,7 @@ namespace Domain.Models.User
 
         int MaxUserId();
 
-        UserMstModel? GetByUserId(int userId);
+        UserMstModel GetByUserId(int userId);
 
         UserMstModel GetByUserId(int userId, int sinDate);
 
@@ -54,8 +54,28 @@ namespace Domain.Models.User
 
         bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, int userId);
 
+        bool NotAllowSaveMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, int userId);
+
         PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode);
 
         List<UserPermissionModel> GetAllPermission(int hpId, int userId);
+
+        List<UserMstModel> GetUsersByCurrentUser(int hpId, int currentUser);
+
+        bool SaveListUserMst(int hpId, List<UserMstModel> users, int currentUser);
+
+        bool GetShowRenkeiCd1ColumnSetting();
+
+        bool UserIdIsExistInDb(int userId);
+
+        List<int> ListDepartmentValid(int hpId);
+
+        List<int> ListJobCdValid(int hpId);
+
+        List<JobMstModel> GetListJob(int hpId);
+
+        List<FunctionMstModel> GetListFunctionPermission();
+
+        UserMstModel GetUserInfo(int hpId, int userId);
     }
 }

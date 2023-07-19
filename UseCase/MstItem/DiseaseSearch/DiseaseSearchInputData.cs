@@ -4,7 +4,7 @@ namespace UseCase.MstItem.DiseaseSearch;
 
 public class DiseaseSearchInputData : IInputData<DiseaseSearchOutputData>
 {
-    public DiseaseSearchInputData(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, int sindate, string keyword, int pageIndex, int pageSize)
+    public DiseaseSearchInputData(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, int sindate, string keyword, int pageIndex, int pageSize, bool isHasFreeByomei)
     {
         IsPrefix = isPrefix;
         IsByomei = isByomei;
@@ -14,6 +14,7 @@ public class DiseaseSearchInputData : IInputData<DiseaseSearchOutputData>
         Keyword = keyword;
         PageIndex = pageIndex;
         PageSize = pageSize;
+        IsHasFreeByomei = isHasFreeByomei;
     }
 
     public bool IsPrefix { get; private set; }
@@ -31,4 +32,6 @@ public class DiseaseSearchInputData : IInputData<DiseaseSearchOutputData>
     public int PageIndex { get; private set; }
 
     public int PageSize { get; private set; }
+
+    public bool IsHasFreeByomei { get; private set; }
 }

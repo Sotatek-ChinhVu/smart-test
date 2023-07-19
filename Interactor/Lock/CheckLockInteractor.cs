@@ -1,6 +1,4 @@
 ﻿using Domain.Models.Lock;
-using Infrastructure.Repositories;
-using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 
 namespace Interactor.Lock

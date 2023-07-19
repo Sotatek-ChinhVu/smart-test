@@ -10,6 +10,7 @@ public class CoReceTargetFinder : RepositoryBase, ICoReceTargetFinder
     public CoReceTargetFinder(ITenantProvider tenantProvider) : base(tenantProvider)
     {
     }
+
     public CoReceTargetModel FindReceInf(int hpId, int seikyuYm)
     {
         var receInfs = NoTrackingDataContext.ReceInfs.Where(item =>

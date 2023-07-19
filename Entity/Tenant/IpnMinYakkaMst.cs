@@ -6,10 +6,11 @@ namespace Entity.Tenant
 {
     [Table(name: "IPN_MIN_YAKKA_MST")]
     [Index(nameof(HpId), nameof(IpnNameCd), nameof(StartDate), Name = "IPN_MIN_YAKKA_MST_IDX01")]
+    [Index(nameof(HpId), nameof(StartDate), nameof(EndDate), nameof(IpnNameCd), Name = "IPN_MIN_YAKKA_MST_IDX02")]
     [Serializable]
     public class IpnMinYakkaMst : EmrCloneable<IpnMinYakkaMst>
     {
-        
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID", Order = 1)]
         public int Id { get; set; }
@@ -17,7 +18,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -26,7 +27,7 @@ namespace Entity.Tenant
         /// 一般名コード
         /// 
         /// </summary>
-        
+
         [Column("IPN_NAME_CD", Order = 3)]
         [MaxLength(12)]
         public string IpnNameCd { get; set; } = string.Empty;
@@ -58,7 +59,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        
+
         [Column("SEQ_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }

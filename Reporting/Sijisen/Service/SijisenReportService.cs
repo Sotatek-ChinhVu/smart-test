@@ -70,22 +70,23 @@ public class SijisenReportService : ISijisenReportService
             this.odrKouiKbns = odrKouiKbns;
         }
         this.printNoOdr = printNoOdr;
-        printoutDateTime = DateTime.Now;
+        printoutDateTime = CIUtil.GetJapanDateTimeNow();
         currentPage = 1;
 
-        GetRowCount();
         coModel = GetData() ?? new();
-        MakeOdrDtlList();
-
-        hasNextPage = true;
-        // 指示箋印刷
-        while (hasNextPage)
+        if (coModel != null)
         {
-            UpdateDrawForm();
-            currentPage++;
+            GetRowCount();
+            MakeOdrDtlList();
+            hasNextPage = true;
+            while (hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
 
-        return new SijisenMapper(_singleFieldData, _tableFieldData, "lsOrder", GetJobName(formType, coModel.PtNum)).GetData();
+        return new SijisenMapper(_singleFieldData, _tableFieldData, "lsOrder", GetJobName(formType, coModel!.PtNum)).GetData();
     }
 
     private string GetJobName(int formType, long ptNum)

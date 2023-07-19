@@ -1,6 +1,7 @@
 ﻿using Domain.Models.AccountDue;
 using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
+using Domain.Models.Reception;
 using Domain.Models.User;
 using EventProcessor.Interfaces;
 using EventProcessor.Model;
@@ -16,14 +17,16 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
     private readonly IHpInfRepository _hpInfRepository;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IEventProcessorService _eventProcessorService;
+    private readonly IReceptionRepository _receptionRepository;
 
-    public SaveAccountDueListInteractor(IAccountDueRepository accountDueRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IEventProcessorService eventProcessorService)
+    public SaveAccountDueListInteractor(IAccountDueRepository accountDueRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IEventProcessorService eventProcessorService, IReceptionRepository receptionRepository)
     {
         _accountDueRepository = accountDueRepository;
         _userRepository = userRepository;
         _hpInfRepository = hpInfRepository;
         _patientInforRepository = patientInforRepository;
         _eventProcessorService = eventProcessorService;
+        _receptionRepository = receptionRepository;
     }
 
     public SaveAccountDueListOutputData Handle(SaveAccountDueListInputData inputData)
@@ -64,10 +67,12 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
                                                     listAccountDueModel,
                                                     inputData.KaikeiTime
                                                 );
-            if (result)
+            if (result.Any())
             {
                 _eventProcessorService.DoEvent(listTraiLogModels);
-                return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Successed);
+                var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, CommonConstants.InvalidId, inputData.PtId, isDeleted: 0);
+                var sameVisitList = _receptionRepository.GetListSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
+                return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Successed, result, receptionInfos, sameVisitList);
             }
         }
         finally

@@ -8,6 +8,7 @@ using EmrCloudApi.Responses.AccountDue;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.AccountDue.GetAccountDueList;
+using UseCase.AccountDue.IsNyukinExisted;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Core.Sync;
 
@@ -36,6 +37,18 @@ public class AccountDueController : AuthorizeControllerBase
         return new ActionResult<Response<GetAccountDueListResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.IsNyukinExisted)]
+    public ActionResult<Response<IsNyukinExistedResponse>> IsNyukinExisted([FromQuery] IsNyukinExistedRequest request)
+    {
+        var input = new IsNyukinExistedInputData(HpId, request.PtId, request.RaiinNo, request.SinDate);
+        var output = _bus.Handle(input);
+
+        var presenter = new IsNyukinExistedPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<IsNyukinExistedResponse>>(presenter.Result);
+    }
+
     [HttpPost(ApiPath.SaveList)]
     public async Task<ActionResult<Response<SaveAccountDueListResponse>>> SaveList([FromBody] SaveAccountDueListRequest request)
     {
@@ -44,8 +57,7 @@ public class AccountDueController : AuthorizeControllerBase
 
         if (output.Status == SaveAccountDueListStatus.Successed)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.AccountDueChanged,
-                new CommonMessage { PtId = input.PtId, SinDate = input.SinDate, RaiinNo = 0 });
+            await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
         }
 
         var presenter = new SaveAccountDueListPresenter();

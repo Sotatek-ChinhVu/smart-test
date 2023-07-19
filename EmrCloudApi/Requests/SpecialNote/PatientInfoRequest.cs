@@ -1,5 +1,6 @@
 ﻿using Domain.Models.PtCmtInf;
 using Domain.Models.SpecialNote.PatientInfo;
+using Helper.Common;
 using UseCase.SpecialNote.Save;
 
 namespace EmrCloudApi.Requests.SpecialNote
@@ -13,9 +14,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public SeikaturekiInfRequest SeikatureInfItems { get; set; } = new SeikaturekiInfRequest();
 
         public List<KensaInfDetailRequest> KensaInfDetailModels { get; set; } = new List<KensaInfDetailRequest>();
-        public PatientInfoItem Map()
+        public PatientInfoItem Map(int hpId)
         {
-            return new PatientInfoItem(PregnancyItems.Select(p => p.Map()).ToList(), PtCmtInfItems.Map(), SeikatureInfItems.Map(), KensaInfDetailModels.Select(k => new KensaInfDetailItem(k.HpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2)).ToList());
+            return new PatientInfoItem(PregnancyItems.Select(p => p.Map(hpId)).ToList(), PtCmtInfItems.Map(hpId), SeikatureInfItems.Map(hpId), KensaInfDetailModels.Select(k => new KensaInfDetailItem(hpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2)).ToList());
         }
     }
     public class PtPregnancyRequest
@@ -42,10 +43,10 @@ namespace EmrCloudApi.Requests.SpecialNote
 
         public int IsDeleted { get; set; }
 
-        public PtPregnancyItem Map()
+        public PtPregnancyItem Map(int hpId)
         {
             return new PtPregnancyItem(Id,
-            HpId,
+            hpId,
             PtId,
             SeqNo,
             StartDate,
@@ -72,9 +73,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public int IsDeleted { get; set; }
 
         public long Id { get; set; }
-        public PtCmtInfModel Map()
+        public PtCmtInfModel Map(int hpId)
         {
-            return new PtCmtInfModel(HpId, PtId, SeqNo, Text, IsDeleted, Id);
+            return new PtCmtInfModel(hpId, PtId, SeqNo, Text, IsDeleted, Id);
         }
     }
     public class SeikaturekiInfRequest
@@ -88,9 +89,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public long SeqNo { get; set; }
 
         public string Text { get; set; } = String.Empty;
-        public SeikaturekiInfModel Map()
+        public SeikaturekiInfModel Map(int hpId)
         {
-            return new SeikaturekiInfModel(Id, HpId, PtId, SeqNo, Text);
+            return new SeikaturekiInfModel(Id, hpId, PtId, SeqNo, Text);
         }
     }
     public class PhysicalInfoRequest
@@ -177,7 +178,7 @@ namespace EmrCloudApi.Requests.SpecialNote
 
         public KensaInfDetailModel Map()
         {
-            return new KensaInfDetailModel(HpId, PtId, IraiCd, SeqNo, IraiDate, RaiinNo, KensaItemCd, ResultVal, ResultType, AbnormalKbn, IsDeleted, CmtCd1, CmtCd2, DateTime.UtcNow, string.Empty, string.Empty, 0);
+            return new KensaInfDetailModel(HpId, PtId, IraiCd, SeqNo, IraiDate, RaiinNo, KensaItemCd, ResultVal, ResultType, AbnormalKbn, IsDeleted, CmtCd1, CmtCd2, CIUtil.GetJapanDateTimeNow(), string.Empty, string.Empty, 0);
         }
     }
 }

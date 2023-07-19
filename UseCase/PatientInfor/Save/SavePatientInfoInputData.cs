@@ -10,7 +10,7 @@ namespace UseCase.PatientInfor.Save
 {
     public class SavePatientInfoInputData : IInputData<SavePatientInfoOutputData>
     {
-        public SavePatientInfoInputData(PatientInforSaveModel patient, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, ReactSavePatientInfo reactSave, List<LimitListModel> maxMoneys, IEnumerable<InsuranceScanModel> insuranceScans, int userId)
+        public SavePatientInfoInputData(PatientInforSaveModel patient, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, ReactSavePatientInfo reactSave, List<LimitListModel> maxMoneys, IEnumerable<InsuranceScanModel> insuranceScans,List<int> hokenIdList, int userId, int hpId)
         {
             Patient = patient;
             PtKyuseis = ptKyuseis;
@@ -22,7 +22,9 @@ namespace UseCase.PatientInfor.Save
             ReactSave = reactSave;
             MaxMoneys = maxMoneys;
             InsuranceScans = insuranceScans;
+            HokenIdList = hokenIdList;
             UserId = userId;
+            HpId = hpId;
         }
 
         public PatientInforSaveModel Patient { get; private set; }
@@ -45,6 +47,10 @@ namespace UseCase.PatientInfor.Save
 
         public IEnumerable<InsuranceScanModel> InsuranceScans { get; private set; }
 
+        public List<int> HokenIdList { get; private set; }
+
         public int UserId { get; private set; }
+
+        public int HpId { get; private set; }
     }
 }

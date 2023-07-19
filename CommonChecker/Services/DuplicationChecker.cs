@@ -40,7 +40,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             {
                 // Check duplicated itemCode
                 List<DuplicationResultModel> listDuplicatedItemCode = CheckDuplicatedItemCode(checkingOrder, currentOdrDetailCodeList);
-                if (listDuplicatedItemCode != null)
+                if (listDuplicatedItemCode != null && listDuplicatedItemCode.Any())
                 {
                     listErrorInfo.AddRange(listDuplicatedItemCode);
                 }
@@ -50,7 +50,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             {
                 // Check duplicated ippanCode
                 List<DuplicationResultModel> listDuplicatedIppanCode = CheckDuplicatedIppanCode(checkingOrder, currentOdrDetailList);
-                if (listDuplicatedIppanCode != null)
+                if (listDuplicatedIppanCode != null && listDuplicatedIppanCode.Any())
                 {
                     listErrorInfo.AddRange(listDuplicatedIppanCode);
                 }
@@ -181,7 +181,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             return result;
         }
 
-        private List<DuplicationResultModel> CheckDuplicatedItemCode(TOdrInf checkingOrder, List<ItemCodeModel> listDrugItemCode)
+        public List<DuplicationResultModel> CheckDuplicatedItemCode(TOdrInf checkingOrder, List<ItemCodeModel> listDrugItemCode)
         {
             List<DuplicationResultModel> listErrorInfo = new List<DuplicationResultModel>();
 
@@ -236,7 +236,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             return listErrorInfo;
         }
 
-        private List<DuplicationResultModel> CheckDuplicatedIppanCode(TOdrInf checkingOrder, List<TOdrDetail> listComparedDrug)
+        public List<DuplicationResultModel> CheckDuplicatedIppanCode(TOdrInf checkingOrder, List<TOdrDetail> listComparedDrug)
         {
             List<DuplicationResultModel> listErrorInfo = new List<DuplicationResultModel>();
 

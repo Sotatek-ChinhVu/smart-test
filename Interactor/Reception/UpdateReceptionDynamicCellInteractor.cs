@@ -1,4 +1,5 @@
 ﻿using Domain.Models.RaiinKubunMst;
+using Domain.Models.Reception;
 using Helper.Constants;
 using UseCase.Reception.UpdateDynamicCell;
 
@@ -7,14 +8,17 @@ namespace Interactor.Reception;
 public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellInputPort
 {
     private readonly IRaiinKubunMstRepository _raiinKbnInfRepository;
+    private readonly IReceptionRepository _receptionRepository;
 
-    public UpdateReceptionDynamicCellInteractor(IRaiinKubunMstRepository raiinKbnInfRepository)
+    public UpdateReceptionDynamicCellInteractor(IRaiinKubunMstRepository raiinKbnInfRepository, IReceptionRepository receptionRepository)
     {
         _raiinKbnInfRepository = raiinKbnInfRepository;
+        _receptionRepository = receptionRepository;
     }
 
     public UpdateReceptionDynamicCellOutputData Handle(UpdateReceptionDynamicCellInputData input)
     {
+        List<SameVisitModel> sameVisitList = new();
         if (input.HpId <= 0)
         {
             return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidHpId);
@@ -35,11 +39,11 @@ public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellI
         {
             return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidGrpId);
         }
-
         try
         {
             UpdateDynamicCell(input);
-            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.Success);
+            var receptionInfos = _receptionRepository.GetList(input.HpId, input.SinDate, input.RaiinNo, input.PtId, isDeleted: 0);
+            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.Success, receptionInfos, sameVisitList);
         }
         finally
         {

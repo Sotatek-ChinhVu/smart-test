@@ -3,7 +3,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Reporting.Accounting.Model;
 
 namespace Reporting.Accounting.DB;
@@ -1886,5 +1885,25 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                                                                             && oyaRaiinNoList.Contains(item.OyaRaiinNo))
                                                     .Select(item => new RaiinInfModel(item)).ToList();
         return raiinList;
+    }
+
+    public List<CoAccountDueListModel> GetAccountDueList(int hpId, long ptId)
+    {
+        // left table
+        var seikyuList = NoTrackingDataContext.SyunoSeikyus.Where(item => item.HpId == hpId
+                                                                          && item.PtId == ptId);
+
+        var raiinList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                      && item.PtId == ptId
+                                                                      && item.IsDeleted == DeleteTypes.None
+                                                                      && item.Status > RaiinState.TempSave);
+
+        var accountDueList = (from seikyu in seikyuList
+                              join raiinItem in raiinList on new { seikyu.HpId, seikyu.PtId, seikyu.RaiinNo }
+                                                          equals new { raiinItem.HpId, raiinItem.PtId, raiinItem.RaiinNo }
+                              select new CoAccountDueListModel(seikyu.SinDate, seikyu.NyukinKbn, seikyu.RaiinNo, raiinItem.OyaRaiinNo)
+                              )
+                              .ToList();
+        return accountDueList;
     }
 }

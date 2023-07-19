@@ -4,5 +4,6 @@
     {
         Successed = 1,
         NoData,
+        MedicalScreenLocked
     }
 }

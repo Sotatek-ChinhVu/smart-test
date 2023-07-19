@@ -33,7 +33,7 @@ namespace Interactor.SwapHoken
                     return new ValidateSwapHokenOutputData(ValidateSwapHokenStatus.InvalidHokenPid, string.Empty);
 
                 string msg = string.Empty;
-                if (inputData.StartDate != 0 && inputData.EndDate != 0)
+                if (!(inputData.StartDate == 0 && inputData.EndDate == 0))
                 {
                     long count = _swapHokenRepository.CountOdrInf(inputData.HpId, inputData.PtId, inputData.HokenPid , inputData.StartDate, inputData.EndDate);
                     if (count == 0)

@@ -4,6 +4,7 @@ using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
+using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.Receipt.Recalculation;
 
@@ -65,25 +66,13 @@ public class RecalculationController : AuthorizeControllerBase
 
     private void UpdateRecalculationStatus(RecalculationStatus status)
     {
-        AddMessageCheckErrorInMonth(status.Done, status.Type, status.Length, status.SuccessCount, status.Message);
+        AddMessageCheckErrorInMonth(status);
     }
 
-    private void AddMessageCheckErrorInMonth(bool done, int type, int length, int successCount, string messager)
+    private void AddMessageCheckErrorInMonth(RecalculationStatus status)
     {
-        StringBuilder titleProgressbar = new();
-        titleProgressbar.Append("\n{ status: \"");
-        titleProgressbar.Append(done ? "done" : "inprogess");
-        titleProgressbar.Append("\", type: ");
-        titleProgressbar.Append(type);
-        titleProgressbar.Append(", length: ");
-        titleProgressbar.Append(length);
-        titleProgressbar.Append(", successCount: ");
-        titleProgressbar.Append(successCount);
-        titleProgressbar.Append(", message: \"");
-        titleProgressbar.Append(messager);
-        titleProgressbar.Append("\" }");
-
-        var resultForFrontEnd = Encoding.UTF8.GetBytes(titleProgressbar.ToString());
+        string result = "\n" + JsonSerializer.Serialize(status);
+        var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
         HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
         HttpContext.Response.Body.FlushAsync();
     }

@@ -100,7 +100,7 @@ namespace Interactor.MedicalExamination
             {
                 return (JikanConst.Kyujitu, string.Empty, 0, 0, 0);
             }
-            if (sinDate != DateTime.Now.ToString("yyyyMMdd").AsInteger())
+            if (sinDate != CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger())
             {
                 return (JikanConst.JikanNai, string.Empty, 0, 0, 0);
             }

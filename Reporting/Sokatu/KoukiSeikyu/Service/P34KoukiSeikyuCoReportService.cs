@@ -1,10 +1,6 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Helper.Common;
-using Helper.Constants;
+﻿using Helper.Common;
 using Helper.Extension;
-using Microsoft.EntityFrameworkCore.Internal;
 using Reporting.CommonMasters.Constants;
-using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.Common.Utils;
@@ -74,21 +70,26 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
         _seikyuType = seikyuType;
         var getData = GetData();
 
-        foreach (string currentNo in hokensyaNos)
-        {
-            _currentPage = 1;
-            _currentHokensyaNo = currentNo;
-            _hasNextPage = true;
-            while (getData && _hasNextPage)
-            {
-                UpdateDrawForm();
-                _currentPage++;
-            }
-        }
         if (_seikyuYm >= 202210)
         {
             _formFileName = "p34KoukiSeikyu_2210.rse";
         }
+
+        if(getData)
+        {
+            foreach (string currentNo in hokensyaNos)
+            {
+                _currentPage = 1;
+                _currentHokensyaNo = currentNo;
+                _hasNextPage = true;
+                while (getData && _hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
+            }
+        }
+        
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
 
@@ -124,7 +125,7 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd"))
             );
             SetFieldData("reportGengo", wrkYmd.Gengo);
             SetFieldData("reportYear", wrkYmd.Year.ToString());
@@ -216,7 +217,7 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
             //集計
             for (short rowNo = 0; rowNo < maxKohiRow; rowNo++)
             {
-                if(kohiHoubetus.Count <= rowNo)
+                if (kohiHoubetus.Count <= rowNo)
                 {
                     _hasNextPage = true;
                     break;

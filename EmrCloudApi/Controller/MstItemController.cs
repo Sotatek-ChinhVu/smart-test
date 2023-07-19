@@ -13,6 +13,7 @@ using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
@@ -121,7 +122,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.DiseaseSearch)]
         public ActionResult<Response<DiseaseSearchResponse>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
         {
-            var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.IsMisaiyou, request.Sindate, request.Keyword, request.PageIndex, request.PageSize);
+            var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.IsMisaiyou, request.Sindate, request.Keyword, request.PageIndex, request.PageSize, request.IsHasFreeByomei);
             var output = _bus.Handle(input);
 
             var presenter = new DiseaseSearchPresenter();
@@ -361,6 +362,16 @@ namespace EmrCloudApi.Controller
                 request.IsSearchSanteiItem, request.IsSearchKenSaItem, request.ItemFilter, request.IsSearch831SuffixOnly, request.IsSearchSuggestion);
             var output = _bus.Handle(input);
             var presenter = new SearchTenMstItemPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ConvertStringChkJISKj)]
+        public ActionResult<Response<ConvertStringChkJISKjResponse>> ConvertStringChkJISKj([FromBody] ConvertStringChkJISKjRequest request)
+        {
+            var input = new ConvertStringChkJISKjInputData(request.InputList);
+            var output = _bus.Handle(input);
+            var presenter = new ConvertStringChkJISKjPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }

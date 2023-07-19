@@ -85,15 +85,18 @@ public class Sta3040CoReportService : ISta3040CoReportService
         // get data to print
         GetFieldNameList(formFileName);
         GetRowCount(formFileName);
-        GetData(hpId);
-        hasNextPage = true;
-        currentPage = 1;
 
-        //印刷
-        while (hasNextPage)
+        if (GetData(hpId))
         {
-            UpdateDrawForm();
-            currentPage++;
+            hasNextPage = true;
+            currentPage = 1;
+
+            //印刷
+            while (hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
 
         return new Sta3040Mapper(_singleFieldData, _tableFieldData, _extralData, rowCountFieldName, formFileName).GetData();
@@ -112,8 +115,8 @@ public class Sta3040CoReportService : ISta3040CoReportService
 
             //作成日時
             _extralData.Add("HeaderR_0_1_" + currentPage, CIUtil.SDateToShowSWDate(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
-            ) + DateTime.Now.ToString(" HH:mm") + "作成");
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
+            ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
 
             //ページ数
             int totalPage = (int)Math.Ceiling((double)printDatas.Count / maxRow);
@@ -236,7 +239,7 @@ public class Sta3040CoReportService : ISta3040CoReportService
 
     private CountData total = new();
     private CountData subTotal = new();
-    private void GetData(int hpId)
+    private bool GetData(int hpId)
     {
         void MakePrintData()
         {
@@ -460,10 +463,12 @@ public class Sta3040CoReportService : ISta3040CoReportService
         hpInf = _finder.GetHpInf(hpId, CIUtil.DateTimeToInt(DateTime.Today));
 
         usedDrugInfs = _finder.GetUsedDrugInfs(hpId, printConf);
-        if ((usedDrugInfs?.Count ?? 0) == 0) return;
+        if ((usedDrugInfs?.Count ?? 0) == 0) return false;
 
         //印刷用データの作成
         MakePrintData();
+
+        return printDatas.Count > 0;
     }
 
     private void SetFieldData(string field, string value)

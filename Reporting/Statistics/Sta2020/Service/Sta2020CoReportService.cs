@@ -97,17 +97,19 @@ namespace Reporting.Statistics.Sta2020.Service
             // get data to print
             GetFieldNameList();
             GetRowCount();
-            _hasNextPage = true;
-
-            _currentPage = 1;
 
             var getData = GetData();
 
-            //印刷
-            while (_hasNextPage && getData)
+            if (getData)
             {
-                UpdateDrawForm();
-                _currentPage++;
+                _hasNextPage = true;
+
+                _currentPage = 1;
+                while (_hasNextPage && getData)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
 
             return new Sta2020Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
@@ -389,8 +391,8 @@ namespace Reporting.Statistics.Sta2020.Service
                 _extralData.Add("HeaderR_0_0_" + _currentPage, hpInf.HpName);
                 //作成日時
                 _extralData.Add("HeaderR_0_1_" + _currentPage, CIUtil.SDateToShowSWDate(
-                    CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
-                ) + DateTime.Now.ToString(" HH:mm") + "作成");
+                    CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
+                ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
                 //ページ数
                 int totalPage = (int)Math.Ceiling((double)printDatas.Count / _maxRow);
                 _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);

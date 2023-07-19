@@ -9,6 +9,7 @@ using UseCase.Core.Sync;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.GetPtWeight;
+using UseCase.SpecialNote.GetStdPoint;
 using UseCase.SpecialNote.Save;
 
 namespace EmrCloudApi.Controller
@@ -61,7 +62,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Save)]
         public ActionResult<Response<SaveSpecialNoteResponse>> Save([FromBody] SpecialNoteSaveRequest request)
         {
-            var input = new SaveSpecialNoteInputData(HpId, request.PtId, request.SinDate, request.SummaryTab.Map(), request.ImportantNoteTab.Map(), request.PatientInfoTab.Map(), UserId);
+            var input = new SaveSpecialNoteInputData(HpId, request.PtId, request.SinDate, request.SummaryTab.Map(HpId), request.ImportantNoteTab.Map(HpId), request.PatientInfoTab.Map(HpId), UserId);
             var output = _bus.Handle(input);
 
             var presenter = new SaveSpecialNotePresenter();
@@ -80,6 +81,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetPtWeightResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetStdPoint)]
+        public ActionResult<Response<GetStdPointResponse>> GetStdPoint([FromQuery] GetStdPointRequest request)
+        {
+            var input = new GetStdPointInputData(HpId, request.Sex);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetStdPointPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetStdPointResponse>>(presenter.Result);
         }
     }
 }
