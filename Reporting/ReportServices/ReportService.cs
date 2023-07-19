@@ -11,6 +11,8 @@ using Reporting.DailyStatic.Service;
 using Reporting.DrugInfo.Model;
 using Reporting.DrugInfo.Service;
 using Reporting.DrugNoteSeal.Service;
+using Reporting.GrowthCurve.Model;
+using Reporting.GrowthCurve.Service;
 using Reporting.InDrug.Service;
 using Reporting.Karte1.Service;
 using Reporting.Karte3.Service;
@@ -64,8 +66,9 @@ public class ReportService : IReportService
     private readonly IKarte3CoReportService _karte3CoReportService;
     private readonly IAccountingCardListCoReportService _accountingCardListCoReportService;
     private readonly IInDrugCoReportService _inDrugCoReportService;
+    private readonly IGrowthCurveCoReportService _growthCurveCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveCoReportService growthCurveCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -93,6 +96,7 @@ public class ReportService : IReportService
         _karte3CoReportService = karte3CoReportService;
         _accountingCardListCoReportService = accountingCardListCoReportService;
         _inDrugCoReportService = inDrugCoReportService;
+        _growthCurveCoReportService = growthCurveCoReportService;
     }
 
     //Byomei
@@ -484,5 +488,10 @@ public class ReportService : IReportService
     public CommonReportingRequestModel GetKarte3ReportingData(int hpId, long ptId, int startSinYm, int endSinYm, bool includeHoken, bool includeJihi)
     {
         return _karte3CoReportService.GetKarte3PrintData(hpId, ptId, startSinYm, endSinYm, includeHoken, includeJihi);
+    }
+
+    public CommonReportingRequestModel GetGrowthCurvePrintData(int hpId, GrowthCurveConfig growthCurveConfig)
+    {
+        return _growthCurveCoReportService.GetGrowthCurvePrintData(hpId, growthCurveConfig);
     }
 }

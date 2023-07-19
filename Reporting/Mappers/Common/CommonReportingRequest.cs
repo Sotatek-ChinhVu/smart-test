@@ -16,6 +16,9 @@ public class CommonReportingRequest : ICommonReportingRequest
             ListTextData = GetListTextData(),
             SetFieldData = GetSetFieldData(),
             DrawTextData = GetDrawTextData(),
+            DrawBoxData= GetDrawBoxData(),
+            DrawCircleData = GetDrawCircleData(),
+            DrawLineData = GetDrawLineData(),
             ReportConfigPerPage = GetReportConfigModelPerPage(),
             ReportConfigModel = new ReportConfigModel()
             {
@@ -83,7 +86,7 @@ public class CommonReportingRequest : ICommonReportingRequest
         return string.Empty;
     }
 
-    public virtual Dictionary<int, List<ListDrawTextObject>> GetDrawTextData()
+    public virtual Dictionary<int, Dictionary<int, List<ListDrawTextObject>>> GetDrawTextData()
     {
         return new();
     }
@@ -103,7 +106,17 @@ public class CommonReportingRequest : ICommonReportingRequest
         return new();
     }
 
-    public virtual Dictionary<int, List<ListDrawLineObject>> GetDrawLineData()
+    public virtual Dictionary<int, Dictionary<int, List<ListDrawLineObject>>> GetDrawLineData()
+    {
+        return new();
+    }
+
+    public virtual Dictionary<int, Dictionary<int, List<ListDrawBoxObject>>> GetDrawBoxData()
+    {
+        return new();
+    }
+
+    public virtual Dictionary<int, Dictionary<int, List<ListDrawCircleObject>>> GetDrawCircleData()
     {
         return new();
     }

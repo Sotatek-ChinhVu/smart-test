@@ -1,14 +1,18 @@
-﻿using Entity.Tenant;
+﻿using Amazon.Runtime.Internal.Transform;
+using Entity.Tenant;
+using Helper.Common;
 using Helper.Extension;
 using Reporting.GrowthCurve.Model;
 using Reporting.Mappers.Common;
+using System.Drawing;
+using static System.Formats.Asn1.AsnWriter;
+using Point = Reporting.GrowthCurve.Model.Point;
 
 namespace Reporting.GrowthCurve.Service
 {
     public class GrowthCurveService
     {
         protected Point RootAxis = new Point(1750, 3500);
-
         private int partXCount = 12;
         private int intervalX = 12;
         private int intervalY = 5;
@@ -22,11 +26,58 @@ namespace Reporting.GrowthCurve.Service
         List<Point> kanweightPoints = new List<Point>();
         List<Point> kanheightPoints = new List<Point>();
         List<GcStdInf> GcStdInfCollection = new List<GcStdInf>();
-        private readonly Dictionary<int, List<ListDrawTextObject>> _listDrawTextData;
-        private readonly Dictionary<string, string> _singleFieldData;
+        public readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
+        public readonly Dictionary<string, string> _singleFieldData;
+        public readonly Dictionary<string, string> _extralData;
+        public readonly Dictionary<int, List<ListTextObject>> _listTextData;
+        public readonly Dictionary<string, bool> _visibleFieldData;
+        public readonly Dictionary<int, Dictionary<int, List<ListDrawLineObject>>> _listDrawLineData;
+        public readonly Dictionary<int, Dictionary<int, List<ListDrawTextObject>>> _listDrawTextData;
+        public readonly Dictionary<int, Dictionary<int, List<ListDrawBoxObject>>> _listDrawBoxData;
+        public readonly Dictionary<int, Dictionary<int, List<ListDrawCircleObject>>> _listDrawCircleData;
+        public readonly Dictionary<int, List<ListDrawTextObject>> _listCreateLabelsTextData;
+        public readonly Dictionary<int, List<ListDrawTextObject>> _listCreateStdInfPercentTextData;
+        public readonly Dictionary<int, List<ListDrawTextObject>> _listCreateStdInfSDTextData;
+        public readonly Dictionary<int, List<ListDrawTextObject>> _listDrawLegendLabelTextData;
+        public readonly Dictionary<int, List<ListDrawLineObject>> _listDrawHorizotationLineData;
+        public readonly Dictionary<int, List<ListDrawLineObject>> _listDrawVerticalLineData;
+        public readonly Dictionary<int, List<ListDrawLineObject>> _listCreateStdInfPercentLineData;
+        public readonly Dictionary<int, List<ListDrawLineObject>> _listCreateStdInfSDLineData;
+        public readonly Dictionary<int, List<ListDrawLineObject>> _listDrawRectangleCanvasLineData;
+        public readonly Dictionary<int, List<ListDrawBoxObject>> _listDrawKanLineBoxData;
+        public readonly Dictionary<int, List<ListDrawBoxObject>> _listDrawLegendLabelBoxData;
+        public readonly Dictionary<int, List<ListDrawCircleObject>> _listDrawKanLineCircleData;
+        public readonly Dictionary<int, List<ListDrawCircleObject>> _listDrawLegendLabelCircleData;
         List<ListDrawTextObject> listDrawTextPerPage = new();
-
+        List<ListDrawLineObject> listDrawLinePerPage = new();
+        List<ListDrawBoxObject> listDrawBoxPerPage = new();
+        List<ListDrawCircleObject> listDrawCirclePerPage = new();
         protected GrowthCurveConfig GrowthCurveConfig;
+
+        public GrowthCurveService()
+        {
+            _singleFieldData = new();
+            _setFieldData = new();
+            _listTextData = new();
+            _listDrawLineData = new();
+            _listDrawTextData = new();
+            _listDrawBoxData = new();
+            _listDrawCircleData = new();
+            _listCreateLabelsTextData = new();
+            _listCreateStdInfPercentTextData = new();
+            _listCreateStdInfSDTextData = new();
+            _listDrawLegendLabelTextData = new();
+            _listDrawHorizotationLineData = new();
+            _listDrawVerticalLineData = new();
+            _listCreateStdInfPercentLineData = new();
+            _listCreateStdInfSDLineData = new();
+            _listDrawRectangleCanvasLineData = new();
+            _listDrawKanLineBoxData = new();
+            _listDrawLegendLabelBoxData = new();
+            _listDrawKanLineCircleData = new();
+            _listDrawLegendLabelCircleData = new();
+            _extralData = new();
+        }
 
         protected long CanvasWidth { get; set; } = 12500;
 
@@ -39,7 +90,7 @@ namespace Reporting.GrowthCurve.Service
                 return Convert.ToInt64(CanvasWidth / partXCount);
             }
         }
-
+        
         protected long PartHeight
         {
             get
@@ -48,6 +99,7 @@ namespace Reporting.GrowthCurve.Service
                 return Convert.ToInt64(partHeight);
             }
         }
+
         protected int PartYCount
         {
             get
@@ -116,19 +168,22 @@ namespace Reporting.GrowthCurve.Service
                     break;
             }
         }
-
-        public void AddHorizotationLine(int i)
+        
+        public void AddHorizotationLine()
         {
-            var from = new Point(RootAxis.X, RootAxis.Y + i * PartHeight);
-            var to = new Point(RootAxis.X + CanvasWidth, RootAxis.Y + i * PartHeight);
-            Line line = new Line(from, to);
-            horizotationLines.Add(line);
+            for (int i = 1; i < Convert.ToInt32(CanvasHeight / PartHeight); i++)
+            {
+                var from = new Point(RootAxis.X, RootAxis.Y + i * PartHeight);
+                var to = new Point(RootAxis.X + CanvasWidth, RootAxis.Y + i * PartHeight);
+                Line line = new Line(from, to);
+                horizotationLines.Add(line);
+            }
         }
-
+        
         public void AddVerticalLine(int i)
         {
-            var from = new Point(RootAxis.X + i * PartWidth, RootAxis.Y);
-            var to = new Point(RootAxis.X + i * PartWidth, RootAxis.Y + CanvasHeight);
+            var from = new Point((int)(RootAxis.X + i * PartWidth), (int)RootAxis.Y);
+            var to = new Point((int)(RootAxis.X + i * PartWidth), (int)(RootAxis.Y + CanvasHeight));
             Line line = new Line(from, to);
             verticalLines.Add(line);
         }
@@ -159,7 +214,7 @@ namespace Reporting.GrowthCurve.Service
             {
                 SetFieldData("PRN_MODE", "パーセンタイル");
             }
-            SetFieldData("KANID", GrowthCurveConfig.PtNum);
+            SetFieldData("KANID", GrowthCurveConfig.PtNum.ToString());
 
             SetFieldData("KANNAME", GrowthCurveConfig.PtName);
 
@@ -188,6 +243,7 @@ namespace Reporting.GrowthCurve.Service
 
         protected void CreateLabels()
         {
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             for (int i = 1; i < partXCount; i++)
             {
                 int textX = i;
@@ -249,26 +305,33 @@ namespace Reporting.GrowthCurve.Service
                 text = "年齢（年）";
             }
             listDrawTextPerPage.Add(new(RootAxis.X + CanvasWidth - 750, RootAxis.Y + CanvasHeight + 500, 1500, 450, 300, text));
+            _listCreateLabelsTextData.Add(pageIndex, listDrawTextPerPage);
         }
-
+        
         protected void DrawHorizotationLines()
         {
+            int type = 1;
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             foreach (var line in horizotationLines)
             {
-                CoRep.DrawLine(line.From.X, line.From.Y, line.To.X, line.To.Y, 5, Hos.CnDraw.Constants.ConLineStyle.Dash, ColorTranslator.FromHtml("#EB9946"));
+                listDrawLinePerPage.Add(new(line.From.X, line.From.Y, line.To.X, line.To.Y, 5, ConLineStyle.Dash, ColorTranslator.FromHtml("#EB9946")));
             }
+            _listDrawHorizotationLineData.Add(pageIndex, listDrawLinePerPage);
         }
-
+        
         protected void DrawVerticalLines()
         {
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             foreach (var line in verticalLines)
             {
-                CoRep.DrawLine(line.From.X, line.From.Y, line.To.X, line.To.Y, 10, Hos.CnDraw.Constants.ConLineStyle.Solid, ColorTranslator.FromHtml("#FFBF00"));
+                listDrawLinePerPage.Add(new(line.From.X, line.From.Y, line.To.X, line.To.Y, 10, ConLineStyle.Solid, ColorTranslator.FromHtml("#FFBF00")));
             }
+            _listDrawVerticalLineData.Add(pageIndex, listDrawLinePerPage);
         }
 
         protected void CreateStdInfPercent()
         {
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             List<GcStdInf> gcStdInfCollection = GcStdInfCollection;
 
             List<Line> list = new List<Line>();
@@ -290,7 +353,7 @@ namespace Reporting.GrowthCurve.Service
                     if (GrowthCurveConfig.Per50)
                     {
                         //Per50
-                        CoRep.DrawLine(lineSdAVG.From.X, lineSdAVG.From.Y, lineSdAVG.To.X, lineSdAVG.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdAVG.From.X, lineSdAVG.From.Y, lineSdAVG.To.X, lineSdAVG.To.Y, 5, ConLineStyle.Solid, Color.Blue));
 
                         if (GrowthCurveConfig.Legend)
                         {
@@ -303,15 +366,15 @@ namespace Reporting.GrowthCurve.Service
                             }
                         }
                     }
-
+                     
                     if (GrowthCurveConfig.Per25)
                     {
                         //Per25
                         Line lineSdP25 = CreateLineWeight(item1.Point, item1.Per25, item2.Point, item2.Per25);
-                        CoRep.DrawLine(lineSdP25.From.X, lineSdP25.From.Y, lineSdP25.To.X, lineSdP25.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdP25.From.X, lineSdP25.From.Y, lineSdP25.To.X, lineSdP25.To.Y, 5, ConLineStyle.Solid, Color.Blue));
                         //Per75
                         Line lineSdP75 = CreateLineWeight(item1.Point, item1.Per75, item2.Point, item2.Per75);
-                        CoRep.DrawLine(lineSdP75.From.X, lineSdP75.From.Y, lineSdP75.To.X, lineSdP75.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdP75.From.X, lineSdP75.From.Y, lineSdP75.To.X, lineSdP75.To.Y, 5, ConLineStyle.Solid, Color.Blue));
                         if (GrowthCurveConfig.Legend)
                         {
                             if (i == sdMInfCollection.Count - 2)
@@ -344,10 +407,10 @@ namespace Reporting.GrowthCurve.Service
                     {
                         //Per10
                         Line lineSdP10 = CreateLineWeight(item1.Point, item1.Per10, item2.Point, item2.Per10);
-                        CoRep.DrawLine(lineSdP10.From.X, lineSdP10.From.Y, lineSdP10.To.X, lineSdP10.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdP10.From.X, lineSdP10.From.Y, lineSdP10.To.X, lineSdP10.To.Y, 5, ConLineStyle.Solid, Color.Blue));
                         //Per90
                         Line lineSdP90 = CreateLineWeight(item1.Point, item1.Per90, item2.Point, item2.Per90);
-                        CoRep.DrawLine(lineSdP90.From.X, lineSdP90.From.Y, lineSdP90.To.X, lineSdP90.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdP90.From.X, lineSdP90.From.Y, lineSdP90.To.X, lineSdP90.To.Y, 5, ConLineStyle.Solid, Color.Blue));
                         if (GrowthCurveConfig.Legend)
                         {
                             if (i == sdMInfCollection.Count - 2)
@@ -377,10 +440,10 @@ namespace Reporting.GrowthCurve.Service
                     {
                         //Per3
                         Line lineSdP03 = CreateLineWeight(item1.Point, item1.Per03, item2.Point, item2.Per03);
-                        CoRep.DrawLine(lineSdP03.From.X, lineSdP03.From.Y, lineSdP03.To.X, lineSdP03.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdP03.From.X, lineSdP03.From.Y, lineSdP03.To.X, lineSdP03.To.Y, 5, ConLineStyle.Solid, Color.Blue));
                         //Per97
                         Line lineSdP97 = CreateLineWeight(item1.Point, item1.Per97, item2.Point, item2.Per97);
-                        CoRep.DrawLine(lineSdP97.From.X, lineSdP97.From.Y, lineSdP97.To.X, lineSdP97.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdP97.From.X, lineSdP97.From.Y, lineSdP97.To.X, lineSdP97.To.Y, 5, ConLineStyle.Solid, Color.Blue));
                         if (GrowthCurveConfig.Legend)
                         {
                             if (i == sdMInfCollection.Count - 2)
@@ -427,7 +490,7 @@ namespace Reporting.GrowthCurve.Service
                     if (GrowthCurveConfig.Per50)
                     {
                         //Per50
-                        CoRep.DrawLine(lineSdAVG.From.X, lineSdAVG.From.Y, lineSdAVG.To.X, lineSdAVG.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdAVG.From.X, lineSdAVG.From.Y, lineSdAVG.To.X, lineSdAVG.To.Y, 5, ConLineStyle.Solid, Color.Pink));
                         if (GrowthCurveConfig.Legend)
                         {
                             if (i == sdHInfCollection.Count - 2)
@@ -443,10 +506,10 @@ namespace Reporting.GrowthCurve.Service
                     {
                         //Per25
                         Line lineSdP25 = CreateLineHeight(item1.Point, item1.Per25, item2.Point, item2.Per25);
-                        CoRep.DrawLine(lineSdP25.From.X, lineSdP25.From.Y, lineSdP25.To.X, lineSdP25.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdP25.From.X, lineSdP25.From.Y, lineSdP25.To.X, lineSdP25.To.Y, 5, ConLineStyle.Solid, Color.Pink));
                         //Per75
                         Line lineSdP75 = CreateLineHeight(item1.Point, item1.Per75, item2.Point, item2.Per75);
-                        CoRep.DrawLine(lineSdP75.From.X, lineSdP75.From.Y, lineSdP75.To.X, lineSdP75.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdP75.From.X, lineSdP75.From.Y, lineSdP75.To.X, lineSdP75.To.Y, 5, ConLineStyle.Solid, Color.Pink));
                         if (GrowthCurveConfig.Legend)
                         {
                             if (i == sdHInfCollection.Count - 2)
@@ -478,10 +541,10 @@ namespace Reporting.GrowthCurve.Service
                     {
                         //Per10
                         Line lineSdP10 = CreateLineHeight(item1.Point, item1.Per10, item2.Point, item2.Per10);
-                        CoRep.DrawLine(lineSdP10.From.X, lineSdP10.From.Y, lineSdP10.To.X, lineSdP10.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdP10.From.X, lineSdP10.From.Y, lineSdP10.To.X, lineSdP10.To.Y, 5, ConLineStyle.Solid, Color.Pink));
                         //Per90
                         Line lineSdP90 = CreateLineHeight(item1.Point, item1.Per90, item2.Point, item2.Per90);
-                        CoRep.DrawLine(lineSdP90.From.X, lineSdP90.From.Y, lineSdP90.To.X, lineSdP90.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdP90.From.X, lineSdP90.From.Y, lineSdP90.To.X, lineSdP90.To.Y, 5, ConLineStyle.Solid, Color.Pink));
                         if (GrowthCurveConfig.Legend)
                         {
                             if (i == sdHInfCollection.Count - 2)
@@ -514,10 +577,10 @@ namespace Reporting.GrowthCurve.Service
                     {
                         //Per3
                         Line lineSdP03 = CreateLineHeight(item1.Point, item1.Per03, item2.Point, item2.Per03);
-                        CoRep.DrawLine(lineSdP03.From.X, lineSdP03.From.Y, lineSdP03.To.X, lineSdP03.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdP03.From.X, lineSdP03.From.Y, lineSdP03.To.X, lineSdP03.To.Y, 5, ConLineStyle.Solid, Color.Pink));
                         //Per97
                         Line lineSdP97 = CreateLineHeight(item1.Point, item1.Per97, item2.Point, item2.Per97);
-                        CoRep.DrawLine(lineSdP97.From.X, lineSdP97.From.Y, lineSdP97.To.X, lineSdP97.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdP97.From.X, lineSdP97.From.Y, lineSdP97.To.X, lineSdP97.To.Y, 5, ConLineStyle.Solid, Color.Pink));
                         if (GrowthCurveConfig.Legend)
                         {
                             if (i == sdHInfCollection.Count - 2)
@@ -546,10 +609,14 @@ namespace Reporting.GrowthCurve.Service
                     }
                 }
             }
+
+            _listCreateStdInfPercentLineData.Add(pageIndex, listDrawLinePerPage);
+            _listCreateStdInfPercentTextData.Add(pageIndex, listDrawTextPerPage);
         }
 
         protected void CreateStdInfSD()
         {
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             List<GcStdInf> gcStdInfCollection = GcStdInfCollection;
 
             List<Line> list = new List<Line>();
@@ -574,7 +641,7 @@ namespace Reporting.GrowthCurve.Service
                     if (GrowthCurveConfig.SDAvg)
                     {
                         //SDAVG
-                        CoRep.DrawLine(lineSdAVG.From.X, lineSdAVG.From.Y, lineSdAVG.To.X, lineSdAVG.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdAVG.From.X, lineSdAVG.From.Y, lineSdAVG.To.X, lineSdAVG.To.Y, 5, ConLineStyle.Solid, Color.Blue));
 
                         if (GrowthCurveConfig.Legend)
                         {
@@ -592,11 +659,11 @@ namespace Reporting.GrowthCurve.Service
                     {
                         //SDM10
                         Line lineSdM10 = CreateLineWeight(item1.Point, item1.SdM10, item2.Point, item2.SdM10);
-                        CoRep.DrawLine(lineSdM10.From.X, lineSdM10.From.Y, lineSdM10.To.X, lineSdM10.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdM10.From.X, lineSdM10.From.Y, lineSdM10.To.X, lineSdM10.To.Y, 5, ConLineStyle.Solid, Color.Blue));
 
                         //SDP10
                         Line lineSdP10 = CreateLineWeight(item1.Point, item1.SdP10, item2.Point, item2.SdP10);
-                        CoRep.DrawLine(lineSdP10.From.X, lineSdP10.From.Y, lineSdP10.To.X, lineSdP10.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdP10.From.X, lineSdP10.From.Y, lineSdP10.To.X, lineSdP10.To.Y, 5, ConLineStyle.Solid, Color.Blue));
 
                         if (GrowthCurveConfig.Legend)
                         {
@@ -630,11 +697,11 @@ namespace Reporting.GrowthCurve.Service
                     {
                         //SDM20
                         Line lineSdM20 = CreateLineWeight(item1.Point, item1.SdM20, item2.Point, item2.SdM20);
-                        CoRep.DrawLine(lineSdM20.From.X, lineSdM20.From.Y, lineSdM20.To.X, lineSdM20.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdM20.From.X, lineSdM20.From.Y, lineSdM20.To.X, lineSdM20.To.Y, 5, ConLineStyle.Solid, Color.Blue));
 
                         //SDP20
                         Line lineSdP20 = CreateLineWeight(item1.Point, item1.SdP20, item2.Point, item2.SdP20);
-                        CoRep.DrawLine(lineSdP20.From.X, lineSdP20.From.Y, lineSdP20.To.X, lineSdP20.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdP20.From.X, lineSdP20.From.Y, lineSdP20.To.X, lineSdP20.To.Y, 5, ConLineStyle.Solid, Color.Blue));
 
                         if (GrowthCurveConfig.Legend)
                         {
@@ -667,12 +734,12 @@ namespace Reporting.GrowthCurve.Service
                     {
                         //SDM25
                         Line lineSdM25 = CreateLineWeight(item1.Point, item1.SdM25, item2.Point, item2.SdM25);
-                        CoRep.DrawLine(lineSdM25.From.X, lineSdM25.From.Y, lineSdM25.To.X, lineSdM25.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdM25.From.X, lineSdM25.From.Y, lineSdM25.To.X, lineSdM25.To.Y, 5, ConLineStyle.Solid, Color.Blue));
                         //list.Add(lineSdM25);
 
                         //SDP10
                         Line lineSdP25 = CreateLineWeight(item1.Point, item1.SdP25, item2.Point, item2.SdP25);
-                        CoRep.DrawLine(lineSdP25.From.X, lineSdP25.From.Y, lineSdP25.To.X, lineSdP25.To.Y, 5, ConLineStyle.Solid, Color.Blue);
+                        listDrawLinePerPage.Add(new(lineSdP25.From.X, lineSdP25.From.Y, lineSdP25.To.X, lineSdP25.To.Y, 5, ConLineStyle.Solid, Color.Blue));
                         //list.Add(lineSdP25);
                         if (GrowthCurveConfig.Legend)
                         {
@@ -720,7 +787,7 @@ namespace Reporting.GrowthCurve.Service
                     if (GrowthCurveConfig.SDAvg)
                     {
                         //SDAVG
-                        CoRep.DrawLine(lineSdAVG.From.X, lineSdAVG.From.Y, lineSdAVG.To.X, lineSdAVG.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdAVG.From.X, lineSdAVG.From.Y, lineSdAVG.To.X, lineSdAVG.To.Y, 5, ConLineStyle.Solid, Color.Pink));
 
                         if (GrowthCurveConfig.Legend)
                         {
@@ -739,11 +806,11 @@ namespace Reporting.GrowthCurve.Service
                     {
                         //SDM10
                         Line lineSdM10 = CreateLineHeight(item1.Point, item1.SdM10, item2.Point, item2.SdM10);
-                        CoRep.DrawLine(lineSdM10.From.X, lineSdM10.From.Y, lineSdM10.To.X, lineSdM10.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdM10.From.X, lineSdM10.From.Y, lineSdM10.To.X, lineSdM10.To.Y, 5, ConLineStyle.Solid, Color.Pink));
 
                         //SDP10
                         Line lineSdP10 = CreateLineHeight(item1.Point, item1.SdP10, item2.Point, item2.SdP10);
-                        CoRep.DrawLine(lineSdP10.From.X, lineSdP10.From.Y, lineSdP10.To.X, lineSdP10.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdP10.From.X, lineSdP10.From.Y, lineSdP10.To.X, lineSdP10.To.Y, 5, ConLineStyle.Solid, Color.Pink));
 
                         if (GrowthCurveConfig.Legend)
                         {
@@ -778,11 +845,11 @@ namespace Reporting.GrowthCurve.Service
                     {
                         //SDM20
                         Line lineSdM20 = CreateLineHeight(item1.Point, item1.SdM20, item2.Point, item2.SdM20);
-                        CoRep.DrawLine(lineSdM20.From.X, lineSdM20.From.Y, lineSdM20.To.X, lineSdM20.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdM20.From.X, lineSdM20.From.Y, lineSdM20.To.X, lineSdM20.To.Y, 5, ConLineStyle.Solid, Color.Pink));
 
                         //SDP20
                         Line lineSdP20 = CreateLineHeight(item1.Point, item1.SdP20, item2.Point, item2.SdP20);
-                        CoRep.DrawLine(lineSdP20.From.X, lineSdP20.From.Y, lineSdP20.To.X, lineSdP20.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdP20.From.X, lineSdP20.From.Y, lineSdP20.To.X, lineSdP20.To.Y, 5, ConLineStyle.Solid, Color.Pink));
 
                         if (GrowthCurveConfig.Legend)
                         {
@@ -816,11 +883,11 @@ namespace Reporting.GrowthCurve.Service
                     {
                         //SDM25
                         Line lineSdM25 = CreateLineHeight(item1.Point, item1.SdM25, item2.Point, item2.SdM25);
-                        CoRep.DrawLine(lineSdM25.From.X, lineSdM25.From.Y, lineSdM25.To.X, lineSdM25.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdM25.From.X, lineSdM25.From.Y, lineSdM25.To.X, lineSdM25.To.Y, 5, ConLineStyle.Solid, Color.Pink));
 
                         //SDP25
                         Line lineSdP25 = CreateLineHeight(item1.Point, item1.SdP25, item2.Point, item2.SdP25);
-                        CoRep.DrawLine(lineSdP25.From.X, lineSdP25.From.Y, lineSdP25.To.X, lineSdP25.To.Y, 5, ConLineStyle.Solid, Color.Pink);
+                        listDrawLinePerPage.Add(new(lineSdP25.From.X, lineSdP25.From.Y, lineSdP25.To.X, lineSdP25.To.Y, 5, ConLineStyle.Solid, Color.Pink));
 
                         if (GrowthCurveConfig.Legend)
                         {
@@ -850,10 +917,14 @@ namespace Reporting.GrowthCurve.Service
 
                 }
             }
+
+            _listCreateStdInfSDLineData.Add(pageIndex, listDrawLinePerPage);
+            _listCreateStdInfSDTextData.Add(pageIndex, listDrawTextPerPage);
         }
 
         protected void DrawKanLine()
         {
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             if (GrowthCurveConfig.WeightVisible)
             {
                 //In case there is only one point, we'll draw a line that mean from = to 
@@ -896,7 +967,7 @@ namespace Reporting.GrowthCurve.Service
 
                         if (pointFrom.X >= 0 && pointFrom.Y >= 0 && pointTo.X >= 0 && pointTo.Y >= 0)
                         {
-                            CoRep.DrawLine(pointFrom.X, pointFrom.Y, pointTo.X, pointTo.Y, 40, ConLineStyle.Solid, Color.Blue);
+                            listDrawLinePerPage.Add(new(pointFrom.X, pointFrom.Y, pointTo.X, pointTo.Y, 40, ConLineStyle.Solid, Color.Blue));
                         }
 
 
@@ -904,19 +975,19 @@ namespace Reporting.GrowthCurve.Service
                         {
                             if (pointFrom.X >= 0 && pointFrom.Y >= 0)
                             {
-                                CoRep.DrawCircle(pointFrom.X, pointFrom.Y, 120, 120, Color.Blue, Color.Blue);
+                                listDrawCirclePerPage.Add(new(pointFrom.X, pointFrom.Y, 120, 120, Color.Blue, Color.Blue));
                             }
 
                             if (line.To.X >= 0 && line.To.Y >= 0)
                             {
-                                CoRep.DrawCircle(line.To.X - 4, line.To.Y - 4, 120, 120, Color.Blue, Color.Blue);
+                                listDrawCirclePerPage.Add(new(line.To.X - 4, line.To.Y - 4, 120, 120, Color.Blue, Color.Blue));
                             }
                         }
                         else
                         {
                             if (line.To.X >= 0 && line.To.Y >= 0)
-                            {
-                                CoRep.DrawCircle(line.To.X - 4, line.To.Y - 4, 120, 120, Color.Blue, Color.Blue);
+                            { 
+                                listDrawCirclePerPage.Add(new(line.To.X - 4, line.To.Y - 4, 120, 120, Color.Blue, Color.Blue));
                             }
                         }
                     }
@@ -966,71 +1037,137 @@ namespace Reporting.GrowthCurve.Service
 
                         if (pointFrom.X >= 0 && pointFrom.Y >= 0 && pointTo.X >= 0 && pointTo.Y >= 0)
                         {
-                            CoRep.DrawLine(pointFrom.X, pointFrom.Y, pointTo.X, pointTo.Y, 40, ConLineStyle.Solid, Color.Red);
+                            listDrawLinePerPage.Add(new(pointFrom.X, pointFrom.Y, pointTo.X, pointTo.Y, 40, ConLineStyle.Solid, Color.Red));
                         }
 
                         if (i == 0)
                         {
                             if (pointFrom.X >= 0 && pointFrom.Y >= 0)
                             {
-                                CoRep.DrawBox(line.From.X - 100, line.From.Y - 100, 200, 200, 0, Color.Red, Color.Red);
+                                listDrawBoxPerPage.Add(new((int)(line.From.X - 100), (int)(line.From.Y - 100), 200, 200, 0, Color.Red, Color.Red));
                             }
                             if (line.To.X >= 0 && line.To.Y >= 0)
                             {
-                                CoRep.DrawBox(line.To.X - 100, line.To.Y - 100, 200, 200, 0, Color.Red, Color.Red);
+                                listDrawBoxPerPage.Add(new((int)(line.To.X - 100), (int)(line.To.Y - 100), 200, 200, 0, Color.Red, Color.Red));
                             }
                         }
                         else
                         {
                             if (line.To.X >= 0 && line.To.Y >= 0)
-                            {
-                                CoRep.DrawBox(line.To.X - 100, line.To.Y - 100, 200, 200, 0, Color.Red, Color.Red);
+                            { 
+                                listDrawBoxPerPage.Add(new((int)(line.To.X - 100), (int)(line.To.Y - 100), 200, 200, 0, Color.Red, Color.Red));
                             }
                         }
                     }
 
                 }
             }
+            _listDrawKanLineCircleData.Add(pageIndex, listDrawCirclePerPage);
+            _listDrawKanLineBoxData.Add(pageIndex, listDrawBoxPerPage);
         }
 
         protected void DrawRectangleCanvas()
         {
-            CoRep.DrawLine(RootAxis.X, RootAxis.Y, RootAxis.X + CanvasWidth, RootAxis.Y);
-            CoRep.DrawLine(RootAxis.X, RootAxis.Y, RootAxis.X, RootAxis.Y + CanvasHeight);
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+            listDrawLinePerPage.Add(new(RootAxis.X, RootAxis.Y, RootAxis.X + CanvasWidth, RootAxis.Y));
+            listDrawLinePerPage.Add(new(RootAxis.X, RootAxis.Y, RootAxis.X, RootAxis.Y + CanvasHeight));
             //CoRep.
-            CoRep.DrawLine(RootAxis.X, RootAxis.Y + CanvasHeight, RootAxis.X + CanvasWidth, RootAxis.Y + CanvasHeight);
-            CoRep.DrawLine(RootAxis.X + CanvasWidth, RootAxis.Y, RootAxis.X + CanvasWidth, RootAxis.Y + CanvasHeight);
+            listDrawLinePerPage.Add(new(RootAxis.X, RootAxis.Y + CanvasHeight, RootAxis.X + CanvasWidth, RootAxis.Y + CanvasHeight));
+            listDrawLinePerPage.Add(new(RootAxis.X + CanvasWidth, RootAxis.Y, RootAxis.X + CanvasWidth, RootAxis.Y + CanvasHeight));
+            _listDrawRectangleCanvasLineData.Add(pageIndex, listDrawLinePerPage);
         }
 
         protected void DrawLegendLabel()
         {
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             maxX = Convert.ToInt64(RootAxis.X) + partXCount * PartWidth;
             if (GrowthCurveConfig.WeightVisible && GrowthCurveConfig.HeightVisible)
             {
-                CoRep.DrawBox(RootAxis.X + 400, RootAxis.Y + 400, 1300, 1000, 0, Color.White, Color.Black);
-                CoRep.DrawBox(RootAxis.X + 600, RootAxis.Y + 600, 200, 200, 0, Color.Red, Color.Red);
-                CoRep.DrawCircle(RootAxis.X + 700, RootAxis.Y + 1100, 120, 120, Color.Blue, Color.Blue);
+                listDrawBoxPerPage.Add(new((int)(RootAxis.X + 400), (int)(RootAxis.Y + 400), 1300, 1000, 0, Color.White, Color.Black));
+                listDrawBoxPerPage.Add(new((int)RootAxis.X + 600, (int)RootAxis.Y + 600, 200, 200, 0, Color.Red, Color.Red));
+                listDrawCirclePerPage.Add(new(RootAxis.X + 700, RootAxis.Y + 1100, 120, 120, Color.Blue, Color.Blue));
                 listDrawTextPerPage.Add(new(RootAxis.X + 900, RootAxis.Y + 550, 1000, 300, 300, "身長"));
                 listDrawTextPerPage.Add(new(RootAxis.X + 900, RootAxis.Y + 950, 1000, 300, 300, "体重"));
             }
             else
             {
-                CoRep.DrawBox(RootAxis.X + 400, RootAxis.Y + 400, 1300, 600, 0, Color.White, Color.Black);
+                listDrawBoxPerPage.Add(new((int)RootAxis.X + 400, (int)RootAxis.Y + 400, 1300, 600, 0, Color.White, Color.Black));
                 if (GrowthCurveConfig.HeightVisible)
                 {
-                    CoRep.DrawBox(RootAxis.X + 600, RootAxis.Y + 600, 200, 200, 0, Color.Red, Color.Red);
+                    listDrawBoxPerPage.Add(new((int)RootAxis.X + 600, (int)RootAxis.Y + 600, 200, 200, 0, Color.Red, Color.Red));
                     listDrawTextPerPage.Add(new(RootAxis.X + 900, RootAxis.Y + 550, 1000, 300, 300, "身長"));
                 }
                 else if (GrowthCurveConfig.WeightVisible)
                 {
-                    CoRep.DrawCircle(RootAxis.X + 700, RootAxis.Y + 700, 120, 120, Color.Blue, Color.Blue);
+                    listDrawCirclePerPage.Add(new(RootAxis.X + 700, RootAxis.Y + 700, 120, 120, Color.Blue, Color.Blue));
                     listDrawTextPerPage.Add(new(RootAxis.X + 900, RootAxis.Y + 550, 1000, 300, 300, "体重"));
                 }
             }
+            _listDrawLegendLabelBoxData.Add(pageIndex, listDrawBoxPerPage);
+            _listDrawLegendLabelCircleData.Add(pageIndex, listDrawCirclePerPage);
+            _listDrawLegendLabelTextData.Add(pageIndex, listDrawTextPerPage);
         }
 
+        private void CalAxisPoint()
+        {
+            switch (GrowthCurveConfig.Scope)
+            {
+                case 1:
+                    partXCount = 12;
+                    intervalX = 1;//1 Month Interval
+
+                    heightMinY = 10;
+                    heightMaxY = 85;
+
+                    weightMinY = 2;
+                    break;
+                case 2:
+                    partXCount = 12;
+                    intervalX = 2;//2 Month Interval
+
+                    heightMinY = 30;
+                    heightMaxY = 140;
+
+                    weightMinY = 0;
+                    break;
+                case 3:
+                    partXCount = 9;
+                    intervalX = 4;//4 Month Interval
+
+                    heightMinY = 30;
+                    heightMaxY = 140;
+
+                    weightMinY = 0;
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    partXCount = GrowthCurveConfig.Scope;
+                    intervalX = 12;//1 Year Interval
+
+                    heightMinY = 30;
+                    heightMaxY = 140;
+
+                    weightMinY = 0;
+                    break;
+                default:
+                    partXCount = GrowthCurveConfig.Scope;
+                    intervalX = 12;//1 Year Interval
+
+                    heightMinY = 40;
+                    heightMaxY = 190;
+
+                    weightMinY = 0;
+                    break;
+            }
+        }
+        
         private double CalculateAdjY()
         {
+            CalAxisPoint();
+            double height = 530;
+            Point RootAxis = new Point(50, 50);
+            CanvasHeight = (long)(height - 2 * RootAxis.Y);
             double rs = 1;
             double max = heightMaxY - heightMinY;
             if (max > 0 && CanvasHeight > 0)
@@ -1071,15 +1208,15 @@ namespace Reporting.GrowthCurve.Service
 
             double pY = RootAxis.Y + (PartYCount + weightMinY) * PartHeight;
 
-            var pointModel1 = new Point(RootAxis.X + point1 * PartWidth / intervalX, pY - value1 * PartHeight);
-            var pointModel2 = new Point(RootAxis.X + point2 * PartWidth / intervalX, pY - value2 * PartHeight);
+            var pointModel1 = new Point((int)(RootAxis.X + point1 * PartWidth / intervalX), (int)(pY - value1 * PartHeight));
+            var pointModel2 = new Point((int)(RootAxis.X + point2 * PartWidth / intervalX), (int)(pY - value2 * PartHeight));
 
             if (GrowthCurveConfig.Scope > 1)
             {
-                pointModel1 = new Point(RootAxis.X + point1 * PartWidth / intervalX, pY - value1 * PartHeight / intervalY);
-                pointModel2 = new Point(RootAxis.X + point2 * PartWidth / intervalX, pY - value2 * PartHeight / intervalY);
+                pointModel1 = new Point((int)(RootAxis.X + point1 * PartWidth / intervalX), (int)(pY - value1 * PartHeight / intervalY));
+                pointModel2 = new Point((int)(RootAxis.X + point2 * PartWidth / intervalX), (int)(pY - value2 * PartHeight / intervalY));
             }
-
+            
             line.From = pointModel1;
             line.To = pointModel2;
             return line;
@@ -1091,13 +1228,13 @@ namespace Reporting.GrowthCurve.Service
 
             double pY = RootAxis.Y + (PartYCount + heightMinY / intervalY) * PartHeight;
 
-            var pointModel1 = new Point(RootAxis.X + point1 * PartWidth, pY - value1 * PartHeight / 5);
-            var pointModel2 = new Point(RootAxis.X + point2 * PartWidth, pY - value2 * PartHeight / 5);
+            var pointModel1 = new Point((int)(RootAxis.X + point1 * PartWidth), (int)(pY - value1 * PartHeight / 5));
+            var pointModel2 = new Point((int)(RootAxis.X + point2 * PartWidth), (int)(pY - value2 * PartHeight / 5));
 
             if (GrowthCurveConfig.Scope > 1)
             {
-                pointModel1 = new Point(RootAxis.X + point1 * PartWidth / intervalX, pY - value1 * PartHeight / intervalY);
-                pointModel2 = new Point(RootAxis.X + point2 * PartWidth / intervalX, pY - value2 * PartHeight / intervalY);
+                pointModel1 = new Point((int)(RootAxis.X + point1 * PartWidth / intervalX), (int)(pY - value1 * PartHeight / intervalY));
+                pointModel2 = new Point((int)(RootAxis.X + point2 * PartWidth / intervalX), (int)(pY - value2 * PartHeight / intervalY));
             }
 
             lineModel.From = pointModel1;

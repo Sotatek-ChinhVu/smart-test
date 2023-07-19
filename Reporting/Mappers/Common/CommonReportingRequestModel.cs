@@ -1,4 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿using Amazon.S3.Model;
+using System.Drawing;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Reporting.Mappers.Common
 {
@@ -38,10 +41,16 @@ namespace Reporting.Mappers.Common
         public Dictionary<int, ReportConfigModel> ReportConfigPerPage { get; set; } = new();
 
         [JsonPropertyName("drawTextData")]
-        public Dictionary<int, List<ListDrawTextObject>> DrawTextData { get; set; } = new();
+        public Dictionary<int, Dictionary<int, List<ListDrawTextObject>>> DrawTextData { get; set; } = new();
 
         [JsonPropertyName("drawLineObject")]
-        public Dictionary<int, List<ListDrawLineObject>> DrawLineData { get; set; } = new();
+        public Dictionary<int, Dictionary<int, List<ListDrawLineObject>>> DrawLineData { get; set; } = new();
+
+        [JsonPropertyName("drawBoxObject")]
+        public Dictionary<int, Dictionary<int, List<ListDrawBoxObject>>> DrawBoxData { get; set; } = new();
+
+        [JsonPropertyName("drawCircleObject")]
+        public Dictionary<int, Dictionary<int, List<ListDrawCircleObject>>> DrawCircleData { get; set; } = new();
     }
 
     public class CellModel
@@ -149,7 +158,7 @@ namespace Reporting.Mappers.Common
 
     public class ListDrawLineObject
     {
-        public ListDrawLineObject(double startX, double startY, double endX, double endY, long width, ConLineStyle style, string color)
+        public ListDrawLineObject(double startX, double startY, double endX, double endY, long width, ConLineStyle style, Color color)
         {
             StartX = startX;
             StartY = startY;
@@ -158,6 +167,14 @@ namespace Reporting.Mappers.Common
             Width = width;
             Style = style;
             Color = color;
+        }
+
+        public ListDrawLineObject(double startX, double startY, double endX, double endY)
+        {
+            StartX = startX;
+            StartY = startY;
+            EndX = endX;
+            EndY = endY;
         }
 
         [JsonPropertyName("startX")]
@@ -179,7 +196,73 @@ namespace Reporting.Mappers.Common
         public ConLineStyle Style { get; set; }
 
         [JsonPropertyName("color")]
-        public string Color { get; set; }
+        public Color Color { get; set; }
+    }
+
+    public class ListDrawBoxObject
+    {
+        public ListDrawBoxObject(long startX, long startY, long width, long heigth, long round, Color fillColor, Color lineColor)
+        {
+            StartX = startX;
+            StartY = startY;
+            Width = width;
+            Heigth = heigth;
+            Round = round;
+            FillColor = fillColor;
+            LineColor = lineColor;
+        }
+
+        [JsonPropertyName("startX")]
+        public long StartX { get; set; }
+
+        [JsonPropertyName("startY")]
+        public long StartY { get; set; }
+
+        [JsonPropertyName("width")]
+        public long Width { get; set; }
+
+        [JsonPropertyName("heigth")]
+        public long Heigth { get; set; }
+
+        [JsonPropertyName("round")]
+        public long Round { get; set; }
+
+        [JsonPropertyName("fillColor")]
+        public Color FillColor { get; set; }
+
+        [JsonPropertyName("lineColor")]
+        public Color LineColor { get; set; }
+    }
+
+    public class ListDrawCircleObject
+    {
+        public ListDrawCircleObject(double startX, double startY, double width, double heigth, Color fillColor, Color lineColor)
+        {
+            StartX = startX;
+            StartY = startY;
+            Width = width;
+            Heigth = heigth;
+            FillColor = fillColor;
+            LineColor = lineColor;
+        }
+
+        [JsonPropertyName("startX")]
+        public double StartX { get; set; }
+
+        [JsonPropertyName("startY")]
+        public double StartY { get; set; }
+
+        [JsonPropertyName("width")]
+        public double Width { get; set; }
+
+        [JsonPropertyName("heigth")]
+        public double Heigth { get; set; }
+
+        [JsonPropertyName("fillColor")]
+        public Color FillColor { get; set; }
+
+        [JsonPropertyName("lineColor")]
+        public Color LineColor { get; set; }
     }
 
     public enum ConLineStyle

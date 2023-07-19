@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.DrugInfo.Model;
+using Reporting.GrowthCurve.Model;
 using Reporting.Mappers.Common;
 using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
@@ -159,6 +160,13 @@ public class PdfCreatorController : ControllerBase
     {
         var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
+    }
+
+    [HttpGet(ApiPath.GrowthCurve)]
+    public async Task<IActionResult> GetGrowthCurvePrintData([FromQuery] GrowthCurvePrintDataRequest request)
+    {
+        var data = _reportService.GetGrowthCurvePrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.StaticReport)]
