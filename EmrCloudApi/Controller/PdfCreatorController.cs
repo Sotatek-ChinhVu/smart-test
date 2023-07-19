@@ -353,7 +353,7 @@ public class PdfCreatorController : ControllerBase
 
         var stringPrintDrugInfoResult = JsonSerializer.Serialize(present.Result);
 
-        string baseUrl = _configuration.GetSection("Karte2TemplateDefault").Value!;
+        string baseUrl = _configuration.GetSection("DrugInfoTemplateDefault").Value!;
 
         using (var clientResponse = await _httpClient.GetAsync(baseUrl))
         {
@@ -363,7 +363,7 @@ public class PdfCreatorController : ControllerBase
             {
                 string decoded = Encoding.UTF8.GetString(bytes);
 
-                decoded = decoded.Replace("__DATA_KARTE2__", stringPrintDrugInfoResult);
+                decoded = decoded.Replace("__DATA_DRUG_INFORMATION__", stringPrintDrugInfoResult);
 
                 bytes = Encoding.UTF8.GetBytes(decoded);
             }
