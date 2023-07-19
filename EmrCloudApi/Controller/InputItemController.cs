@@ -23,6 +23,7 @@ using UseCase.DrugDetailData.ShowKanjaMuke;
 using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
+using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.UsageTreeSet.GetTree;
 using UseCase.YohoSetMst.GetByItemCd;
 
@@ -128,6 +129,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<ShowDrugDetailHtmlResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDataPrintDrugInfo)]
+        public ActionResult<Response<GetDataPrintDrugInfoResponse>> GetDataPrintDrugInfo([FromQuery] GetDataPrintDrugInfoRequest request)
+        {
+            var input = new GetDataPrintDrugInfoInputData(request.HpId, request.SinDate, request.ItemCd, request.Level, request.DrugName, request.YJCode, request.Type);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDataPrintDrugInfoPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetDataPrintDrugInfoResponse>>(presenter.Result);
         }
     }
 }

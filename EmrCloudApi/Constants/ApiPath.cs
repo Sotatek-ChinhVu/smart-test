@@ -148,6 +148,7 @@
         public const string ShowProductInf = "ShowProductInf";
         public const string ShowKanjaMuke = "ShowKanjaMuke";
         public const string ShowMdbByomei = "ShowMdbByomei";
+        public const string GetDataPrintDrugInfo = "GetDataPrintDrugInfo";
 
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
