@@ -2,7 +2,7 @@
 {
     public class RaiinListFileModel
     {
-        public RaiinListFileModel(int hpId, int grpId, int kbnCd, int categoryCd, string categoryName, long seqNo, int isDeleted, bool isModify)
+        public RaiinListFileModel(int hpId, int grpId, int kbnCd, int categoryCd, string categoryName, long seqNo, int isDeleted)
         {
             HpId = hpId;
             GrpId = grpId;
@@ -11,7 +11,6 @@
             CategoryName = categoryName;
             SeqNo = seqNo;
             IsDeleted = isDeleted;
-            IsModify = isModify;
         }
 
         public int HpId { get; private set; }
@@ -31,8 +30,6 @@
         public long SeqNo { get; private set; }
 
         public int IsDeleted { get; private set; }
-
-        public bool IsModify { get; private set; }
 
         public bool CheckDefaultValue()
         {

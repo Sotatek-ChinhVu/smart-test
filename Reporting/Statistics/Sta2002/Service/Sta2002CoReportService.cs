@@ -87,17 +87,20 @@ namespace Reporting.Statistics.Sta2002.Service
             // get data to print
             GetFieldNameList();
             GetRowCount();
-            GetData();
-            _hasNextPage = true;
-
-            _currentPage = 1;
-
-            //印刷
-            while (_hasNextPage)
+            if (GetData())
             {
-                UpdateDrawForm();
-                _currentPage++;
+                _hasNextPage = true;
+
+                _currentPage = 1;
+
+                //印刷
+                while (_hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
+            
 
             return new Sta2002Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
         }
@@ -119,8 +122,8 @@ namespace Reporting.Statistics.Sta2002.Service
                 _extralData.Add("HeaderR_0_0_" + _currentPage, hpInf.HpName);
                 //作成日時
                 _extralData.Add("HeaderR_0_1_" + _currentPage, CIUtil.SDateToShowSWDate(
-                    CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
-                ) + DateTime.Now.ToString(" HH:mm") + "作成");
+                    CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
+                ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
                 //ページ数
                 int totalPage = (int)Math.Ceiling((double)printDatas.Count / _maxRow);
                 _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);

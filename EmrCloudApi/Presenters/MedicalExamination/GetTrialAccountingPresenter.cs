@@ -18,6 +18,7 @@ namespace EmrCloudApi.Presenters.MedicalExamination
         {
             GetTrialAccountingStatus.Successed => ResponseMessage.Success,
             GetTrialAccountingStatus.NoData => ResponseMessage.NoData,
+            GetTrialAccountingStatus.MedicalScreenLocked => ResponseMessage.MedicalScreenLocked,
             _ => string.Empty
         };
     }

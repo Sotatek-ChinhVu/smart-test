@@ -121,4 +121,6 @@ public interface IReceiptRepository : IRepositoryBase
     bool HasErrorCheck(int sinYm, long ptId, int hokenId);
 
     bool SaveReceStatusCalc(List<ReceStatusModel> newReceStatus, List<ReceStatusModel> updateList, int userId, int hpId);
+
+    List<int> GetListKaikeiInf(int hpId, long ptId);
 }

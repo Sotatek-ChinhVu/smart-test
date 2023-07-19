@@ -68,10 +68,13 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
         var getData = GetData();
         hasNextPage = true;
 
-        while (getData && hasNextPage)
+        if (getData)
         {
-            UpdateDrawForm();
-            currentPage++;
+            while (getData && hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();

@@ -25,7 +25,7 @@ namespace Infrastructure.Repositories.SpecialNote
             if (listKensaInfDetail.Any())
             {
                 int maxIraiDate = listKensaInfDetail.Max(item => item.IraiDate);
-                return listKensaInfDetail.Where(item => item.IraiDate == maxIraiDate)
+                return listKensaInfDetail.Where(item => item.IraiDate == maxIraiDate).AsEnumerable()
                                          .Select(item => new KensaInfDetailModel(
                                             item.HpId,
                                             item.PtId,
@@ -111,7 +111,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtPregnancyModel> GetPregnancyList(long ptId, int hpId)
         {
-            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0)
+            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).AsEnumerable()
               .Select(x => new PtPregnancyModel(
                 x.Id,
                 x.HpId,
@@ -134,7 +134,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtPregnancyModel> GetPregnancyList(long ptId, int hpId, int sinDate)
         {
-            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0 && x.StartDate <= sinDate && x.EndDate >= sinDate)
+            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0 && x.StartDate <= sinDate && x.EndDate >= sinDate).AsEnumerable()
               .Select(x => new PtPregnancyModel(
                 x.Id,
                 x.HpId,
@@ -157,7 +157,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<SeikaturekiInfModel> GetSeikaturekiInfList(long ptId, int hpId)
         {
-            var seikaturekiInfs = NoTrackingDataContext.SeikaturekiInfs.Where(x => x.PtId == ptId && x.HpId == hpId).OrderByDescending(x => x.UpdateDate).Select(x => new SeikaturekiInfModel(
+            var seikaturekiInfs = NoTrackingDataContext.SeikaturekiInfs.Where(x => x.PtId == ptId && x.HpId == hpId).AsEnumerable().OrderByDescending(x => x.UpdateDate).Select(x => new SeikaturekiInfModel(
                 x.Id,
                 x.HpId,
                 x.PtId,
@@ -211,7 +211,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<GcStdInfModel> GetStdPoint(int hpId, int sex)
         {
-            var list = NoTrackingDataContext.GcStdMsts.Where(item => item.HpId == hpId && (sex == 0 || item.Sex == sex))
+            var list = NoTrackingDataContext.GcStdMsts.Where(item => item.HpId == hpId && (sex == 0 || item.Sex == sex)).AsEnumerable()
                 .Select(item => new GcStdInfModel(item.HpId, item.StdKbn, item.Sex, item.Point, item.SdM25, item.SdM20, item.SdM10, item.SdAvg, item.SdP10, item.SdP20, item.SdP25, item.Per03, item.Per10, item.Per25, item.Per50, item.Per75, item.Per90, item.Per97)).ToList();
             return list;
         }

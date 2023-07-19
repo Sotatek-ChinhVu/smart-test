@@ -6,8 +6,7 @@ public class JwtOptions
 
     public string Secret { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Token lifetime in hours
-    /// </summary>
-    public double TokenLifetime { get; set; }
+    public int TokenExpires { get; set; } //hours
+
+    public int RefreshTokenExpires { get; set; } //hours.
 }

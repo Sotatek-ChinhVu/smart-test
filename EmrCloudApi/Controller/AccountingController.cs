@@ -37,7 +37,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetAccountingResponse>> GetList([FromQuery] GetAccountingRequest request)
         {
-            var input = new GetAccountingInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var input = new GetAccountingInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
 
             var presenter = new GetAccountingPresenter();
@@ -49,7 +49,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.PaymentMethod)]
         public ActionResult<Response<GetPaymentMethodResponse>> GetList([FromQuery] GetPaymentMethodRequest request)
         {
-            var input = new GetPaymentMethodInputData(request.HpId);
+            var input = new GetPaymentMethodInputData(HpId);
             var output = _bus.Handle(input);
 
             var presenter = new GetPaymentMethodPresenter();
@@ -91,8 +91,7 @@ namespace EmrCloudApi.Controller
 
             if (output.Status == SaveAccountingStatus.Success)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.AccountDueChanged,
-                    new CommonMessage { PtId = input.PtId, SinDate = input.SinDate, RaiinNo = 0 });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new SaveAccountingPresenter();
@@ -117,7 +116,7 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<CheckAccountingStatusResponse>> ActionResult([FromBody] CheckAccountingStatusRequest request)
         {
             var input = new CheckAccountingStatusInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.DebitBalance,
-                request.SumAdjust, request.ThisCredit, request.Wari, request.IsDisCharge, request.IsSaveAccounting,
+                request.SumAdjust, request.Credit, request.Wari, request.IsDisCharge, request.IsSaveAccounting,
                 request.SyunoSeikyuDtos, request.AllSyunoSeikyuDtos);
             var output = _bus.Handle(input);
             var presenter = new CheckAccountingStatusPresenter();
@@ -165,7 +164,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Recaculation)]
         public ActionResult<Response<RecaculationResponse>> ActionResult([FromBody] RecaculationRequest request)
         {
-            var input = new RecaculationInputData(request.HpId, request.RaiinNo, request.PtId, request.SinDate);
+            var input = new RecaculationInputData(HpId, request.RaiinNo, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new RecaculationPresenter();

@@ -231,7 +231,7 @@ namespace Domain.Models.Insurance
 
         public HokenMstModel HokenMst { get; private set; }
 
-        public bool IsHaveHokenMst { get => HokenMst != null; }
+        public bool IsHaveHokenMst { get => HokenMst != null && !HokenMst.CheckDefaultValue(); }
 
         public string HokenMstHoubetu => HokenMst != null ? HokenMst.Houbetu : string.Empty;
 
@@ -474,5 +474,18 @@ namespace Domain.Models.Insurance
                 return result;
             }
         }
+
+        public bool IsEmptyModel
+        {
+            get => HokenNo == 0 && HokenEdaNo == 0
+                && HokenKbn == 1
+                && string.IsNullOrEmpty(HokensyaNo)
+                && HonkeKbn == 0
+                && string.IsNullOrEmpty(Kigo)
+                && string.IsNullOrEmpty(Bango)
+                && string.IsNullOrEmpty(EdaNo);
+        }
+
+        public int EndDateSort => EndDate != 99999999 ? EndDate : 0;
     }
 }

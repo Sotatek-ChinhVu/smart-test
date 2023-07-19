@@ -70,17 +70,21 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
             _seikyuYm = seikyuYm;
             _seikyuType = seikyuType;
             var getData = GetData();
-            foreach (string currentNo in hokensyaNos)
-            {
-                _currentHokensyaNo = currentNo;
-                _currentPage = 1;
-                _hasNextPage = true;
-                while (getData && _hasNextPage)
-                {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
 
+            if(getData)
+            {
+                foreach (string currentNo in hokensyaNos)
+                {
+                    _currentHokensyaNo = currentNo;
+                    _currentPage = 1;
+                    _hasNextPage = true;
+                    while (getData && _hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
+
+                }
             }
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
@@ -114,7 +118,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service
                 SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
                 //提出年月日
                 wrkYmd = CIUtil.SDateToShowWDate3(
-                    CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+                    CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd"))
                 );
                 SetFieldData("reportGengo", wrkYmd.Gengo);
                 SetFieldData("reportYear", wrkYmd.Year.ToString());

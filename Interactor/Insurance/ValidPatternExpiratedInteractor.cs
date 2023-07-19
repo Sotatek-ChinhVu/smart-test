@@ -2,6 +2,7 @@
 using Domain.Models.ReceptionInsurance;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -161,21 +162,26 @@ namespace Interactor.Insurance
                     case 1:
                     // 国保
                     case 2:
-                        var checkValidConfirmDateAgeCheck = _insuranceResponsitory.IsValidAgeCheck(inputData.SinDate, inputData.PatternHokenPid, inputData.HpId, inputData.PtId, inputData.PatientInfBirthday);
-                        if (!String.IsNullOrEmpty(checkValidConfirmDateAgeCheck))
+
+                        if(!inputData.SelectedHokenInfIsEmptyModel)
                         {
-                            return new ValidPatternExpiratedOutputData(false, checkValidConfirmDateAgeCheck, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidConfirmDateAgeCheck);
+                            var checkValidConfirmDateAgeCheck = _insuranceResponsitory.IsValidAgeCheck(inputData.SinDate, inputData.PatternHokenPid, inputData.HpId, inputData.PtId, inputData.PatientInfBirthday);
+                            if (!String.IsNullOrEmpty(checkValidConfirmDateAgeCheck))
+                            {
+                                return new ValidPatternExpiratedOutputData(false, checkValidConfirmDateAgeCheck, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidConfirmDateAgeCheck);
+                            }
+                            var checkValidConfirmDateHoken = IsValidConfirmDateHoken(inputData.SinDate, inputData.PatternIsExpirated, inputData.HokenInfIsJihi, inputData.HokenInfIsNoHoken, inputData.PatternIsExpirated, inputData.PatternConfirmDate);
+                            if (!String.IsNullOrEmpty(checkValidConfirmDateHoken))
+                            {
+                                return new ValidPatternExpiratedOutputData(false, checkValidConfirmDateHoken, TypeMessage.TypeMessageConfirmation, ValidPatternExpiratedStatus.InvalidConfirmDateHoken);
+                            }
+                            var checkValidHokenMstDate = IsValidHokenMstDate(inputData.HokenInfStartDate, inputData.HokenInfEndDate, inputData.SinDate, inputData.IsHaveHokenMst, inputData.HokenMstStartDate, inputData.HokenMstEndDate, inputData.HokenMstDisplayTextMaster);
+                            if (!String.IsNullOrEmpty(checkValidHokenMstDate))
+                            {
+                                return new ValidPatternExpiratedOutputData(false, checkValidHokenMstDate, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidHokenMstDate);
+                            }
                         }
-                        var checkValidConfirmDateHoken = IsValidConfirmDateHoken(inputData.SinDate, inputData.PatternIsExpirated, inputData.HokenInfIsJihi, inputData.HokenInfIsNoHoken, inputData.PatternIsExpirated, inputData.PatternConfirmDate);
-                        if (!String.IsNullOrEmpty(checkValidConfirmDateHoken))
-                        {
-                            return new ValidPatternExpiratedOutputData(false, checkValidConfirmDateHoken, TypeMessage.TypeMessageConfirmation, ValidPatternExpiratedStatus.InvalidConfirmDateHoken);
-                        }
-                        var checkValidHokenMstDate = IsValidHokenMstDate(inputData.HokenInfStartDate, inputData.HokenInfEndDate, inputData.SinDate, inputData.IsHaveHokenMst, inputData.HokenMstStartDate, inputData.HokenMstEndDate, inputData.HokenMstDisplayTextMaster);
-                        if (!String.IsNullOrEmpty(checkValidHokenMstDate))
-                        {
-                            return new ValidPatternExpiratedOutputData(false, checkValidHokenMstDate, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidHokenMstDate);
-                        }
+
                         if (!inputData.IsEmptyKohi1)
                         {
                             var checkValidKohi1 = IsValidConfirmDateKohi(inputData.KohiConfirmDate1, inputData.SinDate, inputData.PatternIsExpirated, 1);

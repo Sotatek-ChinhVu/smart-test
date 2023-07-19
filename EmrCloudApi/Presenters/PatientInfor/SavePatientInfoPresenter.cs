@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.PatientInfor
 
         public void Complete(SavePatientInfoOutputData outputData)
         {
-            Result.Data = new SavePatientInfoResponse(outputData.ValidateDetails, outputData.Status, outputData.PtID);
+            Result.Data = new SavePatientInfoResponse(outputData.ValidateDetails, outputData.Status, outputData.PtID, outputData.ShouldCheckCloneByomei);
             Result.Status = (int)outputData.Status;
             Result.Message = GetMessage(outputData.Status);
         }

@@ -6,7 +6,7 @@ public interface IAccountDueRepository : IRepositoryBase
 {
     List<AccountDueModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked);
 
-    bool SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues, string kaikeiTime);
+    List<AccountDueModel> SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues, string kaikeiTime);
 
     List<SyunoSeikyuModel> GetListSyunoSeikyuModel(List<long> listRaiinNo);
 
@@ -15,4 +15,6 @@ public interface IAccountDueRepository : IRepositoryBase
     Dictionary<int, string> GetPaymentMethod(int hpId);
 
     Dictionary<int, string> GetUketsukeSbt(int hpId);
+
+    bool IsNyukinExisted(int hpId, long ptId, long raiinNo, int sinDate);
 }

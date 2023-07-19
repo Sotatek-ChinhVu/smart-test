@@ -32,7 +32,6 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
     private List<CoReceInfModel> receInfs;
     private CoHpInfModel hpInf;
     private List<string> printHokensyaNos;
-    private readonly IReadRseReportFileService _readRseReportFileService;
     private const string _formFileName = "p28KoukiSeikyu.rse";
 
     /// <summary>
@@ -50,10 +49,9 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
 
     private readonly ICoKoukiSeikyuFinder _finder;
 
-    public P28KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder finder, IReadRseReportFileService readRseReportFileService)
+    public P28KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder finder)
     {
         _finder = finder;
-        _readRseReportFileService = readRseReportFileService;
         _singleFieldData = new();
         _singleFieldDataM = new();
         _listTextData = new();
@@ -69,17 +67,21 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         _seikyuType = seikyuType;
         var getData = GetData();
 
-        foreach (string currentNo in hokensyaNos)
+        if(getData)
         {
-            _currentPage = 1;
-            _currentHokensyaNo = currentNo;
-            _hasNextPage = true;
-            while (getData && _hasNextPage)
+            foreach (string currentNo in hokensyaNos)
             {
-                UpdateDrawForm();
-                _currentPage++;
+                _currentPage = 1;
+                _currentHokensyaNo = currentNo;
+                _hasNextPage = true;
+                while (getData && _hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
         }
+        
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
         return new KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
@@ -107,7 +109,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
             SetFieldData("seikyuMonth", wrkYmd.Month.AsString());
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd"))
             );
             SetFieldData("reportGengo", wrkYmd.Gengo.AsString());
             SetFieldData("reportYear", wrkYmd.Year.AsString());

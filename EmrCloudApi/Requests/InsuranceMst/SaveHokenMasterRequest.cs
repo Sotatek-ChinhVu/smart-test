@@ -1,6 +1,4 @@
-﻿using Domain.Models.InsuranceMst;
-
-namespace EmrCloudApi.Requests.InsuranceMst
+﻿namespace EmrCloudApi.Requests.InsuranceMst
 {
     public class SaveHokenMasterRequest
     {

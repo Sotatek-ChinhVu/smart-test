@@ -13,7 +13,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Service;
 public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
 {
     #region Constant
-    private const int MyPrefNo = 43;
+    private const int myPrefNo = 45;
     #endregion
 
     #region Private properties
@@ -71,17 +71,21 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
         _seikyuType = seikyuType;
         var getData = GetData();
 
-        foreach (string currentNo in hokensyaNos)
+        if(getData)
         {
-            _currentPage = 1;
-            _currentHokensyaNo = currentNo;
-            _hasNextPage = true;
-            while (getData && _hasNextPage)
+            foreach (string currentNo in hokensyaNos)
             {
-                UpdateDrawForm();
-                _currentPage ++;
+                _currentPage = 1;
+                _currentHokensyaNo = currentNo;
+                _hasNextPage = true;
+                while (getData && _hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
         }
+        
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
         return new P45KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileNameP1, _formFileNameP2, _singleFieldData, _visibleFieldData).GetData();
@@ -118,7 +122,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
 
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd"))
             );
             SetFieldData("reportGengo", wrkYmd.Gengo.ToString());
             SetFieldData("reportYear", wrkYmd.Year.ToString());
@@ -289,7 +293,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
     private bool GetData()
     {
         hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
-        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.SumAll);
+        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
         //保険者番号の指定がある場合は絞り込み
         var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();

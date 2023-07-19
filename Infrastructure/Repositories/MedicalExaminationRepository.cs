@@ -1160,7 +1160,10 @@ namespace Infrastructure.Repositories
                     result.Add(checkModel.ChangeSantei(false));
                 }
             }
-            result.AddRange(checkedOrderModelList);
+            else
+            {
+                result.AddRange(checkedOrderModelList);
+            }
 
             return result;
         }

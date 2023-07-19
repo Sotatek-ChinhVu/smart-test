@@ -184,16 +184,19 @@ public class Sta2003CoReportService : ISta2003CoReportService
         // get data to print
         GetFieldNameList(formFileName);
         GetRowCount(formFileName);
-        GetData(hpId);
-        _hasNextPage = true;
-        _currentPage = 1;
-
-        //印刷
-        while (_hasNextPage)
+        if (GetData(hpId))
         {
-            UpdateDrawForm();
-            _currentPage++;
+            _hasNextPage = true;
+            _currentPage = 1;
+
+            //印刷
+            while (_hasNextPage)
+            {
+                UpdateDrawForm();
+                _currentPage++;
+            }
         }
+        
         return new Sta2003Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, formFileName).GetData();
     }
 
@@ -216,8 +219,8 @@ public class Sta2003CoReportService : ISta2003CoReportService
 
             //作成日時
             _extralData.Add("HeaderR_0_1_" + _currentPage, CIUtil.SDateToShowSWDate(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
-            ) + DateTime.Now.ToString(" HH:mm") + "作成");
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
+            ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
 
             //ページ数
             int totalPage = (int)Math.Ceiling((double)_printDatas.Count / maxRow);
@@ -319,7 +322,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
         UpdateFormBody();
     }
 
-    private void GetData(int hpId)
+    private bool GetData(int hpId)
     {
         void MakePrintData()
         {
@@ -595,7 +598,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
         _syunoInfs = _finder.GetSyunoInfs(hpId, _printConf);
         if ((_syunoInfs?.Count ?? 0) == 0)
         {
-            return;
+            return false;
         }
 
         _jihiSbtMsts = _finder.GetJihiSbtMst(hpId);
@@ -603,6 +606,8 @@ public class Sta2003CoReportService : ISta2003CoReportService
 
         //印刷用データの作成
         MakePrintData();
+
+        return _printDatas.Count > 0;
     }
 
     private void SetFieldData(string field, string value)

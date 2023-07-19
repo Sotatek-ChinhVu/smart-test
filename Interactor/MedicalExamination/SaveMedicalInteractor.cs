@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Domain.Models.Diseases;
+﻿using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.FlowSheet;
 using Domain.Models.HpInf;
@@ -7,6 +6,7 @@ using Domain.Models.Insurance;
 using Domain.Models.Ka;
 using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
+using Domain.Models.Lock;
 using Domain.Models.Medical;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
@@ -18,7 +18,7 @@ using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
-using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Infrastructure.Interfaces;
@@ -27,7 +27,6 @@ using Interactor.CalculateService;
 using Interactor.Family.ValidateFamilyList;
 using Interactor.NextOrder;
 using Microsoft.Extensions.Options;
-using System;
 using UseCase.Accounting.Recaculate;
 using UseCase.Diseases.Upsert;
 using UseCase.Family;
@@ -83,6 +82,25 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     {
         try
         {
+            var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputDatas.HpId, inputDatas.PtId, inputDatas.RaiinNo, inputDatas.SinDate, inputDatas.UserId);
+            if (notAllowSave)
+            {
+                return new SaveMedicalOutputData(
+                       SaveMedicalStatus.MedicalScreenLocked,
+                       RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                       new(),
+                       KarteValidationStatus.Valid,
+                       ValidateFamilyListStatus.ValidateSuccess,
+                       UpsertFlowSheetStatus.Valid,
+                       UpsertPtDiseaseListStatus.Valid,
+                       0,
+                       0,
+                       0,
+                       new(),
+                       new()
+                       );
+            }
+
             //Raiin Info
             var inputDataList = inputDatas.OdrItems.ToList();
             var hpIds = inputDataList.Select(x => x.HpId).ToList();
@@ -126,7 +144,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         UpsertPtDiseaseListStatus.Valid,
                         0,
                         0,
-                        0
+                        0,
+                        new(),
+                        new()
                         );
                 }
 
@@ -216,7 +236,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     validateDisease,
                     0,
                     0,
-                    0
+                    0,
+                    new(),
+                    new()
                     );
             }
 
@@ -240,7 +262,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
             //Special Note
             var summaryTab = inputDatas.SpecialNoteItem.SummaryTab;
-            var summaryInfModel = new SummaryInfModel(summaryTab.Id, summaryTab.HpId, summaryTab.PtId, summaryTab.SeqNo, summaryTab.Text, summaryTab.Rtext, DateTime.UtcNow, DateTime.UtcNow);
+            var summaryInfModel = new SummaryInfModel(summaryTab.Id, summaryTab.HpId, summaryTab.PtId, summaryTab.SeqNo, summaryTab.Text, summaryTab.Rtext, CIUtil.GetJapanDateTimeNow(), CIUtil.GetJapanDateTimeNow());
             var patientInfTab = new PatientInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.PregnancyItems.Select(p => new PtPregnancyModel(
                         p.Id,
                         p.HpId,
@@ -253,12 +275,12 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         p.OvulationDate,
                         p.OvulationDueDate,
                         p.IsDeleted,
-                        DateTime.UtcNow,
+                        CIUtil.GetJapanDateTimeNow(),
                         inputDatas.UserId,
                         string.Empty,
                         p.SinDate
 
-                    )).ToList(), inputDatas.SpecialNoteItem.PatientInfoTab.PtCmtInfItems, inputDatas.SpecialNoteItem.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.KensaInfDetailItems.Select(k => new KensaInfDetailModel(k.HpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2, DateTime.MinValue, string.Empty, string.Empty, 0)).ToList()) }, new());
+                    )).ToList(), inputDatas.SpecialNoteItem.PatientInfoTab.PtCmtInfItems, inputDatas.SpecialNoteItem.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.KensaInfDetailItems.Select(k => new KensaInfDetailModel(k.HpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2, DateTime.MinValue, string.Empty, string.Empty, 0)).ToList()) });
 
             var flowSheetData = inputDatas.FlowSheetItems.Select(i => new FlowSheetModel(
                        i.SinDate,
@@ -305,21 +327,26 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     )));
             }
 
-            return check ?
-                new SaveMedicalOutputData(
-                    SaveMedicalStatus.Successed,
-                    RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
-                    new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
-                    KarteValidationStatus.Valid,
-                    ValidateFamilyListStatus.ValidateSuccess,
-                    UpsertFlowSheetStatus.Valid,
-                    UpsertPtDiseaseListStatus.Valid,
-                    sinDate,
-                    raiinNo,
-                    ptId
-                    )
-                :
-                new SaveMedicalOutputData(
+            if (check)
+            {
+                var receptionInfos = _receptionRepository.GetList(hpId, sinDate, raiinNo, ptId, isDeleted: 0);
+                var sameVisitList = _receptionRepository.GetListSameVisit(hpId, ptId, sinDate);
+                return new SaveMedicalOutputData(
+                         SaveMedicalStatus.Successed,
+                         RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                         new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
+                         KarteValidationStatus.Valid,
+                         ValidateFamilyListStatus.ValidateSuccess,
+                         UpsertFlowSheetStatus.Valid,
+                         UpsertPtDiseaseListStatus.Valid,
+                         sinDate,
+                         raiinNo,
+                         ptId,
+                         receptionInfos,
+                         sameVisitList
+                         );
+            }
+            return new SaveMedicalOutputData(
                     SaveMedicalStatus.Failed,
                     RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
                     new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
@@ -329,7 +356,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     UpsertPtDiseaseListStatus.Valid,
                     sinDate,
                     raiinNo,
-                    ptId
+                    ptId,
+                    new(),
+                    new()
                     );
         }
         finally
@@ -361,13 +390,19 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
         if (saveSuccess)
         {
+            List<FileInfModel> fileList = new();
             var fileInfUpdateTemp = CopyFileFromDoActionToKarte(ptInf != null ? ptInf.PtNum : 0, listFileName);
             if (fileInfUpdateTemp.Any())
             {
-                listUpdates = fileInfUpdateTemp.Select(item => item.Value).ToList();
+                var checkIsSchemaList = _karteInfRepository.ListCheckIsSchema(hpId, ptId, fileInfUpdateTemp);
+                foreach (var item in fileInfUpdateTemp.Select(item => item.Value))
+                {
+                    var isSchema = checkIsSchemaList.ContainsKey(item) && checkIsSchemaList[item];
+                    fileList.Add(new FileInfModel(isSchema, item));
+                }
             }
 
-            _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, listUpdates.Select(item => new FileInfModel(false, item)).ToList(), false);
+            _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, fileList, false);
         }
         else
         {
