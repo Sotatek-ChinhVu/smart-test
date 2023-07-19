@@ -134,7 +134,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetDataPrintDrugInfo)]
         public ActionResult<Response<GetDataPrintDrugInfoResponse>> GetDataPrintDrugInfo([FromQuery] GetDataPrintDrugInfoRequest request)
         {
-            var input = new GetDataPrintDrugInfoInputData(request.HpId, request.SinDate, request.ItemCd, request.Level, request.DrugName, request.YJCode, request.Type);
+            var input = new GetDataPrintDrugInfoInputData(request.HpId, request.SinDate, request.ItemCd, request.Level, string.Empty, request.YJCode, request.Type);
             var output = _bus.Handle(input);
 
             var presenter = new GetDataPrintDrugInfoPresenter();

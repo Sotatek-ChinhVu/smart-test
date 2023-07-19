@@ -5,10 +5,11 @@ namespace EmrCloudApi.Responses.DrugInfor;
 
 public class GetDataPrintDrugInfoResponse
 {
-    public GetDataPrintDrugInfoResponse(DrugInforModel drugInfor, string htmlData)
+    public GetDataPrintDrugInfoResponse(DrugInforModel drugInfor, string htmlData, int drugType)
     {
         DrugInfor = drugInfor;
         HtmlData = htmlData;
+        DrugType = drugType;
     }
 
     [JsonPropertyName("drugInfor")]
@@ -16,4 +17,7 @@ public class GetDataPrintDrugInfoResponse
 
     [JsonPropertyName("htmlData")]
     public string HtmlData { get; private set; }
+
+    [JsonPropertyName("drugType")]
+    public int DrugType { get; private set; }
 }

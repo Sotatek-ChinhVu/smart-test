@@ -330,8 +330,8 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.GetDataPrintDrugInfo)]
     public async Task<IActionResult> GetDataPrintDrugInfo([FromQuery] GetDataPrintDrugInfoRequest request)
     {
-        var inputData = new GetDataPrintDrugInfoInputData(request.HpId, request.SinDate, request.ItemCd, request.Level, request.DrugName, request.YJCode, request.Type);
-        
+        var inputData = new GetDataPrintDrugInfoInputData(request.HpId, request.SinDate, request.ItemCd, request.Level, string.Empty, request.YJCode, request.Type);
+
         var drugInfo = _commonDrugInf.GetDrugInforModel(inputData.HpId, inputData.SinDate, inputData.ItemCd);
         string htmlData = string.Empty;
         switch (inputData.Type)
@@ -346,7 +346,7 @@ public class PdfCreatorController : ControllerBase
                 htmlData = _commonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
         }
-        var outputData = new GetDataPrintDrugInfoOutputData(drugInfo, htmlData, inputData.DrugName);
+        var outputData = new GetDataPrintDrugInfoOutputData(drugInfo, htmlData, (int)inputData.Type);
 
         var present = new GetDataPrintDrugInfoPresenter();
         present.Complete(outputData);

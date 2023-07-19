@@ -6,11 +6,11 @@ namespace UseCase.DrugInfor.GetDataPrintDrugInfo;
 
 public class GetDataPrintDrugInfoOutputData : IOutputData
 {
-    public GetDataPrintDrugInfoOutputData(DrugInforModel drugInfor, string htmlData, string drugName)
+    public GetDataPrintDrugInfoOutputData(DrugInforModel drugInfor, string htmlData, int drugType)
     {
         DrugInfor = drugInfor;
         HtmlData = htmlData;
-        DrugName = drugName;
+        DrugType = drugType;
     }
 
     [JsonPropertyName("drugInfor")]
@@ -19,6 +19,6 @@ public class GetDataPrintDrugInfoOutputData : IOutputData
     [JsonPropertyName("htmlData")]
     public string HtmlData { get; private set; }
 
-    [JsonPropertyName("drugName")]
-    public string DrugName { get; private set; }
+    [JsonPropertyName("drugType")]
+    public int DrugType { get; private set; }
 }

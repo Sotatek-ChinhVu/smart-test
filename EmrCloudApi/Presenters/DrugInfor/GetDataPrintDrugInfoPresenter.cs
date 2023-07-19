@@ -10,6 +10,6 @@ public class GetDataPrintDrugInfoPresenter : IGetDataPrintDrugInfoOutputPort
 
     public void Complete(GetDataPrintDrugInfoOutputData outputData)
     {
-        Result.Data = new GetDataPrintDrugInfoResponse(outputData.DrugInfor, outputData.HtmlData);
+        Result.Data = new GetDataPrintDrugInfoResponse(outputData.DrugInfor, outputData.HtmlData, outputData.DrugType);
     }
 }
