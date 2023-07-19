@@ -513,21 +513,30 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <param name="ptIds">患者ID(null:未指定)</param>
         public void RunCalculateMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix)
         {
-            const string conFncName = nameof(RunCalculateMonth);
-            _emrLogger.WriteLogStart(this, conFncName, "");
+            var total = 1000;
+            int success = 1;
+            SendMessager(new RecalculationStatus(false, 1, total, 0, string.Empty));
+            for (int i = 0; i < 100; i++)
+            {
+                Thread.Sleep(100);
+                SendMessager(new RecalculationStatus(false, 1, success, 0, string.Empty));
+                success++;
+            }
+            //const string conFncName = nameof(RunCalculateMonth);
+            //_emrLogger.WriteLogStart(this, conFncName, "");
 
-            preFix = preFix + "MON_";
+            //preFix = preFix + "MON_";
 
-            //要求登録
-            AddCalcStatusMonth(hpId, seikyuYm, ptIds, preFix);
+            ////要求登録
+            //AddCalcStatusMonth(hpId, seikyuYm, ptIds, preFix);
 
-            AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(preFix);
-            SendMessager(new RecalculationStatus(false, 1, AllCalcCount, 0, string.Empty));
+            //AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(preFix);
+            //SendMessager(new RecalculationStatus(false, 1, AllCalcCount, 0, string.Empty));
 
-            //計算処理
-            RunCalculate(hpId, 0, 0, 0, preFix);
+            ////計算処理
+            //RunCalculate(hpId, 0, 0, 0, preFix);
 
-            _emrLogger.WriteLogEnd(this, conFncName, "");
+            //_emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         private void SendMessager(RecalculationStatus status)

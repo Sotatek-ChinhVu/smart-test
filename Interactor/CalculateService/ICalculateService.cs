@@ -23,7 +23,7 @@ namespace Interactor.CalculateService
 
         bool ReceFutanCalculateMain(ReceCalculateRequest inputData);
 
-        bool RunCalculateMonth(CalculateMonthRequest inputData);
+        Task RunCalculateMonth(CalculateMonthRequest inputData);
 
         SinMeiDataModelDto GetSinMeiInMonthList(GetSinMeiDtoInputData inputData);
     }

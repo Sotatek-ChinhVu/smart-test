@@ -2,6 +2,7 @@
 using Helper.Enum;
 using Infrastructure.Interfaces;
 using Interactor.CalculateService;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http;
 using UseCase.Accounting.GetMeiHoGai;
@@ -190,22 +191,50 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public bool RunCalculateMonth(CalculateMonthRequest inputData)
+        public async Task RunCalculateMonth(CalculateMonthRequest inputData)
         {
-            try
+            var content = JsonContent.Create(inputData);
+
+            var basePath = _configuration.GetSection("CalculateApi")["BasePath"]!;
+            string functionName = "Calculate/RunCalculateMonth";
+
+            content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
+            using (var response = await _httpClient.PostAsync($"{basePath}{functionName}", content, CancellationToken.None))
             {
-                var task = CallCalculate(CalculateApiPath.RunCalculateMonth, inputData);
-                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                using (Stream contentStream = await response.Content.ReadAsStreamAsync())
                 {
-                    return false;
+                    var buffer = new byte[8192];
+                    var isMoreToRead = true;
+
+                    do
+                    {
+                        var read = await contentStream.ReadAsync(buffer, 0, buffer.Length);
+                        if (read == 0)
+                        {
+                            isMoreToRead = false;
+                        }
+                        else
+                        {
+                            Console.WriteLine("step " + read);
+                        }
+                    }
+                    while (isMoreToRead);
                 }
-                return true;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Function RunCalculateMonth " + ex);
-                return false;
-            }
+            //try
+            //{
+            //    var task = CallCalculate(CalculateApiPath.RunCalculateMonth, inputData);
+            //    if (task.Result.ResponseStatus != ResponseStatus.Successed)
+            //    {
+            //        return false;
+            //    }
+            //    return true;
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine("Function RunCalculateMonth " + ex);
+            //    return false;
+            //}
         }
 
         public SinMeiDataModelDto GetSinMeiInMonthList(GetSinMeiDtoInputData inputData)
