@@ -1,8 +1,6 @@
 ﻿using Domain.Constant;
 using EmrCalculateApi.Constants;
 using EmrCalculateApi.Futan.ViewModels;
-using EmrCalculateApi.Helper.Messaging;
-using EmrCalculateApi.Helper.Messaging.Data;
 using EmrCalculateApi.Ika.Constants;
 using EmrCalculateApi.Ika.DB.CommandHandler;
 using EmrCalculateApi.Ika.DB.Finder;
@@ -14,6 +12,8 @@ using EmrCalculateApi.Requests;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -496,13 +496,14 @@ namespace EmrCalculateApi.Ika.ViewModels
                     }
                 }
 
+                successCount++;
                 if (AllCalcCount == successCount)
                 {
                     break;
                 }
                 SendMessager(new RecalculationStatus(false, 1, AllCalcCount, successCount, string.Empty));
-                successCount++;
             }
+            SendMessager(new RecalculationStatus(true, 1, AllCalcCount, successCount, string.Empty));
         }
         /// <summary>
         /// 再計算処理
@@ -801,7 +802,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             {
                 //データを削除する
                 ClearData();
-                
+
                 foreach (RaiinInfModel raiinInfModel in _raiinInfModels)
                 {
                     //_common.Sin.GetSinInf();

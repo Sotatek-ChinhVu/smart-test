@@ -235,7 +235,6 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 {
                     A
                 }
-
             );
 
             return
