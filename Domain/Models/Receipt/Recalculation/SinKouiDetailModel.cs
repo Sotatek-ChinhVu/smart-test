@@ -21,6 +21,7 @@ public class SinKouiDetailModel
         MasterSbt = masterSbt;
         TenMstIsNotNull = tenMstIsNull;
         CmtSelectList = cmtSelectList;
+        TenMst = new();
     }
 
     public SinKouiDetailModel(long ptId, long sinYm, int sinDate, long ptNum, string maxAge, string minAge, string itemCd, string cmtOpt, string itemName, string receName, double suryo, int isNodspRece, string masterSbt, bool tenMstIsNull)
@@ -40,6 +41,20 @@ public class SinKouiDetailModel
         MasterSbt = masterSbt;
         TenMstIsNotNull = tenMstIsNull;
         CmtSelectList = new();
+        TenMst = new();
+    }
+
+    public SinKouiDetailModel(long ptId, long sinYm,  string itemCd, string cmtOpt, string itemName,  double suryo, int isNodspRece, TenItemModel tenMst, List<ItemCommentSuggestionModel> cmtSelectList)
+    {
+        PtId = ptId;
+        SinYm = sinYm;
+        ItemCd = itemCd;
+        CmtOpt = cmtOpt;
+        ItemName = itemName;
+        Suryo = suryo;
+        IsNodspRece = isNodspRece;
+        TenMst = tenMst;
+        CmtSelectList = cmtSelectList;
     }
 
     public long PtId { get; private set; }

@@ -17,8 +17,6 @@ namespace Domain.CalculationInf
     {
         IEnumerable<CalculationInfModel> GetListDataCalculationInf(int hpId, long ptId);
 
-        void CheckErrorInMonth(int hpId, int seikyuYm, List<long> ptIds);
-
         int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm);
 
         List<ReceCheckOptModel> GetReceCheckOpts(int hpId);

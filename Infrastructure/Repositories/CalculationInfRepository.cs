@@ -18,7 +18,6 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -527,7 +526,18 @@ namespace Infrastructure.Repositories
                 var sinKouiDetailModels = new List<SinKouiDetailModel>();
                 foreach (var entity in entities)
                 {
-                    sinKouiDetailModels.Add(new SinKouiDetailModel(entity.TenMst, entity.SinKouiDetail));
+                    //sinKouiDetailModels.Add(new SinKouiDetailModel(entity.TenMst, entity.SinKouiDetail));
+                    sinKouiDetailModels.Add(new SinKouiDetailModel(
+                                                                    entity.SinKouiDetail.PtId,
+                                                                    entity.SinKouiDetail.SinYm,
+                                                                    entity.SinKouiDetail.ItemCd ?? string.Empty,
+                                                                    entity.SinKouiDetail.CmtOpt ?? string.Empty,
+                                                                    entity.SinKouiDetail.ItemName ?? string.Empty,
+                                                                    entity.SinKouiDetail.Suryo,
+                                                                    entity.SinKouiDetail.IsNodspRece,
+                                                                    ConvertTenMstToModel(entity.TenMst),
+                                                                    new()
+                                                                    ));
                 }
                 result.Add(new SinKouiCountModel(entities.Select(p => p.ptHokenPattern).Distinct().ToList(), groupKey.SinKouiCount, sinKouiDetailModels));
             }
@@ -629,9 +639,49 @@ namespace Infrastructure.Repositories
             var odrInfJoinDetails = odrInfJoinDetailQuery.ToList();
             foreach (var odrInfJoinDetail in odrInfJoinDetails)
             {
-                result.AddRange(odrInfJoinDetail.OdrInfDetails.Select(p => new OrdInfDetailModel(p)));
+                result.AddRange(odrInfJoinDetail.OdrInfDetails.Select(p => ToModel(p)));
             }
             return result;
+        }
+
+        private OrdInfDetailModel ToModel(OdrInfDetail odrInfDetail)
+        {
+            return new OrdInfDetailModel(
+                                   odrInfDetail.HpId,
+                                   odrInfDetail.RaiinNo,
+                                   odrInfDetail.RpNo,
+                                   odrInfDetail.RpEdaNo,
+                                   odrInfDetail.RowNo,
+                                   odrInfDetail.PtId,
+                                   odrInfDetail.SinDate,
+                                   odrInfDetail.SinKouiKbn,
+                                   odrInfDetail.ItemCd ?? string.Empty,
+                                   odrInfDetail.ItemName ?? string.Empty,
+                                   odrInfDetail.Suryo,
+                                   odrInfDetail.UnitName ?? string.Empty,
+                                   odrInfDetail.UnitSBT,
+                                   odrInfDetail.TermVal,
+                                   odrInfDetail.KohatuKbn,
+                                   odrInfDetail.SyohoKbn,
+                                   odrInfDetail.SyohoLimitKbn,
+                                   odrInfDetail.DrugKbn,
+                                   odrInfDetail.YohoKbn,
+                                   odrInfDetail.Kokuji1 ?? string.Empty,
+                                   odrInfDetail.Kokiji2 ?? string.Empty,
+                                   odrInfDetail.IsNodspRece,
+                                   odrInfDetail.IpnCd ?? string.Empty,
+                                   odrInfDetail.IpnName ?? string.Empty,
+                                   odrInfDetail.JissiKbn,
+                                   odrInfDetail.JissiDate ?? CIUtil.GetJapanDateTimeNow(),
+                                   odrInfDetail.JissiId,
+                                   odrInfDetail.JissiMachine ?? string.Empty,
+                                   odrInfDetail.ReqCd ?? string.Empty,
+                                   odrInfDetail.Bunkatu ?? string.Empty,
+                                   odrInfDetail.CmtName ?? string.Empty,
+                                   odrInfDetail.CmtOpt ?? string.Empty,
+                                   odrInfDetail.FontColor ?? string.Empty,
+                                   odrInfDetail.CommentNewline
+                               );
         }
 
         public List<BuiOdrItemMstModel> GetBuiOdrItemMsts(int hpId)
