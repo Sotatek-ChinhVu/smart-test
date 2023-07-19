@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.Reception;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.MaxMoney;
 using EmrCloudApi.Presenters.RaiinKubun;
@@ -30,6 +31,7 @@ using UseCase.RaiinKbn.GetPatientRaiinKubunList;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
+using UseCase.Reception.GetLastKarute;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetRaiinListWithKanInf;
@@ -37,6 +39,7 @@ using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
+using UseCase.Reception.RevertDeleteNoRecept;
 using UseCase.Reception.Update;
 using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
@@ -96,8 +99,7 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
             if (output.Status == InsertReceptionStatus.Success)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = output.RaiinNo, PtId = input.Dto.Reception.PtId });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new InsertReceptionPresenter();
@@ -113,8 +115,7 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
             if (output.Status == UpdateReceptionStatus.Success)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = input.Dto.Reception.RaiinNo, PtId = input.Dto.Reception.PtId });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new UpdateReceptionPresenter();
@@ -191,7 +192,8 @@ namespace EmrCloudApi.Controller
                                                            request.IsKohiHaveHokenMst1, request.KohiConfirmDate1, request.KohiHokenMstDisplayTextMaster1, request.KohiHokenMstStartDate1, request.KohiHokenMstEndDate1,
                                                            request.IsEmptyKohi2, request.IsKohiHaveHokenMst2, request.KohiConfirmDate2, request.KohiHokenMstDisplayTextMaster2, request.KohiHokenMstStartDate2,
                                                            request.KohiHokenMstEndDate2, request.IsEmptyKohi3, request.IsKohiHaveHokenMst3, request.KohiConfirmDate3, request.KohiHokenMstDisplayTextMaster3, request.KohiHokenMstStartDate3,
-                                                           request.KohiHokenMstEndDate3, request.IsEmptyKohi4, request.IsKohiHaveHokenMst4, request.KohiConfirmDate4, request.KohiHokenMstDisplayTextMaster4, request.KohiHokenMstStartDate4, request.KohiHokenMstEndDate4, request.PatientInfBirthday, request.PatternHokenKbn);
+                                                           request.KohiHokenMstEndDate3, request.IsEmptyKohi4, request.IsKohiHaveHokenMst4, request.KohiConfirmDate4, request.KohiHokenMstDisplayTextMaster4, request.KohiHokenMstStartDate4, request.KohiHokenMstEndDate4, request.PatientInfBirthday, request.PatternHokenKbn
+                                                           , request.SelectedHokenInfIsEmptyModel);
             var output = _bus.Handle(input);
 
             var presenter = new ValidPatternExpiratedPresenter();
@@ -276,14 +278,39 @@ namespace EmrCloudApi.Controller
             var deleteFirst = output.DeleteReceptionItems.FirstOrDefault();
             if (output.Status == DeleteReceptionStatus.Successed && deleteFirst != null)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                    new CommonMessage { SinDate = deleteFirst.SinDate, RaiinNo = deleteFirst.RaiinNo, PtId = deleteFirst.PtId });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new DeleteReceptionPresenter();
             presenter.Complete(output);
 
             return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetLastKarute)]
+        public ActionResult<Response<GetLastKaruteResponse>> GetLastKarute([FromQuery] GetLastKaruteRequest request)
+        {
+            var input = new GetLastKaruteInputData(HpId, request.PtNum);
+            var output = _bus.Handle(input);
+            var presenter = new GetLastKarutePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetLastKaruteResponse>>(presenter.Result);
+        }
+
+        [HttpPut(ApiPath.RevertDeleteNoRecept)]
+        public async Task<ActionResult<Response<RevertDeleteNoReceptResponse>>> RevertDeleteNoRecept(RevertDeleteNoReceptRequest request)
+        {
+            var input = new RevertDeleteNoReceptInputData(HpId, request.RaiinNo, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            if (output.Status == RevertDeleteNoReceptStatus.Success)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.receptionModel, new()));
+            }
+
+            var presenter = new RevertDeleteNoReceptPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<RevertDeleteNoReceptResponse>>(presenter.Result);
         }
     }
 }

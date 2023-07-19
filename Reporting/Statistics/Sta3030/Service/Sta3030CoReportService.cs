@@ -98,15 +98,18 @@ public class Sta3030CoReportService : ISta3030CoReportService
         // get data to print
         GetFieldNameList(formFileName);
         GetRowCount(formFileName);
-        GetData(hpId);
-        hasNextPage = true;
-        currentPage = 1;
 
-        //印刷
-        while (hasNextPage)
+        if (GetData(hpId))
         {
-            UpdateDrawForm();
-            currentPage++;
+            hasNextPage = true;
+            currentPage = 1;
+
+            //印刷
+            while (hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
 
         return new Sta3030Mapper(_singleFieldData, _tableFieldData, _extralData, rowCountFieldName, formFileName).GetData();
@@ -125,8 +128,8 @@ public class Sta3030CoReportService : ISta3030CoReportService
 
             //作成日時
             _extralData.Add("HeaderR_0_1_" + currentPage, CIUtil.SDateToShowSWDate(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
-            ) + DateTime.Now.ToString(" HH:mm") + "作成");
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
+            ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
 
             //ページ数
             int totalPage = (int)Math.Ceiling((double)printDatas.Count / maxRow);
@@ -227,7 +230,7 @@ public class Sta3030CoReportService : ISta3030CoReportService
         UpdateFormBody();
     }
 
-    private void GetData(int hpId)
+    private bool GetData(int hpId)
     {
         /// <summary>
         /// 明細データ追加
@@ -245,7 +248,7 @@ public class Sta3030CoReportService : ISta3030CoReportService
                 printData.PtName = tgtData.PtName;
                 printData.PtKanaName = tgtData.PtKanaName;
                 printData.BirthdayI = tgtData.Birthday;
-                printData.Age = CIUtil.SDateToAge(tgtData.Birthday, CIUtil.DateTimeToInt(DateTime.Now));
+                printData.Age = CIUtil.SDateToAge(tgtData.Birthday, CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow()));
                 printData.SexCd = tgtData.SexCd;
                 printData.LastVisitDateI = tgtData.LastVisitDate;
             }
@@ -382,11 +385,13 @@ public class Sta3030CoReportService : ISta3030CoReportService
         ptByomeiInfs = _finder.GetPtByomeiInfs(hpId, printConf);
         if ((ptByomeiInfs?.Count ?? 0) == 0)
         {
-            return;
+            return false;
         }
 
         //印刷用データの作成
         MakePrintData();
+
+        return printDatas.Count > 0;
     }
 
     private void SetFieldData(string field, string value)

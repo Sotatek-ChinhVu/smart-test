@@ -66,15 +66,18 @@ public class P33KoukiSeikyuCoReportService : IP33KoukiSeikyuCoReportService
         _seikyuType = seikyuType;
         var getData = GetData();
 
-        foreach (string currentNo in hokensyaNos)
+        if(getData)
         {
-            _currentHokensyaNo = currentNo;
-            _hasNextPage = true;
-            _currentPage = 1;
-            while (getData && _hasNextPage)
+            foreach (string currentNo in hokensyaNos)
             {
-                UpdateDrawForm();
-                _currentPage++;
+                _currentHokensyaNo = currentNo;
+                _hasNextPage = true;
+                _currentPage = 1;
+                while (getData && _hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
         }
 
@@ -107,7 +110,7 @@ public class P33KoukiSeikyuCoReportService : IP33KoukiSeikyuCoReportService
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd"))
             );
             SetFieldData("reportGengo", wrkYmd.Gengo);
             SetFieldData("reportYear", wrkYmd.Year.ToString());

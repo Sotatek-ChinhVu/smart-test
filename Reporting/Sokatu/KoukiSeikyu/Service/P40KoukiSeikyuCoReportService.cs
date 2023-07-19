@@ -71,23 +71,28 @@ public class P40KoukiSeikyuCoReportService : IP40KoukiSeikyuCoReportService
         _hpId = hpId;
         _seikyuYm = seikyuYm;
         _seikyuType = seikyuType;
+
         if (seikyuYm >= 202106)
         {
             _formFileName = "p40KoukiSeikyu_2106.rse";
         }
         var getData = GetData();
 
-        foreach (string currentNo in hokensyaNos)
+        if(getData)
         {
-            _currentPage = 1;
-            _currentHokensyaNo = currentNo;
-            _hasNextPage = true;
-            while (getData && _hasNextPage)
+            foreach (string currentNo in hokensyaNos)
             {
-                UpdateDrawForm();
-                _currentPage++;
+                _currentPage = 1;
+                _currentHokensyaNo = currentNo;
+                _hasNextPage = true;
+                while (getData && _hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
         }
+        
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
         return new KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
@@ -117,7 +122,7 @@ public class P40KoukiSeikyuCoReportService : IP40KoukiSeikyuCoReportService
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
             //提出年月日
             wrkYmd = CIUtil.SDateToShowWDate3(
-                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd"))
             );
             SetFieldData("reportGengo", wrkYmd.Gengo);
             SetFieldData("reportYear", wrkYmd.Year.ToString());

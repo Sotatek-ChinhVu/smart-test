@@ -8,10 +8,9 @@ namespace EmrCloudApi.Requests.MedicalExamination
 {
     public class OrderRealtimeCheckerRequest
     {
-        public OrderRealtimeCheckerRequest(long ptId, int hpId, int sinDay, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb, RealTimeCheckerCondition realTimeCheckerCondition)
+        public OrderRealtimeCheckerRequest(long ptId, int sinDay, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb, RealTimeCheckerCondition realTimeCheckerCondition)
         {
             PtId = ptId;
-            HpId = hpId;
             SinDay = sinDay;
             CurrentListOdr = currentListOdr;
             ListCheckingOrder = listCheckingOrder;
@@ -23,8 +22,6 @@ namespace EmrCloudApi.Requests.MedicalExamination
         }
 
         public long PtId { get; set; }
-
-        public int HpId { get; set; }
 
         public int SinDay { get; set; }
 

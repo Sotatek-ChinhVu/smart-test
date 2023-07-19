@@ -1,16 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
     [Table(name: "YAKKA_SYUSAI_MST")]
+    [Index(nameof(StartDate), nameof(EndDate), Name = "YAKKA_SYUSAI_MST_IDX01")]
     public class YakkaSyusaiMst : EmrCloneable<YakkaSyusaiMst>
     {
         /// <summary>
         /// 医療機関識別ID
         /// 
         /// </summary>
-        
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +21,7 @@ namespace Entity.Tenant
         /// 薬価基準コード
         /// 
         /// </summary>
-        
+
         [Column("YAKKA_CD", Order = 2)]
         [MaxLength(12)]
         public string YakkaCd { get; set; } = string.Empty;
@@ -28,7 +30,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        
+
         [Column("ITEM_CD", Order = 3)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
@@ -37,7 +39,7 @@ namespace Entity.Tenant
         /// 開始日
         /// 
         /// </summary>
-        
+
         [Column("START_DATE", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }

@@ -42,18 +42,19 @@ public class ReceTargetCoReportService : IReceTargetCoReportService
     {
         currentPage = 1;
         hasNextPage = true;
-        printoutDateTime = DateTime.Now;
+        printoutDateTime = CIUtil.GetJapanDateTimeNow();
         GetRowCount();
         coModel = GetData(hpId, seikyuYm);
-        MakePrintDataList();
-
-        while (hasNextPage)
+        if (coModel != null)
         {
-            UpdateDrawForm(seikyuYm);
-            currentPage++;
+            MakePrintDataList();
+            while (hasNextPage)
+            {
+                UpdateDrawForm(seikyuYm);
+                currentPage++;
+            }
         }
         _extralData.Add("totalPage", (currentPage - 1).ToString());
-
         return new ReceTargetMapper(_singleFieldData, _listTextData, _extralData, formFileName).GetData();
     }
 

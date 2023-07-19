@@ -60,6 +60,37 @@ public class ReceptionRowModel
         HokenPid = hokenPid;
     }
 
+    public ReceptionRowModel(long raiinNo, long ptId, int sinDate, int isDeleted)
+    {
+        IsDeleted = isDeleted;
+        RaiinNo = raiinNo;
+        PtId = ptId;
+        SinDate = sinDate;
+        SameVisit = string.Empty;
+        KanaName = string.Empty;
+        Name = string.Empty;
+        Sex = string.Empty;
+        Birthday = string.Empty;
+        Age = string.Empty;
+        YoyakuTime = string.Empty;
+        ReservationName = string.Empty;
+        UketukeTime = string.Empty;
+        SinStartTime = string.Empty;
+        SinEndTime = string.Empty;
+        KaikeiTime = string.Empty;
+        RaiinCmt = string.Empty;
+        PtComment = string.Empty;
+        HokenPatternName = string.Empty;
+        HokenPatternNameForAccountDueList = string.Empty;
+        LastVisitDate = string.Empty;
+        FirstVisitDate = string.Empty;
+        Sname = string.Empty;
+        RaiinRemark = string.Empty;
+        ConfirmationState = string.Empty;
+        ConfirmationResult = string.Empty;
+        GrpIdToDynamicCell = new();
+    }
+
     public long PtId { get; private set; }
 
     public int SinDate { get; private set; }

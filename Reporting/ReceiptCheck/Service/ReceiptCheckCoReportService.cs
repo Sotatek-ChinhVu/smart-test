@@ -1,6 +1,7 @@
 ﻿using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReceiptCheck.DB;
 using Reporting.ReceiptCheck.Mapper;
@@ -39,10 +40,13 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
 
             // データ取得
             _coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
-            // レセプト印刷
-            while (_hasNextPage)
+            if (_coModels != null && _coModels.Any())
             {
-                UpdateDrawForm(seikyuYm);
+                // レセプト印刷
+                while (_hasNextPage)
+                {
+                    UpdateDrawForm(seikyuYm);
+                }
             }
 
             return new CoReceiptCheckMapper(_singleFieldData, _tableFieldData).GetData();
@@ -52,9 +56,9 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
     private void UpdateDrawForm(int seikyuYm)
     {
         string tempSinYm = seikyuYm.AsString().Insert(4, "年");
-        string sYmd = CIUtil.SDateToShowSWDate(CIUtil.StrToIntDef(DateTime.Now.ToString("yyyyMMdd"), 0), fmtDate: 1) +
-                      "（" + CIUtil.JapanDayOfWeek(DateTime.Now) + "）" +
-                       DateTime.Now.ToString("HH:mm") + " 作成";
+        string sYmd = CIUtil.SDateToShowSWDate(CIUtil.StrToIntDef(CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd"), 0), fmtDate: 1) +
+                      "（" + CIUtil.JapanDayOfWeek(CIUtil.GetJapanDateTimeNow()) + "）" +
+                       CIUtil.GetJapanDateTimeNow().ToString("HH:mm") + " 作成";
 
         string sTgtYm = tempSinYm + "月度";
 
@@ -128,5 +132,4 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
             _singleFieldData.Add(field, value);
         }
     }
-
 }

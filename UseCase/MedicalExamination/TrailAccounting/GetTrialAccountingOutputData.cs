@@ -16,6 +16,17 @@ namespace UseCase.MedicalExamination.TrailAccounting
             Status = status;
         }
 
+        public GetTrialAccountingOutputData(GetTrialAccountingStatus status)
+        {
+            HokenPatternRate = string.Empty;
+            SinMeis = new();
+            SinHos = new();
+            SinGais = new();
+            AccountingInf = new();
+            WarningMemos = new();
+            Status = status;
+        }
+
         public string HokenPatternRate { get; private set; }
 
         public List<SinMeiModel> SinMeis { get; private set; }

@@ -105,58 +105,81 @@ public class StatisticService : IStatisticService
         _sta3070CoReportService = sta3070CoReportService;
     }
 
-    public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0)
+    public CommonReportingRequestModel PrintExecute(int hpId, string formName, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0)
     {
         var configDaily = _finder.GetDailyConfigStatisticMenu(hpId, menuId);
-
+        CommonReportingRequestModel result = new();
         switch ((StatisticReportType)configDaily.ReportId)
         {
             case StatisticReportType.Sta1001:
-                return PrintSta1001(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
+                result = PrintSta1001(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
+                break;
             case StatisticReportType.Sta1002:
-                return PrintSta1002(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
+                result = PrintSta1002(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
+                break;
             case StatisticReportType.Sta1010:
-                return PrintSta1010(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
+                result = PrintSta1010(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
+                break;
             case StatisticReportType.Sta2001:
-                return PrintSta2001(hpId, configDaily, monthFrom, monthTo);
+                result = PrintSta2001(hpId, configDaily, monthFrom, monthTo);
+                break;
             case StatisticReportType.Sta2002:
-                return PrintSta2002(hpId, configDaily, monthFrom, monthTo);
+                result = PrintSta2002(hpId, configDaily, monthFrom, monthTo);
+                break;
             case StatisticReportType.Sta2003:
-                return PrintSta2003(hpId, configDaily, monthFrom, monthTo);
+                result = PrintSta2003(hpId, configDaily, monthFrom, monthTo);
+                break;
             case StatisticReportType.Sta2010:
-                return PrintSta2010(hpId, configDaily, monthFrom);
+                result = PrintSta2010(hpId, configDaily, monthFrom);
+                break;
             case StatisticReportType.Sta2011:
-                return PrintSta2011(hpId, configDaily, monthFrom);
+                result = PrintSta2011(hpId, configDaily, monthFrom);
+                break;
             case StatisticReportType.Sta2021:
-                return PrintSta2021(hpId, configDaily, monthFrom, monthTo);
+                result = PrintSta2021(hpId, configDaily, monthFrom, monthTo);
+                break;
             case StatisticReportType.Sta3020:
-                return PrintSta3020(hpId, configDaily, dateFrom);
+                result = PrintSta3020(hpId, configDaily, dateFrom);
+                break;
             case StatisticReportType.Sta3080:
-                return PrintSta3080(hpId, configDaily, monthFrom, monthTo, coFileType);
+                result = PrintSta3080(hpId, configDaily, monthFrom, monthTo, coFileType);
+                break;
             case StatisticReportType.Sta3071:
-                return PrintSta3071(hpId, configDaily, dateFrom, dateTo, coFileType, isPutTotalRow);
+                result = PrintSta3071(hpId, configDaily, dateFrom, dateTo, coFileType, isPutTotalRow);
+                break;
             case StatisticReportType.Sta2020:
-                return PrintSta2020(hpId, configDaily, timeFrom, timeTo);
+                result = PrintSta2020(hpId, configDaily, timeFrom, timeTo);
+                break;
             case StatisticReportType.Sta3010:
-                return PrintSta3010(hpId, configDaily, dateFrom, coFileType);
+                result = PrintSta3010(hpId, configDaily, dateFrom, coFileType);
+                break;
             case StatisticReportType.Sta3001:
-                return PrintSta3001(hpId, configDaily, dateFrom);
+                result = PrintSta3001(hpId, configDaily, dateFrom);
+                break;
             case StatisticReportType.Sta3030:
-                return PrintSta3030(hpId, configDaily, dateFrom, dateTo, tenkiDateFrom ?? -1, tenkiDateTo ?? -1, enableRangeFrom ?? -1, enableRangeTo ?? -1, coFileType);
+                result = PrintSta3030(hpId, configDaily, dateFrom, dateTo, tenkiDateFrom ?? -1, tenkiDateTo ?? -1, enableRangeFrom ?? -1, enableRangeTo ?? -1, coFileType);
+                break;
             case StatisticReportType.Sta3040:
-                return PrintSta3040(hpId, configDaily, monthFrom, monthTo, coFileType);
+                result = PrintSta3040(hpId, configDaily, monthFrom, monthTo, coFileType);
+                break;
             case StatisticReportType.Sta3041:
-                return PrintSta3041(hpId, configDaily, monthFrom, monthTo, coFileType);
+                result = PrintSta3041(hpId, configDaily, monthFrom, monthTo, coFileType);
+                break;
             case StatisticReportType.Sta3050:
-                return PrintSta3050(hpId, configDaily, dateFrom, dateTo, ptNumFrom ?? 0, ptNumTo ?? 0, coFileType);
+                result = PrintSta3050(hpId, configDaily, dateFrom, dateTo, ptNumFrom ?? 0, ptNumTo ?? 0, coFileType);
+                break;
             case StatisticReportType.Sta3060:
-                return PrintSta3060(hpId, configDaily, monthFrom, monthTo, coFileType);
+                result = PrintSta3060(hpId, configDaily, monthFrom, monthTo, coFileType);
+                break;
             case StatisticReportType.Sta3070:
-                return PrintSta3070(hpId, configDaily, monthFrom, monthTo, coFileType);
+                result = PrintSta3070(hpId, configDaily, monthFrom, monthTo, coFileType);
+                break;
             case StatisticReportType.Sta3061:
-                return PrintSta3061(hpId, configDaily, dateFrom, dateTo);
+                result = PrintSta3061(hpId, configDaily, dateFrom, dateTo);
+                break;
         }
-        return new();
+        result.JobName = formName;
+        return result;
     }
 
     #region Print Report

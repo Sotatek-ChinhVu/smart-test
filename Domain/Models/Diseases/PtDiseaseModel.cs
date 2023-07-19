@@ -555,10 +555,10 @@ namespace Domain.Models.Diseases
             #endregion
 
             #region advance
-            if (CIUtil.GetByteCountFromString(Byomei) > 40 && ByomeiCd != null && ByomeiCd.Equals(PtDiseaseConst.FREE_WORD))
-            {
-                return ValidationStatus.InvalidFreeWord;
-            }
+            //if (ByomeiCd.Length > 40 && ByomeiCd != null && ByomeiCd.Equals(PtDiseaseConst.FREE_WORD))
+            //{
+            //    return ValidationStatus.InvalidFreeWord;
+            //}
             if (TenkiKbn == TenkiKbnConst.Continued && TenkiDate > 0)
             {
                 return ValidationStatus.InvalidTenkiDateContinue;

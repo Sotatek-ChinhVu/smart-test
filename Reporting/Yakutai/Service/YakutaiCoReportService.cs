@@ -83,38 +83,36 @@ namespace Reporting.Yakutai.Service
             _ptId = ptId;
             _sinDate = sinDate;
             _raiinNo = raiinNo;
-            _printoutDateTime = DateTime.Now;
+            _printoutDateTime = CIUtil.GetJapanDateTimeNow();
             coModels = GetData();
-
-            if (coModels == null || coModels.Any() == false)
-            {
-                return new();
-            }
             _currentPage = 1;
-            foreach (CoYakutaiModel coYakutaiModel in coModels)
+
+            if (coModels != null && coModels.Any())
             {
-                try
+                foreach (CoYakutaiModel coYakutaiModel in coModels)
                 {
-                    coModel = coYakutaiModel;
-
-                    _formFileName = GetFormFilePrinterName(coYakutaiModel).Item1;
-                    AddFileNamePageMap("1", _formFileName);
-                    _hasNextPage = true;
-
-                    GetRowCount(_formFileName);
-                    MakeOdrDtlList();
-                    //印刷
-                    while (_hasNextPage)
+                    try
                     {
-                        UpdateDrawForm();
-                        _currentPage++;
+                        coModel = coYakutaiModel;
+
+                        _formFileName = GetFormFilePrinterName(coYakutaiModel).Item1;
+                        AddFileNamePageMap("1", _formFileName);
+                        _hasNextPage = true;
+
+                        GetRowCount(_formFileName);
+                        MakeOdrDtlList();
+                        //印刷
+                        while (_hasNextPage)
+                        {
+                            UpdateDrawForm();
+                            _currentPage++;
+                        }
+                    }
+                    finally
+                    {
+                        _currentPage = 1;
                     }
                 }
-                finally
-                {
-                    _currentPage = 1;
-                }
-
             }
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
@@ -236,7 +234,7 @@ namespace Reporting.Yakutai.Service
 
         int _getPrintedLineCount()
         {
-            return printOutData.Count() % _dataRowCount;
+            return printOutData.Count % _dataRowCount;
         }
 
         int _getRemainingLineCount()
@@ -297,7 +295,7 @@ namespace Reporting.Yakutai.Service
             return addPrintOutData;
         }
 
-        private bool UpdateDrawForm()
+        private void UpdateDrawForm()
         {
             _hasNextPage = true;
             #region SubMethod
@@ -545,19 +543,8 @@ namespace Reporting.Yakutai.Service
 
             #endregion
 
-            try
-            {
-                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-                {
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-
-            return true;
+            UpdateFormHeader();
+            UpdateFormBody();
         }
 
         private List<CoYakutaiModel> GetData()

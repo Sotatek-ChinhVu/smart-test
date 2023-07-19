@@ -11,10 +11,9 @@
         ValidateSuccess = 7,
         InvalidSumAdjust = 8,
         InvalidThisWari = 9,
-        InvalidCredit = 10,
-        InvalidPayType = 11,
-        InvalidComment = 12,
-        InvalidSindate = 13,
-        InvalidRaiinNo = 14
+        InvalidPayType = 10,
+        InvalidComment = 11,
+        InvalidSindate = 12,
+        InvalidRaiinNo = 13
     }
 }

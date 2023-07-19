@@ -12,6 +12,10 @@
             SumAdjust = sumAdjust;
         }
 
+        public TrialAccountingInfDto()
+        {
+        }
+
         public int TotalPoint { get; private set; }
         public int KanFutan { get; private set; }
         public int TotalSelfExpense { get; private set; }

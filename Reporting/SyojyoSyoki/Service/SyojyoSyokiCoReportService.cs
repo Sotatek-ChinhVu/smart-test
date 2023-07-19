@@ -36,10 +36,9 @@ namespace Reporting.SyojyoSyoki.Service
         private int _hokenId;
         private int _syojyoSyokiRowCount;
         private int _syojyoSyokiCharCount;
-        private string _rowCountFieldName = "lsSyojyoSyoki";
+        private readonly string _rowCountFieldName = "lsSyojyoSyoki";
         private List<string> _syojyoSyokiList;
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
 
         public SyojyoSyokiCoReportService(IReadRseReportFileService readRseReportFileService, ICoSyojyoSyokiFinder finder)
@@ -57,26 +56,29 @@ namespace Reporting.SyojyoSyoki.Service
             GetRowCount();
             coModels = GetData();
 
-            foreach (CoSyojyoSyokiModel model in coModels)
+            if (coModels != null && coModels.Any()) 
             {
-                coModel = model;
-
-                if (coModel != null && coModel.ReceInf != null)
+                foreach (CoSyojyoSyokiModel model in coModels)
                 {
-                    _hasNextPage = true;
-                    _currentPage = 1;
+                    coModel = model;
 
-                    // 症状詳記リスト
-                    _syojyoSyokiList = new List<string>();
-
-                    MakeSyojyoSyokiList();
-
-                    while (_hasNextPage)
+                    if (coModel != null && coModel.ReceInf != null)
                     {
-                        _hasNextPage = UpdateDrawForm();
-                        _currentPage++;
-                    }
+                        _hasNextPage = true;
+                        _currentPage = 1;
 
+                        // 症状詳記リスト
+                        _syojyoSyokiList = new List<string>();
+
+                        MakeSyojyoSyokiList();
+
+                        while (_hasNextPage)
+                        {
+                            _hasNextPage = UpdateDrawForm();
+                            _currentPage++;
+                        }
+
+                    }
                 }
             }
 

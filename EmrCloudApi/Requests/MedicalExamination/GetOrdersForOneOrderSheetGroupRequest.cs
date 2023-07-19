@@ -4,8 +4,6 @@
     {
         public long PtId { get; set; }
 
-        public int HpId { get; set; }
-
         public int SinDate { get; set; }
 
         public int OdrKouiKbn { get; set; }
