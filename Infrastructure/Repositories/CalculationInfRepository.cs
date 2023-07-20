@@ -542,7 +542,7 @@ namespace Infrastructure.Repositories
                                                                     ConvertTenMstToModel(entity.TenMst)
                                                                     ));
                 }
-                result.Add(ConvertToModel(entities.Select(p => p.ptHokenPattern).Distinct().ToList(), groupKey?.SinKouiCount ?? new(), sinKouiDetailModels));
+                result.Add(ConvertToModel(entities.Select(p => p.ptHokenPattern).Distinct().ToList(), groupKey.SinKouiCount, sinKouiDetailModels));
             }
             return result;
         }
