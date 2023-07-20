@@ -9,14 +9,15 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.Create;
+using UseCase.User.GetAllPermission;
 using UseCase.User.GetList;
-using UseCase.User.GetListUserByCurrentUser;
-using UseCase.User.GetListJobMst;
 using UseCase.User.GetListFunctionPermission;
+using UseCase.User.GetListJobMst;
+using UseCase.User.GetListUserByCurrentUser;
 using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.SaveListUserMst;
 using UseCase.User.UpsertList;
-using UseCase.User.GetAllPermission;
+using UseCase.User.UserInfo;
 
 namespace EmrCloudApi.Controller;
 
@@ -189,4 +190,17 @@ public class UserController : AuthorizeControllerBase
                 userInfoRequest.IsDeleted
             );
     }
+
+    [HttpGet(ApiPath.GetUserInfo)]
+    public ActionResult<Response<GetUserInfoResponse>> GetUserInfo()
+    {
+        var input = new GetUserInfoInputData(HpId, UserId);
+        var output = _bus.Handle(input);
+        var presenter = new GetUserInfoPresenter();
+
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetUserInfoResponse>>(presenter.Result);
+    }
+
 }
