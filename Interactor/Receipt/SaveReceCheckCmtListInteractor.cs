@@ -26,15 +26,18 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
     {
         try
         {
-            var responseValidate = ValidateInput(inputData);
+            var receCheckErrorList = inputData.ReceCheckErrorList.Select(item => ConvertToReceCheckErrorModel(item))
+                                                                 .ToList();
+            var responseValidate = ValidateInput(inputData, receCheckErrorList);
             if (responseValidate != SaveReceCheckCmtListStatus.ValidateSuccess)
             {
                 return new SaveReceCheckCmtListOutputData(responseValidate);
             }
             var receCheckCmtList = inputData.ReceCheckCmtList.Select(item => ConvertToReceCheckCmtModel(item))
-                                                                  .ToList();
+                                                             .ToList();
 
-            if (_receiptRepository.SaveReceCheckCmtList(inputData.HpId, inputData.UserId, inputData.HokenId, inputData.SinYm, inputData.PtId, receCheckCmtList))
+            if (_receiptRepository.SaveReceCheckCmtList(inputData.HpId, inputData.UserId, inputData.HokenId, inputData.SinYm, inputData.PtId, receCheckCmtList)
+                && _receiptRepository.SaveReceCheckErrList(inputData.HpId, inputData.UserId, inputData.HokenId, inputData.SinYm, inputData.PtId, receCheckErrorList))
             {
                 return new SaveReceCheckCmtListOutputData(SaveReceCheckCmtListStatus.Successed);
             }
@@ -49,6 +52,17 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
         }
     }
 
+    private ReceCheckErrModel ConvertToReceCheckErrorModel(ReceCheckErrorItem item)
+    {
+        return new ReceCheckErrModel(
+                   item.ErrCd,
+                   item.SinDate,
+                   item.ACd,
+                   item.BCd,
+                   item.IsChecked
+               );
+    }
+
     private ReceCheckCmtModel ConvertToReceCheckCmtModel(ReceCheckCmtItem item)
     {
         return new ReceCheckCmtModel(
@@ -61,7 +75,7 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
                 );
     }
 
-    private SaveReceCheckCmtListStatus ValidateInput(SaveReceCheckCmtListInputData inputData)
+    private SaveReceCheckCmtListStatus ValidateInput(SaveReceCheckCmtListInputData inputData, List<ReceCheckErrModel> receCheckErrorList)
     {
         if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
         {
@@ -75,7 +89,7 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
         {
             return SaveReceCheckCmtListStatus.InvalidHokenId;
         }
-        else if (!inputData.ReceCheckCmtList.Any())
+        else if (!inputData.ReceCheckCmtList.Any() && !receCheckErrorList.Any())
         {
             return SaveReceCheckCmtListStatus.Failed;
         }
@@ -91,6 +105,10 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
         if (seqNoList.Any() && !_receiptRepository.CheckExistSeqNoReceCheckCmtList(inputData.HpId, inputData.HokenId, inputData.SinYm, inputData.PtId, seqNoList))
         {
             return SaveReceCheckCmtListStatus.InvalidSeqNo;
+        }
+        else if (receCheckErrorList.Any() && !_receiptRepository.CheckExistSeqNoReceCheckErrorList(inputData.HpId, inputData.HokenId, inputData.SinYm, inputData.PtId, receCheckErrorList))
+        {
+            return SaveReceCheckCmtListStatus.InvalidReceCheckErrorItem;
         }
         return SaveReceCheckCmtListStatus.ValidateSuccess;
     }

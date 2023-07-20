@@ -173,8 +173,9 @@ public class ReceiptController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveReceCheckCmtList)]
     public ActionResult<Response<SaveReceCheckCmtListResponse>> SaveReceCheckCmtList([FromBody] SaveReceCheckCmtListRequest request)
     {
-        var listReceSyoukiInf = request.ReceCheckCmtList.Select(item => ConvertToReceCheckCmtItem(item)).ToList();
-        var input = new SaveReceCheckCmtListInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, listReceSyoukiInf);
+        var receCheckCmtList = request.ReceCheckCmtList.Select(item => ConvertToReceCheckCmtItem(item)).ToList();
+        var receCheckErrorList = request.ReceCheckErrorList.Select(item => ConvertToReceCheckErrorItem(item)).ToList();
+        var input = new SaveReceCheckCmtListInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, receCheckCmtList, receCheckErrorList);
         var output = _bus.Handle(input);
 
         var presenter = new SaveReceCheckCmtListPresenter();
@@ -633,6 +634,20 @@ public class ReceiptController : AuthorizeControllerBase
     {
         if (!string.IsNullOrEmpty(inputName)) return $"{inputName}.zip";
         return $"ReceiptCreation{CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow())}.zip";
+    }
+
+    private ReceCheckErrorItem ConvertToReceCheckErrorItem(SaveReceCheckErrorListRequestItem item)
+    {
+        int isChecked = item.IsChecked ? 1 : 0;
+        return new ReceCheckErrorItem(
+                   item.ErrCd,
+                   item.SinDate,
+                   item.ACd,
+                   item.BCd,
+                   string.Empty,
+                   string.Empty,
+                   isChecked
+               );
     }
     #endregion
 }
