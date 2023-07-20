@@ -97,6 +97,7 @@ using Interactor.Document.CommonGetListParam;
 using Interactor.DrugDetail;
 using Interactor.DrugDetailData;
 using Interactor.DrugInfor;
+using Interactor.DrugInfor.CommonDrugInf;
 using Interactor.Family;
 using Interactor.Family.ValidateFamilyList;
 using Interactor.FlowSheet;
@@ -320,6 +321,7 @@ using UseCase.DrugDetailData.ShowKanjaMuke;
 using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
+using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.Family.GetFamilyList;
 using UseCase.Family.GetFamilyReverserList;
 using UseCase.Family.GetMaybeFamilyList;
@@ -365,7 +367,6 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
-using UseCase.Lock.CheckLockOpenAccounting;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
@@ -909,6 +910,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
             services.AddTransient<ICheckOpenReportingService, CheckOpenReportingService>();
             services.AddTransient<IUserTokenRepository, UserTokenRepository>();
+            services.AddTransient<IGetCommonDrugInf, GetCommonDrugInf>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1171,6 +1173,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //DrugInfor
             busBuilder.RegisterUseCase<GetDrugInforInputData, GetDrugInforInteractor>();
+            busBuilder.RegisterUseCase<GetDataPrintDrugInfoInputData, GetDataPrintDrugInfoInteractor>();
 
             // Get HokenMst by FutansyaNo
             busBuilder.RegisterUseCase<GetKohiHokenMstInputData, GetKohiHokenMstInteractor>();
@@ -1384,7 +1387,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetLockInfoInputData, GetLockInfoInteractor>();
             busBuilder.RegisterUseCase<CheckLockVisitingInputData, CheckLockVisitingInteractor>();
             busBuilder.RegisterUseCase<CheckExistFunctionCodeInputData, CheckExistFunctionCodeInteractor>();
-            busBuilder.RegisterUseCase<CheckLockOpenAccountingInputData, CheckLockOpenAccountingInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();

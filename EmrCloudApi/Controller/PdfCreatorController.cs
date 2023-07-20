@@ -1,8 +1,11 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.DrugInfor;
 using EmrCloudApi.Presenters.MedicalExamination;
+using EmrCloudApi.Requests.DrugInfor;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
 using Helper.Enum;
+using Interactor.DrugInfor.CommonDrugInf;
 using Interactor.MedicalExamination.HistoryCommon;
 using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +19,7 @@ using Reporting.ReportServices;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
+using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 
 namespace EmrCloudApi.Controller;
@@ -28,12 +32,14 @@ public class PdfCreatorController : ControllerBase
     private readonly IReportService _reportService;
     private readonly IConfiguration _configuration;
     private readonly IHistoryCommon _historyCommon;
+    private readonly IGetCommonDrugInf _commonDrugInf;
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf)
     {
         _reportService = reportService;
         _configuration = configuration;
         _historyCommon = historyCommon;
+        _commonDrugInf = commonDrugInf;
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
@@ -312,6 +318,81 @@ public class PdfCreatorController : ControllerBase
                     ContentDisposition cd = new ContentDisposition
                     {
                         FileName = "カルテ２号紙.pdf",
+                        Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
+                    };
+                    Response.Headers.Add("Content-Disposition", cd.ToString());
+                    return File(result, "application/pdf");
+                }
+            }
+        }
+    }
+
+    [HttpGet(ApiPath.GetDataPrintDrugInfo)]
+    public async Task<IActionResult> GetDataPrintDrugInfo([FromQuery] GetDataPrintDrugInfoRequest request)
+    {
+        var inputData = new GetDataPrintDrugInfoInputData(request.HpId, request.SinDate, request.ItemCd, request.Level, string.Empty, request.YJCode, request.Type);
+
+        var drugInfo = _commonDrugInf.GetDrugInforModel(inputData.HpId, inputData.SinDate, inputData.ItemCd);
+        string htmlData = string.Empty;
+        switch (inputData.Type)
+        {
+            case TypeHTMLEnum.ShowProductInf:
+                htmlData = _commonDrugInf.ShowProductInf(inputData.HpId, inputData.SinDate, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                break;
+            case TypeHTMLEnum.ShowKanjaMuke:
+                htmlData = _commonDrugInf.ShowKanjaMuke(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                break;
+            case TypeHTMLEnum.ShowMdbByomei:
+                htmlData = _commonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                break;
+        }
+        var outputData = new GetDataPrintDrugInfoOutputData(drugInfo, htmlData, (int)inputData.Type);
+
+        var present = new GetDataPrintDrugInfoPresenter();
+        present.Complete(outputData);
+
+        var stringPrintDrugInfoResult = JsonSerializer.Serialize(present.Result);
+
+        string baseUrl = _configuration.GetSection("DrugInfoTemplateDefault").Value!;
+
+        using (var clientResponse = await _httpClient.GetAsync(baseUrl))
+        {
+            byte[] bytes = await clientResponse.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+
+            using (var memoryStream = new MemoryStream())
+            {
+                string decoded = Encoding.UTF8.GetString(bytes);
+
+                decoded = decoded.Replace("__DATA_DRUG_INFORMATION__", stringPrintDrugInfoResult);
+
+                bytes = Encoding.UTF8.GetBytes(decoded);
+            }
+
+            MultipartFormDataContent form = new MultipartFormDataContent();
+
+            form.Add(new StringContent("0"), "marginTop");
+            form.Add(new StringContent("0".ToString()), "marginBottom");
+            form.Add(new StringContent("0".ToString()), "marginLeft");
+            form.Add(new StringContent("0".ToString()), "marginRight");
+            form.Add(new StringContent("8.27"), "paperWidth");
+            form.Add(new StringContent("11.7"), "paperHeight");
+            form.Add(new StringContent("window.status === 'ready'"), "waitForExpression");
+            form.Add(new ByteArrayContent(bytes, 0, bytes.Length), "files", "index.html");
+
+            string basePath = _configuration.GetSection("RenderKarte2ReportApi")["BasePath"]!;
+
+            using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}", form))
+            {
+                response.EnsureSuccessStatusCode();
+
+                using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
+                {
+                    PdfReader pdfReader = new PdfReader(streamingData);
+                    var byteData = streamingData.ToArray();
+                    var result = SetTitleMetadata(byteData, "医薬品情報.pdf");
+                    ContentDisposition cd = new ContentDisposition
+                    {
+                        FileName = "医薬品情報.pdf",
                         Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
                     };
                     Response.Headers.Add("Content-Disposition", cd.ToString());
