@@ -374,6 +374,8 @@ public class PdfCreatorController : ControllerBase
 
     private async Task<IActionResult> ActionReturnPDF(bool returnNoData, object data, ReportType reportType, string fileName)
     {
+        var json = JsonSerializer.Serialize(data);
+        Console.WriteLine("DataJsonTestPdfString: " + json);
         if (returnNoData)
         {
             return Content(@"
@@ -387,7 +389,6 @@ public class PdfCreatorController : ControllerBase
           ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
           new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
-        var json = JsonSerializer.Serialize(data);
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
         string functionName = reportType switch
