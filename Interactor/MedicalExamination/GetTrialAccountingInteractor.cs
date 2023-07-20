@@ -7,6 +7,7 @@ using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Interactor.CalculateService;
+using Newtonsoft.Json;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.TrailAccounting;
 
@@ -47,10 +48,10 @@ namespace Interactor.MedicalExamination
                                 requestRaiinInf,
                                 true
                             );
-
                 var trialCalculateResponse = _calculateRepository.RunTrialCalculate(runTraialCalculateRequest);
 
                 var sinMeis = GetSinMei(trialCalculateResponse.SinMeiList);
+
                 var sinHos = GetSinHo(sinMeis);
                 var kaikeis = ConvertToKaikeiInfModel(trialCalculateResponse.KaikeiInfList);
                 var sinGais = GetSinGai(inputData.HpId, sinMeis, kaikeis);
@@ -102,55 +103,77 @@ namespace Interactor.MedicalExamination
                                                                         false
                                                             )).ToList();
 
-            return EditSinMei(sinMei);
+            EditSinMei(sinMei);
+            return sinMei;
         }
 
-        private List<SinMeiModel> EditSinMei(List<SinMeiModel> listSinMei)
+        private void EditSinMei(List<SinMeiModel> listSinMei)
         {
-            if (listSinMei == null || listSinMei.Count <= 0) return new List<SinMeiModel>();
+            //if (listSinMei == null || listSinMei.Count <= 0) return new List<SinMeiModel>();
+
+            //int oldSinId = 0;
+            //var result = new List<SinMeiModel>();
+
+            //foreach (SinMeiModel sinMei in listSinMei)
+            //{
+            //    if (sinMei.SinId != 0 && sinMei.SinId != oldSinId)
+            //    {
+            //        oldSinId = sinMei.SinId;
+            //        sinMei.SinIdBinding = oldSinId.AsString();
+            //    }
+
+            //    //listSinMei.Add(sinMei);
+
+            //    if (sinMei == listSinMei.Last()) continue;
+
+            //    SinMeiModel nextSinMei = listSinMei[listSinMei.IndexOf(sinMei) + 1];
+            //    if (nextSinMei.SinId != 0 && nextSinMei.SinId != oldSinId)
+            //    {
+            //        listSinMei.Add(new SinMeiModel(sinMei.SinId,
+            //                                    sinMei.SinIdBinding,
+            //                                    sinMei.ItemName,
+            //                                    sinMei.Suryo,
+            //                                    sinMei.UnitName,
+            //                                    sinMei.TenKai,
+            //                                    sinMei.TotalTen,
+            //                                    sinMei.TotalKingaku,
+            //                                    sinMei.Kingaku,
+            //                                    sinMei.FutanS,
+            //                                    sinMei.FutanK1,
+            //                                    sinMei.FutanK2,
+            //                                    sinMei.FutanK3,
+            //                                    sinMei.FutanK4,
+            //                                    sinMei.CdKbn,
+            //                                    sinMei.JihiSbt,
+            //                                    sinMei.EnTenKbn,
+            //                                    sinMei.SanteiKbn,
+            //                                    sinMei.InOutKbn,
+            //                                    true));
+            //    }
+            //}
+
+            //return listSinMei;
+
+            if (listSinMei == null || listSinMei.Count <= 0) return;
 
             int oldSinId = 0;
-            var result = new List<SinMeiModel>();
 
-            foreach (SinMeiModel sinMei in listSinMei)
+            for (int i = 0; i < listSinMei.Count; i++)
             {
-                if (sinMei.SinId != 0 && sinMei.SinId != oldSinId)
+                if (listSinMei[i].SinId != 0 && listSinMei[i].SinId != oldSinId)
                 {
-                    oldSinId = sinMei.SinId;
-                    sinMei.SinIdBinding = oldSinId.AsString();
+                    oldSinId = listSinMei[i].SinId;
+                    listSinMei[i].SinIdBinding = oldSinId.AsString();
                 }
 
-                result.Add(sinMei);
+                if (i == listSinMei.Count - 1) continue;
 
-                if (sinMei == listSinMei.Last()) continue;
-
-                SinMeiModel nextSinMei = listSinMei[listSinMei.IndexOf(sinMei) + 1];
-                if (nextSinMei.SinId != 0 && nextSinMei.SinId != oldSinId)
+                if (listSinMei[i + 1].SinId != 0 && listSinMei[i + 1].SinId != oldSinId)
                 {
-                    result.Add(new SinMeiModel(sinMei.SinId,
-                                                sinMei.SinIdBinding,
-                                                sinMei.ItemName,
-                                                sinMei.Suryo,
-                                                sinMei.UnitName,
-                                                sinMei.TenKai,
-                                                sinMei.TotalTen,
-                                                sinMei.TotalKingaku,
-                                                sinMei.Kingaku,
-                                                sinMei.FutanS,
-                                                sinMei.FutanK1,
-                                                sinMei.FutanK2,
-                                                sinMei.FutanK3,
-                                                sinMei.FutanK4,
-                                                sinMei.CdKbn,
-                                                sinMei.JihiSbt,
-                                                sinMei.EnTenKbn,
-                                                sinMei.SanteiKbn,
-                                                sinMei.InOutKbn,
-                                                true));
+                    listSinMei.Insert(i + 1, new SinMeiModel());
+                    i++;
                 }
             }
-
-            return result;
         }
 
         private List<SinHoModel> GetSinHo(List<SinMeiModel> sinMeiModels)

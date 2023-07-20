@@ -54,6 +54,16 @@ namespace Domain.Models.Accounting
             Days = days;
         }
 
+        public SinMeiModel()
+        {
+            SinIdBinding = string.Empty;
+            ItemName = string.Empty;
+            UnitName = string.Empty;
+            TenKai = string.Empty;
+            CdKbn = string.Empty;
+            Days = new();
+        }
+
         public int SinId { get; private set; }
         public string SinIdBinding { get; set; }
         public string ItemName { get; private set; }
