@@ -18,10 +18,22 @@
 
         public List<RecedenCmtSelectModel> ItemCmtModels { get; private set; }
 
+        public List<GroupCommentModel> ListGroupComment { get; private set; }
+
         public ItemCommentSuggestionModel SetData(List<RecedenCmtSelectModel> itemCmtModels)
         {
             ItemCmtModels = itemCmtModels;
             return this;
         }
+    }
+
+    public class GroupCommentModel
+    {
+        public GroupCommentModel(List<RecedenCmtSelectModel> itemCmtModels)
+        {
+            ItemCmtModels = itemCmtModels;
+        }
+
+        public List<RecedenCmtSelectModel> ItemCmtModels { get; private set; }
     }
 }

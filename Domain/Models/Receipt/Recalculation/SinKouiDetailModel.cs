@@ -62,9 +62,10 @@ public class SinKouiDetailModel
         MasterSbt = string.Empty;
     }
 
-    public SinKouiDetailModel(long ptId, long sinYm, string maxAge, string minAge, string itemCd, string cmtOpt, string itemName, string receName, double suryo, int isNodspRece, string masterSbt, TenItemModel tenMst)
+    public SinKouiDetailModel(long ptId, long ptNum, long sinYm, string maxAge, string minAge, string itemCd, string cmtOpt, string itemName, string receName, double suryo, int isNodspRece, string masterSbt, TenItemModel tenMst)
     {
         PtId = ptId;
+        PtNum = ptNum;
         SinYm = sinYm;
         MaxAge = maxAge;
         MinAge = minAge;

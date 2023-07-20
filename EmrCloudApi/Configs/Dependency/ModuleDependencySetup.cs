@@ -129,6 +129,7 @@ using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
 using Interactor.RaiinListSetting;
 using Interactor.Receipt;
+using Interactor.ReceiptCheck;
 using Interactor.Reception;
 using Interactor.ReceptionInsurance;
 using Interactor.ReceptionSameVisit;
@@ -176,6 +177,8 @@ using Reporting.DrugNoteSeal.DB;
 using Reporting.DrugNoteSeal.Service;
 using Reporting.Karte1.DB;
 using Reporting.Karte1.Service;
+using Reporting.Karte3.DB;
+using Reporting.Karte3.Service;
 using Reporting.Kensalrai.DB;
 using Reporting.Kensalrai.Service;
 using Reporting.MedicalRecordWebId.DB;
@@ -359,6 +362,7 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
+using UseCase.Lock.CheckLockOpenAccounting;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
@@ -404,6 +408,7 @@ using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
@@ -504,8 +509,10 @@ using UseCase.Receipt.SaveReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ValidateCreateUKEFile;
+using UseCase.ReceiptCheck;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetLastKarute;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetListRaiinInf;
@@ -608,16 +615,6 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.Lock.CheckExistFunctionCode;
-using CommonChecker.Caches.Interface;
-using CommonChecker.Caches;
-using Reporting.Sokatu.KokhoSeikyu.Service;
-using UseCase.AccountDue.IsNyukinExisted;
-using UseCase.Lock.CheckLockOpenAccounting;
-using Reporting.Karte3.Service;
-using Reporting.Karte3.DB;
-using UseCase.Reception.GetLastKarute;
-using UseCase.MstItem.ConvertStringChkJISKj;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1335,6 +1332,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
             busBuilder.RegisterUseCase<SaveReceStatusInputData, SaveReceStatusInteractor>();
             busBuilder.RegisterUseCase<GetReceStatusInputData, GetReceStatusInteractor>();
+            busBuilder.RegisterUseCase<ReceiptCheckRecalculationInputData, ReceiptCheckRecalculationInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();

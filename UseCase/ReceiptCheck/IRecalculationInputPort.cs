@@ -2,7 +2,7 @@
 
 namespace UseCase.ReceiptCheck
 {
-    public interface IRecalculationInputPort : IInputPort<RecalculationInputData, RecalculationOutputData>
+    public interface IRecalculationInputPort : IInputPort<ReceiptCheckRecalculationInputData, ReceiptCheckRecalculationOutputData>
     {
     }
 }

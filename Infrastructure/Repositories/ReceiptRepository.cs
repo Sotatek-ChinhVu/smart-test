@@ -3077,6 +3077,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                    receInf.HpId,
                    receInf.SeikyuYm,
                    receInf.PtId,
+                   0,
                    receInf.SinYm,
                    receInf.HokenId,
                    receInf.HokenId2,

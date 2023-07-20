@@ -472,6 +472,23 @@ namespace Domain.Models.Diseases
             return this;
         }
 
+        public PtDiseaseModel(string byomei, List<PrefixSuffixModel> prefixSuffixList)
+        {
+            Byomei = byomei;
+            PrefixSuffixList = prefixSuffixList;
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = string.Empty;
+            Icd1022013 = string.Empty;
+            ItemCd = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
+            ByomeiCd = string.Empty;
+            HosokuCmt = string.Empty;
+        }
+
         public ValidationStatus Validation()
         {
             #region common

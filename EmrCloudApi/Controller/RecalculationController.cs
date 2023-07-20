@@ -1,4 +1,6 @@
-﻿using EmrCloudApi.Requests.Receipt;
+﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Requests.Receipt;
+using EmrCloudApi.Requests.ReceiptCheck;
 using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
@@ -6,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using UseCase.Core.Sync;
 using UseCase.Receipt.Recalculation;
+using RCUseCase = UseCase.ReceiptCheck;
 
 namespace EmrCloudApi.Controller;
 
@@ -86,5 +89,35 @@ public class RecalculationController : AuthorizeControllerBase
         var resultForFrontEnd = Encoding.UTF8.GetBytes(titleProgressbar.ToString());
         HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
         HttpContext.Response.Body.FlushAsync();
+    }
+
+    [HttpPost(ApiPath.ReceiptCheckRecalculation)]
+    public void ReceiptCheckRecalculation([FromBody] ReceiptCheckRecalculationRequest request)
+    {
+        try
+        {
+            Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
+            Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
+
+            HttpContext.Response.ContentType = "application/json";
+            //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
+            HttpResponse response = HttpContext.Response;
+            //response.StatusCode = 202;
+
+            var input = new RCUseCase.ReceiptCheckRecalculationInputData(HpId, UserId, request.PtIds, request.SeikyuYm);
+            _bus.Handle(input);
+        }
+        catch
+        {
+            var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
+        }
+        finally
+        {
+            Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+            Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
+            HttpContext.Response.Body.Close();
+        }
     }
 }

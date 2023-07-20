@@ -25,7 +25,7 @@ namespace Domain.CalculationInf
 
         List<SinKouiCountModel> GetSinKouiCounts(int hpId, long ptId, int sinYm, int hokenId);
 
-        void InsertReceCmtErr(int hpId, int userId, string userName, List<ReceCheckErrModel> oldReceCheckErrs, List<ReceCheckErrModel> newReceCheckErrs, ReceInfModel receInfModel, string errCd, string errMsg1, string errMsg2 = "", string aCd = " ", string bCd = " ", int sinDate = 0);
+        void InsertReceCmtErr(int hpId, int userId, List<ReceCheckErrModel> oldReceCheckErrs, List<ReceCheckErrModel> newReceCheckErrs, ReceInfModel receInfModel, string errCd, string errMsg1, string errMsg2 = "", string aCd = " ", string bCd = " ", int sinDate = 0);
 
         List<PtDiseaseModel> GetByomeiInThisMonth(int hpId, int sinYm, long ptId, int hokenId);
 
@@ -53,7 +53,7 @@ namespace Domain.CalculationInf
 
         List<DensiSanteiKaisuModel> FindDensiSanteiKaisuList(int hpId, int sinDate, string itemCd);
 
-        List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, int itemGrpCd);
+        List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, long itemGrpCd);
 
         double SanteiCount(int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, List<string> itemCds, List<int> santeiKbns, List<int> hokenKbns);
 
@@ -82,5 +82,7 @@ namespace Domain.CalculationInf
         bool HasErrorWithSanteiByStartDate(int hpId, long ptId, int seikyuYm, int startDate, string itemCd);
 
         int GetSanteiEndDate(int hpId, long ptId, int seikyuYm);
+
+        bool SaveChanged(int hpId, int userId, List<ReceCheckErrModel> receChecks);
     }
 }
