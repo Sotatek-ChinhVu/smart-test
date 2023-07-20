@@ -518,7 +518,7 @@ namespace Infrastructure.Repositories
                                   };
 
             var groupKeys = joinTenMstQuery.GroupBy(p => new { p.PtId, p.SinDate, p.RaiinNo })
-                                           .Select(p => p.FirstOrDefault());
+                                           .Select(p => p.FirstOrDefault() ?? new());
 
             foreach (var groupKey in groupKeys)
             {
@@ -530,18 +530,47 @@ namespace Infrastructure.Repositories
                     sinKouiDetailModels.Add(new SinKouiDetailModel(
                                                                     entity.SinKouiDetail.PtId,
                                                                     entity.SinKouiDetail.SinYm,
+                                                                    entity.TenMst.MaxAge ?? string.Empty,
+                                                                    entity.TenMst.MinAge ?? string.Empty,
                                                                     entity.SinKouiDetail.ItemCd ?? string.Empty,
                                                                     entity.SinKouiDetail.CmtOpt ?? string.Empty,
                                                                     entity.SinKouiDetail.ItemName ?? string.Empty,
+                                                                    entity.TenMst.ReceName ?? string.Empty,
                                                                     entity.SinKouiDetail.Suryo,
                                                                     entity.SinKouiDetail.IsNodspRece,
-                                                                    ConvertTenMstToModel(entity.TenMst),
-                                                                    new()
+                                                                    entity.TenMst.MasterSbt ?? string.Empty,
+                                                                    ConvertTenMstToModel(entity.TenMst)
                                                                     ));
                 }
-                result.Add(new SinKouiCountModel(entities.Select(p => p.ptHokenPattern).Distinct().ToList(), groupKey.SinKouiCount, sinKouiDetailModels));
+                result.Add(ConvertToModel(entities.Select(p => p.ptHokenPattern).Distinct().ToList(), groupKey?.SinKouiCount ?? new(), sinKouiDetailModels));
             }
             return result;
+        }
+
+        private SinKouiCountModel ConvertToModel(List<PtHokenPattern> ptHokenPatterns, SinKouiCount sinKouiCount, List<SinKouiDetailModel> sinKouiDetailModels)
+        {
+            return new SinKouiCountModel(
+                                        sinKouiCount.HpId,
+                                        sinKouiCount.PtId,
+                                        sinKouiCount.SinDate,
+                                        sinKouiCount.RaiinNo,
+                                        ptHokenPatterns.Select(x => new PtHokenPatternModel(
+                                                                        x.PtId,
+                                                                        x.HokenPid,
+                                                                        x.SeqNo,
+                                                                        x.HokenKbn,
+                                                                        x.HokenSbtCd,
+                                                                        x.HokenId,
+                                                                        x.Kohi1Id,
+                                                                        x.Kohi2Id,
+                                                                        x.Kohi3Id,
+                                                                        x.Kohi4Id,
+                                                                        x.HokenMemo ?? string.Empty,
+                                                                        x.StartDate,
+                                                                        x.EndDate
+                                                        )).ToList(),
+                                        sinKouiDetailModels
+                                        );
         }
 
         public void ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
@@ -744,12 +773,115 @@ namespace Infrastructure.Repositories
                 var OrdInfDetailModels = new List<OrdInfDetailModel>();
                 foreach (var odrInfDetail in odrInfJoinDetail.OdrInfDetails)
                 {
-                    OrdInfDetailModels.Add(new OrdInfDetailModel(odrInfDetail.OdrDetail, odrInfDetail.TenMsts.ToList()));
+                    OrdInfDetailModels.Add(ConvertToModel(odrInfDetail.OdrDetail,
+                                                          odrInfDetail.TenMsts.FirstOrDefault(p => p.StartDate <= odrInfDetail.OdrDetail.SinDate && p.EndDate >= odrInfDetail.OdrDetail.SinDate) ?? new()));
                 }
-                result.Add(new OrdInfModel(odrInfJoinDetail.OdrInf, OrdInfDetailModels));
+                result.Add(ConvertToModel(odrInfJoinDetail.OdrInf, OrdInfDetailModels));
             }
 
             return result;
+        }
+
+        private OrdInfDetailModel ConvertToModel(OdrInfDetail odrInfDetail, TenMst tenMst)
+        {
+            return new OrdInfDetailModel(
+                                odrInfDetail.HpId,
+                                odrInfDetail.RaiinNo,
+                                odrInfDetail.RpNo,
+                                odrInfDetail.RpEdaNo,
+                                odrInfDetail.RowNo,
+                                odrInfDetail.PtId,
+                                odrInfDetail.SinDate,
+                                odrInfDetail.SinKouiKbn,
+                                odrInfDetail.ItemCd ?? string.Empty,
+                                odrInfDetail.ItemName ?? string.Empty,
+                                odrInfDetail.Suryo,
+                                odrInfDetail.UnitName ?? string.Empty,
+                                odrInfDetail.UnitSBT,
+                                odrInfDetail.TermVal,
+                                odrInfDetail.KohatuKbn,
+                                odrInfDetail.SyohoKbn,
+                                odrInfDetail.SyohoLimitKbn,
+                                odrInfDetail.DrugKbn,
+                                odrInfDetail.YohoKbn,
+                                odrInfDetail.Kokuji1 ?? string.Empty,
+                                odrInfDetail.Kokiji2 ?? string.Empty,
+                                odrInfDetail.IsNodspRece,
+                                odrInfDetail.IpnCd ?? string.Empty,
+                                odrInfDetail.IpnName ?? string.Empty,
+                                odrInfDetail.JissiKbn,
+                                odrInfDetail.JissiDate ?? DateTime.MinValue,
+                                odrInfDetail.JissiId,
+                                odrInfDetail.JissiMachine ?? string.Empty,
+                                odrInfDetail.ReqCd ?? string.Empty,
+                                odrInfDetail.Bunkatu ?? string.Empty,
+                                odrInfDetail.CmtName ?? string.Empty,
+                                odrInfDetail.CmtOpt ?? string.Empty,
+                                odrInfDetail.FontColor ?? string.Empty,
+                                odrInfDetail.CommentNewline,
+                                tenMst?.MasterSbt ?? string.Empty,
+                                0,
+                                0,
+                                true,
+                                0,
+                                0,
+                                tenMst?.Ten ?? 0,
+                                0,
+                                0,
+                                0,
+                                tenMst?.OdrTermVal ?? 0,
+                                tenMst?.CnvTermVal ?? 0,
+                                tenMst?.YjCd ?? string.Empty,
+                                new(),
+                                0,
+                                0,
+                                tenMst?.CnvUnitName ?? string.Empty,
+                                tenMst?.OdrUnitName ?? string.Empty,
+                                 string.Empty,
+                                 string.Empty,
+                                tenMst?.CmtColKeta1 ?? 0,
+                                tenMst?.CmtColKeta2 ?? 0,
+                                tenMst?.CmtColKeta3 ?? 0,
+                                tenMst?.CmtColKeta4 ?? 0,
+                                tenMst?.CmtCol2 ?? 0,
+                                tenMst?.CmtCol3 ?? 0,
+                                tenMst?.CmtCol4 ?? 0,
+                                tenMst?.HandanGrpKbn ?? 0,
+                                new()
+                    );
+        }
+
+        private OrdInfModel ConvertToModel(OdrInf odrInf, List<OrdInfDetailModel> ordInfDetailModels)
+        {
+            return new OrdInfModel(
+                         odrInf.HpId,
+                         odrInf.RaiinNo,
+                         odrInf.RpNo,
+                         odrInf.RpEdaNo,
+                         odrInf.PtId,
+                         odrInf.SinDate,
+                         odrInf.HokenPid,
+                         odrInf.OdrKouiKbn,
+                         odrInf.RpName ?? string.Empty,
+                         odrInf.InoutKbn,
+                         odrInf.SikyuKbn,
+                         odrInf.SyohoSbt,
+                         odrInf.SanteiKbn,
+                         odrInf.TosekiKbn,
+                         odrInf.DaysCnt,
+                         odrInf.SortNo,
+                         odrInf.IsDeleted,
+                         odrInf.Id,
+                         ordInfDetailModels,
+                         DateTime.MinValue,
+                         0,
+                         "",
+                         DateTime.MinValue,
+                         0,
+                         "",
+                         string.Empty,
+                         string.Empty
+                     );
         }
 
         public string GetSanteiItemCd(int hpId, string itemCd, int sinDate)
@@ -1059,12 +1191,27 @@ namespace Infrastructure.Repositories
                     string itemCd = sinKouiDetail.sinKouiDetail.ItemCd ?? string.Empty;
                     int sinDate = sinKouiDetail.sinKouiCount.SinDate;
                     List<ItemCommentSuggestionModel> listCmtSelect = GetListComment(hpId, new List<string> { itemCd }, sinDate, new List<int> { 0 }, true);
-                    listSinKouiDetailModel.Add(new SinKouiDetailModel(sinKouiDetail.sinKouiDetail, sinKouiDetail.sinKouiCount, listCmtSelect));
+                    listSinKouiDetailModel.Add(ConvertToModel(sinKouiDetail.sinKouiDetail, sinKouiDetail.sinKouiCount, listCmtSelect));
                 });
                 result.Add(new SinKouiModel(sinKoui, listSinKouiDetailModel));
             });
 
             return result;
+        }
+
+        private SinKouiDetailModel ConvertToModel(SinKouiDetail sinKouiDetail, SinKouiCount sinKouiCount, List<ItemCommentSuggestionModel> listCmtSelect)
+        {
+            return new SinKouiDetailModel(
+                                          sinKouiDetail.PtId,
+                                          sinKouiDetail.SinYm,
+                                          sinKouiCount.SinDate,
+                                          sinKouiDetail.ItemCd ?? string.Empty,
+                                          sinKouiDetail.CmtOpt ?? string.Empty,
+                                          sinKouiDetail.ItemName ?? string.Empty,
+                                          sinKouiDetail.Suryo,
+                                          sinKouiDetail.IsNodspRece,
+                                          listCmtSelect
+                                          );
         }
 
         public List<ItemCommentSuggestionModel> GetListComment(int hpCd, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false)

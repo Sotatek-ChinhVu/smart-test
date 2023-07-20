@@ -44,17 +44,38 @@ public class SinKouiDetailModel
         TenMst = new();
     }
 
-    public SinKouiDetailModel(long ptId, long sinYm,  string itemCd, string cmtOpt, string itemName,  double suryo, int isNodspRece, TenItemModel tenMst, List<ItemCommentSuggestionModel> cmtSelectList)
+    public SinKouiDetailModel(long ptId, long sinYm, int sinDate, string itemCd, string cmtOpt, string itemName, double suryo, int isNodspRece, List<ItemCommentSuggestionModel> cmtSelectList)
     {
         PtId = ptId;
         SinYm = sinYm;
+        SinDate = sinDate;
         ItemCd = itemCd;
         CmtOpt = cmtOpt;
         ItemName = itemName;
         Suryo = suryo;
         IsNodspRece = isNodspRece;
-        TenMst = tenMst;
         CmtSelectList = cmtSelectList;
+        TenMst = new();
+        MaxAge = string.Empty;
+        MinAge = string.Empty;
+        ReceName = string.Empty;
+        MasterSbt = string.Empty;
+    }
+
+    public SinKouiDetailModel(long ptId, long sinYm, string maxAge, string minAge, string itemCd, string cmtOpt, string itemName, string receName, double suryo, int isNodspRece, string masterSbt, TenItemModel tenMst)
+    {
+        PtId = ptId;
+        SinYm = sinYm;
+        MaxAge = maxAge;
+        MinAge = minAge;
+        ItemCd = itemCd;
+        CmtOpt = cmtOpt;
+        ItemName = itemName;
+        ReceName = receName;
+        Suryo = suryo;
+        IsNodspRece = isNodspRece;
+        MasterSbt = masterSbt;
+        TenMst = tenMst;
     }
 
     public long PtId { get; private set; }

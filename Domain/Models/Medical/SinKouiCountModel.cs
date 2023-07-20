@@ -20,8 +20,12 @@ namespace Domain.Models.Medical
             SinKouiDetailModels = new();
         }
 
-        public SinKouiCountModel(int hpId, long ptId, int sinYm, int sinDay, int sinDate, long raiinNo, int rpNo, int seqNo, int count, List<PtHokenPatternModel> ptHokenPatterns, List<SinKouiDetailModel> sinKouiDetailModels) : this(hpId, ptId, sinYm, sinDay, sinDate, raiinNo, rpNo, seqNo, count)
+        public SinKouiCountModel(int hpId, long ptId, int sinDate, long raiinNo, List<PtHokenPatternModel> ptHokenPatterns, List<SinKouiDetailModel> sinKouiDetailModels)
         {
+            HpId = hpId;
+            PtId = ptId;
+            SinDate = sinDate;
+            RaiinNo = raiinNo;
             PtHokenPatterns = ptHokenPatterns;
             SinKouiDetailModels = sinKouiDetailModels;
         }

@@ -19,6 +19,12 @@ namespace Domain.Models.MstItem
             SinKouiDetailModels = sinKouiDetailModels;
         }
 
+        public long PtId { get; set; }
+
+        public int SinYm { get; set; }
+
+        public int MyProperty { get; set; }
+         
         public int SinKouiCd { get; private set; }
 
         public string SinkouiName { get; private set; }
