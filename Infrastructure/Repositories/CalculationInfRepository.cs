@@ -591,53 +591,6 @@ namespace Infrastructure.Repositories
             TrackingDataContext.ReceCheckErrs.RemoveRange(oldReceCheckErrs);
         }
 
-        public void InsertReceCmtErr(int hpId, int userId, List<ReceCheckErrModel> oldReceCheckErrs, List<ReceCheckErrModel> newReceCheckErrs, ReceInfModel receInfModel, string errCd, string errMsg1, string errMsg2 = "", string aCd = " ", string bCd = " ", int sinDate = 0)
-        {
-            if (!string.IsNullOrEmpty(errMsg1) && errMsg1.Length > 100)
-            {
-                errMsg1 = CIUtil.Copy(errMsg1, 1, 99) + "…";
-            }
-            if (!string.IsNullOrEmpty(errMsg2) && errMsg2.Length > 100)
-            {
-                errMsg2 = CIUtil.Copy(errMsg2, 1, 99) + "…";
-            }
-
-            var existNewReceCheckErr = newReceCheckErrs.FirstOrDefault(p => p.HpId == hpId &&
-                                           p.PtId == receInfModel.PtId &&
-                                           p.SinYm == receInfModel.SinYm &&
-                                           p.SinDate == sinDate &&
-                                           p.HokenId == receInfModel.HokenId &&
-                                           p.ErrCd == errCd &&
-                                           p.ACd == aCd &&
-                                           p.BCd == bCd);
-
-            if (existNewReceCheckErr != null)
-            {
-                if (errCd == ReceErrCdConst.SanteiCountCheckErrCd)
-                {
-                    existNewReceCheckErr.ChangeMessage1(errMsg1);
-                    existNewReceCheckErr.ChangeMessage2(errMsg2);
-                }
-                return;
-            }
-
-            var newReceCheckErr = new ReceCheckErrModel(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId, errCd, sinDate, aCd, bCd, errMsg1, errMsg2, 0);
-
-            var existedReceCheckErr = oldReceCheckErrs.FirstOrDefault(p => p.HpId == newReceCheckErr.HpId &&
-                                                                            p.PtId == newReceCheckErr.PtId &&
-                                                                            p.SinYm == newReceCheckErr.SinYm &&
-                                                                            p.SinDate == newReceCheckErr.SinDate &&
-                                                                            p.HokenId == newReceCheckErr.HokenId &&
-                                                                            p.ErrCd == newReceCheckErr.ErrCd &&
-                                                                            p.ACd == newReceCheckErr.ACd &&
-                                                                            p.BCd == newReceCheckErr.BCd);
-            if (existedReceCheckErr != null)
-            {
-                newReceCheckErr.ChangeIsChecked(existedReceCheckErr.IsChecked);
-            }
-            newReceCheckErrs.Add(newReceCheckErr);
-        }
-
         public List<OrdInfDetailModel> GetOdrInfsBySinDate(int hpId, long ptId, int sinDate, int hokenId)
         {
             var result = new List<OrdInfDetailModel>();

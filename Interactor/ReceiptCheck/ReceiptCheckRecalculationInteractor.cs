@@ -122,11 +122,11 @@ namespace Interactor.ReceiptCheck
                 _calculationInfRepository.ClearReceCmtErr(hpId, receInfModel.PtId, receInfModel.HokenId, receInfModel.SinYm);
                 _sinKouiCounts = _calculationInfRepository.GetSinKouiCounts(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
 
-                CheckHoken(hpId, userId,  receInfModel);
-                CheckByomei(hpId, userId,  receInfModel);
+                CheckHoken(hpId, userId, receInfModel);
+                CheckByomei(hpId, userId, receInfModel);
                 CheckOrder(hpId, userId, receInfModel);
-                CheckRosai(hpId, userId,  receInfModel);
-                CheckAftercare(hpId, userId,  receInfModel);
+                CheckRosai(hpId, userId, receInfModel);
+                CheckAftercare(hpId, userId, receInfModel);
 
                 // CheckedCount++;
             }
@@ -150,8 +150,8 @@ namespace Interactor.ReceiptCheck
                         {
                             if (receInfModel.PtHokenInf.StartDate > 0 && receInfModel.PtHokenInf.StartDate > firstSinKouiCount.SinDate)
                             {
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                                       ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtHokenInf.StartDate) + "～）", HOKEN_CHAR);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                      ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtHokenInf.StartDate) + "～）", HOKEN_CHAR);
                             }
                         }
 
@@ -161,8 +161,8 @@ namespace Interactor.ReceiptCheck
                         {
                             if (receInfModel.PtHokenInf.EndDate > 0 && receInfModel.PtHokenInf.EndDate < lastSinKouiCount.SinDate)
                             {
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                                    ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtHokenInf.EndDate) + "）", HOKEN_CHAR);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                   ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtHokenInf.EndDate) + "）", HOKEN_CHAR);
                             }
                         }
                     }
@@ -175,8 +175,8 @@ namespace Interactor.ReceiptCheck
                         {
                             if (receInfModel.PtKohi1.StartDate > 0 && receInfModel.PtKohi1.StartDate > firstSinKouiCount.SinDate)
                             {
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                                    ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi1.StartDate) + "～）", KOHI1_CHAR);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                   ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi1.StartDate) + "～）", KOHI1_CHAR);
                             }
                         }
 
@@ -186,8 +186,8 @@ namespace Interactor.ReceiptCheck
                         {
                             if (receInfModel.PtKohi1.EndDate > 0 && receInfModel.PtKohi1.EndDate < lastSinKouiCount.SinDate)
                             {
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                                    ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi1.EndDate) + "）", KOHI1_CHAR);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                   ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi1.EndDate) + "）", KOHI1_CHAR);
                             }
                         }
                     }
@@ -200,8 +200,8 @@ namespace Interactor.ReceiptCheck
                         {
                             if (receInfModel.PtKohi2.StartDate > 0 && receInfModel.PtKohi2.StartDate > firstSinKouiCount.SinDate)
                             {
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                                    ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi2.StartDate) + "～）", KOHI2_CHAR);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                   ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi2.StartDate) + "～）", KOHI2_CHAR);
                             }
                         }
 
@@ -211,8 +211,8 @@ namespace Interactor.ReceiptCheck
                         {
                             if (receInfModel.PtKohi2.EndDate > 0 && receInfModel.PtKohi2.EndDate < lastSinKouiCount.SinDate)
                             {
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                                    ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi2.EndDate) + "）", KOHI2_CHAR);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                   ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi2.EndDate) + "）", KOHI2_CHAR);
                             }
                         }
                     }
@@ -225,8 +225,8 @@ namespace Interactor.ReceiptCheck
                         {
                             if (receInfModel.PtKohi3.StartDate > 0 && receInfModel.PtKohi3.StartDate > firstSinKouiCount.SinDate)
                             {
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                                    ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi3.StartDate) + "～）", KOHI3_CHAR);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                   ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi3.StartDate) + "～）", KOHI3_CHAR);
                             }
                         }
 
@@ -236,8 +236,8 @@ namespace Interactor.ReceiptCheck
                         {
                             if (receInfModel.PtKohi3.EndDate > 0 && receInfModel.PtKohi3.EndDate < lastSinKouiCount.SinDate)
                             {
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                                     ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi3.EndDate) + "）", KOHI3_CHAR);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                    ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi3.EndDate) + "）", KOHI3_CHAR);
                             }
                         }
                     }
@@ -250,8 +250,8 @@ namespace Interactor.ReceiptCheck
                         {
                             if (receInfModel.PtKohi4.StartDate > 0 && receInfModel.PtKohi4.StartDate > firstSinKouiCount.SinDate)
                             {
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                                    ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi4.StartDate) + "～）", KOHI4_CHAR);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
+                                   ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi4.StartDate) + "～）", KOHI4_CHAR);
                             }
                         }
 
@@ -261,8 +261,8 @@ namespace Interactor.ReceiptCheck
                         {
                             if (receInfModel.PtKohi4.EndDate > 0 && receInfModel.PtKohi4.EndDate < lastSinKouiCount.SinDate)
                             {
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                                    ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi4.EndDate) + "）", KOHI4_CHAR);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
+                                   ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(receInfModel.PtKohi4.EndDate) + "）", KOHI4_CHAR);
                             }
                         }
                     }
@@ -279,8 +279,8 @@ namespace Interactor.ReceiptCheck
                     {
                         latestConfirmedDate = CIUtil.SDateToShowSWDate(receInfModel.HokenChecks.OrderByDescending(p => p.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0);
                     }
-                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                            ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", HOKEN_CHAR);
+                    InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                           ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", HOKEN_CHAR);
                 }
                 if (receInfModel.Kohi1Id > 0 && !receInfModel.IsKohi1Confirmed)
                 {
@@ -289,8 +289,8 @@ namespace Interactor.ReceiptCheck
                     {
                         latestConfirmedDate = CIUtil.SDateToShowSWDate(receInfModel.Kohi1Checks.OrderByDescending(p => p.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0);
                     }
-                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                             ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI1_CHAR);
+                    InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                            ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI1_CHAR);
                 }
                 if (receInfModel.Kohi2Id > 0 && !receInfModel.IsKohi2Confirmed)
                 {
@@ -299,8 +299,8 @@ namespace Interactor.ReceiptCheck
                     {
                         latestConfirmedDate = CIUtil.SDateToShowSWDate(receInfModel.Kohi2Checks.OrderByDescending(p => p.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0);
                     }
-                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                            ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI2_CHAR);
+                    InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                           ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI2_CHAR);
                 }
                 if (receInfModel.Kohi3Id > 0 && !receInfModel.IsKohi3Confirmed)
                 {
@@ -309,8 +309,8 @@ namespace Interactor.ReceiptCheck
                     {
                         latestConfirmedDate = CIUtil.SDateToShowSWDate(receInfModel.Kohi3Checks.OrderByDescending(p => p.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0);
                     }
-                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                            ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI3_CHAR);
+                    InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                           ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI3_CHAR);
                 }
                 if (receInfModel.Kohi4Id > 0 && !receInfModel.IsKohi4Confirmed)
                 {
@@ -319,8 +319,8 @@ namespace Interactor.ReceiptCheck
                     {
                         latestConfirmedDate = CIUtil.SDateToShowSWDate(receInfModel.Kohi4Checks.OrderByDescending(p => p.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0);
                     }
-                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                            ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI4_CHAR);
+                    InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.UnConfirmedHokenErrCd,
+                           ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI4_CHAR);
                 }
             }
         }
@@ -337,11 +337,11 @@ namespace Interactor.ReceiptCheck
                     if (sinKouiDetail != null)
                     {
                         string msg2 = string.Format("（初診: {0}）", CIUtil.SDateToShowSWDate(sinKouiDetail.SinDate));
-                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.NotExistByomeiErrCd, ReceErrCdConst.NotExistByomeiErrMsg, msg2, sinDate: sinKouiDetail.SinDate);
+                        InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.NotExistByomeiErrCd, ReceErrCdConst.NotExistByomeiErrMsg, msg2, sinDate: sinKouiDetail.SinDate);
                     }
                     else
                     {
-                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.NotExistByomeiErrCd, ReceErrCdConst.NotExistByomeiErrMsg);
+                        InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.NotExistByomeiErrCd, ReceErrCdConst.NotExistByomeiErrMsg);
                     }
                 }
 
@@ -359,11 +359,11 @@ namespace Interactor.ReceiptCheck
                             foreach (var msgError in msgErrors)
                             {
                                 string itemName = odrInfs.FirstOrDefault(p => p.ItemCd == msgError)?.ItemName ?? string.Empty;
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.BuiOrderByomeiErrCd,
-                                                                           ReceErrCdConst.BuiOrderByomeiErrMsg,
-                                                                           itemName + " : " +
-                                                                           CIUtil.SDateToShowSWDate(sinKouiCount.SinDate) + "）",
-                                                                           msgError, sinDate: sinKouiCount.SinDate);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.BuiOrderByomeiErrCd,
+                                                                          ReceErrCdConst.BuiOrderByomeiErrMsg,
+                                                                          itemName + " : " +
+                                                                          CIUtil.SDateToShowSWDate(sinKouiCount.SinDate) + "）",
+                                                                          msgError, sinDate: sinKouiCount.SinDate);
                             }
                         }
                     }
@@ -380,7 +380,7 @@ namespace Interactor.ReceiptCheck
                     {
                         foreach (var msg in errorOdrInfDetail.Errors)
                         {
-                            _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrCd, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrMsg, msg, aCd: errorOdrInfDetail.ItemName, bCd: errorOdrInfDetail.OdrKouiKbn.ToString(), sinDate: errorOdrInfDetail.SinDate);
+                            InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrCd, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrMsg, msg, aCd: errorOdrInfDetail.ItemName, bCd: errorOdrInfDetail.OdrKouiKbn.ToString(), sinDate: errorOdrInfDetail.SinDate);
                         }
                     }
                 }
@@ -402,7 +402,7 @@ namespace Interactor.ReceiptCheck
                         {
                             format = "（再診: {0}）";
                             msg2 = string.Format(format, CIUtil.SDateToShowSWDate(sinKouiDetail.SinDate));
-                            _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.CheckReVisitContiByomeiErrCd, ReceErrCdConst.CheckReVisitContiByomeiErrMsg, msg2, sinDate: sinKouiDetail.SinDate);
+                            InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.CheckReVisitContiByomeiErrCd, ReceErrCdConst.CheckReVisitContiByomeiErrMsg, msg2, sinDate: sinKouiDetail.SinDate);
                         }
                         //first visit
                         else if (_receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.CheckFirstVisit2003ByomeiErrCd) && sinKouiDetail.IsFirstVisit)
@@ -420,8 +420,8 @@ namespace Interactor.ReceiptCheck
                                         string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 100);
                                         msg2 = string.Format(format, CIUtil.SDateToShowSWDate(sinKouiDetail.SinDate),
                                                             cutByomei, CIUtil.SDateToShowSWDate(ptByomei.StartDate));
-                                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.CheckFirstVisit2003ByomeiErrCd, ReceErrCdConst.CheckFirstVisit2004ByomeiErrMsg,
-                                                                         msg2, cutByomei, sinDate: sinKouiDetail.SinDate);
+                                        InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.CheckFirstVisit2003ByomeiErrCd, ReceErrCdConst.CheckFirstVisit2004ByomeiErrMsg,
+                                                                        msg2, cutByomei, sinDate: sinKouiDetail.SinDate);
                                     }
                                 }
                             }
@@ -431,7 +431,7 @@ namespace Interactor.ReceiptCheck
                             {
                                 format = "（初診: {0}）";
                                 msg2 = string.Format(format, CIUtil.SDateToShowSWDate(sinKouiDetail.SinDate));
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.CheckFirstVisit2003ByomeiErrCd, ReceErrCdConst.CheckFirstVisit2003ByomeiErrMsg, msg2, sinDate: sinKouiDetail.SinDate);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.CheckFirstVisit2003ByomeiErrCd, ReceErrCdConst.CheckFirstVisit2003ByomeiErrMsg, msg2, sinDate: sinKouiDetail.SinDate);
                             }
                         }
                     }
@@ -442,7 +442,7 @@ namespace Interactor.ReceiptCheck
                 //E2005 check if has not main byomei 
                 if (_receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.HasNotMainByomeiErrCd) && !ptByomeis.Any(p => p.IsMain))
                 {
-                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.HasNotMainByomeiErrCd, ReceErrCdConst.HasNotMainByomeiErrMsg);
+                    InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.HasNotMainByomeiErrCd, ReceErrCdConst.HasNotMainByomeiErrMsg);
                 }
 
                 //E2006 check abandonment byomei
@@ -455,8 +455,8 @@ namespace Interactor.ReceiptCheck
                         {
                             string format = "（{0}: ～{1}）";
                             string msg2 = string.Format(format, ptByomei.Byomei, CIUtil.SDateToShowSWDate(ptByomei.DelDate));
-                            _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.InvalidByomeiErrCd, ReceErrCdConst.InvalidByomeiErrMsg,
-                                                                       msg2, ptByomei.ByomeiCd);
+                            InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.InvalidByomeiErrCd, ReceErrCdConst.InvalidByomeiErrMsg,
+                                                                      msg2, ptByomei.ByomeiCd);
                         }
                     }
                 }
@@ -470,7 +470,7 @@ namespace Interactor.ReceiptCheck
                         {
                             string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 100);
                             string msg2 = string.Format("({0}: {1}/20文字)", cutByomei, ptByomei.Byomei.Length);
-                            _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.FreeTextLengthByomeiErrCd, ReceErrCdConst.FreeTextLengthByomeiErrMsg, msg2, cutByomei);
+                            InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.FreeTextLengthByomeiErrCd, ReceErrCdConst.FreeTextLengthByomeiErrMsg, msg2, cutByomei);
                         }
                     }
                 }
@@ -487,8 +487,8 @@ namespace Interactor.ReceiptCheck
                             string format = "（{0}: {1}～）";
                             string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 100);
                             string msg2 = string.Format(format, cutByomei, CIUtil.SDateToShowSWDate(ptByomei.StartDate));
-                            _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.CheckSuspectedByomeiErrCd,
-                                ReceErrCdConst.CheckSuspectedByomeiErrMsg.Replace("xx", receCheckOpt.CheckOpt.AsString()), msg2, cutByomei);
+                            InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.CheckSuspectedByomeiErrCd,
+                               ReceErrCdConst.CheckSuspectedByomeiErrMsg.Replace("xx", receCheckOpt.CheckOpt.AsString()), msg2, cutByomei);
                         }
                     }
                 }
@@ -522,10 +522,10 @@ namespace Interactor.ReceiptCheck
                     }
                     foreach (var ptByomei in checkedByomeiList)
                     {
-                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.DuplicateByomeiCheckErrCd,
-                                                                              ReceErrCdConst.DuplicateByomeiCheckErrMsg,
-                                                                              "（" + ptByomei.Byomei + " : " + CIUtil.SDateToShowSWDate(ptByomei.StartDate) + "）",
-                                                                              ptByomei.ByomeiCd, string.Join(string.Empty, ptByomei.GetAllSyusyokuCds().ToArray()));
+                        InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.DuplicateByomeiCheckErrCd,
+                                                                             ReceErrCdConst.DuplicateByomeiCheckErrMsg,
+                                                                             "（" + ptByomei.Byomei + " : " + CIUtil.SDateToShowSWDate(ptByomei.StartDate) + "）",
+                                                                             ptByomei.ByomeiCd, string.Join(string.Empty, ptByomei.GetAllSyusyokuCds().ToArray()));
                     }
                 }
 
@@ -561,11 +561,11 @@ namespace Interactor.ReceiptCheck
                                     checkedItemCds.Add(odrInf.ItemCd);
                                     if (checkedItemCds.Count(p => p == odrInf.ItemCd) == 1)
                                     {
-                                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.HasNotByomeiWithOdrErrCd,
-                                                                                   ReceErrCdConst.HasNotByomeiWithOdrErrMsg,
-                                                                                   "（" + odrInf.ItemName + " : " +
-                                                                                   CIUtil.SDateToShowSWDate(sinKouiCount.SinDate) + "）",
-                                                                                   odrInf.ItemCd);
+                                        InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.HasNotByomeiWithOdrErrCd,
+                                                                                  ReceErrCdConst.HasNotByomeiWithOdrErrMsg,
+                                                                                  "（" + odrInf.ItemName + " : " +
+                                                                                  CIUtil.SDateToShowSWDate(sinKouiCount.SinDate) + "）",
+                                                                                  odrInf.ItemCd);
                                     }
                                 }
                             }
@@ -583,11 +583,11 @@ namespace Interactor.ReceiptCheck
                                 foreach (var msgError in msgErrors)
                                 {
                                     string itemName = odrInfs.FirstOrDefault(p => p.ItemCd == msgError)?.ItemName;
-                                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.BuiOrderByomeiErrCd,
-                                                                               ReceErrCdConst.BuiOrderByomeiErrMsg,
-                                                                               itemName + " : " +
-                                                                               CIUtil.SDateToShowSWDate(sinKouiCount.SinDate) + "）",
-                                                                               msgError, sinDate: sinKouiCount.SinDate);
+                                    InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.BuiOrderByomeiErrCd,
+                                                                              ReceErrCdConst.BuiOrderByomeiErrMsg,
+                                                                              itemName + " : " +
+                                                                              CIUtil.SDateToShowSWDate(sinKouiCount.SinDate) + "）",
+                                                                              msgError, sinDate: sinKouiCount.SinDate);
                                 }
                             }
                         }
@@ -605,7 +605,7 @@ namespace Interactor.ReceiptCheck
                     {
                         foreach (var msg in errorOdrInfDetail.Errors)
                         {
-                            _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrCd, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrMsg, msg, aCd: errorOdrInfDetail.ItemName, bCd: errorOdrInfDetail.OdrKouiKbn.ToString(), sinDate: errorOdrInfDetail.SinDate);
+                            InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrCd, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrMsg, msg, aCd: errorOdrInfDetail.ItemName, bCd: errorOdrInfDetail.OdrKouiKbn.ToString(), sinDate: errorOdrInfDetail.SinDate);
                         }
                     }
                 }
@@ -648,8 +648,8 @@ namespace Interactor.ReceiptCheck
                     foreach (var odr in resultOdrs)
                     {
                         string msg2 = string.Format("（{0}: {1} [{2}日/{3}日]）", odr.ItemName, CIUtil.SDateToShowSWDate(odrInfModel.SinDate), odr.UsingDay, odr.LimitDay);
-                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExceededDosageOdrErrCd, ReceErrCdConst.ExceededDosageOdrErrMsg,
-                                                        msg2, odr.ItemCd, sinDate: odrInfModel.SinDate);
+                        InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExceededDosageOdrErrCd, ReceErrCdConst.ExceededDosageOdrErrMsg,
+                                                       msg2, odr.ItemCd, sinDate: odrInfModel.SinDate);
                     }
                 }
                 OrdInfDetailModels.AddRange(odrInfModel.OrdInfDetails);
@@ -678,8 +678,8 @@ namespace Interactor.ReceiptCheck
                                 if (!checkedOdrItemCds.Contains(odrDetail.ItemCd) || !checkedOdrItemCds.Contains(duplicatedOdr.ItemCd))
                                 {
                                     string msg2 = string.Format("（{0} : {1} [{2}]）", odrDetail.ItemName, duplicatedOdr.ItemName, CIUtil.SDateToShowSWDate(odrDetail.SinDate));
-                                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.DuplicateOdrErrCd, ReceErrCdConst.DuplicateOdrErrMsg,
-                                                                    msg2, odrDetail.ItemCd, sinDate: odrDetail.SinDate);
+                                    InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.DuplicateOdrErrCd, ReceErrCdConst.DuplicateOdrErrMsg,
+                                                                   msg2, odrDetail.ItemCd, sinDate: odrDetail.SinDate);
                                 }
                                 checkedOdrItemCds.Add(odrDetail.ItemCd);
                                 checkedOdrItemCds.Add(duplicatedOdr.ItemCd);
@@ -707,14 +707,14 @@ namespace Interactor.ReceiptCheck
                             if (lastTenMst != null && sinKouiCount.SinDate > lastTenMst.EndDate)
                             {
                                 string msg2 = string.Format("（{0} {1}: ～{2}）", sinKouiDetailModel.ItemName, CIUtil.SDateToShowSWDate(sinKouiCount.SinDate), CIUtil.SDateToShowSWDate(lastTenMst.EndDate));
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredEndDateOdrErrCd, ReceErrCdConst.ExpiredEndDateOdrErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredEndDateOdrErrCd, ReceErrCdConst.ExpiredEndDateOdrErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
                             }
 
                             var firstTenMst = _calculationInfRepository.FindFirstTenMst(hpId, itemCd);
                             if (firstTenMst != null && sinKouiCount.SinDate < firstTenMst.StartDate)
                             {
                                 string msg2 = string.Format("（{0} {1}: {2}～）", sinKouiDetailModel.ItemName, CIUtil.SDateToShowSWDate(sinKouiCount.SinDate), CIUtil.SDateToShowSWDate(firstTenMst.StartDate));
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ExpiredStartDateOdrErrCd, ReceErrCdConst.ExpiredStartDateOdrErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ExpiredStartDateOdrErrCd, ReceErrCdConst.ExpiredStartDateOdrErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
                             }
 
                             checkedItemCds.Add(itemCd);
@@ -1050,7 +1050,7 @@ namespace Interactor.ReceiptCheck
                                 if (santeiCount > densiSanteiKaisu.MaxCount)
                                 {
                                     string msg2 = string.Format("({0}: {1}回 [{2}回/{3}])", sinKouiDetailModel.ItemName, santeiCount, densiSanteiKaisu.MaxCount, sTerm);
-                                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.SanteiCountCheckErrCd, ReceErrCdConst.SanteiCountCheckErrMsg, msg2, itemCd);
+                                    InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.SanteiCountCheckErrCd, ReceErrCdConst.SanteiCountCheckErrMsg, msg2, itemCd);
                                 }
                             }
                             checkedItemCds.Add(itemCd);
@@ -1086,7 +1086,7 @@ namespace Interactor.ReceiptCheck
                 }
                 if (suryoSum > 1)
                 {
-                    _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.FirstExamFeeCheckErrCd, ReceErrCdConst.FirstExamFeeCheckErrMsg, msg2);
+                    InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.FirstExamFeeCheckErrCd, ReceErrCdConst.FirstExamFeeCheckErrMsg, msg2);
                 }
             }
 
@@ -1097,8 +1097,8 @@ namespace Interactor.ReceiptCheck
                 {
                     if (sinKouiCount.SinKouiDetailModels.Any(p => p.ItemCd == ReceErrCdConst.TokuzaiItemCd))
                     {
-                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.TokuzaiItemCheckErrCd, ReceErrCdConst.TokuzaiItemCheckErrMsg,
-                                                        "（2017(H29)/04/01～使用不可）", ReceErrCdConst.TokuzaiItemCd, sinDate: sinKouiCount.SinDate);
+                        InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.TokuzaiItemCheckErrCd, ReceErrCdConst.TokuzaiItemCheckErrMsg,
+                                                       "（2017(H29)/04/01～使用不可）", ReceErrCdConst.TokuzaiItemCd, sinDate: sinKouiCount.SinDate);
                         continue;
                     }
                 }
@@ -1261,7 +1261,7 @@ namespace Interactor.ReceiptCheck
                             }
                             if (!string.IsNullOrEmpty(msg2))
                             {
-                                _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.ItemAgeCheckErrCd, ReceErrCdConst.ItemAgeCheckErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
+                                InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.ItemAgeCheckErrCd, ReceErrCdConst.ItemAgeCheckErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
                             }
 
                             checkedItemCds.Add(itemCd);
@@ -1347,7 +1347,7 @@ namespace Interactor.ReceiptCheck
                                             }
 
                                             string message = string.Format("（{0}: {1}）", itemName, comment);
-                                            _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.CommentCheckErrCd, ReceErrCdConst.CommentCheckErrMsg, message, itemCd, cmtCd, 0);
+                                            InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.CommentCheckErrCd, ReceErrCdConst.CommentCheckErrMsg, message, itemCd, cmtCd, 0);
                                         }
                                     }
                                 });
@@ -1364,14 +1364,14 @@ namespace Interactor.ReceiptCheck
                 {
                     foreach (var item in addtionItems)
                     {
-                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfModel, ReceErrCdConst.AdditionItemErrCd, CIUtil.Copy(item.Text, 1, 100), "（" + CIUtil.SDateToShowSWDate(item.SinDate) + "）",
-                            item.ItemCd + "," + item.DelItemCd, item.TermCnt + "," + item.TermSbt + "," + item.IsWarning, item.SinDate);
+                        InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.AdditionItemErrCd, CIUtil.Copy(item.Text, 1, 100), "（" + CIUtil.SDateToShowSWDate(item.SinDate) + "）",
+                           item.ItemCd + "," + item.DelItemCd, item.TermCnt + "," + item.TermSbt + "," + item.IsWarning, item.SinDate);
                     }
                 }
             }
         }
 
-        private void CheckRosai(int hpId, int userId,  ReceInfModel receInfItem)
+        private void CheckRosai(int hpId, int userId, ReceInfModel receInfItem)
         {
             //check use normal hoken but order Rosai item
             //■健康保険のレセプトで労災項目がオーダーされています。
@@ -1408,26 +1408,26 @@ namespace Interactor.ReceiptCheck
                     // check error Rousai kantoku cd empty
                     if (!_calculationInfRepository.IsKantokuCdValid(hpId, receInfItem.HokenId, receInfItem.PtId))
                     {
-                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfItem, ReceErrCdConst.HasNotRousaiKantokuErrCd, ReceErrCdConst.HasNotRousaiKantokuErrMsg);
+                        InsertReceCmtErr(hpId, receInfItem, ReceErrCdConst.HasNotRousaiKantokuErrCd, ReceErrCdConst.HasNotRousaiKantokuErrMsg);
                     }
 
                     // check error Rousai Saigai
                     if (receInfItem.PtHokenInf.RousaiSaigaiKbn != 1 &&
                         receInfItem.PtHokenInf.RousaiSaigaiKbn != 2)
                     {
-                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfItem, ReceErrCdConst.HasNotSaigaiKbnErrCd, ReceErrCdConst.HasNotSaigaiKbnErrMsg);
+                        InsertReceCmtErr(hpId, receInfItem, ReceErrCdConst.HasNotSaigaiKbnErrCd, ReceErrCdConst.HasNotSaigaiKbnErrMsg);
                     }
 
                     // check error Syobyo
                     if (receInfItem.PtHokenInf.RousaiSyobyoDate <= 0)
                     {
-                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfItem, ReceErrCdConst.HasNotSyobyoDateErrCd, ReceErrCdConst.HasNotSyobyoDateErrMsg);
+                        InsertReceCmtErr(hpId, receInfItem, ReceErrCdConst.HasNotSyobyoDateErrCd, ReceErrCdConst.HasNotSyobyoDateErrMsg);
                     }
 
                     //check error SyobyoKeika
                     if (!_calculationInfRepository.ExistSyobyoKeikaData(hpId, receInfItem.PtId, receInfItem.SinYm, receInfItem.HokenId))
                     {
-                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfItem, ReceErrCdConst.HasNotSyobyoKeikaErrCd, ReceErrCdConst.HasNotSyobyoKeikaErrMsg);
+                        InsertReceCmtErr(hpId, receInfItem, ReceErrCdConst.HasNotSyobyoKeikaErrCd, ReceErrCdConst.HasNotSyobyoKeikaErrMsg);
                     }
 
                 }
@@ -1445,8 +1445,8 @@ namespace Interactor.ReceiptCheck
                         if (sinKouiDetailModel.MasterSbt == "R")
                         {
                             string msg2 = string.Format("（{0}: {1}）", sinKouiDetailModel.ItemName, CIUtil.SDateToShowSWDate(sinKouiCount.SinDate));
-                            _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfItem, ReceErrCdConst.HokenUsingRosaiItemErrCd, ReceErrCdConst.HokenUsingRosaiItemErrMsg, msg2,
-                                                            sinKouiDetailModel.ItemCd, sinKouiDetailModel.ItemName, sinDate: sinKouiCount.SinDate);
+                            InsertReceCmtErr(hpId, receInfItem, ReceErrCdConst.HokenUsingRosaiItemErrCd, ReceErrCdConst.HokenUsingRosaiItemErrMsg, msg2,
+                                                           sinKouiDetailModel.ItemCd, sinKouiDetailModel.ItemName, sinDate: sinKouiCount.SinDate);
                         }
                     }
                 }
@@ -1454,7 +1454,7 @@ namespace Interactor.ReceiptCheck
             }
         }
 
-        private void CheckAftercare(int hpId, int userId,  ReceInfModel receInfItem)
+        private void CheckAftercare(int hpId, int userId, ReceInfModel receInfItem)
         {
 
             // check aftercare can using
@@ -1466,7 +1466,7 @@ namespace Interactor.ReceiptCheck
                     //check error SyobyoKeika
                     if (!_calculationInfRepository.ExistSyobyoKeikaData(hpId, receInfItem.PtId, receInfItem.SinYm, receInfItem.HokenId))
                     {
-                        _calculationInfRepository.InsertReceCmtErr(hpId, userId, _oldReceCheckErrs, _newReceCheckErrs, receInfItem, ReceErrCdConst.HasNotSyobyoKeikaErrCd, ReceErrCdConst.HasNotSyobyoKeikaErrMsg);
+                        InsertReceCmtErr(hpId, receInfItem, ReceErrCdConst.HasNotSyobyoKeikaErrCd, ReceErrCdConst.HasNotSyobyoKeikaErrMsg);
                     }
                 }
             }
@@ -1982,5 +1982,51 @@ namespace Interactor.ReceiptCheck
             return realtimeChecker;
         }
 
+        private void InsertReceCmtErr(int hpId, ReceInfModel receInfModel, string errCd, string errMsg1, string errMsg2 = "", string aCd = " ", string bCd = " ", int sinDate = 0)
+        {
+            if (!string.IsNullOrEmpty(errMsg1) && errMsg1.Length > 100)
+            {
+                errMsg1 = CIUtil.Copy(errMsg1, 1, 99) + "…";
+            }
+            if (!string.IsNullOrEmpty(errMsg2) && errMsg2.Length > 100)
+            {
+                errMsg2 = CIUtil.Copy(errMsg2, 1, 99) + "…";
+            }
+
+            var existNewReceCheckErr = _newReceCheckErrs.FirstOrDefault(p => p.HpId == hpId &&
+                                           p.PtId == receInfModel.PtId &&
+                                           p.SinYm == receInfModel.SinYm &&
+                                           p.SinDate == sinDate &&
+                                           p.HokenId == receInfModel.HokenId &&
+                                           p.ErrCd == errCd &&
+                                           p.ACd == aCd &&
+                                           p.BCd == bCd);
+
+            if (existNewReceCheckErr != null)
+            {
+                if (errCd == ReceErrCdConst.SanteiCountCheckErrCd)
+                {
+                    existNewReceCheckErr.ChangeMessage1(errMsg1);
+                    existNewReceCheckErr.ChangeMessage2(errMsg2);
+                }
+                return;
+            }
+
+            var newReceCheckErr = new ReceCheckErrModel(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId, errCd, sinDate, aCd, bCd, errMsg1, errMsg2, 0);
+
+            var existedReceCheckErr = _oldReceCheckErrs.FirstOrDefault(p => p.HpId == newReceCheckErr.HpId &&
+                                                                            p.PtId == newReceCheckErr.PtId &&
+                                                                            p.SinYm == newReceCheckErr.SinYm &&
+                                                                            p.SinDate == newReceCheckErr.SinDate &&
+                                                                            p.HokenId == newReceCheckErr.HokenId &&
+                                                                            p.ErrCd == newReceCheckErr.ErrCd &&
+                                                                            p.ACd == newReceCheckErr.ACd &&
+                                                                            p.BCd == newReceCheckErr.BCd);
+            if (existedReceCheckErr != null)
+            {
+                newReceCheckErr.ChangeIsChecked(existedReceCheckErr.IsChecked);
+            }
+            _newReceCheckErrs.Add(newReceCheckErr);
+        }
     }
 }

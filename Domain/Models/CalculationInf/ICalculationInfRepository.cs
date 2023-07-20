@@ -25,8 +25,6 @@ namespace Domain.CalculationInf
 
         List<SinKouiCountModel> GetSinKouiCounts(int hpId, long ptId, int sinYm, int hokenId);
 
-        void InsertReceCmtErr(int hpId, int userId, List<ReceCheckErrModel> oldReceCheckErrs, List<ReceCheckErrModel> newReceCheckErrs, ReceInfModel receInfModel, string errCd, string errMsg1, string errMsg2 = "", string aCd = " ", string bCd = " ", int sinDate = 0);
-
         List<PtDiseaseModel> GetByomeiInThisMonth(int hpId, int sinYm, long ptId, int hokenId);
 
         List<OrdInfDetailModel> GetOdrInfsBySinDate(int hpId, long ptId, int sinDate, int hokenId);
