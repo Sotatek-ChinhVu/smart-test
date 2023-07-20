@@ -91,7 +91,7 @@ public class RecalculationController : AuthorizeControllerBase
         HttpContext.Response.Body.FlushAsync();
     }
 
-    [HttpPost(ApiPath.ReceiptCheckRecalculation)]
+    [HttpPost(ApiPath.ReceiptCheck)]
     public void ReceiptCheckRecalculation([FromBody] ReceiptCheckRecalculationRequest request)
     {
         try
