@@ -5,11 +5,8 @@ using Helper.Constant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Xml.Linq;
 using static Helper.Constants.UserConst;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories
 {
@@ -409,12 +406,12 @@ namespace Infrastructure.Repositories
             IQueryable<UserPermission> listUserPermission = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId);
 
             var queryFinal = (from user in listUsers
-                             join userPermission in listUserPermission on user.UserId equals userPermission.UserId into listUserPer
-                             select new
-                             {
-                                 User = user,
-                                 Permissions = listUserPer
-                             }).ToList();
+                              join userPermission in listUserPermission on user.UserId equals userPermission.UserId into listUserPer
+                              select new
+                              {
+                                  User = user,
+                                  Permissions = listUserPer
+                              }).ToList();
 
             return queryFinal.Select(x => new UserMstModel(x.User.HpId,
                                                           x.User.Id,
@@ -445,16 +442,16 @@ namespace Infrastructure.Repositories
         /// <param name="users"></param>
         /// <param name="currentUser"></param>
         /// <returns></returns>
-        public bool SaveListUserMst(int hpId, List<UserMstModel> users , int currentUser)
+        public bool SaveListUserMst(int hpId, List<UserMstModel> users, int currentUser)
         {
             IEnumerable<long> userIdList = users.Select(x => x.Id);
             var usersUpdate = TrackingDataContext.UserMsts.Where(x => userIdList.Contains(x.UserId)).ToList();
-            foreach(var item in users)
+            foreach (var item in users)
             {
                 var update = usersUpdate.FirstOrDefault(x => x.Id == item.Id);
-                if(update is null)
+                if (update is null)
                 {
-                    if(item.Id == 0)
+                    if (item.Id == 0)
                     {
                         TrackingDataContext.UserMsts.Add(new UserMst()
                         {
@@ -519,7 +516,7 @@ namespace Infrastructure.Repositories
                     foreach (var permission in item.Permissions)
                     {
                         var updateP = permissionByUsers.FirstOrDefault(x => x.FunctionCd == permission.FunctionCd);
-                        if(updateP is null)
+                        if (updateP is null)
                         {
                             TrackingDataContext.UserPermissions.Add(new UserPermission()
                             {
@@ -571,15 +568,15 @@ namespace Infrastructure.Repositories
             IQueryable<FunctionMst> listFuncMst = NoTrackingDataContext.FunctionMsts;
             IQueryable<PermissionMst> listPerMst = NoTrackingDataContext.PermissionMsts;
             var functionMstQuery = (from funcMst in listFuncMst
-                                   join perMst in listPerMst on funcMst.FunctionCd equals perMst.FunctionCd into listPermission
-                                   select new
-                                   {
-                                       FuncMst = funcMst,
-                                       ListPermission = listPermission,
-                                   }).ToList();
+                                    join perMst in listPerMst on funcMst.FunctionCd equals perMst.FunctionCd into listPermission
+                                    select new
+                                    {
+                                        FuncMst = funcMst,
+                                        ListPermission = listPermission,
+                                    }).ToList();
 
             return functionMstQuery.Where(x => x.ListPermission.Any()).Select(x => new FunctionMstModel(x.FuncMst.FunctionCd,
-                                                                                                        x.FuncMst.FunctionName ?? string.Empty, 
+                                                                                                        x.FuncMst.FunctionName ?? string.Empty,
                                                                                                         x.ListPermission.Select(p => new PermissionMstModel(p.FunctionCd, p.Permission)).ToList())).ToList();
         }
 
@@ -651,6 +648,15 @@ namespace Infrastructure.Repositories
                 default:
                     throw new NotSupportedException("Not supported for code : " + permissionCode);
             }
+        }
+
+        public UserMstModel GetUserInfo(int hpId, int userId)
+        {
+            var user = NoTrackingDataContext.UserMsts
+                .FirstOrDefault(x => x.HpId == hpId &&
+                                     x.UserId == userId);
+
+            return ToModel(user ?? new());
         }
     }
 }

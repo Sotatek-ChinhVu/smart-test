@@ -598,6 +598,7 @@ using UseCase.User.SaveListUserMst;
 using UseCase.User.UpdateUserConf;
 using UseCase.User.UpsertList;
 using UseCase.User.UpsertUserConfList;
+using UseCase.User.UserInfo;
 using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.UserConf.UserSettingParam;
@@ -928,6 +929,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveListUserMstInputData, SaveListUserMstInteractor>();
             busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
             busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
+            busBuilder.RegisterUseCase<GetUserInfoInputData, GetUserInfoInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
