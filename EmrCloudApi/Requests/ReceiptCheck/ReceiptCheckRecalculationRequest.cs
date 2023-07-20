@@ -2,8 +2,8 @@
 {
     public class ReceiptCheckRecalculationRequest
     {
-        public List<long> PtIds { get; private set; } = new();
+        public List<long> PtIds { get; set; } = new();
 
-        public int SeikyuYm { get; private set; }
+        public int SeikyuYm { get; set; }
     }
 }

@@ -96,9 +96,6 @@ public class RecalculationController : AuthorizeControllerBase
     {
         try
         {
-            Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
-            Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
-
             HttpContext.Response.ContentType = "application/json";
             //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
             HttpResponse response = HttpContext.Response;
@@ -115,8 +112,6 @@ public class RecalculationController : AuthorizeControllerBase
         }
         finally
         {
-            Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
-            Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
             HttpContext.Response.Body.Close();
         }
     }

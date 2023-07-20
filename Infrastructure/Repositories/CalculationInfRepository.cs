@@ -3,10 +3,12 @@ using Domain.Constant;
 using Domain.Models.Accounting;
 using Domain.Models.CalculationInf;
 using Domain.Models.Diseases;
+using Domain.Models.Insurance;
 using Domain.Models.Medical;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
+using Domain.Models.PatientInfor;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.ReceSeikyu;
@@ -201,13 +203,13 @@ namespace Infrastructure.Repositories
             List<ReceInfModel> receInfModels = new List<ReceInfModel>();
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
 
-            var receStates = NoTrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+            var receStates = NoTrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true)).ToList();
 
-            var receInfs = NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+            var receInfs = NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true)).ToList();
 
-            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true)).ToList();
 
-            var ptKohiInfs = NoTrackingDataContext.PtKohis.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+            var ptKohiInfs = NoTrackingDataContext.PtKohis.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true)).ToList();
 
             var receInfJoinPtInfQuery = from receInf in receInfs
                                         join ptInf in ptInfs
@@ -394,17 +396,21 @@ namespace Infrastructure.Repositories
 
             foreach (var entity in query10)
             {
-                receInfModels.Add(new ReceInfModel(
-                    ConvertToReceInfModel(entity.ReceInf, entity.PtInf)
-                    ));
+                receInfModels.Add(
+                    ConvertToReceInfModel(entity.ReceInf, entity.PtInf, entity.PtHokenInf, entity.PtKohi1Inf, entity.PtKohi2Inf,
+                    entity.PtKohi3Inf, entity.PtKohi4Inf, entity.HokenChecks.ToList(), entity.Kohi1Checks.ToList(), entity.Kohi2Checks.ToList(), entity.Kohi3Checks.ToList(), entity.Kohi4Checks.ToList(),
+                    entity.ReceStatus));
             }
             return receInfModels;
         }
 
-        public ReceInfModel ConvertToReceInfModel(ReceInf receInf, PtInf ptInf)
+        private ReceInfModel ConvertToReceInfModel(ReceInf receInf, PtInf ptInf, PtHokenInf ptHokenInf, PtKohi kohi1,
+            PtKohi kohi2, PtKohi kohi3, PtKohi kohi4, List<PtHokenCheck> ptHokenCheck, List<PtHokenCheck> kohi1Checks, List<PtHokenCheck> kohi2Checks,
+            List<PtHokenCheck> kohi3Checks, List<PtHokenCheck> kohi4Checks, ReceStatus receStatus)
         {
             return new ReceInfModel(
                        receInf.HpId,
+                       receInf.SeikyuKbn,
                        receInf.SeikyuYm,
                        receInf.PtId,
                        ptInf.PtNum,
@@ -449,8 +455,100 @@ namespace Infrastructure.Repositories
                        receInf?.Kohi3ReceTensu ?? -1,
                        receInf?.Kohi3ReceFutan ?? -1,
                        receInf?.Kohi4ReceTensu ?? -1,
-                       receInf?.Kohi4ReceFutan ?? -1
+                       receInf?.Kohi4ReceFutan ?? -1,
+                       ConvertPtInfModel(ptInf),
+                       ConvertHokenInfModel(ptHokenInf),
+                       ConvertKohiInfModel(kohi1),
+                       ConvertKohiInfModel(kohi2),
+                       ConvertKohiInfModel(kohi3),
+                       ConvertKohiInfModel(kohi4),
+                       ConvertConfirmDate(ptHokenCheck),
+                       ConvertConfirmDate(kohi1Checks),
+                       ConvertConfirmDate(kohi2Checks),
+                       ConvertConfirmDate(kohi3Checks),
+                       ConvertConfirmDate(kohi4Checks),
+                       new ReceStatusModel(receStatus.IsPaperRece)
                 );
+        }
+
+        private PatientInforModel ConvertPtInfModel(PtInf ptInf)
+        {
+            return new PatientInforModel(
+                          ptInf.HpId,
+                          ptInf.PtId,
+                          ptInf.ReferenceNo,
+                          ptInf.SeqNo,
+                          ptInf.PtNum,
+                          ptInf.KanaName ?? string.Empty,
+                          ptInf.Name ?? string.Empty,
+                          ptInf.Sex,
+                          ptInf.Birthday,
+                          ptInf.LimitConsFlg,
+                          ptInf.IsDead,
+                          ptInf.DeathDate,
+                          ptInf.HomePost ?? string.Empty,
+                          ptInf.HomeAddress1 ?? string.Empty,
+                          ptInf.HomeAddress2 ?? string.Empty,
+                          ptInf.Tel1 ?? string.Empty,
+                          ptInf.Tel2 ?? string.Empty,
+                          ptInf.Mail ?? string.Empty,
+                          ptInf.Setanusi ?? string.Empty,
+                          ptInf.Zokugara ?? string.Empty,
+                          ptInf.Job ?? string.Empty,
+                          ptInf.RenrakuName ?? string.Empty,
+                          ptInf.RenrakuPost ?? string.Empty,
+                          ptInf.RenrakuAddress1 ?? string.Empty,
+                          ptInf.RenrakuAddress2 ?? string.Empty,
+                          ptInf.RenrakuTel ?? string.Empty,
+                          ptInf.RenrakuMemo ?? string.Empty,
+                          ptInf.OfficeName ?? string.Empty,
+                          ptInf.OfficePost ?? string.Empty,
+                          ptInf.OfficeAddress1 ?? string.Empty,
+                          ptInf.OfficeAddress2 ?? string.Empty,
+                          ptInf.OfficeTel ?? string.Empty,
+                          ptInf.OfficeMemo ?? string.Empty,
+                          ptInf.IsRyosyoDetail,
+                          ptInf.PrimaryDoctor,
+                          ptInf.IsTester,
+                          ptInf.MainHokenPid,
+                          string.Empty,
+                          0,
+                          0,
+                          0,
+                          string.Empty
+                      );
+        }
+
+        private HokenInfModel ConvertHokenInfModel(PtHokenInf ptHoken)
+        {
+            return new HokenInfModel(ptHoken != null ? ptHoken.PtId : 0,
+                                     ptHoken != null ? ptHoken.StartDate : 0,
+                                     ptHoken != null ? ptHoken.EndDate : 0,
+                                     ptHoken != null ? ptHoken.RousaiSaigaiKbn : 0,
+                                     ptHoken != null ? ptHoken.RousaiSyobyoDate : 0);
+        }
+
+        private KohiInfModel ConvertKohiInfModel(PtKohi ptKohi)
+        {
+            return new KohiInfModel(ptKohi != null ? ptKohi.StartDate : 0,
+                                    ptKohi != null ? ptKohi.EndDate : 0);
+        }
+
+        private List<ConfirmDateModel> ConvertConfirmDate(List<PtHokenCheck> ptHokenCheck)
+        {
+            var result = new List<ConfirmDateModel>();
+            foreach (var item in ptHokenCheck)
+            {
+                result.Add(new ConfirmDateModel(item.HokenGrp,
+                item.HokenId,
+                item.CheckDate,
+                item.CheckId,
+                item.CheckMachine ?? string.Empty,
+                item.CheckCmt ?? string.Empty,
+                item.IsDeleted));
+            }
+
+            return result;
         }
 
         public List<SinKouiCountModel> GetSinKouiCounts(int hpId, long ptId, int sinYm, int hokenId)
@@ -605,7 +703,7 @@ namespace Infrastructure.Repositories
 
             var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(odrDetail => odrDetail.HpId == hpId &&
                                                                                        odrDetail.PtId == ptId &&
-                                                                                       odrDetail.SinDate == sinDate);
+                                                                                       odrDetail.SinDate == sinDate).ToList();
 
             var odrInfs = NoTrackingDataContext.OdrInfs.Where(odr => odr.HpId == hpId &&
                                                                      odr.PtId == ptId &&
@@ -613,7 +711,7 @@ namespace Infrastructure.Repositories
                                                                      odr.SanteiKbn == 0 &&
                                                                      hokenPids.Contains(odr.HokenPid) &&
                                                                      odr.IsDeleted == DeleteTypes.None &&
-                                                                     odr.OdrKouiKbn != 10);
+                                                                     odr.OdrKouiKbn != 10).ToList();
 
             var odrInfJoinDetailQuery = from odrInf in odrInfs
                                         join odrInfDetail in odrInfDetails
@@ -704,19 +802,19 @@ namespace Infrastructure.Repositories
             var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(odrDetail => odrDetail.HpId == hpId &&
                                                                                                 odrDetail.PtId == ptId);
 
-            var detailJoinTenMstQuery = from odrDetail in odrInfDetails
-                                        join tenMst in tenMstQuery on odrDetail.ItemCd equals tenMst.ItemCd into tempTenMsts
-                                        select new
-                                        {
-                                            OdrDetail = odrDetail,
-                                            TenMsts = tempTenMsts
-                                        };
+            var detailJoinTenMstQuery = (from odrDetail in odrInfDetails
+                                         join tenMst in tenMstQuery on odrDetail.ItemCd equals tenMst.ItemCd into tempTenMsts
+                                         select new
+                                         {
+                                             OdrDetail = odrDetail,
+                                             TenMsts = tempTenMsts
+                                         }).ToList();
             var odrInfs = NoTrackingDataContext.OdrInfs.Where(odr => odr.HpId == hpId &&
                                                                      odr.PtId == ptId &&
                                                                      odr.SinDate / 100 == sinYm &&
                                                                      hokenPIds.Contains(odr.HokenPid) &&
                                                                      odr.IsDeleted == DeleteTypes.None &&
-                                                                     odr.OdrKouiKbn != 10);
+                                                                     odr.OdrKouiKbn != 10).ToList();
             var odrInfJoinDetailQuery = from odrInf in odrInfs
                                         join detailJoinTenMst in detailJoinTenMstQuery
                                         on new { odrInf.RaiinNo, odrInf.SinDate, odrInf.RpNo, odrInf.RpEdaNo }

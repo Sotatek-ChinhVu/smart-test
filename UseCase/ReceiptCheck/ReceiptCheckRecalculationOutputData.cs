@@ -4,13 +4,11 @@ namespace UseCase.ReceiptCheck
 {
     public class ReceiptCheckRecalculationOutputData : IOutputData
     {
-        public ReceiptCheckRecalculationOutputData(string errorText, RecalculationStatus status)
+        public ReceiptCheckRecalculationOutputData(bool success)
         {
-            ErrorText = errorText;
-            Status = status;
+            Success = success;
         }
 
-        public string ErrorText { get; private set; }
-        public RecalculationStatus Status { get; private set; }
+        public bool Success { get; private set; }
     }
 }

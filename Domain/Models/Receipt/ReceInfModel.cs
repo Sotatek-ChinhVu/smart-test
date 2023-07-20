@@ -73,6 +73,69 @@ public class ReceInfModel
         Kohi4ReceFutan = kohi4ReceFutan;
     }
 
+    public ReceInfModel(int hpId, int seikyuKbn, int seikyuYm, long ptId, long ptNum, int sinYm, int hokenId, int hokenId2, int kaId, int tantoId, string receSbt, int hokenKbn, int hokenSbtCd, string houbetu, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int honkeKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int hokenNissu, int kohi1Nissu, int kohi2Nissu, int kohi3Nissu, int kohi4Nissu, int kohi1ReceKyufu, int kohi2ReceKyufu, int kohi3ReceKyufu, int kohi4ReceKyufu, int hokenReceTensu, int hokenReceFutan, int kohi1ReceTensu, int kohi1ReceFutan, int kohi2ReceTensu, int kohi2ReceFutan, int kohi3ReceTensu, int kohi3ReceFutan, int kohi4ReceTensu, int kohi4ReceFutan, PatientInforModel ptInf, HokenInfModel ptHokenInf, KohiInfModel ptKohi1, KohiInfModel ptKohi2, KohiInfModel ptKohi3, KohiInfModel ptKohi4, List<ConfirmDateModel> hokenChecks, List<ConfirmDateModel> kohi1Checks, List<ConfirmDateModel> kohi2Checks, List<ConfirmDateModel> kohi3Checks, List<ConfirmDateModel> kohi4Checks, ReceStatusModel receStatus)
+    {
+        HpId = hpId;
+        SeikyuKbn = seikyuKbn;
+        SeikyuYm = seikyuYm;
+        PtId = ptId;
+        PtNum = ptNum;
+        SinYm = sinYm;
+        HokenId = hokenId;
+        HokenId2 = hokenId2;
+        KaId = kaId;
+        TantoId = tantoId;
+        ReceSbt = receSbt;
+        HokenKbn = hokenKbn;
+        HokenSbtCd = hokenSbtCd;
+        Houbetu = houbetu;
+        Kohi1Id = kohi1Id;
+        Kohi2Id = kohi2Id;
+        Kohi3Id = kohi3Id;
+        Kohi4Id = kohi4Id;
+        Kohi1Houbetu = kohi1Houbetu;
+        Kohi2Houbetu = kohi2Houbetu;
+        Kohi3Houbetu = kohi3Houbetu;
+        Kohi4Houbetu = kohi4Houbetu;
+        HonkeKbn = honkeKbn;
+        Tokki1 = tokki1;
+        Tokki2 = tokki2;
+        Tokki3 = tokki3;
+        Tokki4 = tokki4;
+        Tokki5 = tokki5;
+        HokenNissu = hokenNissu;
+        Kohi1Nissu = kohi1Nissu;
+        Kohi2Nissu = kohi2Nissu;
+        Kohi3Nissu = kohi3Nissu;
+        Kohi4Nissu = kohi4Nissu;
+        Kohi1ReceKyufu = kohi1ReceKyufu;
+        Kohi2ReceKyufu = kohi2ReceKyufu;
+        Kohi3ReceKyufu = kohi3ReceKyufu;
+        Kohi4ReceKyufu = kohi4ReceKyufu;
+        HokenReceTensu = hokenReceTensu;
+        HokenReceFutan = hokenReceFutan;
+        Kohi1ReceTensu = kohi1ReceTensu;
+        Kohi1ReceFutan = kohi1ReceFutan;
+        Kohi2ReceTensu = kohi2ReceTensu;
+        Kohi2ReceFutan = kohi2ReceFutan;
+        Kohi3ReceTensu = kohi3ReceTensu;
+        Kohi3ReceFutan = kohi3ReceFutan;
+        Kohi4ReceTensu = kohi4ReceTensu;
+        Kohi4ReceFutan = kohi4ReceFutan;
+        PtInf = ptInf;
+        PtHokenInf = ptHokenInf;
+        PtKohi1 = ptKohi1;
+        PtKohi2 = ptKohi2;
+        PtKohi3 = ptKohi3;
+        PtKohi4 = ptKohi4;
+        HokenChecks = hokenChecks;
+        Kohi1Checks = kohi1Checks;
+        Kohi2Checks = kohi2Checks;
+        Kohi3Checks = kohi3Checks;
+        Kohi4Checks = kohi4Checks;
+        ReceStatus = receStatus;
+    }
+
     public int HpId { get; private set; }
 
     public int SeikyuKbn { get; private set; }
@@ -210,52 +273,4 @@ public class ReceInfModel
     public int LastDateOfThisMonth => (SinYm + "31").AsInteger();
 
     public int IsPaperRece => (ReceStatus != null && ReceStatus.IsPaperRece) ? 1 : 0;
-
-    public ReceInfModel(ReceInfModel receInf)
-    {
-        SeikyuYm = receInf.SeikyuYm;
-        PtId = receInf.PtId;
-        SinYm = receInf.SinYm;
-        HokenId = receInf.HokenId;
-        HokenId2 = receInf.HokenId2;
-        KaId = receInf.KaId;
-        TantoId = receInf.TantoId;
-        ReceSbt = receInf.ReceSbt;
-        HokenKbn = receInf.HokenKbn;
-        HokenSbtCd = receInf.HokenSbtCd;
-        Houbetu = receInf.Houbetu;
-        Kohi1Id = receInf.Kohi1Id;
-        Kohi2Id = receInf.Kohi2Id;
-        Kohi3Id = receInf.Kohi3Id;
-        Kohi4Id = receInf.Kohi4Id;
-        Kohi1Houbetu = receInf.Kohi1Houbetu;
-        Kohi2Houbetu = receInf.Kohi2Houbetu;
-        Kohi3Houbetu = receInf.Kohi3Houbetu;
-        Kohi4Houbetu = receInf.Kohi4Houbetu;
-        HonkeKbn = receInf.HonkeKbn;
-        Tokki1 = receInf.Tokki1;
-        Tokki2 = receInf.Tokki2;
-        Tokki3 = receInf.Tokki3;
-        Tokki4 = receInf.Tokki4;
-        Tokki5 = receInf.Tokki5;
-        HokenNissu = receInf.HokenNissu;
-        Kohi1Nissu = receInf.Kohi1Nissu;
-        Kohi2Nissu = receInf.Kohi2Nissu;
-        Kohi3Nissu = receInf.Kohi3Nissu;
-        Kohi4Nissu = receInf.Kohi4Nissu;
-        Kohi1ReceKyufu = receInf.Kohi1ReceKyufu;
-        Kohi2ReceKyufu = receInf.Kohi2ReceKyufu;
-        Kohi3ReceKyufu = receInf.Kohi3ReceKyufu;
-        Kohi4ReceKyufu = receInf.Kohi4ReceKyufu;
-        HokenReceTensu = receInf.HokenReceTensu;
-        HokenReceFutan = receInf.HokenReceFutan;
-        Kohi1ReceTensu = receInf.Kohi1ReceTensu;
-        Kohi1ReceFutan = receInf.Kohi1ReceFutan;
-        Kohi2ReceTensu = receInf.Kohi2ReceTensu;
-        Kohi2ReceFutan = receInf.Kohi2ReceFutan;
-        Kohi3ReceTensu = receInf.Kohi3ReceTensu;
-        Kohi3ReceFutan = receInf.Kohi3ReceFutan;
-        Kohi4ReceTensu = receInf.Kohi4ReceTensu;
-        Kohi4ReceFutan = receInf.Kohi4ReceFutan;
-    }
 }

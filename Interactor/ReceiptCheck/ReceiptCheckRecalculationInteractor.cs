@@ -16,6 +16,8 @@ using Domain.Models.TodayOdr;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Infrastructure.Interfaces;
 using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
@@ -27,18 +29,18 @@ namespace Interactor.ReceiptCheck
 {
     public class ReceiptCheckRecalculationInteractor : IRecalculationInputPort
     {
-        public const string HOKEN_CHAR = "0";
-        public const string KOHI1_CHAR = "1";
-        public const string KOHI2_CHAR = "2";
-        public const string KOHI3_CHAR = "3";
-        public const string KOHI4_CHAR = "4";
-        public const string FREE_WORD = "0000999";
-        public const string SUSPECTED_SUFFIX = "の疑い";
-        public const string LEFT = "左";
-        public const string RIGHT = "右";
-        public const string BOTH = "両";
-        public const string LEFT_RIGHT = "左右";
-        public const string RIGHT_LEFT = "右左";
+        private const string HOKEN_CHAR = "0";
+        private const string KOHI1_CHAR = "1";
+        private const string KOHI2_CHAR = "2";
+        private const string KOHI3_CHAR = "3";
+        private const string KOHI4_CHAR = "4";
+        private const string FREE_WORD = "0000999";
+        private const string SUSPECTED_SUFFIX = "の疑い";
+        private const string LEFT = "左";
+        private const string RIGHT = "右";
+        private const string BOTH = "両";
+        private const string LEFT_RIGHT = "左右";
+        private const string RIGHT_LEFT = "右左";
 
         private readonly ICalculateService _calculateService;
         private readonly ICalculationInfRepository _calculationInfRepository;
@@ -48,66 +50,80 @@ namespace Interactor.ReceiptCheck
         private readonly ITenantProvider _tenantProvider;
 
         private int SeikyuYm;
-        private List<ReceInfModel> _receInfModels;
-        private List<ReceCheckOptModel> _receCheckOpts;
-        private List<SinKouiCountModel> _sinKouiCounts;
-        private List<ReceCheckErrModel> _newReceCheckErrs;
-        private List<ReceCheckErrModel> _oldReceCheckErrs;
+        private List<ReceInfModel> _receInfModels = new List<ReceInfModel>();
+        private List<ReceCheckOptModel> _receCheckOpts = new List<ReceCheckOptModel>();
+        private List<SinKouiCountModel> _sinKouiCounts = new List<SinKouiCountModel>();
+        private List<ReceCheckErrModel> _newReceCheckErrs = new List<ReceCheckErrModel>();
+        private List<ReceCheckErrModel> _oldReceCheckErrs = new List<ReceCheckErrModel>();
         public List<BuiErrorModel> errorOdrInfDetails = new List<BuiErrorModel>();
         public string ErrorText { get; set; } = string.Empty;
 
-        public ReceiptCheckRecalculationInteractor(ICalculateService calculateService, ICalculationInfRepository calculationInfRepository, ISystemConfRepository systemConfRepository, ICommonMedicalCheck commonMedicalCheck)
+        public ReceiptCheckRecalculationInteractor(ICalculateService calculateService, ICalculationInfRepository calculationInfRepository, ISystemConfRepository systemConfRepository, ICommonMedicalCheck commonMedicalCheck, IRealtimeOrderErrorFinder realtimeOrderErrorFinder, ITenantProvider tenantProvider)
         {
             _calculateService = calculateService;
             _calculationInfRepository = calculationInfRepository;
             _systemConfRepository = systemConfRepository;
             _commonMedicalCheck = commonMedicalCheck;
+            _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
+            _tenantProvider = tenantProvider;
         }
 
         public ReceiptCheckRecalculationOutputData Handle(ReceiptCheckRecalculationInputData inputData)
         {
-            if (DateTime.Now.Day <= 10)
+            string errorText = string.Empty;
+            try
             {
-                if (DateTime.Now.Month > 1)
+                if (DateTime.Now.Day <= 10)
                 {
-                    SeikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month - 1;
+                    if (DateTime.Now.Month > 1)
+                    {
+                        SeikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month - 1;
+                    }
+                    else
+                    {
+                        SeikyuYm = (DateTime.Now.Year - 1) * 100 + 12;
+                    }
                 }
                 else
                 {
-                    SeikyuYm = (DateTime.Now.Year - 1) * 100 + 12;
+                    SeikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month;
                 }
-            }
-            else
-            {
-                SeikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month;
-            }
 
-            _calculateService.RunCalculateMonth(
-                new Request.CalculateMonthRequest()
+                SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・"));
+                _calculateService.RunCalculateMonth(
+                    new Request.CalculateMonthRequest()
+                    {
+                        HpId = inputData.HpId,
+                        SeikyuYm = inputData.SeikyuYm,
+                        PtIds = inputData.PtIds,
+                        PreFix = ""
+                    });
+
+                SendMessenger(new RecalculationStatus(false, 2, 0, 0, "レセ集計中・・・"));
+                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm));
+
+                SendMessenger(new RecalculationStatus(false, 3, 0, 0, "レセチェック中・・・"));
+                CheckErrorInMonth(inputData.HpId, inputData.UserId, inputData.SeikyuYm, inputData.PtIds);
+
+                errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.PtIds, inputData.SeikyuYm);
+                
+                return new ReceiptCheckRecalculationOutputData(true);
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(errorText))
                 {
-                    HpId = inputData.HpId,
-                    SeikyuYm = inputData.SeikyuYm,
-                    PtIds = inputData.PtIds,
-                    PreFix = ""
-                });
+                    SendMessenger(new RecalculationStatus(true, 4, 0, 0, errorText));
+                }
 
-            _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm));
-
-            CheckErrorInMonth(inputData.HpId, inputData.UserId, inputData.SeikyuYm, inputData.PtIds);
-
-            string errorText = string.Empty;
-            errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.PtIds, inputData.SeikyuYm);
-            if (!string.IsNullOrEmpty(errorText))
-            {
-                return new ReceiptCheckRecalculationOutputData(errorText, RecalculationStatus.Error);
+                _calculationInfRepository.ReleaseResource();
+                _systemConfRepository.ReleaseResource();
             }
-
-            return new ReceiptCheckRecalculationOutputData(string.Empty, RecalculationStatus.Successed);
         }
 
         public void CheckErrorInMonth(int hpId, int userId, int seikyuYm, List<long> ptIds)
         {
-            var isStopCalc = false;
+           // var isStopCalc = false;
             var allCheckCount = _calculationInfRepository.GetCountReceInfs(hpId, ptIds, seikyuYm);
             if (allCheckCount == 0) return;
             //CheckedCount = 0;
@@ -122,11 +138,11 @@ namespace Interactor.ReceiptCheck
                 _calculationInfRepository.ClearReceCmtErr(hpId, receInfModel.PtId, receInfModel.HokenId, receInfModel.SinYm);
                 _sinKouiCounts = _calculationInfRepository.GetSinKouiCounts(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
 
-                CheckHoken(hpId, userId, receInfModel);
-                CheckByomei(hpId, userId, receInfModel);
-                CheckOrder(hpId, userId, receInfModel);
-                CheckRosai(hpId, userId, receInfModel);
-                CheckAftercare(hpId, userId, receInfModel);
+                CheckHoken(hpId, receInfModel);
+                CheckByomei(hpId, receInfModel);
+                CheckOrder(hpId, receInfModel);
+                CheckRosai(hpId, receInfModel);
+                CheckAftercare(hpId, receInfModel);
 
                 // CheckedCount++;
             }
@@ -134,7 +150,7 @@ namespace Interactor.ReceiptCheck
             // PrintReceCheck(seikyuYm, ptIds);
         }
 
-        public void CheckHoken(int hpId, int userId, ReceInfModel receInfModel)
+        public void CheckHoken(int hpId, ReceInfModel receInfModel)
         {
             //expired
             if (_receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ExpiredEndDateHokenErrCd))
@@ -325,7 +341,7 @@ namespace Interactor.ReceiptCheck
             }
         }
 
-        public void CheckByomei(int hpId, int userId, ReceInfModel receInfModel)
+        public void CheckByomei(int hpId, ReceInfModel receInfModel)
         {
             var ptByomeis = _calculationInfRepository.GetByomeiInThisMonth(hpId, receInfModel.SinYm, receInfModel.PtId, receInfModel.HokenId);
             if (ptByomeis.Count == 0)
@@ -613,7 +629,7 @@ namespace Interactor.ReceiptCheck
             }
         }
 
-        public void CheckOrder(int hpId, int userId, ReceInfModel receInfModel)
+        public void CheckOrder(int hpId, ReceInfModel receInfModel)
         {
             bool isCheckExceedDosage = _receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ExceededDosageOdrErrCd);
             bool isCheckDuplicateOdr = _receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.DuplicateOdrErrCd);
@@ -1371,7 +1387,7 @@ namespace Interactor.ReceiptCheck
             }
         }
 
-        private void CheckRosai(int hpId, int userId, ReceInfModel receInfItem)
+        private void CheckRosai(int hpId, ReceInfModel receInfItem)
         {
             //check use normal hoken but order Rosai item
             //■健康保険のレセプトで労災項目がオーダーされています。
@@ -1454,7 +1470,7 @@ namespace Interactor.ReceiptCheck
             }
         }
 
-        private void CheckAftercare(int hpId, int userId, ReceInfModel receInfItem)
+        private void CheckAftercare(int hpId, ReceInfModel receInfItem)
         {
 
             // check aftercare can using
@@ -1661,7 +1677,7 @@ namespace Interactor.ReceiptCheck
             return errorMsgs;
         }
 
-        public bool CheckDuplicateByomei(bool checkDuplicateByomei, bool checkDuplicateSyusyokuByomei, PtDiseaseModel currentPtByomeiModel, PtDiseaseModel comparedPtByomeiModel, int recehokenId)
+        private bool CheckDuplicateByomei(bool checkDuplicateByomei, bool checkDuplicateSyusyokuByomei, PtDiseaseModel currentPtByomeiModel, PtDiseaseModel comparedPtByomeiModel, int recehokenId)
         {
             if (!checkDuplicateByomei)
             {
@@ -1736,7 +1752,7 @@ namespace Interactor.ReceiptCheck
             return "";
         }
 
-        public bool ValidateByomeiReflectOdrSite(string buiOdr, string byomeiName, int LrKbn, int BothKbn)
+        private bool ValidateByomeiReflectOdrSite(string buiOdr, string byomeiName, int LrKbn, int BothKbn)
         {
             string GetDirection(string name)
             {
@@ -1788,7 +1804,7 @@ namespace Interactor.ReceiptCheck
             return true;
         }
 
-        public string GetErrorTextAfterCheck(int hpId, List<long> ptIds, int seikyuYm, bool notUsingReceInfCache = false)
+        private string GetErrorTextAfterCheck(int hpId, List<long> ptIds, int seikyuYm, bool notUsingReceInfCache = false)
         {
             if (_receInfModels == null || notUsingReceInfCache)
             {
@@ -2027,6 +2043,11 @@ namespace Interactor.ReceiptCheck
                 newReceCheckErr.ChangeIsChecked(existedReceCheckErr.IsChecked);
             }
             _newReceCheckErrs.Add(newReceCheckErr);
+        }
+
+        private void SendMessenger(RecalculationStatus status)
+        {
+            Messenger.Instance.Send(status);
         }
     }
 }

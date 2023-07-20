@@ -1,6 +1,8 @@
-﻿namespace UseCase.ReceiptCheck
+﻿using UseCase.Core.Sync.Core;
+
+namespace UseCase.ReceiptCheck
 {
-    public interface IRecalculationOutputPort
+    public interface IRecalculationOutputPort : IOutputPort<ReceiptCheckRecalculationOutputData>
     {
     }
 }
