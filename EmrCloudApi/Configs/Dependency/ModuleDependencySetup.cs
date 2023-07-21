@@ -368,7 +368,6 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
-using UseCase.Lock.CheckLockOpenAccounting;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;

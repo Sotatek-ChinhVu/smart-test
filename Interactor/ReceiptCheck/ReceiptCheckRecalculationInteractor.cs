@@ -106,15 +106,17 @@ namespace Interactor.ReceiptCheck
                 CheckErrorInMonth(inputData.HpId, inputData.UserId, inputData.SeikyuYm, inputData.PtIds);
 
                 errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.PtIds, inputData.SeikyuYm);
-                
+
                 return new ReceiptCheckRecalculationOutputData(true);
             }
             finally
             {
                 if (!string.IsNullOrEmpty(errorText))
                 {
-                    SendMessenger(new RecalculationStatus(true, 4, 0, 0, errorText));
+                    SendMessenger(new RecalculationStatus(false, 4, 0, 0, errorText));
                 }
+
+                SendMessenger(new RecalculationStatus(true, 5, 0, 0, errorText));
 
                 _calculationInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
@@ -123,7 +125,7 @@ namespace Interactor.ReceiptCheck
 
         public void CheckErrorInMonth(int hpId, int userId, int seikyuYm, List<long> ptIds)
         {
-           // var isStopCalc = false;
+            // var isStopCalc = false;
             var allCheckCount = _calculationInfRepository.GetCountReceInfs(hpId, ptIds, seikyuYm);
             if (allCheckCount == 0) return;
             //CheckedCount = 0;

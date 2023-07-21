@@ -467,7 +467,7 @@ namespace Infrastructure.Repositories
                        ConvertConfirmDate(kohi2Checks),
                        ConvertConfirmDate(kohi3Checks),
                        ConvertConfirmDate(kohi4Checks),
-                       new ReceStatusModel(receStatus.IsPaperRece)
+                       new ReceStatusModel(receStatus != null ? receStatus.IsPaperRece : 0)
                 );
         }
 
