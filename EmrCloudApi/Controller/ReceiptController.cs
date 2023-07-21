@@ -242,7 +242,7 @@ public class ReceiptController : AuthorizeControllerBase
     [HttpGet(ApiPath.ReceCmtHistory)]
     public ActionResult<Response<ReceCmtHistoryResponse>> ReceCmtHistory([FromQuery] ReceCmtHistoryRequest request)
     {
-        var input = new ReceCmtHistoryInputData(HpId, request.PtId, request.SinDate);
+        var input = new ReceCmtHistoryInputData(HpId, request.PtId);
         var output = _bus.Handle(input);
 
         var presenter = new ReceCmtHistoryPresenter();
