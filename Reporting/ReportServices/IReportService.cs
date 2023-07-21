@@ -9,6 +9,7 @@ using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
 using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
+using Reporting.Structs;
 
 namespace Reporting.ReportServices;
 
@@ -79,4 +80,6 @@ public interface IReportService
     CommonReportingRequestModel GetKarte3ReportingData(int hpId, long ptId, int startSinYm, int endSinYm, bool includeHoken, bool includeJihi);
 
     CommonReportingRequestModel GetAccountingCardListReportingData(int hpId, List<TargetItem> targets, bool includeOutDrug, string kaName, string tantoName, string uketukeSbt, string hoken);
+
+    CommonExcelReportingModel GetDataP24WelfareDisk(int hpId, int seikyuYm, SeikyuType seikyuType);
 }

@@ -31,6 +31,8 @@ using Reporting.ReceiptList.Service;
 using Reporting.ReceiptPrint.Service;
 using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
+using Reporting.Sokatu.WelfareDisk.Service;
+using Reporting.Structs;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
 
@@ -64,8 +66,9 @@ public class ReportService : IReportService
     private readonly IKarte3CoReportService _karte3CoReportService;
     private readonly IAccountingCardListCoReportService _accountingCardListCoReportService;
     private readonly IInDrugCoReportService _inDrugCoReportService;
+    private readonly IP24WelfareDiskService _p24WelfareDiskService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IP24WelfareDiskService p24WelfareDiskService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -93,6 +96,7 @@ public class ReportService : IReportService
         _karte3CoReportService = karte3CoReportService;
         _accountingCardListCoReportService = accountingCardListCoReportService;
         _inDrugCoReportService = inDrugCoReportService;
+        _p24WelfareDiskService = p24WelfareDiskService;
     }
 
     //Byomei
@@ -140,7 +144,7 @@ public class ReportService : IReportService
     {
         return _accountingCardListCoReportService.GetAccountingCardListData(hpId, targets, includeOutDrug, kaName, tantoName, uketukeSbt, hoken);
     }
-    
+
     //MedicalRecordWebId
     public CommonReportingRequestModel GetMedicalRecordWebIdReportingData(int hpId, long ptId, int sinDate)
     {
@@ -484,5 +488,11 @@ public class ReportService : IReportService
     public CommonReportingRequestModel GetKarte3ReportingData(int hpId, long ptId, int startSinYm, int endSinYm, bool includeHoken, bool includeJihi)
     {
         return _karte3CoReportService.GetKarte3PrintData(hpId, ptId, startSinYm, endSinYm, includeHoken, includeJihi);
+    }
+
+    // P24WelfareDisk
+    public CommonExcelReportingModel GetDataP24WelfareDisk(int hpId, int seikyuYm, SeikyuType seikyuType)
+    {
+        return _p24WelfareDiskService.GetDataP24WelfareDisk(hpId, seikyuYm, seikyuType);
     }
 }

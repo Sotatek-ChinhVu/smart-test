@@ -221,6 +221,7 @@ using Reporting.Sokatu.KoukiSeikyu.DB;
 using Reporting.Sokatu.KoukiSeikyu.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Reporting.Sokatu.Syaho.Service;
+using Reporting.Sokatu.WelfareDisk.Service;
 using Reporting.Sokatu.WelfareSeikyu.DB;
 using Reporting.Sokatu.WelfareSeikyu.Service;
 using Reporting.Statistics.Sta1001.DB;
@@ -788,7 +789,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP20KoukiSeikyuCoReportService, P20KoukiSeikyuCoReportService>();
             services.AddTransient<IP25KokhoSokatuCoReportService, P25KokhoSokatuCoReportService>();
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
-            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
             services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
             services.AddTransient<IP08KokhoSeikyuCoReportService, P08KokhoSeikyuCoReportService>();
@@ -806,6 +806,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KokhoSokatuCoReportService, P14KokhoSokatuCoReportService>();
             services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
             services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
+            services.AddTransient<IP24WelfareDiskService, P24WelfareDiskService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

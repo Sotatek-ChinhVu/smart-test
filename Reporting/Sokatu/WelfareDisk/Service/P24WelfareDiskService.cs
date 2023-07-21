@@ -1,16 +1,15 @@
 ﻿using Helper.Common;
-using Helper.Extension;
+using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.WelfareSeikyu.DB;
 using Reporting.Sokatu.WelfareSeikyu.Models;
 using Reporting.Structs;
-using System.Text;
 
 namespace Reporting.Sokatu.WelfareDisk.Service;
 
 public class P24WelfareDiskService : IP24WelfareDiskService
 {
-    private List<int> KohiHokenNos = new List<int> { 101, 102, 103, 105, 106, 107, 203, 206 };
+    private readonly List<int> kohiHokenNos = new List<int> { 101, 102, 103, 105, 106, 107, 203, 206 };
 
     private List<CoP24WelfareReceInfModel> receInfs;
     private CoHpInfModel hpInf;
@@ -24,47 +23,34 @@ public class P24WelfareDiskService : IP24WelfareDiskService
     public P24WelfareDiskService(ICoWelfareSeikyuFinder welfareFinder)
     {
         _welfareFinder = welfareFinder;
+        receInfs = new();
+        hpInf = new();
     }
 
-    #region OutPut method
-    public OutPutExitCode OutPutFile(string outputPath)
+    public CommonExcelReportingModel GetDataP24WelfareDisk(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        try
+        this.hpId = hpId;
+        this.seikyuType = seikyuType;
+        this.seikyuYm = seikyuYm;
+        GetData();
+        List<string> retDatas = new();
+        foreach (var receInf in receInfs)
         {
-            GetData();
-            //出力パス
-            string fileName = string.Format("FKS_241{0}.csv", hpInf.HpCd.PadLeft(7, '0'));
-            string filePath = Path.Combine(outputPath, fileName);
-
-            List<string> retDatas = new();
-
-            foreach (var receInf in receInfs)
-            {
-                retDatas.Add(RecordData(receInf));
-            }
-
-            var encoding = Encoding.GetEncoding("shift_jis");
-            File.WriteAllLines(filePath, retDatas, encoding);
-
-            return OutPutExitCode.EndSuccess;
+            retDatas.Add(RecordData(receInf));
         }
-        catch (Exception ex)
-        {
-            Log.WriteLogError(ModuleName, this, nameof(OutPutFile), ex);
-            return OutPutExitCode.EndError;
-        }
+        string fileName = string.Format("FKS_241{0}.xlsx", hpInf.HpCd.PadLeft(7, '0'));
+        return new CommonExcelReportingModel(fileName, retDatas);
     }
-    #endregion
 
     #region Private function
-    private bool GetData()
+    private void GetData()
     {
         hpInf = _welfareFinder.GetHpInf(hpId, seikyuYm);
-        var wrkReces = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, KohiHokenNos, FutanCheck.None, 0);
+        var wrkReces = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, kohiHokenNos, FutanCheck.None, 0);
 
         //三重県用のモデルクラスにコピー
         receInfs = wrkReces
-            .Select(x => new CoP24WelfareReceInfModel(x.ReceInf, x.PtInf, x.PtKohi1, x.PtKohi2, x.PtKohi3, x.PtKohi4, KohiHokenNos))
+            .Select(x => new CoP24WelfareReceInfModel(x.ReceInf, x.PtInf, x.PtKohi1, x.PtKohi2, x.PtKohi3, x.PtKohi4, kohiHokenNos))
             .OrderBy(r => r.CityCode)
             .ThenBy(r => r.KohiSbt)
             .ThenBy(r => r.WelfareJyukyusyaNo)
@@ -74,7 +60,6 @@ public class P24WelfareDiskService : IP24WelfareDiskService
         {
             receInf.IsOutDrug = _welfareFinder.IsOutDrugOrder(hpId, receInf.PtId, receInf.SinYm);
         }
-        return (receInfs?.Count ?? 0) > 0;
     }
 
     private string RecordData(CoP24WelfareReceInfModel receInf)
