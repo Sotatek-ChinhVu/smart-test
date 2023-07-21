@@ -247,7 +247,8 @@ public class RecalculationInteractor : IRecalculationInputPort
             SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty));
             return false;
         }
-        SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, errorText.ToString()));
+        string resultError = errorText.ToString().Replace(Environment.NewLine, "\\r\\n");
+        SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, resultError));
         return true;
     }
 

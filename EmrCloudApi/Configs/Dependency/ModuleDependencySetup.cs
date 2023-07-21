@@ -97,6 +97,7 @@ using Interactor.Document.CommonGetListParam;
 using Interactor.DrugDetail;
 using Interactor.DrugDetailData;
 using Interactor.DrugInfor;
+using Interactor.DrugInfor.CommonDrugInf;
 using Interactor.Family;
 using Interactor.Family.ValidateFamilyList;
 using Interactor.FlowSheet;
@@ -321,6 +322,7 @@ using UseCase.DrugDetailData.ShowKanjaMuke;
 using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
+using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.Family.GetFamilyList;
 using UseCase.Family.GetFamilyReverserList;
 using UseCase.Family.GetMaybeFamilyList;
@@ -366,7 +368,6 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
-using UseCase.Lock.CheckLockOpenAccounting;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
@@ -525,6 +526,7 @@ using UseCase.Reception.GetSettings;
 using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
+using UseCase.Reception.RevertDeleteNoRecept;
 using UseCase.Reception.Update;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
@@ -553,6 +555,7 @@ using UseCase.SinKoui.GetSinKoui;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.GetPtWeight;
+using UseCase.SpecialNote.GetStdPoint;
 using UseCase.SpecialNote.Save;
 using UseCase.StickyNote;
 using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
@@ -598,6 +601,7 @@ using UseCase.User.SaveListUserMst;
 using UseCase.User.UpdateUserConf;
 using UseCase.User.UpsertList;
 using UseCase.User.UpsertUserConfList;
+using UseCase.User.UserInfo;
 using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.UserConf.UserSettingParam;
@@ -650,7 +654,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             //Cache data
-            services.AddScoped<IUserInfoService, UserInfoService>();
+            services.AddTransient<IUserInfoService, UserInfoService>();
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
@@ -908,6 +912,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
             services.AddTransient<ICheckOpenReportingService, CheckOpenReportingService>();
             services.AddTransient<IUserTokenRepository, UserTokenRepository>();
+            services.AddTransient<IGetCommonDrugInf, GetCommonDrugInf>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -929,6 +934,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveListUserMstInputData, SaveListUserMstInteractor>();
             busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
             busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
+            busBuilder.RegisterUseCase<GetUserInfoInputData, GetUserInfoInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
@@ -965,6 +971,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetMedicalDetailsInputData, GetMedicalDetailsInteractor>();
             busBuilder.RegisterUseCase<DeleteReceptionInputData, DeleteReceptionInteractor>();
             busBuilder.RegisterUseCase<GetRaiinListWithKanInfInputData, GetRaiinListWithKanInfInteractor>();
+            busBuilder.RegisterUseCase<RevertDeleteNoReceptInputData, RevertDeleteNoReceptInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -1129,6 +1136,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveSpecialNoteInputData, SaveSpecialNoteInteractor>();
             busBuilder.RegisterUseCase<AddAlrgyDrugListInputData, AddAlrgyDrugListInteractor>();
             busBuilder.RegisterUseCase<GetPtWeightInputData, GetPtWeightInteractor>();
+            busBuilder.RegisterUseCase<GetStdPointInputData, GetStdPointInteractor>();
 
             // StickyNote
             busBuilder.RegisterUseCase<GetStickyNoteInputData, GetStickyNoteInteractor>();
@@ -1167,6 +1175,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //DrugInfor
             busBuilder.RegisterUseCase<GetDrugInforInputData, GetDrugInforInteractor>();
+            busBuilder.RegisterUseCase<GetDataPrintDrugInfoInputData, GetDataPrintDrugInfoInteractor>();
 
             // Get HokenMst by FutansyaNo
             busBuilder.RegisterUseCase<GetKohiHokenMstInputData, GetKohiHokenMstInteractor>();
@@ -1380,7 +1389,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetLockInfoInputData, GetLockInfoInteractor>();
             busBuilder.RegisterUseCase<CheckLockVisitingInputData, CheckLockVisitingInteractor>();
             busBuilder.RegisterUseCase<CheckExistFunctionCodeInputData, CheckExistFunctionCodeInteractor>();
-            busBuilder.RegisterUseCase<CheckLockOpenAccountingInputData, CheckLockOpenAccountingInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();

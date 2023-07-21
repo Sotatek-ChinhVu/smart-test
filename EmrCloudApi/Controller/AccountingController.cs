@@ -91,8 +91,7 @@ namespace EmrCloudApi.Controller
 
             if (output.Status == SaveAccountingStatus.Success)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.AccountDueChanged,
-                    new CommonMessage { PtId = input.PtId, SinDate = input.SinDate, RaiinNo = 0 });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new SaveAccountingPresenter();

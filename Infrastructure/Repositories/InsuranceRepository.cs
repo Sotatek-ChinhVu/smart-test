@@ -1293,6 +1293,7 @@ namespace Infrastructure.Repositories
                                         item.HokenInfIsDeleted,
                                         Mapper.Map(hokenMst, new HokenMstModel(), (src, dest) =>
                                         {
+                                            dest.ChangePropertiesNoAutoMap(src.HokenSname);
                                             return dest;
                                         }),
                                         new HokensyaMstModel(),

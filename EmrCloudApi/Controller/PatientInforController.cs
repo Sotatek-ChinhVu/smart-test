@@ -614,6 +614,12 @@ namespace EmrCloudApi.Controller
                                                                     x.IsDeleted,
                                                                     string.Empty)).ToList();
 
+            List<int> hokenIdList = new();
+            if (patientInfo.ReactSave.ConfirmCloneByomei)
+            {
+                hokenIdList = patientInfo.HokenIdList;
+            }
+
             var input = new SavePatientInfoInputData(patient,
                  patientInfo.PtKyuseis,
                  patientInfo.PtSanteis,
@@ -624,6 +630,7 @@ namespace EmrCloudApi.Controller
                  patientInfo.ReactSave,
                  patientInfo.MaxMoneys,
                  insuranceScans,
+                 hokenIdList,
                  UserId,
                  HpId
                  );
@@ -647,8 +654,7 @@ namespace EmrCloudApi.Controller
 
             if (output.Status == DeletePatientInfoStatus.Successful)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.DeletePtInfChanged,
-                    new CommonMessage { PtId = input.PtId, SinDate = 0, RaiinNo = 0 });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new DeletePatientInfoPresenter();
