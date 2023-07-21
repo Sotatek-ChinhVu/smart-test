@@ -1298,79 +1298,79 @@ namespace Interactor.ReceiptCheck
                     listItemCdOfMonth.AddRange(sinKoui.SinKouiDetailModels);
                 });
 
-                listSinKoui.ForEach((sinKoui) =>
-                {
-                    if (sinKoui.ExistItemWithCommentSelect)
-                    {
-                        var listItemWithCmtSelect = sinKoui.SinKouiDetailModels.Where(s => s.CmtSelectList != null && s.CmtSelectList.Count > 0).ToList();
+                //listSinKoui.ForEach((sinKoui) =>
+                //{
+                //    if (sinKoui.ExistItemWithCommentSelect)
+                //    {
+                //        var listItemWithCmtSelect = sinKoui.SinKouiDetailModels.Where(s => s.CmtSelectList != null && s.CmtSelectList.Count > 0).ToList();
 
-                        listItemWithCmtSelect.ForEach((sinKouiDetail) =>
-                        {
-                            List<string> listItemCd = sinKoui.SinKouiDetailModels.Select(s => s.ItemCd).ToList();
-                            sinKouiDetail.CmtSelectList.ForEach((cmtSelect) =>
-                            {
-                                cmtSelect.ListGroupComment.ForEach((groupComment) =>
-                                {
-                                    List<RecedenCmtSelectModel> filteredCmtSelect = groupComment.ItemCmtModels.Where(r => r.CondKbn == 1).ToList();
-                                    if (filteredCmtSelect.Count > 0)
-                                    {
-                                        bool existCmtSelect = false;
-                                        foreach (var recedenCmtSelect in filteredCmtSelect)
-                                        {
-                                            if (recedenCmtSelect.IsSatsueiBui)
-                                            {
-                                                // If recedenCmtSelect is 撮影部位 type => have to check in the same RP
-                                                if (listItemCd.Contains(recedenCmtSelect.CmtCd))
-                                                {
-                                                    existCmtSelect = true;
-                                                    break;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                // If recedenCmtSelect isn't 撮影部位 type => have to check in the same month
-                                                // If exist recedenCmtSelect in ReceCmt => it's Ok
-                                                bool isExistInReceCmt = listReceCmtItemCode.Contains(recedenCmtSelect.CmtCd);
-                                                if (isExistInReceCmt || listItemCdOfMonth.Any(x => x.ItemCd == recedenCmtSelect.CmtCd))
-                                                {
-                                                    existCmtSelect = true;
-                                                    break;
-                                                }
-                                            }
+                //        listItemWithCmtSelect.ForEach((sinKouiDetail) =>
+                //        {
+                //            List<string> listItemCd = sinKoui.SinKouiDetailModels.Select(s => s.ItemCd).ToList();
+                //            sinKouiDetail.CmtSelectList.ForEach((cmtSelect) =>
+                //            {
+                //                cmtSelect.ListGroupComment.ForEach((groupComment) =>
+                //                {
+                //                    List<RecedenCmtSelectModel> filteredCmtSelect = groupComment.ItemCmtModels.Where(r => r.CondKbn == 1).ToList();
+                //                    if (filteredCmtSelect.Count > 0)
+                //                    {
+                //                        bool existCmtSelect = false;
+                //                        foreach (var recedenCmtSelect in filteredCmtSelect)
+                //                        {
+                //                            if (recedenCmtSelect.IsSatsueiBui)
+                //                            {
+                //                                // If recedenCmtSelect is 撮影部位 type => have to check in the same RP
+                //                                if (listItemCd.Contains(recedenCmtSelect.CmtCd))
+                //                                {
+                //                                    existCmtSelect = true;
+                //                                    break;
+                //                                }
+                //                            }
+                //                            else
+                //                            {
+                //                                // If recedenCmtSelect isn't 撮影部位 type => have to check in the same month
+                //                                // If exist recedenCmtSelect in ReceCmt => it's Ok
+                //                                bool isExistInReceCmt = listReceCmtItemCode.Contains(recedenCmtSelect.CmtCd);
+                //                                if (isExistInReceCmt || listItemCdOfMonth.Any(x => x.ItemCd == recedenCmtSelect.CmtCd))
+                //                                {
+                //                                    existCmtSelect = true;
+                //                                    break;
+                //                                }
+                //                            }
 
-                                            // Fix bug 4858
-                                            if (recedenCmtSelect.CmtSbt == 3)
-                                            {
-                                                //Fix comment 4818
-                                                if (listItemCdOfMonth.Any(x => x.ItemCd == ItemCdConst.CommentJissiRekkyoItemNameDummy && x.CmtOpt == sinKouiDetail.ItemCd))
-                                                {
-                                                    existCmtSelect = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
+                //                            // Fix bug 4858
+                //                            if (recedenCmtSelect.CmtSbt == 3)
+                //                            {
+                //                                //Fix comment 4818
+                //                                if (listItemCdOfMonth.Any(x => x.ItemCd == ItemCdConst.CommentJissiRekkyoItemNameDummy && x.CmtOpt == sinKouiDetail.ItemCd))
+                //                                {
+                //                                    existCmtSelect = true;
+                //                                    break;
+                //                                }
+                //                            }
+                //                        }
 
-                                        if (!existCmtSelect)
-                                        {
-                                            string itemCd = sinKouiDetail.ItemCd;
-                                            string itemName = sinKouiDetail.ItemName;
-                                            string cmtCd = filteredCmtSelect.First().CmtCd;
+                //                        if (!existCmtSelect)
+                //                        {
+                //                            string itemCd = sinKouiDetail.ItemCd;
+                //                            string itemName = sinKouiDetail.ItemName;
+                //                            string cmtCd = filteredCmtSelect.First().CmtCd;
 
-                                            string comment = filteredCmtSelect.First().CommentName;
-                                            if (filteredCmtSelect.Count > 1)
-                                            {
-                                                comment += "...など";
-                                            }
+                //                            string comment = filteredCmtSelect.First().CommentName;
+                //                            if (filteredCmtSelect.Count > 1)
+                //                            {
+                //                                comment += "...など";
+                //                            }
 
-                                            string message = string.Format("（{0}: {1}）", itemName, comment);
-                                            InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.CommentCheckErrCd, ReceErrCdConst.CommentCheckErrMsg, message, itemCd, cmtCd, 0);
-                                        }
-                                    }
-                                });
-                            });
-                        });
-                    }
-                });
+                //                            string message = string.Format("（{0}: {1}）", itemName, comment);
+                //                            InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.CommentCheckErrCd, ReceErrCdConst.CommentCheckErrMsg, message, itemCd, cmtCd, 0);
+                //                        }
+                //                    }
+                //                });
+                //            });
+                //        });
+                //    }
+                //});
             }
 
             if (isCheckAdditionItem)
