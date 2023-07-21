@@ -139,6 +139,10 @@ namespace Infrastructure.Repositories
                 {
                     continue;
                 }
+                else if (functionCd == FunctionCode.Accounting && checkedResult.lockInf.OyaRaiinNo != oyaRaiinNo)
+                {
+                    continue;
+                }
                 result.Add(new LockModel(
                     checkedResult.lockInf.UserId,
                     checkedResult.lockedUserInf?.Name ?? string.Empty,
