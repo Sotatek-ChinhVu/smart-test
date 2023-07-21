@@ -16,6 +16,17 @@ public class ReceCheckErrModel
         IsChecked = isChecked;
     }
 
+    public ReceCheckErrModel(string errCd, int sinDate, string aCd, string bCd, int isChecked)
+    {
+        ErrCd = errCd;
+        SinDate = sinDate;
+        ACd = aCd;
+        BCd = bCd;
+        Message1 = string.Empty;
+        Message2 = string.Empty;
+        IsChecked = isChecked;
+    }
+
     public ReceCheckErrModel ChangeMessage(string message1, string message2)
     {
         Message1 = message1;

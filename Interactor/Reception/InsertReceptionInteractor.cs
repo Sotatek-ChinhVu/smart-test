@@ -36,7 +36,7 @@ public class InsertReceptionInteractor : IInsertReceptionInputPort
             var raiinNo = _receptionRepository.Insert(dto, input.HpId, input.UserId);
             if (raiinNo > 0)
             {
-                receptionInfos = _receptionRepository.GetList(input.HpId, dto.Reception.SinDate, raiinNo, dto.Reception.PtId);
+                receptionInfos = _receptionRepository.GetList(input.HpId, dto.Reception.SinDate, raiinNo, dto.Reception.PtId, isDeleted: 0);
                 sameVisitList = _receptionRepository.GetListSameVisit(input.HpId, dto.Reception.PtId, dto.Reception.SinDate);
             }
             return new InsertReceptionOutputData(InsertReceptionStatus.Success, raiinNo, receptionInfos, sameVisitList);

@@ -62,5 +62,7 @@ namespace Domain.Models.Reception
         ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate);
 
         List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate);
+
+        bool UpdateIsDeleted(int hpId, long raiinNo);
     }
 }

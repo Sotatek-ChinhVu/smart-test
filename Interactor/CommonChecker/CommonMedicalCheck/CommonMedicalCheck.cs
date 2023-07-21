@@ -1597,8 +1597,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 pregnancies,
                 specialNoteItem.PatientInfoTab.PtCmtInfItems,
                 specialNoteItem.PatientInfoTab.SeikatureInfItems,
-                new List<PhysicalInfoModel> { physicalModel },
-                new()
+                new List<PhysicalInfoModel> { physicalModel }
             );
 
         var specialNoteModel = new SpecialNoteFull(

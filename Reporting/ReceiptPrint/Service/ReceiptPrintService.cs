@@ -264,6 +264,10 @@ public class ReceiptPrintService : IReceiptPrintService
         {
             return _p27KoukiSeikyuCoReportService.GetP27KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType, prefKbn);
         }
+        else if (prefNo == 14 && reportId == 102 && reportEdaNo == 0)
+        {
+            return _p14KokhoSokatuCoReportService.GetP14KokhoSokatuReportingData(hpId, seikyuYm, seikyuType);
+        }
         result.JobName = formName;
 
         return result;

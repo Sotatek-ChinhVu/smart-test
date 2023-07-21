@@ -1,4 +1,5 @@
 ﻿using Domain.Models.HistoryOrder;
+using Infrastructure.Repositories;
 using UseCase.MedicalExamination.GetHistoryIndex;
 
 namespace Interactor.MedicalExamination
@@ -42,6 +43,7 @@ namespace Interactor.MedicalExamination
             finally
             {
                 _historyRepository.ReleaseResource();
+                _historyRepository.Dispose();
             }
         }
     }

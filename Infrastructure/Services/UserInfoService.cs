@@ -35,5 +35,10 @@ namespace Infrastructure.Services
             _userInfoList = _tenantProvider.GetNoTrackingDataContext().UserMsts.ToList();
             //_memoryCache.Set(_cacheKey, _userInfoList);
         }
+
+        public void Dispose()
+        {
+            _tenantProvider.DisposeDataContext();
+        }
     }
 }

@@ -11,4 +11,6 @@ public class SaveReceCheckCmtListRequest
     public int HokenId { get; set; }
 
     public List<SaveReceCheckCmtListRequestItem> ReceCheckCmtList { get; set; } = new();
+
+    public List<SaveReceCheckErrorListRequestItem> ReceCheckErrorList { get; set; } = new();
 }

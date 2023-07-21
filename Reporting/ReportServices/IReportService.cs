@@ -1,6 +1,7 @@
 ﻿using Domain.Models.AccountDue;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
+using Reporting.AccountingCardList.Model;
 using Reporting.CommonMasters.Enums;
 using Reporting.DrugInfo.Model;
 using Reporting.Karte1.Mapper;
@@ -67,6 +68,8 @@ public interface IReportService
 
     CommonReportingRequestModel GetDrugNoteSealPrintData(int hpId, long ptId, int sinDate, long raiinNo);
 
+    CommonReportingRequestModel GetInDrugPrintData(int hpId, long ptId, int sinDate, long raiinNo);
+
     CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, int raiinNo);
 
     CommonReportingRequestModel GetAccountingCardReportingData(int hpId, long ptId, int sinYm, int hokenId, bool includeOutDrug);
@@ -74,4 +77,6 @@ public interface IReportService
     List<CoAccountingParamModel> PrintWithoutThread(bool ryoshusho, bool meisai, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> accountDueListModels, CoAccountDueListModel selectedAccountDueListModel, bool isPrintMonth, int sinDate, long oyaRaiinNo, List<CoAccountDueListModel>? nyukinModels = null);
 
     CommonReportingRequestModel GetKarte3ReportingData(int hpId, long ptId, int startSinYm, int endSinYm, bool includeHoken, bool includeJihi);
+
+    CommonReportingRequestModel GetAccountingCardListReportingData(int hpId, List<TargetItem> targets, bool includeOutDrug, string kaName, string tantoName, string uketukeSbt, string hoken);
 }

@@ -483,5 +483,18 @@ namespace Domain.Models.Insurance
                 return result;
             }
         }
+
+        public bool IsEmptyModel
+        {
+            get => HokenNo == 0 && HokenEdaNo == 0
+                && HokenKbn == 1
+                && string.IsNullOrEmpty(HokensyaNo)
+                && HonkeKbn == 0
+                && string.IsNullOrEmpty(Kigo)
+                && string.IsNullOrEmpty(Bango)
+                && string.IsNullOrEmpty(EdaNo);
+        }
+
+        public int EndDateSort => EndDate != 99999999 ? EndDate : 0;
     }
 }
