@@ -509,7 +509,8 @@ using UseCase.Receipt.SaveReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ValidateCreateUKEFile;
-using UseCase.ReceiptCheck;
+using UseCase.ReceiptCheck.Recalculation;
+using UseCase.ReceiptCheck.ReceiptInfEdit;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastKarute;
@@ -1333,6 +1334,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveReceStatusInputData, SaveReceStatusInteractor>();
             busBuilder.RegisterUseCase<GetReceStatusInputData, GetReceStatusInteractor>();
             busBuilder.RegisterUseCase<ReceiptCheckRecalculationInputData, ReceiptCheckRecalculationInteractor>();
+            busBuilder.RegisterUseCase<DeleteReceiptInfEditInputData, DeleteReceiptInfEditInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();

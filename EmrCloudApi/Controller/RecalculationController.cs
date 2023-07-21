@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using UseCase.Core.Sync;
 using UseCase.Receipt.Recalculation;
-using RCUseCase = UseCase.ReceiptCheck;
+using UseCase.ReceiptCheck.Recalculation;
+using UseCase.ReceiptCheck.ReceiptInfEdit;
 
 namespace EmrCloudApi.Controller;
 
@@ -101,7 +102,7 @@ public class RecalculationController : AuthorizeControllerBase
             HttpResponse response = HttpContext.Response;
             //response.StatusCode = 202;
 
-            var input = new RCUseCase.ReceiptCheckRecalculationInputData(HpId, UserId, request.PtIds, request.SeikyuYm);
+            var input = new ReceiptCheckRecalculationInputData(HpId, UserId, request.PtIds, request.SeikyuYm);
             _bus.Handle(input);
         }
         catch
@@ -114,5 +115,12 @@ public class RecalculationController : AuthorizeControllerBase
         {
             HttpContext.Response.Body.Close();
         }
+    }
+
+    [HttpGet(ApiPath.DeleteReceiptInfEdit)]
+    public void DeleteReceiptInfEdit([FromQuery] DeleteReceiptInfEditRequest request)
+    {
+        var input = new DeleteReceiptInfEditInputData(HpId, UserId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
     }
 }

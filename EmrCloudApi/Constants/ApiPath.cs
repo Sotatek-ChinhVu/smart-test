@@ -276,6 +276,7 @@
         public const string GetReceStatus = "GetReceStatus";
         public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
         public const string GetListSinKoui = "GetListSinKoui";
+        public const string DeleteReceiptInfEdit = "DeleteReceiptInfEdit";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";

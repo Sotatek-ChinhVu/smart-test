@@ -1736,6 +1736,31 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
+        public bool DeleteReceiptInfEdit(int hpId, int userId, int seikyuYm, long ptId, int sinYm, int hokenId)
+        {
+            var listReceInfEdit = TrackingDataContext.ReceInfEdits.Where(item => item.HpId == hpId
+                                                                                && item.SeikyuYm == seikyuYm
+                                                                                && item.PtId == ptId
+                                                                                && item.SinYm == sinYm
+                                                                                && item.HokenId == hokenId
+                                                                                && item.IsDeleted == 0)
+                                                                   .ToList();
+
+            if (listReceInfEdit.Count() > 0)
+            {
+                foreach (var receInfEdit in listReceInfEdit)
+                {
+                    receInfEdit.IsDeleted = 1;
+                    receInfEdit.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    receInfEdit.UpdateId = userId;
+                }
+
+                return TrackingDataContext.SaveChanges() > 0;
+            }
+
+            return true;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();

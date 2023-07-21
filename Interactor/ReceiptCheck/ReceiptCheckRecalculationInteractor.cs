@@ -22,12 +22,12 @@ using Infrastructure.Interfaces;
 using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using UseCase.MedicalExamination.Calculate;
-using UseCase.ReceiptCheck;
+using UseCase.ReceiptCheck.Recalculation;
 using Request = UseCase.Receipt.Recalculation;
 
 namespace Interactor.ReceiptCheck
 {
-    public class ReceiptCheckRecalculationInteractor : IRecalculationInputPort
+    public class ReceiptCheckRecalculationInteractor : IReceiptCheckRecalculationInputPort
     {
         private const string HOKEN_CHAR = "0";
         private const string KOHI1_CHAR = "1";

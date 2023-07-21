@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.ReceiptCheck
+namespace UseCase.ReceiptCheck.Recalculation
 {
     public class ReceiptCheckRecalculationInputData : IInputData<ReceiptCheckRecalculationOutputData>
     {

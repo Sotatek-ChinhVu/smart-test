@@ -82,5 +82,7 @@ namespace Domain.CalculationInf
         int GetSanteiEndDate(int hpId, long ptId, int seikyuYm);
 
         bool SaveChanged(int hpId, int userId, List<ReceCheckErrModel> receChecks);
+
+        bool DeleteReceiptInfEdit(int hpId, int userId, int seikyuYm, long ptId, int sinYm, int hokenId);
     }
 }
