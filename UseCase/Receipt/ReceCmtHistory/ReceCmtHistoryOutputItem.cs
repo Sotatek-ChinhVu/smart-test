@@ -22,4 +22,5 @@ public class ReceCmtHistoryOutputItem
     public string HokenName { get; private set; }
 
     public List<ReceCmtItem> ReceCmtList { get; private set; }
+
 }
