@@ -375,10 +375,10 @@ public class PdfCreatorController : ControllerBase
 
             MultipartFormDataContent form = new MultipartFormDataContent();
 
-            form.Add(new StringContent("0"), "marginTop");
-            form.Add(new StringContent("0".ToString()), "marginBottom");
-            form.Add(new StringContent("0".ToString()), "marginLeft");
-            form.Add(new StringContent("0".ToString()), "marginRight");
+            form.Add(new StringContent("0.7"), "marginTop");
+            form.Add(new StringContent("0.7".ToString()), "marginBottom");
+            form.Add(new StringContent("0.7".ToString()), "marginLeft");
+            form.Add(new StringContent("0.7".ToString()), "marginRight");
             form.Add(new StringContent("8.27"), "paperWidth");
             form.Add(new StringContent("11.7"), "paperHeight");
             form.Add(new StringContent("window.status === 'ready'"), "waitForExpression");

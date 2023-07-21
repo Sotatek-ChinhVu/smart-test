@@ -486,6 +486,13 @@ namespace Domain.Models.Insurance
                 && string.IsNullOrEmpty(EdaNo);
         }
 
+
         public int EndDateSort => EndDate != 99999999 ? EndDate : 0;
+
+        public HokenInfModel ChangeSinDate(int sinDate)
+        {
+            SinDate = sinDate;
+            return this;
+        }
     }
 }
