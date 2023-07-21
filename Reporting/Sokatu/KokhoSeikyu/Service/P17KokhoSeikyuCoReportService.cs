@@ -33,7 +33,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
         private List<CoKaMstModel> kaMsts;
         #endregion
 
-        private const string _formFileNameP1 = "p17KokhoSeikyuP1.rse";
+        private const string _formFileNameP1 = "p17KokhoSeikyuP1_clone.rse";
         private const string _formFileNameP2 = "p17KokhoSeikyuP2.rse";
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
@@ -88,11 +88,12 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                         fileName.Add(indexPage.ToString(), _formFileNameP1);
                     }
                     currentPage++;
+
                     indexPage++;
                 }
             }
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            var pageIndex = _setFieldData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
             return new P08KokhoSeikyuMapper(_setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
         }
@@ -107,8 +108,8 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             #region Header
             int UpdateFormHeader()
             {
+                var pageIndex = _setFieldData.Select(item => item.Key).Distinct().Count() + 1;
                 Dictionary<string, string> fieldDataPerPage = new();
-                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 //医療機関コード
                 SetFieldData("hpCode", hpInf.HpCd);
                 //請求年月
@@ -117,7 +118,11 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 SetFieldData("seikyuYear", wrkYmd.Year.ToString());
                 SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
 
-                if (currentPage >= 2) return 1;
+                if (currentPage >= 2)
+                {
+                    _setFieldData.Add(pageIndex, fieldDataPerPage);
+                    return 1;
+                }
 
                 //医療機関情報
                 SetFieldData("address1", hpInf.Address1);
@@ -144,8 +149,8 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             #region BodyP1
             int UpdateFormBodyP1()
             {
-                List<ListTextObject> listDataPerPage = new();
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                List<ListTextObject> listDataPerPage = new();
                 var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
 
                 const int maxRow = 11;
