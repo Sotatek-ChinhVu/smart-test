@@ -1,7 +1,6 @@
 ﻿using ClosedXML.Excel;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportPDF;
-using Entity.Tenant;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Mappers.Common;
 using Reporting.ReportServices;
@@ -31,17 +30,30 @@ public class ExcelCreatorController : ControllerBase
     private IActionResult RenderExcel(CommonExcelReportingModel dataModel)
     {
         var dataList = dataModel.Data;
+        if (!dataList.Any())
+        {
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
+        }
         string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         using (var workbook = new XLWorkbook())
         {
             IXLWorksheet worksheet =
-            workbook.Worksheets.Add("shift_jis");
-            worksheet.Cell(1, 1).Value = "Id";
-            worksheet.Cell(1, 2).Value = "FirstName";
-            worksheet.Cell(1, 3).Value = "LastName";
-            for (int index = 1; index <= dataList.Count; index++)
+            workbook.Worksheets.Add(dataModel.SheetName);
+            int rowIndex = 1;
+            foreach (var row in dataList)
             {
-                worksheet.Cell(index + 1, 1).Value = dataList[index - 1];
+                List<string> colDataList = row.Split(',').ToList();
+                int colIndex = 1;
+                foreach (var cellData in colDataList)
+                {
+                    worksheet.Cell(rowIndex, colIndex).Value = cellData;
+                    colIndex++;
+                }
+                rowIndex++;
             }
 
             using (var stream = new MemoryStream())

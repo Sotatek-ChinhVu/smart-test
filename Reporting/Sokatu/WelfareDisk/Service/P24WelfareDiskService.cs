@@ -38,8 +38,8 @@ public class P24WelfareDiskService : IP24WelfareDiskService
         {
             retDatas.Add(RecordData(receInf));
         }
-        string fileName = string.Format("FKS_241{0}.xlsx", hpInf.HpCd.PadLeft(7, '0'));
-        return new CommonExcelReportingModel(fileName, retDatas);
+        string sheetName = string.Format("FKS_241{0}", hpInf.HpCd.PadLeft(7, '0'));
+        return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, retDatas);
     }
 
     #region Private function
