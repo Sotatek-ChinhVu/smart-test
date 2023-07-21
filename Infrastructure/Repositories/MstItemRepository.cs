@@ -2916,11 +2916,8 @@ namespace Infrastructure.Repositories
 
         public List<TeikyoByomeiModel> GetTeikyoByomeiModel(int hpId, string itemCd, bool isFromCheckingView = false)
         {
-            var result = new List<TeikyoByomeiModel>();
-
             var teikyoByomeis = NoTrackingDataContext.TekiouByomeiMsts.Where(
                     (x) => x.HpId == hpId && x.ItemCd == itemCd && (!isFromCheckingView || x.IsInvalidTokusyo != 1));
-
 
             var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where((x) => x.HpId == Session.HospitalID);
 
@@ -2933,24 +2930,25 @@ namespace Infrastructure.Repositories
                             ByomeiMst = byomeiMst
                         };
 
-            result = query.AsEnumerable()
-                          .Select(x => new TeikyoByomeiModel(x.ByomeiMst.SikkanCd,
-                                                             x.TeikyoByomei.HpId,
-                                                             x.TeikyoByomei.ItemCd,
-                                                             x.TeikyoByomei.ByomeiCd,
-                                                             x.TeikyoByomei.StartYM,
-                                                             x.TeikyoByomei.EndYM,
-                                                             x.TeikyoByomei.IsInvalid,
-                                                             x.TeikyoByomei.IsInvalidTokusyo,
-                                                             x.TeikyoByomei.EditKbn,
-                                                             x.TeikyoByomei.SystemData,
-                                                             x.ByomeiMst.Byomei ?? string.Empty,
-                                                             x.ByomeiMst.KanaName1 ?? string.Empty,
-                                                             false,
-                                                             false))
-                          .OrderByDescending(x => x.SystemData)
-                          .ThenBy(x => x.KanaName)
-                          .ToList();
+            var result = query.AsEnumerable()
+                              .Select(x => new TeikyoByomeiModel(x.ByomeiMst.SikkanCd,
+                                                                 x.TeikyoByomei.HpId,
+                                                                 x.TeikyoByomei.ItemCd,
+                                                                 x.TeikyoByomei.ByomeiCd,
+                                                                 x.TeikyoByomei.StartYM,
+                                                                 x.TeikyoByomei.EndYM,
+                                                                 x.TeikyoByomei.IsInvalid,
+                                                                 x.TeikyoByomei.IsInvalidTokusyo,
+                                                                 x.TeikyoByomei.EditKbn,
+                                                                 x.TeikyoByomei.SystemData,
+                                                                 x.ByomeiMst.Byomei ?? string.Empty,
+                                                                 x.ByomeiMst.KanaName1 ?? string.Empty,
+                                                                 x.ByomeiMst.Sbyomei ?? string.Empty,
+                                                                 false,
+                                                                 false))
+                              .OrderByDescending(x => x.SystemData)
+                              .ThenBy(x => x.KanaName)
+                              .ToList();
             return result;
         }
 
