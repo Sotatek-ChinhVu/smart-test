@@ -97,7 +97,7 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
         {
             return SaveReceCheckCmtListStatus.InvalidStatusColor;
         }
-        else if (inputData.ReceCheckCmtList.Any(item => item.Cmt == string.Empty))
+        else if (inputData.ReceCheckCmtList.Any(item => item.Cmt == string.Empty || item.Cmt.Length > 300))
         {
             return SaveReceCheckCmtListStatus.InvalidCmt;
         }
