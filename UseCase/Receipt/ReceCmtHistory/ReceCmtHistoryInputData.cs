@@ -4,13 +4,16 @@ namespace UseCase.Receipt.ReceCmtHistory;
 
 public class ReceCmtHistoryInputData : IInputData<ReceCmtHistoryOutputData>
 {
-    public ReceCmtHistoryInputData(int hpId, long ptId)
+    public ReceCmtHistoryInputData(int hpId, long ptId, int sinDate)
     {
         HpId = hpId;
         PtId = ptId;
+        SinDate = sinDate;
     }
 
     public int HpId { get; private set; }
 
     public long PtId { get; private set; }
+
+    public int SinDate { get; private set; }
 }
