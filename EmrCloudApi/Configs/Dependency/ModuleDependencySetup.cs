@@ -807,6 +807,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
             services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
             services.AddTransient<IP24WelfareDiskService, P24WelfareDiskService>();
+            services.AddTransient<IReceiptPrintExcelService, ReceiptPrintExcelService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

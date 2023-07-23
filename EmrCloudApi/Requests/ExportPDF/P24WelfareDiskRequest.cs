@@ -1,16 +1,16 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class P24WelfareDiskRequest : ReportRequestBase
+public class ReceiptPrintExcelRequest : ReportRequestBase
 {
+    public int PrefNo { get; set; }
+
+    public int ReportId { get; set; }
+
+    public int ReportEdaNo { get; set; }
+
+    public int DataKbn { get; set; }
+
     public int SeikyuYm { get; set; }
 
-    public bool IsNormal { get; set; }
-
-    public bool IsPaper { get; set; }
-
-    public bool IsDelay { get; set; }
-
-    public bool IsHenrei { get; set; }
-
-    public bool IsOnline { get; set; }
+    public string FormName { get; set; } = string.Empty;
 }

@@ -66,9 +66,9 @@ public class ReportService : IReportService
     private readonly IKarte3CoReportService _karte3CoReportService;
     private readonly IAccountingCardListCoReportService _accountingCardListCoReportService;
     private readonly IInDrugCoReportService _inDrugCoReportService;
-    private readonly IP24WelfareDiskService _p24WelfareDiskService;
+    private readonly IReceiptPrintExcelService _receiptPrintExcelService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IP24WelfareDiskService p24WelfareDiskService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IReceiptPrintExcelService receiptPrintExcelService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -96,7 +96,7 @@ public class ReportService : IReportService
         _karte3CoReportService = karte3CoReportService;
         _accountingCardListCoReportService = accountingCardListCoReportService;
         _inDrugCoReportService = inDrugCoReportService;
-        _p24WelfareDiskService = p24WelfareDiskService;
+        _receiptPrintExcelService = receiptPrintExcelService;
     }
 
     //Byomei
@@ -491,8 +491,9 @@ public class ReportService : IReportService
     }
 
     // P24WelfareDisk
-    public CommonExcelReportingModel GetDataP24WelfareDisk(int hpId, int seikyuYm, SeikyuType seikyuType)
+
+    public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
     {
-        return _p24WelfareDiskService.GetDataP24WelfareDisk(hpId, seikyuYm, seikyuType);
+        return _receiptPrintExcelService.GetReceiptPrintExcel(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, seikyuYm);
     }
 }
