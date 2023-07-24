@@ -15,10 +15,12 @@ namespace Reporting.ReceiptPrint.Service
         #endregion
 
         private readonly IP24WelfareDiskService _p24WelfareDiskService;
+        private readonly IP43Amakusa41DiskService _p43Amakusa41DiskService;
 
-        public ReceiptPrintExcelService(IP24WelfareDiskService p24WelfareDiskService)
+        public ReceiptPrintExcelService(IP24WelfareDiskService p24WelfareDiskService, IP43Amakusa41DiskService p43Amakusa41DiskService)
         {
             _p24WelfareDiskService = p24WelfareDiskService;
+            _p43Amakusa41DiskService = p43Amakusa41DiskService;
         }
 
         public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
@@ -27,7 +29,10 @@ namespace Reporting.ReceiptPrint.Service
             var seikyuType = GetSeikyuType(dataKbn);
             if (prefNo == 24 && reportId == 106 && reportEdaNo == 0)
             {
-                _p24WelfareDiskService.GetDataP24WelfareDisk(hpId, seikyuYm, seikyuType);
+               result = _p24WelfareDiskService.GetDataP24WelfareDisk(hpId, seikyuYm, seikyuType);
+            }else if (prefNo == 43 && reportId == 106 && reportEdaNo == 0)
+            {
+                result = _p43Amakusa41DiskService.GetDataP43Amakusa41Disk(hpId, seikyuYm, seikyuType);
             }
 
             formName = result.JobName ;

@@ -103,10 +103,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         public string JyukyusyaNo
         {
             get =>
-                kohiHokens.Exists(x => x.HokenNo == PtKohi1.HokenNo && x.HokenEdaNo == PtKohi1.HokenEdaNo) ? PtKohi1.JyukyusyaNo :
+                kohiHokens.Exists(x => x.HokenNo == PtKohi1.HokenNo && x.HokenEdaNo == PtKohi1.HokenEdaNo) ? PtKohi1.JyukyusyaNo :/*
                 kohiHokens.Exists(x => x.HokenNo == PtKohi2.HokenNo && x.HokenEdaNo == PtKohi2.HokenEdaNo) ? PtKohi2.JyukyusyaNo :
                 kohiHokens.Exists(x => x.HokenNo == PtKohi3.HokenNo && x.HokenEdaNo == PtKohi3.HokenEdaNo) ? PtKohi3.JyukyusyaNo :
-                kohiHokens.Exists(x => x.HokenNo == PtKohi4.HokenNo && x.HokenEdaNo == PtKohi4.HokenEdaNo) ? PtKohi4.JyukyusyaNo :
+                kohiHokens.Exists(x => x.HokenNo == PtKohi4.HokenNo && x.HokenEdaNo == PtKohi4.HokenEdaNo) ? PtKohi4.JyukyusyaNo :*/
                 string.Empty;
         }
 
