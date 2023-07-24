@@ -21,7 +21,7 @@ namespace Reporting.ReceiptPrint.Service
             _p24WelfareDiskService = p24WelfareDiskService;
         }
 
-        public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
+        public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
         {
             CommonExcelReportingModel result = new();
             var seikyuType = GetSeikyuType(dataKbn);
@@ -29,8 +29,6 @@ namespace Reporting.ReceiptPrint.Service
             {
                 _p24WelfareDiskService.GetDataP24WelfareDisk(hpId, seikyuYm, seikyuType);
             }
-
-            formName = result.JobName ;
             return result;
         }
 

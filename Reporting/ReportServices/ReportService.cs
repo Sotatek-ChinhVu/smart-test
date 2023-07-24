@@ -492,8 +492,8 @@ public class ReportService : IReportService
 
     // P24WelfareDisk
 
-    public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
+    public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
     {
-        return _receiptPrintExcelService.GetReceiptPrintExcel(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, seikyuYm);
+        return _receiptPrintExcelService.GetReceiptPrintExcel(hpId, prefNo, reportId, reportEdaNo, dataKbn, seikyuYm);
     }
 }
