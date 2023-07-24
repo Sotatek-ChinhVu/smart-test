@@ -3421,6 +3421,51 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
+    public void UpdateReceStatus(ReceStatusModel receStatusUpdate, int hpId, int userId)
+    {
+        if (receStatusUpdate == null)
+        {
+            return;
+        }
+
+        var receStatus = TrackingDataContext.ReceStatuses.FirstOrDefault(x => x.HpId == hpId &&
+                                                                              x.PtId == receStatusUpdate.PtId &&
+                                                                              x.SeikyuYm == receStatusUpdate.SeikyuYm &&
+                                                                              x.HokenId == receStatusUpdate.HokenId &&
+                                                                              x.SinYm == receStatusUpdate.SinYm);
+        if (receStatus != null)
+        {
+            receStatus.UpdateId = userId;
+            receStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            receStatus.IsPaperRece = receStatusUpdate.IsPaperRece ? 1 : 0;
+            receStatus.FusenKbn = receStatusUpdate.FusenKbn;
+            receStatus.StatusKbn = receStatusUpdate.StatusKbn;
+        }
+        else
+        {
+            TrackingDataContext.ReceStatuses.Add(new ReceStatus()
+            {
+                HpId = hpId,
+                PtId = receStatusUpdate.PtId,
+                SeikyuYm = receStatusUpdate.SeikyuYm,
+                HokenId = receStatusUpdate.HokenId,
+                SinYm = receStatusUpdate.SinYm,
+                FusenKbn = receStatusUpdate.FusenKbn,
+                IsPaperRece = receStatusUpdate.IsPaperRece ? 1 : 0,
+                Output = receStatusUpdate.IsOutput ? 1 : 0,
+                IsDeleted = 0,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                CreateId = userId,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId,
+                StatusKbn = receStatusUpdate.StatusKbn,
+                IsPrechecked = receStatusUpdate.IsPrechecked ? 1 : 0
+            });
+        }
+
+        TrackingDataContext.SaveChanges();
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();

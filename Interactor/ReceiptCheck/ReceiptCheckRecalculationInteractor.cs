@@ -48,6 +48,7 @@ namespace Interactor.ReceiptCheck
         private readonly ICommonMedicalCheck _commonMedicalCheck;
         private readonly IRealtimeOrderErrorFinder _realtimeOrderErrorFinder;
         private readonly ITenantProvider _tenantProvider;
+        private readonly IReceiptRepository _receiptRepository;
 
         private int SeikyuYm;
         private List<ReceInfModel> _receInfModels = new List<ReceInfModel>();
@@ -58,7 +59,7 @@ namespace Interactor.ReceiptCheck
         public List<BuiErrorModel> errorOdrInfDetails = new List<BuiErrorModel>();
         public string ErrorText { get; set; } = string.Empty;
 
-        public ReceiptCheckRecalculationInteractor(ICalculateService calculateService, ICalculationInfRepository calculationInfRepository, ISystemConfRepository systemConfRepository, ICommonMedicalCheck commonMedicalCheck, IRealtimeOrderErrorFinder realtimeOrderErrorFinder, ITenantProvider tenantProvider)
+        public ReceiptCheckRecalculationInteractor(ICalculateService calculateService, ICalculationInfRepository calculationInfRepository, ISystemConfRepository systemConfRepository, ICommonMedicalCheck commonMedicalCheck, IRealtimeOrderErrorFinder realtimeOrderErrorFinder, ITenantProvider tenantProvider, IReceiptRepository receiptRepository)
         {
             _calculateService = calculateService;
             _calculationInfRepository = calculationInfRepository;
@@ -66,6 +67,7 @@ namespace Interactor.ReceiptCheck
             _commonMedicalCheck = commonMedicalCheck;
             _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
             _tenantProvider = tenantProvider;
+            _receiptRepository = receiptRepository;
         }
 
         public ReceiptCheckRecalculationOutputData Handle(ReceiptCheckRecalculationInputData inputData)
@@ -107,6 +109,8 @@ namespace Interactor.ReceiptCheck
 
                 errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.PtIds, inputData.SeikyuYm);
 
+                _receiptRepository.UpdateReceStatus(inputData.ReceStatus, inputData.HpId, inputData.UserId);
+
                 return new ReceiptCheckRecalculationOutputData(true);
             }
             finally
@@ -120,6 +124,7 @@ namespace Interactor.ReceiptCheck
 
                 _calculationInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
+                _receiptRepository.ReleaseResource();
             }
         }
 

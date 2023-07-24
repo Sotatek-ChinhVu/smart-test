@@ -97,7 +97,7 @@ public class RecalculationController : AuthorizeControllerBase
             HttpResponse response = HttpContext.Response;
             //response.StatusCode = 202;
 
-            var input = new ReceiptCheckRecalculationInputData(HpId, UserId, request.PtIds, request.SeikyuYm);
+            var input = new ReceiptCheckRecalculationInputData(HpId, UserId, request.PtIds, request.SeikyuYm, request.ReceStatus);
             _bus.Handle(input);
         }
         catch

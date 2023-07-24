@@ -1,7 +1,10 @@
-﻿namespace Domain.Models.Receipt;
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.Receipt;
 
 public class ReceStatusModel
 {
+    [JsonConstructor]
     public ReceStatusModel(long ptId, int seikyuYm, int hokenId, int sinYm, int fusenKbn, bool isPaperRece, bool isOutput, int statusKbn, bool isPrechecked)
     {
         PtId = ptId;

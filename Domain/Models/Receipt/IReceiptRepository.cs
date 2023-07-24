@@ -127,4 +127,6 @@ public interface IReceiptRepository : IRepositoryBase
     bool CheckExistSeqNoReceCheckErrorList(int hpId, int hokenId, int sinYm, long ptId, List<ReceCheckErrModel> receCheckErrorList);
 
     bool SaveReceCheckErrList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckErrModel> receCheckErrorList);
+
+    void UpdateReceStatus(ReceStatusModel receStatusUpdate, int hpId, int userId);
 }
