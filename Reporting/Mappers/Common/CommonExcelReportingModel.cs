@@ -18,6 +18,4 @@ public class CommonExcelReportingModel
     public string SheetName { get; private set; }
 
     public List<string> Data { get; private set; }
-
-    public string JobName { get; private set; } = string.Empty;
 }
