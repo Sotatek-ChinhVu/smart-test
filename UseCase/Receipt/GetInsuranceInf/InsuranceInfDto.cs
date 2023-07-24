@@ -4,7 +4,7 @@ namespace UseCase.Receipt.GetInsuranceInf
 {
     public class InsuranceInfDto
     {
-        public InsuranceInfDto(int hokenId, string insuranceName, int hokenKbn, int nissu, int tensu, int ichibuFutan, string edaNo, string kigo, string bango, bool kohi1ReceKisai, int kohi1Id, bool kohi2ReceKisai, int kohi2Id, bool kohi3ReceKisai, int kohi3Id, bool kohi4ReceKisai, string kohi1FutansyaNo, string kohi1JyukyusyaNo, string kohi2FutansyaNo, string kohi2JyukyusyaNo, string kohi3FutansyaNo, string kohi3JyukyusyaNo, string kohi4FutansyaNo, string kohi4JyukyusyaNo, string hokensyaNo)
+        public InsuranceInfDto(int hokenId, string insuranceName, int hokenKbn, int nissu, int tensu, int ichibuFutan, int ptFutan, string edaNo, string kigo, string bango, bool kohi1ReceKisai, int kohi1Id, bool kohi2ReceKisai, int kohi2Id, bool kohi3ReceKisai, int kohi3Id, bool kohi4ReceKisai, string futansyaNoKohi1, string jyukyusyaNoKohi1, string futansyaNoKohi2, string jyukyusyaNoKohi2, string futansyaNoKohi3, string jyukyusyaNoKohi3, string futansyaNoKohi4, string jyukyusyaNoKohi4, string hokensyaNo)
         {
             HokenId = hokenId;
             InsuranceName = insuranceName;
@@ -12,6 +12,7 @@ namespace UseCase.Receipt.GetInsuranceInf
             Nissu = nissu;
             Tensu = CIUtil.FormatIntToString(tensu);
             IchibuFutan = CIUtil.FormatIntToString(ichibuFutan);
+            PtFutan = CIUtil.FormatIntToString(ptFutan);
             EdaNo = (HokenKbn > 0 && (HokenKbn < 11 || HokenKbn > 14)) ? edaNo : string.Empty;
             Kigo = kigo;
             Bango = bango;
@@ -22,14 +23,14 @@ namespace UseCase.Receipt.GetInsuranceInf
             Kohi3ReceKisai = kohi3ReceKisai;
             Kohi3Id = kohi3Id;
             Kohi4ReceKisai = kohi4ReceKisai;
-            Kohi1FutansyaNo = kohi1FutansyaNo;
-            Kohi1JyukyusyaNo = kohi1JyukyusyaNo;
-            Kohi2FutansyaNo = kohi2FutansyaNo;
-            Kohi2JyukyusyaNo = kohi2JyukyusyaNo;
-            Kohi3FutansyaNo = kohi3FutansyaNo;
-            Kohi3JyukyusyaNo = kohi3JyukyusyaNo;
-            Kohi4FutansyaNo = kohi4FutansyaNo;
-            Kohi4JyukyusyaNo = kohi4JyukyusyaNo;
+            FutansyaNoKohi1 = futansyaNoKohi1;
+            JyukyusyaNoKohi1 = jyukyusyaNoKohi1;
+            FutansyaNoKohi2 = futansyaNoKohi2;
+            JyukyusyaNoKohi2 = jyukyusyaNoKohi2;
+            FutansyaNoKohi3 = futansyaNoKohi3;
+            JyukyusyaNoKohi3 = jyukyusyaNoKohi3;
+            FutansyaNoKohi4 = futansyaNoKohi4;
+            JyukyusyaNoKohi4 = jyukyusyaNoKohi4;
             HokensyaNo = hokensyaNo;
         }
 
@@ -39,6 +40,7 @@ namespace UseCase.Receipt.GetInsuranceInf
         public int Nissu { get; private set; }
         public string Tensu { get; private set; }
         public string IchibuFutan { get; private set; }
+        public string PtFutan { get; private set; }
         public string EdaNo { get; private set; }
         public string Kigo { get; private set; }
         public string Bango { get; private set; }
@@ -49,15 +51,14 @@ namespace UseCase.Receipt.GetInsuranceInf
         public bool Kohi3ReceKisai { get; private set; }
         public int Kohi3Id { get; private set; }
         public bool Kohi4ReceKisai { get; private set; }
-        public string Kohi1FutansyaNo { get; private set; }
-        public string Kohi1JyukyusyaNo { get; private set; }
-        public string Kohi2FutansyaNo { get; private set; }
-        public string Kohi2JyukyusyaNo { get; private set; }
-        public string Kohi3FutansyaNo { get; private set; }
-        public string Kohi3JyukyusyaNo { get; private set; }
-        public string Kohi4FutansyaNo { get; private set; }
-        public string Kohi4JyukyusyaNo { get; private set; }
+        public string FutansyaNoKohi1 { get; private set; }
+        public string JyukyusyaNoKohi1 { get; private set; }
+        public string FutansyaNoKohi2 { get; private set; }
+        public string JyukyusyaNoKohi2 { get; private set; }
+        public string FutansyaNoKohi3 { get; private set; }
+        public string JyukyusyaNoKohi3 { get; private set; }
+        public string FutansyaNoKohi4 { get; private set; }
+        public string JyukyusyaNoKohi4 { get; private set; }
         public string HokensyaNo { get; private set; }
-
     }
 }
