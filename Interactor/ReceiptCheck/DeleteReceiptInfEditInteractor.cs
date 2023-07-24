@@ -26,7 +26,7 @@ namespace Interactor.ReceiptCheck
 
                 Task.Run(() => { _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(ptIds, inputData.SeikyuYm)); });
 
-                return new DeleteReceiptInfEditOutputData(DeleteReceiptInfStatus.Success);
+                return new DeleteReceiptInfEditOutputData(DeleteReceiptInfStatus.Successed);
 
             }
             finally

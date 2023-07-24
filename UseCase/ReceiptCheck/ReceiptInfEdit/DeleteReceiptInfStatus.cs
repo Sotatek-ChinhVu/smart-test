@@ -2,7 +2,7 @@
 {
     public enum DeleteReceiptInfStatus
     {
-        Success = 1,
-        Error = 2,
+        Successed = 1,
+        Failed = 2,
     }
 }

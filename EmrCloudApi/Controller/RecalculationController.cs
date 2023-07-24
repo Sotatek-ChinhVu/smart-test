@@ -1,6 +1,9 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.Receipt;
 using EmrCloudApi.Requests.Receipt;
 using EmrCloudApi.Requests.ReceiptCheck;
+using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.Receipt;
 using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
@@ -112,9 +115,14 @@ public class RecalculationController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.DeleteReceiptInfEdit)]
-    public void DeleteReceiptInfEdit([FromQuery] DeleteReceiptInfEditRequest request)
+    public ActionResult<Response<DeleteReceiptInfResponse>> DeleteReceiptInfEdit([FromQuery] DeleteReceiptInfEditRequest request)
     {
         var input = new DeleteReceiptInfEditInputData(HpId, UserId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
         var output = _bus.Handle(input);
+
+        var presenter = new DeleteReceiptInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<DeleteReceiptInfResponse>>(presenter.Result);
     }
 }
