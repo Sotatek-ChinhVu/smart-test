@@ -1,11 +1,9 @@
-﻿using Entity.Tenant;
-using Reporting.GrowthCurve.Model;
+﻿using Reporting.GrowthCurve.Model;
 using Reporting.Mappers.Common;
 
-namespace Reporting.GrowthCurve.Service
+namespace Reporting.GrowthCurve.Service;
+
+public interface IGrowthCurveCoReportService
 {
-    public interface IGrowthCurveCoReportService
-    {
-        CommonReportingRequestModel GetGrowthCurvePrintData(int hpId, GrowthCurveConfig growthCurveConfig);
-    }
+    CommonReportingRequestModel GetGrowthCurveA4PrintData(int hpId, GrowthCurveConfig growthCurveConfig);
 }

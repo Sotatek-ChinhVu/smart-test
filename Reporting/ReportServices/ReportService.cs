@@ -490,8 +490,8 @@ public class ReportService : IReportService
         return _karte3CoReportService.GetKarte3PrintData(hpId, ptId, startSinYm, endSinYm, includeHoken, includeJihi);
     }
 
-    public CommonReportingRequestModel GetGrowthCurvePrintData(int hpId, GrowthCurveConfig growthCurveConfig)
+    public CommonReportingRequestModel GetGrowthCurveA4PrintData(int hpId, GrowthCurveConfig growthCurveConfig)
     {
-        return _growthCurveCoReportService.GetGrowthCurvePrintData(hpId, growthCurveConfig);
+        return _growthCurveCoReportService.GetGrowthCurveA4PrintData(hpId, growthCurveConfig);
     }
 }

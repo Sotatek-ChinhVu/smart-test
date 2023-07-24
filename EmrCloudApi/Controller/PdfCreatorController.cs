@@ -171,7 +171,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.GrowthCurve)]
     public async Task<IActionResult> GetGrowthCurvePrintData([FromQuery] GrowthCurvePrintDataRequest request)
     {
-        var data = _reportService.GetGrowthCurvePrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        var data = _reportService.GetGrowthCurveA4PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 

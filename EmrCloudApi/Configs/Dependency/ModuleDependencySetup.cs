@@ -177,6 +177,7 @@ using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
 using Reporting.DrugNoteSeal.DB;
 using Reporting.DrugNoteSeal.Service;
+using Reporting.GrowthCurve.DB;
 using Reporting.GrowthCurve.Service;
 using Reporting.InDrug.DB;
 using Reporting.InDrug.Service;
@@ -808,6 +809,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
             services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
             services.AddTransient<IGrowthCurveCoReportService, GrowthCurveA4CoReportService>();
+            services.AddTransient<ISpecialNoteFinder, SpecialNoteFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

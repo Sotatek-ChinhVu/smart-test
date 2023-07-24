@@ -71,7 +71,7 @@ public interface IReportService
 
     CommonReportingRequestModel GetInDrugPrintData(int hpId, long ptId, int sinDate, long raiinNo);
 
-    CommonReportingRequestModel GetGrowthCurvePrintData(int hpId, GrowthCurveConfig growthCurveConfig);
+    CommonReportingRequestModel GetGrowthCurveA4PrintData(int hpId, GrowthCurveConfig growthCurveConfig);
 
     CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, int raiinNo);
 

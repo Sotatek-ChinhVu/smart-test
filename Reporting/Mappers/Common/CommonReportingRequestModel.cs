@@ -1,7 +1,4 @@
-﻿using Amazon.S3.Model;
-using System.Drawing;
-using System.Text;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Reporting.Mappers.Common
 {
@@ -158,7 +155,7 @@ namespace Reporting.Mappers.Common
 
     public class ListDrawLineObject
     {
-        public ListDrawLineObject(double startX, double startY, double endX, double endY, long width, ConLineStyle style, Color color)
+        public ListDrawLineObject(double startX, double startY, double endX, double endY, long width, string style, string color)
         {
             StartX = startX;
             StartY = startY;
@@ -175,6 +172,9 @@ namespace Reporting.Mappers.Common
             StartY = startY;
             EndX = endX;
             EndY = endY;
+            Width = 10;
+            Style = "Solid";
+            Color = "Black";
         }
 
         [JsonPropertyName("startX")]
@@ -193,15 +193,15 @@ namespace Reporting.Mappers.Common
         public long Width { get; set; }
 
         [JsonPropertyName("style")]
-        public ConLineStyle Style { get; set; }
+        public string Style { get; set; }
 
         [JsonPropertyName("color")]
-        public Color Color { get; set; }
+        public string Color { get; set; }
     }
 
     public class ListDrawBoxObject
     {
-        public ListDrawBoxObject(long startX, long startY, long width, long heigth, long round, Color fillColor, Color lineColor)
+        public ListDrawBoxObject(long startX, long startY, long width, long heigth, long round, string fillColor, string lineColor)
         {
             StartX = startX;
             StartY = startY;
@@ -228,15 +228,15 @@ namespace Reporting.Mappers.Common
         public long Round { get; set; }
 
         [JsonPropertyName("fillColor")]
-        public Color FillColor { get; set; }
+        public string FillColor { get; set; }
 
         [JsonPropertyName("lineColor")]
-        public Color LineColor { get; set; }
+        public string LineColor { get; set; }
     }
 
     public class ListDrawCircleObject
     {
-        public ListDrawCircleObject(double startX, double startY, double width, double heigth, Color fillColor, Color lineColor)
+        public ListDrawCircleObject(double startX, double startY, double width, double heigth, string fillColor, string lineColor)
         {
             StartX = startX;
             StartY = startY;
@@ -259,10 +259,10 @@ namespace Reporting.Mappers.Common
         public double Heigth { get; set; }
 
         [JsonPropertyName("fillColor")]
-        public Color FillColor { get; set; }
+        public string FillColor { get; set; }
 
         [JsonPropertyName("lineColor")]
-        public Color LineColor { get; set; }
+        public string LineColor { get; set; }
     }
 
     public enum ConLineStyle

@@ -3,7 +3,8 @@
     public class GrowthCurvePrintDataRequest : ReportRequestBase
     {
         public long PtNum { get; set; }
-        public string ?PtName { get; set; }
+        public long PtId { get; set; }
+        public string PtName { get; set; } = string.Empty;
         public int Sex { get; set; }
         public int BirthDay { get; set; }
         public int PrintMode { get; set; }
