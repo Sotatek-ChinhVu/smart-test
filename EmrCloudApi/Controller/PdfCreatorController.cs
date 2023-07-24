@@ -210,7 +210,7 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
-    [HttpGet(ApiPath.P24WelfareDisk)]
+    [HttpGet(ApiPath.WelfareDisk)]
     public IActionResult GenerateKarte1Report([FromQuery] ReceiptPrintExcelRequest request)
     {
         var data = _reportService.GetReceiptPrintExcel(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);

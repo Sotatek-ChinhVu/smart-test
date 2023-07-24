@@ -102,7 +102,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                     IsPaperRece = receStatus == null ? 0 : receStatus.IsPaperRece,
                 }
             );
-            var count0 = joinQuery.ToList();
+            
             //請求区分
             List<int> Codes = new List<int>();
             if (seikyuType.IsNormal) Codes.Add(SeikyuKbn.Normal);

@@ -108,7 +108,7 @@
         public const string ExportKarte2 = "ExportKarte2";
         public const string ExportKarte3 = "ExportKarte3";
         public const string AccountingCardList = "AccountingCardList";
-        public const string P24WelfareDisk = "P24WelfareDisk";
+        public const string WelfareDisk = "WelfareDisk";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
