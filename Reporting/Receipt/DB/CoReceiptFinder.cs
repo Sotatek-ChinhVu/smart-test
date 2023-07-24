@@ -878,11 +878,11 @@ namespace Reporting.Receipt.DB
             var sinDtls = NoTrackingDataContext.SinKouiDetails.Where(s =>
                     s.HpId == hpId &&
                     (ptId.Any() ? ptId.Contains(s.PtId) : true) &&
-                    s.SinYm == (sinYm > 0 ? sinYm : s.SinYm));
+                    s.SinYm == (sinYm > 0 ? sinYm : s.SinYm)).ToList();
             var sinCounts = NoTrackingDataContext.SinKouiCounts.Where(s =>
                 s.HpId == hpId &&
                 (ptId.Any() ? ptId.Contains(s.PtId) : true) &&
-                s.SinYm == (sinYm > 0 ? sinYm : s.SinYm));
+                s.SinYm == (sinYm > 0 ? sinYm : s.SinYm)).ToList();
 
             var sinCountMaxs = (
                     from sinCount in sinCounts
@@ -896,7 +896,7 @@ namespace Reporting.Receipt.DB
                         SeqNo = A.Key.SeqNo,
                         LastDate = A.Max(a => a.sinCount.SinDate)
                     }
-                );
+                ).ToList();
             //var receInfs = NoTrackingDataContext.ReceInfRepository.Where(r =>
             //    r.HpId == hpId &&
             //    r.SeikyuYm == seikyuYm);
@@ -960,7 +960,7 @@ namespace Reporting.Receipt.DB
                 t.EndDate >= lastDateOfMonth);
 
             var joinQuery = (
-                from sinDtl in sinDtls.AsEnumerable()
+                from sinDtl in sinDtls
                 join sinCount in sinCountMaxs on
                     new { sinDtl.HpId, sinDtl.PtId, sinDtl.RpNo, sinDtl.SeqNo } equals
                     new { sinCount.HpId, sinCount.PtId, sinCount.RpNo, sinCount.SeqNo } into sc
