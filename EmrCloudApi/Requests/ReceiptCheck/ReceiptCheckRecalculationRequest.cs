@@ -8,6 +8,6 @@ namespace EmrCloudApi.Requests.ReceiptCheck
 
         public int SeikyuYm { get; set; }
 
-        public ReceStatusModel ReceStatus { get; set; }
+        public ReceStatusModel ReceStatus { get; set; } = new();
     }
 }

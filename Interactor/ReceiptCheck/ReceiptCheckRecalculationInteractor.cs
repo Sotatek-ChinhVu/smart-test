@@ -130,18 +130,14 @@ namespace Interactor.ReceiptCheck
 
         public void CheckErrorInMonth(int hpId, int userId, int seikyuYm, List<long> ptIds)
         {
-            // var isStopCalc = false;
             var allCheckCount = _calculationInfRepository.GetCountReceInfs(hpId, ptIds, seikyuYm);
             if (allCheckCount == 0) return;
-            //CheckedCount = 0;
 
             _receCheckOpts = _calculationInfRepository.GetReceCheckOpts(hpId);
             _receInfModels = _calculationInfRepository.GetReceInfModels(hpId, ptIds, seikyuYm);
 
             foreach (var receInfModel in _receInfModels)
             {
-                //if (IsStopCalc) break;
-                //if (CancellationToken.IsCancellationRequested) return;
                 _calculationInfRepository.ClearReceCmtErr(hpId, receInfModel.PtId, receInfModel.HokenId, receInfModel.SinYm);
                 _sinKouiCounts = _calculationInfRepository.GetSinKouiCounts(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
 
@@ -150,11 +146,8 @@ namespace Interactor.ReceiptCheck
                 CheckOrder(hpId, receInfModel);
                 CheckRosai(hpId, receInfModel);
                 CheckAftercare(hpId, receInfModel);
-
-                // CheckedCount++;
             }
             _calculationInfRepository.SaveChanged(hpId, userId, _newReceCheckErrs);
-            // PrintReceCheck(seikyuYm, ptIds);
         }
 
         public void CheckHoken(int hpId, ReceInfModel receInfModel)
@@ -605,7 +598,7 @@ namespace Interactor.ReceiptCheck
                             {
                                 foreach (var msgError in msgErrors)
                                 {
-                                    string itemName = odrInfs.FirstOrDefault(p => p.ItemCd == msgError)?.ItemName;
+                                    string itemName = odrInfs.FirstOrDefault(p => p.ItemCd == msgError)?.ItemName ?? string.Empty;
                                     InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.BuiOrderByomeiErrCd,
                                                                               ReceErrCdConst.BuiOrderByomeiErrMsg,
                                                                               itemName + " : " +
@@ -785,10 +778,10 @@ namespace Interactor.ReceiptCheck
                                 return CIUtil.DaysBefore(baseDate, term);
                             }
 
-                            int MonthsAfter(int baseDate, int term)
-                            {
-                                return CIUtil.MonthsAfter(baseDate, term);
-                            }
+                            //int MonthsAfter(int baseDate, int term)
+                            //{
+                            //    return CIUtil.MonthsAfter(baseDate, term);
+                            //}
 
                             int GetHokenKbn(int receHokenKbn)
                             {
@@ -1305,79 +1298,79 @@ namespace Interactor.ReceiptCheck
                     listItemCdOfMonth.AddRange(sinKoui.SinKouiDetailModels);
                 });
 
-                //listSinKoui.ForEach((sinKoui) =>
-                //{
-                //    if (sinKoui.ExistItemWithCommentSelect)
-                //    {
-                //        var listItemWithCmtSelect = sinKoui.SinKouiDetailModels.Where(s => s.CmtSelectList != null && s.CmtSelectList.Count > 0).ToList();
+                listSinKoui.ForEach((sinKoui) =>
+                {
+                    if (sinKoui.ExistItemWithCommentSelect)
+                    {
+                        var listItemWithCmtSelect = sinKoui.SinKouiDetailModels.Where(s => s.CmtSelectList != null && s.CmtSelectList.Count > 0).ToList();
 
-                //        listItemWithCmtSelect.ForEach((sinKouiDetail) =>
-                //        {
-                //            List<string> listItemCd = sinKoui.SinKouiDetailModels.Select(s => s.ItemCd).ToList();
-                //            sinKouiDetail.CmtSelectList.ForEach((cmtSelect) =>
-                //            {
-                //                cmtSelect.ListGroupComment.ForEach((groupComment) =>
-                //                {
-                //                    List<RecedenCmtSelectModel> filteredCmtSelect = groupComment.ItemCmtModels.Where(r => r.CondKbn == 1).ToList();
-                //                    if (filteredCmtSelect.Count > 0)
-                //                    {
-                //                        bool existCmtSelect = false;
-                //                        foreach (var recedenCmtSelect in filteredCmtSelect)
-                //                        {
-                //                            if (recedenCmtSelect.IsSatsueiBui)
-                //                            {
-                //                                // If recedenCmtSelect is 撮影部位 type => have to check in the same RP
-                //                                if (listItemCd.Contains(recedenCmtSelect.CmtCd))
-                //                                {
-                //                                    existCmtSelect = true;
-                //                                    break;
-                //                                }
-                //                            }
-                //                            else
-                //                            {
-                //                                // If recedenCmtSelect isn't 撮影部位 type => have to check in the same month
-                //                                // If exist recedenCmtSelect in ReceCmt => it's Ok
-                //                                bool isExistInReceCmt = listReceCmtItemCode.Contains(recedenCmtSelect.CmtCd);
-                //                                if (isExistInReceCmt || listItemCdOfMonth.Any(x => x.ItemCd == recedenCmtSelect.CmtCd))
-                //                                {
-                //                                    existCmtSelect = true;
-                //                                    break;
-                //                                }
-                //                            }
+                        listItemWithCmtSelect.ForEach((sinKouiDetail) =>
+                        {
+                            List<string> listItemCd = sinKoui.SinKouiDetailModels.Select(s => s.ItemCd).ToList();
+                            sinKouiDetail.CmtSelectList.ForEach((cmtSelect) =>
+                            {
+                                cmtSelect.ListGroupComment.ForEach((groupComment) =>
+                                {
+                                    List<RecedenCmtSelectModel> filteredCmtSelect = groupComment.ItemCmtModels.Where(r => r.CondKbn == 1).ToList();
+                                    if (filteredCmtSelect.Count > 0)
+                                    {
+                                        bool existCmtSelect = false;
+                                        foreach (var recedenCmtSelect in filteredCmtSelect)
+                                        {
+                                            if (recedenCmtSelect.IsSatsueiBui)
+                                            {
+                                                // If recedenCmtSelect is 撮影部位 type => have to check in the same RP
+                                                if (listItemCd.Contains(recedenCmtSelect.CmtCd))
+                                                {
+                                                    existCmtSelect = true;
+                                                    break;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                // If recedenCmtSelect isn't 撮影部位 type => have to check in the same month
+                                                // If exist recedenCmtSelect in ReceCmt => it's Ok
+                                                bool isExistInReceCmt = listReceCmtItemCode.Contains(recedenCmtSelect.CmtCd);
+                                                if (isExistInReceCmt || listItemCdOfMonth.Any(x => x.ItemCd == recedenCmtSelect.CmtCd))
+                                                {
+                                                    existCmtSelect = true;
+                                                    break;
+                                                }
+                                            }
 
-                //                            // Fix bug 4858
-                //                            if (recedenCmtSelect.CmtSbt == 3)
-                //                            {
-                //                                //Fix comment 4818
-                //                                if (listItemCdOfMonth.Any(x => x.ItemCd == ItemCdConst.CommentJissiRekkyoItemNameDummy && x.CmtOpt == sinKouiDetail.ItemCd))
-                //                                {
-                //                                    existCmtSelect = true;
-                //                                    break;
-                //                                }
-                //                            }
-                //                        }
+                                            // Fix bug 4858
+                                            if (recedenCmtSelect.CmtSbt == 3)
+                                            {
+                                                //Fix comment 4818
+                                                if (listItemCdOfMonth.Any(x => x.ItemCd == ItemCdConst.CommentJissiRekkyoItemNameDummy && x.CmtOpt == sinKouiDetail.ItemCd))
+                                                {
+                                                    existCmtSelect = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
 
-                //                        if (!existCmtSelect)
-                //                        {
-                //                            string itemCd = sinKouiDetail.ItemCd;
-                //                            string itemName = sinKouiDetail.ItemName;
-                //                            string cmtCd = filteredCmtSelect.First().CmtCd;
+                                        if (!existCmtSelect)
+                                        {
+                                            string itemCd = sinKouiDetail.ItemCd;
+                                            string itemName = sinKouiDetail.ItemName;
+                                            string cmtCd = filteredCmtSelect.First().CmtCd;
 
-                //                            string comment = filteredCmtSelect.First().CommentName;
-                //                            if (filteredCmtSelect.Count > 1)
-                //                            {
-                //                                comment += "...など";
-                //                            }
+                                            string comment = filteredCmtSelect.First().CommentName;
+                                            if (filteredCmtSelect.Count > 1)
+                                            {
+                                                comment += "...など";
+                                            }
 
-                //                            string message = string.Format("（{0}: {1}）", itemName, comment);
-                //                            InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.CommentCheckErrCd, ReceErrCdConst.CommentCheckErrMsg, message, itemCd, cmtCd, 0);
-                //                        }
-                //                    }
-                //                });
-                //            });
-                //        });
-                //    }
-                //});
+                                            string message = string.Format("（{0}: {1}）", itemName, comment);
+                                            InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.CommentCheckErrCd, ReceErrCdConst.CommentCheckErrMsg, message, itemCd, cmtCd, 0);
+                                        }
+                                    }
+                                });
+                            });
+                        });
+                    }
+                });
             }
 
             if (isCheckAdditionItem)
@@ -1927,12 +1920,12 @@ namespace Interactor.ReceiptCheck
                         {
                             foreach (var key in keysGroupBy)
                             {
-                                if (kouiDetails.Count(p => p.PtId == key.PtId && p.SinYm == key.SinYm && p.ItemCd == key.ItemCd) >= 4)
+                                if (kouiDetails.Count(p => p.PtId == (key != null ? key.PtId : 0) && p.SinYm == (key != null ? key.SinYm : 0) && p.ItemCd == (key != null ? key.ItemCd : string.Empty)) >= 4)
                                 {
-                                    int santeiStartDate = _calculationInfRepository.GetSanteiStartDate(hpId, key.PtId, seikyuYm);
-                                    if (_calculationInfRepository.HasErrorWithSanteiByStartDate(hpId, key.PtId, seikyuYm, santeiStartDate, key.ItemCd))
+                                    int santeiStartDate = _calculationInfRepository.GetSanteiStartDate(hpId, key != null ? key.PtId : 0, seikyuYm);
+                                    if (_calculationInfRepository.HasErrorWithSanteiByStartDate(hpId, key != null ? key.PtId : 0, seikyuYm, santeiStartDate, key != null ? key.ItemCd : string.Empty))
                                     {
-                                        var sinKouiDetail = kouiDetails.FirstOrDefault(p => p.PtId == key.PtId && p.SinYm == key.SinYm && p.ItemCd == key.ItemCd);
+                                        var sinKouiDetail = kouiDetails.FirstOrDefault(p => p.PtId == key.PtId && p.SinYm == key.SinYm && p.ItemCd == key.ItemCd) ?? new();
                                         santeiNextMonthErrors.Add(string.Format("    {0}/{1} ID:{2} [{3}] {4}", seikyuYm / 100, seikyuYm % 100, sinKouiDetail.PtNum, sinKouiDetail.ItemCd, sinKouiDetail.ReceName));
                                     }
                                 }
@@ -1962,12 +1955,12 @@ namespace Interactor.ReceiptCheck
                         {
                             foreach (var key in keysGroupBy)
                             {
-                                if (kouiDetails.Count(p => p.PtId == key.PtId && p.SinYm == key.SinYm && p.ItemCd == key.ItemCd) >= 4)
+                                if (kouiDetails.Count(p => p.PtId == (key != null ? key.PtId : 0) && p.SinYm == (key != null ? key.SinYm : 0) && p.ItemCd == (key != null ? key.ItemCd : string.Empty)) >= 4)
                                 {
-                                    int santeiEndDate = _calculationInfRepository.GetSanteiEndDate(hpId, key.PtId, seikyuYm);
+                                    int santeiEndDate = _calculationInfRepository.GetSanteiEndDate(hpId, key != null ? key.PtId : 0, seikyuYm);
                                     if (_calculationInfRepository.HasErrorWithSanteiByEndDate(hpId, key.PtId, seikyuYm, santeiEndDate, key.ItemCd))
                                     {
-                                        var sinKouiDetail = kouiDetails.FirstOrDefault(p => p.PtId == key.PtId && p.SinYm == key.SinYm && p.ItemCd == key.ItemCd);
+                                        var sinKouiDetail = kouiDetails.FirstOrDefault(p => p.PtId == key.PtId && p.SinYm == key.SinYm && p.ItemCd == key.ItemCd) ?? new();
                                         santeiLastMonthErrors.Add(string.Format("    {0}/{1} ID:{2} [{3}] {4}", seikyuYm / 100, seikyuYm % 100, sinKouiDetail.PtNum, sinKouiDetail.ItemCd, sinKouiDetail.ReceName));
                                     }
                                 }

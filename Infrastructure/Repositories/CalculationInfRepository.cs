@@ -623,32 +623,35 @@ namespace Infrastructure.Repositories
 
             var groupKeys = joinTenMstQuery.GroupBy(p => new { p.PtId, p.SinDate, p.RaiinNo })
                                            .Select(p => p.FirstOrDefault());
-
-            foreach (var groupKey in groupKeys)
+            if(groupKeys != null)
             {
-                var entities = joinTenMstQuery.Where(p => p.PtId == groupKey.PtId && p.SinDate == groupKey.SinDate && p.RaiinNo == groupKey.RaiinNo);
-                var sinKouiDetailModels = new List<SinKouiDetailModel>();
-                foreach (var entity in entities)
+                foreach (var groupKey in groupKeys)
                 {
-                    //sinKouiDetailModels.Add(new SinKouiDetailModel(entity.TenMst, entity.SinKouiDetail));
-                    sinKouiDetailModels.Add(new SinKouiDetailModel(
-                                                                    entity.SinKouiDetail.PtId,
-                                                                    0,
-                                                                    entity.SinKouiDetail.SinYm,
-                                                                    entity.TenMst.MaxAge ?? string.Empty,
-                                                                    entity.TenMst.MinAge ?? string.Empty,
-                                                                    entity.SinKouiDetail.ItemCd ?? string.Empty,
-                                                                    entity.SinKouiDetail.CmtOpt ?? string.Empty,
-                                                                    entity.SinKouiDetail.ItemName ?? string.Empty,
-                                                                    entity.TenMst.ReceName ?? string.Empty,
-                                                                    entity.SinKouiDetail.Suryo,
-                                                                    entity.SinKouiDetail.IsNodspRece,
-                                                                    entity.TenMst.MasterSbt ?? string.Empty,
-                                                                    ConvertTenMstToModel(entity.TenMst)
-                                                                    ));
+                    var entities = joinTenMstQuery.Where(p => p.PtId == groupKey.PtId && p.SinDate == groupKey.SinDate && p.RaiinNo == groupKey.RaiinNo);
+                    var sinKouiDetailModels = new List<SinKouiDetailModel>();
+                    foreach (var entity in entities)
+                    {
+                        //sinKouiDetailModels.Add(new SinKouiDetailModel(entity.TenMst, entity.SinKouiDetail));
+                        sinKouiDetailModels.Add(new SinKouiDetailModel(
+                                                                        entity.SinKouiDetail.PtId,
+                                                                        0,
+                                                                        entity.SinKouiDetail.SinYm,
+                                                                        entity.TenMst.MaxAge ?? string.Empty,
+                                                                        entity.TenMst.MinAge ?? string.Empty,
+                                                                        entity.SinKouiDetail.ItemCd ?? string.Empty,
+                                                                        entity.SinKouiDetail.CmtOpt ?? string.Empty,
+                                                                        entity.SinKouiDetail.ItemName ?? string.Empty,
+                                                                        entity.TenMst.ReceName ?? string.Empty,
+                                                                        entity.SinKouiDetail.Suryo,
+                                                                        entity.SinKouiDetail.IsNodspRece,
+                                                                        entity.TenMst.MasterSbt ?? string.Empty,
+                                                                        ConvertTenMstToModel(entity.TenMst)
+                                                                        ));
+                    }
+                    result.Add(ConvertToModel(entities.Select(p => p.ptHokenPattern).Distinct().ToList(), groupKey?.SinKouiCount ?? new(), sinKouiDetailModels));
                 }
-                result.Add(ConvertToModel(entities.Select(p => p.ptHokenPattern).Distinct().ToList(), groupKey.SinKouiCount, sinKouiDetailModels));
             }
+            
             return result;
         }
 
@@ -1368,7 +1371,7 @@ namespace Infrastructure.Repositories
 
                 if (listCommentWithCode.Count <= 0)
                 {
-                    inputCodeItem.SetData(new List<RecedenCmtSelectModel>());
+                    inputCodeItem.SetRecedenCmtSelectModel(new List<RecedenCmtSelectModel>());
                     continue;
                 }
 
@@ -1386,7 +1389,7 @@ namespace Infrastructure.Repositories
                     .ThenBy(item => item.SortNo)
                     .ToList();
 
-                inputCodeItem.SetData(listCommentWithCode);
+                inputCodeItem.SetRecedenCmtSelectModel(listCommentWithCode);
             }
 
             return result ?? new List<ItemCommentSuggestionModel>();

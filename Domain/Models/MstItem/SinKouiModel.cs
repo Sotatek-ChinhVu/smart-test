@@ -37,8 +37,6 @@ namespace Domain.Models.MstItem
 
         public string SinkouiName { get; private set; }
 
-        public List<ItemCommentSuggestionModel> ListCmtSelect { get; private set; }
-
         public List<SinKouiDetailModel> SinKouiDetailModels { get; private set; }
 
         public bool ExistItemWithCommentSelect

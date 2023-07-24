@@ -77,6 +77,20 @@ public class SinKouiDetailModel
         IsNodspRece = isNodspRece;
         MasterSbt = masterSbt;
         TenMst = tenMst;
+        CmtSelectList = new();
+    }
+
+    public SinKouiDetailModel()
+    {
+        ItemName = string.Empty;
+        ReceName = string.Empty;
+        MasterSbt = string.Empty;
+        MaxAge = string.Empty;
+        MinAge = string.Empty;
+        ItemCd = string.Empty;
+        CmtOpt = string.Empty;
+        TenMst = new();
+        CmtSelectList = new();
     }
 
     public long PtId { get; private set; }
