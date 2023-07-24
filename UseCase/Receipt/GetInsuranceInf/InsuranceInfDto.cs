@@ -4,7 +4,7 @@ namespace UseCase.Receipt.GetInsuranceInf
 {
     public class InsuranceInfDto
     {
-        public InsuranceInfDto(int hokenId, string insuranceName, int hokenKbn, int nissu, int tensu, int ichibuFutan, string edaNo, string kigo, string bango, bool kohi1ReceKisai, int kohi1Id, bool kohi2ReceKisai, int kohi2Id, bool kohi3ReceKisai, int kohi3Id, bool kohi4ReceKisai, string futansyaNoKohi1, string jyukyusyaNoKohi1, string futansyaNoKohi2, string jyukyusyaNoKohi2, string futansyaNoKohi3, string jyukyusyaNoKohi3, string futansyaNoKohi4, string jyukyusyaNoKohi4, string hokensyaNo)
+        public InsuranceInfDto(int hokenId, string insuranceName, int hokenKbn, int nissu, int tensu, int ichibuFutan, int ptFutan, string edaNo, string kigo, string bango, bool kohi1ReceKisai, int kohi1Id, bool kohi2ReceKisai, int kohi2Id, bool kohi3ReceKisai, int kohi3Id, bool kohi4ReceKisai, string futansyaNoKohi1, string jyukyusyaNoKohi1, string futansyaNoKohi2, string jyukyusyaNoKohi2, string futansyaNoKohi3, string jyukyusyaNoKohi3, string futansyaNoKohi4, string jyukyusyaNoKohi4, string hokensyaNo)
         {
             HokenId = hokenId;
             InsuranceName = insuranceName;
@@ -12,6 +12,7 @@ namespace UseCase.Receipt.GetInsuranceInf
             Nissu = nissu;
             Tensu = CIUtil.FormatIntToString(tensu);
             IchibuFutan = CIUtil.FormatIntToString(ichibuFutan);
+            PtFutan = CIUtil.FormatIntToString(ptFutan);
             EdaNo = (HokenKbn > 0 && (HokenKbn < 11 || HokenKbn > 14)) ? edaNo : string.Empty;
             Kigo = kigo;
             Bango = bango;
@@ -39,6 +40,7 @@ namespace UseCase.Receipt.GetInsuranceInf
         public int Nissu { get; private set; }
         public string Tensu { get; private set; }
         public string IchibuFutan { get; private set; }
+        public string PtFutan { get; private set; }
         public string EdaNo { get; private set; }
         public string Kigo { get; private set; }
         public string Bango { get; private set; }
