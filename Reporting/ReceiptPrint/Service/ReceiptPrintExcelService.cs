@@ -23,7 +23,7 @@ namespace Reporting.ReceiptPrint.Service
             _p43Amakusa41DiskService = p43Amakusa41DiskService;
         }
 
-        public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
+        public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
         {
             CommonExcelReportingModel result = new();
             var seikyuType = GetSeikyuType(dataKbn);
@@ -34,8 +34,6 @@ namespace Reporting.ReceiptPrint.Service
             {
                 result = _p43Amakusa41DiskService.GetDataP43Amakusa41Disk(hpId, seikyuYm, seikyuType);
             }
-
-            formName = result.JobName ;
             return result;
         }
 

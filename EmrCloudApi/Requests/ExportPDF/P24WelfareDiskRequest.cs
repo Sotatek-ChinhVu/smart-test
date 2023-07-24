@@ -11,6 +11,4 @@ public class ReceiptPrintExcelRequest : ReportRequestBase
     public int DataKbn { get; set; }
 
     public int SeikyuYm { get; set; }
-
-    public string FormName { get; set; } = string.Empty;
 }

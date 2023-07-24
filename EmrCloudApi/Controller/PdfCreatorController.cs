@@ -213,7 +213,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.WelfareDisk)]
     public IActionResult GenerateKarte1Report([FromQuery] ReceiptPrintExcelRequest request)
     {
-        var data = _reportService.GetReceiptPrintExcel(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
+        var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
         return RenderExcel(data);
     }
 
