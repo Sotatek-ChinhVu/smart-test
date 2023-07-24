@@ -73,7 +73,7 @@ namespace Reporting.Sokatu.WelfareDisk.Service
             {
                 retDatas.Add(RecordData(receInf));
             }
-            string sheetName = string.Format("天草市子ども医療費請求書_{0}.csv", seikyuYm);
+            string sheetName = string.Format("天草市子ども医療費請求書_{0}", seikyuYm);
 
             return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, retDatas);
         }
