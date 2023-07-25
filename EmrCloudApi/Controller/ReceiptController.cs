@@ -55,11 +55,9 @@ namespace EmrCloudApi.Controller;
 public class ReceiptController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    private readonly IWebSocketService _webSocketService;
-    public ReceiptController(UseCaseBus bus, IUserService userService, IWebSocketService webSocketService) : base(userService)
+    public ReceiptController(UseCaseBus bus, IUserService userService) : base(userService)
     {
         _bus = bus;
-        _webSocketService = webSocketService;
     }
 
     [HttpPost(ApiPath.GetList)]
@@ -174,17 +172,12 @@ public class ReceiptController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.SaveReceCheckCmtList)]
-    public async Task<ActionResult<ActionResult<Response<SaveReceCheckCmtListResponse>>>> SaveReceCheckCmtList([FromBody] SaveReceCheckCmtListRequest request)
+    public ActionResult<Response<SaveReceCheckCmtListResponse>> SaveReceCheckCmtList([FromBody] SaveReceCheckCmtListRequest request)
     {
         var receCheckCmtList = request.ReceCheckCmtList.Select(item => ConvertToReceCheckCmtItem(item)).ToList();
         var receCheckErrorList = request.ReceCheckErrorList.Select(item => ConvertToReceCheckErrorItem(item)).ToList();
         var input = new SaveReceCheckCmtListInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, receCheckCmtList, receCheckErrorList);
         var output = _bus.Handle(input);
-
-        if (output.Status == SaveReceCheckCmtListStatus.Successed)
-        {
-            await _webSocketService.SendMessageAsync(FunctionCodes.ReceCheckCmtChanged, output.ReceiptCheckCmtErrList);
-        }
 
         var presenter = new SaveReceCheckCmtListPresenter();
         presenter.Complete(output);
