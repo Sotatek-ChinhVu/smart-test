@@ -33,7 +33,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
         private List<CoKaMstModel> kaMsts;
         #endregion
 
-        private const string _formFileNameP1 = "p17KokhoSeikyuP1_clone.rse";
+        private const string _formFileNameP1 = "p17KokhoSeikyuP1.rse";
         private const string _formFileNameP2 = "p17KokhoSeikyuP2.rse";
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
@@ -151,82 +151,88 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             {
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 List<ListTextObject> listDataPerPage = new();
-                var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
 
-                const int maxRow = 11;
-                List<CoReceInfModel> wrkReces;
-
-                for (short rowNo = 0; rowNo < maxRow; rowNo++)
+                if (pageIndex % 2 != 0) 
                 {
-                    wrkReces = null;
-                    switch (rowNo)
-                    {
-                        //国保
-                        case 0: wrkReces = curReceInfs.Where(r => r.IsNrElderIppan).ToList(); break;
-                        case 1: wrkReces = curReceInfs.Where(r => r.IsNrElderUpper).ToList(); break;
-                        case 2: wrkReces = curReceInfs.Where(r => (r.IsNrMine || r.IsNrFamily) && (r.HokenRate == 10)).ToList(); break;
-                        case 3: wrkReces = curReceInfs.Where(r => (r.IsNrMine || r.IsNrFamily) && (r.HokenRate == 20)).ToList(); break;
-                        case 4: wrkReces = curReceInfs.Where(r => (r.IsNrMine || r.IsNrFamily) && (r.HokenRate == 30)).ToList(); break;
-                        case 5: wrkReces = curReceInfs.Where(r => r.IsNrPreSchool).ToList(); break;
-                        //退職
-                        case 6: wrkReces = curReceInfs.Where(r => r.IsRetElderIppan).ToList(); break;
-                        case 7: wrkReces = curReceInfs.Where(r => r.IsRetElderUpper).ToList(); break;
-                        case 8: wrkReces = curReceInfs.Where(r => r.IsRetMine).ToList(); break;
-                        case 9: wrkReces = curReceInfs.Where(r => r.IsRetFamily).ToList(); break;
-                        case 10: wrkReces = curReceInfs.Where(r => r.IsRetPreSchool).ToList(); break;
-                    }
-                    if (wrkReces == null) continue;
+                    var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
 
-                    countData wrkData = new countData();
-                    //件数
-                    wrkData.Count = wrkReces.Count;
-                    listDataPerPage.Add(new("count", 0, rowNo, wrkData.Count.ToString()));
-                    //日数
-                    wrkData.Nissu = wrkReces.Sum(r => r.HokenNissu);
-                    listDataPerPage.Add(new("nissu", 0, rowNo, wrkData.Nissu.ToString()));
-                    //点数
-                    wrkData.Tensu = wrkReces.Sum(r => r.Tensu);
-                    listDataPerPage.Add(new("tensu", 0, rowNo, wrkData.Tensu.ToString()));
-                    //一部負担金
-                    wrkData.Futan = wrkReces.Sum(r => r.HokenReceFutan);
-                    listDataPerPage.Add(new("futan", 0, rowNo, wrkData.Futan.ToString()));
-                }
+                    const int maxRow = 11;
+                    List<CoReceInfModel> wrkReces;
 
-                //公費負担医療
-                for (short rowNo = 0; rowNo < fixedHoubetuP1.Count + 1; rowNo++)
-                {
-                    countData wrkData = new countData(); ;
-                    if (rowNo < fixedHoubetuP1.Count)
+                    for (short rowNo = 0; rowNo < maxRow; rowNo++)
                     {
-                        //固定枠
-                        wrkReces = curReceInfs.Where(r => r.IsHeiyo && r.IsKohi(fixedHoubetuP1[rowNo])).ToList();
-                        wrkData.Count = wrkReces.Count;
-                        wrkData.Nissu = wrkReces.Sum(r => r.KohiReceNissu(fixedHoubetuP1[rowNo]));
-                        wrkData.Tensu = wrkReces.Sum(r => r.KohiReceTensu(fixedHoubetuP1[rowNo]));
-                        wrkData.Futan = wrkReces.Sum(r => r.KohiReceFutan(fixedHoubetuP1[rowNo]));
-                    }
-                    else
-                    {
-                        //その他
-                        var prefAllHoubetus = SokatuUtil.GetKohiHoubetu(receInfs.Where(r => r.IsHeiyo).ToList(), fixedHoubetuP1);
-                        foreach (var prefAllHoubetu in prefAllHoubetus)
+                        wrkReces = null;
+                        switch (rowNo)
                         {
-                            wrkReces = curReceInfs.Where(r => r.IsHeiyo && r.IsKohi(prefAllHoubetu)).ToList();
-                            wrkData.Count += wrkReces.Count;
-                            wrkData.Nissu += wrkReces.Sum(r => r.KohiReceNissu(prefAllHoubetu));
-                            wrkData.Tensu += wrkReces.Sum(r => r.KohiReceTensu(prefAllHoubetu));
-                            wrkData.Futan += wrkReces.Sum(r => r.KohiReceFutan(prefAllHoubetu));
+                            //国保
+                            case 0: wrkReces = curReceInfs.Where(r => r.IsNrElderIppan).ToList(); break;
+                            case 1: wrkReces = curReceInfs.Where(r => r.IsNrElderUpper).ToList(); break;
+                            case 2: wrkReces = curReceInfs.Where(r => (r.IsNrMine || r.IsNrFamily) && (r.HokenRate == 10)).ToList(); break;
+                            case 3: wrkReces = curReceInfs.Where(r => (r.IsNrMine || r.IsNrFamily) && (r.HokenRate == 20)).ToList(); break;
+                            case 4: wrkReces = curReceInfs.Where(r => (r.IsNrMine || r.IsNrFamily) && (r.HokenRate == 30)).ToList(); break;
+                            case 5: wrkReces = curReceInfs.Where(r => r.IsNrPreSchool).ToList(); break;
+                            //退職
+                            case 6: wrkReces = curReceInfs.Where(r => r.IsRetElderIppan).ToList(); break;
+                            case 7: wrkReces = curReceInfs.Where(r => r.IsRetElderUpper).ToList(); break;
+                            case 8: wrkReces = curReceInfs.Where(r => r.IsRetMine).ToList(); break;
+                            case 9: wrkReces = curReceInfs.Where(r => r.IsRetFamily).ToList(); break;
+                            case 10: wrkReces = curReceInfs.Where(r => r.IsRetPreSchool).ToList(); break;
                         }
+                        if (wrkReces == null) continue;
+
+                        countData wrkData = new countData();
+                        //件数
+                        wrkData.Count = wrkReces.Count;
+                        listDataPerPage.Add(new("count", 0, rowNo, wrkData.Count.ToString()));
+                        //日数
+                        wrkData.Nissu = wrkReces.Sum(r => r.HokenNissu);
+                        listDataPerPage.Add(new("nissu", 0, rowNo, wrkData.Nissu.ToString()));
+                        //点数
+                        wrkData.Tensu = wrkReces.Sum(r => r.Tensu);
+                        listDataPerPage.Add(new("tensu", 0, rowNo, wrkData.Tensu.ToString()));
+                        //一部負担金
+                        wrkData.Futan = wrkReces.Sum(r => r.HokenReceFutan);
+                        listDataPerPage.Add(new("futan", 0, rowNo, wrkData.Futan.ToString()));
                     }
 
-                    listDataPerPage.Add(new("kohiCount", 0, rowNo, wrkData.Count.ToString()));
-                    listDataPerPage.Add(new("kohiNissu", 0, rowNo, wrkData.Nissu.ToString()));
-                    listDataPerPage.Add(new("kohiTensu", 0, rowNo, wrkData.Tensu.ToString()));
-                    listDataPerPage.Add(new("kohiFutan", 0, rowNo, wrkData.Futan.ToString()));
+                    //公費負担医療
+                    for (short rowNo = 0; rowNo < fixedHoubetuP1.Count + 1; rowNo++)
+                    {
+                        countData wrkData = new countData(); ;
+                        if (rowNo < fixedHoubetuP1.Count)
+                        {
+                            //固定枠
+                            wrkReces = curReceInfs.Where(r => r.IsHeiyo && r.IsKohi(fixedHoubetuP1[rowNo])).ToList();
+                            wrkData.Count = wrkReces.Count;
+                            wrkData.Nissu = wrkReces.Sum(r => r.KohiReceNissu(fixedHoubetuP1[rowNo]));
+                            wrkData.Tensu = wrkReces.Sum(r => r.KohiReceTensu(fixedHoubetuP1[rowNo]));
+                            wrkData.Futan = wrkReces.Sum(r => r.KohiReceFutan(fixedHoubetuP1[rowNo]));
+                        }
+                        else
+                        {
+                            //その他
+                            var prefAllHoubetus = SokatuUtil.GetKohiHoubetu(receInfs.Where(r => r.IsHeiyo).ToList(), fixedHoubetuP1);
+                            foreach (var prefAllHoubetu in prefAllHoubetus)
+                            {
+                                wrkReces = curReceInfs.Where(r => r.IsHeiyo && r.IsKohi(prefAllHoubetu)).ToList();
+                                wrkData.Count += wrkReces.Count;
+                                wrkData.Nissu += wrkReces.Sum(r => r.KohiReceNissu(prefAllHoubetu));
+                                wrkData.Tensu += wrkReces.Sum(r => r.KohiReceTensu(prefAllHoubetu));
+                                wrkData.Futan += wrkReces.Sum(r => r.KohiReceFutan(prefAllHoubetu));
+                            }
+                        }
+
+                        listDataPerPage.Add(new("kohiCount", 0, rowNo, wrkData.Count.ToString()));
+                        listDataPerPage.Add(new("kohiNissu", 0, rowNo, wrkData.Nissu.ToString()));
+                        listDataPerPage.Add(new("kohiTensu", 0, rowNo, wrkData.Tensu.ToString()));
+                        listDataPerPage.Add(new("kohiFutan", 0, rowNo, wrkData.Futan.ToString()));
+                    }
+                    _hasNextPage = !curReceInfs.FirstOrDefault().IsPrefIn;
                 }
+                
                 _listTextData.Add(pageIndex, listDataPerPage);
                 //県外保険者は2ページ目も印刷する
-                _hasNextPage = !curReceInfs.FirstOrDefault().IsPrefIn;
+                
 
                 return 1;
             }
@@ -244,8 +250,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             }
             else
             {
-                //県外保険者はヘッダーだけの２ページ目を印刷する
-                if (UpdateFormHeader() < 0)
+                if (UpdateFormHeader() < 0 || UpdateFormBodyP1() < 0)
                 {
                     hasNextPage = _hasNextPage;
                     return false;
