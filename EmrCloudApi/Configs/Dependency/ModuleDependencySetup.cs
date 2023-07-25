@@ -789,6 +789,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KoukiSeikyuCoReportService, P14KoukiSeikyuCoReportService>();
             services.AddTransient<IP17KoukiSeikyuCoReportService, P17KoukiSeikyuCoReportService>();
             services.AddTransient<IP20KoukiSeikyuCoReportService, P20KoukiSeikyuCoReportService>();
+            services.AddTransient<IP37KoukiSokatuCoReportService, P37KoukiSokatuCoReportService>();
             services.AddTransient<IP25KokhoSokatuCoReportService, P25KokhoSokatuCoReportService>();
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
@@ -809,6 +810,16 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KokhoSokatuCoReportService, P14KokhoSokatuCoReportService>();
             services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
             services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
+            services.AddTransient<IP17KokhoSokatuCoReportService, P17KokhoSokatuCoReportService>();
+            services.AddTransient<IP20KokhoSokatuCoReportService, P20KokhoSokatuCoReportService>();
+            services.AddTransient<IP22KokhoSokatuCoReportService, P22KokhoSokatuCoReportService>();
+            services.AddTransient<IP23KokhoSokatuCoReportService, P23KokhoSokatuCoReportService>();
+            services.AddTransient<IP26KokhoSokatuInCoReportService, P26KokhoSokatuInCoReportService>();
+            services.AddTransient<IP33KokhoSokatuCoReportService, P33KokhoSokatuCoReportService>();
+            services.AddTransient<IP34KokhoSokatuCoReportService, P34KokhoSokatuCoReportService>();
+            services.AddTransient<IP35KokhoSokatuCoReportService, P35KokhoSokatuCoReportService>();
+            services.AddTransient<IP37KokhoSokatuCoReportService, P37KokhoSokatuCoReportService>();
+            services.AddTransient<IP26KokhoSokatuOutCoReportService, P26KokhoSokatuOutCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
