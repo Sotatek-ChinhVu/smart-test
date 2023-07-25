@@ -102,7 +102,7 @@ public class RecalculationController : AuthorizeControllerBase
         }
         catch
         {
-            var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
+            var resultForFrontEnd = Encoding.UTF8.GetBytes("\n Error");
             HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
             HttpContext.Response.Body.FlushAsync();
         }
