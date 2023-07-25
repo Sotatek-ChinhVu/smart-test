@@ -10,7 +10,6 @@ using Reporting.Calculate.Interface;
 using Reporting.Calculate.Receipt.Models;
 using Reporting.Receipt.Constants;
 using Reporting.Receipt.Models;
-using System.Diagnostics;
 
 namespace Reporting.Receipt.DB
 {
@@ -875,6 +874,7 @@ namespace Reporting.Receipt.DB
 
         public List<SinKouiDetailModel> FindSinKouiDetailDataForRece(int hpId, int seikyuYm, List<long> ptId, int sinYm, int hokenId, int mode, bool includeTester, List<int> seikyuKbns, int tantoId, int kaId)
         {
+
             var sinDtls = NoTrackingDataContext.SinKouiDetails.Where(s =>
                     s.HpId == hpId &&
                     (ptId.Any() ? ptId.Contains(s.PtId) : true) &&
@@ -954,26 +954,18 @@ namespace Reporting.Receipt.DB
             }
 
             // 一旦、診療月の最終日基準でマスタ取得
-
-            var sinDtlsData = sinDtls.ToList();
-            var itemCodeList = sinDtlsData.Select(s => s.ItemCd).ToList();
-
-            var sinCountData = sinCountMaxs.ToList();
-            var tenMstsData = NoTrackingDataContext.TenMsts
-                .Where(t =>
-                    t.HpId == hpId &&
-                    itemCodeList.Contains(t.ItemCd) &&
-                    t.StartDate <= lastDateOfMonth &&
-                    t.EndDate >= lastDateOfMonth)
-                .ToList();
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t =>
+                t.HpId == hpId &&
+                t.StartDate <= lastDateOfMonth &&
+                t.EndDate >= lastDateOfMonth);
 
             var joinQuery = (
-                from sinDtl in sinDtlsData
-                join sinCount in sinCountData on
+                from sinDtl in sinDtls.AsEnumerable()
+                join sinCount in sinCountMaxs on
                     new { sinDtl.HpId, sinDtl.PtId, sinDtl.RpNo, sinDtl.SeqNo } equals
                     new { sinCount.HpId, sinCount.PtId, sinCount.RpNo, sinCount.SeqNo } into sc
                 from b in sc.DefaultIfEmpty()
-                join tenMst in tenMstsData on
+                join tenMst in tenMsts on
                     new { sinDtl.HpId, sinDtl.ItemCd } equals
                     new { tenMst.HpId, tenMst.ItemCd } into tm
                 from a in tm.DefaultIfEmpty()

@@ -16,7 +16,6 @@ using Reporting.Mappers.Common;
 using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
-using System.Diagnostics;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
@@ -185,10 +184,14 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPreview)]
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
-        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
-        var result = await RenderPdf(data, ReportType.Common, data.JobName);
-        return result;
-    }
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>Preview has been error, please check again later</p>
+            ", "text/html");
+            //var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
+            //return await RenderPdf(data, ReportType.Common, data.JobName);
+     }
 
     [HttpGet(ApiPath.SyojyoSyoki)]
     public async Task<IActionResult> SyojyoSyoki([FromQuery] SyojyoSyokiRequest request)
