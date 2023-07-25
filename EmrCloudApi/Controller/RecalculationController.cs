@@ -1,4 +1,9 @@
-﻿using EmrCloudApi.Requests.Receipt;
+﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.Receipt;
+using EmrCloudApi.Requests.Receipt;
+using EmrCloudApi.Requests.ReceiptCheck;
+using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.Receipt;
 using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
@@ -7,6 +12,8 @@ using System.Text;
 using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.Receipt.Recalculation;
+using UseCase.ReceiptCheck.Recalculation;
+using UseCase.ReceiptCheck.ReceiptInfEdit;
 
 namespace EmrCloudApi.Controller;
 
@@ -75,5 +82,47 @@ public class RecalculationController : AuthorizeControllerBase
         var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
         HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
         HttpContext.Response.Body.FlushAsync();
+    }
+
+    [HttpPost(ApiPath.ReceiptCheck)]
+    public void ReceiptCheckRecalculation([FromBody] ReceiptCheckRecalculationRequest request)
+    {
+        try
+        {
+            Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
+            Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
+
+            HttpContext.Response.ContentType = "application/json";
+            //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
+            HttpResponse response = HttpContext.Response;
+            //response.StatusCode = 202;
+
+            var input = new ReceiptCheckRecalculationInputData(HpId, UserId, request.PtIds, request.SeikyuYm, request.ReceStatus);
+            _bus.Handle(input);
+        }
+        catch
+        {
+            var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
+        }
+        finally
+        {
+            Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+            Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
+            HttpContext.Response.Body.Close();
+        }
+    }
+
+    [HttpGet(ApiPath.DeleteReceiptInfEdit)]
+    public ActionResult<Response<DeleteReceiptInfResponse>> DeleteReceiptInfEdit([FromQuery] DeleteReceiptInfEditRequest request)
+    {
+        var input = new DeleteReceiptInfEditInputData(HpId, UserId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new DeleteReceiptInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<DeleteReceiptInfResponse>>(presenter.Result);
     }
 }
