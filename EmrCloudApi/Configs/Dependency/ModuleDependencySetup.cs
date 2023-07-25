@@ -815,6 +815,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP34KokhoSokatuCoReportService, P34KokhoSokatuCoReportService>();
             services.AddTransient<IP35KokhoSokatuCoReportService, P35KokhoSokatuCoReportService>();
             services.AddTransient<IP37KokhoSokatuCoReportService, P37KokhoSokatuCoReportService>();
+            services.AddTransient<IP26KokhoSokatuOutCoReportService, P26KokhoSokatuOutCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
