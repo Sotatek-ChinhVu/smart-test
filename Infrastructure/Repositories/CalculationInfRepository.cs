@@ -683,7 +683,7 @@ namespace Infrastructure.Repositories
 
         public void ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
         {
-            var oldReceCheckErrs = NoTrackingDataContext.ReceCheckErrs
+            var oldReceCheckErrs = TrackingDataContext.ReceCheckErrs
                                                         .Where(p => p.HpId == hpId &&
                                                                     p.SinYm == sinYm &&
                                                                     p.PtId == ptId &&
@@ -831,13 +831,13 @@ namespace Infrastructure.Repositories
             var odrInfJoinDetails = odrInfJoinDetailQuery.ToList();
             foreach (var odrInfJoinDetail in odrInfJoinDetails)
             {
-                var OrdInfDetailModels = new List<OrdInfDetailModel>();
+                var ordInfDetailModels = new List<OrdInfDetailModel>();
                 foreach (var odrInfDetail in odrInfJoinDetail.OdrInfDetails)
                 {
-                    OrdInfDetailModels.Add(ConvertToModel(odrInfDetail.OdrDetail,
+                    ordInfDetailModels.Add(ConvertToModel(odrInfDetail.OdrDetail,
                                                           odrInfDetail.TenMsts.FirstOrDefault(p => p.StartDate <= odrInfDetail.OdrDetail.SinDate && p.EndDate >= odrInfDetail.OdrDetail.SinDate) ?? new()));
                 }
-                result.Add(ConvertToModel(odrInfJoinDetail.OdrInf, OrdInfDetailModels));
+                result.Add(ConvertToModel(odrInfJoinDetail.OdrInf, ordInfDetailModels));
             }
 
             return result;

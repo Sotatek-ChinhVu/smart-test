@@ -50,7 +50,7 @@ namespace Interactor.ReceiptCheck
         private readonly ITenantProvider _tenantProvider;
         private readonly IReceiptRepository _receiptRepository;
 
-        private int SeikyuYm;
+        private int seikyuYm;
         private List<ReceInfModel> _receInfModels = new List<ReceInfModel>();
         private List<ReceCheckOptModel> _receCheckOpts = new List<ReceCheckOptModel>();
         private List<SinKouiCountModel> _sinKouiCounts = new List<SinKouiCountModel>();
@@ -79,16 +79,16 @@ namespace Interactor.ReceiptCheck
                 {
                     if (DateTime.Now.Month > 1)
                     {
-                        SeikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month - 1;
+                        seikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month - 1;
                     }
                     else
                     {
-                        SeikyuYm = (DateTime.Now.Year - 1) * 100 + 12;
+                        seikyuYm = (DateTime.Now.Year - 1) * 100 + 12;
                     }
                 }
                 else
                 {
-                    SeikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month;
+                    seikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month;
                 }
 
                 SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・"));
@@ -1416,7 +1416,7 @@ namespace Interactor.ReceiptCheck
             }
 
             // check rosai can using
-            if (_systemConfRepository.GetSettingValue(100003, 0, hpId) == 1 && SeikyuYm >= _systemConfRepository.GetSettingParams(100003, 0, hpId).AsInteger())
+            if (_systemConfRepository.GetSettingValue(100003, 0, hpId) == 1 && seikyuYm >= _systemConfRepository.GetSettingParams(100003, 0, hpId).AsInteger())
             {
                 if ((receInfItem.HokenKbn == 11 || receInfItem.HokenKbn == 12) &&    //check using Rosai Receden
                     receInfItem.IsPaperRece == 0)
@@ -1474,7 +1474,7 @@ namespace Interactor.ReceiptCheck
         {
 
             // check aftercare can using
-            if (_systemConfRepository.GetSettingValue(100003, 1, hpId) == 1 && SeikyuYm >= _systemConfRepository.GetSettingParams(100003, 0, hpId).AsInteger())
+            if (_systemConfRepository.GetSettingValue(100003, 1, hpId) == 1 && seikyuYm >= _systemConfRepository.GetSettingParams(100003, 0, hpId).AsInteger())
             {
                 if (receInfItem.HokenKbn == 13 && receInfItem.IsPaperRece == 0)  //check using aftercare Receden
                 {

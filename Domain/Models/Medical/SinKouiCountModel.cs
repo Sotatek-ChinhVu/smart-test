@@ -48,9 +48,9 @@ namespace Domain.Models.Medical
 
         public int Count { get; private set; }
 
-        public List<PtHokenPatternModel> PtHokenPatterns { get; set; }
+        public List<PtHokenPatternModel> PtHokenPatterns { get; private set; }
 
-        public List<SinKouiDetailModel> SinKouiDetailModels { get; set; }
+        public List<SinKouiDetailModel> SinKouiDetailModels { get; private set; }
 
         public bool IsFirstVisit => SinKouiDetailModels?.Count > 0 && SinKouiDetailModels.Exists(p => ReceErrCdConst.IsFirstVisitCd.Contains(p.ItemCd));
 

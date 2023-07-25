@@ -12,7 +12,7 @@ namespace Domain.Models.MstItem
             SinKouiDetailModels = new();
         }
 
-        public SinKouiModel(long ptId, int sinYm, int rpNo, int hokenPid, int hokenId, List<SinKouiDetailModel> sinKouiDetailModels)
+        public SinKouiModel(long ptId, int sinYm, long rpNo, int hokenPid, int hokenId, List<SinKouiDetailModel> sinKouiDetailModels)
         {
             PtId = ptId;
             SinYm = sinYm;
@@ -23,15 +23,15 @@ namespace Domain.Models.MstItem
             SinkouiName = string.Empty;
         }
 
-        public long PtId { get; set; }
+        public long PtId { get; private set; }
 
-        public int SinYm { get; set; }
+        public int SinYm { get; private set; }
 
-        public int RpNo { get; set; }
+        public long RpNo { get; private set; }
 
-        public int HokenPid { get; set; }
+        public int HokenPid { get; private set; }
 
-        public int HokenId { get; set; }
+        public int HokenId { get; private set; }
 
         public int SinKouiCd { get; private set; }
 
