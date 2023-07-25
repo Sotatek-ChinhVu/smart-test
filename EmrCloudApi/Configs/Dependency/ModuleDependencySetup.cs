@@ -488,6 +488,7 @@ using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
 using UseCase.Receipt.GetListReceInf;
+using UseCase.Receipt.GetListSokatuMst;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceByomeiChecking;
@@ -1330,6 +1331,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Receipt
             busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();
+            busBuilder.RegisterUseCase<GetListSokatuMstInputData, GetListSokatuMstInteractor>();
 
             //Convert Input Item to Today Order
             busBuilder.RegisterUseCase<ConvertInputItemToTodayOrdInputData, ConvertInputItemToTodayOrderInteractor>();

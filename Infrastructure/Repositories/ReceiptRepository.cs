@@ -22,6 +22,8 @@ namespace Infrastructure.Repositories;
 public class ReceiptRepository : RepositoryBase, IReceiptRepository
 {
     private readonly IMstItemRepository _mstItemRepository;
+    private static readonly object _threadsafelock = new object();
+    private List<SystemConf> _systemConfigs = new List<SystemConf>();
     public ReceiptRepository(ITenantProvider tenantProvider, IMstItemRepository mstItemRepository) : base(tenantProvider)
     {
         _mstItemRepository = mstItemRepository;
@@ -3466,8 +3468,54 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         TrackingDataContext.SaveChanges();
     }
 
+    public List<SokatuMstModel> GetSokatuMstModels(int hpId, int SeikyuYm)
+    {
+        {
+            List<SokatuMstModel>? result = new();
+            var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).FirstOrDefault();
+            if (hpInf != null)
+            {
+                result = NoTrackingDataContext.SokatuMsts.Where(
+                  x => x.HpId == hpId &&
+                    x.PrefNo == hpInf.PrefNo &&
+                    x.StartYm <= SeikyuYm &&
+                    x.EndYm >= SeikyuYm)
+                  .OrderBy(x => x.SortNo)
+                  .AsEnumerable()
+                  .Select(x => new SokatuMstModel(x.PrefNo, x.ReportId, x.ReportEdaNo, x.ReportName ?? string.Empty))
+                  .ToList();
+
+                if (result != null && (int)SettingValue(100001) != 1)
+                {
+                    result = result.Where(item => item.ReportId != 4).ToList();
+                }
+            }
+            return result;
+        }
+    }
+
+    public double SettingValue(int groupCd, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false)
+    {
+        lock (_threadsafelock)
+        {
+            SystemConf systemConf = new SystemConf();
+            if (!fromLastestDb)
+            {
+                systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+            }
+            else
+            {
+                systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
+                    p.HpId == Session.HospitalID && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+            }
+            return systemConf != null ? systemConf.Val : defaultValue;
+        }
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
     }
+
+
 }
