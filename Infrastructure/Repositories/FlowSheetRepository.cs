@@ -37,37 +37,41 @@ namespace Infrastructure.Repositories
             _memoryCache = memoryCache;
         }
 
-        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, ref long totalCount)
+        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, ref long totalCount, int pageIndex, int pageSize, Dictionary<string, string> sortData)
         {
             var stopwatch = Stopwatch.StartNew();
             Console.WriteLine("Start GetListFlowSheet");
 
-            // From History
-            var allRaiinInfList = NoTrackingDataContext.RaiinInfs
-                .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status >= RaiinState.TempSave && r.IsDeleted == 0)
-                .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.UketukeTime ?? string.Empty, r.SyosaisinKbn, r.Status))
-                .ToList();
-
-            Console.WriteLine("Get allRaiinInfList: " + stopwatch.ElapsedMilliseconds);
-
             // From NextOrder
+            List<FlowSheetModel> groupNextOdr = new();
             var rsvkrtOdrInfs = NoTrackingDataContext.RsvkrtOdrInfs.Where(r => r.HpId == hpId
-                                                                                        && r.PtId == ptId
-                                                                                        && r.IsDeleted == DeleteTypes.None);
-            var rsvkrtMsts = NoTrackingDataContext.RsvkrtMsts.Where(r => r.HpId == hpId
-                                                                                        && r.PtId == ptId
-                                                                                        && r.IsDeleted == DeleteTypes.None
-                                                                                        && r.RsvkrtKbn == 0);
-            var groupNextOdr = (
-                                    from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable<RsvkrtOdrInf>()
-                                    join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
-                                                     equals new { rsvkrtMst.HpId, rsvkrtMst.PtId, rsvkrtMst.RsvkrtNo }
-                                    group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo } into g
-                                    select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, string.Empty, -1, 0)
-                               ).ToList();
+                                                                               && r.PtId == ptId
+                                                                               && r.IsDeleted == DeleteTypes.None)
+                                                                    .ToList();
+            if (rsvkrtOdrInfs.Any())
+            {
+                var rsvkrtMsts = NoTrackingDataContext.RsvkrtMsts.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == DeleteTypes.None && r.RsvkrtKbn == 0).ToList();
+                groupNextOdr = (
+                                       from rsvkrtOdrInf in rsvkrtOdrInfs
+                                       join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
+                                                        equals new { rsvkrtMst.HpId, rsvkrtMst.PtId, rsvkrtMst.RsvkrtNo }
+                                       group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo } into g
+                                       select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, string.Empty, -1, 0)
+                                 ).ToList();
+            }
 
             Console.WriteLine("Get groupNextOdr: " + stopwatch.ElapsedMilliseconds);
 
+            // From History
+            var allRaiinInfList = NoTrackingDataContext.RaiinInfs
+                                                       .Where(r => r.HpId == hpId
+                                                                   && r.PtId == ptId
+                                                                   && r.Status >= RaiinState.TempSave
+                                                                   && r.IsDeleted == 0)
+                                                       .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.UketukeTime ?? string.Empty, r.SyosaisinKbn, r.Status))
+                                                       .ToList();
+
+            Console.WriteLine("Get allRaiinInfList: " + stopwatch.ElapsedMilliseconds);
 
             var allFlowSheetQueryable = allRaiinInfList.Union(groupNextOdr);
 
@@ -76,6 +80,7 @@ namespace Infrastructure.Repositories
                 allFlowSheetQueryable.OrderByDescending(r => r.SinDate)
                                      .ThenByDescending(r => r.UketukeTime)
                                      .ThenByDescending(r => r.RaiinNo)
+                                     .Take(100)
                                      .ToList();
 
             var nextKarteList = NoTrackingDataContext.RsvkrtKarteInfs

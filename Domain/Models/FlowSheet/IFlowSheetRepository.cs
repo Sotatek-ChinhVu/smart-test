@@ -5,7 +5,7 @@ namespace Domain.Models.FlowSheet
 {
     public interface IFlowSheetRepository : IRepositoryBase
     {
-        List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, ref long totalCount);
+        List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, ref long totalCount, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
         Dictionary<long, List<RaiinListInfModel>> GetRaiinListInf(int hpId, long ptId);
 

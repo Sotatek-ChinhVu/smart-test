@@ -9,5 +9,11 @@
         public long RaiinNo { get; set; }
 
         public bool IsHolidayOnly { get; set; }
+
+        public int PageIndex { get; private set; }
+
+        public int PageSize { get; private set; }
+
+        public Dictionary<string, string> SortData { get; private set; } = new();
     }
 }
