@@ -110,10 +110,16 @@ namespace Domain.Models.Insurance
             Houbetu = houbetu;
             SeqNo = seqNo;
             ConfirmDateList = new();
-            FutansyaNo= string.Empty;
-            JyukyusyaNo= string.Empty;
+            FutansyaNo = string.Empty;
+            JyukyusyaNo = string.Empty;
             TokusyuNo = string.Empty;
             HokenMstModel = new();
+        }
+
+        public KohiInfModel(int startDate, int endDate)
+        {
+            StartDate = startDate;
+            EndDate = endDate;
         }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }

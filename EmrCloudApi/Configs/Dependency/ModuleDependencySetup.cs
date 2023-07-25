@@ -130,6 +130,7 @@ using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
 using Interactor.RaiinListSetting;
 using Interactor.Receipt;
+using Interactor.ReceiptCheck;
 using Interactor.Reception;
 using Interactor.ReceptionInsurance;
 using Interactor.ReceptionSameVisit;
@@ -513,6 +514,8 @@ using UseCase.Receipt.SaveReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ValidateCreateUKEFile;
+using UseCase.ReceiptCheck.Recalculation;
+using UseCase.ReceiptCheck.ReceiptInfEdit;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastKarute;
@@ -786,6 +789,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KoukiSeikyuCoReportService, P14KoukiSeikyuCoReportService>();
             services.AddTransient<IP17KoukiSeikyuCoReportService, P17KoukiSeikyuCoReportService>();
             services.AddTransient<IP20KoukiSeikyuCoReportService, P20KoukiSeikyuCoReportService>();
+            services.AddTransient<IP37KoukiSokatuCoReportService, P37KoukiSokatuCoReportService>();
             services.AddTransient<IP25KokhoSokatuCoReportService, P25KokhoSokatuCoReportService>();
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
@@ -806,6 +810,16 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KokhoSokatuCoReportService, P14KokhoSokatuCoReportService>();
             services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
             services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
+            services.AddTransient<IP17KokhoSokatuCoReportService, P17KokhoSokatuCoReportService>();
+            services.AddTransient<IP20KokhoSokatuCoReportService, P20KokhoSokatuCoReportService>();
+            services.AddTransient<IP22KokhoSokatuCoReportService, P22KokhoSokatuCoReportService>();
+            services.AddTransient<IP23KokhoSokatuCoReportService, P23KokhoSokatuCoReportService>();
+            services.AddTransient<IP26KokhoSokatuInCoReportService, P26KokhoSokatuInCoReportService>();
+            services.AddTransient<IP33KokhoSokatuCoReportService, P33KokhoSokatuCoReportService>();
+            services.AddTransient<IP34KokhoSokatuCoReportService, P34KokhoSokatuCoReportService>();
+            services.AddTransient<IP35KokhoSokatuCoReportService, P35KokhoSokatuCoReportService>();
+            services.AddTransient<IP37KokhoSokatuCoReportService, P37KokhoSokatuCoReportService>();
+            services.AddTransient<IP26KokhoSokatuOutCoReportService, P26KokhoSokatuOutCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -1347,6 +1361,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
             busBuilder.RegisterUseCase<SaveReceStatusInputData, SaveReceStatusInteractor>();
             busBuilder.RegisterUseCase<GetReceStatusInputData, GetReceStatusInteractor>();
+            busBuilder.RegisterUseCase<ReceiptCheckRecalculationInputData, ReceiptCheckRecalculationInteractor>();
+            busBuilder.RegisterUseCase<DeleteReceiptInfEditInputData, DeleteReceiptInfEditInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();

@@ -14,6 +14,7 @@ public class GetReceStatusResponse
         IsPaperRece = output.IsPaperRece;
         StatusKbn = output.StatusKbn;
         IsPrechecked = output.IsPrechecked;
+        IsOutput = output.IsOutput;
     }
 
     public long PtId { get; private set; }
@@ -31,4 +32,6 @@ public class GetReceStatusResponse
     public int StatusKbn { get; private set; }
 
     public bool IsPrechecked { get; private set; }
+
+    public bool IsOutput { get; private set; }
 }
