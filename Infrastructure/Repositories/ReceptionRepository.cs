@@ -1317,7 +1317,7 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted)
+        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted, b)
         {
             List<ReceptionModel> result = new();
 
