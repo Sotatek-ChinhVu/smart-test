@@ -155,7 +155,7 @@ namespace Reporting.Sokatu.WelfareDisk.Service
             }
             DateTime seiYm = CIUtil.IntToDate(seikyuYm * 100 + 1);
             string houYm = seiYm.AddMonths(1).ToString("yyyyMM");
-            string sheetName = string.Format("{0}_{1}1{2}_{3}.csv", houYm, hpInf.PrefNo.ToString().PadLeft(2, '0'), hpInf.HpCd.PadLeft(7, '0'), DateTime.Now.ToString("yyyyMMdd"));
+            string sheetName = string.Format("{0}_{1}1{2}_{3}", houYm, hpInf.PrefNo.ToString().PadLeft(2, '0'), hpInf.HpCd.PadLeft(7, '0'), DateTime.Now.ToString("yyyyMMdd"));
             return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, retDatas);
         }
 
