@@ -1395,7 +1395,7 @@ namespace Infrastructure.Repositories
             return result ?? new List<ItemCommentSuggestionModel>();
         }
 
-        private TenItemModel ConvertTenMstToModel(TenMst tenMst)
+        private static TenItemModel ConvertTenMstToModel(TenMst tenMst)
         {
             return new TenItemModel(
                         tenMst?.HpId ?? 0,
