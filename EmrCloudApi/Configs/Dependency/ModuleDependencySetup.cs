@@ -785,6 +785,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KoukiSeikyuCoReportService, P14KoukiSeikyuCoReportService>();
             services.AddTransient<IP17KoukiSeikyuCoReportService, P17KoukiSeikyuCoReportService>();
             services.AddTransient<IP20KoukiSeikyuCoReportService, P20KoukiSeikyuCoReportService>();
+            services.AddTransient<IP37KoukiSokatuCoReportService, P37KoukiSokatuCoReportService>();
             services.AddTransient<IP25KokhoSokatuCoReportService, P25KokhoSokatuCoReportService>();
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
