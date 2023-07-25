@@ -220,7 +220,7 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> MemoMsgPrint([FromBody] MemoMsgPrintRequest request)
     {
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
-        return await RenderPdf(data, ReportType.Common, data.JobName);
+        return await RenderPdf(data, ReportType.Common, "MemoMsgPrint");
     }
 
     [HttpGet(ApiPath.ReceTarget)]
