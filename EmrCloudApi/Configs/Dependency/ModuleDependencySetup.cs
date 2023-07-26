@@ -625,6 +625,24 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.Receipt.ValidateCreateUKEFile;
+using Interactor.PatientInfor.SortPatientCommon;
+using Reporting.DrugNoteSeal.Service;
+using Reporting.DrugNoteSeal.DB;
+using Reporting.Sokatu.HikariDisk.DB;
+using Reporting.Sokatu.HikariDisk.Service;
+using Reporting.Sokatu.KoukiSeikyu.DB;
+using UseCase.RaiinListSetting.GetDocCategory;
+using Interactor.RaiinListSetting;
+using Domain.Models.RaiinListSetting;
+using UseCase.RaiinListSetting.GetFilingcategory;
+using Reporting.Sokatu.AfterCareSeikyu.Service;
+using Reporting.Sokatu.AfterCareSeikyu.DB;
+using Reporting.Sijisen.DB;
+using Reporting.Sokatu.Syaho.Service;
+using Reporting.Sokatu.Syaho.DB;
+using Interactor.SetMst.CommonSuperSet;
+using Reporting.Sokatu.KokhoSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -825,6 +843,15 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP40KokhoSokatuCoReportService, P40KokhoSokatuCoReportService>();
             services.AddTransient<IP42KokhoSokatuCoReportService, P42KokhoSokatuCoReportService>();
             services.AddTransient<IP12KokhoSokatuCoReportService, P12KokhoSokatuCoReportService>();
+            services.AddTransient<IP13KokhoSokatuCoReportService, P13KokhoSokatuCoReportService>();
+            services.AddTransient<IP43KokhoSokatuCoReportService, P43KokhoSokatuCoReportService>();
+            services.AddTransient<IP43KoukiSokatuCoReportService, P43KoukiSokatuCoReportService>();
+            services.AddTransient<IP44KokhoSokatuCoReportService, P44KokhoSokatuCoReportService>();
+            services.AddTransient<IP45KokhoSokatuCoReportService, P45KokhoSokatuCoReportService>();
+            services.AddTransient<IP45KoukiSokatuCoReportService, P45KoukiSokatuCoReportService>();
+            services.AddTransient<IP12KokhoSeikyuCoReportService, P12KokhoSeikyuCoReportService>();
+            services.AddTransient<IP13KokhoSeikyuCoReportService, P13KokhoSeikyuCoReportService>();
+            services.AddTransient<IP14KokhoSeikyuCoReportService, P14KokhoSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
