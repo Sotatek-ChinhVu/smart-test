@@ -217,8 +217,9 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.MemoMsgPrint)]
-    public async Task<IActionResult> MemoMsgPrint([FromBody] MemoMsgPrintRequest request)
+    public async Task<IActionResult> MemoMsgPrint([FromForm] StringObjectRequest requestString)
     {
+        var request = JsonSerializer.Deserialize<MemoMsgPrintRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
         return await RenderPdf(data, ReportType.Common, "MemoMsgPrint");
     }
@@ -267,8 +268,9 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.AccountingCardList)]
-    public async Task<IActionResult> GetAccountingCardListReportingData([FromBody] AccountingCardListRequest request)
+    public async Task<IActionResult> GetAccountingCardListReportingData([FromForm] StringObjectRequest requestString)
     {
+        var request = JsonSerializer.Deserialize<AccountingCardListRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetAccountingCardListReportingData(request.HpId, request.Targets, request.IncludeOutDrug, request.KaName, request.TantoName, request.UketukeSbt, request.Hoken);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
