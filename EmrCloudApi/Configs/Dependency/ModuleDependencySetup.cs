@@ -794,6 +794,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IP41KokhoSokatuCoReportService, P41KokhoSokatuCoReportService>();
             services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
             services.AddTransient<IP08KokhoSeikyuCoReportService, P08KokhoSeikyuCoReportService>();
             services.AddTransient<IP22WelfareSeikyuCoReportService, P22WelfareSeikyuCoReportService>();
@@ -820,6 +821,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP35KokhoSokatuCoReportService, P35KokhoSokatuCoReportService>();
             services.AddTransient<IP37KokhoSokatuCoReportService, P37KokhoSokatuCoReportService>();
             services.AddTransient<IP26KokhoSokatuOutCoReportService, P26KokhoSokatuOutCoReportService>();
+            services.AddTransient<IP40KokhoSokatuCoReportService, P40KokhoSokatuCoReportService>();
+            services.AddTransient<IP42KokhoSokatuCoReportService, P42KokhoSokatuCoReportService>();
+            services.AddTransient<IP12KokhoSokatuCoReportService, P12KokhoSokatuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
