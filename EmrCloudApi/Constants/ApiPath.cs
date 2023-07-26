@@ -39,6 +39,7 @@
         public const string GetJihiMstList = "GetJihiMstList";
         public const string SearchTenMstItem = "SearchTenMstItem";
         public const string ConvertStringChkJISKj = "ConvertStringChkJISKj";
+        public const string GetTeikyoByomei = "GetTeikyoByomei";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

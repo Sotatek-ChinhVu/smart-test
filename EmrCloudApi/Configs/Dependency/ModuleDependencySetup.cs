@@ -427,6 +427,7 @@ using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
+using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -1176,6 +1177,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetCmtCheckMstListInputData, GetCmtCheckMstListInteractor>();
             busBuilder.RegisterUseCase<SearchTenMstItemInputData, SearchTenMstItemInteractor>();
             busBuilder.RegisterUseCase<ConvertStringChkJISKjInputData, ConvertStringChkJISKjInteractor>();
+            busBuilder.RegisterUseCase<GetTeikyoByomeiInputData, GetTeikyoByomeiInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
