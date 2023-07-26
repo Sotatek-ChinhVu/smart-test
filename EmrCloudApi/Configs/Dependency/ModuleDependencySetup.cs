@@ -647,6 +647,7 @@ using Reporting.Byomei.DB;
 using UseCase.User.GetListUserByCurrentUser;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -857,6 +858,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP13KokhoSeikyuCoReportService, P13KokhoSeikyuCoReportService>();
             services.AddTransient<IP14KokhoSeikyuCoReportService, P14KokhoSeikyuCoReportService>();
             services.AddTransient<IP20KokhoSeikyuCoReportService, P20KokhoSeikyuCoReportService>();
+            services.AddTransient<IP21KokhoSeikyuCoReportService, P21KokhoSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
