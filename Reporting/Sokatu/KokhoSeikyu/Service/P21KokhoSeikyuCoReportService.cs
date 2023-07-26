@@ -104,14 +104,15 @@ public class P21KokhoSeikyuCoReportService : IP21KokhoSeikyuCoReportService
     {
         bool _hasNextPage = true;
 
+        List<ListTextObject> listDataPerPage = new();
+        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+
         #region SubMethod
 
         #region Header
         int UpdateFormHeader()
         {
             Dictionary<string, string> fieldDataPerPage = new();
-            List<ListTextObject> listDataPerPage = new();
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             //医療機関コード
             SetFieldData("hpCode", hpInf.HpCd);
             //医療機関情報
@@ -138,7 +139,6 @@ public class P21KokhoSeikyuCoReportService : IP21KokhoSeikyuCoReportService
             listDataPerPage.Add(new("kokhoKbn", printKokhoKbn, 0, "○"));
             //印
             SetVisibleFieldData("inkan", seikyuYm < KaiseiDate.m202210);
-            _listTextData.Add(pageIndex, listDataPerPage);
 
             return 1;
         }
@@ -147,9 +147,6 @@ public class P21KokhoSeikyuCoReportService : IP21KokhoSeikyuCoReportService
         #region Body
         int UpdateFormBody()
         {
-            List<ListTextObject> listDataPerPage = new();
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-
             const int maxRow = 5;
 
             if (currentPage == 1)
@@ -215,7 +212,6 @@ public class P21KokhoSeikyuCoReportService : IP21KokhoSeikyuCoReportService
             var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
             if (kohiHoubetus.Count == 0)
             {
-                _listTextData.Add(pageIndex, listDataPerPage);
                 _hasNextPage = false;
                 return 1;
             }
@@ -249,7 +245,6 @@ public class P21KokhoSeikyuCoReportService : IP21KokhoSeikyuCoReportService
                     break;
                 }
             }
-            _listTextData.Add(pageIndex, listDataPerPage);
             #endregion
 
             return 1;
@@ -263,6 +258,7 @@ public class P21KokhoSeikyuCoReportService : IP21KokhoSeikyuCoReportService
             hasNextPage = _hasNextPage;
             return false;
         }
+        _listTextData.Add(pageIndex, listDataPerPage);
 
         hasNextPage = _hasNextPage;
         return true;
