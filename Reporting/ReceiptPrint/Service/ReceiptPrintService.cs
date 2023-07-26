@@ -75,10 +75,11 @@ public class ReceiptPrintService : IReceiptPrintService
     private readonly IP42KokhoSokatuCoReportService _p42KokhoSokatuCoReportService;
     private readonly IP12KokhoSokatuCoReportService _p12KokhoSokatuCoReportService;
     private readonly IP13KokhoSokatuCoReportService _p13KokhoSokatuCoReportService;
+    private readonly IP43KokhoSokatuCoReportService _P43KokhoSokatuCoReportService;
 
     public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService, IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService, IHikariDiskCoReportService hikariDiskCoReportService, IP28KoukiSeikyuCoReportService p28KoukiSeikyuCoReportService, IP29KoukiSeikyuCoReportService p29KoukiSeikyuCoReportService, IAfterCareSeikyuCoReportService afterCareSeikyuCoReportService, ISyahoCoReportService syahoCoReportService, IP45KoukiSeikyuCoReportService p45KoukiSeikyuCoReportService, IP33KoukiSeikyuCoReportService p33KoukiSeikyuCoReportService, IP34KoukiSeikyuCoReportService p34KoukiSeikyuCoReportService, IP35KoukiSeikyuCoReportService p35KoukiSeikyuCoReportService, IP37KoukiSeikyuCoReportService p37KoukiSeikyuCoReportService, IP40KoukiSeikyuCoReportService p40KoukiSeikyuCoReportService, IP42KoukiSeikyuCoReportService p42KoukiSeikyuCoReportService, IP09KoukiSeikyuCoReportService p09KoukiSeikyuCoReportService, IP12KoukiSeikyuCoReportService p12KoukiSeikyuCoReportService, IP13KoukiSeikyuCoReportService p13KoukiSeikyuCoReportService, IP30KoukiSeikyuCoReportService p30KoukiSeikyuCoReportService, IP41KoukiSeikyuCoReportService p41KoukiSeikyuCoReportService, IP08KokhoSokatuCoReportService p08KokhoSokatuCoReportService, IP44KoukiSeikyuCoReportService p44KoukiSeikyuCoReportService, IP08KoukiSeikyuCoReportService p08KoukiSeikyuCoReportService, IP11KoukiSeikyuCoReportService p11KoukiSeikyuCoReportService, IP14KoukiSeikyuCoReportService p14KoukiSeikyuCoReportService, IP17KoukiSeikyuCoReportService p17KoukiSeikyuCoReportService
                               , IP20KoukiSeikyuCoReportService p20KoukiSeikyuCoReportService, IP25KokhoSokatuCoReportService p25KokhoSokatuCoReportService, IP13WelfareSeikyuCoReportService p13WelfareSeikyuCoReportService, IP08KokhoSeikyuCoReportService p08KokhoSeikyuCoReportService, IP22WelfareSeikyuCoReportService p22WelfareSeikyuCoReportService, IP21KoukiSeikyuCoReportService p21KoukiSeikyuCoReportService, IP22KoukiSeikyuCoReportService p22KoukiSeikyuCoReportService, IP23KoukiSeikyuCoReportService p23KoukiSeikyuCoReportService, IP24KoukiSeikyuCoReportService p24KoukiSeikyuCoReportService, IP25KoukiSeikyuCoReportService p25KoukiSeikyuCoReportService, IP27KoukiSeikyuCoReportService p27KoukiSeikyuCoReportService, IP14KokhoSokatuCoReportService p14KokhoSokatuCoReportService, IP17KokhoSokatuCoReportService p17KokhoSokatuCoReportService, IP20KokhoSokatuCoReportService p20KokhoSokatuCoReportService, IP22KokhoSokatuCoReportService p22KokhoSokatuCoReportService, IP23KokhoSokatuCoReportService p23KokhoSokatuCoReportService, IP26KokhoSokatuInCoReportService p26KokhoSokatuInCoReportService, IP33KokhoSokatuCoReportService p33KokhoSokatuCoReportService, IP34KokhoSokatuCoReportService p34KokhoSokatuCoReportService, IP35KokhoSokatuCoReportService p35KokhoSokatuCoReportService, IP37KokhoSokatuCoReportService p37KokhoSokatuCoReportService, IP37KoukiSokatuCoReportService p37KoukiSokatuCoReportService, IP26KokhoSokatuOutCoReportService p26KokhoSokatuOutCoReportService, IP40KokhoSokatuCoReportService p40KokhoSokatuCoReportService
-                              , IP41KokhoSokatuCoReportService p41KokhoSokatuCoReportService, IP42KokhoSokatuCoReportService p42KokhoSokatuCoReportService, IP12KokhoSokatuCoReportService p12KokhoSokatuCoReportService, IP13KokhoSokatuCoReportService p13KokhoSokatuCoReportService)
+                              , IP41KokhoSokatuCoReportService p41KokhoSokatuCoReportService, IP42KokhoSokatuCoReportService p42KokhoSokatuCoReportService, IP12KokhoSokatuCoReportService p12KokhoSokatuCoReportService, IP13KokhoSokatuCoReportService p13KokhoSokatuCoReportService, IP43KokhoSokatuCoReportService p43KokhoSokatuCoReportService)
     {
         _p28KokhoSokatuCoReportService = p28KokhoSokatuCoReportService;
         _p11KokhoSokatuCoReportService = p11KokhoSokatuCoReportService;
@@ -133,6 +134,7 @@ public class ReceiptPrintService : IReceiptPrintService
         _p42KokhoSokatuCoReportService = p42KokhoSokatuCoReportService;
         _p12KokhoSokatuCoReportService = p12KokhoSokatuCoReportService;
         _p13KokhoSokatuCoReportService = p13KokhoSokatuCoReportService;
+        _P43KokhoSokatuCoReportService = p43KokhoSokatuCoReportService;
     }
 
     public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos)
@@ -284,11 +286,11 @@ public class ReceiptPrintService : IReceiptPrintService
         }
         else if (prefNo == 24 && reportId == 104 && reportEdaNo == 0)
         {
-            result =  _p24KoukiSeikyuCoReportService.GetP24KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
+            result = _p24KoukiSeikyuCoReportService.GetP24KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
         }
         else if (prefNo == 25 && reportId == 104 && reportEdaNo == 0)
         {
-            result =  _p25KoukiSeikyuCoReportService.GetP25KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
+            result = _p25KoukiSeikyuCoReportService.GetP25KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType);
         }
         else if (prefNo == 27 && reportId == 104 && reportEdaNo == 0)
         {
@@ -344,7 +346,7 @@ public class ReceiptPrintService : IReceiptPrintService
         }
         else if (prefNo == 26 && reportId == 102 && reportEdaNo == 2)
         {
-            result =  _p26KokhoSokatuOutCoReportService.GetP26KokhoSokatuOutReportingData(hpId, seikyuYm, seikyuType);
+            result = _p26KokhoSokatuOutCoReportService.GetP26KokhoSokatuOutReportingData(hpId, seikyuYm, seikyuType);
         }
         else if (prefNo == 40 && reportId == 102 && reportEdaNo == 0)
         {
@@ -366,6 +368,10 @@ public class ReceiptPrintService : IReceiptPrintService
         {
             result = _p13KokhoSokatuCoReportService.GetP13KokhoSokatuReportingData(hpId, seikyuYm, seikyuType, diskKind, diskCnt);
         }
+        else if (prefNo == 43 && reportId == 102 && reportEdaNo == 0)
+        {
+            result = _P43KokhoSokatuCoReportService.GetP43KokhoSokatuReportingData(hpId, seikyuYm, seikyuType);
+        }
         result.JobName = formName;
 
         return result;
@@ -373,7 +379,7 @@ public class ReceiptPrintService : IReceiptPrintService
 
     private PrefKbn GetPrefKbn(int reportEdaNo)
     {
-        switch(reportEdaNo)
+        switch (reportEdaNo)
         {
             case 0:
                 return PrefKbn.PrefIn;
