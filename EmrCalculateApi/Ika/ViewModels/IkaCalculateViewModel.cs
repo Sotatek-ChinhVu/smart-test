@@ -516,7 +516,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             var total = 1000;
             int success = 1;
             SendMessager(new RecalculationStatus(false, 1, total, 0, string.Empty));
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 30; i++)
             {
                 Thread.Sleep(100);
                 SendMessager(new RecalculationStatus(false, 1, success, 0, string.Empty));

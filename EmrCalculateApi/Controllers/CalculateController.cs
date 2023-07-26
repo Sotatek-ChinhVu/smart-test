@@ -2,6 +2,8 @@
 using EmrCalculateApi.Interface;
 using EmrCalculateApi.Requests;
 using EmrCalculateApi.Responses;
+using EmrCalculateApi.Constants;
+using EmrCalculateApi.Realtime;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +17,13 @@ namespace EmrCalculateApi.Controllers
     public class CalculateController : ControllerBase
     {
         private readonly IIkaCalculateViewModel _ikaCalculate;
+        private readonly IWebSocketService _webSocketService;
         private CancellationToken? _cancellationToken;
 
-        public CalculateController(IIkaCalculateViewModel ikaCalculate)
+        public CalculateController(IIkaCalculateViewModel ikaCalculate, IWebSocketService webSocketService)
         {
             _ikaCalculate = ikaCalculate;
+            _webSocketService = webSocketService;
         }
 
         [HttpPost("RunCalculateOne")]
@@ -58,7 +62,7 @@ namespace EmrCalculateApi.Controllers
         }
 
         [HttpPost("RunCalculateMonth")]
-        public void RunCalculateMonth([FromBody] RunCalculateMonthRequest monthRequest, CancellationToken cancellationToken)
+        public async Task<ActionResult> RunCalculateMonth([FromBody] RunCalculateMonthRequest monthRequest, CancellationToken cancellationToken)
         {
             _cancellationToken = cancellationToken;
             try
@@ -67,8 +71,7 @@ namespace EmrCalculateApi.Controllers
                 Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
 
                 HttpContext.Response.ContentType = "application/json";
-                HttpResponse response = HttpContext.Response;
-
+                await _webSocketService.SendMessageAsync(FunctionCodes.RunCalculateMonth, "CHECK");
                 _ikaCalculate.RunCalculateMonth(
                              monthRequest.HpId,
                              monthRequest.SeikyuYm,
@@ -78,8 +81,7 @@ namespace EmrCalculateApi.Controllers
             catch
             {
                 var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
-                HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
-                HttpContext.Response.Body.FlushAsync();
+                await _webSocketService.SendMessageAsync(FunctionCodes.RunCalculateMonth, resultForFrontEnd);
             }
             finally
             {
@@ -87,6 +89,7 @@ namespace EmrCalculateApi.Controllers
                 Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
                 HttpContext.Response.Body.Close();
             }
+            return Ok();
         }
 
         private void StopCalculation(StopCalcStatus stopCalcStatus)
@@ -103,7 +106,8 @@ namespace EmrCalculateApi.Controllers
 
         private void UpdateRecalculationStatus(RecalculationStatus status)
         {
-            AddMessageCheckErrorInMonth(status);
+            var result = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculateMonth, status);
+            result.Wait();
         }
 
         private void AddMessageCheckErrorInMonth(RecalculationStatus status)
