@@ -1,4 +1,5 @@
-﻿using Domain.Models.CalculationInf;
+﻿using Domain.Constant;
+using Domain.Models.CalculationInf;
 using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
@@ -14,6 +15,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -1327,10 +1329,35 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public (bool resultSave, long ptId) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
+        public (bool resultSave, long ptId) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId, List<int> hokenIdList)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
+
+            #region CloneByomeiWithNewHokenId
+            if (hokenIdList.Any())
+            {
+                //if add new hoken => confirm clone byomei
+                var hokenInf = hokenInfs.OrderByDescending(p => p.EndDateSort)
+                                        .ThenByDescending(p => p.HokenId)
+                                        .FirstOrDefault(p => p.IsDeleted == DeleteTypes.None && !p.IsAddNew);
+                if (hokenInf != null)
+                {
+                    var ptByomeis = TrackingDataContext.PtByomeis.Where(item => item.PtId == ptInf.PtId
+                                                                                && item.HokenPid == hokenInf.HokenId
+                                                                                && item.IsDeleted == DeleteTypes.None
+                                                                                && item.TenkiKbn == TenkiKbnConst.Continued)
+                                                                 .ToList();
+                    if (ptByomeis.Count > 0)
+                    {
+                        foreach (var hokenId in hokenIdList)
+                        {
+                            CloneByomeiWithNewHokenId(ptByomeis, hokenId, userId);
+                        }
+                    }
+                }
+            }
+            #endregion
 
             #region Patient-info
             PtInf? patientInfo = TrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptInf.PtId);
@@ -1538,7 +1565,6 @@ namespace Infrastructure.Repositories
                 }
             }
             #endregion
-
 
             var databaseHokenPartterns = TrackingDataContext.PtHokenPatterns.Where(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == DeleteTypes.None).ToList();
             var databaseHoKentInfs = TrackingDataContext.PtHokenInfs.Where(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == DeleteTypes.None).ToList();
@@ -2566,6 +2592,28 @@ namespace Infrastructure.Repositories
                                                                                   0,
                                                                                   0,
                                                                                   string.Empty)).ToList();
+        }
+
+        private void CloneByomeiWithNewHokenId(List<PtByomei> ptByomeis, int hokenId, int userId)
+        {
+            List<PtByomei> newCloneByomeis = new();
+            foreach (var ptByomei in ptByomeis)
+            {
+                var cloneByomei = ptByomei.Clone();
+                cloneByomei.CreateId = userId;
+                cloneByomei.UpdateId = userId;
+                cloneByomei.CreateDate = CIUtil.GetJapanDateTimeNow();
+                cloneByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                cloneByomei.HokenPid = hokenId;
+                cloneByomei.Id = 0;
+                newCloneByomeis.Add(cloneByomei);
+            }
+            TrackingDataContext.PtByomeis.AddRange(newCloneByomeis);
+
+            foreach (var newCloneByomei in newCloneByomeis)
+            {
+                newCloneByomei.SeqNo = newCloneByomei.Id;
+            }
         }
     }
 }

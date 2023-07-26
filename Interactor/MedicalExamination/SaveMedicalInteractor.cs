@@ -280,7 +280,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         string.Empty,
                         p.SinDate
 
-                    )).ToList(), inputDatas.SpecialNoteItem.PatientInfoTab.PtCmtInfItems, inputDatas.SpecialNoteItem.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.KensaInfDetailItems.Select(k => new KensaInfDetailModel(k.HpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2, DateTime.MinValue, string.Empty, string.Empty, 0)).ToList()) }, new());
+                    )).ToList(), inputDatas.SpecialNoteItem.PatientInfoTab.PtCmtInfItems, inputDatas.SpecialNoteItem.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.KensaInfDetailItems.Select(k => new KensaInfDetailModel(k.HpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2, DateTime.MinValue, string.Empty, string.Empty, 0)).ToList()) });
 
             var flowSheetData = inputDatas.FlowSheetItems.Select(i => new FlowSheetModel(
                        i.SinDate,
@@ -395,7 +395,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             if (fileInfUpdateTemp.Any())
             {
                 var checkIsSchemaList = _karteInfRepository.ListCheckIsSchema(hpId, ptId, fileInfUpdateTemp);
-                foreach (var item in fileInfUpdateTemp.Select(item => item.Value))
+                foreach (var item in fileInfUpdateTemp.Select(item => item.NewFileName))
                 {
                     var isSchema = checkIsSchemaList.ContainsKey(item) && checkIsSchemaList[item];
                     fileList.Add(new FileInfModel(isSchema, item));
@@ -414,9 +414,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         }
     }
 
-    private Dictionary<string, string> CopyFileFromDoActionToKarte(long ptNum, List<string> listFileDo)
+    private List<FileMapCopyItem> CopyFileFromDoActionToKarte(long ptNum, List<string> listFileDo)
     {
-        Dictionary<string, string> fileInfUpdateTemp = new();
+        List<FileMapCopyItem> fileInfUpdateTemp = new();
 
         var listFolderPath = new List<string>(){
                                             CommonConstants.Store,
@@ -441,12 +441,12 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 var copySuccess = _amazonS3Service.CopyObjectAsync(oldFileLink.Replace(baseAccessUrl, string.Empty), newFile.Replace(baseAccessUrl, string.Empty)).Result;
                 if (copySuccess)
                 {
-                    fileInfUpdateTemp.Add(oldFileName, newFile);
+                    fileInfUpdateTemp.Add(new(oldFileName, newFile));
                 }
             }
             else
             {
-                fileInfUpdateTemp.Add(oldFileName, oldFileName);
+                fileInfUpdateTemp.Add(new(oldFileName, oldFileName));
             }
         }
         return fileInfUpdateTemp;

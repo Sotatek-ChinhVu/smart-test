@@ -20,9 +20,18 @@ public class ReceCmtHistoryInteractor : IReceCmtHistoryInputPort
     {
         try
         {
-            var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, 0);
+            var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, 0, false);
             var hokenInfList = insuranceData.ListHokenInf;
             var receCmtList = _receiptRepository.GetReceCmtList(inputData.HpId, 0, inputData.PtId, 0, 0);
+
+            foreach (var cmt in receCmtList)
+            {
+                var ptHokenInfModel = hokenInfList.FirstOrDefault(p => p.HokenId == cmt.HokenId);
+                if (ptHokenInfModel != null)
+                {
+                    ptHokenInfModel.ChangeSinDate(cmt.SinYm * 100 + 1);
+                }
+            }
 
             var result = ConvertToResult(hokenInfList, receCmtList);
             return new ReceCmtHistoryOutputData(result, ReceCmtHistoryStatus.Successed);
@@ -40,7 +49,7 @@ public class ReceCmtHistoryInteractor : IReceCmtHistoryInputPort
         var sinYmList = receCmtList.Select(item => item.SinYm).Distinct().OrderByDescending(item => item).ToList();
         foreach (var sinYm in sinYmList)
         {
-            var hokenIdList = receCmtList.Where(item => item.SinYm == sinYm).Select(item => item.HokenId).Distinct().ToList();
+            var hokenIdList = receCmtList.Where(item => item.SinYm == sinYm).Select(item => item.HokenId).OrderByDescending(item => item).Distinct().ToList();
             foreach (var hokenId in hokenIdList)
             {
                 var outputItem = new ReceCmtHistoryOutputItem(

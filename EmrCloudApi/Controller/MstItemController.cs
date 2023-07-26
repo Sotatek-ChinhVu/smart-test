@@ -27,6 +27,7 @@ using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
+using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -372,6 +373,16 @@ namespace EmrCloudApi.Controller
             var input = new ConvertStringChkJISKjInputData(request.InputList);
             var output = _bus.Handle(input);
             var presenter = new ConvertStringChkJISKjPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTeikyoByomei)]
+        public ActionResult<Response<GetTeikyoByomeiResponse>> GetTeikyoByomei([FromQuery] GetTeikyoByomeiRequest request)
+        {
+            var input = new GetTeikyoByomeiInputData(HpId, request.ItemCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetTeikyoByomeiPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }

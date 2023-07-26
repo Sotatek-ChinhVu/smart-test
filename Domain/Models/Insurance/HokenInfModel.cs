@@ -113,6 +113,15 @@ namespace Domain.Models.Insurance
             HokensyaMst = new();
         }
 
+        public HokenInfModel(long ptId, int startDate, int endDate, int rousaiSaigaiKbn, int rousaiSyobyoDate)
+        {
+            PtId = ptId;
+            StartDate = startDate;
+            EndDate = endDate;
+            RousaiSaigaiKbn = rousaiSaigaiKbn;
+            RousaiSyobyoDate = rousaiSyobyoDate;
+        }
+
         public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();
 
         public int HpId { get; private set; }
@@ -473,6 +482,26 @@ namespace Domain.Models.Insurance
                 }
                 return result;
             }
+        }
+
+        public bool IsEmptyModel
+        {
+            get => HokenNo == 0 && HokenEdaNo == 0
+                && HokenKbn == 1
+                && string.IsNullOrEmpty(HokensyaNo)
+                && HonkeKbn == 0
+                && string.IsNullOrEmpty(Kigo)
+                && string.IsNullOrEmpty(Bango)
+                && string.IsNullOrEmpty(EdaNo);
+        }
+
+
+        public int EndDateSort => EndDate != 99999999 ? EndDate : 0;
+
+        public HokenInfModel ChangeSinDate(int sinDate)
+        {
+            SinDate = sinDate;
+            return this;
         }
     }
 }

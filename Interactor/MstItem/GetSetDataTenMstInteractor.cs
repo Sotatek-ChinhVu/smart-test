@@ -22,7 +22,7 @@ namespace Interactor.MstItem
         {
             try
             {
-                if(inputData.HpId <= 0)
+                if (inputData.HpId <= 0)
                     return new GetSetDataTenMstOutputData(GetSetDataTenMstStatus.InvalidHpId, ObjectExtension.CreateInstance<SetDataTenMstOriginModel>());
 
                 if (string.IsNullOrEmpty(inputData.ItemCd))
@@ -32,16 +32,16 @@ namespace Interactor.MstItem
                 ItemTypeEnums itemType = TenMstMaintenanceUtil.GetItemType(inputData.ItemCd);
                 FitlerCategoryListByItemType(itemType, ref categoryList);
 
-                SetDataTenMstOriginModel result = ReloadSubVMSelectedItem(inputData.ItemCd, 
+                SetDataTenMstOriginModel result = ReloadSubVMSelectedItem(inputData.ItemCd,
                                                                           inputData.JiCd,
-                                                                          inputData.IpnNameCd, 
+                                                                          inputData.IpnNameCd,
                                                                           inputData.SanteiItemCd,
-                                                                          inputData.AgekasanCd1Note, 
+                                                                          inputData.AgekasanCd1Note,
                                                                           inputData.AgekasanCd2Note,
-                                                                          inputData.AgekasanCd3Note, 
-                                                                          inputData.AgekasanCd4Note, 
-                                                                          categoryList, 
-                                                                          inputData.HpId, 
+                                                                          inputData.AgekasanCd3Note,
+                                                                          inputData.AgekasanCd4Note,
+                                                                          categoryList,
+                                                                          inputData.HpId,
                                                                           inputData.SinDate);
 
                 return new GetSetDataTenMstOutputData(GetSetDataTenMstStatus.Successful, result);
@@ -151,7 +151,7 @@ namespace Interactor.MstItem
         }
 
 
-        private SetDataTenMstOriginModel ReloadSubVMSelectedItem(string itemCd, string jiCd , string ipnNameCd, string santeiItemCd, string agekasanCd1, string agekasanCd2, string agekasanCd3, string agekasanCd4, List<CategoryItemModel> listCategories, int hpId, int sinDate)
+        private SetDataTenMstOriginModel ReloadSubVMSelectedItem(string itemCd, string jiCd, string ipnNameCd, string santeiItemCd, string agekasanCd1, string agekasanCd2, string agekasanCd3, string agekasanCd4, List<CategoryItemModel> listCategories, int hpId, int sinDate)
         {
             List<CategoryItemModel> visibleList = listCategories.FindAll(item => item.Visibility);
 
@@ -175,7 +175,7 @@ namespace Interactor.MstItem
                         basicSettingTab = new BasicSettingTabModel(_mstItemRepository.GetListCmtKbnMstModelByItemCd(hpId, itemCd));
                         break;
                     case CategoryItemEnums.IjiSetting:
-                        ijiSettingTab = LoadIjiSetting(santeiItemCd , agekasanCd1, agekasanCd2 ,agekasanCd3 ,agekasanCd4, hpId, sinDate);
+                        ijiSettingTab = LoadIjiSetting(santeiItemCd, agekasanCd1, agekasanCd2, agekasanCd3, agekasanCd4, hpId, sinDate);
                         break;
                     case CategoryItemEnums.PrecriptionSetting:
                         precriptionSettingTab = LoadPrecriptionSetting(itemCd, jiCd, ipnNameCd, hpId, sinDate);
@@ -208,15 +208,15 @@ namespace Interactor.MstItem
                 }
             }
 
-            return new SetDataTenMstOriginModel(basicSettingTab, 
-                                                ijiSettingTab, 
-                                                precriptionSettingTab, 
-                                                usageSettingTab, 
-                                                drugInfomationTab, 
-                                                teikyoByomeiTab, 
+            return new SetDataTenMstOriginModel(basicSettingTab,
+                                                ijiSettingTab,
+                                                precriptionSettingTab,
+                                                usageSettingTab,
+                                                drugInfomationTab,
+                                                teikyoByomeiTab,
                                                 santeiKaishuTab,
-                                                haihanTab, 
-                                                houkatsuTab, 
+                                                haihanTab,
+                                                houkatsuTab,
                                                 combinedContraindicationTab);
         }
 
@@ -247,7 +247,7 @@ namespace Interactor.MstItem
             return new PrecriptionSettingTabModel(m10DayLimits, ipnMinYakkaMsts, drugDayLimits, dosageMst, ipnNameMst);
         }
 
-        private DrugInfomationTabModel LoadDrugInfomation(string itemCd, int hpId) 
+        private DrugInfomationTabModel LoadDrugInfomation(string itemCd, int hpId)
         {
             List<DrugInfModel> drugInfs = _mstItemRepository.GetDrugInfByItemCd(hpId, itemCd);
 
