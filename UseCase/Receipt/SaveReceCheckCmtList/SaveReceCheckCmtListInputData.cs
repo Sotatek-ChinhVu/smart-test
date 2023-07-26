@@ -4,7 +4,7 @@ namespace UseCase.Receipt.SaveReceCheckCmtList;
 
 public class SaveReceCheckCmtListInputData : IInputData<SaveReceCheckCmtListOutputData>
 {
-    public SaveReceCheckCmtListInputData(int hpId, int userId, long ptId, int sinYm, int hokenId, List<ReceCheckCmtItem> receCheckCmtList)
+    public SaveReceCheckCmtListInputData(int hpId, int userId, long ptId, int sinYm, int hokenId, List<ReceCheckCmtItem> receCheckCmtList, List<ReceCheckErrorItem> receCheckErrorList)
     {
         HpId = hpId;
         UserId = userId;
@@ -12,6 +12,7 @@ public class SaveReceCheckCmtListInputData : IInputData<SaveReceCheckCmtListOutp
         SinYm = sinYm;
         HokenId = hokenId;
         ReceCheckCmtList = receCheckCmtList;
+        ReceCheckErrorList = receCheckErrorList;
     }
 
     public int HpId { get; private set; }
@@ -25,4 +26,6 @@ public class SaveReceCheckCmtListInputData : IInputData<SaveReceCheckCmtListOutp
     public int HokenId { get; private set; }
 
     public List<ReceCheckCmtItem> ReceCheckCmtList { get; private set; }
+
+    public List<ReceCheckErrorItem> ReceCheckErrorList { get; private set; }
 }

@@ -4,7 +4,7 @@ namespace Domain.Models.MstItem
 {
     public class TeikyoByomeiModel
     {
-        public TeikyoByomeiModel(int sikkanCd, int hpId, string itemCd, string byomeiCd, int startYM, int endYM, int isInvalid, int isInvalidTokusyo, int editKbn, int systemData, string byomei, string kanaName, bool isDeleted, bool isModified)
+        public TeikyoByomeiModel(int sikkanCd, int hpId, string itemCd, string byomeiCd, int startYM, int endYM, int isInvalid, int isInvalidTokusyo, int editKbn, int systemData, string byomei, string kanaName, string sbyomeiOrigin, bool isDeleted, bool isModified)
         {
             SikkanCd = sikkanCd;
             HpId = hpId;
@@ -18,6 +18,7 @@ namespace Domain.Models.MstItem
             SystemData = systemData;
             Byomei = byomei;
             KanaName = kanaName;
+            SbyomeiOrigin = sbyomeiOrigin;
             IsDeleted = isDeleted;
             IsModified = isModified;
         }
@@ -28,6 +29,7 @@ namespace Domain.Models.MstItem
             ByomeiCd = string.Empty;
             Byomei = string.Empty;
             KanaName = string.Empty;
+            SbyomeiOrigin = string.Empty;
         }
 
         public int SikkanCd { get; private set; }
@@ -104,15 +106,15 @@ namespace Domain.Models.MstItem
         /// </summary>
         public string KanaName { get; private set; }
 
-
         public bool IsDeleted { get; private set; }
 
         public bool IsModified { get; private set; }
 
-        
         public bool CheckDefaultValue()
         {
             return string.IsNullOrEmpty(Byomei) && string.IsNullOrEmpty(ByomeiCd) && StartYM == 0 && EndYM == 999999;
         }
+
+        public string SbyomeiOrigin { get; private set; }
     }
 }

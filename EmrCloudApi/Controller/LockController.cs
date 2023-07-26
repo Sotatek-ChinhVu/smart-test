@@ -12,7 +12,6 @@ using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
-using UseCase.Lock.CheckLockOpenAccounting;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
 
@@ -172,18 +171,6 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<CheckLockVisitingResponse>>(presenter.Result);
-        }
-
-        [HttpGet(ApiPath.CheckLockOpenAccounting)]
-        public ActionResult<Response<CheckLockOpenAccountingResponse>> CheckLockOpenAccounting([FromQuery] CheckLockOpenAccountingRequest request)
-        {
-            var input = new CheckLockOpenAccountingInputData(HpId, request.PtId, request.RaiinNo, UserId);
-            var output = _bus.Handle(input);
-
-            var presenter = new CheckLockOpenAccountingPresenter();
-            presenter.Complete(output);
-
-            return new ActionResult<Response<CheckLockOpenAccountingResponse>>(presenter.Result);
         }
     }
 

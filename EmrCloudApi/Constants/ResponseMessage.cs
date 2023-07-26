@@ -970,6 +970,7 @@
         public static readonly string InvalidTokkiItem = "Invalid TokkiItem!";
         public static readonly string InvalidFusenKbn = "Invalid FusenKbn!";
         public static readonly string InvalidStatusKbn = "Invalid StatusKbn!";
+        public static readonly string InvalidReceCheckErrorItem = "Invalid ReceCheckErrorItem!";
 
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";

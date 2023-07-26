@@ -187,17 +187,16 @@ namespace Reporting.Receipt.Service
             while (i < CoModels.Count())
             {
                 CoModel = CoModels[i];
+                GetFormParam("fmReceipt.rse");
 
+                _byomeiCharCount -= 3;
+                _tekiyoCharCount -= 13;
+                _tekiyoByoCharCount -= 26;
                 // フォームチェック
                 if (TargetIsKenpo() ||
                             (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 0))
                 {
-                    GetFormParam("fmReceipt.rse");
                     // 対象が社保国保または、自賠健保準拠
-                    _byomeiCharCount -= 3;
-                    _tekiyoCharCount -= 13;
-                    _tekiyoByoCharCount -= 26;
-
                     if ((int)_systemConfRepository.GetSettingValue(94001, 1, HpId) == 1)
                     {
                         // 病名欄転帰日記載をする場合
@@ -224,9 +223,6 @@ namespace Reporting.Receipt.Service
                         (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 1, HpId) == 1))
                 {
                     // 労災（短期、年金、アフターケア）、自賠労災準拠
-                    _byomeiCharCount -= 3;
-                    _tekiyoCharCount -= 13;
-                    _tekiyoByoCharCount -= 26;
                     if ((int)_systemConfRepository.GetSettingValue(94001, 0, HpId) == 1)
                     {
                         _tekiyoByoCharCount -= 4;
