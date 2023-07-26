@@ -122,7 +122,7 @@ public class P22KokhoSeikyuCoReportService : IP22KokhoSeikyuCoReportService
             SetFieldData("reportMonth", wrkYmd.Month.ToString());
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //保険者
-            SetFieldData("hokensyaName", hokensyaNames.Find(h => h.HokensyaNo == currentHokensyaNo)?.Name ?? "");
+            fieldDataPerPage.Add("hokensyaName", hokensyaNames.Find(h => h.HokensyaNo == currentHokensyaNo)?.Name ?? "");
             fieldDataPerPage.Add("hokensyaNo", currentHokensyaNo);
             _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
             //印
