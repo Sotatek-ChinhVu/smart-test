@@ -12,8 +12,8 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    [Migration("20230710071004_create_key_RsvkrtMst")]
-    partial class createkeyRsvkrtMst
+    [Migration("20230726014044_create_key_RsvkrtMs")]
+    partial class createkeyRsvkrtMs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -18410,7 +18410,7 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "PtId", "RsvkrtNo");
 
-                    b.HasIndex("HpId", "PtId", "RsvkrtNo", "RsvDate")
+                    b.HasIndex("HpId", "PtId", "RsvDate")
                         .IsUnique()
                         .HasFilter("RsvkrtKbn = 0 AND IsDeleted = 0");
 

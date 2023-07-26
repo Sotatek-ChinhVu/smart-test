@@ -5,15 +5,15 @@
 namespace TenantMigration.Migrations
 {
     /// <inheritdoc />
-    public partial class createkeyRsvkrtMst : Migration
+    public partial class createkeyRsvkrtMs : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateIndex(
-                name: "IX_RSVKRT_MST_HP_ID_PT_ID_RSVKRT_NO_RSV_DATE",
+                name: "IX_RSVKRT_MST_HP_ID_PT_ID_RSV_DATE",
                 table: "RSVKRT_MST",
-                columns: new[] { "HP_ID", "PT_ID", "RSVKRT_NO", "RSV_DATE" },
+                columns: new[] { "HP_ID", "PT_ID", "RSV_DATE" },
                 unique: true,
                 filter: "RsvkrtKbn = 0 AND IsDeleted = 0");
         }
@@ -22,7 +22,7 @@ namespace TenantMigration.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_RSVKRT_MST_HP_ID_PT_ID_RSVKRT_NO_RSV_DATE",
+                name: "IX_RSVKRT_MST_HP_ID_PT_ID_RSV_DATE",
                 table: "RSVKRT_MST");
         }
     }
