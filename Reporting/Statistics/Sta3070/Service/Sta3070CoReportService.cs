@@ -1,7 +1,7 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Helper.Common;
+using Helper.Extension;
 using Reporting.CommonMasters.Enums;
-using Reporting.CommonMasters.Extension;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -193,15 +193,18 @@ public class Sta3070CoReportService : ISta3070CoReportService
 
         // get data to print
         GetFieldNameList(formFileName);
-        GetData(hpId);
-        hasNextPage = true;
-        currentPage = 1;
 
-        //印刷
-        while (hasNextPage)
+        if (GetData(hpId))
         {
-            UpdateDrawForm();
-            currentPage++;
+            hasNextPage = true;
+            currentPage = 1;
+
+            //印刷
+            while (hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
 
         return new Sta3070Mapper(_singleFieldData, _tableFieldData, _extralData, formFileName).GetData();
@@ -299,7 +302,7 @@ public class Sta3070CoReportService : ISta3070CoReportService
 
     }
 
-    private void GetData(int hpId)
+    private bool GetData(int hpId)
     {
         CoSta3070PrintData SetPrintData(List<CoRaiinInfModel> syukeiData, TotalCnt totalCnt, string clA1, string clA2, string clB, bool isTotal = false)
         {
@@ -600,12 +603,14 @@ public class Sta3070CoReportService : ISta3070CoReportService
 
         //データ取得
         raiinInfs = _finder.GetRaiinInfs(hpId, printConf);
-        if ((raiinInfs?.Count ?? 0) == 0) return;
+        if ((raiinInfs?.Count ?? 0) == 0) return false;
 
         hpInf = _finder.GetHpInf(hpId, raiinInfs.FirstOrDefault()?.SinDate ?? 0);
 
         //印刷用データの作成
         MakePrintData();
+
+        return printDatas.Count > 0;
     }
 
 

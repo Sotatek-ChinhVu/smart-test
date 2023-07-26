@@ -11,6 +11,8 @@ namespace Domain.Models.Diseases
 
         List<PtDiseaseModel> GetByomeiInThisMonth(int hpId, int sinYm, long ptId, int hokenId);
 
+        List<PtDiseaseModel> GetPtByomeisByHokenId(int hpId, long ptId, int hokenId);
+
         List<long> Upsert(List<PtDiseaseModel> inputDatas, int hpId, int userId);
 
         List<ByomeiSetMstModel> GetDataTreeSetByomei(int hpId, int sinDate);

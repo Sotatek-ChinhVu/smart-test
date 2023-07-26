@@ -64,14 +64,15 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             _seikyuYm = seikyuYm;
             _seikyuType = seikyuType;
             var getData = GetData();
-
             _hasNextPage = true;
             _currentPage = 1;
-
-            while (getData && _hasNextPage)
+            if (getData)
             {
-                UpdateDrawForm();
-                _currentPage++;
+                while (getData && _hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();

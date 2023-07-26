@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Extension;
-using Reporting.CommonMasters.Extension;
 
 namespace Reporting.Statistics.Sta3030.Models;
 
@@ -42,7 +41,7 @@ public class CoPtByomeiModel
     /// </summary>
     public string PtName
     {
-        get => PtInf.Name??string.Empty;
+        get => PtInf.Name ?? string.Empty;
     }
 
     /// <summary>

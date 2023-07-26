@@ -12,7 +12,6 @@ using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
-using UseCase.Lock.CheckLockOpenAccounting;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
 
@@ -44,7 +43,8 @@ namespace EmrCloudApi.Controller
             if (_cancellationToken!.Value.IsCancellationRequested)
             {
                 Console.WriteLine("Come in cancelation Addlock");
-                if(output.Status == AddLockStatus.Successed){
+                if (output.Status == AddLockStatus.Successed)
+                {
                     var inputDelete = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false, false);
                     _bus.Handle(inputDelete);
                 }
@@ -65,8 +65,8 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<LockResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.CheckLock)]
-        public ActionResult<Response<LockResponse>> CheckLock([FromQuery] LockRequest request)
+        [HttpPost(ApiPath.CheckLock)]
+        public ActionResult<Response<LockResponse>> CheckLock([FromBody] CheckLockRequest request)
         {
             var input = new CheckLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
             var output = _bus.Handle(input);
@@ -89,10 +89,10 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<CheckExistFunctionCodeResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.RemoveLock)]
-        public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> RemoveLock([FromQuery] LockRequest request)
+        [HttpPost(ApiPath.RemoveLock)]
+        public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> RemoveLock([FromBody] LockRequest request)
         {
-            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false, false);
+            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false, false, request.TabKey);
             var output = _bus.Handle(input);
 
             if (output.Status == RemoveLockStatus.Successed)
@@ -171,18 +171,6 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<CheckLockVisitingResponse>>(presenter.Result);
-        }
-
-        [HttpGet(ApiPath.CheckLockOpenAccounting)]
-        public ActionResult<Response<CheckLockOpenAccountingResponse>> CheckLockOpenAccounting([FromQuery] CheckLockOpenAccountingRequest request)
-        {
-            var input = new CheckLockOpenAccountingInputData(HpId, request.PtId, request.RaiinNo);
-            var output = _bus.Handle(input);
-
-            var presenter = new CheckLockOpenAccountingPresenter();
-            presenter.Complete(output);
-
-            return new ActionResult<Response<CheckLockOpenAccountingResponse>>(presenter.Result);
         }
     }
 

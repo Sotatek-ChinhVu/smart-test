@@ -1,10 +1,12 @@
 ﻿using Helper.Common;
 using Infrastructure.Interfaces;
 using Reporting.CommonMasters.Config;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.OrderLabel.DB;
 using Reporting.OrderLabel.Mapper;
 using Reporting.OrderLabel.Model;
+using Reporting.ReadRseReportFile.Service;
 using System.Text;
 
 namespace Reporting.OrderLabel.Service;
@@ -23,7 +25,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
     }
 
     private readonly ITenantProvider _tenantProvider;
-    private CoOrderLabelModel _coModel = new();
+    private CoOrderLabelModel? _coModel = null;
     private List<CoUserMstModel> _userMsts = new();
     private List<CoOrderLabelPrintDataModel> _printOutData = new();
     private readonly ISystemConfig _systemConfig;
@@ -47,13 +49,17 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             {
                 _coModel = GetDataYoyakuOrder(hpId, ptId, odrKouiKbns, rsvKrtOdrInfModels, finder);
             }
+            if (_coModel == null)
+            {
+                return new OrderLabelMapper(_printOutData).GetData();
+            }
             _userMsts = finder.FindUserMst(hpId);
             MakeOdrDtlList(sinDate);
             return new OrderLabelMapper(_printOutData).GetData();
         }
     }
 
-    private CoOrderLabelModel GetData(int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, CoOrderLabelFinder finder)
+    private CoOrderLabelModel? GetData(int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, CoOrderLabelFinder finder)
     {
         // 患者情報
         CoPtInfModel ptInf = finder.FindPtInf(hpId, ptId);
@@ -83,7 +89,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
         List<CoCommonOdrInfModel> commonOdrInfs = CommonOdrInfListFactory(odrInfs);
         List<CoCommonOdrInfDetailModel> commonOdrDtls = CommonOdrInfDetailListFactory(odrInfDtls);
 
-        CoOrderLabelModel coOrderLabel = new();
+        CoOrderLabelModel? coOrderLabel = null;
 
         if (odrInfs != null && odrInfs.Any(p => p.OdrKouiKbn > 10) && odrInfDtls != null && odrInfDtls.Any() ||
             commonOdrInfs != null && commonOdrInfs.Any(p => p.OdrKouiKbn > 10) && commonOdrDtls != null && commonOdrDtls.Any() ||
@@ -95,44 +101,39 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
         return coOrderLabel;
     }
 
-    private CoOrderLabelModel GetDataYoyakuOrder(int hpId, long ptId, List<(int from, int to)> odrKouiKbns, List<RsvkrtOdrInfModel> rsvKrtOdrInfModels, CoOrderLabelFinder finder)
+    private CoOrderLabelModel? GetDataYoyakuOrder(int hpId, long ptId, List<(int from, int to)> odrKouiKbns, List<RsvkrtOdrInfModel> rsvKrtOdrInfModels, CoOrderLabelFinder finder)
     {
         // 患者情報
         CoPtInfModel ptInf = finder.FindPtInf(hpId, ptId);
 
         // オーダー情報
-        List<CoCommonOdrInfModel> commonOdrInfs = new List<CoCommonOdrInfModel>();
-        List<CoCommonOdrInfDetailModel> commonOdrDtls = new List<CoCommonOdrInfDetailModel>();
-
-        foreach (RsvkrtOdrInfModel odrInf in rsvKrtOdrInfModels)
+        List<CoCommonOdrInfModel> commonOdrInfs = new();
+        List<CoCommonOdrInfDetailModel> commonOdrDtls = new();
+        foreach (var odrInf in rsvKrtOdrInfModels.Where(odrInf => odrKouiKbns.Any(p => p.from <= odrInf.OdrKouiKbn && p.to >= odrInf.OdrKouiKbn)))
         {
-            if (odrKouiKbns.Any(p => p.from <= odrInf.OdrKouiKbn && p.to >= odrInf.OdrKouiKbn))
+            commonOdrInfs.Add(
+                            new CoCommonOdrInfModel(
+                                hpId: odrInf.HpId, sinDate: odrInf.RsvDate, ptId: odrInf.PtId, raiinNo: odrInf.RsvkrtNo,
+                                rpNo: odrInf.RpNo, rpEdaNo: odrInf.RpEdaNo,
+                                odrKouiKbn: odrInf.OdrKouiKbn, rpName: odrInf.RpName, inoutKbn: odrInf.InoutKbn, sikyuKbn: odrInf.SikyuKbn,
+                                syohoSbt: odrInf.SyohoSbt, santeiKbn: odrInf.SanteiKbn, tosekiKbn: odrInf.TosekiKbn, daysCnt: odrInf.DaysCnt, sortNo: odrInf.SortNo, createId: odrInf.CreateId));
+            foreach (RsvkrtOdrInfDetailModel odrDtl in odrInf.OdrInfDetailModels)
             {
-                commonOdrInfs.Add(
-                    new CoCommonOdrInfModel(
-                        hpId: odrInf.HpId, sinDate: odrInf.RsvDate, ptId: odrInf.PtId, raiinNo: odrInf.RsvkrtNo,
-                        rpNo: odrInf.RpNo, rpEdaNo: odrInf.RpEdaNo,
-                        odrKouiKbn: odrInf.OdrKouiKbn, rpName: odrInf.RpName, inoutKbn: odrInf.InoutKbn, sikyuKbn: odrInf.SikyuKbn,
-                        syohoSbt: odrInf.SyohoSbt, santeiKbn: odrInf.SanteiKbn, tosekiKbn: odrInf.TosekiKbn, daysCnt: odrInf.DaysCnt, sortNo: odrInf.SortNo, createId: odrInf.CreateId));
-
-                foreach (RsvkrtOdrInfDetailModel odrDtl in odrInf.OdrInfDetailModels)
-                {
-                    if (odrDtl.IsEmpty) continue;
-                    commonOdrDtls.Add(
-                        new CoCommonOdrInfDetailModel(
-                            hpId: odrDtl.HpId, ptId: odrDtl.PtId, sinDate: odrDtl.RsvDate, raiinNo: odrDtl.RsvkrtNo,
-                            rpNo: odrDtl.RpNo, rpEdaNo: odrDtl.RpEdaNo, rowNo: odrDtl.RowNo,
-                            odrKouiKbn: odrInf.OdrKouiKbn,
-                            sinKouiKbn: odrDtl.SinKouiKbn,
-                            itemCd: odrDtl.ItemCd, itemName: odrDtl.ItemName, suryo: odrDtl.Suryo, unitName: odrDtl.UnitName,
-                            syohoKbn: odrDtl.SyohoKbn, syohoLimitKbn: odrDtl.SyohoLimitKbn, bunkatu: odrDtl.Bunkatu
-                            )
-                        );
-                }
+                if (odrDtl.IsEmpty) continue;
+                commonOdrDtls.Add(
+                    new CoCommonOdrInfDetailModel(
+                        hpId: odrDtl.HpId, ptId: odrDtl.PtId, sinDate: odrDtl.RsvDate, raiinNo: odrDtl.RsvkrtNo,
+                        rpNo: odrDtl.RpNo, rpEdaNo: odrDtl.RpEdaNo, rowNo: odrDtl.RowNo,
+                        odrKouiKbn: odrInf.OdrKouiKbn,
+                        sinKouiKbn: odrDtl.SinKouiKbn,
+                        itemCd: odrDtl.ItemCd, itemName: odrDtl.ItemName, suryo: odrDtl.Suryo, unitName: odrDtl.UnitName,
+                        syohoKbn: odrDtl.SyohoKbn, syohoLimitKbn: odrDtl.SyohoLimitKbn, bunkatu: odrDtl.Bunkatu
+                        )
+                    );
             }
         }
 
-        CoOrderLabelModel coOrderLabel = new();
+        CoOrderLabelModel? coOrderLabel = null;
 
         if (commonOdrInfs.Any() && commonOdrDtls.Any())
         {
@@ -215,12 +216,12 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
         // 初再診
         string getSyosai(double suryo)
         {
-            string itemName = "";
+            string itemName = string.Empty;
             // 初再診
             switch (suryo)
             {
                 case 0: // 初再診なし
-                    itemName = "";
+                    itemName = string.Empty;
                     break;
                 case 1:
                     itemName = "初診";
@@ -244,7 +245,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                     itemName = "電話再診２科目";
                     break;
                 default:
-                    itemName = "";
+                    itemName = string.Empty;
                     break;
             }
 
@@ -253,7 +254,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
         // 時間枠
         string getJikan(double suryo)
         {
-            string itemName = "";
+            string itemName = string.Empty;
 
             // 時間枠
 
@@ -297,7 +298,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
 
         string getCreateUserName(int userId)
         {
-            string user = "";
+            string user = string.Empty;
 
             if (_userMsts.Any(p => p.UserId == userId))
             {
@@ -313,12 +314,12 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
         List<CoOrderLabelPrintDataModel> addPrintOutData = new List<CoOrderLabelPrintDataModel>();
 
         // ヘッダー
-        string header = "";
+        string header = string.Empty;
 
         _printOutData.AddRange(addPrintOutData);
 
         int rpNo = 0;
-        List<CoCommonOdrInfModel> filteredOdrInfs = _coModel.OdrInfModels.FindAll(p => p.OdrKouiKbn < 10 || p.OdrKouiKbn > 10);
+        List<CoCommonOdrInfModel> filteredOdrInfs = _coModel!.OdrInfModels.FindAll(p => p.OdrKouiKbn < 10 || p.OdrKouiKbn > 10);
 
         int createId = 0;
 
@@ -352,27 +353,27 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                     // 初再診
                     if (_systemConfig.OrderLabelSyosaiPrint() == 1 && _coModel.OdrInfDetailModels.Any(p => p.OdrKouiKbn >= 10 && p.OdrKouiKbn <= 12))
                     {
-                        string syosai = "";
+                        string syosai = string.Empty;
                         CoCommonOdrInfDetailModel odrDtlSin = _coModel.OdrInfDetailModels.FirstOrDefault(p => p.ItemCd == "@SHIN") ?? new();
                         if (odrDtlSin != null)
                         {
                             syosai = getSyosai(odrDtlSin.Suryo);
                         }
 
-                        if (syosai != "")
+                        if (syosai != string.Empty)
                         {
                             CoCommonOdrInfDetailModel odrDtlJikan = _coModel.OdrInfDetailModels.FirstOrDefault(p => p.ItemCd == "@JIKAN") ?? new();
                             if (odrDtlJikan != null)
                             {
                                 string jikan = getJikan(odrDtlJikan.Suryo);
-                                if (jikan != "")
+                                if (jikan != string.Empty)
                                 {
                                     syosai += $"({jikan})";
                                 }
                             }
                         }
 
-                        if (syosai != "")
+                        if (syosai != string.Empty)
                         {
                             addPrintOutData.Add(AddItem(TargetControl.Comment, syosai));
                         }
@@ -425,7 +426,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             rpNo++;
             string preSet = $"{rpNo:D2})";
             string mark = GetMark(odrInf.SikyuKbn, odrInf.SanteiKbn);
-            string inout = "";
+            string inout = string.Empty;
             if ((odrInf.OdrKouiKbn >= 20 && odrInf.OdrKouiKbn < 29 || odrInf.OdrKouiKbn >= 60 && odrInf.OdrKouiKbn < 69) && odrInf.InoutKbn == 1)
             {
                 inout = "院外";
@@ -443,7 +444,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                         itemName.Append(mark + odrDtl.ItemName);
                     }
 
-                    mark = "";
+                    mark = string.Empty;
                 }
 
                 if (itemName.Length > 0)
@@ -492,9 +493,9 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
 
                     }
 
-                    preSet = "";
-                    mark = "";
-                    inout = "";
+                    preSet = string.Empty;
+                    mark = string.Empty;
+                    inout = string.Empty;
 
                     if (!string.IsNullOrEmpty(odrDtl.UnitName))
                     {
@@ -522,7 +523,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             {
                 string yoyaku = $"次回予約：{yoyakuModel.SinDate / 10000}年{yoyakuModel.SinDate % 10000 / 100}月{yoyakuModel.SinDate % 100}日";
                 string week = CIUtil.GetYobi(yoyakuModel.SinDate);
-                if (week != "")
+                if (week != string.Empty)
                 {
                     week = "（" + week + "）";
                 }
@@ -531,7 +532,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                 {
                     yoyaku += CIUtil.Copy(yoyakuModel.Time, 1, 2) + ":" + CIUtil.Copy(yoyakuModel.Time, 3, 2);
                 }
-                if (yoyakuModel.Frame != "")
+                if (yoyakuModel.Frame != string.Empty)
                 {
                     yoyaku += "[" + yoyakuModel.Frame + "]";
                 }
@@ -550,7 +551,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
     /// <returns></returns>
     private string GetMark(int sikyuKbn, int santeiKbn)
     {
-        string sikyu = "";
+        string sikyu = string.Empty;
 
         if (_systemConfig.OrderLabelSanteiGaiDsp() == 1 && santeiKbn == 1)
         {

@@ -122,7 +122,6 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
             if (_coModels.Count == 0)
             {
-                result.Add(new CoOutDrugReportingOutputItem());
                 return new CoOutDrugReportingOutputData()
                 {
                     Data = result,
@@ -132,68 +131,72 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 };
             }
 
-            for (_repeatKai = 0; _repeatKai < repeatMax; _repeatKai++)
+            if (_coModels != null && _coModels.Count != 0)
             {
-                foreach (CoOutDrugModel coModelData in _coModels)
+                for (_repeatKai = 0; _repeatKai < repeatMax; _repeatKai++)
                 {
-                    _coModel = coModelData;
-
-                    if (_coModel.PrintData?.PrintDataID != printDataId)
+                    foreach (CoOutDrugModel coModelData in _coModels)
                     {
-                        // 印刷対象が変わったらページリセット
-                        printDataId = _coModel.PrintData?.PrintDataID ?? string.Empty;
-                    }
+                        _coModel = coModelData;
 
-                    if (_coModel.PrintData?.PrintType == OutDrugPrintOutType.Syohosen)
-                    {
-                        string formfile = "fmOutDrug.rse";
-                        if (coModelData.PrintData?.SinDate >= 20220401)
+                        if (_coModel.PrintData?.PrintDataID != printDataId)
                         {
-                            formfile = "fmOutDrug_202204.rse";
+                            // 印刷対象が変わったらページリセット
+                            printDataId = _coModel.PrintData?.PrintDataID ?? string.Empty;
                         }
 
-                        // フォーム情報取得
-                        GetFormParam(formfile);
+                        if (_coModel.PrintData?.PrintType == OutDrugPrintOutType.Syohosen)
+                        {
+                            string formfile = "fmOutDrug.rse";
+                            if (coModelData.PrintData?.SinDate >= 20220401)
+                            {
+                                formfile = "fmOutDrug_202204.rse";
+                            }
 
-                        // 印字する項目のリスト生成
-                        MakeDataList();
+                            // フォーム情報取得
+                            GetFormParam(formfile);
 
-                        // 印字する備考のリスト生成
-                        MakeBikoList();
+                            // 印字する項目のリスト生成
+                            MakeDataList();
 
-                        // 印刷タイプを処方箋にセット
-                        _printoutType = OutDrugPrintOutType.Syohosen;
+                            // 印字する備考のリスト生成
+                            MakeBikoList();
+
+                            // 印刷タイプを処方箋にセット
+                            _printoutType = OutDrugPrintOutType.Syohosen;
+                        }
+                        else if (_coModel.PrintData?.PrintType == OutDrugPrintOutType.Bunkatu)
+                        {
+                            // 分割指示別紙
+                            _printoutType = OutDrugPrintOutType.Bunkatu;
+                        }
+
+                        Dictionary<string, string> singleFieldData = UpdateFormHeader();
+                        var outputItem = new CoOutDrugReportingOutputItem()
+                        {
+                            SingleFieldData = singleFieldData,
+                            PrintOutData = _dataList,
+                            BikoList = _bikoList,
+                            PrintoutType = (int)_printoutType,
+                            PrintDataId = printDataId,
+                            PrintDataPrintType = (int)(_coModel.PrintData?.PrintType ?? 0),
+                            PrintDataSinDate = _coModel.PrintData?.SinDate ?? 0,
+                            PrintDataBunkatuMax = _coModel.PrintData?.BunkatuMax ?? 0,
+                            PrintDataHonKeKbn = _coModel.PrintData?.HonKeKbn ?? 0,
+                            PrintDataRefillCount = _coModel.PrintData?.RefillCount ?? 0,
+                            PrintDataSex = _coModel.PrintData?.Sex ?? 0,
+                            QRData = _coModel.QRData(),
+                            PtNum = _coModel.PrintData?.PtNum ?? 0,
+                            PtName = _coModel.PrintData?.PtName ?? string.Empty,
+                            HpFaxNo = _coModel.PrintData?.HpFaxNo ?? string.Empty,
+                            HpOtherContacts = _coModel.PrintData?.HpOtherContacts ?? string.Empty,
+                            HpTel = _coModel.PrintData?.HpTel ?? string.Empty,
+                        };
+                        result.Add(outputItem);
                     }
-                    else if (_coModel.PrintData?.PrintType == OutDrugPrintOutType.Bunkatu)
-                    {
-                        // 分割指示別紙
-                        _printoutType = OutDrugPrintOutType.Bunkatu;
-                    }
-
-                    Dictionary<string, string> singleFieldData = UpdateFormHeader();
-                    var outputItem = new CoOutDrugReportingOutputItem()
-                    {
-                        SingleFieldData = singleFieldData,
-                        PrintOutData = _dataList,
-                        BikoList = _bikoList,
-                        PrintoutType = (int)_printoutType,
-                        PrintDataId = printDataId,
-                        PrintDataPrintType = (int)(_coModel.PrintData?.PrintType ?? 0),
-                        PrintDataSinDate = _coModel.PrintData?.SinDate ?? 0,
-                        PrintDataBunkatuMax = _coModel.PrintData?.BunkatuMax ?? 0,
-                        PrintDataHonKeKbn = _coModel.PrintData?.HonKeKbn ?? 0,
-                        PrintDataRefillCount = _coModel.PrintData?.RefillCount ?? 0,
-                        PrintDataSex = _coModel.PrintData?.Sex ?? 0,
-                        QRData = _coModel.QRData(),
-                        PtNum = _coModel.PrintData?.PtNum ?? 0,
-                        PtName = _coModel.PrintData?.PtName ?? string.Empty,
-                        HpFaxNo = _coModel.PrintData?.HpFaxNo ?? string.Empty,
-                        HpOtherContacts = _coModel.PrintData?.HpOtherContacts ?? string.Empty,
-                        HpTel = _coModel.PrintData?.HpTel ?? string.Empty,
-                    };
-                    result.Add(outputItem);
                 }
             }
+            
             return new CoOutDrugReportingOutputData()
             {
                 Data = result,

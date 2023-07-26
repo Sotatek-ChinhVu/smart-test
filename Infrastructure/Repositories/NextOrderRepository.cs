@@ -26,6 +26,10 @@ namespace Infrastructure.Repositories
             _options = optionsAccessor.Value;
         }
 
+        public NextOrderRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        {
+        }
+
         public List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int rsvkrtKbn)
         {
             var byomeis = new List<RsvkrtByomei>();

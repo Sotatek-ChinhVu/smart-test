@@ -89,14 +89,16 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
         this.diskKind = diskKind;
         this.diskCnt = diskCnt;
         var getData = GetData();
-
         hasNextPage = true;
         currentPage = 1;
 
-        while (getData && hasNextPage)
+        if (getData)
         {
-            UpdateDrawForm();
-            currentPage++;
+            while (getData && hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();

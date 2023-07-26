@@ -38,6 +38,8 @@
         public const string GetCmtCheckMstList = "GetCmtCheckMstList";
         public const string GetJihiMstList = "GetJihiMstList";
         public const string SearchTenMstItem = "SearchTenMstItem";
+        public const string ConvertStringChkJISKj = "ConvertStringChkJISKj";
+        public const string GetTeikyoByomei = "GetTeikyoByomei";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -49,6 +51,7 @@
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
         public const string GetPtWeight = "GetPtWeight";
+        public const string GetStdPoint = "GetStdPoint";
 
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
@@ -66,6 +69,7 @@
         public const string Recaculation = "Recaculation";
         public const string ConvertItem = "ConvertItem";
         public const string CheckOrdInfInDrug = "CheckOrdInfInDrug";
+        public const string InDrug = "InDrug";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -104,6 +108,7 @@
         public const string AccountingCard = "AccountingCard";
         public const string ExportKarte2 = "ExportKarte2";
         public const string ExportKarte3 = "ExportKarte3";
+        public const string AccountingCardList = "AccountingCardList";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -144,6 +149,7 @@
         public const string ShowProductInf = "ShowProductInf";
         public const string ShowKanjaMuke = "ShowKanjaMuke";
         public const string ShowMdbByomei = "ShowMdbByomei";
+        public const string GetDataPrintDrugInfo = "GetDataPrintDrugInfo";
 
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
@@ -156,7 +162,7 @@
         public const string InitDoctorCombo = "InitDoctorCombo";
         public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
         public const string GetLastKarute = "GetLastKarute";
-
+        public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
 
@@ -234,6 +240,7 @@
         public const string GetListJobMst = "GetListJobMst";
         public const string GetListFunctionPermission = "GetListFunctionPermission";
         public const string SaveListUserMst = "SaveListUserMst";
+        public const string GetUserInfo = "GetUserInfo";
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
@@ -275,6 +282,7 @@
         public const string GetReceStatus = "GetReceStatus";
         public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
         public const string GetListSinKoui = "GetListSinKoui";
+        public const string DeleteReceiptInfEdit = "DeleteReceiptInfEdit";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";

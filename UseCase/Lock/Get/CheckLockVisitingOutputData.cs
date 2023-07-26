@@ -1,14 +1,17 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.Lock;
+using UseCase.Core.Sync.Core;
 
-namespace UseCase.Lock.Get
+namespace UseCase.Lock.Get;
+
+public class CheckLockVisitingOutputData : IOutputData
 {
-    public class CheckLockVisitingOutputData : IOutputData
+    public CheckLockVisitingOutputData(CheckLockVisitingStatus status, List<LockModel> lockInfs)
     {
-        public CheckLockVisitingOutputData(CheckLockVisitingStatus status)
-        {
-            Status = status;
-        }
-
-        public CheckLockVisitingStatus Status { get; private set; }
+        Status = status;
+        LockInfs = lockInfs;
     }
+
+    public CheckLockVisitingStatus Status { get; private set; }
+
+    public List<LockModel> LockInfs { get; private set; }
 }
