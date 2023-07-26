@@ -134,7 +134,6 @@ public class P24KokhoSeikyuCoReportService : IP24KokhoSeikyuCoReportService
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //保険者
             fieldDataPerPage.Add("hokensyaNo", currentHokensyaNo);
-            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
             //国保・退職の種別
             listDataPerPage.Add(new("kokhoKbn", printKokhoKbn, 0, "○"));
             //印
@@ -206,7 +205,7 @@ public class P24KokhoSeikyuCoReportService : IP24KokhoSeikyuCoReportService
             {
                 kohiCount += curReceInfs.Where(r => r.IsHeiyo && r.IsKohi(houbetu)).ToList().Count;
             }
-            SetFieldData("kohiCount", kohiCount.ToString());
+            fieldDataPerPage.Add("kohiCount", kohiCount.ToString());
 
             //原爆件数
             int kohi19Count = 0;
@@ -214,11 +213,11 @@ public class P24KokhoSeikyuCoReportService : IP24KokhoSeikyuCoReportService
             {
                 kohi19Count += curReceInfs.Where(r => r.IsHeiyo && r.IsKohi(houbetu)).ToList().Count;
             }
-            SetFieldData("kohi19Count", kohi19Count.ToString());
+            fieldDataPerPage.Add("kohi19Count", kohi19Count.ToString());
 
             //在医総
             int zaiCount = curReceInfs.Where(r => r.IsZaiiso == 1).Count();
-            SetFieldData("zaiCount", zaiCount.ToString());
+            fieldDataPerPage.Add("zaiCount", zaiCount.ToString());
             _listTextData.Add(pageIndex, listDataPerPage);
             return 1;
         }
@@ -231,6 +230,7 @@ public class P24KokhoSeikyuCoReportService : IP24KokhoSeikyuCoReportService
             hasNextPage = _hasNextPage;
             return false;
         }
+        _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
 
         hasNextPage = _hasNextPage;
         return true;
