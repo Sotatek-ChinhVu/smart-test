@@ -33,7 +33,7 @@ public class P23KokhoSeikyuCoReportService : IP23KokhoSeikyuCoReportService
     /// <summary>
     /// OutPut Data
     /// </summary>
-    private const string _formFileName = "p23KokhoSeikyu.rse";
+    private string _formFileName = "p23KokhoSeikyu.rse";
     private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
@@ -67,7 +67,11 @@ public class P23KokhoSeikyuCoReportService : IP23KokhoSeikyuCoReportService
         this.seikyuYm = seikyuYm;
         this.seikyuType = seikyuType;
         var getData = GetData();
-        
+
+        if(seikyuYm >= 202210)
+        {
+            _formFileName = "p23KokhoSeikyu_2210.rse";
+        }
 
         foreach (string currentNo in hokensyaNos)
         {
@@ -91,14 +95,14 @@ public class P23KokhoSeikyuCoReportService : IP23KokhoSeikyuCoReportService
     private bool UpdateDrawForm()
     {
         bool _hasNextPage = false;
+        Dictionary<string, string> fieldDataPerPage = new();
+        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
 
         #region SubMethod
 
         #region Header
         int UpdateFormHeader()
         {
-            Dictionary<string, string> fieldDataPerPage = new();
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
             //医療機関コード
             SetFieldData("hpCode", hpInf.HpCd);
             //医療機関情報
@@ -122,7 +126,7 @@ public class P23KokhoSeikyuCoReportService : IP23KokhoSeikyuCoReportService
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //保険者
             fieldDataPerPage.Add("hokensyaNo", currentHokensyaNo);
-            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+            //_singleFieldDataM.Add(pageIndex, fieldDataPerPage);
             SetFieldData("hokensyaName", hokensyaNames.Find(h => h.HokensyaNo == currentHokensyaNo)?.Name ?? "");
 
             return 1;
@@ -183,7 +187,7 @@ public class P23KokhoSeikyuCoReportService : IP23KokhoSeikyuCoReportService
             {
                 kohiCount += curReceInfs.Where(r => r.IsHeiyo && r.IsKohi(houbetu)).ToList().Count;
             }
-            SetFieldData("kohiCount", kohiCount.ToString());
+            fieldDataPerPage.Add("kohiCount", kohiCount.ToString());
 
             //「② 福祉」欄
             int welfareCount = 0;
@@ -191,7 +195,8 @@ public class P23KokhoSeikyuCoReportService : IP23KokhoSeikyuCoReportService
             {
                 welfareCount += curReceInfs.Where(r => r.IsHeiyo && r.IsKohi(houbetu)).ToList().Count;
             }
-            SetFieldData("welfareCount", welfareCount.ToString());
+            fieldDataPerPage.Add("welfareCount", welfareCount.ToString());
+
             _listTextData.Add(pageIndex, listDataPerPage);
 
             return 1;
@@ -205,6 +210,7 @@ public class P23KokhoSeikyuCoReportService : IP23KokhoSeikyuCoReportService
             hasNextPage = _hasNextPage;
             return false;
         }
+        _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
 
         hasNextPage = _hasNextPage;
         return true;
