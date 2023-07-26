@@ -39,6 +39,7 @@
         public const string GetJihiMstList = "GetJihiMstList";
         public const string SearchTenMstItem = "SearchTenMstItem";
         public const string ConvertStringChkJISKj = "ConvertStringChkJISKj";
+        public const string GetTeikyoByomei = "GetTeikyoByomei";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -282,6 +283,7 @@
         public const string GetReceStatus = "GetReceStatus";
         public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
         public const string GetListSinKoui = "GetListSinKoui";
+        public const string DeleteReceiptInfEdit = "DeleteReceiptInfEdit";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
