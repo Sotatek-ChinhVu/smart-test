@@ -3367,6 +3367,33 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return kaikeiInfs.Select(x => x.SinYm).Distinct().ToList();
     }
 
+    public List<PtHokenInfKaikeiModel> GetListKaikeiInf(int hpId, int sinYm, long ptId)
+    {
+        var kaikeiInfo = NoTrackingDataContext.KaikeiInfs.Where(item => item.HpId == hpId
+                                                                        && item.PtId == ptId
+                                                                        && (item.SinDate / 100) == sinYm)
+                                                          .ToList();
+
+        if (kaikeiInfo.Count > 0)
+        {
+            List<int> hokenIdList = kaikeiInfo.Select(k => k.HokenId).Distinct().ToList();
+            var hokenInfList = NoTrackingDataContext.PtHokenInfs.Where(item => item.HpId == hpId
+                                                                               && item.PtId == ptId
+                                                                               && hokenIdList.Contains(item.HokenId))
+                                                                .ToList();
+            return hokenInfList.Select(item => new PtHokenInfKaikeiModel(item.HokenId,
+                                                                         item.PtId,
+                                                                         item.HokenKbn,
+                                                                         item.Houbetu ?? string.Empty,
+                                                                         item.HokenKbn,
+                                                                         item.HokensyaNo ?? string.Empty,
+                                                                         item.StartDate,
+                                                                         item.EndDate))
+                               .ToList();
+        }
+        return new();
+    }
+
     public bool CheckExistSeqNoReceCheckErrorList(int hpId, int hokenId, int sinYm, long ptId, List<ReceCheckErrModel> receCheckErrorList)
     {
         var errorCdList = receCheckErrorList.Select(item => item.ErrCd).Distinct().ToList();
