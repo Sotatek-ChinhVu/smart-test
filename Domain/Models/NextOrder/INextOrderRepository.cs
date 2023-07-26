@@ -28,5 +28,7 @@ namespace Domain.Models.NextOrder
         List<RaiinKbnModel> InitDefaultByNextOrder(int hpId, long ptId, int sinDate, List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds);
 
         bool CheckNextOrdHaveOdr(int hpId, long ptId, int sinDate);
+
+        bool CheckUpsertNextOrder(int hpId, long ptId, int rsvDate);
     }
 }

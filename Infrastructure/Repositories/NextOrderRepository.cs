@@ -8,7 +8,6 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Text;
@@ -1318,6 +1317,15 @@ namespace Infrastructure.Repositories
             return queryRsvkrtMsts.AsEnumerable().Count(x => x != null && x.Odrs.Any(o => o != null && o.IsDeleted == 0)) > 0;
         }
 
+        public bool CheckUpsertNextOrder(int hpId, long ptId, int rsvDate)
+        {
+            return NoTrackingDataContext.RsvkrtMsts.Any(x =>
+                                                            x.HpId == hpId &&
+                                                            x.PtId == ptId &&
+                                                            x.RsvkrtKbn == 0 &&
+                                                            x.RsvDate == rsvDate &&
+                                                            x.IsDeleted == DeleteTypes.None);
+        }
         public void ReleaseResource()
         {
             DisposeDataContext();
