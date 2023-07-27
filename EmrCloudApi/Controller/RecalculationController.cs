@@ -17,6 +17,8 @@ using UseCase.Receipt.Recalculation;
 using UseCase.ReceiptCheck.Recalculation;
 using UseCase.ReceiptCheck.ReceiptInfEdit;
 using Castle.Core.Internal;
+using EmrCloudApi.Responses.Receipt.Dto;
+using EmrCloudApi.Requests.ExportPDF;
 
 namespace EmrCloudApi.Controller;
 
@@ -27,10 +29,14 @@ public class RecalculationController : AuthorizeControllerBase
     private readonly UseCaseBus _bus;
     private CancellationToken? _cancellationToken;
     private Socket server;
+    private string hostName;
+    private string uniqueKey;
+
     public RecalculationController(UseCaseBus bus, IUserService userService) : base(userService)
     {
         _bus = bus;
-        
+        hostName = string.Empty;
+        uniqueKey = string.Empty;
     }
 
     [HttpPost]
@@ -47,7 +53,9 @@ public class RecalculationController : AuthorizeControllerBase
             HttpResponse response = HttpContext.Response;
             //response.StatusCode = 202;
 
-            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox);
+            uniqueKey = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            hostName = Dns.GetHostName();
+            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, hostName, uniqueKey);
             _bus.Handle(input);
         }
         catch
@@ -82,7 +90,6 @@ public class RecalculationController : AuthorizeControllerBase
         if ((status.Type == 1 && status.Message.Equals("StartCalculateMonth"))
             || (status.Type == 2 && status.Message.Equals("StartFutanCalculateMain")))
         {
-            var hostName = Dns.GetHostName();
             Task.Run(() =>
             {
                 CreateSocketServer(hostName);
@@ -90,13 +97,14 @@ public class RecalculationController : AuthorizeControllerBase
         }
         else
         {
-            AddMessageCheckErrorInMonth(status);
+            SendMessage(status);
         }
     }
 
-    private void AddMessageCheckErrorInMonth(RecalculationStatus status)
+    private void SendMessage(RecalculationStatus status)
     {
-        string result = "\n" + JsonSerializer.Serialize(status);
+        var dto = new RecalculationDto(status);
+        string result = "\n" + JsonSerializer.Serialize(dto);
         var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
         HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
         HttpContext.Response.Body.FlushAsync();
@@ -182,7 +190,22 @@ public class RecalculationController : AuthorizeControllerBase
             var messageString = Encoding.UTF8.GetString(buffer, 0, recevied);
             if (!messageString.IsNullOrEmpty())
             {
-                Console.WriteLine(messageString);
+                try
+                {
+                    var statusObject = JsonSerializer.Deserialize<RecalculationStatus>(messageString);
+                    if (statusObject != null && statusObject.UniqueKey.Equals(uniqueKey))
+                    {
+                        var dto = new RecalculationDto(statusObject);
+                        string result = "\n" + JsonSerializer.Serialize(dto);
+                        var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+                        HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+                        HttpContext.Response.Body.FlushAsync();
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine(messageString);
+                }
             }
         }
     }

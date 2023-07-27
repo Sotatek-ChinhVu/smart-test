@@ -75,7 +75,7 @@ namespace EmrCalculateApi.Controllers
                 Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
 
                 // info about localhost
-                var ipEntryAwait = Dns.GetHostEntryAsync(Dns.GetHostName());
+                var ipEntryAwait = Dns.GetHostEntryAsync(monthRequest.HostName);
                 ipEntryAwait.Wait();
                 IPHostEntry ipEntry = ipEntryAwait.Result;
 
@@ -104,7 +104,8 @@ namespace EmrCalculateApi.Controllers
                              monthRequest.HpId,
                              monthRequest.SeikyuYm,
                              monthRequest.PtIds,
-                             monthRequest.PreFix);
+                             monthRequest.PreFix,
+                             monthRequest.UniqueKey);
             }
             catch
             {
@@ -140,14 +141,14 @@ namespace EmrCalculateApi.Controllers
 
         private void UpdateRecalculationStatus(RecalculationStatus status)
         {
-            AddMessageCheckErrorInMonth(status);
+            SendMessage(status);
             //var result = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculateMonth, status);
             //result.Wait();
         }
 
-        private void AddMessageCheckErrorInMonth(RecalculationStatus status)
+        private void SendMessage(RecalculationStatus status)
         {
-            string result = "\n" + JsonSerializer.Serialize(status);
+            string result = JsonSerializer.Serialize(status);
             var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
 
             // send message to the server

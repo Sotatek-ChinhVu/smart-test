@@ -91,7 +91,7 @@ namespace Interactor.ReceiptCheck
                     seikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month;
                 }
 
-                SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・"));
+                SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・", string.Empty));
                 _calculateService.RunCalculateMonth(
                     new Request.CalculateMonthRequest()
                     {
@@ -101,10 +101,10 @@ namespace Interactor.ReceiptCheck
                         PreFix = ""
                     });
 
-                SendMessenger(new RecalculationStatus(false, 2, 0, 0, "レセ集計中・・・"));
+                SendMessenger(new RecalculationStatus(false, 2, 0, 0, "レセ集計中・・・", string.Empty));
                 _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm));
 
-                SendMessenger(new RecalculationStatus(false, 3, 0, 0, "レセチェック中・・・"));
+                SendMessenger(new RecalculationStatus(false, 3, 0, 0, "レセチェック中・・・", string.Empty));
                 CheckErrorInMonth(inputData.HpId, inputData.UserId, inputData.SeikyuYm, inputData.PtIds);
 
                 errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.PtIds, inputData.SeikyuYm);
@@ -117,10 +117,10 @@ namespace Interactor.ReceiptCheck
             {
                 if (!string.IsNullOrEmpty(errorText))
                 {
-                    SendMessenger(new RecalculationStatus(false, 4, 0, 0, errorText));
+                    SendMessenger(new RecalculationStatus(false, 4, 0, 0, errorText, string.Empty));
                 }
 
-                SendMessenger(new RecalculationStatus(true, 5, 0, 0, errorText));
+                SendMessenger(new RecalculationStatus(true, 5, 0, 0, errorText, string.Empty));
 
                 _calculationInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();

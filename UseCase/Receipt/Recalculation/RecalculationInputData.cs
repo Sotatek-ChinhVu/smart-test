@@ -4,7 +4,7 @@ namespace UseCase.Receipt.Recalculation;
 
 public class RecalculationInputData : IInputData<RecalculationOutputData>
 {
-    public RecalculationInputData(int hpId, int userId, int sinYm, List<long> ptIdList, bool isRecalculationCheckBox, bool isReceiptAggregationCheckBox, bool isCheckErrorCheckBox)
+    public RecalculationInputData(int hpId, int userId, int sinYm, List<long> ptIdList, bool isRecalculationCheckBox, bool isReceiptAggregationCheckBox, bool isCheckErrorCheckBox, string hostName, string uniqueKey)
     {
         HpId = hpId;
         UserId = userId;
@@ -13,6 +13,8 @@ public class RecalculationInputData : IInputData<RecalculationOutputData>
         IsRecalculationCheckBox = isRecalculationCheckBox;
         IsReceiptAggregationCheckBox = isReceiptAggregationCheckBox;
         IsCheckErrorCheckBox = isCheckErrorCheckBox;
+        HostName = hostName;
+        UniqueKey = uniqueKey;
     }
 
     public int HpId { get; private set; }
@@ -28,4 +30,8 @@ public class RecalculationInputData : IInputData<RecalculationOutputData>
     public bool IsReceiptAggregationCheckBox { get; private set; }
 
     public bool IsCheckErrorCheckBox { get; private set; }
+
+    public string HostName { get; private set; }
+
+    public string UniqueKey { get; private set; }
 }

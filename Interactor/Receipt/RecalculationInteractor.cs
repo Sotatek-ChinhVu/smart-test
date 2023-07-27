@@ -76,7 +76,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             // run Recalculation
             if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
-                success = RunCalculateMonth(inputData.HpId, inputData.SinYm, inputData.PtIdList, ptInfCount == 0 ? 1 : ptInfCount);
+                success = RunCalculateMonth(inputData.HpId, inputData.SinYm, inputData.PtIdList, inputData.HostName, inputData.UniqueKey);
             }
 
             // run Receipt Aggregation
@@ -96,7 +96,7 @@ public class RecalculationInteractor : IRecalculationInputPort
 
             if (!inputData.IsCheckErrorCheckBox && !inputData.IsReceiptAggregationCheckBox && !inputData.IsRecalculationCheckBox)
             {
-                SendMessager(new RecalculationStatus(true, 0, 0, 0, string.Empty));
+                SendMessager(new RecalculationStatus(true, 0, 0, 0, string.Empty, string.Empty));
             }
             return new RecalculationOutputData(success);
         }
@@ -115,9 +115,9 @@ public class RecalculationInteractor : IRecalculationInputPort
         }
     }
 
-    private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, int allCheckCount)
+    private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, string hostName, string uniqueKey)
     {
-        SendMessager(new RecalculationStatus(false, 1, 0, 0, "StartCalculateMonth"));
+        SendMessager(new RecalculationStatus(false, 1, 0, 0, "StartCalculateMonth", string.Empty));
         //int successCount = 1;
         var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
         isStopCalc = statusCallBack.Result.Result;
@@ -129,7 +129,9 @@ public class RecalculationInteractor : IRecalculationInputPort
         {
             HpId = hpId,
             PtIds = ptInfList,
-            SeikyuYm = seikyuYm
+            SeikyuYm = seikyuYm,
+            HostName = hostName,
+            UniqueKey = uniqueKey
         });
         //SendMessager(new RecalculationStatus(true, 1, allCheckCount, successCount, string.Empty));
         //successCount++;
@@ -160,7 +162,7 @@ public class RecalculationInteractor : IRecalculationInputPort
 
     private bool ReceFutanCalculateMain(int seikyuYm, List<long> ptInfList, int allCheckCount)
     {
-        SendMessager(new RecalculationStatus(false, 2, 0, 0, "StartFutanCalculateMain"));
+        SendMessager(new RecalculationStatus(false, 2, 0, 0, "StartFutanCalculateMain", string.Empty));
         //int successCount = 1;
         var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
         isStopCalc = statusCallBack.Result.Result;
@@ -207,7 +209,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         var allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
         var allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(inputData.HpId, kantokuCdValidList);
 
-        SendMessager(new RecalculationStatus(false, 3, allCheckCount, 0, string.Empty));
+        SendMessager(new RecalculationStatus(false, 3, allCheckCount, 0, string.Empty, string.Empty));
         int successCount = 1;
         foreach (var recalculationItem in receRecalculationList)
         {
@@ -237,18 +239,18 @@ public class RecalculationInteractor : IRecalculationInputPort
             {
                 break;
             }
-            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty));
+            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty, string.Empty));
             successCount++;
         }
         errorText.Append(errorTextSinKouiCount);
         errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.SinYm, errorText, ptIdList, systemConfigList, receRecalculationList);
         if (isStopCalc || !_receiptRepository.SaveNewReceCheckErrList(inputData.HpId, inputData.UserId, newReceCheckErrList))
         {
-            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty));
+            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty, string.Empty));
             return false;
         }
         string resultError = errorText.ToString().Replace(Environment.NewLine, "\\r\\n");
-        SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, resultError));
+        SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, resultError, string.Empty));
         return true;
     }
 
