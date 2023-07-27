@@ -15,35 +15,9 @@ namespace Reporting.KensaLabel.Service
         private long raiinNo;
         private int sinDate;
         private KensaPrinterModel kensaPrinter;
-        private int currentPage;
-        private bool hasNextPage;
         private PtInfModel ptInfModel;
-        /// <summary>
-        /// 出力モード
-        /// 0:印刷
-        /// 1:ファイル
-        /// </summary>
-        private CoOutputMode OutputMode;
-        /// <summary>
-        /// ファイルタイプ
-        /// 0:バイナリ
-        /// 1:PDF
-        /// </summary>
-        private CoFileType FileType;
-        /// <summary>
-        /// 出力先フォルダ
-        /// </summary>
-        private string OutputDirectory;
-        /// <summary>
-        /// ファイル名
-        /// </summary>
-        private string OutputFileName;
-        /// <summary>
-        /// プリンタ名
-        /// </summary>
-        private string PrinterName;
 
-        public bool CanOutputTraceLog { get; set; } = true;
+        public bool canOutputTraceLog { get; set; } = true;
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
@@ -52,7 +26,7 @@ namespace Reporting.KensaLabel.Service
         private readonly Dictionary<string, bool> _visibleFieldData;
         private readonly Dictionary<string, bool> _visibleAtPrint;
         private string _formFileName = "fmKensaLabel.rse";
-        public KensaLabelCoReportService(IKensaLabelFinder finder) : base()
+        public KensaLabelCoReportService(IKensaLabelFinder finder)
         {
             _finder = finder;
             _singleFieldData = new();
