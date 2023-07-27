@@ -112,7 +112,6 @@ namespace Reporting.Yakutai.Service
                     {
                         _currentPage = 1;
                     }
-
                 }
             }
 
@@ -235,7 +234,7 @@ namespace Reporting.Yakutai.Service
 
         int _getPrintedLineCount()
         {
-            return printOutData.Count() % _dataRowCount;
+            return printOutData.Count % _dataRowCount;
         }
 
         int _getRemainingLineCount()
@@ -296,7 +295,7 @@ namespace Reporting.Yakutai.Service
             return addPrintOutData;
         }
 
-        private bool UpdateDrawForm()
+        private void UpdateDrawForm()
         {
             _hasNextPage = true;
             #region SubMethod
@@ -544,19 +543,8 @@ namespace Reporting.Yakutai.Service
 
             #endregion
 
-            try
-            {
-                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-                {
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-
-            return true;
+            UpdateFormHeader();
+            UpdateFormBody();
         }
 
         private List<CoYakutaiModel> GetData()

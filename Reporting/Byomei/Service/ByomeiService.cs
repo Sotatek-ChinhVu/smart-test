@@ -72,7 +72,7 @@ public class ByomeiService : IByomeiService
                     currentPage++;
                 }
             }
-        };
+        }
         
         return new ByomeiMapper(_singleFieldData, _tableFieldData, _visibleFieldList).GetData();
     }

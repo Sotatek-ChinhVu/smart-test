@@ -53,7 +53,7 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
     {
         _kokhoFinder = kokhoFinder;
         _welfareFinder = welfareFinder;
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _singleFieldData = new();
         _extralData = new();
         _listTextData = new();
@@ -74,7 +74,7 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
     /// OutPut Data
     /// </summary>
     private const string _formFileName = "p25KokhoSokatu.rse";
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -89,19 +89,21 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
         this.diskKind = diskKind;
         this.diskCnt = diskCnt;
         var getData = GetData();
-
         hasNextPage = true;
         currentPage = 1;
 
-        while (getData && hasNextPage)
+        if (getData)
         {
-            UpdateDrawForm();
-            currentPage++;
+            while (getData && hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function
@@ -190,13 +192,13 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
                 if (new int[] { 0, 1, 2 }.Contains(diskKind))
                 {
                     pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                    Dictionary<string, string> fieldDataPerPage = _singleFieldDataM.ContainsKey(pageIndex) ? _singleFieldDataM[pageIndex] : new();
+                    Dictionary<string, string> fieldDataPerPage = _setFieldData.ContainsKey(pageIndex) ? _setFieldData[pageIndex] : new();
 
                     fieldDataPerPage.Add(string.Format("diskKind{0}", diskKind), "〇");
 
-                    if (!_singleFieldDataM.ContainsKey(pageIndex))
+                    if (!_setFieldData.ContainsKey(pageIndex))
                     {
-                        _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+                        _setFieldData.Add(pageIndex, fieldDataPerPage);
                     }
 
                     SetFieldData("diskCnt", diskCnt.ToString());

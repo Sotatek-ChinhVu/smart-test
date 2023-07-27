@@ -7197,7 +7197,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "UserId")
                         .IsUnique()
-                        .HasFilter("FunctionCd = \"02000000\"");
+                        .HasFilter("FunctionCd IN (02000000, 03000000)");
 
                     b.ToTable("LOCK_INF");
                 });
@@ -18406,6 +18406,10 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("HpId", "PtId", "RsvkrtNo");
+
+                    b.HasIndex("HpId", "PtId", "RsvDate")
+                        .IsUnique()
+                        .HasFilter("RsvkrtKbn = 0 AND IsDeleted = 0");
 
                     b.ToTable("RSVKRT_MST");
                 });

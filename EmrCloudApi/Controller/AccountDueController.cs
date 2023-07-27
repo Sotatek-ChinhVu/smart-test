@@ -57,8 +57,7 @@ public class AccountDueController : AuthorizeControllerBase
 
         if (output.Status == SaveAccountDueListStatus.Successed)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.AccountDueChanged,
-                new CommonMessage { PtId = input.PtId, SinDate = input.SinDate, RaiinNo = 0 });
+            await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
         }
 
         var presenter = new SaveAccountDueListPresenter();

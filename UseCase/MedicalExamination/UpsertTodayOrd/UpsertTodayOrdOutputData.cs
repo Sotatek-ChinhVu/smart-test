@@ -1,4 +1,5 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.Reception;
+using UseCase.Core.Sync.Core;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
 using static Helper.Constants.RaiinInfConst;
@@ -14,7 +15,9 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
             KarteValidationStatus validationKarte,
             int sinDate,
             long raiinNo,
-            long ptId)
+            long ptId,
+            List<ReceptionRowModel> receptionInfos,
+            List<SameVisitModel> sameVisitList)
         {
             Status = status;
             ValidationRaiinInf = validationRaiinInf;
@@ -23,6 +26,8 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
             SinDate = sinDate;
             RaiinNo = raiinNo;
             PtId = ptId;
+            ReceptionInfos = receptionInfos;
+            SameVisitList = sameVisitList;
         }
 
         public int SinDate { get; private set; }
@@ -36,5 +41,9 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
         public RaiinInfTodayOdrValidationStatus ValidationRaiinInf { get; private set; }
         public Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> ValidationOdrs { get; private set; }
         public KarteValidationStatus ValidationKarte { get; private set; }
+
+        public List<ReceptionRowModel> ReceptionInfos { get; private set; }
+
+        public List<SameVisitModel> SameVisitList { get; private set; }
     }
 }

@@ -35,7 +35,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         /// OutPut Data
         /// </summary>
         private const string _formFileName = "p28KokhoSokatu.rse";
-        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+        private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<string, string> _extralData;
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -51,7 +51,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         {
             _kokhoFinder = kokhoFinder;
             _singleFieldData = new();
-            _singleFieldDataM = new();
+            _setFieldData = new();
             _listTextData = new();
             _extralData = new();
             _visibleFieldData = new();
@@ -64,19 +64,20 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             _seikyuYm = seikyuYm;
             _seikyuType = seikyuType;
             var getData = GetData();
-
             _hasNextPage = true;
             _currentPage = 1;
-
-            while (getData && _hasNextPage)
+            if (getData)
             {
-                UpdateDrawForm();
-                _currentPage++;
+                while (getData && _hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
-            return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+            return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
         }
 
         private bool GetData()

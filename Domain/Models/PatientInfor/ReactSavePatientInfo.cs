@@ -23,5 +23,7 @@
         public bool ConfirmHokenPatternSelectedIsInfMainHokenPid { get; set; }
 
         public bool ConfirmSamePatientInf { get; set; }
+
+        public bool ConfirmCloneByomei { get; set; }
     }
 }

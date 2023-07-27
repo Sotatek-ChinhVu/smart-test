@@ -1,7 +1,10 @@
-﻿namespace Domain.Models.Receipt;
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.Receipt;
 
 public class ReceStatusModel
 {
+    [JsonConstructor]
     public ReceStatusModel(long ptId, int seikyuYm, int hokenId, int sinYm, int fusenKbn, bool isPaperRece, bool isOutput, int statusKbn, bool isPrechecked)
     {
         PtId = ptId;
@@ -20,6 +23,11 @@ public class ReceStatusModel
         IsPaperRece = false;
         IsOutput = false;
         IsPrechecked = false;
+    }
+
+    public ReceStatusModel(int isPaperRece)
+    {
+        IsPaperRece = isPaperRece == 1 ? true : false;
     }
 
     public long PtId { get; private set; }

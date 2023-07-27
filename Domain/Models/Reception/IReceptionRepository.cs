@@ -49,7 +49,7 @@ namespace Domain.Models.Reception
 
         bool CheckExistRaiinNo(int hpId, long ptId, long raiinNo);
 
-        List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted);
+        List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted, bool isAll = false);
 
         ReceptionModel? GetLastKarute(int hpId, long ptNum);
 
@@ -62,5 +62,7 @@ namespace Domain.Models.Reception
         ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate);
 
         List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate);
+
+        bool UpdateIsDeleted(int hpId, long raiinNo);
     }
 }

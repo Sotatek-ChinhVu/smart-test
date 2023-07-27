@@ -41,9 +41,7 @@ public class DeleteReceptionInteractor : IDeleteReceptionInputPort
             {
                 return new DeleteReceptionOutputData(DeleteReceptionStatus.InvalidRaiinNo, new(), receptionInfos, sameVisitList);
             }
-
             var result = _raiinInfRepository.Delete(inputData.Flag, inputData.HpId, inputData.PtId, inputData.UserId, inputData.SinDate, raiinNos.Select(r => new Tuple<long, long, int>(r.RaiinNo, r.OyaRaiinNo, r.Status)).ToList());
-
             if (result.Any())
             {
                 Task.Run(() =>
@@ -51,7 +49,7 @@ public class DeleteReceptionInteractor : IDeleteReceptionInputPort
                     _calculateService.RunCalculate(new RecaculationInputDto(inputData.HpId, inputData.PtId, inputData.SinDate, 0, "DR_"));
                 });
                 //Item1: SinDate, Item2: RaiinNo, Item3: PtId
-                receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, result.First().Item2, inputData.PtId);
+                receptionInfos.Add(new ReceptionRowModel(result.First().Item2, result.First().Item3, result.First().Item1, 1));
                 sameVisitList = _receptionRepository.GetListSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
                 return new DeleteReceptionOutputData(DeleteReceptionStatus.Successed, result.Select(r => new DeleteReceptionItem(r.Item1, r.Item2, r.Item3)).ToList(), receptionInfos, sameVisitList);
             }

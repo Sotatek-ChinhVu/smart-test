@@ -12,7 +12,7 @@ namespace Domain.Models.Lock
 
         List<LockModel> GetLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
 
-        List<long> RemoveLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
+        List<long> RemoveLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string tabKey);
 
         List<long> RemoveAllLock(int hpId, int userId);
 
@@ -22,12 +22,12 @@ namespace Domain.Models.Lock
 
         List<LockModel> GetLockInfo(int hpId, long ptId, List<string> lisFunctionCd_B, int sinDate_B, long raiinNo);
 
-        bool GetVisitingLockStatus(int hpId, int userId, long ptId, string functionCode);
+        List<LockModel> GetVisitingLockStatus(int hpId, int userId, long ptId, string functionCode);
 
         string GetFunctionNameLock(string functionCode);
 
-        List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate);
+        List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate, long raiinNo);
 
-        bool CheckLockOpenAccounting(int hpId, long ptId, long raiinNo);
+        List<LockModel> CheckLockOpenAccounting(int hpId, long ptId, long raiinNo, int userId);
     }
 }

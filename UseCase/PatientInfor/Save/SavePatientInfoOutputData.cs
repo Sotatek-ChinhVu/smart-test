@@ -13,12 +13,15 @@ namespace UseCase.PatientInfor.Save
 
         public PatientInforModel PatientInforModel { get; private set; }
 
-        public SavePatientInfoOutputData(IEnumerable<SavePatientInfoValidationResult> validateDetails, SavePatientInfoStatus status, long ptID, PatientInforModel patientInforModel)
+        public bool ShouldCheckCloneByomei { get; private set; }
+
+        public SavePatientInfoOutputData(IEnumerable<SavePatientInfoValidationResult> validateDetails, SavePatientInfoStatus status, long ptID, PatientInforModel patientInforModel, bool shouldCheckCloneByomei)
         {
             ValidateDetails = validateDetails;
             Status = status;
             PtID = ptID;
             PatientInforModel = patientInforModel;
+            ShouldCheckCloneByomei = shouldCheckCloneByomei;
         }
     }
 }
