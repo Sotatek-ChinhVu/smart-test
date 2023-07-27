@@ -95,6 +95,7 @@ namespace Infrastructure.Repositories
                                       ptByomei.SyubyoKbn,
                                       ptByomei.Id,
                                       byomeiMst.DelDate,
+                                      ptByomei.TenkiKbn,
                                       prefixList);
         }
 
@@ -1083,7 +1084,7 @@ namespace Infrastructure.Repositories
                 results.Add(new DensiSanteiKaisuModel(entity.Id,
                                                       entity.HpId,
                                                       entity.ItemCd,
-                                                      entity.MaxCount,
+                                                      entity.UnitCd,
                                                       entity.MaxCount,
                                                       entity.SpJyoken,
                                                       entity.StartDate,

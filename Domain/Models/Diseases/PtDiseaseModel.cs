@@ -470,7 +470,7 @@ namespace Domain.Models.Diseases
             return this;
         }
 
-        public PtDiseaseModel(int hokenId, string byomeiCd, string byomei, int startDate, int tenkiDate, int syubyoKbn, long id, int delDate, List<PrefixSuffixModel> prefixSuffixList)
+        public PtDiseaseModel(int hokenId, string byomeiCd, string byomei, int startDate, int tenkiDate, int syubyoKbn, long id, int delDate, int tenkiKbn, List<PrefixSuffixModel> prefixSuffixList)
         {
             HokenId = hokenId;
             ByomeiCd = byomeiCd;
@@ -480,6 +480,7 @@ namespace Domain.Models.Diseases
             SyubyoKbn = syubyoKbn;
             Id = id;
             DelDate = delDate;
+            TenkiKbn = tenkiKbn;
             PrefixSuffixList = prefixSuffixList;
         }
 
