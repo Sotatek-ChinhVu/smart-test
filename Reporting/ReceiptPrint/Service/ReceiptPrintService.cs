@@ -318,11 +318,11 @@ public class ReceiptPrintService : IReceiptPrintService
         }
         else if (prefNo == 27 && reportId == 104 && reportEdaNo == 0)
         {
-            result = _p27KoukiSeikyuCoReportService.GetP27KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType, prefKbn);
+            result = _p27KoukiSeikyuCoReportService.GetP27KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType, prefKbn, printHokensyaNos);
         }
         else if (prefNo == 27 && reportId == 104 && reportEdaNo == 1)
         {
-            result = _p27KoukiSeikyuCoReportService.GetP27KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType, prefKbn);
+            result = _p27KoukiSeikyuCoReportService.GetP27KoukiSeikyuReportingData(hpId, seikyuYm, seikyuType, prefKbn, printHokensyaNos);
         }
         else if (prefNo == 14 && reportId == 102 && reportEdaNo == 0)
         {

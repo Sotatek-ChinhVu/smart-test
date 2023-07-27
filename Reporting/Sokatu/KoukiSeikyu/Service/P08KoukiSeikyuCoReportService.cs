@@ -26,7 +26,7 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
     /// <summary>
     /// CoReport Model
     /// </summary>
-    private string _currentHokensyaNo;
+    private string currentHokensyaNo;
     private List<string> hokensyaNos;
     private List<CoHokensyaMstModel> hokensyaNames;
     private List<CoReceInfModel> receInfs;
@@ -35,60 +35,63 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
     #endregion
 
     #region Init properties
-    private int _hpId;
-    private int _seikyuYm;
-    private SeikyuType _seikyuType;
+    private int hpId;
+    private int seikyuYm;
+    private SeikyuType seikyuType;
     private List<string> printHokensyaNos;
-    private bool _hasNextPage;
-    private int _currentPage;
+    private bool hasNextPage;
+    private int currentPage;
     #endregion
 
     /// <summary>
     /// OutPut Data
     /// </summary>
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, bool> _visibleFieldData;
     private const string _formFileName = "p08KoukiSeikyu.rse";
+    private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
+    private readonly Dictionary<string, bool> _visibleAtPrint;
 
     #region Constructor and Init
     public P08KoukiSeikyuCoReportService(ICoKoukiSeikyuFinder kokhoFinder)
     {
         _kokhoFinder = kokhoFinder;
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _singleFieldData = new();
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        _visibleAtPrint = new();
     }
     #endregion
     public CommonReportingRequestModel GetP08KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        _hpId = hpId;
-        _seikyuYm = seikyuYm;
-        _seikyuType = seikyuType;
+        this.hpId = hpId;
+        this.seikyuYm = seikyuYm;
+        this.seikyuType = seikyuType;
         var getData = GetData();
 
         if (getData)
         {
             foreach (string currentNo in hokensyaNos)
             {
-                _currentPage = 1;
-                _currentHokensyaNo = currentNo;
-                _hasNextPage = true;
-                while (getData && _hasNextPage)
+                currentPage = 1;
+                currentHokensyaNo = currentNo;
+                hasNextPage = true;
+                while (getData && hasNextPage)
                 {
                     UpdateDrawForm();
-                    _currentPage++;
+                    currentPage++;
                 }
             }
         }
-        
+
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
     }
 
     #region Private function
@@ -109,7 +112,7 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
             SetFieldData("hpTel", hpInf.Tel);
             SetFieldData("kaisetuName", hpInf.KaisetuName);
             //請求年月
-            CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(_seikyuYm * 100 + 1);
+            CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(seikyuYm * 100 + 1);
             SetFieldData("seikyuGengo", wrkYmd.Gengo);
             SetFieldData("seikyuYear", wrkYmd.Year.ToString());
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
@@ -122,17 +125,17 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
             SetFieldData("reportMonth", wrkYmd.Month.ToString());
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //保険者
-            int prefNo = _currentHokensyaNo.Substring(_currentHokensyaNo.Length - 6, 2).AsInteger();
+            int prefNo = currentHokensyaNo.Substring(currentHokensyaNo.Length - 6, 2).AsInteger();
             SetFieldData("hokensyaPref", PrefCode.PrefName(prefNo));
-            fieldDataPerPage.Add("hokensyaNo", _currentHokensyaNo.ToString());
+            fieldDataPerPage.Add("hokensyaNo", currentHokensyaNo.ToString());
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+            _setFieldData.Add(pageIndex, fieldDataPerPage);
             //印
-            SetVisibleFieldData("inkan", _seikyuYm < KaiseiDate.m202210);
-            SetVisibleFieldData("kbnRate9", _seikyuYm < KaiseiDate.m202210);
-            SetVisibleFieldData("kbnRate9H", _seikyuYm < KaiseiDate.m202210);
-            SetVisibleFieldData("kbnIppan", _seikyuYm >= KaiseiDate.m202210);
-            SetVisibleFieldData("kbnIppanH", _seikyuYm >= KaiseiDate.m202210);
+            SetVisibleFieldData("inkan", seikyuYm < KaiseiDate.m202210);
+            SetVisibleFieldData("kbnRate9", seikyuYm < KaiseiDate.m202210);
+            SetVisibleFieldData("kbnRate9H", seikyuYm < KaiseiDate.m202210);
+            SetVisibleFieldData("kbnIppan", this.seikyuYm >= KaiseiDate.m202210);
+            SetVisibleFieldData("kbnIppanH", this.seikyuYm >= KaiseiDate.m202210);
 
             return 1;
         }
@@ -143,12 +146,12 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
         {
             List<ListTextObject> listDataPerPage = new();
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-            var curReceInfs = receInfs.Where(r => r.HokensyaNo == _currentHokensyaNo);
+            var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
 
             #region Body
             const int maxRow = 2;
 
-            if (_currentPage == 1)
+            if (currentPage == 1)
             {
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
@@ -181,13 +184,13 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
 
             #region 公費負担医療
             const int maxKohiRow = 3;
-            int kohiIndex = (_currentPage - 1) * maxKohiRow;
+            int kohiIndex = (currentPage - 1) * maxKohiRow;
 
             var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
             if (kohiHoubetus.Count == 0)
             {
                 _listTextData.Add(pageIndex, listDataPerPage);
-                _hasNextPage = false;
+                hasNextPage = false;
                 return 1;
             }
 
@@ -216,7 +219,7 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
                 kohiIndex++;
                 if (kohiIndex >= kohiHoubetus.Count)
                 {
-                    _hasNextPage = false;
+                    hasNextPage = false;
                     break;
                 }
             }
@@ -230,7 +233,7 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
 
         #endregion
 
-        
+
         if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
         {
             return false;
@@ -240,8 +243,8 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
 
     private bool GetData()
     {
-        hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
-        receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.NoSum);
+        hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
+        receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.NoSum);
         //保険者番号の指定がある場合は絞り込み
         var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
