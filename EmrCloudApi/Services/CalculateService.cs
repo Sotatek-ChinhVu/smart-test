@@ -2,7 +2,6 @@
 using Helper.Enum;
 using Infrastructure.Interfaces;
 using Interactor.CalculateService;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http;
 using UseCase.Accounting.GetMeiHoGai;
@@ -191,50 +190,22 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public async Task RunCalculateMonth(CalculateMonthRequest inputData)
+        public bool RunCalculateMonth(CalculateMonthRequest inputData)
         {
-            var content = JsonContent.Create(inputData);
-
-            var basePath = _configuration.GetSection("CalculateApi")["BasePath"]!;
-            string functionName = "Calculate/RunCalculateMonth";
-
-            content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
-            using (var response = await _httpClient.PostAsync($"{basePath}{functionName}", content, CancellationToken.None))
+            try
             {
-                using (Stream contentStream = await response.Content.ReadAsStreamAsync())
+                var task = CallCalculate(CalculateApiPath.RunCalculateMonth, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
                 {
-                    var buffer = new byte[8192];
-                    var isMoreToRead = true;
-
-                    do
-                    {
-                        var read = await contentStream.ReadAsync(buffer, 0, buffer.Length);
-                        if (read == 0)
-                        {
-                            isMoreToRead = false;
-                        }
-                        else
-                        {
-                            Console.WriteLine("step " + read);
-                        }
-                    }
-                    while (isMoreToRead);
+                    return false;
                 }
+                return true;
             }
-            //try
-            //{
-            //    var task = CallCalculate(CalculateApiPath.RunCalculateMonth, inputData);
-            //    if (task.Result.ResponseStatus != ResponseStatus.Successed)
-            //    {
-            //        return false;
-            //    }
-            //    return true;
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine("Function RunCalculateMonth " + ex);
-            //    return false;
-            //}
+            catch (Exception ex)
+            {
+                Console.WriteLine("Function RunCalculateMonth " + ex);
+                return false;
+            }
         }
 
         public SinMeiDataModelDto GetSinMeiInMonthList(GetSinMeiDtoInputData inputData)

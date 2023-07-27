@@ -513,12 +513,12 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <param name="ptIds">患者ID(null:未指定)</param>
         public void RunCalculateMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix)
         {
-            var total = 1000;
+            var total = 10;
             int success = 1;
             SendMessager(new RecalculationStatus(false, 1, total, 0, string.Empty));
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 10; i++)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(200);
                 SendMessager(new RecalculationStatus(false, 1, success, 0, string.Empty));
                 success++;
             }

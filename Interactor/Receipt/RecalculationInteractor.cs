@@ -117,8 +117,8 @@ public class RecalculationInteractor : IRecalculationInputPort
 
     private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, int allCheckCount)
     {
-        SendMessager(new RecalculationStatus(false, 1, allCheckCount, 0, string.Empty));
-        int successCount = 1;
+        SendMessager(new RecalculationStatus(false, 1, 0, 0, "StartCalculateMonth"));
+        //int successCount = 1;
         var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
         isStopCalc = statusCallBack.Result.Result;
         if (isStopCalc)
@@ -131,7 +131,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             PtIds = ptInfList,
             SeikyuYm = seikyuYm
         });
-        SendMessager(new RecalculationStatus(true, 1, allCheckCount, successCount, string.Empty));
+        //SendMessager(new RecalculationStatus(true, 1, allCheckCount, successCount, string.Empty));
         //successCount++;
         //foreach (var item in ptInfList)
         //{
@@ -160,8 +160,8 @@ public class RecalculationInteractor : IRecalculationInputPort
 
     private bool ReceFutanCalculateMain(int seikyuYm, List<long> ptInfList, int allCheckCount)
     {
-        SendMessager(new RecalculationStatus(false, 2, allCheckCount, 0, string.Empty));
-        int successCount = 1;
+        SendMessager(new RecalculationStatus(false, 2, 0, 0, "StartFutanCalculateMain"));
+        //int successCount = 1;
         var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
         isStopCalc = statusCallBack.Result.Result;
         if (isStopCalc)
@@ -169,7 +169,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             return false;
         }
         _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(ptInfList, seikyuYm));
-        SendMessager(new RecalculationStatus(true, 2, allCheckCount, successCount, string.Empty));
+        //SendMessager(new RecalculationStatus(true, 2, allCheckCount, successCount, string.Empty));
         //int successCount = 1;
         //foreach (var item in ptInfList)
         //{

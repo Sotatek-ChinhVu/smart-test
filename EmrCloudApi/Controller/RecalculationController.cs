@@ -8,12 +8,15 @@ using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Sockets;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.Receipt.Recalculation;
 using UseCase.ReceiptCheck.Recalculation;
 using UseCase.ReceiptCheck.ReceiptInfEdit;
+using Castle.Core.Internal;
 
 namespace EmrCloudApi.Controller;
 
@@ -23,9 +26,11 @@ public class RecalculationController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
     private CancellationToken? _cancellationToken;
+    private Socket server;
     public RecalculationController(UseCaseBus bus, IUserService userService) : base(userService)
     {
         _bus = bus;
+        
     }
 
     [HttpPost]
@@ -56,6 +61,7 @@ public class RecalculationController : AuthorizeControllerBase
             Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
             Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
             HttpContext.Response.Body.Close();
+            server.Dispose();
         }
     }
 
@@ -73,7 +79,19 @@ public class RecalculationController : AuthorizeControllerBase
 
     private void UpdateRecalculationStatus(RecalculationStatus status)
     {
-        AddMessageCheckErrorInMonth(status);
+        if ((status.Type == 1 && status.Message.Equals("StartCalculateMonth"))
+            || (status.Type == 2 && status.Message.Equals("StartFutanCalculateMain")))
+        {
+            var hostName = Dns.GetHostName();
+            Task.Run(() =>
+            {
+                CreateSocketServer(hostName);
+            });
+        }
+        else
+        {
+            AddMessageCheckErrorInMonth(status);
+        }
     }
 
     private void AddMessageCheckErrorInMonth(RecalculationStatus status)
@@ -124,5 +142,48 @@ public class RecalculationController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<DeleteReceiptInfResponse>>(presenter.Result);
+    }
+
+    private void CreateSocketServer(string hostName)
+    {
+        var ipEntryAwait = Dns.GetHostEntryAsync(hostName);
+        ipEntryAwait.Wait();
+        IPHostEntry ipEntry = ipEntryAwait.Result;
+
+        // we will axtract the local host ip 
+        IPAddress ip = ipEntry.AddressList[0];
+
+        // connect the server socket to client socket
+        IPEndPoint iPEndPoint = new IPEndPoint(ip, 22222);
+
+        server = new Socket(
+            iPEndPoint.AddressFamily,
+            SocketType.Stream,
+            ProtocolType.Tcp
+        );
+
+        server.Bind(iPEndPoint);
+        server.Listen();
+
+        var handlerAwait = server.AcceptAsync();
+        handlerAwait.Wait();
+        var handler = handlerAwait.Result;
+
+        while (true)
+        {
+            var buffer = new byte[1024];
+
+            // receive the message from client but as bytes
+            var receviedAwait = handler.ReceiveAsync(buffer, SocketFlags.None);
+            receviedAwait.Wait();
+            var recevied = receviedAwait.Result;
+
+            // convert bytes to string message
+            var messageString = Encoding.UTF8.GetString(buffer, 0, recevied);
+            if (!messageString.IsNullOrEmpty())
+            {
+                Console.WriteLine(messageString);
+            }
+        }
     }
 }
