@@ -1489,11 +1489,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return receCheckErrs.Select(item => ConvertToReceCheckErrModel(item)).ToList();
     }
 
-    public bool SaveReceCheckCmtList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckCmtModel> receCheckCmtList)
+    public List<ReceCheckCmtModel> SaveReceCheckCmtList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckCmtModel> receCheckCmtList)
     {
+        List<ReceCheckCmtModel> result = new();
         if (!receCheckCmtList.Any())
         {
-            return true;
+            return result;
         }
         var receCheckCmtUpdateList = receCheckCmtList.Where(item => item.SeqNo > 0).ToList();
         var receCheckCmtUpdateDBList = TrackingDataContext.ReceCheckCmts.Where(item => item.HpId == hpId
@@ -1515,6 +1516,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             {
                 continue;
             }
+            result.Add(model);
             entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             entity.UpdateId = userId;
             if (model.IsDeleted)
@@ -1527,7 +1529,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             entity.IsChecked = model.IsChecked;
             entity.SortNo = model.SortNo;
         }
-        return TrackingDataContext.SaveChanges() > 0;
+        if (TrackingDataContext.SaveChanges() > 0)
+        {
+            result.AddRange(receCheckAddNewList.Select(item => ConvertToReceCheckCmtModel(item)).ToList());
+            return result;
+        }
+        return new();
     }
 
     public bool CheckExistSeqNoReceCheckCmtList(int hpId, int hokenId, int sinYm, long ptId, List<int> seqNoList)
