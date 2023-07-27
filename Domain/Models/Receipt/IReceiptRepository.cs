@@ -124,6 +124,8 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<int> GetListKaikeiInf(int hpId, long ptId);
 
+    List<PtHokenInfKaikeiModel> GetListKaikeiInf(int hpId, int sinYm, long ptId);
+
     bool CheckExistSeqNoReceCheckErrorList(int hpId, int hokenId, int sinYm, long ptId, List<ReceCheckErrModel> receCheckErrorList);
 
     bool SaveReceCheckErrList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckErrModel> receCheckErrorList);

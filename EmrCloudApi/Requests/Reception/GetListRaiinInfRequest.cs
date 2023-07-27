@@ -9,5 +9,7 @@
         public int PageSize { get; set; }
 
         public int IsDeleted { get; set; } = 1;
+
+        public bool IsAll { get; set; } = false;
     }
 }

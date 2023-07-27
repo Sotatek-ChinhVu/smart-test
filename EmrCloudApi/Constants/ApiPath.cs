@@ -39,6 +39,7 @@
         public const string GetJihiMstList = "GetJihiMstList";
         public const string SearchTenMstItem = "SearchTenMstItem";
         public const string ConvertStringChkJISKj = "ConvertStringChkJISKj";
+        public const string GetTeikyoByomei = "GetTeikyoByomei";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -282,6 +283,7 @@
         public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
         public const string GetListSinKoui = "GetListSinKoui";
         public const string DeleteReceiptInfEdit = "DeleteReceiptInfEdit";
+        public const string GetListKaikeiInf = "GetListKaikeiInf";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -370,6 +372,7 @@
 
         //NextOrder
         public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
+        public const string CheckUpsertNextOrder = "CheckUpsertNextOrder";
 
         public const string Test = "Test";
     }
