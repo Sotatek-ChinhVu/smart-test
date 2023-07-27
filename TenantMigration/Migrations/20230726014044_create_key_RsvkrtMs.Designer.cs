@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20230726014044_create_key_RsvkrtMs")]
+    partial class createkeyRsvkrtMs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -7197,7 +7200,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "UserId")
                         .IsUnique()
-                        .HasFilter("FunctionCd IN (02000000, 03000000)");
+                        .HasFilter("FunctionCd = \"02000000\"");
 
                     b.ToTable("LOCK_INF");
                 });
