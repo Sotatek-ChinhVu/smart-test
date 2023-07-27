@@ -371,6 +371,7 @@
 
         //NextOrder
         public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
+        public const string CheckUpsertNextOrder = "CheckUpsertNextOrder";
 
         public const string Test = "Test";
     }
