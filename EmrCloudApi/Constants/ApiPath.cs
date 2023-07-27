@@ -283,6 +283,7 @@
         public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
         public const string GetListSinKoui = "GetListSinKoui";
         public const string DeleteReceiptInfEdit = "DeleteReceiptInfEdit";
+        public const string GetListKaikeiInf = "GetListKaikeiInf";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";

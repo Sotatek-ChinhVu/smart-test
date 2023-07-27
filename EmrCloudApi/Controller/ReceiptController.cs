@@ -47,6 +47,7 @@ using EmrCloudApi.Presenters.SinKoui;
 using EmrCloudApi.Requests.SinKoui;
 using EmrCloudApi.Responses.SinKoui;
 using UseCase.SinKoui.GetSinKoui;
+using UseCase.Receipt.GetListKaikeiInf;
 
 namespace EmrCloudApi.Controller;
 
@@ -478,6 +479,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListSinKouiResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListKaikeiInf)]
+    public ActionResult<Response<GetListKaikeiInfResponse>> GetListKaikeiInf([FromQuery] GetListKaikeiInfRequest request)
+    {
+        var input = new GetListKaikeiInfInputData(HpId, request.SinYm, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListKaikeiInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListKaikeiInfResponse>>(presenter.Result);
     }
 
     #region Private function
