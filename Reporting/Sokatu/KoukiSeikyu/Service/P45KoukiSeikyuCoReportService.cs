@@ -70,19 +70,27 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
         this.seikyuYm = seikyuYm;
         this.seikyuType = seikyuType;
         var getData = GetData();
+        int indexPage = 1;
+        var fileName = new Dictionary<string, string>();
 
-        if (getData)
+        foreach (string currentNo in hokensyaNos)
         {
-            foreach (string currentNo in hokensyaNos)
+            currentPage = 1;
+            currentHokensyaNo = currentNo;
+            hasNextPage = true;
+            while (getData && hasNextPage)
             {
-                currentPage = 1;
-                currentHokensyaNo = currentNo;
-                hasNextPage = true;
-                while (getData && hasNextPage)
+                UpdateDrawForm();
+                if (currentPage == 2)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    fileName.Add(indexPage.ToString(), _formFileNameP2);
                 }
+                else
+                {
+                    fileName.Add(indexPage.ToString(), _formFileNameP1);
+                }
+                currentPage++;
+                indexPage++;
             }
         }
 

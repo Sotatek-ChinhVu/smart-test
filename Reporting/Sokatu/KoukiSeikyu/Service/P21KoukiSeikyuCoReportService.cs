@@ -195,7 +195,7 @@ public class P21KoukiSeikyuCoReportService : IP21KoukiSeikyuCoReportService
             if (kohiHoubetus.Count == 0)
             {
                 _listTextData.Add(pageIndex, listDataPerPage);
-                _hasNextPage = false;
+                hasNextPage = false;
                 return 1;
             }
 
@@ -224,7 +224,7 @@ public class P21KoukiSeikyuCoReportService : IP21KoukiSeikyuCoReportService
                 kohiIndex++;
                 if (kohiIndex >= kohiHoubetus.Count)
                 {
-                    _hasNextPage = false;
+                    hasNextPage = false;
                     break;
                 }
             }
@@ -243,7 +243,7 @@ public class P21KoukiSeikyuCoReportService : IP21KoukiSeikyuCoReportService
         }
         return true;
     }
-
+    
     private bool GetData()
     {
         hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);

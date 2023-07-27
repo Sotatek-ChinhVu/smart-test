@@ -71,10 +71,6 @@ public class P45KoukiSeikyuMapper : CommonReportingRequest
     }
     public override Dictionary<string, string> GetFileNamePageMap()
     {
-        /*var fileName = new Dictionary<string, string>
-        {
-            { "1", _formFileNameP1 }, { "2", _formFileNameP2 }, { "3", _formFileNameP1 }
-        };*/
         return _fileName;
     }
 
