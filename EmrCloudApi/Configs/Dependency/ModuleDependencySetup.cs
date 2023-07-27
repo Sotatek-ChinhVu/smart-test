@@ -644,6 +644,14 @@ using Reporting.Sijisen.DB;
 using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Interactor.SetMst.CommonSuperSet;
+using Reporting.Sokatu.WelfareSeikyu.DB;
+using Reporting.Byomei.DB;
+using UseCase.User.GetListUserByCurrentUser;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.MedicalExamination.GetHeaderVistitDate;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -854,6 +862,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP12KokhoSeikyuCoReportService, P12KokhoSeikyuCoReportService>();
             services.AddTransient<IP13KokhoSeikyuCoReportService, P13KokhoSeikyuCoReportService>();
             services.AddTransient<IP14KokhoSeikyuCoReportService, P14KokhoSeikyuCoReportService>();
+            services.AddTransient<IP20KokhoSeikyuCoReportService, P20KokhoSeikyuCoReportService>();
+            services.AddTransient<IP21KokhoSeikyuCoReportService, P21KokhoSeikyuCoReportService>();
+            services.AddTransient<IP22KokhoSeikyuCoReportService, P22KokhoSeikyuCoReportService>();
+            services.AddTransient<IP23KokhoSeikyuCoReportService, P23KokhoSeikyuCoReportService>();
+            services.AddTransient<IP24KokhoSeikyuCoReportService, P24KokhoSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
