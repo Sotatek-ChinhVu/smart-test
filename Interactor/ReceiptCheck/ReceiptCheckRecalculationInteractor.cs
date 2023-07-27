@@ -138,7 +138,7 @@ namespace Interactor.ReceiptCheck
 
             foreach (var receInfModel in _receInfModels)
             {
-                _calculationInfRepository.ClearReceCmtErr(hpId, receInfModel.PtId, receInfModel.HokenId, receInfModel.SinYm);
+                _oldReceCheckErrs = _calculationInfRepository.ClearReceCmtErr(hpId, receInfModel.PtId, receInfModel.HokenId, receInfModel.SinYm);
                 _sinKouiCounts = _calculationInfRepository.GetSinKouiCounts(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
 
                 CheckHoken(hpId, receInfModel);
@@ -509,8 +509,7 @@ namespace Interactor.ReceiptCheck
                     }
                 }
 
-
-
+                //E2012
                 bool checkDuplicateByomei = _receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.DuplicateByomeiCheckErrCd);
                 bool checkDuplicateSyusyokuByomei = _receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.DuplicateSyusyokuByomeiCheckErrCd);
                 if (checkDuplicateByomei)
