@@ -87,15 +87,15 @@ namespace Infrastructure.Repositories
                                        .Select(i => new PrefixSuffixModel($"SyusyokuCd{i}", ptByomei.GetPropertyValueOrDefault($"SyusyokuCd{i}", string.Empty)))
                                        .ToList();
 
-            return new PtDiseaseModel(ptByomei.HokenPid,
-                                      ptByomei.ByomeiCd ?? string.Empty,
-                                      ptByomei.Byomei ?? string.Empty,
-                                      ptByomei.StartDate,
-                                      ptByomei.TenkiDate,
-                                      ptByomei.SyubyoKbn,
-                                      ptByomei.Id,
-                                      byomeiMst.DelDate,
-                                      ptByomei.TenkiKbn,
+            return new PtDiseaseModel(ptByomei != null ? ptByomei.HokenPid : 0,
+                                      ptByomei != null ? ptByomei.ByomeiCd ?? string.Empty : string.Empty,
+                                      ptByomei != null ? ptByomei.Byomei ?? string.Empty : string.Empty,
+                                      ptByomei != null ? ptByomei.StartDate : 0,
+                                      ptByomei != null ? ptByomei.TenkiDate : 0,
+                                      ptByomei != null ? ptByomei.SyubyoKbn : 0,
+                                      ptByomei != null ? ptByomei.Id : 0,
+                                      byomeiMst != null ? byomeiMst.DelDate : 0,
+                                      ptByomei != null ? ptByomei.TenkiKbn : 0,
                                       prefixList);
         }
 
