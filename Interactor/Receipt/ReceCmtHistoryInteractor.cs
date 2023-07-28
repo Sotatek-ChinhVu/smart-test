@@ -20,7 +20,7 @@ public class ReceCmtHistoryInteractor : IReceCmtHistoryInputPort
     {
         try
         {
-            var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, 0, false);
+            var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, 0, false, true);
             var hokenInfList = insuranceData.ListHokenInf;
             var receCmtList = _receiptRepository.GetReceCmtList(inputData.HpId, 0, inputData.PtId, 0, 0);
 
