@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.Receipt
 
         public void Complete(CheckExisReceInfEditOutputData outputData)
         {
-            Result.Data = new CheckExisReceInfEditResponse(outputData.Status);
+            Result.Data = new CheckExisReceInfEditResponse(outputData.IsExisted);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

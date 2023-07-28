@@ -3532,12 +3532,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public bool CheckExisReceInfEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId)
     {
-        var result = NoTrackingDataContext.ReceInfEdits.Where(item => item.HpId == hpId
+        var result = NoTrackingDataContext.ReceInfEdits.FirstOrDefault(item => item.HpId == hpId
                                                                     && item.SeikyuYm == seikyuYm
                                                                     && item.PtId == ptId
                                                                     && item.SinYm == sinYm
                                                                     && item.HokenId == hokenId
-                                                                    && item.IsDeleted == 0).FirstOrDefault();
+                                                                    && item.IsDeleted == 0);
 
         return result != null;
     }

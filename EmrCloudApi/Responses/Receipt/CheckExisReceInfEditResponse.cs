@@ -1,14 +1,12 @@
-﻿using UseCase.Receipt.CheckExisReceInfEdit;
-
-namespace EmrCloudApi.Responses.Receipt
+﻿namespace EmrCloudApi.Responses.Receipt
 {
     public class CheckExisReceInfEditResponse
     {
-        private CheckExisReceInfEditStatus Status;
-
-        public CheckExisReceInfEditResponse(CheckExisReceInfEditStatus status)
+        public CheckExisReceInfEditResponse(bool receInfEdit)
         {
-            Status = status;
+            ReceInfEdit = receInfEdit;
         }
+
+        public bool ReceInfEdit { get; private set; }
     }
 }
