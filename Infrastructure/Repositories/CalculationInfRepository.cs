@@ -83,7 +83,20 @@ namespace Infrastructure.Repositories
 
         private PtDiseaseModel ConvertToModel(PtByomei ptByomei, ByomeiMst byomeiMst)
         {
-            return new PtDiseaseModel(ptByomei.Byomei ?? string.Empty, new());
+            var prefixList = Enumerable.Range(1, 21)
+                                       .Select(i => new PrefixSuffixModel($"SyusyokuCd{i}", ptByomei.GetPropertyValueOrDefault($"SyusyokuCd{i}", string.Empty)))
+                                       .ToList();
+
+            return new PtDiseaseModel(ptByomei.HokenPid,
+                                      ptByomei.ByomeiCd ?? string.Empty,
+                                      ptByomei.Byomei ?? string.Empty,
+                                      ptByomei.StartDate,
+                                      ptByomei.TenkiDate,
+                                      ptByomei.SyubyoKbn,
+                                      ptByomei.Id,
+                                      byomeiMst.DelDate,
+                                      ptByomei.TenkiKbn,
+                                      prefixList);
         }
 
         public int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm)
@@ -623,7 +636,7 @@ namespace Infrastructure.Repositories
 
             var groupKeys = joinTenMstQuery.GroupBy(p => new { p.PtId, p.SinDate, p.RaiinNo })
                                            .Select(p => p.FirstOrDefault());
-            if(groupKeys != null)
+            if (groupKeys != null)
             {
                 foreach (var groupKey in groupKeys)
                 {
@@ -651,7 +664,7 @@ namespace Infrastructure.Repositories
                     result.Add(ConvertToModel(entities.Select(p => p.ptHokenPattern).Distinct().ToList(), groupKey?.SinKouiCount ?? new(), sinKouiDetailModels));
                 }
             }
-            
+
             return result;
         }
 
@@ -681,7 +694,7 @@ namespace Infrastructure.Repositories
                                         );
         }
 
-        public void ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
+        public List<ReceCheckErrModel> ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
         {
             var oldReceCheckErrs = TrackingDataContext.ReceCheckErrs
                                                         .Where(p => p.HpId == hpId &&
@@ -690,6 +703,21 @@ namespace Infrastructure.Repositories
                                                                     p.HokenId == hokenId)
                                                         .ToList();
             TrackingDataContext.ReceCheckErrs.RemoveRange(oldReceCheckErrs);
+
+            var result = oldReceCheckErrs.Select(x => new ReceCheckErrModel(
+                                                                            x.HpId,
+                                                                            x.PtId,
+                                                                            x.SinYm,
+                                                                            x.HokenId,
+                                                                            x.ErrCd,
+                                                                            x.SinDate,
+                                                                            x.ACd,
+                                                                            x.BCd,
+                                                                            x.Message1 ?? string.Empty,
+                                                                            x.Message2 ?? string.Empty,
+                                                                            x.IsChecked
+                                                                            )).ToList();
+            return result;
         }
 
         public List<OrdInfDetailModel> GetOdrInfsBySinDate(int hpId, long ptId, int sinDate, int hokenId)
@@ -1056,7 +1084,7 @@ namespace Infrastructure.Repositories
                 results.Add(new DensiSanteiKaisuModel(entity.Id,
                                                       entity.HpId,
                                                       entity.ItemCd,
-                                                      entity.MaxCount,
+                                                      entity.UnitCd,
                                                       entity.MaxCount,
                                                       entity.SpJyoken,
                                                       entity.StartDate,
