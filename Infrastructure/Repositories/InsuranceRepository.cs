@@ -33,7 +33,7 @@ namespace Infrastructure.Repositories
             #endregion
 
             #region PtHokenInf
-            IQueryable<PtHokenInf> hokenInfQuery = NoTrackingDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId && (h.IsDeleted == DeleteTypes.None || h.HokenId == maxIdHokenInf)).OrderByDescending(x => x.HokenId);
+            IQueryable<PtHokenInf> hokenInfQuery = NoTrackingDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId && (h.IsDeleted == DeleteTypes.Deleted || h.IsDeleted == DeleteTypes.None || h.HokenId == maxIdHokenInf)).OrderByDescending(x => x.HokenId);
 
             var hokenMasterInfQuery = NoTrackingDataContext.HokenMsts.Where(h => h.HpId == hpId && (!flag || (h.StartDate <= sinDate && sinDate <= h.EndDate)) &&
                                                                             (h.PrefNo == prefCd || h.PrefNo == 0 || h.IsOtherPrefValid == 1))
