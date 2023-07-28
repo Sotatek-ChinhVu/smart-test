@@ -704,7 +704,7 @@ namespace Infrastructure.Repositories
             List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage,
             bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem,
             bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter,
-            bool isSearch831SuffixOnly)
+            bool isSearch831SuffixOnly, bool isSearchGazoDensibaitaiHozon)
         {
             string kanaKeyword = keyword;
             if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
@@ -991,6 +991,12 @@ namespace Infrastructure.Repositories
             if (pointTo != null)
             {
                 queryResult = queryResult.Where(t => t.Ten <= pointTo);
+            }
+
+            //special item GazoDensibaitaiHozon SMAR-4289
+            if (!isSearchGazoDensibaitaiHozon)
+            {
+                queryResult = queryResult.Where(t => t.ItemCd != "840000100");
             }
 
             var yakkaSyusaiMstList = NoTrackingDataContext.YakkaSyusaiMsts.AsQueryable();
