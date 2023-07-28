@@ -634,11 +634,11 @@ public class ReceiptController : AuthorizeControllerBase
                    request.Kohi4ReceTensu,
                    request.Kohi4ReceFutan,
                    request.IsDeleted,
-                   request.Tokki1Id.ToString(),
-                   request.Tokki2Id.ToString(),
-                   request.Tokki3Id.ToString(),
-                   request.Tokki4Id.ToString(),
-                   request.Tokki5Id.ToString()
+                   request.Tokki1Id,
+                   request.Tokki2Id,
+                   request.Tokki3Id,
+                   request.Tokki4Id,
+                   request.Tokki5Id
             );
     }
 
