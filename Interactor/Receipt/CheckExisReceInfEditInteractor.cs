@@ -18,7 +18,7 @@ namespace Interactor.Receipt
             {
                 var receInfEdit = _receiptRepository.CheckExisReceInfEdit(inputData.HpId, inputData.SeikyuYm, inputData.PtId, inputData.SinYm, inputData.HokenId);
                 if (receInfEdit)
-                {
+                return new CheckExisReceInfEditOutputData(CheckExisReceInfEditStatus.Success, receInfEdit);
                     return new CheckExisReceInfEditOutputData(CheckExisReceInfEditStatus.Success);
                 }
                 else
