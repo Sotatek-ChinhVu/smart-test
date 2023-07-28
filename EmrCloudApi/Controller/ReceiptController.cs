@@ -492,8 +492,9 @@ public class ReceiptController : AuthorizeControllerBase
 
         return new ActionResult<Response<GetListKaikeiInfResponse>>(presenter.Result);
     }
-    [HttpGet(ApiPath.CheckExisReceInfEdit)]
-    public ActionResult<Response<CheckExisReceInfEditResponse>> CheckExisReceInfEdit([FromQuery] CheckExisReceInfEditRequest request)
+
+    [HttpPost(ApiPath.CheckExisReceInfEdit)]
+    public ActionResult<Response<CheckExisReceInfEditResponse>> CheckExisReceInfEdit([FromBody] CheckExisReceInfEditRequest request)
     {
         var input = new CheckExisReceInfEditInputData(HpId, request.SeikyuYm, request.PtId, request.SinYm, request.HokenId);
         var output = _bus.Handle(input);
