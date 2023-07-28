@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.DrugInfo.Model;
+using Reporting.KensaLabel.Model;
 using Reporting.Mappers.Common;
 using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
@@ -249,6 +250,13 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> Yakutai([FromQuery] YakutaiRequest request)
     {
         var data = _reportService.GetYakutaiReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
+    [HttpGet(ApiPath.KensaLabel)]
+    public async Task<IActionResult> KensaLabel([FromQuery] KensaLabelRequest request)
+    {
+        var data = _reportService.GetKensaLabelPrintData(request.HpId, request.PtId, request.RaiinNo, request.SinDate, new KensaPrinterModel(request.ItemCd, request.ContainerName, request.ContainerCd, request.Count, request.PrinterName, request.InoutKbn, request.OdrKouiKbn));
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
