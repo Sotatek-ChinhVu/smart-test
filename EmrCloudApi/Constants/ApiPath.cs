@@ -108,6 +108,7 @@
         public const string AccountingCard = "AccountingCard";
         public const string ExportKarte2 = "ExportKarte2";
         public const string ExportKarte3 = "ExportKarte3";
+        public const string KensaLabel = "KensaLabel";
         public const string AccountingCardList = "AccountingCardList";
 
         //PatientInfor

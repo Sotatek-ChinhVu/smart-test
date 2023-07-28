@@ -14,6 +14,8 @@ using Reporting.DrugNoteSeal.Service;
 using Reporting.InDrug.Service;
 using Reporting.Karte1.Service;
 using Reporting.Karte3.Service;
+using Reporting.KensaLabel.Model;
+using Reporting.KensaLabel.Service;
 using Reporting.Kensalrai.Service;
 using Reporting.Mappers.Common;
 using Reporting.MedicalRecordWebId.Service;
@@ -64,8 +66,9 @@ public class ReportService : IReportService
     private readonly IKarte3CoReportService _karte3CoReportService;
     private readonly IAccountingCardListCoReportService _accountingCardListCoReportService;
     private readonly IInDrugCoReportService _inDrugCoReportService;
+    private readonly IKensaLabelCoReportService _kensaLabelCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IKensaLabelCoReportService kensaLabelCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -93,6 +96,7 @@ public class ReportService : IReportService
         _karte3CoReportService = karte3CoReportService;
         _accountingCardListCoReportService = accountingCardListCoReportService;
         _inDrugCoReportService = inDrugCoReportService;
+        _kensaLabelCoReportService = kensaLabelCoReportService;
     }
 
     //Byomei
@@ -162,6 +166,12 @@ public class ReportService : IReportService
     public CommonReportingRequestModel GetSyojyoSyokiReportingData(int hpId, long ptId, int seikyuYm, int hokenId)
     {
         return _syojyoSyokiCoReportService.GetSyojyoSyokiReportingData(hpId, ptId, seikyuYm, hokenId);
+    }
+
+    //KensaLabelCoReportService
+    public CommonReportingRequestModel GetKensaLabelPrintData(int hpId, long ptId, long raiinNo, int sinDate, KensaPrinterModel printerModel)
+    {
+        return _kensaLabelCoReportService.GetKensaLabelPrintData(hpId, ptId, raiinNo, sinDate, printerModel);
     }
 
     /// <summary>

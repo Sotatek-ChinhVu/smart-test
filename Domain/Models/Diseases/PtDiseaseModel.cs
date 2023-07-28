@@ -1,6 +1,5 @@
 ﻿using Domain.Constant;
 using Helper.Common;
-using Helper.Extension;
 using System.Text.Json.Serialization;
 using static Helper.Constants.PtDiseaseConst;
 
@@ -8,7 +7,6 @@ namespace Domain.Models.Diseases
 {
     public class PtDiseaseModel
     {
-        private const string MODIFIER_CD = "SyusyokuCd";
         private const string FREE_WORD = "0000999";
 
         [JsonConstructor]
@@ -472,21 +470,18 @@ namespace Domain.Models.Diseases
             return this;
         }
 
-        public PtDiseaseModel(string byomei, List<PrefixSuffixModel> prefixSuffixList)
+        public PtDiseaseModel(int hokenId, string byomeiCd, string byomei, int startDate, int tenkiDate, int syubyoKbn, long id, int delDate, int tenkiKbn, List<PrefixSuffixModel> prefixSuffixList)
         {
+            HokenId = hokenId;
+            ByomeiCd = byomeiCd;
             Byomei = byomei;
+            StartDate = startDate;
+            TenkiDate = tenkiDate;
+            SyubyoKbn = syubyoKbn;
+            Id = id;
+            DelDate = delDate;
+            TenkiKbn = tenkiKbn;
             PrefixSuffixList = prefixSuffixList;
-            Icd10 = string.Empty;
-            Icd102013 = string.Empty;
-            Icd1012013 = string.Empty;
-            Icd1022013 = string.Empty;
-            ItemCd = string.Empty;
-            CreateUser = string.Empty;
-            UpdateUser = string.Empty;
-            CreateDate = string.Empty;
-            UpdateDate = string.Empty;
-            ByomeiCd = string.Empty;
-            HosokuCmt = string.Empty;
         }
 
         public ValidationStatus Validation()
@@ -733,16 +728,17 @@ namespace Domain.Models.Diseases
 
         public List<string> GetAllSyusyokuCds()
         {
-            List<string> syusyokuCds = new List<string>();
-            for (int i = 1; i <= 21; i++)
+            var syusyokuCds = new List<string>();
+
+            foreach (var item in PrefixSuffixList)
             {
-                if (PrefixSuffixList.GetMemberValue(MODIFIER_CD + i) == null ||
-                    string.IsNullOrEmpty(PrefixSuffixList.GetMemberValue(MODIFIER_CD + i).AsString()))
+                if (string.IsNullOrEmpty(item.Name))
                 {
                     continue;
                 }
-                syusyokuCds.Add(PrefixSuffixList.GetMemberValue(MODIFIER_CD + i).AsString());
+                syusyokuCds.Add(item.Name);
             }
+
             syusyokuCds.Sort();
             return syusyokuCds;
         }
