@@ -3500,6 +3500,36 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         TrackingDataContext.SaveChanges();
     }
 
+    public void ClearReceCmtErr(int hpId, List<ReceCheckErrModel> receCheckErrList)
+    {
+        if (!receCheckErrList.Any())
+        {
+            return;
+        }
+        var ptIdList = receCheckErrList.Select(item => item.PtId).Distinct().ToList();
+        var hokenIdList = receCheckErrList.Select(item => item.HokenId).Distinct().ToList();
+        var sinYmList = receCheckErrList.Select(item => item.SinYm).Distinct().ToList();
+        var oldReceCheckErrList = TrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
+                                                                                  && ptIdList.Contains(item.PtId)
+                                                                                  && hokenIdList.Contains(item.HokenId)
+                                                                                  && sinYmList.Contains(item.SinYm))
+                                                                    .ToList();
+
+        var itemGroupList = receCheckErrList.GroupBy(item => new { item.SinYm, item.HokenId, item.PtId })
+                                            .Select(item => item.First())
+                                            .ToList();
+
+        foreach (var groupItem in itemGroupList)
+        {
+            var receCheckErrRemove = oldReceCheckErrList.Where(item => item.SinYm == groupItem.SinYm
+                                                                       && item.PtId == groupItem.PtId
+                                                                       && item.HokenId == groupItem.HokenId)
+                                                        .ToList();
+            TrackingDataContext.ReceCheckErrs.RemoveRange(receCheckErrRemove);
+        }
+        TrackingDataContext.SaveChanges();
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
