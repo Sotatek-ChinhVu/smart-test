@@ -15,6 +15,7 @@ using System.IO.Compression;
 using System.Net.Mime;
 using UseCase.Core.Sync;
 using UseCase.Receipt;
+using UseCase.Receipt.CheckExisReceInfEdit;
 using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
@@ -491,6 +492,18 @@ public class ReceiptController : AuthorizeControllerBase
 
         return new ActionResult<Response<GetListKaikeiInfResponse>>(presenter.Result);
     }
+    [HttpGet(ApiPath.CheckExisReceInfEdit)]
+    public ActionResult<Response<CheckExisReceInfEditResponse>> CheckExisReceInfEdit([FromQuery] CheckExisReceInfEditRequest request)
+    {
+        var input = new CheckExisReceInfEditInputData(HpId, request.SeikyuYm, request.PtId, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new CheckExisReceInfEditPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<CheckExisReceInfEditResponse>>(presenter.Result);
+    }
+
 
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)

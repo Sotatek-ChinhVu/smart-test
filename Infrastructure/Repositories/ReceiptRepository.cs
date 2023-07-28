@@ -3530,6 +3530,18 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         TrackingDataContext.SaveChanges();
     }
 
+    public bool CheckExisReceInfEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId)
+    {
+        var result = NoTrackingDataContext.ReceInfEdits.Where(item => item.HpId == hpId
+                                                                    && item.SeikyuYm == seikyuYm
+                                                                    && item.PtId == ptId
+                                                                    && item.SinYm == sinYm
+                                                                    && item.HokenId == hokenId
+                                                                    && item.IsDeleted == 0).FirstOrDefault();
+
+        return result != null;
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
