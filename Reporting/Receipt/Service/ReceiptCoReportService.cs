@@ -25,6 +25,27 @@ namespace Reporting.Receipt.Service
 {
     public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
     {
+        private const string RECEIPT_CHECK_FORM_FILE_NAME = "fmRezeCheck.rse";
+        private const string RECEIPT_KENPO_FORM_FILE_NAME = "fmReceipt.rse";
+        private const string RECEIPT_KANAGAWA2_FORM_FILE_NAME = "fmReceipt_Kanagawa2.rse";
+        private const string RECEIPT_ROSAI_TANKI_FORM_FILE_NAME = "fmReceipt_Rosai_Tanki_{0}.rse";
+        private const string RECEIPT_ROSAI_TANKI_OVERLAY_FORM_FILE_NAME = "fmReceipt_Rosai_Tanki_Overlay.rse";
+        private const string RECEIPT_ROSAI_TANKI_201905_FORM_FILE_NAME = "fmReceipt_Rosai_Tanki_201905_{0}.rse";
+        private const string RECEIPT_ROSAI_TANKI_201905_OVERLAY_FORM_FILE_NAME = "fmReceipt_Rosai_Tanki_201905_Overlay.rse";
+        private const string RECEIPT_ROSAI_NENKIN_FORM_FILE_NAME = "fmReceipt_Rosai_Nenkin_{0}.rse";
+        private const string RECEIPT_ROSAI_NENKIN_OVERLAY_FORM_FILE_NAME = "fmReceipt_Rosai_Nenkin_Overlay.rse";
+        private const string RECEIPT_ROSAI_NENKIN_201905_FORM_FILE_NAME = "fmReceipt_Rosai_Nenkin_201905_{0}.rse";
+        private const string RECEIPT_ROSAI_NENKIN_201905_OVERLAY_FORM_FILE_NAME = "fmReceipt_Rosai_Nenkin_201905_Overlay.rse";
+        private const string RECEIPT_ROSAI_PAGE2_FORM_FILE_NAME = "fmReceipt_Rosai_2Page.rse";
+        private const string RECEIPT_ROSAI_PAGE2_OVERLAY_FORM_FILE_NAME = "fmReceipt_Rosai_2Page_Overlay.rse";
+        private const string RECEIPT_ROSAI_AFTER_FORM_FILE_NAME = "fmReceipt_Rosai_After.rse";
+        private const string RECEIPT_ROSAI_AFTER_OVERLAY_FORM_FILE_NAME = "fmReceipt_Rosai_After_Overlay.rse";
+        private const string RECEIPT_ROSAI_AFTER_PAGE2_FORM_FILE_NAME = "fmReceipt_Rosai_After_2Page.rse";
+        private const string RECEIPT_ROSAI_AFTER_PAGE2_OVERLAY_FORM_FILE_NAME = "fmReceipt_Rosai_After_2Page_Overlay.rse";
+        private const string RECEIPT_JIBAI_KENPO_FORM_FILE_NAME = "fmReceipt_Jibai_Kenpo.rse";
+        private const string RECEIPT_JIBAI_ROSAI_FORM_FILE_NAME = "fmReceipt_Jibai_Rosai.rse";
+        private const string RECEIPT_JIBAI_PAGE2_FORM_FILE_NAME = "fmReceipt_Jibai_2Page.rse";
+
         private readonly ICoReceiptFinder _coReceiptFinder;
         private readonly ISystemConfRepository _systemConfRepository;
         private readonly ISystemConfigProvider _systemConfigProvider;
@@ -187,7 +208,8 @@ namespace Reporting.Receipt.Service
             while (i < CoModels.Count())
             {
                 CoModel = CoModels[i];
-                GetFormParam("fmReceipt.rse");
+                var formName = GetFormFileName(CurrentPage);
+                GetFormParam(formName);
 
                 _byomeiCharCount -= 3;
                 _tekiyoCharCount -= 13;
@@ -264,6 +286,160 @@ namespace Reporting.Receipt.Service
                 i++;
             }
 
+        }
+
+        private string GetFormFileName(int page)
+        {
+            string ret = "";
+
+            if (Target == TargetConst.KanagawaRece2)
+            {
+                // 神奈川レセプト２枚目
+                ret = RECEIPT_KANAGAWA2_FORM_FILE_NAME;
+            }
+            else if (TargetIsKenpo())
+            {
+                ret = RECEIPT_KENPO_FORM_FILE_NAME;
+            }
+            else
+            {
+                switch (Target)
+                {
+                    case TargetConst.RousaiTanki:
+                        // 労災短期
+                        if (page <= 1)
+                        {
+                            // 1ページ目
+                            if ((int)_systemConfRepository.GetSettingValue(94002, 0, HpId) == 1)
+                            {
+                                // 2019/05 元号対応様式変更
+                                //if (OutputMode == CoOutputMode.Print && Preview == false)
+                                //{
+                                //    // 紙出力
+                                //    ret = string.Format(RECEIPT_ROSAI_TANKI_201905_FORM_FILE_NAME, 1);
+                                //}
+                                //else
+                                //{
+                                // プレビュー
+                                ret = RECEIPT_ROSAI_TANKI_201905_OVERLAY_FORM_FILE_NAME;
+                                //}
+                            }
+                            else
+                            {
+                                //if (OutputMode == CoOutputMode.Print && Preview == false)
+                                //{
+                                //    // 紙出力
+                                //    ret = string.Format(RECEIPT_ROSAI_TANKI_FORM_FILE_NAME, 1);
+                                //}
+                                //else
+                                //{
+                                // プレビュー
+                                ret = RECEIPT_ROSAI_TANKI_OVERLAY_FORM_FILE_NAME;
+                                //}
+                            }
+                        }
+                        else
+                        {
+                            // 2ページ目以降
+                            //if (OutputMode == CoOutputMode.Print && Preview == false)
+                            //{
+                            //    ret = RECEIPT_ROSAI_PAGE2_FORM_FILE_NAME;
+                            //}
+                            //else
+                            //{
+                            ret = RECEIPT_ROSAI_PAGE2_OVERLAY_FORM_FILE_NAME;
+                            //}
+                        }
+                        break;
+                    case TargetConst.RousaiNenkin:
+                        // 労災傷病年金
+                        if (page <= 1)
+                        {
+                            // 1ページ目
+
+                            // 2019/05 以前
+                            //if (OutputMode == CoOutputMode.Print && Preview == false)
+                            //{
+                            //    // 紙出力
+                            //    ret = string.Format(Paths.RECEIPT_ROSAI_NENKIN_FORM_FILE_NAME, 1);
+                            //}
+                            //else
+                            //{
+                            // プレビュー
+                            ret = RECEIPT_ROSAI_NENKIN_OVERLAY_FORM_FILE_NAME;
+                            //}
+                        }
+                        else
+                        {
+                            // 2ページ目以降
+                            //if (OutputMode == CoOutputMode.Print && Preview == false)
+                            //{
+                            //    // 紙出力
+                            //    ret = Paths.RECEIPT_ROSAI_PAGE2_FORM_FILE_NAME;
+                            //}
+                            //else
+                            //{
+                            // プレビュー
+                            ret = RECEIPT_ROSAI_PAGE2_OVERLAY_FORM_FILE_NAME;
+                            //}
+                        }
+                        break;
+                    case TargetConst.RousaiAfter:
+                        // アフターケア
+                        if (page <= 1)
+                        {
+                            // 1ページ目
+                            //if (OutputMode == CoOutputMode.Print && Preview == false)
+                            //{
+                            //    // 紙出力
+                            //    ret = Paths.RECEIPT_ROSAI_AFTER_FORM_FILE_NAME;
+                            //}
+                            //else
+                            //{
+                            // プレビュー
+                            ret = RECEIPT_ROSAI_AFTER_OVERLAY_FORM_FILE_NAME;
+                            // }
+                        }
+                        else
+                        {
+                            // 2ページ目以降
+                            //if (OutputMode == CoOutputMode.Print && Preview == false)
+                            //{
+                            //    // 紙出力
+                            //    ret = Paths.RECEIPT_ROSAI_AFTER_PAGE2_FORM_FILE_NAME;
+                            //}
+                            //else
+                            //{
+                            // プレビュー
+                            ret = RECEIPT_ROSAI_AFTER_PAGE2_OVERLAY_FORM_FILE_NAME;
+                            //}
+                        }
+                        break;
+                    case TargetConst.Jibai:
+                        // 自賠
+                        if (page <= 1)
+                        {
+                            //if (SystemConfig.Instance.JibaiJunkyo == 0)
+                            //{
+                            //    // 健保準拠
+                            //    ret = Paths.RECEIPT_JIBAI_KENPO_FORM_FILE_NAME;
+                            //}
+                            //else
+                            //{
+                            // 労災準拠
+                            ret = RECEIPT_JIBAI_ROSAI_FORM_FILE_NAME;
+                            // }
+                        }
+                        else
+                        {
+                            // 2ページ目以降
+                            ret = RECEIPT_JIBAI_PAGE2_FORM_FILE_NAME;
+                        }
+                        break;
+                }
+            }
+
+            return ret;
         }
 
         #region initParam
