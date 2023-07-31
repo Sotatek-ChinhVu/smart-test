@@ -1,48 +1,21 @@
-﻿using Domain.Models.Receipt.ReceiptListAdvancedSearch;
-using Helper.Common;
-using Microsoft.VisualBasic.FileIO;
-using Reporting.CommonMasters.Enums;
+﻿using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
-using Reporting.ReceiptList.Model;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ReceiptListModel = Reporting.ReceiptList.Model.ReceiptListModel;
 
 namespace Reporting.ReceiptList.Service
-{
+{ 
     public class ImportCSVCoReportService : IImportCSVCoReportService
     {
-        protected bool IsPrinterRunning = false;
-        private int hpId;
-        private int seikyuYm;
-        private List<ReceiptListModel> receiptListModels;
-        private CoFileType fileType;
+        private List<ReceiptListModel>? receiptListModel;
 
-        public CommonExcelReportingModel GetImportCSVCoReportServiceReportingData(int hpId, int seikyuYm, List<ReceiptListModel> receiptListModels, CoFileType fileType, bool outputTitle = false)
+        public CommonExcelReportingModel GetImportCSVCoReportServiceReportingData(List<ReceiptListModel> receiptListModel, CoFileType fileType, bool outputTitle = false)
         {
-            this.hpId = hpId;
-            this.seikyuYm = seikyuYm;
-            this.receiptListModels = receiptListModels;
-            this.fileType = fileType;
-            OutputCsv(outputTitle);
+            outputTitle = true;
+            this.receiptListModel = receiptListModel;
 
-            return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, retDatas);
-        }
-
-        private void OutputCsv(bool outputTitle)
-        {
-            if (IsPrinterRunning)
+            if (receiptListModel.Count == 0)
             {
-                return;
-            }
-
-            if (receiptListModels == null || receiptListModels.Any() == false)
-            {
-                return;
+                return new();
             }
 
             List<string> output = new List<string>();
@@ -95,8 +68,7 @@ namespace Reporting.ReceiptList.Service
                     );
             }
 
-            //int count = 0;
-            foreach (ReceiptListModel receiptList in receiptListModels)
+            foreach (ReceiptListModel receiptList in this.receiptListModel)
             {
                 string line = "";
                 // 請求
@@ -182,7 +154,30 @@ namespace Reporting.ReceiptList.Service
                 line += $"{receiptList.JibaiHokenTel}";
                 output.Add(line);
             }
+            //OutputCsv(outputTitle);
 
+            string sheetName = "レセチェック一覧表";
+
+            return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, output);
         }
+
+        /*public ReceiptListModel OutputCsv(bool outputTitle)
+        {
+            if (IsPrinterRunning)
+            {
+                return ReceiptListModel();
+            }
+
+            if (receiptListModels == null || receiptListModels.Any() == false)
+            {
+                return ReceiptListModel();
+            }
+
+            
+
+            //int count = 0;
+            
+
+        }*/
     }
 }
