@@ -27,7 +27,7 @@ namespace Reporting.ReceiptPrint.Service
             var seikyuType = GetSeikyuType(dataKbn);
             if (prefNo == 24 && reportId == 106 && reportEdaNo == 0)
             {
-                _p24WelfareDiskService.GetDataP24WelfareDisk(hpId, seikyuYm, seikyuType);
+                result = _p24WelfareDiskService.GetDataP24WelfareDisk(hpId, seikyuYm, seikyuType);
             }
             return result;
         }
