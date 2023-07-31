@@ -12,15 +12,15 @@ public class SaveReceiptEditRequest
 
     public int SeqNo { get; set; }
 
-    public int Tokki1Id { get; set; }
+    public string Tokki1Id { get; set; } = string.Empty;
 
-    public int Tokki2Id { get; set; }
+    public string Tokki2Id { get; set; } = string.Empty;
 
-    public int Tokki3Id { get; set; }
+    public string Tokki3Id { get; set; } = string.Empty;
 
-    public int Tokki4Id { get; set; }
+    public string Tokki4Id { get; set; } = string.Empty;
 
-    public int Tokki5Id { get; set; }
+    public string Tokki5Id { get; set; } = string.Empty;
 
     public int HokenNissu { get; set; }
 

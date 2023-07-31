@@ -33,7 +33,7 @@ public class GetListRaiinInfInteractor : IGetListRaiinInfInputPort
                 return new GetListRaiinInfOutputData(GetListRaiinInfStatus.InvalidPageSize);
             }
 
-            var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize, inputData.IsDeleted)
+            var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize, inputData.IsDeleted, inputData.IsAll)
                                 .Select(item => new GetListRaiinInfOutputItem(
                                                     item.HpId,
                                                     item.PtId,
@@ -58,9 +58,9 @@ public class GetListRaiinInfInteractor : IGetListRaiinInfInputPort
         }
     }
 
-    private List<GetListRaiinInfOutputItem> GetListRaiinInfos(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted)
+    private List<GetListRaiinInfOutputItem> GetListRaiinInfos(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted, bool isAll)
     {
-        List<GetListRaiinInfOutputItem> result = new(_raiinInfRepository.GetListRaiinInf(hpId, ptId, pageIndex, pageSize, isDeleted)
+        List<GetListRaiinInfOutputItem> result = new(_raiinInfRepository.GetListRaiinInf(hpId, ptId, pageIndex, pageSize, isDeleted, isAll)
                                                                         .Select(x => new GetListRaiinInfOutputItem(
                                                                                x.HpId,
                                                                                x.PtId,

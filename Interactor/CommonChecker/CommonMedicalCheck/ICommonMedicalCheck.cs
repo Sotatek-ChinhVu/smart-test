@@ -15,5 +15,7 @@ public interface ICommonMedicalCheck
 
     List<ErrorInfoModel> GetErrorDetails(int hpId, long ptId, int sinday, List<UnitCheckInfoModel> listErrorInfo);
 
+    List<DayLimitResultModel> CheckOnlyDayLimit(OrdInfoModel checkingOrder);
+
     void ReleaseResource();
 }
