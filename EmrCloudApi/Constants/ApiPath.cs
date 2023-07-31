@@ -40,6 +40,8 @@
         public const string SearchTenMstItem = "SearchTenMstItem";
         public const string ConvertStringChkJISKj = "ConvertStringChkJISKj";
         public const string GetTeikyoByomei = "GetTeikyoByomei";
+        public const string GetDrugAction = "GetDrugAction";
+        public const string GetDefaultPrecautions = "GetDefaultPrecautions";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
