@@ -7,7 +7,6 @@ using EmrCalculateApi.Realtime;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
 using System.Text.Json;
 
 namespace EmrCalculateApi.Controllers
