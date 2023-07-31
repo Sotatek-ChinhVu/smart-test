@@ -8,9 +8,6 @@ using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
-using System.Text.Json;
-using System.Net.Sockets;
-using System.Net;
 
 namespace EmrCalculateApi.Controllers
 {
@@ -21,7 +18,6 @@ namespace EmrCalculateApi.Controllers
         private readonly IIkaCalculateViewModel _ikaCalculate;
         private readonly IWebSocketService _webSocketService;
         private CancellationToken? _cancellationToken;
-        private Socket client;
 
         public CalculateController(IIkaCalculateViewModel ikaCalculate, IWebSocketService webSocketService)
         {
@@ -74,32 +70,6 @@ namespace EmrCalculateApi.Controllers
                 Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
                 Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
 
-                // info about localhost
-                var ipEntryAwait = Dns.GetHostEntryAsync(monthRequest.HostName);
-                ipEntryAwait.Wait();
-                IPHostEntry ipEntry = ipEntryAwait.Result;
-
-                // localhost ip address
-
-                IPAddress ip = ipEntry.AddressList[0];
-
-                IPEndPoint iPEndPoint = new(ip, 22222);
-
-                // client socket
-                client = new Socket(
-                    iPEndPoint.AddressFamily,
-                    SocketType.Stream,
-                    ProtocolType.Tcp
-                    );
-
-                var connect = client.ConnectAsync(iPEndPoint);
-                connect.Wait();
-
-                var resultForFrontEnd = Encoding.UTF8.GetBytes("start socket");
-                var sendMessage = client.SendAsync(resultForFrontEnd, socketFlags: SocketFlags.None);
-                sendMessage.Wait();
-
-                //await _webSocketService.SendMessageAsync(FunctionCodes.RunCalculateMonth, "CHECK");
                 _ikaCalculate.RunCalculateMonth(
                              monthRequest.HpId,
                              monthRequest.SeikyuYm,
@@ -110,19 +80,12 @@ namespace EmrCalculateApi.Controllers
             catch
             {
                 var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
-                var sendMessage = client.SendAsync(resultForFrontEnd, socketFlags: SocketFlags.None);
-                sendMessage.Wait();
-                //await _webSocketService.SendMessageAsync(FunctionCodes.RunCalculateMonth, resultForFrontEnd);
+                var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculateMonth, resultForFrontEnd);
+                sendMessager.Wait();
             }
             finally
             {
-                Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
-                Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
-                var resultForFrontEnd = Encoding.UTF8.GetBytes("end socket");
-                var sendMessage = client.SendAsync(resultForFrontEnd, socketFlags: SocketFlags.None);
-                sendMessage.Wait();
-                //client.Disconnect(true);
-                //HttpContext.Response.Body.Close();
+                HttpContext.Response.Body.Close();
             }
             return Ok();
         }
@@ -141,19 +104,8 @@ namespace EmrCalculateApi.Controllers
 
         private void UpdateRecalculationStatus(RecalculationStatus status)
         {
-            SendMessage(status);
-            //var result = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculateMonth, status);
-            //result.Wait();
-        }
-
-        private void SendMessage(RecalculationStatus status)
-        {
-            string result = JsonSerializer.Serialize(status);
-            var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
-
-            // send message to the server
-            var sendMessage = client.SendAsync(resultForFrontEnd, socketFlags: SocketFlags.None);
-            sendMessage.Wait();
+            var result = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculateMonth, status);
+            result.Wait();
         }
     }
 }
