@@ -113,6 +113,15 @@ namespace Domain.Models.Insurance
             HokensyaMst = new();
         }
 
+        public HokenInfModel(long ptId, int startDate, int endDate, int rousaiSaigaiKbn, int rousaiSyobyoDate)
+        {
+            PtId = ptId;
+            StartDate = startDate;
+            EndDate = endDate;
+            RousaiSaigaiKbn = rousaiSaigaiKbn;
+            RousaiSyobyoDate = rousaiSyobyoDate;
+        }
+
         public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();
 
         public int HpId { get; private set; }

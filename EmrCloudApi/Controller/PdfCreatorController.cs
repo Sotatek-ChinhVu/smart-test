@@ -13,6 +13,7 @@ using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.DrugInfo.Model;
 using Reporting.GrowthCurve.Model;
+using Reporting.KensaLabel.Model;
 using Reporting.Mappers.Common;
 using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
@@ -200,13 +201,9 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPreview)]
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
-        return Content(@"
-            <meta charset=""utf-8"">
-            <title>印刷対象が見つかりません。</title>
-            <p style='text-align: center;font-size: 25px;font-weight: 300'>Preview has been error, please check again later</p>
-            ", "text/html");
-        //var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
-        //return await RenderPdf(data, ReportType.Common, data.JobName);
+        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
+        var result = await RenderPdf(data, ReportType.Common, data.JobName);
+        return result;
     }
 
     [HttpGet(ApiPath.SyojyoSyoki)]
@@ -231,10 +228,11 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.MemoMsgPrint)]
-    public async Task<IActionResult> MemoMsgPrint([FromBody] MemoMsgPrintRequest request)
+    public async Task<IActionResult> MemoMsgPrint([FromForm] StringObjectRequest requestString)
     {
+        var request = JsonSerializer.Deserialize<MemoMsgPrintRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
-        return await RenderPdf(data, ReportType.Common, data.JobName);
+        return await RenderPdf(data, ReportType.Common, "MemoMsgPrint");
     }
 
     [HttpGet(ApiPath.ReceTarget)]
@@ -265,6 +263,13 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
+    [HttpGet(ApiPath.KensaLabel)]
+    public async Task<IActionResult> KensaLabel([FromQuery] KensaLabelRequest request)
+    {
+        var data = _reportService.GetKensaLabelPrintData(request.HpId, request.PtId, request.RaiinNo, request.SinDate, new KensaPrinterModel(request.ItemCd, request.ContainerName, request.ContainerCd, request.Count, request.PrinterName, request.InoutKbn, request.OdrKouiKbn));
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
     [HttpGet(ApiPath.AccountingCard)]
     public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
     {
@@ -281,8 +286,9 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.AccountingCardList)]
-    public async Task<IActionResult> GetAccountingCardListReportingData([FromBody] AccountingCardListRequest request)
+    public async Task<IActionResult> GetAccountingCardListReportingData([FromForm] StringObjectRequest requestString)
     {
+        var request = JsonSerializer.Deserialize<AccountingCardListRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetAccountingCardListReportingData(request.HpId, request.Targets, request.IncludeOutDrug, request.KaName, request.TantoName, request.UketukeSbt, request.Hoken);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }

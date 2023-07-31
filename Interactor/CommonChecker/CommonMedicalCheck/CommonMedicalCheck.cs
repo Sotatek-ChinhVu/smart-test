@@ -14,7 +14,6 @@ using Domain.Models.SpecialNote.SummaryInf;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
-using System.Reflection;
 using System.Text;
 using UseCase.Family;
 using UseCase.MedicalExamination.SaveMedical;
@@ -223,6 +222,20 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             });
         }
         return listUnitCheckErrorInfo;
+    }
+
+    public List<DayLimitResultModel> CheckOnlyDayLimit(OrdInfoModel checkingOrder)
+    {
+        UnitChecker<OrdInfoModel, OrdInfoDetailModel> dayLimitChecker =
+            new DayLimitChecker<OrdInfoModel, OrdInfoDetailModel>()
+            {
+                CheckType = RealtimeCheckerType.Days
+            };
+        InitUnitCheck(dayLimitChecker);
+
+        UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> checkedResult = dayLimitChecker.CheckOrderList(new List<OrdInfoModel>() { checkingOrder }, new(new(), new(), new()), new(), new(), true);
+        List<DayLimitResultModel>? result = checkedResult.ErrorInfo as List<DayLimitResultModel>;
+        return result ?? new List<DayLimitResultModel>();
     }
 
     private List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromOrder(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
@@ -757,9 +770,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<ErrorInfoModel> result = new List<ErrorInfoModel>();
 
         var errorGroup = (from a in allergyInfo
-                          group a by new { a.YjCd, a.AllergyYjCd , a.Id}
+                          group a by new { a.YjCd, a.AllergyYjCd, a.Id }
                           into gcs
-                          select new { gcs.Key.YjCd, gcs.Key.AllergyYjCd , gcs.Key.Id}
+                          select new { gcs.Key.YjCd, gcs.Key.AllergyYjCd, gcs.Key.Id }
                           ).ToList();
 
         foreach (var error in errorGroup)
