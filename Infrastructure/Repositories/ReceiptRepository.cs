@@ -3486,7 +3486,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     x.EndYm >= SeikyuYm)
                   .OrderBy(x => x.SortNo)
                   .AsEnumerable()
-                  .Select(x => new SokatuMstModel(x.PrefNo, x.ReportId, x.ReportEdaNo, x.ReportName ?? string.Empty))
+                  .Select(x => new SokatuMstModel(x.PrefNo, x.StartYm, x.EndYm, x.ReportId, x.ReportEdaNo, x.SortNo, x.ReportName ?? string.Empty, x.PrintType, x.PrintNoType, x.DataAll, x.DataDisk, x.DataPaper, x.DataKbn, x.DiskKind ?? string.Empty, x.DiskCnt, x.IsSort))
                   .ToList();
 
                 if (result != null && systemConf.Val != 1)
