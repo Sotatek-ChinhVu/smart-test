@@ -502,7 +502,7 @@ public class ReportService : IReportService
 
     // P24WelfareDisk
 
-    public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm, List<ReceiptListModel> receiptListModel, CoFileType printType)
+    public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm, List<ReceiptInputCsvModel> receiptListModel, CoFileType printType)
     {
         return _receiptPrintExcelService.GetReceiptPrintExcel(hpId, prefNo, reportId, reportEdaNo, dataKbn, seikyuYm, receiptListModel, printType);
     }

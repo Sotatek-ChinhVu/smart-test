@@ -1,14 +1,14 @@
 ﻿using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
-using ReceiptListModel = Reporting.ReceiptList.Model.ReceiptListModel;
+using Reporting.ReceiptList.Model;
 
 namespace Reporting.ReceiptList.Service
-{ 
+{
     public class ImportCSVCoReportService : IImportCSVCoReportService
     {
-        private List<ReceiptListModel>? receiptListModel;
+        private List<ReceiptInputCsvModel>? receiptListModel;
 
-        public CommonExcelReportingModel GetImportCSVCoReportServiceReportingData(List<ReceiptListModel> receiptListModel, CoFileType fileType, bool outputTitle = false)
+        public CommonExcelReportingModel GetImportCSVCoReportServiceReportingData(List<ReceiptInputCsvModel> receiptListModel, CoFileType fileType, bool outputTitle = false)
         {
             outputTitle = true;
             this.receiptListModel = receiptListModel;
@@ -68,7 +68,7 @@ namespace Reporting.ReceiptList.Service
                     );
             }
 
-            foreach (ReceiptListModel receiptList in this.receiptListModel)
+            foreach (ReceiptInputCsvModel receiptList in this.receiptListModel)
             {
                 string line = "";
                 // 請求
@@ -160,24 +160,5 @@ namespace Reporting.ReceiptList.Service
 
             return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, output);
         }
-
-        /*public ReceiptListModel OutputCsv(bool outputTitle)
-        {
-            if (IsPrinterRunning)
-            {
-                return ReceiptListModel();
-            }
-
-            if (receiptListModels == null || receiptListModels.Any() == false)
-            {
-                return ReceiptListModel();
-            }
-
-            
-
-            //int count = 0;
-            
-
-        }*/
     }
 }

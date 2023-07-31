@@ -15,7 +15,7 @@ public class ReceiptPrintExcelRequest : ReportRequestBase
 
     public int SeikyuYm { get; set; }
 
-    public List<ReceiptListModel> receiptListModel { get; set; }
+    public List<ReceiptInputCsvModel> receiptListModel { get; set; }
 
     public CoFileType printType { get; set; }
 }

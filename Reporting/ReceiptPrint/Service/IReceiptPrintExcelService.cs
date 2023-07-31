@@ -6,6 +6,6 @@ namespace Reporting.ReceiptPrint.Service
 {
     public interface IReceiptPrintExcelService
     {
-        CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm, List<ReceiptListModel> receiptListModel, CoFileType printType);
+        CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm, List<ReceiptInputCsvModel> receiptListModel, CoFileType printType);
     }
 }

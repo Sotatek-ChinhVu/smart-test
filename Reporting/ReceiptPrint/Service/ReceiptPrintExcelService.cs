@@ -1,12 +1,9 @@
-﻿using Domain.Models.Receipt.ReceiptListAdvancedSearch;
-using Reporting.CommonMasters.Enums;
+﻿using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReceiptList.Model;
 using Reporting.ReceiptList.Service;
 using Reporting.Sokatu.WelfareDisk.Service;
 using Reporting.Structs;
-using System.Collections.Generic;
-using ReceiptListModel = Reporting.ReceiptList.Model.ReceiptListModel;
 
 namespace Reporting.ReceiptPrint.Service
 {
@@ -26,20 +23,20 @@ namespace Reporting.ReceiptPrint.Service
         public ReceiptPrintExcelService(IP24WelfareDiskService p24WelfareDiskService, IImportCSVCoReportService importCSVCoReportService)
         {
             _p24WelfareDiskService = p24WelfareDiskService;
-            _importCSVCoReportService= importCSVCoReportService;
+            _importCSVCoReportService = importCSVCoReportService;
         }
 
-        public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm, List<ReceiptListModel> receiptListModel, CoFileType printType)
+        public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm, List<ReceiptInputCsvModel> receiptListModel, CoFileType printType)
         {
             CommonExcelReportingModel result = new();
             var seikyuType = GetSeikyuType(dataKbn);
             if (prefNo == 24 && reportId == 106 && reportEdaNo == 0)
             {
-                _p24WelfareDiskService.GetDataP24WelfareDisk(hpId, seikyuYm, seikyuType);
+                result = _p24WelfareDiskService.GetDataP24WelfareDisk(hpId, seikyuYm, seikyuType);
             }
             else if (printType == CoFileType.Csv)
             {
-                _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(receiptListModel, printType, false);
+                result = _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(receiptListModel, printType, false);
             }
             return result;
         }
