@@ -4,6 +4,7 @@ using Reporting.Accounting.Model.Output;
 using Reporting.AccountingCardList.Model;
 using Reporting.CommonMasters.Enums;
 using Reporting.DrugInfo.Model;
+using Reporting.GrowthCurve.Model;
 using Reporting.Karte1.Mapper;
 using Reporting.KensaLabel.Model;
 using Reporting.Mappers.Common;
@@ -71,6 +72,10 @@ public interface IReportService
     CommonReportingRequestModel GetDrugNoteSealPrintData(int hpId, long ptId, int sinDate, long raiinNo);
 
     CommonReportingRequestModel GetInDrugPrintData(int hpId, long ptId, int sinDate, long raiinNo);
+
+    CommonReportingRequestModel GetGrowthCurveA4PrintData(int hpId, GrowthCurveConfig growthCurveConfig);
+
+    CommonReportingRequestModel GetGrowthCurveA5PrintData(int hpId, GrowthCurveConfig growthCurveConfig);
 
     CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, int raiinNo);
 

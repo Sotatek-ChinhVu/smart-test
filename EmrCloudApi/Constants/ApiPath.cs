@@ -51,6 +51,7 @@
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
         public const string GetPtWeight = "GetPtWeight";
+        public const string GrowthCurve = "GrowthCurve";
         public const string GetStdPoint = "GetStdPoint";
 
         //Today Oder
@@ -324,6 +325,7 @@
         public const string GetListReceSeikyu = "GetListReceSeikyu";
         public const string SearchReceInf = "SearchReceInf";
         public const string SaveReceSeikyu = "SaveReceSeikyu";
+        public const string CancelSeikyu = "CancelSeikyu";
         public const string ImportFileReceSeikyu = "ImportFileReceSeikyu";
 
         //WeightedSetConfirmation

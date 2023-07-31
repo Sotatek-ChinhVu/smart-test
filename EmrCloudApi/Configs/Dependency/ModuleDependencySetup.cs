@@ -178,6 +178,8 @@ using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
 using Reporting.DrugNoteSeal.DB;
 using Reporting.DrugNoteSeal.Service;
+using Reporting.GrowthCurve.DB;
+using Reporting.GrowthCurve.Service;
 using Reporting.InDrug.DB;
 using Reporting.InDrug.Service;
 using Reporting.Karte1.DB;
@@ -542,6 +544,7 @@ using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
+using UseCase.ReceSeikyu.CancelSeikyu;
 using UseCase.ReceSeikyu.GetList;
 using UseCase.ReceSeikyu.ImportFile;
 using UseCase.ReceSeikyu.Save;
@@ -815,6 +818,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KokhoSokatuCoReportService, P14KokhoSokatuCoReportService>();
             services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
             services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
+            services.AddTransient<IGrowthCurveA4CoReportService, GrowthCurveA4CoReportService>();
+            services.AddTransient<IGrowthCurveA5CoReportService, GrowthCurveA5CoReportService>();
+            services.AddTransient<ISpecialNoteFinder, SpecialNoteFinder>();
             services.AddTransient<IP17KokhoSokatuCoReportService, P17KokhoSokatuCoReportService>();
             services.AddTransient<IP20KokhoSokatuCoReportService, P20KokhoSokatuCoReportService>();
             services.AddTransient<IP22KokhoSokatuCoReportService, P22KokhoSokatuCoReportService>();
@@ -851,7 +857,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
             #endregion Reporting
         }
-        
+
         private void SetupRepositories(IServiceCollection services)
         {
             services.AddTransient<IUserRepository, UserRepository>();
@@ -1399,6 +1405,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchReceInfInputData, SearchReceInfInteractor>();
             busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
             busBuilder.RegisterUseCase<ImportFileReceSeikyuInputData, ImportFileReceSeikyuInteractor>();
+            busBuilder.RegisterUseCase<CancelSeikyuInputData, CancelSeikyuInteractor>();
 
             //WeightedSetConfirmation
             busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
