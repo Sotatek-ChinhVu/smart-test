@@ -322,6 +322,7 @@
         public const string GetListReceSeikyu = "GetListReceSeikyu";
         public const string SearchReceInf = "SearchReceInf";
         public const string SaveReceSeikyu = "SaveReceSeikyu";
+        public const string CancelSeikyu = "CancelSeikyu";
         public const string ImportFileReceSeikyu = "ImportFileReceSeikyu";
 
         //WeightedSetConfirmation
