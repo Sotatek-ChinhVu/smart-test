@@ -8,20 +8,21 @@ using Reporting.Mappers.Common;
 
 namespace Reporting.GrowthCurve.Service;
 
-public class GrowthCurveA4CoReportService : GrowthCurveService, IGrowthCurveA4CoReportService
+public class GrowthCurveA5CoReportService : GrowthCurveService, IGrowthCurveA5CoReportService
 {
-    private readonly string fileName = "GrowthCurve_A4.rse";
+    private readonly string fileName = "GrowthCurve_A5.rse";
     private readonly ISpecialNoteFinder _specialNoteFinder;
     private List<PointModel> kanWeightPointCollection = new();
     private List<PointModel> kanHeightPointCollection = new();
-    public GrowthCurveA4CoReportService(ISpecialNoteFinder specialNoteFinder)
+    public GrowthCurveA5CoReportService(ISpecialNoteFinder specialNoteFinder)
     {
         _specialNoteFinder = specialNoteFinder;
-        CanvasWidth = 17800;
-        CanvasHeight = 24600;
+        CanvasWidth = 11900;
+        CanvasHeight = 16000;
+        RootAxis = new Point(1600, 3500);
     }
 
-    public CommonReportingRequestModel GetGrowthCurveA4PrintData(int hpId, GrowthCurveConfig growthCurveConfig)
+    public CommonReportingRequestModel GetGrowthCurveA5PrintData(int hpId, GrowthCurveConfig growthCurveConfig)
     {
         GrowthCurveConfig = growthCurveConfig;
 

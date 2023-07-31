@@ -68,10 +68,11 @@ public class ReportService : IReportService
     private readonly IKarte3CoReportService _karte3CoReportService;
     private readonly IAccountingCardListCoReportService _accountingCardListCoReportService;
     private readonly IInDrugCoReportService _inDrugCoReportService;
-    private readonly IGrowthCurveCoReportService _growthCurveCoReportService;
+    private readonly IGrowthCurveA4CoReportService _growthCurveA4CoReportService;
+    private readonly IGrowthCurveA5CoReportService _growthCurveA5CoReportService;
     private readonly IKensaLabelCoReportService _kensaLabelCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveCoReportService growthCurveCoReportService, IKensaLabelCoReportService kensaLabelCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -99,7 +100,8 @@ public class ReportService : IReportService
         _karte3CoReportService = karte3CoReportService;
         _accountingCardListCoReportService = accountingCardListCoReportService;
         _inDrugCoReportService = inDrugCoReportService;
-        _growthCurveCoReportService = growthCurveCoReportService;
+        _growthCurveA4CoReportService = growthCurveA4CoReportService;
+        _growthCurveA5CoReportService = growthCurveA5CoReportService;
         _kensaLabelCoReportService = kensaLabelCoReportService;
     }
 
@@ -148,7 +150,7 @@ public class ReportService : IReportService
     {
         return _accountingCardListCoReportService.GetAccountingCardListData(hpId, targets, includeOutDrug, kaName, tantoName, uketukeSbt, hoken);
     }
-    
+
     //MedicalRecordWebId
     public CommonReportingRequestModel GetMedicalRecordWebIdReportingData(int hpId, long ptId, int sinDate)
     {
@@ -502,6 +504,11 @@ public class ReportService : IReportService
 
     public CommonReportingRequestModel GetGrowthCurveA4PrintData(int hpId, GrowthCurveConfig growthCurveConfig)
     {
-        return _growthCurveCoReportService.GetGrowthCurveA4PrintData(hpId, growthCurveConfig);
+        return _growthCurveA4CoReportService.GetGrowthCurveA4PrintData(hpId, growthCurveConfig);
+    }
+
+    public CommonReportingRequestModel GetGrowthCurveA5PrintData(int hpId, GrowthCurveConfig growthCurveConfig)
+    {
+        return _growthCurveA5CoReportService.GetGrowthCurveA5PrintData(hpId, growthCurveConfig);
     }
 }

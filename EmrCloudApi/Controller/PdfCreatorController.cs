@@ -172,7 +172,15 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.GrowthCurve)]
     public async Task<IActionResult> GetGrowthCurvePrintData([FromQuery] GrowthCurvePrintDataRequest request)
     {
-        var data = _reportService.GetGrowthCurveA4PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        CommonReportingRequestModel data;
+        if (request.Type == 0)
+        {
+            data = _reportService.GetGrowthCurveA5PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        }
+        else
+        {
+            data = _reportService.GetGrowthCurveA4PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        }
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -196,11 +204,6 @@ public class PdfCreatorController : ControllerBase
         var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
         var result = await RenderPdf(data, ReportType.Common, data.JobName);
         return result;
-        //return Content(@"
-        //    <meta charset=""utf-8"">
-        //    <title>印刷対象が見つかりません。</title>
-        //    <p style='text-align: center;font-size: 25px;font-weight: 300'>Preview has been error, please check again later</p>
-        //    ", "text/html");
     }
 
     [HttpGet(ApiPath.SyojyoSyoki)]

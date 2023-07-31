@@ -819,7 +819,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KokhoSokatuCoReportService, P14KokhoSokatuCoReportService>();
             services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
             services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
-            services.AddTransient<IGrowthCurveCoReportService, GrowthCurveA4CoReportService>();
+            services.AddTransient<IGrowthCurveA4CoReportService, GrowthCurveA4CoReportService>();
+            services.AddTransient<IGrowthCurveA5CoReportService, GrowthCurveA5CoReportService>();
             services.AddTransient<ISpecialNoteFinder, SpecialNoteFinder>();
             services.AddTransient<IP17KokhoSokatuCoReportService, P17KokhoSokatuCoReportService>();
             services.AddTransient<IP20KokhoSokatuCoReportService, P20KokhoSokatuCoReportService>();
