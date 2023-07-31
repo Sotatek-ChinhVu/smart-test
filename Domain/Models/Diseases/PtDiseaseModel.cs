@@ -1,6 +1,5 @@
 ﻿using Domain.Constant;
 using Helper.Common;
-using Helper.Constants;
 using System.Text.Json.Serialization;
 using static Helper.Constants.PtDiseaseConst;
 
@@ -471,6 +470,20 @@ namespace Domain.Models.Diseases
             return this;
         }
 
+        public PtDiseaseModel(int hokenId, string byomeiCd, string byomei, int startDate, int tenkiDate, int syubyoKbn, long id, int delDate, int tenkiKbn, List<PrefixSuffixModel> prefixSuffixList)
+        {
+            HokenId = hokenId;
+            ByomeiCd = byomeiCd;
+            Byomei = byomei;
+            StartDate = startDate;
+            TenkiDate = tenkiDate;
+            SyubyoKbn = syubyoKbn;
+            Id = id;
+            DelDate = delDate;
+            TenkiKbn = tenkiKbn;
+            PrefixSuffixList = prefixSuffixList;
+        }
+
         public ValidationStatus Validation()
         {
             #region common
@@ -596,6 +609,8 @@ namespace Domain.Models.Diseases
             get => IsContinous || (StartDate <= (SinDate / 100 * 100 + 31) && TenkiDate >= (SinDate / 100 * 100 + 1));
         }
 
+        public int HokenId { get; private set; }
+
         public int HokenPid { get; private set; }
 
         public string Icd10 { get; set; }
@@ -710,5 +725,23 @@ namespace Domain.Models.Diseases
             SikkanCd = sikkanCd;
             return this;
         }
+
+        public List<string> GetAllSyusyokuCds()
+        {
+            var syusyokuCds = new List<string>();
+
+            foreach (var item in PrefixSuffixList)
+            {
+                if (string.IsNullOrEmpty(item.Name))
+                {
+                    continue;
+                }
+                syusyokuCds.Add(item.Name);
+            }
+
+            syusyokuCds.Sort();
+            return syusyokuCds;
+        }
+
     }
 }

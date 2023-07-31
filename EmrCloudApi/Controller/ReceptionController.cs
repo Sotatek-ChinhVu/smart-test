@@ -253,7 +253,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetListRaiinInfResponse>> GetList([FromQuery] GetListRaiinInfRequest req)
         {
-            var input = new GetListRaiinInfInputData(HpId, req.PtId, req.PageIndex, req.PageSize, req.IsDeleted);
+            var input = new GetListRaiinInfInputData(HpId, req.PtId, req.PageIndex, req.PageSize, req.IsDeleted, req.IsAll);
             var output = _bus.Handle(input);
             var presenter = new GetListRaiinInfPresenter();
             presenter.Complete(output);

@@ -28,6 +28,7 @@ public class ReceStatusItem
         IsOutput = model.IsOutput;
         StatusKbn = model.StatusKbn;
         IsPrechecked = model.IsPrechecked;
+        IsOutput = model.IsOutput;
     }
 
     public long PtId { get; private set; }

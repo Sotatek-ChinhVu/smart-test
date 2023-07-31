@@ -1,4 +1,5 @@
 ﻿using Domain.Constant;
+using Domain.Models.Family;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Common;
@@ -1317,16 +1318,26 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted)
+        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted, bool isAll)
         {
             List<ReceptionModel> result = new();
-
-            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId &&
-                                                                       x.PtId == ptId && (x.IsDeleted == DeleteTypes.None || isDeleted == 1 || (x.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)))
-                                                           .OrderByDescending(x => x.SinDate)
-                                                           .Skip((pageIndex - 1) * pageSize)
-                                                           .Take(pageSize)
-                                                           .ToList();
+            var raiinInfs = new List<RaiinInf>();
+            if (isAll)
+            {
+                raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId &&
+                                                        x.PtId == ptId && (x.IsDeleted == DeleteTypes.None || isDeleted == 1 || (x.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)))
+                                            .OrderByDescending(x => x.SinDate)
+                                            .ToList();
+            }
+            else
+            {
+                raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId &&
+                                                           x.PtId == ptId && (x.IsDeleted == DeleteTypes.None || isDeleted == 1 || (x.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)))
+                                               .OrderByDescending(x => x.SinDate)
+                                               .Skip((pageIndex - 1) * pageSize)
+                                               .Take(pageSize)
+                                               .ToList();
+            }
 
             var tantoIdList = raiinInfs.Select(item => item.TantoId).Distinct().ToList();
             var kaIdIdList = raiinInfs.Select(item => item.KaId).Distinct().ToList();

@@ -130,6 +130,7 @@ using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
 using Interactor.RaiinListSetting;
 using Interactor.Receipt;
+using Interactor.ReceiptCheck;
 using Interactor.Reception;
 using Interactor.ReceptionInsurance;
 using Interactor.ReceptionSameVisit;
@@ -177,12 +178,16 @@ using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
 using Reporting.DrugNoteSeal.DB;
 using Reporting.DrugNoteSeal.Service;
+using Reporting.GrowthCurve.DB;
+using Reporting.GrowthCurve.Service;
 using Reporting.InDrug.DB;
 using Reporting.InDrug.Service;
 using Reporting.Karte1.DB;
 using Reporting.Karte1.Service;
 using Reporting.Karte3.DB;
 using Reporting.Karte3.Service;
+using Reporting.KensaLabel.DB;
+using Reporting.KensaLabel.Service;
 using Reporting.Kensalrai.DB;
 using Reporting.Kensalrai.Service;
 using Reporting.MedicalRecordWebId.DB;
@@ -427,6 +432,7 @@ using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
+using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -438,6 +444,7 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
+using UseCase.NextOrder.Check;
 using UseCase.NextOrder.CheckNextOrdHaveOdr;
 using UseCase.NextOrder.Get;
 using UseCase.NextOrder.GetList;
@@ -487,6 +494,7 @@ using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
+using UseCase.Receipt.GetListKaikeiInf;
 using UseCase.Receipt.GetListReceInf;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
@@ -514,6 +522,8 @@ using UseCase.Receipt.SaveReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ValidateCreateUKEFile;
+using UseCase.ReceiptCheck.Recalculation;
+using UseCase.ReceiptCheck.ReceiptInfEdit;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastKarute;
@@ -534,6 +544,7 @@ using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
+using UseCase.ReceSeikyu.CancelSeikyu;
 using UseCase.ReceSeikyu.GetList;
 using UseCase.ReceSeikyu.ImportFile;
 using UseCase.ReceSeikyu.Save;
@@ -787,9 +798,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KoukiSeikyuCoReportService, P14KoukiSeikyuCoReportService>();
             services.AddTransient<IP17KoukiSeikyuCoReportService, P17KoukiSeikyuCoReportService>();
             services.AddTransient<IP20KoukiSeikyuCoReportService, P20KoukiSeikyuCoReportService>();
+            services.AddTransient<IP37KoukiSokatuCoReportService, P37KoukiSokatuCoReportService>();
             services.AddTransient<IP25KokhoSokatuCoReportService, P25KokhoSokatuCoReportService>();
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IP41KokhoSokatuCoReportService, P41KokhoSokatuCoReportService>();
             services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
             services.AddTransient<IP08KokhoSeikyuCoReportService, P08KokhoSeikyuCoReportService>();
             services.AddTransient<IP22WelfareSeikyuCoReportService, P22WelfareSeikyuCoReportService>();
@@ -806,6 +819,36 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KokhoSokatuCoReportService, P14KokhoSokatuCoReportService>();
             services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
             services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
+            services.AddTransient<IGrowthCurveA4CoReportService, GrowthCurveA4CoReportService>();
+            services.AddTransient<IGrowthCurveA5CoReportService, GrowthCurveA5CoReportService>();
+            services.AddTransient<ISpecialNoteFinder, SpecialNoteFinder>();
+            services.AddTransient<IP17KokhoSokatuCoReportService, P17KokhoSokatuCoReportService>();
+            services.AddTransient<IP20KokhoSokatuCoReportService, P20KokhoSokatuCoReportService>();
+            services.AddTransient<IP22KokhoSokatuCoReportService, P22KokhoSokatuCoReportService>();
+            services.AddTransient<IP23KokhoSokatuCoReportService, P23KokhoSokatuCoReportService>();
+            services.AddTransient<IP26KokhoSokatuInCoReportService, P26KokhoSokatuInCoReportService>();
+            services.AddTransient<IP33KokhoSokatuCoReportService, P33KokhoSokatuCoReportService>();
+            services.AddTransient<IP34KokhoSokatuCoReportService, P34KokhoSokatuCoReportService>();
+            services.AddTransient<IP35KokhoSokatuCoReportService, P35KokhoSokatuCoReportService>();
+            services.AddTransient<IP37KokhoSokatuCoReportService, P37KokhoSokatuCoReportService>();
+            services.AddTransient<IP26KokhoSokatuOutCoReportService, P26KokhoSokatuOutCoReportService>();
+            services.AddTransient<IP40KokhoSokatuCoReportService, P40KokhoSokatuCoReportService>();
+            services.AddTransient<IP42KokhoSokatuCoReportService, P42KokhoSokatuCoReportService>();
+            services.AddTransient<IP12KokhoSokatuCoReportService, P12KokhoSokatuCoReportService>();
+            services.AddTransient<IP13KokhoSokatuCoReportService, P13KokhoSokatuCoReportService>();
+            services.AddTransient<IP43KokhoSokatuCoReportService, P43KokhoSokatuCoReportService>();
+            services.AddTransient<IP43KoukiSokatuCoReportService, P43KoukiSokatuCoReportService>();
+            services.AddTransient<IP44KokhoSokatuCoReportService, P44KokhoSokatuCoReportService>();
+            services.AddTransient<IP45KokhoSokatuCoReportService, P45KokhoSokatuCoReportService>();
+            services.AddTransient<IP45KoukiSokatuCoReportService, P45KoukiSokatuCoReportService>();
+            services.AddTransient<IP12KokhoSeikyuCoReportService, P12KokhoSeikyuCoReportService>();
+            services.AddTransient<IP13KokhoSeikyuCoReportService, P13KokhoSeikyuCoReportService>();
+            services.AddTransient<IP14KokhoSeikyuCoReportService, P14KokhoSeikyuCoReportService>();
+            services.AddTransient<IP20KokhoSeikyuCoReportService, P20KokhoSeikyuCoReportService>();
+            services.AddTransient<IP21KokhoSeikyuCoReportService, P21KokhoSeikyuCoReportService>();
+            services.AddTransient<IP22KokhoSeikyuCoReportService, P22KokhoSeikyuCoReportService>();
+            services.AddTransient<IP23KokhoSeikyuCoReportService, P23KokhoSeikyuCoReportService>();
+            services.AddTransient<IP24KokhoSeikyuCoReportService, P24KokhoSeikyuCoReportService>();
             services.AddTransient<IP24WelfareDiskService, P24WelfareDiskService>();
             services.AddTransient<IReceiptPrintExcelService, ReceiptPrintExcelService>();
 
@@ -912,6 +955,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoPtByomeiFinder, CoPtByomeiFinder>();
             services.AddTransient<ICheckOpenReportingService, CheckOpenReportingService>();
             services.AddTransient<IUserTokenRepository, UserTokenRepository>();
+            services.AddTransient<IKensaLabelCoReportService, KensaLabelCoReportService>();
+            services.AddTransient<IKensaLabelFinder, KensaLabelFinder>();
             services.AddTransient<IGetCommonDrugInf, GetCommonDrugInf>();
         }
 
@@ -1070,6 +1115,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSinkouCountInMonthInputData, GetSinkouCountInMonthInteractor>();
             busBuilder.RegisterUseCase<CheckNextOrdHaveOdrInputData, CheckNextOrdHaveInteractor>();
             busBuilder.RegisterUseCase<GetHeaderVistitDateInputData, GetHeaderVistitDateInteractor>();
+            busBuilder.RegisterUseCase<CheckUpsertNextOrderInputData, CheckUpsertNextOrderInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
@@ -1160,6 +1206,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetCmtCheckMstListInputData, GetCmtCheckMstListInteractor>();
             busBuilder.RegisterUseCase<SearchTenMstItemInputData, SearchTenMstItemInteractor>();
             busBuilder.RegisterUseCase<ConvertStringChkJISKjInputData, ConvertStringChkJISKjInteractor>();
+            busBuilder.RegisterUseCase<GetTeikyoByomeiInputData, GetTeikyoByomeiInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -1349,12 +1396,16 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
             busBuilder.RegisterUseCase<SaveReceStatusInputData, SaveReceStatusInteractor>();
             busBuilder.RegisterUseCase<GetReceStatusInputData, GetReceStatusInteractor>();
+            busBuilder.RegisterUseCase<ReceiptCheckRecalculationInputData, ReceiptCheckRecalculationInteractor>();
+            busBuilder.RegisterUseCase<DeleteReceiptInfEditInputData, DeleteReceiptInfEditInteractor>();
+            busBuilder.RegisterUseCase<GetListKaikeiInfInputData, GetListKaikeiInfInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
             busBuilder.RegisterUseCase<SearchReceInfInputData, SearchReceInfInteractor>();
             busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
             busBuilder.RegisterUseCase<ImportFileReceSeikyuInputData, ImportFileReceSeikyuInteractor>();
+            busBuilder.RegisterUseCase<CancelSeikyuInputData, CancelSeikyuInteractor>();
 
             //WeightedSetConfirmation
             busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();

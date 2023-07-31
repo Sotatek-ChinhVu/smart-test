@@ -4,21 +4,25 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
 {
     public class KoukiSeikyuMapper : CommonReportingRequest
     {
-        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+        private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, string> _extralData;
         private readonly string _formFileName;
         private readonly Dictionary<string, bool> _visibleFieldData;
+        private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
+        private readonly Dictionary<string, bool> _visibleAtPrint;
 
-        public KoukiSeikyuMapper(Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
+        public KoukiSeikyuMapper(Dictionary<int, ReportConfigModel> reportConfigPerPage, Dictionary<int, Dictionary<string, string>> setFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData, Dictionary<string, bool> visibleAtPrint)
         {
-            _singleFieldDataM = singleFieldDataM;
+            _reportConfigPerPage = reportConfigPerPage;
+            _setFieldData = setFieldData;
             _listTextData = listTextData;
             _extralData = extralData;
             _formFileName = formFileName;
             _singleFieldData = singleFieldData;
             _visibleFieldData = visibleFieldData;
+            _visibleAtPrint = visibleAtPrint;
         }
 
         public override int GetReportType()
@@ -63,7 +67,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
 
         public override Dictionary<int, Dictionary<string, string>> GetSetFieldData()
         {
-            return _singleFieldDataM;
+            return _setFieldData;
         }
         public override Dictionary<string, string> GetFileNamePageMap()
         {
@@ -77,6 +81,16 @@ namespace Reporting.Sokatu.KoukiSeikyu.Mapper
         public override Dictionary<string, bool> GetVisibleFieldData()
         {
             return _visibleFieldData;
+        }
+
+        public override Dictionary<int, ReportConfigModel> GetReportConfigModelPerPage()
+        {
+            return _reportConfigPerPage; 
+        }
+
+        public override Dictionary<string, bool> GetVisibleAtPrint()
+        {
+            return _visibleAtPrint;
         }
     }
 }

@@ -126,7 +126,7 @@ namespace Interactor.MedicalExamination
                 }
 
                 return new GetCheckDiseaseOutputData(
-                       result.Select(r => new GetCheckDiseaseItemOutputData(r.Item1, r.Item2, r.Item3.Select(r3 =>
+                       result.Select(r => new GetCheckDiseaseItemOutputData(r.Item1, r.Item2, r.Item3.OrderByDescending(item => item.IsAdopted).ThenBy(item => item.Byomei).Select(r3 =>
                        new CheckedDiseaseItem(r3.SikkanCd, r3.NanByoCd, r3.Byomei, r3.OdrItemNo, new PtDiseaseItem(r3.PtDiseaseModel), new ByomeiItem(r3.ByomeiMst), r3.IsAdopted)).ToList())).ToList(), GetCheckDiseaseStatus.Successed);
             }
             catch
