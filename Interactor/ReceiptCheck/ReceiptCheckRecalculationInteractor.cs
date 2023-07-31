@@ -109,17 +109,13 @@ namespace Interactor.ReceiptCheck
 
                 errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.PtIds, inputData.SeikyuYm);
 
+                SendMessenger(new RecalculationStatus(false, 4, 0, 0, errorText));
                 _receiptRepository.UpdateReceStatus(inputData.ReceStatus, inputData.HpId, inputData.UserId);
 
                 return new ReceiptCheckRecalculationOutputData(true);
             }
             finally
             {
-                if (!string.IsNullOrEmpty(errorText))
-                {
-                    SendMessenger(new RecalculationStatus(false, 4, 0, 0, errorText));
-                }
-
                 SendMessenger(new RecalculationStatus(true, 5, 0, 0, errorText));
 
                 _calculationInfRepository.ReleaseResource();
