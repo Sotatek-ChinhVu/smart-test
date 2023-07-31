@@ -116,7 +116,7 @@ namespace Interactor.ReceiptCheck
             }
             finally
             {
-                SendMessenger(new RecalculationStatus(true, 5, 0, 0, errorText));
+                SendMessenger(new RecalculationStatus(true, 5, 0, 0, string.Empty));
 
                 _calculationInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
@@ -1839,9 +1839,9 @@ namespace Interactor.ReceiptCheck
                 errors.Insert(0, "■請求できない項目がオーダーされています。");
                 foreach (var error in errors)
                 {
-                    ErrorText += "\n" + error;
+                    ErrorText += Environment.NewLine + error;
                 }
-                ErrorText += "\n";
+                ErrorText += Environment.NewLine;
             }
 
             //check use Rosai Receden but not set 災害区分
@@ -1863,9 +1863,9 @@ namespace Interactor.ReceiptCheck
                     rosaiRecedenErrors.Insert(0, "■災害区分が設定されていません。");
                     foreach (var error in rosaiRecedenErrors)
                     {
-                        ErrorText += "\n" + error;
+                        ErrorText += Environment.NewLine + error;
                     }
-                    ErrorText += "\n";
+                    ErrorText += Environment.NewLine;
                 }
             }
 
@@ -1889,9 +1889,9 @@ namespace Interactor.ReceiptCheck
                 receSeiKyuErrors.Insert(0, "■返戻/月遅れ登録に誤りがあるため、レセプトを作成できません。");
                 foreach (var error in receSeiKyuErrors)
                 {
-                    ErrorText += "\n" + error;
+                    ErrorText += Environment.NewLine + error;
                 }
-                ErrorText += "\n";
+                ErrorText += Environment.NewLine;
             }
 
             //check patient ZaiganIso(在がん医総）
@@ -1928,12 +1928,12 @@ namespace Interactor.ReceiptCheck
                             if (santeiNextMonthErrors.Count > 0)
                             {
                                 santeiNextMonthErrors.Insert(0, "■週単位計算項目　次月に月またぎで算定要件(暦週)を満たしています。" +
-                                                                "\n" + "    診療内容を確認してください。");
+                                                                Environment.NewLine + "    診療内容を確認してください。");
                                 foreach (var error in santeiNextMonthErrors)
                                 {
-                                    ErrorText += "\n" + error;
+                                    ErrorText += Environment.NewLine + error;
                                 }
-                                ErrorText += "\n";
+                                ErrorText += Environment.NewLine;
                             }
                         }
                     }
@@ -1963,12 +1963,12 @@ namespace Interactor.ReceiptCheck
                             if (santeiLastMonthErrors.Count > 0)
                             {
                                 santeiLastMonthErrors.Insert(0, "■週単位計算項目　前月に月またぎで算定要件(暦週)を満たしています。" +
-                                                                "\n" + "    診療内容を確認してください。");
+                                                                Environment.NewLine + "    診療内容を確認してください。");
                                 foreach (var error in santeiLastMonthErrors)
                                 {
-                                    ErrorText += "\n" + error;
+                                    ErrorText += Environment.NewLine + error;
                                 }
-                                ErrorText += "\n";
+                                ErrorText += Environment.NewLine;
                             }
                         }
                     }
