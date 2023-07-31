@@ -51,6 +51,7 @@
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
         public const string GetPtWeight = "GetPtWeight";
+        public const string GrowthCurve = "GrowthCurve";
         public const string GetStdPoint = "GetStdPoint";
 
         //Today Oder
