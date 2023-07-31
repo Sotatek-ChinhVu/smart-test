@@ -12,13 +12,17 @@ namespace Domain.Models.ReceSeikyu
 
         bool InsertNewReceSeikyu(List<ReceSeikyuModel> listInsert, int userId, int hpId);
 
+        int InsertNewReceSeikyu(ReceSeikyuModel model, int userId, int hpId);
+
+        bool UpdateReceSeikyu(List<ReceSeikyuModel> receSeikyuList, int userId, int hpId);
+
         void EntryDeleteHenJiyuu(long ptId, int sinYm, int preHokenId, int userId);
 
         bool SaveReceSeiKyu(int hpId, int userId, List<ReceSeikyuModel> data);
 
         bool RemoveReceSeikyuDuplicateIfExist(long ptId, int sinYm, int hokenId, int userId, int hpId);
 
-        bool UpdateSeikyuYmReceipSeikyuIfExist(long ptId, int sinYm, int hokenId , int seikyuYm, int userId, int hpId);
+        bool UpdateSeikyuYmReceipSeikyuIfExist(long ptId, int sinYm, int hokenId, int seikyuYm, int userId, int hpId);
 
         bool IsReceSeikyuExisted(int hpId, long ptId, int sinYm, int hokenId);
 
@@ -33,6 +37,8 @@ namespace Domain.Models.ReceSeikyu
         void InsertSingleRerikiInf(int hpId, long ptId, int sinYm, int hokenId, string searchNo, string rireki, int userId);
 
         void InsertSingleHenJiyuu(int hpId, long ptId, int sinYm, int hokenId, string hosoku, string henreiJiyuuCd, string henreiJiyuu, int userId);
+
+        ReceSeikyuModel GetReceSeikyuDuplicate(int hpId, long ptId, int sinYm, int hokenId);
 
         bool SaveChangeImportFileRececeikyus();
     }

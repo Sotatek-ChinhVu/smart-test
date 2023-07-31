@@ -108,6 +108,7 @@
         public const string AccountingCard = "AccountingCard";
         public const string ExportKarte2 = "ExportKarte2";
         public const string ExportKarte3 = "ExportKarte3";
+        public const string KensaLabel = "KensaLabel";
         public const string AccountingCardList = "AccountingCardList";
 
         //PatientInfor
@@ -283,6 +284,7 @@
         public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
         public const string GetListSinKoui = "GetListSinKoui";
         public const string DeleteReceiptInfEdit = "DeleteReceiptInfEdit";
+        public const string GetListKaikeiInf = "GetListKaikeiInf";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -320,6 +322,7 @@
         public const string GetListReceSeikyu = "GetListReceSeikyu";
         public const string SearchReceInf = "SearchReceInf";
         public const string SaveReceSeikyu = "SaveReceSeikyu";
+        public const string CancelSeikyu = "CancelSeikyu";
         public const string ImportFileReceSeikyu = "ImportFileReceSeikyu";
 
         //WeightedSetConfirmation
@@ -371,6 +374,7 @@
 
         //NextOrder
         public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
+        public const string CheckUpsertNextOrder = "CheckUpsertNextOrder";
 
         public const string Test = "Test";
     }

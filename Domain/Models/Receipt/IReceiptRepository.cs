@@ -40,7 +40,7 @@ public interface IReceiptRepository : IRepositoryBase
 
     bool SaveSyobyoKeikaList(int hpId, int userId, List<SyobyoKeikaModel> syoukiInfList);
 
-    bool SaveReceCheckCmtList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckCmtModel> receCheckCmtList);
+    List<ReceCheckCmtModel> SaveReceCheckCmtList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckCmtModel> receCheckCmtList);
 
     bool CheckExistSeqNoReceCheckCmtList(int hpId, int hokenId, int sinYm, long ptId, List<int> seqNoList);
 
@@ -124,9 +124,13 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<int> GetListKaikeiInf(int hpId, long ptId);
 
+    List<PtHokenInfKaikeiModel> GetListKaikeiInf(int hpId, int sinYm, long ptId);
+
     bool CheckExistSeqNoReceCheckErrorList(int hpId, int hokenId, int sinYm, long ptId, List<ReceCheckErrModel> receCheckErrorList);
 
     bool SaveReceCheckErrList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckErrModel> receCheckErrorList);
 
     void UpdateReceStatus(ReceStatusModel receStatusUpdate, int hpId, int userId);
+
+    void ClearReceCmtErr(int hpId, List<ReceCheckErrModel> receRecalculationList);
 }
