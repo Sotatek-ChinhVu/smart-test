@@ -3,6 +3,7 @@ using EmrCalculateApi.Futan.ViewModels;
 using EmrCalculateApi.Ika.ViewModels;
 using EmrCalculateApi.Implementation;
 using EmrCalculateApi.Interface;
+using EmrCalculateApi.Realtime;
 using EmrCalculateApi.ReceFutan.ViewModels;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -13,7 +14,7 @@ using Serilog.Events;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddSignalR();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -40,6 +41,7 @@ services.AddScoped<IEmrLogger, EmrLogger>();
 services.AddScoped<IFutancalcViewModel, FutancalcViewModel>();
 services.AddScoped<IReceFutanViewModel, ReceFutanViewModel>();
 services.AddScoped<IIkaCalculateViewModel, IkaCalculateViewModel>();
+services.AddScoped<IWebSocketService, WebSocketService>();
 
 //Serilog 
 builder.Host.UseSerilog((ctx, lc) => lc
@@ -94,6 +96,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// SignalR Hub
+app.MapHub<CommonHub>("/CommonHub");
 
 //Serilog 
 app.UseSerilogRequestLogging();

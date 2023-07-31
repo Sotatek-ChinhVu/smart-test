@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Futan;
 using EmrCalculateApi.Interface;
+using EmrCalculateApi.Realtime;
 using EmrCalculateApi.Requests;
 using EmrCalculateApi.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +12,11 @@ namespace EmrCalculateApi.Controllers
     public class CalculateController : ControllerBase
     {
         private readonly IIkaCalculateViewModel _ikaCalculate;
-        public CalculateController(IIkaCalculateViewModel ikaCalculate)
+        private readonly IWebSocketService  _webSocketService;
+        public CalculateController(IIkaCalculateViewModel ikaCalculate, IWebSocketService webSocketService)
         {
             _ikaCalculate = ikaCalculate;
+            _webSocketService = webSocketService;
         }
 
         [HttpPost("RunCalculateOne")]
@@ -59,6 +62,18 @@ namespace EmrCalculateApi.Controllers
                 monthRequest.SeikyuYm,
                 monthRequest.PtIds,
                 monthRequest.PreFix);
+
+            return Ok();
+        }
+
+        [HttpPost("Test")]
+        public async Task<ActionResult> Test()
+        {
+            for (int i = 0; i < length; i++)
+            {
+
+            }
+            await _webSocketService.SendMessageAsync("MessageTest", "abc");
 
             return Ok();
         }
