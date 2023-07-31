@@ -6,7 +6,7 @@ namespace Domain.Models.ReceSeikyu
 {
     public class ReceSeikyuModel
     {
-        public ReceSeikyuModel(int sinDate, int hpId, long ptId, string ptName, int sinYm, int receListSinYm, int hokenId, string hokensyaNo, int seqNo, int seikyuYm, int seikyuKbn, int preHokenId, string cmt, long ptNum, int hokenKbn, string houbetu, int hokenStartDate, int hokenEndDate, bool isModified, int originSeikyuYm, int originSinYm, bool isAddNew , int isDeleted , bool isChecked, List<RecedenHenJiyuuModel> listRecedenHenJiyuuModel)
+        public ReceSeikyuModel(int sinDate, int hpId, long ptId, string ptName, int sinYm, int receListSinYm, int hokenId, string hokensyaNo, int seqNo, int seikyuYm, int seikyuKbn, int preHokenId, string cmt, long ptNum, int hokenKbn, string houbetu, int hokenStartDate, int hokenEndDate, bool isModified, int originSeikyuYm, int originSinYm, bool isAddNew, int isDeleted, bool isChecked, List<RecedenHenJiyuuModel> listRecedenHenJiyuuModel)
         {
             SinDay = sinDate;
             HpId = hpId;
@@ -47,6 +47,42 @@ namespace Domain.Models.ReceSeikyu
             PtNum = ptNum;
             Houbetu = string.Empty;
             ListRecedenHenJiyuuModel = new();
+        }
+
+        public ReceSeikyuModel(long ptId, int seikyuKbn, int seikyuYm, int sinYm, int hokenId)
+        {
+            PtId = ptId;
+            SeikyuYm = seikyuYm;
+            SinYm = sinYm;
+            HokenId = hokenId;
+            SeikyuKbn = seikyuKbn;
+            HokensyaNo = string.Empty;
+            Cmt = string.Empty;
+            Houbetu = string.Empty;
+            PtName = string.Empty;
+            ListRecedenHenJiyuuModel = new();
+        }
+
+        public ReceSeikyuModel()
+        {
+            PtName = string.Empty;
+            HokensyaNo = string.Empty;
+            Cmt = string.Empty;
+            Houbetu = string.Empty;
+            ListRecedenHenJiyuuModel = new();
+        }
+
+        public ReceSeikyuModel UpdateReceSeikyuModel(int isDeleted)
+        {
+            IsDeleted = isDeleted;
+            return this;
+        }
+
+        public ReceSeikyuModel UpdateReceSeikyuModel(int preHokenId, string cmt)
+        {
+            PreHokenId = preHokenId;
+            Cmt = cmt;
+            return this;
         }
 
         public int SinDay { get; private set; }
