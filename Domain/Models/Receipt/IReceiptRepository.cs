@@ -34,6 +34,8 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int sinYm);
 
+    bool CheckExisReceInfEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
     bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
 
     bool SaveSyoukiInfList(int hpId, int userId, List<SyoukiInfModel> syoukiInfList);

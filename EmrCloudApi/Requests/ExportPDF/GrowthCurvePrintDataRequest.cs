@@ -2,6 +2,7 @@
 {
     public class GrowthCurvePrintDataRequest : ReportRequestBase
     {
+        public int Type { get; set; }
         public long PtNum { get; set; }
         public long PtId { get; set; }
         public string PtName { get; set; } = string.Empty;

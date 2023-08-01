@@ -533,6 +533,7 @@ namespace Infrastructure.Repositories
         public void Dispose()
         {
             _userInfoService.Dispose();
+            _kaService.Dispose();
         }
         #region private method
         private long SearchKarte(int hpId, long ptId, int isDeleted, List<long> raiinNoList, string keyWord, bool isNext)

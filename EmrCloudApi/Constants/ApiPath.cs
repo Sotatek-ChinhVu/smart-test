@@ -111,6 +111,8 @@
         public const string ExportKarte3 = "ExportKarte3";
         public const string KensaLabel = "KensaLabel";
         public const string AccountingCardList = "AccountingCardList";
+        public const string WelfareDisk = "WelfareDisk";
+        public const string ReceListCsv = "ReceListCsv";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -286,6 +288,7 @@
         public const string GetListSinKoui = "GetListSinKoui";
         public const string DeleteReceiptInfEdit = "DeleteReceiptInfEdit";
         public const string GetListKaikeiInf = "GetListKaikeiInf";
+        public const string CheckExisReceInfEdit = "CheckExisReceInfEdit";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";

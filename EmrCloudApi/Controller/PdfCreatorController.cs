@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using ClosedXML.Excel;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.DrugInfor;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.DrugInfor;
@@ -172,7 +173,15 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.GrowthCurve)]
     public async Task<IActionResult> GetGrowthCurvePrintData([FromQuery] GrowthCurvePrintDataRequest request)
     {
-        var data = _reportService.GetGrowthCurveA4PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        CommonReportingRequestModel data;
+        if (request.Type == 0)
+        {
+            data = _reportService.GetGrowthCurveA5PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        }
+        else
+        {
+            data = _reportService.GetGrowthCurveA4PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        }
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -196,11 +205,6 @@ public class PdfCreatorController : ControllerBase
         var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
         var result = await RenderPdf(data, ReportType.Common, data.JobName);
         return result;
-        //return Content(@"
-        //    <meta charset=""utf-8"">
-        //    <title>印刷対象が見つかりません。</title>
-        //    <p style='text-align: center;font-size: 25px;font-weight: 300'>Preview has been error, please check again later</p>
-        //    ", "text/html");
     }
 
     [HttpGet(ApiPath.SyojyoSyoki)]
@@ -223,6 +227,21 @@ public class PdfCreatorController : ControllerBase
         var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
+
+    [HttpGet(ApiPath.WelfareDisk)]
+    public IActionResult GenerateKarte1Report([FromQuery] ReceiptPrintExcelRequest request)
+    {
+        var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
+        return RenderExcel(data);
+    }
+
+    [HttpPost(ApiPath.ReceListCsv)]
+    public IActionResult GenerateKarteCsvReport([FromBody] ReceiptListExcelRequest request)
+    {
+        var data = _reportService.GetReceiptListExcel(request.receiptListModel);
+        return RenderExcel(data);
+    }
+
 
     [HttpPost(ApiPath.MemoMsgPrint)]
     public async Task<IActionResult> MemoMsgPrint([FromForm] StringObjectRequest requestString)
@@ -532,5 +551,43 @@ public class PdfCreatorController : ControllerBase
                    request.RaiinNo,
                    request.OyaRaiinNo
                );
+    }
+
+    private IActionResult RenderExcel(CommonExcelReportingModel dataModel)
+    {
+        var dataList = dataModel.Data;
+        if (!dataList.Any())
+        {
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
+        }
+        string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        using (var workbook = new XLWorkbook())
+        {
+            IXLWorksheet worksheet =
+            workbook.Worksheets.Add(dataModel.SheetName);
+            int rowIndex = 1;
+            foreach (var row in dataList)
+            {
+                List<string> colDataList = row.Split(',').ToList();
+                int colIndex = 1;
+                foreach (var cellData in colDataList)
+                {
+                    worksheet.Cell(rowIndex, colIndex).Value = cellData;
+                    colIndex++;
+                }
+                rowIndex++;
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
+                return File(content, contentType, dataModel.FileName);
+            }
+        }
     }
 }
