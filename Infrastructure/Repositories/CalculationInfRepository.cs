@@ -86,6 +86,28 @@ namespace Infrastructure.Repositories
             var prefixList = Enumerable.Range(1, 21)
                                        .Select(i => new PrefixSuffixModel($"SyusyokuCd{i}", ptByomei.GetPropertyValueOrDefault($"SyusyokuCd{i}", string.Empty)))
                                        .ToList();
+            var byomeiCds = prefixList.Where(x => x.Name != string.Empty).Select(x => x.Name).Distinct().ToList();
+
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => byomeiCds.Contains(b.ByomeiCd)).ToList();
+
+            foreach (var item in byomeiCds)
+            {
+                var byomei = byomeiMstList.FirstOrDefault(b => item == b.ByomeiCd);
+                if (byomei == null || byomei.ByomeiCd == null)
+                {
+                    continue;
+                }
+
+                if (byomei.ByomeiCd.StartsWith('8'))
+                {
+                    ptByomei.Byomei = ptByomei.Byomei + byomei.Byomei;
+                }
+                else
+                {
+                    ptByomei.Byomei = byomei.Byomei + ptByomei.Byomei;
+                }
+
+            }
 
             return new PtDiseaseModel(ptByomei != null ? ptByomei.HokenPid : 0,
                                       ptByomei != null ? ptByomei.ByomeiCd ?? string.Empty : string.Empty,
