@@ -13,36 +13,15 @@ namespace Reporting.Receipt.Mapper
 {
     public class ReceiptPreviewMapper : CommonReportingRequest
     {
-        private readonly CoReceiptModel _coReceipt;
-        private readonly ISystemConfRepository _systemConfRepository;
-        private readonly ICoReceiptFinder _coReceiptFinder;
-        List<CoReceiptByomeiModel> ByomeiModels;
-        List<CoReceiptTekiyoModel> TekiyoModels;
-        List<CoReceiptTekiyoModel> TekiyoEnModels;
         Dictionary<string, string> _fileName = new Dictionary<string, string>();
-        protected int CurrentPage = 1;
-        private int HpId;
-        private int Target;
-        private int _tekiyoRowCount;
-        private int _tekiyoEnRowCount;
-        private int _tekiyoRowCount2;
+        Dictionary<string, string> _singleData = new Dictionary<string, string>();
+        List<Dictionary<string, CellModel>> _cellData = new List<Dictionary<string, CellModel>>();
 
-        public ReceiptPreviewMapper(Dictionary<string, string> fileName, CoReceiptModel coReceipt, List<CoReceiptByomeiModel> byomeiModels, List<CoReceiptTekiyoModel> tekiyoModels, List<CoReceiptTekiyoModel> tekiyoEnModels, int currentPage, int hpId, int target, ISystemConfRepository systemConfRepository, ICoReceiptFinder coReceiptFinder, int tekiyoRowCount, int tekiyoEnRowCount, int tekiyoRowCount2)
+        public ReceiptPreviewMapper(List<Dictionary<string, CellModel>> cellData, Dictionary<string, string> singleData, Dictionary<string, string> fileName)
         {
+            _cellData = cellData;
+            _singleData = singleData;
             _fileName = fileName;
-            _coReceipt = coReceipt;
-            ByomeiModels = byomeiModels;
-            TekiyoModels = tekiyoModels;
-            TekiyoEnModels = tekiyoEnModels;
-            CurrentPage = currentPage;
-            HpId = hpId;
-            Target = target;
-            _systemConfRepository = systemConfRepository;
-            _coReceiptFinder = coReceiptFinder;
-            _tekiyoRowCount = tekiyoRowCount;
-            _tekiyoEnRowCount = tekiyoEnRowCount;
-            _tekiyoRowCount2 = tekiyoRowCount2;
-            UpdateDrawForm();
         }
 
         public override Dictionary<string, string> GetFileNamePageMap()
@@ -57,7 +36,7 @@ namespace Reporting.Receipt.Mapper
 
         public override Dictionary<string, string> GetSingleFieldData()
         {
-            return SingleData;
+            return _singleData;
         }
 
         public override string GetRowCountFieldName()
@@ -77,7 +56,7 @@ namespace Reporting.Receipt.Mapper
 
         public override List<Dictionary<string, CellModel>> GetTableFieldData()
         {
-            return CellData;
+            return _cellData;
         }
 
         public override string GetJobName()

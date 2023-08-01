@@ -1,4 +1,5 @@
-﻿using Domain.Constant;
+﻿using Amazon.Runtime.Internal.Transform;
+using Domain.Constant;
 using Domain.Models.SystemConf;
 using Helper.Common;
 using Infrastructure.Base;
@@ -182,7 +183,7 @@ namespace Reporting.Receipt.Service
             {
                 InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
                 _PrintOut();
-                return new ReceiptPreviewMapper(_fileName, CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, CoModelFinder, _tekiyoRowCount, _tekiyoEnRowCount, _tekiyoRowCount2).GetData();
+                return new ReceiptPreviewMapper(CellData, SingleData, _fileName).GetData();
             }
             else
             {
@@ -202,35 +203,44 @@ namespace Reporting.Receipt.Service
                             , sort: 0);
                 _PrintOut();
 
-                return new ReceiptPreviewMapper(_fileName, CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, CoModelFinder, _tekiyoRowCount, _tekiyoEnRowCount, _tekiyoRowCount2).GetData();
+                return new ReceiptPreviewMapper(CellData, SingleData, _fileName).GetData();
             }
         }
 
         private void _PrintOut()
         {
             CoModels = GetData();
-
+            CurrentPage = 1;
             int i = 0;
+            int pageCount = 1;
             while (i < CoModels.Count())
             {
                 CoModel = CoModels[i];
-                var formName = GetFormFileName(CurrentPage);
-                _fileName.Add((i + 1).ToString(), formName);
-                GetFormParam(formName);
 
-                _byomeiCharCount -= 3;
-                _tekiyoCharCount -= 13;
-                _tekiyoByoCharCount -= 26;
                 // フォームチェック
                 if (TargetIsKenpo() ||
                             (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 0))
                 {
+                    var formName = GetFormFileName(CurrentPage);
+                    _fileName.Add(pageCount.ToString(), formName);
+                    pageCount++;
+                    GetFormParam(formName);
+
+                    _byomeiCharCount -= 3;
+                    _tekiyoCharCount -= 13;
+                    _tekiyoByoCharCount -= 26;
+
                     // 対象が社保国保または、自賠健保準拠
                     if ((int)_systemConfRepository.GetSettingValue(94001, 1, HpId) == 1)
                     {
                         // 病名欄転帰日記載をする場合
                         _tekiyoByoCharCount -= 4;
                     }
+
+                    // 病名リスト作成
+                    // 摘要欄リスト作成
+                    ByomeiModels = new List<CoReceiptByomeiModel>();
+                    TekiyoModels = new List<CoReceiptTekiyoModel>();
 
                     // 病名リスト
                     MakeByoList();
@@ -251,11 +261,26 @@ namespace Reporting.Receipt.Service
                 else if (new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin, TargetConst.RousaiAfter }.Contains(Target) ||
                         (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 1, HpId) == 1))
                 {
+                    var formName = GetFormFileName(CurrentPage);
+                    _fileName.Add(pageCount.ToString(), formName);
+                    pageCount++;
+                    GetFormParam(formName);
+
+                    _byomeiCharCount -= 3;
+                    _tekiyoCharCount -= 13;
+                    _tekiyoByoCharCount -= 26;
+
                     // 労災（短期、年金、アフターケア）、自賠労災準拠
                     if ((int)_systemConfRepository.GetSettingValue(94001, 0, HpId) == 1)
                     {
                         _tekiyoByoCharCount -= 4;
                     }
+
+                    // 病名リスト作成
+                    // 摘要欄リスト作成
+                    ByomeiModels = new List<CoReceiptByomeiModel>();
+                    TekiyoModels = new List<CoReceiptTekiyoModel>();
+                    TekiyoEnModels = new List<CoReceiptTekiyoModel>();
 
                     MakeByoList();
                     if (Target != TargetConst.RousaiAfter)
@@ -266,7 +291,6 @@ namespace Reporting.Receipt.Service
                 }
 
                 bool isNextPageExits = true;
-                CurrentPage = 1;
                 // レセプト印刷
                 while (isNextPageExits)
                 {
@@ -277,8 +301,10 @@ namespace Reporting.Receipt.Service
                     {
                         // 労災自賠の場合、2ページ目は様式が異なる
                         //initResult = CoInit(CurrentPage);
-                        CoRep.OpenForm(GetFormFileName(CurrentPage));
-                        _tekiyoRowCount2 = CoRep.GetListRowCount("lsTekiyo1");
+                        var formName = GetFormFileName(CurrentPage);
+                        _fileName.Add(pageCount.ToString(), formName);
+                        pageCount++;
+                        GetFormParam(formName);
                     }
                 }
 
@@ -295,6 +321,17 @@ namespace Reporting.Receipt.Service
                         i++;
                         CoModel = CoModels[i];
 
+                        var formName1 = GetFormFileName(CurrentPage);
+                        _fileName.Add(pageCount.ToString(), formName1);
+                        pageCount++;
+                        GetFormParam(formName1);
+
+                        // 病名リスト作成
+                        // 摘要欄リスト作成
+                        ByomeiModels = new List<CoReceiptByomeiModel>();
+                        TekiyoModels = new List<CoReceiptTekiyoModel>();
+                        TekiyoEnModels = new List<CoReceiptTekiyoModel>();
+
                         MakeByoList();
                         if (Target != TargetConst.RousaiAfter)
                         {
@@ -302,6 +339,22 @@ namespace Reporting.Receipt.Service
                         }
                         MakeTekiyoListForRousai();
 
+                        isNextPageExits = true;
+                        while (isNextPageExits)
+                        {
+                            isNextPageExits = UpdateDrawForm();
+                            CurrentPage++;
+
+                            if (isNextPageExits && new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin, TargetConst.RousaiAfter, TargetConst.Jibai }.Contains(Target))
+                            {
+                                // 労災自賠の場合、2ページ目は様式が異なる
+                                //initResult = CoInit(CurrentPage);
+                                var formName2 = GetFormFileName(CurrentPage);
+                                _fileName.Add(pageCount.ToString(), formName2);
+                                GetFormParam(formName2);
+                                pageCount++;
+                            }
+                        }
                     }
                 }
 
@@ -2547,11 +2600,13 @@ namespace Reporting.Receipt.Service
             List<SinMeiDataModel> sinmeiDatas = CoModel.SinMeiData.Where(p => !(rosaiTargetSyukeiSakils.Contains(p.SyukeiSaki))).OrderBy(p => p.ReceSortKey).ToList();
 
             bool first = true;
+            int count = 0;
             foreach (SinMeiDataModel sinmeiData in sinmeiDatas)
             {
                 string mark = "";
                 string sinId = "";
-
+                count++;
+                Console.WriteLine("Count" + count);
                 if (new int[] { 1 }.Contains(sinmeiData.SinId))
                 {
                     //レセコメントヘッダー
@@ -2592,10 +2647,13 @@ namespace Reporting.Receipt.Service
 
                     first = false;
                 }
+                Console.WriteLine("Count" + count);
             }
+
+            Console.WriteLine("END END END END");
         }
 
-        private bool UpdateDrawForm(out bool hasNextPage)
+        private bool UpdateDrawForm()
         {
             bool _hasNextPage = true;
             #region SubMethod
@@ -2666,8 +2724,6 @@ namespace Reporting.Receipt.Service
                                     _hasNextPage = false;
                                     break;
                                 }
-
-                                CellData.Add(data);
                             }
                         }
                     }
@@ -2681,10 +2737,11 @@ namespace Reporting.Receipt.Service
                         {
                             if (tekiyoIndex < TekiyoModels.Count())
                             {
-                                CoRep.ListText("lsSinId", 0, i, TekiyoModels[tekiyoIndex].SinId);
-                                CoRep.ListText("lsTekiyoMark", 0, i, TekiyoModels[tekiyoIndex].Mark);
-                                CoRep.ListText("lsTekiyo", 0, i, TekiyoModels[tekiyoIndex].Tekiyo);
-
+                                var data = new Dictionary<string, CellModel>();
+                                data.Add("lsSinId", new CellModel(TekiyoModels[tekiyoIndex].SinId));
+                                data.Add("lsTekiyoMark", new CellModel(TekiyoModels[tekiyoIndex].Mark));
+                                data.Add("lsTekiyo", new CellModel(TekiyoModels[tekiyoIndex].Tekiyo));
+                                CellData.Add(data);
                                 tekiyoIndex++;
                                 if (tekiyoIndex >= TekiyoModels.Count())
                                 {
@@ -2700,7 +2757,7 @@ namespace Reporting.Receipt.Service
                     }
                 }
 
-                if ((new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin }.Contains(Target) || (Target == TargetConst.Jibai && SystemConfig.Instance.JibaiJunkyo == 1)) && CurrentPage == 1)
+                if ((new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin }.Contains(Target) || (Target == TargetConst.Jibai && _systemConfRepository.GetSettingValue(3001, 0, HpId) == 1)) && CurrentPage == 1)
                 {
                     // 労災 円項目用　本紙のみ
                     int tekiyoEnIndex = (CurrentPage - 1) * _tekiyoEnRowCount;
@@ -2709,8 +2766,9 @@ namespace Reporting.Receipt.Service
                     {
                         for (short i = 0; i < _tekiyoEnRowCount; i++)
                         {
-                            CoRep.ListText("lsEnTekiyo", 0, i, TekiyoEnModels[tekiyoEnIndex].Tekiyo);
-
+                            var data = new Dictionary<string, CellModel>();
+                            data.Add("lsEnTekiyo", new CellModel(TekiyoEnModels[tekiyoEnIndex].Tekiyo));
+                            CellData.Add(data);
                             tekiyoEnIndex++;
                             if (tekiyoEnIndex >= TekiyoEnModels.Count())
                             {
@@ -2739,18 +2797,14 @@ namespace Reporting.Receipt.Service
             {
                 if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
                 {
-                    hasNextPage = _hasNextPage;
                     return false;
                 }
             }
             catch (Exception e)
             {
-                hasNextPage = _hasNextPage;
                 return false;
             }
 
-            hasNextPage = _hasNextPage;
-            //hasNextPage = false;
             return true;
         }
 
