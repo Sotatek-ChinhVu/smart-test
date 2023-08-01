@@ -32,7 +32,7 @@ public class GetDiseaseReceListInteractor : IGetDiseaseReceListInputPort
 
             var patientDiseaseList = _ptDiseaseRepository.GetPatientDiseaseList(inputData.HpId, inputData.PtId, lastDate, inputData.HokenId, DiseaseViewType.FromReceiptCheck, false, false);
             patientDiseaseList = patientDiseaseList.Where(item => item.IsDeleted == 0
-                                                                  && item.StartDate <= lastDate
+                                                                  //&& item.StartDate <= lastDate
                                                                   && item.IsNodspRece == 0                            // Rece Kisai (レセ記載)
                                                                   && (item.TenkiKbn == TenkiKbnConst.Continued        // Continuous disease (継続病名)
                                                                       || item.TenkiDate >= firstDate))                // Tenki disease (転帰した病名)
