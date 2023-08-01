@@ -35,5 +35,10 @@ namespace Infrastructure.Services
             _kaInfoList = _tenantProvider.GetNoTrackingDataContext().KaMsts.ToList();
             //_memoryCache.Set(_cacheKey, _userInfoList);
         }
+
+        public void Dispose()
+        {
+            _tenantProvider.DisposeDataContext();
+        }
     }
 }

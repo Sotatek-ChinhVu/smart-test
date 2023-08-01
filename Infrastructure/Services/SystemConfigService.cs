@@ -35,5 +35,10 @@ namespace Infrastructure.Services
             }
             return userInfo.Val;
         }
+
+        public void Dispose()
+        {
+            _tenantProvider.DisposeDataContext();
+        }
     }
 }
