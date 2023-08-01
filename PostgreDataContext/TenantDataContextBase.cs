@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace PostgreDataContext
 {
@@ -424,6 +423,9 @@ namespace PostgreDataContext
             modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
             modelBuilder.Entity<SetMst>()
            .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter("IsDeleted = 0").IsUnique();
+
+            modelBuilder.Entity<RsvkrtMst>()
+           .HasIndex(r => new { r.HpId, r.PtId, r.RsvDate }).HasFilter("RsvkrtKbn = 0 AND IsDeleted = 0").IsUnique();
 
             modelBuilder
                 .Entity<SetMst>()

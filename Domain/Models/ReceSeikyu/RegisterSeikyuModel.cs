@@ -62,7 +62,7 @@ namespace Domain.Models.ReceSeikyu
         {
             get
             {
-                switch (SeikyuYm)
+                switch (SeikyuKbn)
                 {
                     case 1:
                         return "月遅れ";

@@ -34,7 +34,7 @@ namespace Interactor.MedicalExamination
                         inputData.Prefix
                     ));
 
-                var checkReceFutanCalculateMain = _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(new List<long> { inputData.PtId }, inputData.SinDate / 100));
+                var checkReceFutanCalculateMain = _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(new List<long> { inputData.PtId }, inputData.SinDate / 100,  string.Empty), CancellationToken.None);
                 check = checkRunCalculateOne && checkReceFutanCalculateMain;
             }
             else

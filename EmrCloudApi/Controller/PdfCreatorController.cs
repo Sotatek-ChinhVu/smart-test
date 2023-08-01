@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using ClosedXML.Excel;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.DrugInfor;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.DrugInfor;
@@ -12,11 +13,12 @@ using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.DrugInfo.Model;
+using Reporting.GrowthCurve.Model;
+using Reporting.KensaLabel.Model;
 using Reporting.Mappers.Common;
 using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
-using System.Diagnostics;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
@@ -168,6 +170,21 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
+    [HttpGet(ApiPath.GrowthCurve)]
+    public async Task<IActionResult> GetGrowthCurvePrintData([FromQuery] GrowthCurvePrintDataRequest request)
+    {
+        CommonReportingRequestModel data;
+        if (request.Type == 0)
+        {
+            data = _reportService.GetGrowthCurveA5PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        }
+        else
+        {
+            data = _reportService.GetGrowthCurveA4PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        }
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
     [HttpGet(ApiPath.StaticReport)]
     public async Task<IActionResult> GenerateStatisticReport([FromQuery] StatisticExportRequest request)
     {
@@ -188,11 +205,6 @@ public class PdfCreatorController : ControllerBase
         var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
         var result = await RenderPdf(data, ReportType.Common, data.JobName);
         return result;
-        //return Content(@"
-        //    <meta charset=""utf-8"">
-        //    <title>印刷対象が見つかりません。</title>
-        //    <p style='text-align: center;font-size: 25px;font-weight: 300'>Preview has been error, please check again later</p>
-        //    ", "text/html");
     }
 
     [HttpGet(ApiPath.SyojyoSyoki)]
@@ -216,9 +228,25 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
-    [HttpPost(ApiPath.MemoMsgPrint)]
-    public async Task<IActionResult> MemoMsgPrint([FromBody] MemoMsgPrintRequest request)
+    [HttpGet(ApiPath.WelfareDisk)]
+    public IActionResult GenerateKarte1Report([FromQuery] ReceiptPrintExcelRequest request)
     {
+        var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
+        return RenderExcel(data);
+    }
+
+    [HttpPost(ApiPath.ReceListCsv)]
+    public IActionResult GenerateKarteCsvReport([FromBody] ReceiptListExcelRequest request)
+    {
+        var data = _reportService.GetReceiptListExcel(request.receiptListModel);
+        return RenderExcel(data);
+    }
+
+
+    [HttpPost(ApiPath.MemoMsgPrint)]
+    public async Task<IActionResult> MemoMsgPrint([FromForm] StringObjectRequest requestString)
+    {
+        var request = JsonSerializer.Deserialize<MemoMsgPrintRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
         return await RenderPdf(data, ReportType.Common, "MemoMsgPrint");
     }
@@ -251,6 +279,13 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
+    [HttpGet(ApiPath.KensaLabel)]
+    public async Task<IActionResult> KensaLabel([FromQuery] KensaLabelRequest request)
+    {
+        var data = _reportService.GetKensaLabelPrintData(request.HpId, request.PtId, request.RaiinNo, request.SinDate, new KensaPrinterModel(request.ItemCd, request.ContainerName, request.ContainerCd, request.Count, request.PrinterName, request.InoutKbn, request.OdrKouiKbn));
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
     [HttpGet(ApiPath.AccountingCard)]
     public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
     {
@@ -267,8 +302,9 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.AccountingCardList)]
-    public async Task<IActionResult> GetAccountingCardListReportingData([FromBody] AccountingCardListRequest request)
+    public async Task<IActionResult> GetAccountingCardListReportingData([FromForm] StringObjectRequest requestString)
     {
+        var request = JsonSerializer.Deserialize<AccountingCardListRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetAccountingCardListReportingData(request.HpId, request.Targets, request.IncludeOutDrug, request.KaName, request.TantoName, request.UketukeSbt, request.Hoken);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -515,5 +551,43 @@ public class PdfCreatorController : ControllerBase
                    request.RaiinNo,
                    request.OyaRaiinNo
                );
+    }
+
+    private IActionResult RenderExcel(CommonExcelReportingModel dataModel)
+    {
+        var dataList = dataModel.Data;
+        if (!dataList.Any())
+        {
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
+        }
+        string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        using (var workbook = new XLWorkbook())
+        {
+            IXLWorksheet worksheet =
+            workbook.Worksheets.Add(dataModel.SheetName);
+            int rowIndex = 1;
+            foreach (var row in dataList)
+            {
+                List<string> colDataList = row.Split(',').ToList();
+                int colIndex = 1;
+                foreach (var cellData in colDataList)
+                {
+                    worksheet.Cell(rowIndex, colIndex).Value = cellData;
+                    colIndex++;
+                }
+                rowIndex++;
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
+                return File(content, contentType, dataModel.FileName);
+            }
+        }
     }
 }

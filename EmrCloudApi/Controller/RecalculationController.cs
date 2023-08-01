@@ -8,12 +8,16 @@ using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.Receipt.Recalculation;
 using UseCase.ReceiptCheck.Recalculation;
 using UseCase.ReceiptCheck.ReceiptInfEdit;
+using EmrCloudApi.Responses.Receipt.Dto;
+using Microsoft.AspNetCore.SignalR.Client;
+using Infrastructure.Interfaces;
 
 namespace EmrCloudApi.Controller;
 
@@ -23,9 +27,17 @@ public class RecalculationController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
     private CancellationToken? _cancellationToken;
-    public RecalculationController(UseCaseBus bus, IUserService userService) : base(userService)
+    private readonly ITenantProvider _tenantProvider;
+    private readonly IConfiguration _configuration;
+    private HubConnection connection;
+    private string uniqueKey;
+
+    public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider) : base(userService)
     {
         _bus = bus;
+        _tenantProvider = tenantProvider;
+        _configuration = configuration;
+        uniqueKey = string.Empty;
     }
 
     [HttpPost]
@@ -42,7 +54,8 @@ public class RecalculationController : AuthorizeControllerBase
             HttpResponse response = HttpContext.Response;
             //response.StatusCode = 202;
 
-            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox);
+            uniqueKey = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, uniqueKey, cancellationToken);
             _bus.Handle(input);
         }
         catch
@@ -73,12 +86,56 @@ public class RecalculationController : AuthorizeControllerBase
 
     private void UpdateRecalculationStatus(RecalculationStatus status)
     {
-        AddMessageCheckErrorInMonth(status);
+        if (!status.UniqueKey.Equals("NotConnectSocket") && (status.Type == 1 || status.Type == 2))
+        {
+            if (status.Message.Equals("StartCalculateMonth") || status.Message.Equals("StartFutanCalculateMain"))
+            {
+                string domain = _tenantProvider.GetDomainFromHeader();
+                string socketUrl = _configuration.GetSection("CalculateApi")["WssPath"]! + domain;
+                connection = new HubConnectionBuilder()
+                 .WithUrl(socketUrl)
+                 .Build();
+
+                var connect = connection.StartAsync();
+                connect.Wait();
+            }
+
+            connection.On<string, string>("ReceiveMessage", (function, data) =>
+            {
+                if (function.Equals(FunctionCodes.RunCalculate))
+                {
+                    try
+                    {
+                        var objectStatus = JsonSerializer.Deserialize<RecalculationStatus>(data);
+                        if (objectStatus != null && objectStatus.UniqueKey.Equals(uniqueKey))
+                        {
+                            SendMessage(objectStatus);
+                            if (objectStatus.Done)
+                            {
+                                connection.DisposeAsync();
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
+                        HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+                        HttpContext.Response.Body.FlushAsync();
+                        Console.WriteLine(data);
+                    }
+                }
+            });
+        }
+        else
+        {
+            SendMessage(status);
+        }
     }
 
-    private void AddMessageCheckErrorInMonth(RecalculationStatus status)
+    private void SendMessage(RecalculationStatus status)
     {
-        string result = "\n" + JsonSerializer.Serialize(status);
+        var dto = new RecalculationDto(status);
+        string result = "\n" + JsonSerializer.Serialize(dto);
         var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
         HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
         HttpContext.Response.Body.FlushAsync();

@@ -91,7 +91,7 @@ namespace Interactor.ReceiptCheck
                     seikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month;
                 }
 
-                SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・"));
+                SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・", "NotConnectSocket"));
                 _calculateService.RunCalculateMonth(
                     new Request.CalculateMonthRequest()
                     {
@@ -99,12 +99,12 @@ namespace Interactor.ReceiptCheck
                         SeikyuYm = inputData.SeikyuYm,
                         PtIds = inputData.PtIds,
                         PreFix = ""
-                    });
+                    }, CancellationToken.None);
 
-                SendMessenger(new RecalculationStatus(false, 2, 0, 0, "レセ集計中・・・"));
-                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm));
+                SendMessenger(new RecalculationStatus(false, 2, 0, 0, "レセ集計中・・・", "NotConnectSocket"));
+                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm, string.Empty), CancellationToken.None);
 
-                SendMessenger(new RecalculationStatus(false, 3, 0, 0, "レセチェック中・・・"));
+                SendMessenger(new RecalculationStatus(false, 3, 0, 0, "レセチェック中・・・", "NotConnectSocket"));
                 CheckErrorInMonth(inputData.HpId, inputData.UserId, inputData.SeikyuYm, inputData.PtIds);
 
                 errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.PtIds, inputData.SeikyuYm);
@@ -117,10 +117,10 @@ namespace Interactor.ReceiptCheck
             {
                 if (!string.IsNullOrEmpty(errorText))
                 {
-                    SendMessenger(new RecalculationStatus(false, 4, 0, 0, errorText));
+                    SendMessenger(new RecalculationStatus(false, 4, 0, 0, errorText, string.Empty));
                 }
 
-                SendMessenger(new RecalculationStatus(true, 5, 0, 0, errorText));
+                SendMessenger(new RecalculationStatus(true, 5, 0, 0, errorText, string.Empty));
 
                 _calculationInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
@@ -138,7 +138,7 @@ namespace Interactor.ReceiptCheck
 
             foreach (var receInfModel in _receInfModels)
             {
-                _calculationInfRepository.ClearReceCmtErr(hpId, receInfModel.PtId, receInfModel.HokenId, receInfModel.SinYm);
+                _oldReceCheckErrs = _calculationInfRepository.ClearReceCmtErr(hpId, receInfModel.PtId, receInfModel.HokenId, receInfModel.SinYm);
                 _sinKouiCounts = _calculationInfRepository.GetSinKouiCounts(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
 
                 CheckHoken(hpId, receInfModel);
@@ -509,8 +509,7 @@ namespace Interactor.ReceiptCheck
                     }
                 }
 
-
-
+                //E2012
                 bool checkDuplicateByomei = _receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.DuplicateByomeiCheckErrCd);
                 bool checkDuplicateSyusyokuByomei = _receCheckOpts.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.DuplicateSyusyokuByomeiCheckErrCd);
                 if (checkDuplicateByomei)

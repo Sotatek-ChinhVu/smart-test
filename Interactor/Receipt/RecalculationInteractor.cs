@@ -76,13 +76,13 @@ public class RecalculationInteractor : IRecalculationInputPort
             // run Recalculation
             if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
-                success = RunCalculateMonth(inputData.HpId, inputData.SinYm, inputData.PtIdList, ptInfCount == 0 ? 1 : ptInfCount);
+                success = RunCalculateMonth(inputData.HpId, inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
             }
 
             // run Receipt Aggregation
             if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
-                success = ReceFutanCalculateMain(inputData.SinYm, inputData.PtIdList, ptInfCount == 0 ? 1 : ptInfCount);
+                success = ReceFutanCalculateMain(inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
             }
 
             // check error in month
@@ -96,7 +96,7 @@ public class RecalculationInteractor : IRecalculationInputPort
 
             if (!inputData.IsCheckErrorCheckBox && !inputData.IsReceiptAggregationCheckBox && !inputData.IsRecalculationCheckBox)
             {
-                SendMessager(new RecalculationStatus(true, 0, 0, 0, string.Empty));
+                SendMessager(new RecalculationStatus(true, 0, 0, 0, string.Empty, string.Empty));
             }
             return new RecalculationOutputData(success);
         }
@@ -115,10 +115,9 @@ public class RecalculationInteractor : IRecalculationInputPort
         }
     }
 
-    private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, int allCheckCount)
+    private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
     {
-        SendMessager(new RecalculationStatus(false, 1, allCheckCount, 0, string.Empty));
-        int successCount = 1;
+        SendMessager(new RecalculationStatus(false, 1, 0, 0, "StartCalculateMonth", string.Empty));
         var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
         isStopCalc = statusCallBack.Result.Result;
         if (isStopCalc)
@@ -129,65 +128,22 @@ public class RecalculationInteractor : IRecalculationInputPort
         {
             HpId = hpId,
             PtIds = ptInfList,
-            SeikyuYm = seikyuYm
-        });
-        SendMessager(new RecalculationStatus(true, 1, allCheckCount, successCount, string.Empty));
-        //successCount++;
-        //foreach (var item in ptInfList)
-        //{
-        //    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-        //    isStopCalc = statusCallBack.Result.Result;
-        //    if (isStopCalc)
-        //    {
-        //        break;
-        //    }
-        //    _calculateRepository.RunCalculateMonth(new CalculateMonthRequest()
-        //    {
-        //        HpId = hpId,
-        //        PtIds = new List<long>() { item },
-        //        SeikyuYm = seikyuYm
-        //    });
-        //    if (allCheckCount == successCount)
-        //    {
-        //        break;
-        //    }
-        //    SendMessager(new RecalculationStatus(false, 1, allCheckCount, successCount, string.Empty));
-        //    successCount++;
-        //}
-        //SendMessager(new RecalculationStatus(true, 1, allCheckCount, successCount, string.Empty));
+            SeikyuYm = seikyuYm,
+            UniqueKey = uniqueKey
+        }, cancellationToken);
         return true;
     }
 
-    private bool ReceFutanCalculateMain(int seikyuYm, List<long> ptInfList, int allCheckCount)
+    private bool ReceFutanCalculateMain(int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
     {
-        SendMessager(new RecalculationStatus(false, 2, allCheckCount, 0, string.Empty));
-        int successCount = 1;
+        SendMessager(new RecalculationStatus(false, 2, 0, 0, "StartFutanCalculateMain", string.Empty));
         var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
         isStopCalc = statusCallBack.Result.Result;
         if (isStopCalc)
         {
             return false;
         }
-        _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(ptInfList, seikyuYm));
-        SendMessager(new RecalculationStatus(true, 2, allCheckCount, successCount, string.Empty));
-        //int successCount = 1;
-        //foreach (var item in ptInfList)
-        //{
-        //    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-        //    isStopCalc = statusCallBack.Result.Result;
-        //    if (isStopCalc)
-        //    {
-        //        break;
-        //    }
-        //    _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(new List<long>() { item }, seikyuYm));
-        //    if (allCheckCount == successCount)
-        //    {
-        //        break;
-        //    }
-        //    SendMessager(new RecalculationStatus(false, 2, allCheckCount, successCount, string.Empty));
-        //    successCount++;
-        //}
-        //SendMessager(new RecalculationStatus(true, 2, allCheckCount, successCount, string.Empty));
+        _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(ptInfList, seikyuYm, uniqueKey), cancellationToken);
         return true;
     }
 
@@ -207,7 +163,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         var allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
         var allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(inputData.HpId, kantokuCdValidList);
 
-        SendMessager(new RecalculationStatus(false, 3, allCheckCount, 0, string.Empty));
+        SendMessager(new RecalculationStatus(false, 3, allCheckCount, 0, string.Empty, string.Empty));
         int successCount = 1;
         foreach (var recalculationItem in receRecalculationList)
         {
@@ -237,18 +193,20 @@ public class RecalculationInteractor : IRecalculationInputPort
             {
                 break;
             }
-            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty));
+            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty, string.Empty));
             successCount++;
         }
         errorText.Append(errorTextSinKouiCount);
+        ptIdList = inputData.PtIdList.Distinct().ToList();
+        _receiptRepository.ClearReceCmtErr(inputData.HpId, newReceCheckErrList);
         errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.SinYm, errorText, ptIdList, systemConfigList, receRecalculationList);
         if (isStopCalc || !_receiptRepository.SaveNewReceCheckErrList(inputData.HpId, inputData.UserId, newReceCheckErrList))
         {
-            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty));
+            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty, string.Empty));
             return false;
         }
         string resultError = errorText.ToString().Replace(Environment.NewLine, "\\r\\n");
-        SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, resultError));
+        SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, resultError, string.Empty));
         return true;
     }
 
