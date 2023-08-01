@@ -7,6 +7,6 @@
             DrugInf = drugInfo;
         }
 
-        public string DrugInf { get; private set; }
+        public string DrugInfo { get; private set; }
     }
 }
