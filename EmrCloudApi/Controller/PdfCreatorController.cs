@@ -231,14 +231,14 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.WelfareDisk)]
     public IActionResult GenerateKarte1Report([FromQuery] ReceiptPrintExcelRequest request)
     {
-        var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm, request.receiptListModel, request.printType);
+        var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
         return RenderExcel(data);
     }
 
     [HttpPost(ApiPath.ReceListCsv)]
-    public IActionResult GenerateKarteCsvReport([FromBody] ReceiptPrintExcelRequest request)
+    public IActionResult GenerateKarteCsvReport([FromBody] ReceiptListExcelRequest request)
     {
-        var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm, request.receiptListModel, request.printType);
+        var data = _reportService.GetReceiptListExcel(request.receiptListModel);
         return RenderExcel(data);
     }
 

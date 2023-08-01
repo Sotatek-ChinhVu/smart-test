@@ -6,6 +6,6 @@ namespace Reporting.ReceiptList.Service
 {
     public interface IImportCSVCoReportService
     {
-        CommonExcelReportingModel GetImportCSVCoReportServiceReportingData(List<ReceiptInputCsvModel> receiptListModels, CoFileType fileType, bool outputTitle = false);
+        CommonExcelReportingModel GetImportCSVCoReportServiceReportingData(List<ReceiptInputCsvModel> receiptListModels, bool outputTitle = false);
     }
 }

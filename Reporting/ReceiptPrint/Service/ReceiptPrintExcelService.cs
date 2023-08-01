@@ -18,25 +18,19 @@ namespace Reporting.ReceiptPrint.Service
         #endregion
 
         private readonly IP24WelfareDiskService _p24WelfareDiskService;
-        private readonly IImportCSVCoReportService _importCSVCoReportService;
 
-        public ReceiptPrintExcelService(IP24WelfareDiskService p24WelfareDiskService, IImportCSVCoReportService importCSVCoReportService)
+        public ReceiptPrintExcelService(IP24WelfareDiskService p24WelfareDiskService)
         {
             _p24WelfareDiskService = p24WelfareDiskService;
-            _importCSVCoReportService = importCSVCoReportService;
         }
 
-        public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm, List<ReceiptInputCsvModel> receiptListModel, CoFileType printType)
+        public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
         {
             CommonExcelReportingModel result = new();
             var seikyuType = GetSeikyuType(dataKbn);
             if (prefNo == 24 && reportId == 106 && reportEdaNo == 0)
             {
                 result = _p24WelfareDiskService.GetDataP24WelfareDisk(hpId, seikyuYm, seikyuType);
-            }
-            else if (printType == CoFileType.Csv)
-            {
-                result = _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(receiptListModel, printType, false);
             }
             return result;
         }

@@ -8,7 +8,7 @@ namespace Reporting.ReceiptList.Service
     {
         private List<ReceiptInputCsvModel>? receiptListModel;
 
-        public CommonExcelReportingModel GetImportCSVCoReportServiceReportingData(List<ReceiptInputCsvModel> receiptListModel, CoFileType fileType, bool outputTitle = false)
+        public CommonExcelReportingModel GetImportCSVCoReportServiceReportingData(List<ReceiptInputCsvModel> receiptListModel, bool outputTitle = false)
         {
             outputTitle = true;
             this.receiptListModel = receiptListModel;

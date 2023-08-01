@@ -89,5 +89,7 @@ public interface IReportService
 
     CommonReportingRequestModel GetAccountingCardListReportingData(int hpId, List<TargetItem> targets, bool includeOutDrug, string kaName, string tantoName, string uketukeSbt, string hoken);
 
-    CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm, List<ReceiptInputCsvModel> receiptListModel, CoFileType printType);
+    CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm);
+
+    CommonExcelReportingModel GetReceiptListExcel(List<ReceiptInputCsvModel> receiptListModel);
 }
