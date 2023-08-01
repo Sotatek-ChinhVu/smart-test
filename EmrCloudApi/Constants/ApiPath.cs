@@ -291,6 +291,7 @@
         public const string DeleteReceiptInfEdit = "DeleteReceiptInfEdit";
         public const string GetListKaikeiInf = "GetListKaikeiInf";
         public const string CheckExisReceInfEdit = "CheckExisReceInfEdit";
+        public const string GetListSokatuMst = "GetListSokatuMst";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
