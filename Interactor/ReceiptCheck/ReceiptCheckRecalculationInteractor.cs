@@ -102,7 +102,7 @@ namespace Interactor.ReceiptCheck
                     }, CancellationToken.None);
 
                 SendMessenger(new RecalculationStatus(false, 2, 0, 0, "レセ集計中・・・", "NotConnectSocket"));
-                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm, string.Empty, string.Empty), CancellationToken.None);
+                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm, string.Empty), CancellationToken.None);
 
                 SendMessenger(new RecalculationStatus(false, 3, 0, 0, "レセチェック中・・・", "NotConnectSocket"));
                 CheckErrorInMonth(inputData.HpId, inputData.UserId, inputData.SeikyuYm, inputData.PtIds);

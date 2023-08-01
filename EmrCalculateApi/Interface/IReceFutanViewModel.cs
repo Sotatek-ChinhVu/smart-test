@@ -8,7 +8,6 @@ namespace EmrCalculateApi.Interface
         void ReceFutanCalculateMain(
             List<long> ptIds,
             int seikyuYm,
-            string hostName,
             string uniqueKey
         );
 

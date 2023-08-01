@@ -87,7 +87,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
         /// <param name="ptIds">患者ID(null:未指定)</param>
         /// <param name="seikyuYm">請求年月</param>
         public void ReceFutanCalculateMain(
-            List<long> ptIds, int seikyuYm, string hostName, string uniqueKey
+            List<long> ptIds, int seikyuYm, string uniqueKey
         )
         {
             const string conFncName = nameof(ReceFutanCalculateMain);

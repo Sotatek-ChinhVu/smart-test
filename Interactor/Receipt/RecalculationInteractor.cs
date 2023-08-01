@@ -76,13 +76,13 @@ public class RecalculationInteractor : IRecalculationInputPort
             // run Recalculation
             if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
-                success = RunCalculateMonth(inputData.HpId, inputData.SinYm, inputData.PtIdList, inputData.HostName, inputData.UniqueKey, inputData.CancellationToken);
+                success = RunCalculateMonth(inputData.HpId, inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
             }
 
             // run Receipt Aggregation
             if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
-                success = ReceFutanCalculateMain(inputData.SinYm, inputData.PtIdList, inputData.HostName, inputData.UniqueKey, inputData.CancellationToken);
+                success = ReceFutanCalculateMain(inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
             }
 
             // check error in month
@@ -115,7 +115,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         }
     }
 
-    private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, string hostName, string uniqueKey, CancellationToken cancellationToken)
+    private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
     {
         SendMessager(new RecalculationStatus(false, 1, 0, 0, "StartCalculateMonth", string.Empty));
         var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
@@ -129,13 +129,12 @@ public class RecalculationInteractor : IRecalculationInputPort
             HpId = hpId,
             PtIds = ptInfList,
             SeikyuYm = seikyuYm,
-            HostName = hostName,
             UniqueKey = uniqueKey
         }, cancellationToken);
         return true;
     }
 
-    private bool ReceFutanCalculateMain(int seikyuYm, List<long> ptInfList, string hostName, string uniqueKey, CancellationToken cancellationToken)
+    private bool ReceFutanCalculateMain(int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
     {
         SendMessager(new RecalculationStatus(false, 2, 0, 0, "StartFutanCalculateMain", string.Empty));
         var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
@@ -144,7 +143,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         {
             return false;
         }
-        _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(ptInfList, seikyuYm, hostName, uniqueKey), cancellationToken);
+        _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(ptInfList, seikyuYm, uniqueKey), cancellationToken);
         return true;
     }
 

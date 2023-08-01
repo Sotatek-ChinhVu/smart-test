@@ -19,8 +19,6 @@
 
         public int SeikyuYm { get; set; }
 
-        public string HostName { get; set; } = string.Empty;
-
         public string UniqueKey { get; set; } = string.Empty;
     }
 }

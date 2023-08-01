@@ -30,7 +30,6 @@ public class RecalculationController : AuthorizeControllerBase
     private readonly ITenantProvider _tenantProvider;
     private readonly IConfiguration _configuration;
     private HubConnection connection;
-    private string hostName;
     private string uniqueKey;
 
     public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider) : base(userService)
@@ -38,7 +37,6 @@ public class RecalculationController : AuthorizeControllerBase
         _bus = bus;
         _tenantProvider = tenantProvider;
         _configuration = configuration;
-        hostName = string.Empty;
         uniqueKey = string.Empty;
     }
 
@@ -57,8 +55,7 @@ public class RecalculationController : AuthorizeControllerBase
             //response.StatusCode = 202;
 
             uniqueKey = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-            hostName = Dns.GetHostName();
-            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, hostName, uniqueKey, cancellationToken);
+            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, uniqueKey, cancellationToken);
             _bus.Handle(input);
         }
         catch

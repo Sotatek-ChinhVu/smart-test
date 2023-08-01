@@ -40,7 +40,6 @@ namespace EmrCalculateApi.Controllers
                 _receFutanCalculate.ReceFutanCalculateMain(
                                    calculateRequest.PtIds,
                                    calculateRequest.SeikyuYm,
-                                   calculateRequest.HostName,
                                    calculateRequest.UniqueKey);
             }
             catch
