@@ -63,6 +63,7 @@
         public static readonly string ExistedId = "ExistedId";
         public static readonly string InputDataNull = "Input data is null";
         public static readonly string Valid = "Valid";
+        public static readonly string InValid = "InValid";
         public static readonly string MedicalScreenLocked = "Medical Screen Locked!";
         public static readonly string None = "None";
         public static readonly string Locked = "Locked";
@@ -970,6 +971,7 @@
         public static readonly string InvalidTokkiItem = "Invalid TokkiItem!";
         public static readonly string InvalidFusenKbn = "Invalid FusenKbn!";
         public static readonly string InvalidStatusKbn = "Invalid StatusKbn!";
+        public static readonly string InvalidReceCheckErrorItem = "Invalid ReceCheckErrorItem!";
 
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";

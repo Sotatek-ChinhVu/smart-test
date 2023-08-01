@@ -1,14 +1,20 @@
-﻿using EmrCloudApi.Constants;
+﻿using ClosedXML.Excel;
+using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.DrugInfor;
 using EmrCloudApi.Presenters.MedicalExamination;
+using EmrCloudApi.Requests.DrugInfor;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
 using Helper.Enum;
+using Interactor.DrugInfor.CommonDrugInf;
 using Interactor.MedicalExamination.HistoryCommon;
 using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.DrugInfo.Model;
+using Reporting.GrowthCurve.Model;
+using Reporting.KensaLabel.Model;
 using Reporting.Mappers.Common;
 using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
@@ -16,6 +22,7 @@ using Reporting.ReportServices;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
+using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 
 namespace EmrCloudApi.Controller;
@@ -28,12 +35,14 @@ public class PdfCreatorController : ControllerBase
     private readonly IReportService _reportService;
     private readonly IConfiguration _configuration;
     private readonly IHistoryCommon _historyCommon;
+    private readonly IGetCommonDrugInf _commonDrugInf;
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf)
     {
         _reportService = reportService;
         _configuration = configuration;
         _historyCommon = historyCommon;
+        _commonDrugInf = commonDrugInf;
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
@@ -161,6 +170,21 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
+    [HttpGet(ApiPath.GrowthCurve)]
+    public async Task<IActionResult> GetGrowthCurvePrintData([FromQuery] GrowthCurvePrintDataRequest request)
+    {
+        CommonReportingRequestModel data;
+        if (request.Type == 0)
+        {
+            data = _reportService.GetGrowthCurveA5PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        }
+        else
+        {
+            data = _reportService.GetGrowthCurveA4PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        }
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
     [HttpGet(ApiPath.StaticReport)]
     public async Task<IActionResult> GenerateStatisticReport([FromQuery] StatisticExportRequest request)
     {
@@ -179,7 +203,8 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
         var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
-        return await RenderPdf(data, ReportType.Common, data.JobName);
+        var result = await RenderPdf(data, ReportType.Common, data.JobName);
+        return result;
     }
 
     [HttpGet(ApiPath.SyojyoSyoki)]
@@ -203,11 +228,27 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
-    [HttpPost(ApiPath.MemoMsgPrint)]
-    public async Task<IActionResult> MemoMsgPrint([FromBody] MemoMsgPrintRequest request)
+    [HttpGet(ApiPath.WelfareDisk)]
+    public IActionResult GenerateKarte1Report([FromQuery] ReceiptPrintExcelRequest request)
     {
+        var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
+        return RenderExcel(data);
+    }
+
+    [HttpPost(ApiPath.ReceListCsv)]
+    public IActionResult GenerateKarteCsvReport([FromBody] ReceiptListExcelRequest request)
+    {
+        var data = _reportService.GetReceiptListExcel(request.receiptListModel);
+        return RenderExcel(data);
+    }
+
+
+    [HttpPost(ApiPath.MemoMsgPrint)]
+    public async Task<IActionResult> MemoMsgPrint([FromForm] StringObjectRequest requestString)
+    {
+        var request = JsonSerializer.Deserialize<MemoMsgPrintRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
-        return await RenderPdf(data, ReportType.Common, data.JobName);
+        return await RenderPdf(data, ReportType.Common, "MemoMsgPrint");
     }
 
     [HttpGet(ApiPath.ReceTarget)]
@@ -238,6 +279,13 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
+    [HttpGet(ApiPath.KensaLabel)]
+    public async Task<IActionResult> KensaLabel([FromQuery] KensaLabelRequest request)
+    {
+        var data = _reportService.GetKensaLabelPrintData(request.HpId, request.PtId, request.RaiinNo, request.SinDate, new KensaPrinterModel(request.ItemCd, request.ContainerName, request.ContainerCd, request.Count, request.PrinterName, request.InoutKbn, request.OdrKouiKbn));
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
     [HttpGet(ApiPath.AccountingCard)]
     public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
     {
@@ -254,8 +302,9 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.AccountingCardList)]
-    public async Task<IActionResult> GetAccountingCardListReportingData([FromBody] AccountingCardListRequest request)
+    public async Task<IActionResult> GetAccountingCardListReportingData([FromForm] StringObjectRequest requestString)
     {
+        var request = JsonSerializer.Deserialize<AccountingCardListRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetAccountingCardListReportingData(request.HpId, request.Targets, request.IncludeOutDrug, request.KaName, request.TantoName, request.UketukeSbt, request.Hoken);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -321,6 +370,81 @@ public class PdfCreatorController : ControllerBase
         }
     }
 
+    [HttpGet(ApiPath.GetDataPrintDrugInfo)]
+    public async Task<IActionResult> GetDataPrintDrugInfo([FromQuery] GetDataPrintDrugInfoRequest request)
+    {
+        var inputData = new GetDataPrintDrugInfoInputData(request.HpId, request.SinDate, request.ItemCd, request.Level, string.Empty, request.YJCode, request.Type);
+
+        var drugInfo = _commonDrugInf.GetDrugInforModel(inputData.HpId, inputData.SinDate, inputData.ItemCd);
+        string htmlData = string.Empty;
+        switch (inputData.Type)
+        {
+            case TypeHTMLEnum.ShowProductInf:
+                htmlData = _commonDrugInf.ShowProductInf(inputData.HpId, inputData.SinDate, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                break;
+            case TypeHTMLEnum.ShowKanjaMuke:
+                htmlData = _commonDrugInf.ShowKanjaMuke(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                break;
+            case TypeHTMLEnum.ShowMdbByomei:
+                htmlData = _commonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                break;
+        }
+        var outputData = new GetDataPrintDrugInfoOutputData(drugInfo, htmlData, (int)inputData.Type);
+
+        var present = new GetDataPrintDrugInfoPresenter();
+        present.Complete(outputData);
+
+        var stringPrintDrugInfoResult = JsonSerializer.Serialize(present.Result);
+
+        string baseUrl = _configuration.GetSection("DrugInfoTemplateDefault").Value!;
+
+        using (var clientResponse = await _httpClient.GetAsync(baseUrl))
+        {
+            byte[] bytes = await clientResponse.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+
+            using (var memoryStream = new MemoryStream())
+            {
+                string decoded = Encoding.UTF8.GetString(bytes);
+
+                decoded = decoded.Replace("__DATA_DRUG_INFORMATION__", stringPrintDrugInfoResult);
+
+                bytes = Encoding.UTF8.GetBytes(decoded);
+            }
+
+            MultipartFormDataContent form = new MultipartFormDataContent();
+
+            form.Add(new StringContent("0.7"), "marginTop");
+            form.Add(new StringContent("0.7".ToString()), "marginBottom");
+            form.Add(new StringContent("0.7".ToString()), "marginLeft");
+            form.Add(new StringContent("0.7".ToString()), "marginRight");
+            form.Add(new StringContent("8.27"), "paperWidth");
+            form.Add(new StringContent("11.7"), "paperHeight");
+            form.Add(new StringContent("window.status === 'ready'"), "waitForExpression");
+            form.Add(new ByteArrayContent(bytes, 0, bytes.Length), "files", "index.html");
+
+            string basePath = _configuration.GetSection("RenderKarte2ReportApi")["BasePath"]!;
+
+            using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}", form))
+            {
+                response.EnsureSuccessStatusCode();
+
+                using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
+                {
+                    PdfReader pdfReader = new PdfReader(streamingData);
+                    var byteData = streamingData.ToArray();
+                    var result = SetTitleMetadata(byteData, "医薬品情報.pdf");
+                    ContentDisposition cd = new ContentDisposition
+                    {
+                        FileName = "医薬品情報.pdf",
+                        Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
+                    };
+                    Response.Headers.Add("Content-Disposition", cd.ToString());
+                    return File(result, "application/pdf");
+                }
+            }
+        }
+    }
+
     private byte[] SetTitleMetadata(byte[] pdf, string title)
     {
         using var inputStream = new MemoryStream(pdf);
@@ -346,7 +470,8 @@ public class PdfCreatorController : ControllerBase
                 && !data.ListTextData.Any()
                 && !data.SingleFieldList.Any()
                 && !data.SetFieldData.Any()
-                && data.ReportType != (int)CoReportType.MemoMsg))
+                && data.ReportType != (int)CoReportType.MemoMsg
+                && data.ReportType != (int)CoReportType.Receipt))
         {
             returnNoData = true;
         }
@@ -373,6 +498,8 @@ public class PdfCreatorController : ControllerBase
 
     private async Task<IActionResult> ActionReturnPDF(bool returnNoData, object data, ReportType reportType, string fileName)
     {
+        var json = JsonSerializer.Serialize(data);
+        Console.WriteLine("DataJsonTestPdfString: " + json);
         if (returnNoData)
         {
             return Content(@"
@@ -386,7 +513,6 @@ public class PdfCreatorController : ControllerBase
           ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
           new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
-        var json = JsonSerializer.Serialize(data);
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
         string functionName = reportType switch
@@ -425,5 +551,43 @@ public class PdfCreatorController : ControllerBase
                    request.RaiinNo,
                    request.OyaRaiinNo
                );
+    }
+
+    private IActionResult RenderExcel(CommonExcelReportingModel dataModel)
+    {
+        var dataList = dataModel.Data;
+        if (!dataList.Any())
+        {
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
+        }
+        string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        using (var workbook = new XLWorkbook())
+        {
+            IXLWorksheet worksheet =
+            workbook.Worksheets.Add(dataModel.SheetName);
+            int rowIndex = 1;
+            foreach (var row in dataList)
+            {
+                List<string> colDataList = row.Split(',').ToList();
+                int colIndex = 1;
+                foreach (var cellData in colDataList)
+                {
+                    worksheet.Cell(rowIndex, colIndex).Value = cellData;
+                    colIndex++;
+                }
+                rowIndex++;
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
+                return File(content, contentType, dataModel.FileName);
+            }
+        }
     }
 }

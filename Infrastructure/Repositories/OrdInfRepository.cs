@@ -64,7 +64,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<OrdInfModel> GetList(long ptId, int hpId)
         {
-            var allOdrInf = NoTrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10)?.AsEnumerable();
+            var allOdrInf = NoTrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.IsDeleted == DeleteTypes.None && odr.OdrKouiKbn != 10)?.AsEnumerable();
 
             return allOdrInf?.Select(o => ConvertToModel(o)) ?? Enumerable.Empty<OrdInfModel>();
         }
