@@ -210,6 +210,8 @@ namespace EmrCalculateApi.Ika.ViewModels
 
         public int AllCalcCount { get; set; }
 
+        public string UniqueKey { get; set; }
+
         private int _calculatedCount;
         public int CalculatedCount
         {
@@ -254,7 +256,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             // 要求登録           
             AddCalcStatus(hpId, ptId, sinDate, seikyuUp, preFix);
 
-            int successCount = 1;
+            int successCount = 0;
             // 要求がある限りループ
             while (!IsStopCalc && GetCalcStatus(hpId, ptId, sinDate, ref calcStatus, preFix))
             {
@@ -264,6 +266,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 {
                     break;
                 }
+
                 if (CancellationToken.IsCancellationRequested) return;
                 _emrLogger.WriteLogMsg(this, conFncName, "req start");
 
@@ -501,9 +504,9 @@ namespace EmrCalculateApi.Ika.ViewModels
                 {
                     break;
                 }
-                SendMessager(new RecalculationStatus(false, 1, AllCalcCount, successCount, string.Empty, string.Empty));
+                SendMessager(new RecalculationStatus(false, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
             }
-            SendMessager(new RecalculationStatus(true, 1, AllCalcCount, successCount, string.Empty, string.Empty));
+            SendMessager(new RecalculationStatus(true, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
         }
         /// <summary>
         /// 再計算処理
@@ -513,34 +516,22 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <param name="ptIds">患者ID(null:未指定)</param>
         public void RunCalculateMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix, string uniqueKey)
         {
-            var total = 10;
-            int success = 1;
-            SendMessager(new RecalculationStatus(false, 1, total, 0, string.Empty, uniqueKey));
-            for (int i = 0; i < 10; i++)
-            {
-                Thread.Sleep(200);
-                if (success < total)
-                {
-                    SendMessager(new RecalculationStatus(false, 1, total, success, string.Empty, uniqueKey));
-                    success++;
-                }
-            }
-            SendMessager(new RecalculationStatus(true, 1, total, total, string.Empty, uniqueKey));
-            //const string conFncName = nameof(RunCalculateMonth);
-            //_emrLogger.WriteLogStart(this, conFncName, "");
+            const string conFncName = nameof(RunCalculateMonth);
+            UniqueKey = uniqueKey;
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
-            //preFix = preFix + "MON_";
+            preFix = preFix + "MON_";
 
-            ////要求登録
-            //AddCalcStatusMonth(hpId, seikyuYm, ptIds, preFix);
+            //要求登録
+            AddCalcStatusMonth(hpId, seikyuYm, ptIds, preFix);
 
-            //AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(preFix);
-            //SendMessager(new RecalculationStatus(false, 1, AllCalcCount, 0, string.Empty));
+            AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(preFix);
+            SendMessager(new RecalculationStatus(false, 1, AllCalcCount, 0, string.Empty, UniqueKey));
 
-            ////計算処理
-            //RunCalculate(hpId, 0, 0, 0, preFix);
+            //計算処理
+            RunCalculate(hpId, 0, 0, 0, preFix);
 
-            //_emrLogger.WriteLogEnd(this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         private void SendMessager(RecalculationStatus status)

@@ -8,7 +8,6 @@ using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -17,6 +16,9 @@ using UseCase.Receipt.Recalculation;
 using UseCase.ReceiptCheck.Recalculation;
 using UseCase.ReceiptCheck.ReceiptInfEdit;
 using EmrCloudApi.Responses.Receipt.Dto;
+using Microsoft.AspNetCore.SignalR.Client;
+using Infrastructure.Interfaces;
+using EmrCloudApi.Realtime;
 
 namespace EmrCloudApi.Controller;
 
@@ -26,12 +28,19 @@ public class RecalculationController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
     private CancellationToken? _cancellationToken;
+    private readonly ITenantProvider _tenantProvider;
+    private readonly IConfiguration _configuration;
+    private readonly IWebSocketService _webSocketService;
+    private HubConnection connection;
     private string hostName;
     private string uniqueKey;
 
-    public RecalculationController(UseCaseBus bus, IUserService userService) : base(userService)
+    public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider, IWebSocketService webSocketService) : base(userService)
     {
         _bus = bus;
+        _tenantProvider = tenantProvider;
+        _configuration = configuration;
+        _webSocketService = webSocketService;
         hostName = string.Empty;
         uniqueKey = string.Empty;
     }
@@ -52,7 +61,7 @@ public class RecalculationController : AuthorizeControllerBase
 
             uniqueKey = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
             hostName = Dns.GetHostName();
-            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, hostName, uniqueKey);
+            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, hostName, uniqueKey, cancellationToken);
             _bus.Handle(input);
         }
         catch
@@ -83,7 +92,50 @@ public class RecalculationController : AuthorizeControllerBase
 
     private void UpdateRecalculationStatus(RecalculationStatus status)
     {
-        SendMessage(status);
+        if (!status.UniqueKey.Equals("NotConnectSocket") && (status.Type == 1 || status.Type == 2))
+        {
+            if (status.Message.Equals("StartCalculateMonth") || status.Message.Equals("StartFutanCalculateMain"))
+            {
+                string domain = _tenantProvider.GetDomainFromHeader();
+                string socketUrl = _configuration.GetSection("CalculateApi")["WssPath"]! + domain;
+                connection = new HubConnectionBuilder()
+                 .WithUrl(socketUrl)
+                 .Build();
+
+                var connect = connection.StartAsync();
+                connect.Wait();
+            }
+
+            connection.On<string, string>("ReceiveMessage", (function, data) =>
+            {
+                if (function.Equals(FunctionCodes.RunCalculate))
+                {
+                    try
+                    {
+                        var objectStatus = JsonSerializer.Deserialize<RecalculationStatus>(data);
+                        if (objectStatus != null && objectStatus.UniqueKey.Equals(uniqueKey))
+                        {
+                            SendMessage(objectStatus);
+                            if (objectStatus.Done)
+                            {
+                                connection.DisposeAsync();
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
+                        HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+                        HttpContext.Response.Body.FlushAsync();
+                        Console.WriteLine(data);
+                    }
+                }
+            });
+        }
+        else
+        {
+            SendMessage(status);
+        }
     }
 
     private void SendMessage(RecalculationStatus status)

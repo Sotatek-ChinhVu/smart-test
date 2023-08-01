@@ -8,6 +8,7 @@ using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using System.Threading;
 
 namespace EmrCalculateApi.Controllers
 {
@@ -64,26 +65,27 @@ namespace EmrCalculateApi.Controllers
         public ActionResult RunCalculateMonth([FromBody] RunCalculateMonthRequest monthRequest, CancellationToken cancellationToken)
         {
             _cancellationToken = cancellationToken;
-
             try
             {
                 Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
                 Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
 
                 _ikaCalculate.RunCalculateMonth(
-                             monthRequest.HpId,
-                             monthRequest.SeikyuYm,
-                             monthRequest.PtIds,
-                             monthRequest.PreFix,
-                             monthRequest.UniqueKey);
+                              monthRequest.HpId,
+                              monthRequest.SeikyuYm,
+                              monthRequest.PtIds,
+                              monthRequest.PreFix,
+                              monthRequest.UniqueKey);
             }
             catch
             {
-                var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculateMonth, "Error");
+                var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, "Error");
                 sendMessager.Wait();
             }
             finally
             {
+                Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+                Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
                 HttpContext.Response.Body.Close();
             }
             return Ok();
@@ -104,7 +106,7 @@ namespace EmrCalculateApi.Controllers
         private void UpdateRecalculationStatus(RecalculationStatus status)
         {
             var objectJson = JsonSerializer.Serialize(status);
-            var result = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculateMonth, objectJson);
+            var result = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, objectJson);
             result.Wait();
         }
     }
