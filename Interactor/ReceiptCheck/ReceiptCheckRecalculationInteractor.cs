@@ -117,7 +117,7 @@ namespace Interactor.ReceiptCheck
             finally
             {
                 SendMessenger(new RecalculationStatus(true, 5, 0, 0, string.Empty));
-                
+
                 _calculationInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
                 _receiptRepository.ReleaseResource();
@@ -1404,9 +1404,8 @@ namespace Interactor.ReceiptCheck
                     orderRosaiErrors.Insert(0, "■健康保険のレセプトで労災項目がオーダーされています。");
                     foreach (var error in orderRosaiErrors)
                     {
-                        ErrorText += Environment.NewLine + error;
+                        ErrorText += error + Environment.NewLine;
                     }
-                    ErrorText += Environment.NewLine;
                 }
             }
 
@@ -1839,9 +1838,8 @@ namespace Interactor.ReceiptCheck
                 errors.Insert(0, "■請求できない項目がオーダーされています。");
                 foreach (var error in errors)
                 {
-                    ErrorText += Environment.NewLine + error;
+                    ErrorText += error + Environment.NewLine;
                 }
-                ErrorText += Environment.NewLine;
             }
 
             //check use Rosai Receden but not set 災害区分
@@ -1863,9 +1861,8 @@ namespace Interactor.ReceiptCheck
                     rosaiRecedenErrors.Insert(0, "■災害区分が設定されていません。");
                     foreach (var error in rosaiRecedenErrors)
                     {
-                        ErrorText += Environment.NewLine + error;
+                        ErrorText += error + Environment.NewLine;
                     }
-                    ErrorText += Environment.NewLine;
                 }
             }
 
@@ -1889,9 +1886,8 @@ namespace Interactor.ReceiptCheck
                 receSeiKyuErrors.Insert(0, "■返戻/月遅れ登録に誤りがあるため、レセプトを作成できません。");
                 foreach (var error in receSeiKyuErrors)
                 {
-                    ErrorText += Environment.NewLine + error;
+                    ErrorText += error + Environment.NewLine;
                 }
-                ErrorText += Environment.NewLine;
             }
 
             //check patient ZaiganIso(在がん医総）
@@ -1931,9 +1927,8 @@ namespace Interactor.ReceiptCheck
                                                                 Environment.NewLine + "    診療内容を確認してください。");
                                 foreach (var error in santeiNextMonthErrors)
                                 {
-                                    ErrorText += Environment.NewLine + error;
+                                    ErrorText += error + Environment.NewLine;
                                 }
-                                ErrorText += Environment.NewLine;
                             }
                         }
                     }
@@ -1966,9 +1961,8 @@ namespace Interactor.ReceiptCheck
                                                                 Environment.NewLine + "    診療内容を確認してください。");
                                 foreach (var error in santeiLastMonthErrors)
                                 {
-                                    ErrorText += Environment.NewLine + error;
+                                    ErrorText += error + Environment.NewLine;
                                 }
-                                ErrorText += Environment.NewLine;
                             }
                         }
                     }
