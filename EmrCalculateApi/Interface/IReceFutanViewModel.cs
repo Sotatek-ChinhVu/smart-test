@@ -7,7 +7,8 @@ namespace EmrCalculateApi.Interface
     {
         void ReceFutanCalculateMain(
             List<long> ptIds,
-            int seikyuYm
+            int seikyuYm,
+            string uniqueKey
         );
 
         List<ReceInfModel> KaikeiTotalCalculate(
