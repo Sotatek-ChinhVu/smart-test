@@ -43,6 +43,16 @@ namespace Interactor.Receipt
                 if (inputData.ChkHenreisai && inputData.ChkTogetsu)
                     seikyuKbnMode = 2;
 
+                string log = "Đức Test: ";
+                var listField = inputData.GetType()
+                     .GetProperties().ToList();
+                foreach (var field in listField)
+                {
+                    var value = inputData.GetType().GetProperty(field.Name)?.GetValue(inputData, null);
+                    log += field.Name + ": " + value?.ToString() ?? string.Empty + ", ";
+                }
+                Console.WriteLine(log);
+
                 var responseAPI = _calcultateCustomerService.RunCaculationPostAsync<List<string>>(TypeCalculate.GetRecedenData, new
                 {
                     Mode = (int)inputData.ModeType,
