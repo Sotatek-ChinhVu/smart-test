@@ -54,7 +54,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.StartDate > 0 &&
-                    p.StartDate <= sinDate && 
+                    p.StartDate <= sinDate &&
                     (p.EndDate >= sinDate || p.EndDate == 0) &&
                     p.IsDeleted == DeleteStatus.None)
                 .OrderBy(p => p.HpId)
@@ -95,14 +95,14 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 .ThenBy(p => p.StartDate)
                 .ToList();
 
-            var hokenMsts = _tenantDataContext.HokenMsts.FindListQueryableNoTrack(h => 
-                h.HpId == hpId && 
-                (h.PrefNo == 0 || h.PrefNo == prefCd) && 
+            var hokenMsts = _tenantDataContext.HokenMsts.FindListQueryableNoTrack(h =>
+                h.HpId == hpId &&
+                (h.PrefNo == 0 || h.PrefNo == prefCd) &&
                 h.StartDate <= sinDate);
             //診療日基準で保険番号マスタのキー情報を取得
-            var hokenMstKeys = _tenantDataContext.HokenMsts.FindListQueryableNoTrack(h => 
-                h.HpId == hpId && 
-                (h.PrefNo == 0 || h.PrefNo == prefCd) && 
+            var hokenMstKeys = _tenantDataContext.HokenMsts.FindListQueryableNoTrack(h =>
+                h.HpId == hpId &&
+                (h.PrefNo == 0 || h.PrefNo == prefCd) &&
                 h.StartDate <= sinDate
             ).GroupBy(
                 x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
@@ -118,7 +118,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
             );
 
             var kohiPriorities = _tenantDataContext.KohiPriorities.FindListQueryableNoTrack();
-            var ptKohis = _tenantDataContext.PtKohis.FindListQueryableNoTrack(p=>p.HpId == hpId && p.PtId == ptId);
+            var ptKohis = _tenantDataContext.PtKohis.FindListQueryableNoTrack(p => p.HpId == hpId && p.PtId == ptId);
             //保険番号マスタの取得
             var houbetuMsts = (
                 from hokenMst in hokenMsts
@@ -219,7 +219,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
             {
                 results.Add(
                     new PtHokenPatternModel(
-                        entity.hokPattern, 
+                        entity.hokPattern,
                         entity.Kohi1Houbetu, entity.kohi1HokenSbtKbn, entity.kohi1HokenNo, entity.kohi1HokenEdaNo, entity.Kohi1PriorityNo,
                         entity.Kohi2Houbetu, entity.kohi2HokenSbtKbn, entity.kohi2HokenNo, entity.kohi2HokenEdaNo, entity.Kohi2PriorityNo,
                         entity.Kohi3Houbetu, entity.kohi3HokenSbtKbn, entity.kohi3HokenNo, entity.kohi3HokenEdaNo, entity.Kohi3PriorityNo,
@@ -301,48 +301,48 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 //}
                 //else
                 //{
-                    // その他
-                    //var entities3 = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
-                    //p.CreateMachine.ToUpper() == computerName &&
-                    //p.SeikyuUp == 1 &&
-                    //p.Status == 0)
-                    //.OrderBy(p => p.CalcId)
-                    //.ToList();
-                    var entity3 = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
-                    p.HpId == hospitalId &&
-                    p.CreateMachine == computerName &&
-                    //p.SeikyuUp == 1 &&
-                    p.Status == 0)
-                    .OrderBy(p => p.CalcMode)
-                    .ThenByDescending(p=>p.SeikyuUp)
-                    .ThenBy(p => p.CalcId)
-                    .FirstOrDefault();
-                    //if (entities3 != null && entities3.Any())
-                    if(entity3 != null)
-                    {
-                        //calcStatus = new CalcStatusModel(entities3.OrderByDescending(p => p.CalcId).First());
-                        //calcStatus = new CalcStatusModel(entities3.First());
-                        calcStatus = new CalcStatusModel(entity3);
-                    }
-                    //else
-                    //{
-                    //    //var entities4 = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
-                    //    //p.CreateMachine.ToUpper() == computerName &&
-                    //    //p.Status == 0)
-                    //    //.OrderBy(p => p.CalcId)
-                    //    //.ToList();
-                    //    var entity4 = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
-                    //    p.CreateMachine == computerName &&
-                    //    p.Status == 0)
-                    //    .OrderBy(p => p.CalcId)
-                    //    .FirstOrDefault();
-                    //    //if (entities4 != null && entities4.Any())
-                    //    if (entity4 != null)
-                    //    {
-                    //        //calcStatus = new CalcStatusModel(entities4.OrderByDescending(p => p.CalcId).First());
-                    //        calcStatus = new CalcStatusModel(entity4);
-                    //    }
-                    //}
+                // その他
+                //var entities3 = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
+                //p.CreateMachine.ToUpper() == computerName &&
+                //p.SeikyuUp == 1 &&
+                //p.Status == 0)
+                //.OrderBy(p => p.CalcId)
+                //.ToList();
+                var entity3 = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
+                p.HpId == hospitalId &&
+                p.CreateMachine == computerName &&
+                //p.SeikyuUp == 1 &&
+                p.Status == 0)
+                .OrderBy(p => p.CalcMode)
+                .ThenByDescending(p => p.SeikyuUp)
+                .ThenBy(p => p.CalcId)
+                .FirstOrDefault();
+                //if (entities3 != null && entities3.Any())
+                if (entity3 != null)
+                {
+                    //calcStatus = new CalcStatusModel(entities3.OrderByDescending(p => p.CalcId).First());
+                    //calcStatus = new CalcStatusModel(entities3.First());
+                    calcStatus = new CalcStatusModel(entity3);
+                }
+                //else
+                //{
+                //    //var entities4 = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
+                //    //p.CreateMachine.ToUpper() == computerName &&
+                //    //p.Status == 0)
+                //    //.OrderBy(p => p.CalcId)
+                //    //.ToList();
+                //    var entity4 = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
+                //    p.CreateMachine == computerName &&
+                //    p.Status == 0)
+                //    .OrderBy(p => p.CalcId)
+                //    .FirstOrDefault();
+                //    //if (entities4 != null && entities4.Any())
+                //    if (entity4 != null)
+                //    {
+                //        //calcStatus = new CalcStatusModel(entities4.OrderByDescending(p => p.CalcId).First());
+                //        calcStatus = new CalcStatusModel(entity4);
+                //    }
+                //}
                 //}
             }
 
@@ -376,7 +376,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
         /// <param name="calcStatus"></param>
         /// <returns></returns>
         public List<CalcStatusModel> GetSameCalcStatus(CalcStatusModel calcStatus, string preFix)
-        {            
+        {
             string computerName = (preFix + Hardcode.ComputerName).ToUpper();
 
             var entities = _tenantDataContext.CalcStatus.FindListQueryable(p =>
@@ -506,7 +506,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
             var entities = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
                 p.CalcId == calcId);
 
-            if(entities != null && entities.Any())
+            if (entities != null && entities.Any())
             {
                 ret = entities.First().Status;
             }
@@ -544,9 +544,8 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
         public int GetCountCalcInMonth(string prefix)
         {
-            string computerName = Hardcode.ComputerName;
             return _tenantDataContext.CalcStatus
-                            .FindListQueryableNoTrack(p => p.CreateMachine == prefix + computerName &&
+                            .FindListQueryableNoTrack(p => p.CreateMachine == (prefix + Hardcode.ComputerName).ToUpper() &&
                                                            p.Status == 0).Count();
         }
     }

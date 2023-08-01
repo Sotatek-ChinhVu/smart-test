@@ -15,6 +15,7 @@ using System.IO.Compression;
 using System.Net.Mime;
 using UseCase.Core.Sync;
 using UseCase.Receipt;
+using UseCase.Receipt.CheckExisReceInfEdit;
 using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
@@ -47,6 +48,7 @@ using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ValidateCreateUKEFile;
 using UseCase.SinKoui.GetSinKoui;
+using UseCase.Receipt.GetListSokatuMst;
 
 namespace EmrCloudApi.Controller;
 
@@ -490,6 +492,31 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListKaikeiInfResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.CheckExisReceInfEdit)]
+    public ActionResult<Response<CheckExisReceInfEditResponse>> CheckExisReceInfEdit([FromQuery] CheckExisReceInfEditRequest request)
+    {
+        var input = new CheckExisReceInfEditInputData(HpId, request.SeikyuYm, request.PtId, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new CheckExisReceInfEditPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<CheckExisReceInfEditResponse>>(presenter.Result);
+    }
+
+
+    [HttpGet(ApiPath.GetListSokatuMst)]
+    public ActionResult<Response<GetListSokatuMstResponse>> GetSokatuMstModels([FromQuery] GetListSokatuMstRequest req)
+    {
+        var input = new GetListSokatuMstInputData(HpId, req.SeikyuYm);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListSokatuMstPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListSokatuMstResponse>>(presenter.Result);
     }
 
     #region Private function
