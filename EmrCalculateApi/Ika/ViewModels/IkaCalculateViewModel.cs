@@ -12,6 +12,8 @@ using EmrCalculateApi.Requests;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -208,6 +210,8 @@ namespace EmrCalculateApi.Ika.ViewModels
 
         public int AllCalcCount { get; set; }
 
+        public string UniqueKey { get; set; }
+
         private int _calculatedCount;
         public int CalculatedCount
         {
@@ -236,7 +240,6 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <param name="seikyuUp">請求UP情報</param>
         public void RunCalculate(int hpId, long ptId, int sinDate, int seikyuUp, string preFix)
         {
-            CalculatedCount = 0;
             const string conFncName = nameof(RunCalculate);
 
             // 電子算定回数マスタのキャッシュ
@@ -253,9 +256,17 @@ namespace EmrCalculateApi.Ika.ViewModels
             // 要求登録           
             AddCalcStatus(hpId, ptId, sinDate, seikyuUp, preFix);
 
+            int successCount = 0;
             // 要求がある限りループ
             while (!IsStopCalc && GetCalcStatus(hpId, ptId, sinDate, ref calcStatus, preFix))
             {
+                var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                IsStopCalc = statusCallBack.Result.Result;
+                if (IsStopCalc)
+                {
+                    break;
+                }
+
                 if (CancellationToken.IsCancellationRequested) return;
                 _emrLogger.WriteLogMsg(this, conFncName, "req start");
 
@@ -488,8 +499,14 @@ namespace EmrCalculateApi.Ika.ViewModels
                     }
                 }
 
-                CalculatedCount++;
+                successCount++;
+                if (AllCalcCount == successCount)
+                {
+                    break;
+                }
+                SendMessager(new RecalculationStatus(false, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
             }
+            SendMessager(new RecalculationStatus(true, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
         }
         /// <summary>
         /// 再計算処理
@@ -497,9 +514,10 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <param name="hpId">医療機関識別ID</param>
         /// <param name="seikyuYm">請求年月</param>
         /// <param name="ptIds">患者ID(null:未指定)</param>
-        public void RunCalculateMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix)
+        public void RunCalculateMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix, string uniqueKey)
         {
             const string conFncName = nameof(RunCalculateMonth);
+            UniqueKey = uniqueKey;
             _emrLogger.WriteLogStart(this, conFncName, "");
 
             preFix = preFix + "MON_";
@@ -508,12 +526,19 @@ namespace EmrCalculateApi.Ika.ViewModels
             AddCalcStatusMonth(hpId, seikyuYm, ptIds, preFix);
 
             AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(preFix);
+            SendMessager(new RecalculationStatus(false, 1, AllCalcCount, 0, string.Empty, UniqueKey));
 
             //計算処理
             RunCalculate(hpId, 0, 0, 0, preFix);
 
             _emrLogger.WriteLogEnd(this, conFncName, "");
         }
+
+        private void SendMessager(RecalculationStatus status)
+        {
+            Messenger.Instance.Send(status);
+        }
+
         /// <summary>
         /// 計算処理（指定の診療日のみ）
         /// </summary>
@@ -781,7 +806,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             {
                 //データを削除する
                 ClearData();
-                
+
                 foreach (RaiinInfModel raiinInfModel in _raiinInfModels)
                 {
                     //_common.Sin.GetSinInf();

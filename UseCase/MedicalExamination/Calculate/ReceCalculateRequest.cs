@@ -1,15 +1,17 @@
-﻿namespace UseCase.MedicalExamination.Calculate
+﻿namespace UseCase.MedicalExamination.Calculate;
+
+public class ReceCalculateRequest
 {
-    public class ReceCalculateRequest
+    public ReceCalculateRequest(List<long> ptIds, int seikyuYm, string uniqueKey)
     {
-        public ReceCalculateRequest(List<long> ptIds, int seikyuYm)
-        {
-            PtIds = ptIds;
-            SeikyuYm = seikyuYm;
-        }
-
-        public List<long> PtIds { get; private set; }
-
-        public int SeikyuYm { get; private set; }
+        PtIds = ptIds;
+        SeikyuYm = seikyuYm;
+        UniqueKey = uniqueKey;
     }
+
+    public List<long> PtIds { get; private set; }
+
+    public int SeikyuYm { get; private set; }
+
+    public string UniqueKey { get; private set; }
 }
