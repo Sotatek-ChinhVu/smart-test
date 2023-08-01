@@ -18,7 +18,6 @@ using UseCase.ReceiptCheck.ReceiptInfEdit;
 using EmrCloudApi.Responses.Receipt.Dto;
 using Microsoft.AspNetCore.SignalR.Client;
 using Infrastructure.Interfaces;
-using EmrCloudApi.Realtime;
 
 namespace EmrCloudApi.Controller;
 
@@ -30,17 +29,15 @@ public class RecalculationController : AuthorizeControllerBase
     private CancellationToken? _cancellationToken;
     private readonly ITenantProvider _tenantProvider;
     private readonly IConfiguration _configuration;
-    private readonly IWebSocketService _webSocketService;
     private HubConnection connection;
     private string hostName;
     private string uniqueKey;
 
-    public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider, IWebSocketService webSocketService) : base(userService)
+    public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider) : base(userService)
     {
         _bus = bus;
         _tenantProvider = tenantProvider;
         _configuration = configuration;
-        _webSocketService = webSocketService;
         hostName = string.Empty;
         uniqueKey = string.Empty;
     }
