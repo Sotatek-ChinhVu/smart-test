@@ -36,6 +36,18 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("reportConfigPerPage")]
         public Dictionary<int, ReportConfigModel> ReportConfigPerPage { get; set; } = new();
+
+        [JsonPropertyName("drawTextData")]
+        public Dictionary<int, Dictionary<int, List<ListDrawTextObject>>> DrawTextData { get; set; } = new();
+
+        [JsonPropertyName("drawLineObject")]
+        public Dictionary<int, Dictionary<int, List<ListDrawLineObject>>> DrawLineData { get; set; } = new();
+
+        [JsonPropertyName("drawBoxObject")]
+        public Dictionary<int, Dictionary<int, List<ListDrawBoxObject>>> DrawBoxData { get; set; } = new();
+
+        [JsonPropertyName("drawCircleObject")]
+        public Dictionary<int, Dictionary<int, List<ListDrawCircleObject>>> DrawCircleData { get; set; } = new();
     }
 
     public class CellModel
@@ -108,5 +120,158 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("data")]
         public string Data { get; set; }
+    }
+
+    public class ListDrawTextObject
+    {
+        public ListDrawTextObject(double startX, double startY, double width, double heigth, long hanFontHeight, string text)
+        {
+            StartX = startX;
+            StartY = startY;
+            Width = width;
+            Heigth = heigth;
+            HanFontHeight = hanFontHeight;
+            Text = text;
+        }
+
+        [JsonPropertyName("startX")]
+        public double StartX { get; set; }
+
+        [JsonPropertyName("startY")]
+        public double StartY { get; set; }
+
+        [JsonPropertyName("width")]
+        public double Width { get; set; }
+
+        [JsonPropertyName("heigth")]
+        public double Heigth { get; set; }
+
+        [JsonPropertyName("hanFontHeight")]
+        public double HanFontHeight { get; set; }
+
+        [JsonPropertyName("text")]
+        public string Text { get; set; }
+    }
+
+    public class ListDrawLineObject
+    {
+        public ListDrawLineObject(double startX, double startY, double endX, double endY, long width, string style, string color)
+        {
+            StartX = startX;
+            StartY = startY;
+            EndX = endX;
+            EndY = endY;
+            Width = width;
+            Style = style;
+            Color = color;
+        }
+
+        public ListDrawLineObject(double startX, double startY, double endX, double endY)
+        {
+            StartX = startX;
+            StartY = startY;
+            EndX = endX;
+            EndY = endY;
+            Width = 10;
+            Style = "Solid";
+            Color = "Black";
+        }
+
+        [JsonPropertyName("startX")]
+        public double StartX { get; set; }
+
+        [JsonPropertyName("startY")]
+        public double StartY { get; set; }
+
+        [JsonPropertyName("endX")]
+        public double EndX { get; set; }
+
+        [JsonPropertyName("endY")]
+        public double EndY { get; set; }
+
+        [JsonPropertyName("width")]
+        public long Width { get; set; }
+
+        [JsonPropertyName("style")]
+        public string Style { get; set; }
+
+        [JsonPropertyName("color")]
+        public string Color { get; set; }
+    }
+
+    public class ListDrawBoxObject
+    {
+        public ListDrawBoxObject(long startX, long startY, long width, long heigth, long round, string fillColor, string lineColor)
+        {
+            StartX = startX;
+            StartY = startY;
+            Width = width;
+            Heigth = heigth;
+            Round = round;
+            FillColor = fillColor;
+            LineColor = lineColor;
+        }
+
+        [JsonPropertyName("startX")]
+        public long StartX { get; set; }
+
+        [JsonPropertyName("startY")]
+        public long StartY { get; set; }
+
+        [JsonPropertyName("width")]
+        public long Width { get; set; }
+
+        [JsonPropertyName("heigth")]
+        public long Heigth { get; set; }
+
+        [JsonPropertyName("round")]
+        public long Round { get; set; }
+
+        [JsonPropertyName("fillColor")]
+        public string FillColor { get; set; }
+
+        [JsonPropertyName("lineColor")]
+        public string LineColor { get; set; }
+    }
+
+    public class ListDrawCircleObject
+    {
+        public ListDrawCircleObject(double startX, double startY, double width, double heigth, string fillColor, string lineColor)
+        {
+            StartX = startX;
+            StartY = startY;
+            Width = width;
+            Heigth = heigth;
+            FillColor = fillColor;
+            LineColor = lineColor;
+        }
+
+        [JsonPropertyName("startX")]
+        public double StartX { get; set; }
+
+        [JsonPropertyName("startY")]
+        public double StartY { get; set; }
+
+        [JsonPropertyName("width")]
+        public double Width { get; set; }
+
+        [JsonPropertyName("heigth")]
+        public double Heigth { get; set; }
+
+        [JsonPropertyName("fillColor")]
+        public string FillColor { get; set; }
+
+        [JsonPropertyName("lineColor")]
+        public string LineColor { get; set; }
+    }
+
+    public enum ConLineStyle
+    {
+        None = 0,
+        Solid = 1,
+        Dash = 2,
+        Dot = 3,
+        DashDot = 4,
+        DashDotDot = 5
     }
 }

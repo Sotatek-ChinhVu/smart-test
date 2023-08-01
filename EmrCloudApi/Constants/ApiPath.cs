@@ -39,6 +39,9 @@
         public const string GetJihiMstList = "GetJihiMstList";
         public const string SearchTenMstItem = "SearchTenMstItem";
         public const string ConvertStringChkJISKj = "ConvertStringChkJISKj";
+        public const string GetTeikyoByomei = "GetTeikyoByomei";
+        public const string GetDrugAction = "GetDrugAction";
+        public const string GetDefaultPrecautions = "GetDefaultPrecautions";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -50,6 +53,7 @@
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
         public const string GetPtWeight = "GetPtWeight";
+        public const string GrowthCurve = "GrowthCurve";
         public const string GetStdPoint = "GetStdPoint";
 
         //Today Oder
@@ -107,7 +111,10 @@
         public const string AccountingCard = "AccountingCard";
         public const string ExportKarte2 = "ExportKarte2";
         public const string ExportKarte3 = "ExportKarte3";
+        public const string KensaLabel = "KensaLabel";
         public const string AccountingCardList = "AccountingCardList";
+        public const string WelfareDisk = "WelfareDisk";
+        public const string ReceListCsv = "ReceListCsv";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -282,6 +289,8 @@
         public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
         public const string GetListSinKoui = "GetListSinKoui";
         public const string DeleteReceiptInfEdit = "DeleteReceiptInfEdit";
+        public const string GetListKaikeiInf = "GetListKaikeiInf";
+        public const string CheckExisReceInfEdit = "CheckExisReceInfEdit";
         public const string GetListSokatuMst = "GetListSokatuMst";
 
         //Accounting
@@ -320,6 +329,7 @@
         public const string GetListReceSeikyu = "GetListReceSeikyu";
         public const string SearchReceInf = "SearchReceInf";
         public const string SaveReceSeikyu = "SaveReceSeikyu";
+        public const string CancelSeikyu = "CancelSeikyu";
         public const string ImportFileReceSeikyu = "ImportFileReceSeikyu";
 
         //WeightedSetConfirmation
@@ -371,6 +381,7 @@
 
         //NextOrder
         public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
+        public const string CheckUpsertNextOrder = "CheckUpsertNextOrder";
 
         public const string Test = "Test";
     }

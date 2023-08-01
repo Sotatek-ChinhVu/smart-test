@@ -65,7 +65,7 @@ namespace Domain.CalculationInf
 
         bool ExistSyobyoKeikaData(int hpId, long ptId, int sinYm, int hokenId);
 
-        void ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
+        List<ReceCheckErrModel> ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
 
         List<ReceSeikyuModel> GetReceSeikyus(int hpId, List<long> ptIds, int seikyuYm);
 

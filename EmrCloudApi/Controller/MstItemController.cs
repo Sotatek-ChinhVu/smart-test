@@ -19,7 +19,9 @@ using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
+using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDosageDrugList;
+using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetListDrugImage;
@@ -27,6 +29,7 @@ using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
+using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -359,7 +362,8 @@ namespace EmrCloudApi.Controller
                 request.PointTo, request.KouiKbn, request.OriKouiKbn, request.KouiKbns, request.IncludeRosai, request.IncludeMisai,
                 request.SinDate, request.ItemCodeStartWith, request.IsIncludeUsage, request.OnlyUsage, request.YJCode, request.IsMasterSearch,
                 request.IsExpiredSearchIfNoData, request.IsAllowSearchDeletedItem, request.IsExpired, request.IsDeleted, request.DrugKbns,
-                request.IsSearchSanteiItem, request.IsSearchKenSaItem, request.ItemFilter, request.IsSearch831SuffixOnly, request.IsSearchSuggestion);
+                request.IsSearchSanteiItem, request.IsSearchKenSaItem, request.ItemFilter, request.IsSearch831SuffixOnly, request.IsSearchSuggestion, 
+                request.IsSearchGazoDensibaitaiHozon);
             var output = _bus.Handle(input);
             var presenter = new SearchTenMstItemPresenter();
             presenter.Complete(output);
@@ -375,5 +379,36 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
+
+        [HttpGet(ApiPath.GetTeikyoByomei)]
+        public ActionResult<Response<GetTeikyoByomeiResponse>> GetTeikyoByomei([FromQuery] GetTeikyoByomeiRequest request)
+        {
+            var input = new GetTeikyoByomeiInputData(HpId, request.ItemCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetTeikyoByomeiPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDrugAction)]
+        public ActionResult<Response<GetDrugActionResponse>> GetDrugAction([FromQuery] GetDrugActionRequest request)
+        {
+            var input = new GetDrugActionInputData( request.YjCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetDrugActionPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetDrugActionResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDefaultPrecautions)]
+        public ActionResult<Response<GetDefaultPrecautionsResponse>> GetDefaultPrecautions([FromQuery] GetDefaultPrecautionsRequest request)
+        {
+            var input = new GetDefaultPrecautionsInputData(request.YjCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetDefaultPrecautionsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetDefaultPrecautionsResponse>>(presenter.Result);
+        }
+
     }
 }

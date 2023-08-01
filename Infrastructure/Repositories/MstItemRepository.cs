@@ -704,7 +704,7 @@ namespace Infrastructure.Repositories
             List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage,
             bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem,
             bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter,
-            bool isSearch831SuffixOnly)
+            bool isSearch831SuffixOnly, bool isSearchGazoDensibaitaiHozon)
         {
             string kanaKeyword = keyword;
             if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
@@ -991,6 +991,12 @@ namespace Infrastructure.Repositories
             if (pointTo != null)
             {
                 queryResult = queryResult.Where(t => t.Ten <= pointTo);
+            }
+
+            //special item GazoDensibaitaiHozon SMAR-4289
+            if (!isSearchGazoDensibaitaiHozon)
+            {
+                queryResult = queryResult.Where(t => t.ItemCd != "840000100");
             }
 
             var yakkaSyusaiMstList = NoTrackingDataContext.YakkaSyusaiMsts.AsQueryable();
@@ -5215,6 +5221,38 @@ namespace Infrastructure.Repositories
                                                             )).ToList();
 
             return (tenMstModels, totalCount);
+        }
+
+        public string GetDrugAction(string yjCd)
+        {
+            var m34DrugInfMain = NoTrackingDataContext.M34DrugInfoMains.Where(drug => drug.YjCd == yjCd);
+            var m34IndicationCode = NoTrackingDataContext.M34IndicationCodes.Where(ind => ind.KonoCd != null);
+            var query = (from drug in m34DrugInfMain
+                         join ind in m34IndicationCode on drug.KonoCd equals ind.KonoCd
+                         select new
+                         {
+                             M34IndicationCode = ind
+                         }).FirstOrDefault();
+
+            var result = query != null ? query.M34IndicationCode.KonoSimpleCmt ?? string.Empty : string.Empty;
+
+            return result;
+        }
+
+        public string GetPrecautions(string yjCd)
+        {
+            string result = string.Empty;
+
+            var listPrecautionCode = NoTrackingDataContext.M34Precautions.Where(pre => pre.YjCd == yjCd).ToList().Select(u => u.PrecautionCd).ToList();
+            if (listPrecautionCode.Count == 0) return string.Empty;
+            var listPrecautionInf = NoTrackingDataContext.M34PrecautionCodes.Where(preCode => listPrecautionCode.Contains(preCode.PrecautionCd)).ToList();
+            foreach (var item in listPrecautionInf)
+            {
+                result += item.PrecautionCmt + Environment.NewLine;
+            }
+            result?.TrimEnd(Environment.NewLine.ToCharArray());
+
+            return result ?? string.Empty;
         }
     }
 }
