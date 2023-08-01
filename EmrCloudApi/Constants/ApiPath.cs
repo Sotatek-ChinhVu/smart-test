@@ -111,6 +111,8 @@
         public const string ExportKarte3 = "ExportKarte3";
         public const string KensaLabel = "KensaLabel";
         public const string AccountingCardList = "AccountingCardList";
+        public const string WelfareDisk = "WelfareDisk";
+        public const string ReceListCsv = "ReceListCsv";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";

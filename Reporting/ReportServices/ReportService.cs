@@ -35,6 +35,8 @@ using Reporting.ReceiptList.Service;
 using Reporting.ReceiptPrint.Service;
 using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
+using Reporting.Sokatu.WelfareDisk.Service;
+using Reporting.Structs;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
 
@@ -71,8 +73,10 @@ public class ReportService : IReportService
     private readonly IGrowthCurveA4CoReportService _growthCurveA4CoReportService;
     private readonly IGrowthCurveA5CoReportService _growthCurveA5CoReportService;
     private readonly IKensaLabelCoReportService _kensaLabelCoReportService;
+    private readonly IReceiptPrintExcelService _receiptPrintExcelService;
+    private readonly IImportCSVCoReportService _importCSVCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService, IReceiptPrintExcelService receiptPrintExcelService, IImportCSVCoReportService importCSVCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -103,6 +107,8 @@ public class ReportService : IReportService
         _growthCurveA4CoReportService = growthCurveA4CoReportService;
         _growthCurveA5CoReportService = growthCurveA5CoReportService;
         _kensaLabelCoReportService = kensaLabelCoReportService;
+        _receiptPrintExcelService = receiptPrintExcelService;
+        _importCSVCoReportService = importCSVCoReportService;
     }
 
     //Byomei
@@ -510,5 +516,17 @@ public class ReportService : IReportService
     public CommonReportingRequestModel GetGrowthCurveA5PrintData(int hpId, GrowthCurveConfig growthCurveConfig)
     {
         return _growthCurveA5CoReportService.GetGrowthCurveA5PrintData(hpId, growthCurveConfig);
+    }
+
+    // P24WelfareDisk
+
+    public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
+    {
+        return _receiptPrintExcelService.GetReceiptPrintExcel(hpId, prefNo, reportId, reportEdaNo, dataKbn, seikyuYm);
+    }
+
+    public CommonExcelReportingModel GetReceiptListExcel(List<ReceiptInputCsvModel> receiptListModel)
+    {
+        return _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(receiptListModel);
     }
 }
