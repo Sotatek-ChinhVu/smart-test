@@ -497,12 +497,12 @@ namespace Interactor.ReceiptCheck
                 {
                     foreach (var ptByomei in ptByomeis)
                     {
-                        if (ptByomei.PrefixSuffixList.Any(x => x.Name == "8002") &&
+                        if (ptByomei.Byomei.AsString().Contains(SUSPECTED_SUFFIX) &&
                             CIUtil.DateTimeToInt(CIUtil.IntToDate(ptByomei.StartDate).AddMonths(receCheckOpt.CheckOpt)) <= receInfModel.LastDateOfThisMonth)
                         {
                             string format = "（{0}: {1}～）";
                             string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 100);
-                            string msg2 = string.Format(format + SUSPECTED_SUFFIX, cutByomei, CIUtil.SDateToShowSWDate(ptByomei.StartDate));
+                            string msg2 = string.Format(format, cutByomei, CIUtil.SDateToShowSWDate(ptByomei.StartDate));
                             InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.CheckSuspectedByomeiErrCd,
                                ReceErrCdConst.CheckSuspectedByomeiErrMsg.Replace("xx", receCheckOpt.CheckOpt.AsString()), msg2, cutByomei);
                         }
