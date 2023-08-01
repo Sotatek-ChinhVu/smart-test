@@ -4,7 +4,7 @@
     {
         public GetDrugActionResponse(string drugInfo)
         {
-            DrugInf = drugInfo;
+            DrugInfo = drugInfo;
         }
 
         public string DrugInfo { get; private set; }
