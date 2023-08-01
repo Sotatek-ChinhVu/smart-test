@@ -7,6 +7,9 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Xml.Linq;
+using System;
 
 namespace Infrastructure.Repositories
 {
@@ -147,7 +150,6 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        
         public IEnumerable<RegisterSeikyuModel> SearchReceInf(int hpId, long ptNum, int sinYm)
         {
             PtInf? ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(u => u.HpId == hpId && u.PtNum == ptNum && u.IsDelete == 0);
@@ -163,7 +165,7 @@ namespace Infrastructure.Repositories
                             PtHokenInfo = ptHoken
                         };
 
-            return query.AsEnumerable().Select(u => new RegisterSeikyuModel(ptInf.PtId, 
+            return query.AsEnumerable().Select(u => new RegisterSeikyuModel(ptInf.PtId,
                                                                             ptInf.Name ?? string.Empty,
                                                                             u.ReceInf.SinYm,
                                                                             u.ReceInf.SeikyuYm,
@@ -199,7 +201,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool InsertNewReceSeikyu(List<ReceSeikyuModel> listInsert, int userId , int hpId)
+        public bool InsertNewReceSeikyu(List<ReceSeikyuModel> listInsert, int userId, int hpId)
         {
             var addedList = listInsert.Select(item => Mapper.Map(item, new ReceSeikyu(), (src, dest) =>
             {
@@ -219,9 +221,65 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public bool SaveReceSeiKyu(int hpId, int userId , List<ReceSeikyuModel> data)
+        public int InsertNewReceSeikyu(ReceSeikyuModel model, int userId, int hpId)
         {
-            var addedList = data.FindAll(item => item.SeqNo == 0 && item.OriginSinYm != item.SinYm).Select(item => Mapper.Map(item , new ReceSeikyu(), (src,dest) =>
+            ReceSeikyu entity = new();
+            entity.PtId = model.PtId;
+            entity.SeikyuYm = model.SeikyuYm;
+            entity.SinYm = model.SinYm;
+            entity.HokenId = model.HokenId;
+            entity.SeikyuKbn = model.SeikyuKbn;
+            entity.IsDeleted = 0;
+            entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            entity.CreateId = userId;
+            entity.UpdateId = userId;
+            entity.SeqNo = 0;
+            entity.HpId = hpId;
+            TrackingDataContext.ReceSeikyus.Add(entity);
+            TrackingDataContext.SaveChanges();
+            return entity.SeqNo;
+        }
+
+        public bool UpdateReceSeikyu(List<ReceSeikyuModel> receSeikyuList, int userId, int hpId)
+        {
+            var seqNoList = receSeikyuList.Select(item => item.SeqNo).Distinct().ToList();
+            var receSeikyuDB = TrackingDataContext.ReceSeikyus.Where(item => item.HpId == hpId
+                                                                             && seqNoList.Contains(item.SeqNo)
+                                                                             && item.IsDeleted == 0)
+                                                              .ToList();
+            foreach (var model in receSeikyuList)
+            {
+                var updateItem = receSeikyuDB.FirstOrDefault(item => item.SinYm == model.SinYm && item.SeqNo == model.SeqNo);
+                if (updateItem == null)
+                {
+                    updateItem = new ReceSeikyu();
+                    updateItem.SeqNo = 0;
+                    updateItem.HpId = hpId;
+                    updateItem.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    updateItem.CreateId = userId;
+                }
+                updateItem.PtId = model.PtId;
+                updateItem.SinYm = model.SinYm;
+                updateItem.HokenId = model.HokenId;
+                updateItem.SeikyuKbn = model.SeikyuKbn;
+                updateItem.PreHokenId = model.PreHokenId;
+                updateItem.Cmt = model.Cmt;
+                updateItem.IsDeleted = model.IsDeleted;
+                updateItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                updateItem.UpdateId = userId;
+                if (updateItem.SeqNo == 0)
+                {
+                    updateItem.IsDeleted = 0;
+                    TrackingDataContext.Add(updateItem);
+                }
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool SaveReceSeiKyu(int hpId, int userId, List<ReceSeikyuModel> data)
+        {
+            var addedList = data.FindAll(item => item.SeqNo == 0 && item.OriginSinYm != item.SinYm).Select(item => Mapper.Map(item, new ReceSeikyu(), (src, dest) =>
             {
                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -236,12 +294,12 @@ namespace Infrastructure.Repositories
             })).ToList();
             TrackingDataContext.ReceSeikyus.AddRange(addedList);
 
-            foreach(var item in data.Where(x => x.SeqNo != 0 && x.OriginSinYm == x.SinYm))
+            foreach (var item in data.Where(x => x.SeqNo != 0 && x.OriginSinYm == x.SinYm))
             {
                 var update = TrackingDataContext.ReceSeikyus.FirstOrDefault(x => x.SeqNo == item.SeqNo);
-                if(update != null)
+                if (update != null)
                 {
-                    if(item.IsDeleted == DeleteTypes.Deleted)
+                    if (item.IsDeleted == DeleteTypes.Deleted)
                     {
                         update.IsDeleted = DeleteTypes.Deleted;
                         update.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -428,6 +486,21 @@ namespace Infrastructure.Repositories
             int changeDatas = TrackingDataContext.ChangeTracker.Entries().Count(x => x.State == EntityState.Modified || x.State == EntityState.Added);
             if (changeDatas == 0) return true; //case nochanges
             return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public ReceSeikyuModel GetReceSeikyuDuplicate(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            var result = NoTrackingDataContext.ReceSeikyus.FirstOrDefault(item => item.HpId == hpId &&
+                                                                                  item.PtId == ptId &&
+                                                                                  item.SinYm == sinYm &&
+                                                                                  item.HokenId == hokenId &&
+                                                                                  item.SeikyuYm != 999999 &&
+                                                                                  item.IsDeleted == 0);
+            if (result != null)
+            {
+                return new ReceSeikyuModel(0, result.HpId, result.PtId, string.Empty, result.SinYm, 0, result.HokenId, string.Empty, result.SeqNo, result.SeikyuYm, result.SeikyuKbn, result.PreHokenId, result.Cmt ?? string.Empty, 0, 0, string.Empty, 0, 0, false, 0, 0, false, 0, false, new());
+            }
+            return new();
         }
     }
 }

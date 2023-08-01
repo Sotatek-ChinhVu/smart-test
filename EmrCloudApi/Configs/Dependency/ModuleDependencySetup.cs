@@ -178,6 +178,8 @@ using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
 using Reporting.DrugNoteSeal.DB;
 using Reporting.DrugNoteSeal.Service;
+using Reporting.GrowthCurve.DB;
+using Reporting.GrowthCurve.Service;
 using Reporting.InDrug.DB;
 using Reporting.InDrug.Service;
 using Reporting.Karte1.DB;
@@ -224,6 +226,7 @@ using Reporting.Sokatu.KoukiSeikyu.DB;
 using Reporting.Sokatu.KoukiSeikyu.Service;
 using Reporting.Sokatu.Syaho.DB;
 using Reporting.Sokatu.Syaho.Service;
+using Reporting.Sokatu.WelfareDisk.Service;
 using Reporting.Sokatu.WelfareSeikyu.DB;
 using Reporting.Sokatu.WelfareSeikyu.Service;
 using Reporting.Statistics.Sta1001.DB;
@@ -487,6 +490,7 @@ using UseCase.RaiinListSetting.GetDocCategory;
 using UseCase.RaiinListSetting.GetFilingcategory;
 using UseCase.RaiinListSetting.GetRaiiinListSetting;
 using UseCase.RaiinListSetting.SaveRaiinListSetting;
+using UseCase.Receipt.CheckExisReceInfEdit;
 using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
@@ -541,6 +545,7 @@ using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
+using UseCase.ReceSeikyu.CancelSeikyu;
 using UseCase.ReceSeikyu.GetList;
 using UseCase.ReceSeikyu.ImportFile;
 using UseCase.ReceSeikyu.Save;
@@ -662,9 +667,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Cache data
             services.AddTransient<IUserInfoService, UserInfoService>();
-            services.AddScoped<IKaService, KaService>();
-            services.AddScoped<ISystemConfigService, SystemConfigService>();
+            services.AddTransient<IKaService, KaService>();
+            services.AddTransient<ISystemConfigService, SystemConfigService>();
 
+            //Init follow transient so no need change transient
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
 
             #region Reporting
@@ -797,8 +803,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP37KoukiSokatuCoReportService, P37KoukiSokatuCoReportService>();
             services.AddTransient<IP25KokhoSokatuCoReportService, P25KokhoSokatuCoReportService>();
             services.AddTransient<ICoWelfareSeikyuFinder, CoWelfareSeikyuFinder>();
-            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
-            services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
             services.AddTransient<IP41KokhoSokatuCoReportService, P41KokhoSokatuCoReportService>();
             services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
             services.AddTransient<IP08KokhoSeikyuCoReportService, P08KokhoSeikyuCoReportService>();
@@ -816,6 +820,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP14KokhoSokatuCoReportService, P14KokhoSokatuCoReportService>();
             services.AddTransient<IInDrugCoReportService, InDrugCoReportService>();
             services.AddTransient<ICoInDrugFinder, CoInDrugFinder>();
+            services.AddTransient<IGrowthCurveA4CoReportService, GrowthCurveA4CoReportService>();
+            services.AddTransient<IGrowthCurveA5CoReportService, GrowthCurveA5CoReportService>();
+            services.AddTransient<ISpecialNoteFinder, SpecialNoteFinder>();
             services.AddTransient<IP17KokhoSokatuCoReportService, P17KokhoSokatuCoReportService>();
             services.AddTransient<IP20KokhoSokatuCoReportService, P20KokhoSokatuCoReportService>();
             services.AddTransient<IP22KokhoSokatuCoReportService, P22KokhoSokatuCoReportService>();
@@ -843,13 +850,16 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP22KokhoSeikyuCoReportService, P22KokhoSeikyuCoReportService>();
             services.AddTransient<IP23KokhoSeikyuCoReportService, P23KokhoSeikyuCoReportService>();
             services.AddTransient<IP24KokhoSeikyuCoReportService, P24KokhoSeikyuCoReportService>();
+            services.AddTransient<IP24WelfareDiskService, P24WelfareDiskService>();
+            services.AddTransient<IReceiptPrintExcelService, ReceiptPrintExcelService>();
+            services.AddTransient<IImportCSVCoReportService, ImportCSVCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
             #endregion Reporting
         }
-        
+
         private void SetupRepositories(IServiceCollection services)
         {
             services.AddTransient<IUserRepository, UserRepository>();
@@ -1391,12 +1401,14 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ReceiptCheckRecalculationInputData, ReceiptCheckRecalculationInteractor>();
             busBuilder.RegisterUseCase<DeleteReceiptInfEditInputData, DeleteReceiptInfEditInteractor>();
             busBuilder.RegisterUseCase<GetListKaikeiInfInputData, GetListKaikeiInfInteractor>();
+            busBuilder.RegisterUseCase<CheckExisReceInfEditInputData, CheckExisReceInfEditInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
             busBuilder.RegisterUseCase<SearchReceInfInputData, SearchReceInfInteractor>();
             busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
             busBuilder.RegisterUseCase<ImportFileReceSeikyuInputData, ImportFileReceSeikyuInteractor>();
+            busBuilder.RegisterUseCase<CancelSeikyuInputData, CancelSeikyuInteractor>();
 
             //WeightedSetConfirmation
             busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
