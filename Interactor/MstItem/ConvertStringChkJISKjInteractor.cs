@@ -10,9 +10,10 @@ public class ConvertStringChkJISKjInteractor : IConvertStringChkJISKjInputPort
         var contentStr = string.Empty;
         string result = string.Empty;
         string itemError = string.Empty;
-        foreach (var item in inputData.InputList)
+        foreach (string item in inputData.InputList)
         {
-            var errorStr = CIUtil.Chk_JISKj(item, out contentStr);
+            string checkString = CIUtil.ToWide(item);
+            var errorStr = CIUtil.Chk_JISKj(checkString, out contentStr);
             if (!string.IsNullOrEmpty(errorStr))
             {
                 result = errorStr;
