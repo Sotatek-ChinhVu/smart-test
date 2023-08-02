@@ -1,5 +1,6 @@
 using Helper.Constants;
 using Helper.Extension;
+using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -634,8 +635,27 @@ namespace Helper.Common
         public static string SDateToDecodeAge(string yyyymmdd, string ToYyyymmdd)
         {
             int age = 0, month = 0, day = 0;
-            CIUtil.SDateToDecodeAge(yyyymmdd.AsInteger(), ToYyyymmdd.AsInteger(), ref age, ref month,
-                ref day);
+            if (Int32.Parse(yyyymmdd) > Int32.Parse(ToYyyymmdd))
+            {
+                DateTime startDate;
+                DateTime.TryParseExact(yyyymmdd.ToString(), "yyyyMMdd",
+                                          CultureInfo.InvariantCulture,
+                                          DateTimeStyles.None, out startDate);
+
+                DateTime endDate;
+                DateTime.TryParseExact(ToYyyymmdd.ToString(), "yyyyMMdd",
+                                          CultureInfo.InvariantCulture,
+                                          DateTimeStyles.None, out endDate);
+
+                var dateCalculate = (endDate - startDate).TotalDays;
+                age = (int)(dateCalculate / 365.25);
+                month = (int)((dateCalculate % 365.25) / 30.4375);
+                day = (int)((dateCalculate % 365.25) % 30.4375);
+            }
+            else
+            {
+                CIUtil.SDateToDecodeAge(yyyymmdd.AsInteger(), ToYyyymmdd.AsInteger(), ref age, ref month, ref day);
+            }
             return String.Format("{0}歳{1}ヶ月{2}日", age, month, day);
 
         }
