@@ -210,7 +210,9 @@ namespace EmrCalculateApi.Ika.ViewModels
 
         public int AllCalcCount { get; set; }
 
-        public string UniqueKey { get; set; }
+        public string UniqueKey { get; set; } = string.Empty;
+
+        public bool AllowSendProgress { get => !string.IsNullOrEmpty(UniqueKey); }
 
         private int _calculatedCount;
         public int CalculatedCount
@@ -260,8 +262,11 @@ namespace EmrCalculateApi.Ika.ViewModels
             // 要求がある限りループ
             while (!IsStopCalc && GetCalcStatus(hpId, ptId, sinDate, ref calcStatus, preFix))
             {
-                var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-                IsStopCalc = statusCallBack.Result.Result;
+                if (AllowSendProgress)
+                {
+                    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                    IsStopCalc = statusCallBack.Result.Result;
+                }
                 if (IsStopCalc)
                 {
                     break;
@@ -504,9 +509,15 @@ namespace EmrCalculateApi.Ika.ViewModels
                 {
                     break;
                 }
-                SendMessager(new RecalculationStatus(false, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
+                if (AllowSendProgress)
+                {
+                    SendMessager(new RecalculationStatus(false, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
+                }
             }
-            SendMessager(new RecalculationStatus(true, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
+            if (AllowSendProgress)
+            {
+                SendMessager(new RecalculationStatus(true, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
+            }
         }
         /// <summary>
         /// 再計算処理
@@ -526,7 +537,10 @@ namespace EmrCalculateApi.Ika.ViewModels
             AddCalcStatusMonth(hpId, seikyuYm, ptIds, preFix);
 
             AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(preFix);
-            SendMessager(new RecalculationStatus(false, 1, AllCalcCount, 0, string.Empty, UniqueKey));
+            if (AllowSendProgress)
+            {
+                SendMessager(new RecalculationStatus(false, 1, AllCalcCount, 0, string.Empty, UniqueKey));
+            }
 
             //計算処理
             RunCalculate(hpId, 0, 0, 0, preFix);

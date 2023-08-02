@@ -131,7 +131,10 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                 }
 
                 _emrLogger.WriteLogEnd(this, conFncName, $"ptIds.Count:{ptIds?.Count ?? 0} seikyuYm:{seikyuYm}");
-                SendMessager(new RecalculationStatus(true, 2, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                if (AllowSendProgress)
+                {
+                    SendMessager(new RecalculationStatus(true, 2, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                }
             }
             catch (Exception E)
             {
@@ -194,7 +197,9 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
 
         public bool IsStopCalc { get; set; }
 
-        public string UniqueKey { get; set; }
+        public string UniqueKey { get; set; } = string.Empty;
+
+        public bool AllowSendProgress { get => !string.IsNullOrEmpty(UniqueKey); }
 
         public AfterCalcItem AfterCalcItemEvent { get; set; }
 
@@ -245,12 +250,18 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
             }
 
             AllCalcCount = ReceInfs.Count;
-            SendMessager(new RecalculationStatus(false, 2, AllCalcCount, 0, string.Empty, UniqueKey));
+            if (AllowSendProgress)
+            {
+                SendMessager(new RecalculationStatus(false, 2, AllCalcCount, 0, string.Empty, UniqueKey));
+            }
             CalculatedCount = 0;
             for (int rCnt = ReceInfs.Count - 1; rCnt >= 0 && !IsStopCalc; rCnt--)
             {
-                var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-                IsStopCalc = statusCallBack.Result.Result;
+                if (AllowSendProgress)
+                {
+                    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                    IsStopCalc = statusCallBack.Result.Result;
+                }
                 if (IsStopCalc)
                 {
                     return;
@@ -364,7 +375,10 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                     {
                         break;
                     }
-                    SendMessager(new RecalculationStatus(false, 2, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                    if (AllowSendProgress)
+                    {
+                        SendMessager(new RecalculationStatus(false, 2, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                    }
                 }
                 catch (Exception E)
                 {
