@@ -1855,7 +1855,7 @@ namespace Infrastructure.Repositories
                 itemCd.StartsWith(ItemCdConst.Comment842Pattern) || itemCd.StartsWith(ItemCdConst.Comment880Pattern));
         }
 
-        private int GetLastDaySantei(int hpId, long ptId, int sinDate, long raiinNo, string itemCd)
+        public int GetLastDaySantei(int hpId, long ptId, int sinDate, long raiinNo, string itemCd)
         {
             int result = 0;
             var sinKouiCountDiffDayQuery = NoTrackingDataContext.SinKouiCounts.Where(s => s.HpId == hpId && s.PtId == ptId && (s.SinYm * 100 + s.SinDay) < sinDate);
