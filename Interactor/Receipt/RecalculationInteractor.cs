@@ -198,7 +198,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         }
         errorText.Append(errorTextSinKouiCount);
         ptIdList = inputData.PtIdList.Distinct().ToList();
-        _receiptRepository.ClearReceCmtErr(inputData.HpId, newReceCheckErrList);
+        _receiptRepository.ClearReceCmtErr(inputData.HpId, receRecalculationList);
         errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.SinYm, errorText, ptIdList, systemConfigList, receRecalculationList);
         if (isStopCalc || !_receiptRepository.SaveNewReceCheckErrList(inputData.HpId, inputData.UserId, newReceCheckErrList))
         {
