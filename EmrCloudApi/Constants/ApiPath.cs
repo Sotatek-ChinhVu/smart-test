@@ -290,6 +290,7 @@
         public const string GetListSinKoui = "GetListSinKoui";
         public const string DeleteReceiptInfEdit = "DeleteReceiptInfEdit";
         public const string GetListKaikeiInf = "GetListKaikeiInf";
+        public const string GetListRaiinInf = "GetListRaiinInf";
         public const string CheckExisReceInfEdit = "CheckExisReceInfEdit";
         public const string GetListSokatuMst = "GetListSokatuMst";
 
