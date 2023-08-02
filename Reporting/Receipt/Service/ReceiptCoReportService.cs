@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Domain.Constant;
+﻿using Domain.Constant;
 using Domain.Models.SystemConf;
 using Helper.Common;
 using Infrastructure.Base;
@@ -103,8 +102,10 @@ namespace Reporting.Receipt.Service
 
 
         Dictionary<string, string> SingleData = new Dictionary<string, string>();
-        List<Dictionary<string, CellModel>> CellData = new List<Dictionary<string, CellModel>>();
         Dictionary<string, string> _fileName = new Dictionary<string, string>();
+
+        private readonly Dictionary<string, string> _extralData;
+        private readonly Dictionary<int, List<ListTextObject>> _listTextData;
 
         private List<CoReceiptModel> CoModels;
         private CoReceiptModel CoModel;
@@ -183,7 +184,10 @@ namespace Reporting.Receipt.Service
             {
                 InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
                 _PrintOut();
-                return new ReceiptPreviewMapper(CellData, SingleData, _fileName).GetData();
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new ReceiptPreviewMapper(_extralData,  SingleData, _fileName).GetData();
             }
             else
             {
@@ -203,13 +207,21 @@ namespace Reporting.Receipt.Service
                             , sort: 0);
                 _PrintOut();
 
-                return new ReceiptPreviewMapper(CellData, SingleData, _fileName).GetData();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new ReceiptPreviewMapper(_extralData, SingleData, _fileName).GetData();
             }
         }
 
         private void _PrintOut()
         {
             CoModels = GetData();
+
+            if (CoModels == null || CoModels.Any() == false)
+            {
+                return;
+            }
+
             CurrentPage = 1;
             int i = 0;
             int pageCount = 1;
@@ -2695,7 +2707,8 @@ namespace Reporting.Receipt.Service
             // 本体部分印刷処理
             int UpdateFormBody()
             {
-
+                List<ListTextObject> listDataPerPage = new();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 if (_tekiyoRowCount <= 0) return -1;
                 if ((TekiyoModels?.Count() ?? 0) <= 0 && (CurrentPage > 1 || (TekiyoEnModels?.Count() ?? 0) <= 0)) return -1;
 
@@ -2709,15 +2722,14 @@ namespace Reporting.Receipt.Service
 
                     for (int i = 1; i <= 2; i++)
                     {
-                        for (short j = 0; j < _tekiyoRowCount2; j++)
+                        for (int j = 0; j < _tekiyoRowCount2; j++)
                         {
                             if (tekiyoIndex < TekiyoModels.Count())
                             {
-                                var data = new Dictionary<string, CellModel>();
-                                data.Add($"lsSinId{i}", new CellModel(TekiyoModels[tekiyoIndex].SinId));
-                                data.Add($"lsTekiyoMark{i}", new CellModel(TekiyoModels[tekiyoIndex].Mark));
-                                data.Add($"lsTekiyo{i}", new CellModel(TekiyoModels[tekiyoIndex].Tekiyo));
-                                CellData.Add(data);
+                                listDataPerPage.Add(new($"lsSinId{i}", 0, j, TekiyoModels[tekiyoIndex].SinId));
+                                listDataPerPage.Add(new($"lsTekiyoMark{i}", 0, j, TekiyoModels[tekiyoIndex].Mark));
+                                listDataPerPage.Add(new($"lsTekiyo{i}", 0, j, TekiyoModels[tekiyoIndex].Tekiyo));
+
                                 tekiyoIndex++;
                                 if (tekiyoIndex >= TekiyoModels.Count())
                                 {
@@ -2737,11 +2749,9 @@ namespace Reporting.Receipt.Service
                         {
                             if (tekiyoIndex < TekiyoModels.Count())
                             {
-                                var data = new Dictionary<string, CellModel>();
-                                data.Add("lsSinId", new CellModel(TekiyoModels[tekiyoIndex].SinId));
-                                data.Add("lsTekiyoMark", new CellModel(TekiyoModels[tekiyoIndex].Mark));
-                                data.Add("lsTekiyo", new CellModel(TekiyoModels[tekiyoIndex].Tekiyo));
-                                CellData.Add(data);
+                                listDataPerPage.Add(new("lsSinId", 0, i, TekiyoModels[tekiyoIndex].SinId));
+                                listDataPerPage.Add(new("lsTekiyoMark", 0, i, TekiyoModels[tekiyoIndex].Mark));
+                                listDataPerPage.Add(new("lsTekiyo", 0, i, TekiyoModels[tekiyoIndex].Tekiyo));
                                 tekiyoIndex++;
                                 if (tekiyoIndex >= TekiyoModels.Count())
                                 {
@@ -2766,9 +2776,7 @@ namespace Reporting.Receipt.Service
                     {
                         for (short i = 0; i < _tekiyoEnRowCount; i++)
                         {
-                            var data = new Dictionary<string, CellModel>();
-                            data.Add("lsEnTekiyo", new CellModel(TekiyoEnModels[tekiyoEnIndex].Tekiyo));
-                            CellData.Add(data);
+                            listDataPerPage.Add(new("lsEnTekiyo", 0, i, TekiyoEnModels[tekiyoEnIndex].Tekiyo));
                             tekiyoEnIndex++;
                             if (tekiyoEnIndex >= TekiyoEnModels.Count())
                             {
@@ -2787,8 +2795,9 @@ namespace Reporting.Receipt.Service
                     tekiyoIndex = -1;
                 }
 
-                return tekiyoIndex;
+                _listTextData.Add(pageIndex, listDataPerPage);
 
+                return tekiyoIndex;
             }
 
             #endregion
@@ -4084,16 +4093,19 @@ namespace Reporting.Receipt.Service
                 //医療機関電話番号
                 SingleData.Add("dfHpTel", CoModel.HpTel);
 
+                List<ListTextObject> listDataPerPage = new();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 //病名欄
+                short i = 0;
                 foreach (var item in ByomeiModels)
                 {
-                    var data = new Dictionary<string, CellModel>();
-                    data.Add("lsByomei", new CellModel(item.Byomei));
-                    data.Add("lsByomeiStart", new CellModel(item.StartDate));
-                    data.Add("lsByomeiTenki", new CellModel(item.Tenki));
-                    CellData.Add(data);
+                    listDataPerPage.Add(new("lsByomei", 0, i, item.Byomei));
+                    listDataPerPage.Add(new("lsByomeiStart", 0, i, item.StartDate));
+                    listDataPerPage.Add(new("lsByomeiTenki", 0, i, item.Tenki));
+                    i++;
                 }
 
+                _listTextData.Add(pageIndex, listDataPerPage);
                 // 実日数
                 _printoutJituNissu();
 
@@ -4294,14 +4306,16 @@ namespace Reporting.Receipt.Service
                 SingleData.Add("dfEnTotal", CoModel.RousaiSyokeiGaku_RO?.ToString() ?? string.Empty);
                 //病名欄
                 short i = 0;
+
+                List<ListTextObject> listDataPerPage = new();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 foreach (CoReceiptByomeiModel byomei in ByomeiModels)
                 {
-                    var data = new Dictionary<string, CellModel>();
-                    data.Add("lsByomei", new CellModel(byomei.Byomei));
-                    CellData.Add(data);
+                    listDataPerPage.Add(new("lsByomei", 0, i, byomei.Byomei));
                     i++;
                 }
 
+                _listTextData.Add(pageIndex, listDataPerPage);
                 //点数欄
                 // 点数
                 List<List<string>> tensuSyukeiSakils =
@@ -4854,14 +4868,15 @@ namespace Reporting.Receipt.Service
                 SingleData.Add("dfHpTel", CoModel.HpTel);
 
                 //病名欄
-
+                List<ListTextObject> listDataPerPage = new();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                short i = 0;
                 foreach (CoReceiptByomeiModel byomei in ByomeiModels)
                 {
-                    var data = new Dictionary<string, CellModel>();
-                    data.Add("lsByomei", new CellModel(byomei.Byomei));
-                    CellData.Add(data);
+                    listDataPerPage.Add(new("lsByomei", 0, i, byomei.Byomei));
+                    i++;
                 }
-
+                _listTextData.Add(pageIndex, listDataPerPage);
                 //点数欄
                 // 点数
                 List<string> tensuSyukeiSakils =
@@ -5182,14 +5197,15 @@ namespace Reporting.Receipt.Service
                 SingleData.Add("dfHpTel", CoModel.HpTel);
 
                 //病名欄
+                List<ListTextObject> listDataPerPage = new();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                short i = 0;
                 foreach (CoReceiptByomeiModel byomei in ByomeiModels)
                 {
-                    var data = new Dictionary<string, CellModel>();
-                    data.Add("lsByomei", new CellModel(byomei.Byomei));
-
-                    CellData.Add(data);
+                    listDataPerPage.Add(new("lsByomei", 0, i, byomei.Byomei));
+                    i++;
                 }
-
+                _listTextData.Add(pageIndex, listDataPerPage);
                 //点数欄
                 // 点数
                 List<string> tensuSyukeiSakils =

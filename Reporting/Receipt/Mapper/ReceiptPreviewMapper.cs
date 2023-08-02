@@ -1,13 +1,4 @@
-﻿using Domain.Models.SystemConf;
-using Helper.Common;
-using Reporting.Calculate.Constants;
-using Reporting.Calculate.Receipt.Constants;
-using Reporting.Calculate.Receipt.Models;
-using Reporting.Mappers.Common;
-using Reporting.Receipt.Constants;
-using Reporting.Receipt.DB;
-using Reporting.Receipt.Models;
-using static Helper.Common.CIUtil;
+﻿using Reporting.Mappers.Common;
 
 namespace Reporting.Receipt.Mapper
 {
@@ -15,13 +6,18 @@ namespace Reporting.Receipt.Mapper
     {
         Dictionary<string, string> _fileName = new Dictionary<string, string>();
         Dictionary<string, string> _singleData = new Dictionary<string, string>();
-        List<Dictionary<string, CellModel>> _cellData = new List<Dictionary<string, CellModel>>();
+        Dictionary<string, string> _extralData = new Dictionary<string, string>();
 
-        public ReceiptPreviewMapper(List<Dictionary<string, CellModel>> cellData, Dictionary<string, string> singleData, Dictionary<string, string> fileName)
+        public ReceiptPreviewMapper(Dictionary<string, string> extralData, Dictionary<string, string> singleData, Dictionary<string, string> fileName)
         {
-            _cellData = cellData;
+            _extralData = extralData;
             _singleData = singleData;
             _fileName = fileName;
+        }
+
+        public override Dictionary<string, string> GetExtralData()
+        {
+            return _extralData;
         }
 
         public override Dictionary<string, string> GetFileNamePageMap()
@@ -56,7 +52,7 @@ namespace Reporting.Receipt.Mapper
 
         public override List<Dictionary<string, CellModel>> GetTableFieldData()
         {
-            return _cellData;
+            return new();
         }
 
         public override string GetJobName()
