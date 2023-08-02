@@ -3542,8 +3542,42 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result != null;
     }
 
+    public List<SokatuMstModel> GetSokatuMstModels(int hpId, int SeikyuYm)
+    {
+        {
+            List<SokatuMstModel>? result = new();
+            var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).FirstOrDefault();
+            var groupCd = 100001;
+            var grpEdaNo = 0;
+            //var defaultValue = 0;
+            var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
+                    p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+
+            if (hpInf != null)
+            {
+                result = NoTrackingDataContext.SokatuMsts.Where(
+                  x => x.HpId == hpId &&
+                    x.PrefNo == hpInf.PrefNo &&
+                    x.StartYm <= SeikyuYm &&
+                    x.EndYm >= SeikyuYm)
+                  .OrderBy(x => x.SortNo)
+                  .AsEnumerable()
+                  .Select(x => new SokatuMstModel(x.PrefNo, x.StartYm, x.EndYm, x.ReportId, x.ReportEdaNo, x.SortNo, x.ReportName ?? string.Empty, x.PrintType, x.PrintNoType, x.DataAll, x.DataDisk, x.DataPaper, x.DataKbn, x.DiskKind ?? string.Empty, x.DiskCnt, x.IsSort))
+                  .ToList();
+
+                if (result != null && systemConf.Val != 1)
+                {
+                    result = result.Where(item => item.ReportId != 4).ToList();
+                }
+            }
+            return result;
+        }
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
     }
+
+
 }

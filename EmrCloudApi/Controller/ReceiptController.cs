@@ -48,6 +48,7 @@ using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ValidateCreateUKEFile;
 using UseCase.SinKoui.GetSinKoui;
+using UseCase.Receipt.GetListSokatuMst;
 
 namespace EmrCloudApi.Controller;
 
@@ -505,6 +506,18 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<CheckExisReceInfEditResponse>>(presenter.Result);
     }
 
+
+    [HttpGet(ApiPath.GetListSokatuMst)]
+    public ActionResult<Response<GetListSokatuMstResponse>> GetSokatuMstModels([FromQuery] GetListSokatuMstRequest req)
+    {
+        var input = new GetListSokatuMstInputData(HpId, req.SeikyuYm);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListSokatuMstPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListSokatuMstResponse>>(presenter.Result);
+    }
 
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
