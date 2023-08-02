@@ -1228,13 +1228,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     #endregion
 
     #region Rece check screeen
-    public List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId, int sinDate, bool isGetAll = false)
+    public List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId, int sinDate)
     {
         var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
                                                                     && (sinYm == 0 || item.SinYm == sinYm)
                                                                     && item.PtId == ptId
                                                                     && (hokenId == 0 || item.HokenId == hokenId)
-                                                                    && (isGetAll || item.IsDeleted == DeleteTypes.None))
+                                                                    && item.IsDeleted == DeleteTypes.None)
                                                      .ToList();
 
         var itemCdList = receCmts.Select(item => item.ItemCd).Distinct().ToList();
@@ -1257,6 +1257,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         var receCmtUpdateList = receCmtList.Where(item => item.Id > 0).ToList();
         var receCmtUpdateDBList = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                                             && item.IsDeleted == DeleteTypes.None
                                                                              && receCmtUpdateList.Select(item => item.Id).Contains(item.Id))
                                                               .ToList();
 
@@ -1281,7 +1282,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             entity.SeqNo = model.SeqNo;
             entity.CmtData = model.CmtData;
             entity.Cmt = model.Cmt;
-            entity.IsDeleted = 0;
         }
         return TrackingDataContext.SaveChanges() > 0;
     }
