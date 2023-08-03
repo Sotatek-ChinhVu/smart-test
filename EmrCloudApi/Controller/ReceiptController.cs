@@ -49,6 +49,7 @@ using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ValidateCreateUKEFile;
 using UseCase.SinKoui.GetSinKoui;
 using UseCase.Receipt.GetListSokatuMst;
+using UseCase.Receipt.GetListRaiinInf;
 
 namespace EmrCloudApi.Controller;
 
@@ -492,6 +493,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListKaikeiInfResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListRaiinInf)]
+    public ActionResult<Response<GetListRaiinInfResponse>> GetListRaiinInf([FromQuery] GetListRaiinInfRequest request)
+    {
+        var input = new GetListRaiinInfInputData(HpId, request.PtId, request.SinYm, request.DayInMonth, request.RpNo, request.SeqNo);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListRaiinInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListRaiinInfResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.CheckExisReceInfEdit)]

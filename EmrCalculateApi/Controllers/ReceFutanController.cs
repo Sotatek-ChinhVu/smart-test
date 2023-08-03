@@ -42,9 +42,9 @@ namespace EmrCalculateApi.Controllers
                                    calculateRequest.SeikyuYm,
                                    calculateRequest.UniqueKey);
             }
-            catch
+            catch (Exception ex)
             {
-                var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, "Error");
+                var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, ex.Message);
                 sendMessager.Wait();
             }
             finally

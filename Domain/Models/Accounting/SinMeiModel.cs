@@ -29,7 +29,7 @@ namespace Domain.Models.Accounting
             Days = new();
         }
 
-        public SinMeiModel(int sinId, string sinIdBinding, string itemName, double suryo, string unitName, string tenKai, double totalTen, double totalKingaku, double kingaku, int futanS, int futanK1, int futanK2, int futanK3, int futanK4, string cdKbn, int jihiSbt, int enTenKbn, int santeiKbn, int inOutKbn, bool isRowColorGray, List<int> days)
+        public SinMeiModel(int sinId, string sinIdBinding, string itemName, double suryo, string unitName, string tenKai, double totalTen, double totalKingaku, double kingaku, int futanS, int futanK1, int futanK2, int futanK3, int futanK4, string cdKbn, int jihiSbt, int enTenKbn, int santeiKbn, int inOutKbn, bool isRowColorGray, List<int> days, int sinRpNo, int sinSeqNo)
         {
             SinId = sinId;
             SinIdBinding = sinIdBinding;
@@ -52,6 +52,8 @@ namespace Domain.Models.Accounting
             InOutKbn = inOutKbn;
             IsRowColorGray = isRowColorGray;
             Days = days;
+            SinRpNo = sinRpNo;
+            SinSeqNo = sinSeqNo;
         }
 
         public int SinId { get; private set; }
@@ -73,6 +75,8 @@ namespace Domain.Models.Accounting
         public int EnTenKbn { get; private set; }
         public int SanteiKbn { get; private set; }
         public int InOutKbn { get; private set; }
+        public int SinRpNo { get; private set; }
+        public int SinSeqNo { get; private set; }
         public string Quantity { get => Suryo > 0 && !string.IsNullOrEmpty(UnitName) ? Suryo.AsString() + UnitName : ""; }
         public double SinHoTotalTen { get => EnTenKbn == 1 ? Kingaku / 10 : TotalTen; }
         public double Total { get => TotalKingaku != 0 ? TotalKingaku : TotalTen; }
