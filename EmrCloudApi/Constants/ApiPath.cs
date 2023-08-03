@@ -128,6 +128,7 @@
         public const string DeletePatientInfo = "DeletePatientInfo";
         public const string CheckValidSamePatient = "CheckValidSamePatient";
         public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
+        public const string SavePtKyusei = "SavePtKyusei";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
