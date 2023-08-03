@@ -234,17 +234,17 @@ namespace Reporting.Receipt.Service
             {
                 CoModel = CoModels[i];
 
-                formName = GetFormFileName(CurrentPage);
-                GetFormParam(formName);
-
-                _byomeiCharCount -= 3;
-                _tekiyoCharCount -= 13;
-                _tekiyoByoCharCount -= 26;
-
                 // フォームチェック
                 if (TargetIsKenpo() ||
                             (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 0))
                 {
+                    formName = GetFormFileName(CurrentPage);
+                    GetFormParam(formName);
+
+                    _byomeiCharCount -= 3;
+                    _tekiyoCharCount -= 13;
+                    _tekiyoByoCharCount -= 26;
+
                     // 対象が社保国保または、自賠健保準拠
                     if ((int)_systemConfRepository.GetSettingValue(94001, 1, HpId) == 1)
                     {
@@ -278,7 +278,13 @@ namespace Reporting.Receipt.Service
                 else if (new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin, TargetConst.RousaiAfter }.Contains(Target) ||
                         (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 1))
                 {
-                    
+                    formName = GetFormFileName(CurrentPage);
+                    GetFormParam(formName);
+
+                    _byomeiCharCount -= 3;
+                    _tekiyoCharCount -= 13;
+                    _tekiyoByoCharCount -= 26;
+
                     // 労災（短期、年金、アフターケア）、自賠労災準拠
                     if ((int)_systemConfRepository.GetSettingValue(94001, 0, HpId) == 1)
                     {
@@ -302,7 +308,12 @@ namespace Reporting.Receipt.Service
                     SetFileName(PageCount.ToString(), formName);
                 }
 
-               ///// formName = GetFormFileName(CurrentPage);
+                if (PageCount == 0)
+                {
+                    return;
+                }
+
+                formName = GetFormFileName(2);
 
                 SetFileName((PageCount + 1).ToString(), formName);
                 bool isNextPageExits = true;
