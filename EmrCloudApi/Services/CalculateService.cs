@@ -250,7 +250,7 @@ namespace EmrCloudApi.Services
         {
             try
             {
-                var task = CallCalculate(CalculateApiPath.RunCalculateMonth, inputData, cancellationToken);
+                var task = CallCalculate(CalculateApiPath.RunCalculateMonth, inputData);
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                 {
                     return false;
