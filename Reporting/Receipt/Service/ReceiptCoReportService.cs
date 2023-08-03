@@ -234,17 +234,17 @@ namespace Reporting.Receipt.Service
             {
                 CoModel = CoModels[i];
 
+                formName = GetFormFileName(CurrentPage);
+                GetFormParam(formName);
+
+                _byomeiCharCount -= 3;
+                _tekiyoCharCount -= 13;
+                _tekiyoByoCharCount -= 26;
+
                 // フォームチェック
                 if (TargetIsKenpo() ||
                             (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 0))
                 {
-                    formName = GetFormFileName(CurrentPage);
-                    GetFormParam(formName);
-
-                    _byomeiCharCount -= 3;
-                    _tekiyoCharCount -= 13;
-                    _tekiyoByoCharCount -= 26;
-
                     // 対象が社保国保または、自賠健保準拠
                     if ((int)_systemConfRepository.GetSettingValue(94001, 1, HpId) == 1)
                     {
@@ -276,15 +276,9 @@ namespace Reporting.Receipt.Service
                     SetFileName(PageCount.ToString(), formName);
                 }
                 else if (new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin, TargetConst.RousaiAfter }.Contains(Target) ||
-                        (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 1, HpId) == 1))
+                        (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 1))
                 {
-                    formName = GetFormFileName(CurrentPage);
-                    GetFormParam(formName);
-
-                    _byomeiCharCount -= 3;
-                    _tekiyoCharCount -= 13;
-                    _tekiyoByoCharCount -= 26;
-
+                    
                     // 労災（短期、年金、アフターケア）、自賠労災準拠
                     if ((int)_systemConfRepository.GetSettingValue(94001, 0, HpId) == 1)
                     {
@@ -308,7 +302,7 @@ namespace Reporting.Receipt.Service
                     SetFileName(PageCount.ToString(), formName);
                 }
 
-                formName = GetFormFileName(2);
+               ///// formName = GetFormFileName(CurrentPage);
 
                 SetFileName((PageCount + 1).ToString(), formName);
                 bool isNextPageExits = true;
@@ -1349,7 +1343,7 @@ namespace Reporting.Receipt.Service
             if (rousaiReceiptModel != null)
             {
                 rousaiReceiptModel.JituNissu = receInf.HokenNissu;
-                rousaiReceiptModel.Syokei = receInf.RousaiIFutan / receInf.HokenMst.EnTen;
+                rousaiReceiptModel.Syokei = receInf.RousaiIFutan / (receInf.HokenMst.EnTen == 0 ? 1 : receInf.HokenMst.EnTen);
                 rousaiReceiptModel.SyokeiGaku_I = receInf.RousaiIFutan;
                 rousaiReceiptModel.SyokeiGaku_RO = receInf.RousaiRoFutan;
 
