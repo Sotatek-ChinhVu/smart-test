@@ -621,7 +621,7 @@ namespace EmrCloudApi.Controller
             }
 
             var input = new SavePatientInfoInputData(patient,
-                 patientInfo.PtKyuseis,
+                 patientInfo.PtKyuseis.Select(item => new PtKyuseiModel(HpId, item.PtId, item.SeqNo, item.KanaName, item.Name, item.EndDate)).ToList(),
                  patientInfo.PtSanteis,
                  insurances,
                  hokenInfs,
