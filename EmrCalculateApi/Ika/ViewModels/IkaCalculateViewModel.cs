@@ -262,11 +262,11 @@ namespace EmrCalculateApi.Ika.ViewModels
             // 要求がある限りループ
             while (!IsStopCalc && GetCalcStatus(hpId, ptId, sinDate, ref calcStatus, preFix))
             {
-                if (AllowSendProgress)
-                {
-                    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-                    IsStopCalc = statusCallBack.Result.Result;
-                }
+                //if (AllowSendProgress)
+                //{
+                //    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                //    IsStopCalc = statusCallBack.Result.Result;
+                //}
                 if (IsStopCalc)
                 {
                     break;

@@ -488,6 +488,24 @@
         public const string SaisinSurveillance = "112024570";
         #endregion
 
+        public static List<string> IryoJyohoKibanList = new List<string>()
+        {
+            SyosinIryoJyohoKiban1,
+            SyosinIryoJyohoKiban2,
+            IgakuIryoJyohoKiban1,
+            IgakuIryoJyohoKiban2,
+            SaisinIryoJyohoKiban3,
+            IgakuIryoJyohoKiban3
+        };
+
+        public const string IgakuIryoJyohoKiban1 = "113045070";
+
+        public const string IgakuIryoJyohoKiban2 = "113045170";
+
+        public const string IgakuIryoJyohoKiban3 = "113045270";
+
+        public const string SaisinIryoJyohoKiban3 = "112026570";
+
         /// <summary>
         /// オンライン診療料
         /// </summary>
