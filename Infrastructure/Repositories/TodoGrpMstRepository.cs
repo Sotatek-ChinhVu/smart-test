@@ -65,7 +65,7 @@ namespace Infrastructure.Repositories
             return new TodoGrpMst
             {
                 HpId = hpId,
-                TodoGrpNo = u.TodoGrpNo,
+                TodoGrpNo = 0,
                 TodoGrpName = u.TodoGrpName,
                 GrpColor = u.GrpColor,
                 SortNo = u.SortNo,
