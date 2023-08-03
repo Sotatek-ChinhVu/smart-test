@@ -15,6 +15,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -3544,34 +3545,62 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public List<SokatuMstModel> GetSokatuMstModels(int hpId, int SeikyuYm)
     {
+        List<SokatuMstModel> result = new();
+        var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).FirstOrDefault();
+        var groupCd = 100001;
+        var grpEdaNo = 0;
+        //var defaultValue = 0;
+        var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
+                p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+
+        if (hpInf != null)
         {
-            List<SokatuMstModel>? result = new();
-            var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).FirstOrDefault();
-            var groupCd = 100001;
-            var grpEdaNo = 0;
-            //var defaultValue = 0;
-            var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
-                    p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+            result = NoTrackingDataContext.SokatuMsts.Where(
+              x => x.HpId == hpId &&
+                x.PrefNo == hpInf.PrefNo &&
+                x.StartYm <= SeikyuYm &&
+                x.EndYm >= SeikyuYm)
+              .OrderBy(x => x.SortNo)
+              .AsEnumerable()
+              .Select(x => new SokatuMstModel(x.PrefNo, x.StartYm, x.EndYm, x.ReportId, x.ReportEdaNo, x.SortNo, x.ReportName ?? string.Empty, x.PrintType, x.PrintNoType, x.DataAll, x.DataDisk, x.DataPaper, x.DataKbn, x.DiskKind ?? string.Empty, x.DiskCnt, x.IsSort))
+              .ToList();
 
-            if (hpInf != null)
+            if (result != null && systemConf.Val != 1)
             {
-                result = NoTrackingDataContext.SokatuMsts.Where(
-                  x => x.HpId == hpId &&
-                    x.PrefNo == hpInf.PrefNo &&
-                    x.StartYm <= SeikyuYm &&
-                    x.EndYm >= SeikyuYm)
-                  .OrderBy(x => x.SortNo)
-                  .AsEnumerable()
-                  .Select(x => new SokatuMstModel(x.PrefNo, x.StartYm, x.EndYm, x.ReportId, x.ReportEdaNo, x.SortNo, x.ReportName ?? string.Empty, x.PrintType, x.PrintNoType, x.DataAll, x.DataDisk, x.DataPaper, x.DataKbn, x.DiskKind ?? string.Empty, x.DiskCnt, x.IsSort))
-                  .ToList();
-
-                if (result != null && systemConf.Val != 1)
-                {
-                    result = result.Where(item => item.ReportId != 4).ToList();
-                }
+                result = result.Where(item => item.ReportId != 4).ToList();
             }
-            return result;
         }
+        return result;
+    }
+
+    public List<RaiinInfModel> GetListRaiinInf(int hpId, long ptId, int sinYm, int dayInMonth, int rpNo, int seqNo)
+    {
+        var listSinKouiCount = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
+                                                                                 && item.PtId == ptId
+                                                                                 && item.SinYm == sinYm
+                                                                                 && item.SinDay == dayInMonth
+                                                                                 && item.RpNo == rpNo
+                                                                                 && item.SeqNo == seqNo)
+                                                                   .Select(item => item.RaiinNo)
+                                                                   .Distinct()
+                                                                   .ToList();
+
+        if (!listSinKouiCount.Any())
+        {
+            return new();
+        }
+
+        return NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                             && item.PtId == ptId
+                                                             && item.IsDeleted == DeleteTypes.None
+                                                             && listSinKouiCount.Contains(item.RaiinNo))
+                                               .Select(item => new RaiinInfModel(item.PtId,
+                                                                                 item.SinDate,
+                                                                                 item.RaiinNo,
+                                                                                 item.UketukeTime ?? string.Empty,
+                                                                                 item.SinEndTime ?? string.Empty,
+                                                                                 item.Status))
+                                               .ToList();
     }
 
     public void ReleaseResource()

@@ -137,4 +137,6 @@ public interface IReceiptRepository : IRepositoryBase
     void UpdateReceStatus(ReceStatusModel receStatusUpdate, int hpId, int userId);
 
     void ClearReceCmtErr(int hpId, List<ReceRecalculationModel> receRecalculationList);
+
+    List<RaiinInfModel> GetListRaiinInf(int hpId, long ptId, int sinYm, int dayInMonth, int rpNo, int seqNo);
 }
