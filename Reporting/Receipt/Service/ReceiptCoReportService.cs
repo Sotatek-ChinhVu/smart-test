@@ -1,4 +1,5 @@
-﻿using Domain.Constant;
+﻿using Amazon.Runtime.Internal.Transform;
+using Domain.Constant;
 using Domain.Models.SystemConf;
 using Helper.Common;
 using Infrastructure.Base;
@@ -208,7 +209,8 @@ namespace Reporting.Receipt.Service
                             , sort: 0);
                 _PrintOut();
 
-                _extralData.Add("totalPage", (PageCount + 1).ToString());
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
                 return new ReceiptPreviewMapper(_listTextData, _extralData, SingleData, _fileName).GetData();
             }
         }
