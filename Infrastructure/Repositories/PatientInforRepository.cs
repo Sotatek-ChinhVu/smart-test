@@ -2616,6 +2616,10 @@ namespace Infrastructure.Repositories
                 entity.EndDate = model.EndDate;
                 entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateId = userId;
+                if (model.IsDeleted)
+                {
+                    entity.IsDeleted = 1;
+                }
                 if (entity.SeqNo == 0)
                 {
                     TrackingDataContext.PtKyuseis.Add(entity);

@@ -98,6 +98,8 @@ using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Calculation;
 using UseCase.SwapHoken.Save;
 using UseCase.SwapHoken.Validate;
+using UseCase.PatientInfor.SavePtKyusei;
+using UseCase.PatientInfor;
 
 namespace EmrCloudApi.Controller
 {
@@ -980,6 +982,26 @@ namespace EmrCloudApi.Controller
             var presenter = new CheckValidSamePatientPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CheckValidSamePatientResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SavePtKyusei)]
+        public ActionResult<Response<SavePtKyuseiResponse>> SavePtKyuseiPatient([FromBody] SavePtKyuseiRequest request)
+        {
+            var input = new SavePtKyuseiInputData(HpId,
+                                                  UserId,
+                                                  request.PtId,
+                                                  request.PtKyuseiList.Select(item => new PtKyuseiItem(
+                                                           HpId,
+                                                           request.PtId,
+                                                           item.SeqNo,
+                                                           item.KanaName,
+                                                           item.Name,
+                                                           item.EndDate,
+                                                           item.IsDeleted)).ToList());
+            var output = _bus.Handle(input);
+            var presenter = new SavePtKyuseiPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SavePtKyuseiResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.CheckAllowDeletePatientInfo)]
