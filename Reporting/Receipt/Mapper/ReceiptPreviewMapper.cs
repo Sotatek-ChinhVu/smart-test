@@ -7,12 +7,19 @@ namespace Reporting.Receipt.Mapper
         Dictionary<string, string> _fileName = new Dictionary<string, string>();
         Dictionary<string, string> _singleData = new Dictionary<string, string>();
         Dictionary<string, string> _extralData = new Dictionary<string, string>();
+        Dictionary<int, List<ListTextObject>> _listTextData = new Dictionary<int, List<ListTextObject>>();
 
-        public ReceiptPreviewMapper(Dictionary<string, string> extralData, Dictionary<string, string> singleData, Dictionary<string, string> fileName)
+        public ReceiptPreviewMapper(Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, Dictionary<string, string> singleData, Dictionary<string, string> fileName)
         {
+            _listTextData = listTextData;
             _extralData = extralData;
             _singleData = singleData;
             _fileName = fileName;
+        }
+
+        public override Dictionary<int, List<ListTextObject>> GetListTextData()
+        {
+            return _listTextData;
         }
 
         public override Dictionary<string, string> GetExtralData()
@@ -37,7 +44,7 @@ namespace Reporting.Receipt.Mapper
 
         public override string GetRowCountFieldName()
         {
-            return "lsTekiyo";
+            return string.Empty;
         }
 
         public override Dictionary<string, bool> GetVisibleFieldData()
