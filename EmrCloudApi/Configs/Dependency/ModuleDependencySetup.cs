@@ -631,6 +631,8 @@ using GetDefaultSelectedTimeInputDataOfReception = UseCase.Reception.GetDefaultS
 using GetDefaultSelectedTimeInteractorOfMedical = Interactor.MedicalExamination.GetDefaultSelectedTimeInteractor;
 using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefaultSelectedTimeInteractor;
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
+using GetListRaiinInfInputDataOfReceipt = UseCase.Receipt.GetListRaiinInf.GetListRaiinInfInputData;
+using GetListRaiinInfInteractorOfReceipt = Interactor.Receipt.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetRaiinInfListInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
 using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
@@ -1408,7 +1410,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteReceiptInfEditInputData, DeleteReceiptInfEditInteractor>();
             busBuilder.RegisterUseCase<GetListKaikeiInfInputData, GetListKaikeiInfInteractor>();
             busBuilder.RegisterUseCase<CheckExisReceInfEditInputData, CheckExisReceInfEditInteractor>();
-            busBuilder.RegisterUseCase<GetListRaiinInfInputData, GetListRaiinInfInteractor>();
+            busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfReceipt, GetListRaiinInfInteractorOfReceipt>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
