@@ -1581,7 +1581,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var ptKohi2 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi2Id);
         var ptKohi3 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi3Id);
         var ptKohi4 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi4Id);
-        return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new());
+
+        var hokenPInf = NoTrackingDataContext.PtHokenPatterns.FirstOrDefault(item => item.HpId == hpId
+                                                                                     && item.HokenId == hokenId
+                                                                                     && hokenInf != null
+                                                                                     && item.HokenKbn == hokenInf.HokenKbn
+                                                                                     && item.IsDeleted == 0
+                                                                                     && item.StartDate / 100 <= sinYm
+                                                                                     && item.EndDate / 100 >= sinYm);
+        return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new(), hokenPInf ?? new());
     }
 
     public bool SaveReceCheckOpt(int hpId, int userId, List<ReceCheckOptModel> receCheckOptList)
@@ -2944,7 +2952,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return receCheckCmtList.Any() ? receCheckCmtList.Max(item => item.SeqNo) : 0;
     }
 
-    private InsuranceReceInfModel ConvertToInsuranceReceInfModel(ReceInf receInf, PtHokenInf hokenInf, PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4)
+    private InsuranceReceInfModel ConvertToInsuranceReceInfModel(ReceInf receInf, PtHokenInf hokenInf, PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4, PtHokenPattern hokenPInf)
     {
         return new InsuranceReceInfModel(
                 receInf.SeikyuYm,
@@ -3011,7 +3019,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 hokenInf?.RousaiKofuNo ?? string.Empty,
                 hokenInf?.Kigo ?? string.Empty,
                 hokenInf?.Bango ?? string.Empty,
-                hokenInf?.EdaNo ?? string.Empty
+                hokenInf?.EdaNo ?? string.Empty,
+                hokenPInf?.HokenPid ?? 0
             );
     }
 
