@@ -14,7 +14,7 @@ public class RaiinInfModel
         Status = status;
     }
 
-    public long PtId { get; set; }
+    public long PtId { get; private set; }
 
     /// <summary>
     /// 診療日
