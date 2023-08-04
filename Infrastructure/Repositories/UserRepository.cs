@@ -72,23 +72,31 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.UserMsts.AsEnumerable().Select(u => ToModel(u)).ToList();
         }
 
-        public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly)
+        public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly, bool isAll)
         {
-            var query = NoTrackingDataContext.UserMsts.Where(u =>
-                u.StartDate <= sinDate
-                && u.EndDate >= sinDate
-                && u.IsDeleted == DeleteTypes.None);
-            if (isDoctorOnly)
+            if (isAll)
             {
-                query = query.Where(u => u.JobCd == JobCodes.Doctor);
+                var query = NoTrackingDataContext.UserMsts;
+                return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u, new())).ToList();
             }
-            var listKaMsts = NoTrackingDataContext.KaMsts.Where(item =>
-                                                                    query.Select(item => item.KaId).ToList()
-                                                                    .Contains(item.KaId)
-                                                                    && item.IsDeleted == 0
-                                                              ).ToList();
+            else
+            {
+                var query = NoTrackingDataContext.UserMsts.Where(u =>
+                    u.StartDate <= sinDate
+                    && u.EndDate >= sinDate
+                    && u.IsDeleted == DeleteTypes.None);
+                if (isDoctorOnly)
+                {
+                    query = query.Where(u => u.JobCd == JobCodes.Doctor);
+                }
+                var listKaMsts = NoTrackingDataContext.KaMsts.Where(item =>
+                                                                        query.Select(item => item.KaId).ToList()
+                                                                        .Contains(item.KaId)
+                                                                        && item.IsDeleted == 0
+                                                                  ).ToList();
 
-            return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u, listKaMsts)).ToList();
+                return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u, listKaMsts)).ToList();
+            }
         }
 
         public IEnumerable<UserMstModel> GetDoctorsList(int userId)
