@@ -42,6 +42,7 @@
         public const string GetTeikyoByomei = "GetTeikyoByomei";
         public const string GetDrugAction = "GetDrugAction";
         public const string GetDefaultPrecautions = "GetDefaultPrecautions";
+        public const string UploadImageDrugInf = "UploadImageDrugInf";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -128,6 +129,7 @@
         public const string DeletePatientInfo = "DeletePatientInfo";
         public const string CheckValidSamePatient = "CheckValidSamePatient";
         public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
+        public const string SavePtKyusei = "SavePtKyusei";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";

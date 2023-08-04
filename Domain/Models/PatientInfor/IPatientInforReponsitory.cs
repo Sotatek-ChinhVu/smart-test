@@ -68,6 +68,8 @@ namespace Domain.Models.PatientInfor
 
         int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus);
 
-        List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex , int birthDay);
+        List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex, int birthDay);
+
+        bool SavePtKyusei(int hpId, int userId, List<PtKyuseiModel> ptKyuseiList);
     }
 }

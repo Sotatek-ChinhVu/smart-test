@@ -1045,8 +1045,8 @@ public class RecalculationInteractor : IRecalculationInputPort
                 {
                     if (ptByomei.IsFree && ptByomei.Byomei.Length > 20)
                     {
-                        string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 100);
-                        string msg2 = string.Format("({0}: {1}/20文字)", cutByomei, ptByomei.Byomei.Length);
+                        string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 84);
+                        string msg2 = string.Format("({0}...: {1}/20文字)", cutByomei, ptByomei.Byomei.Length);
                         AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.FreeTextLengthByomeiErrCd, ReceErrCdConst.FreeTextLengthByomeiErrMsg, msg2, cutByomei);
                     }
                 }

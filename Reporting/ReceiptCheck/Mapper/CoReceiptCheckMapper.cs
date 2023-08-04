@@ -47,4 +47,13 @@ public class CoReceiptCheckMapper : CommonReportingRequest
     {
         return new();
     }
+
+    public override Dictionary<string, string> GetExtralData()
+    {
+        Dictionary<string, string> result = new()
+        {
+            { "maxRow", "45" }
+        };
+        return result;
+    }
 }
