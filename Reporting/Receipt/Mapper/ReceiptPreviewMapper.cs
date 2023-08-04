@@ -5,16 +5,21 @@ namespace Reporting.Receipt.Mapper
     public class ReceiptPreviewMapper : CommonReportingRequest
     {
         Dictionary<string, string> _fileName = new Dictionary<string, string>();
-        Dictionary<string, string> _singleData = new Dictionary<string, string>();
         Dictionary<string, string> _extralData = new Dictionary<string, string>();
         Dictionary<int, List<ListTextObject>> _listTextData = new Dictionary<int, List<ListTextObject>>();
+        Dictionary<int, Dictionary<string, string>> _setFieldData = new Dictionary<int, Dictionary<string, string>>();
 
-        public ReceiptPreviewMapper(Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, Dictionary<string, string> singleData, Dictionary<string, string> fileName)
+        public ReceiptPreviewMapper(Dictionary<int, Dictionary<string, string>> setFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, Dictionary<string, string> fileName)
         {
+            _setFieldData = setFieldData;
             _listTextData = listTextData;
             _extralData = extralData;
-            _singleData = singleData;
             _fileName = fileName;
+        }
+
+        public override Dictionary<int, Dictionary<string, string>> GetSetFieldData()
+        {
+            return _setFieldData;
         }
 
         public override Dictionary<int, List<ListTextObject>> GetListTextData()
@@ -39,7 +44,7 @@ namespace Reporting.Receipt.Mapper
 
         public override Dictionary<string, string> GetSingleFieldData()
         {
-            return _singleData;
+            return new();
         }
 
         public override string GetRowCountFieldName()

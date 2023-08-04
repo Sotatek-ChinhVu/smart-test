@@ -102,13 +102,13 @@ namespace Reporting.Receipt.Service
         List<CoReceiptTekiyoModel> TekiyoModels = new List<CoReceiptTekiyoModel>();
         List<CoReceiptTekiyoModel> TekiyoEnModels = new List<CoReceiptTekiyoModel>();
 
-
-        Dictionary<string, string> SingleData = new Dictionary<string, string>();
         Dictionary<string, string> _fileName = new Dictionary<string, string>();
 
         private Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private Dictionary<int, List<ListTextObject>> _listTextData = new Dictionary<int, List<ListTextObject>>();
         List<ListTextObject> _listDataPerPage = new List<ListTextObject>();
+        private Dictionary<int, Dictionary<string, string>> _setFieldData = new Dictionary<int, Dictionary<string, string>>();
+        Dictionary<string, string> _setFieldDataPerPage = new Dictionary<string, string>();
 
         private List<CoReceiptModel> CoModels;
         private CoReceiptModel CoModel;
@@ -189,7 +189,7 @@ namespace Reporting.Receipt.Service
                 _PrintOut();
 
                 _extralData.Add("PageIndex", PageCount.ToString());
-                return new ReceiptPreviewMapper(_listTextData, _extralData, SingleData, _fileName).GetData();
+                return new ReceiptPreviewMapper(_setFieldData, _listTextData, _extralData, _fileName).GetData();
             }
             else
             {
@@ -211,7 +211,7 @@ namespace Reporting.Receipt.Service
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
                 _extralData.Add("totalPage", pageIndex.ToString());
-                return new ReceiptPreviewMapper(_listTextData, _extralData, SingleData, _fileName).GetData();
+                return new ReceiptPreviewMapper(_setFieldData,_listTextData, _extralData, _fileName).GetData();
             }
         }
 
@@ -2837,7 +2837,9 @@ namespace Reporting.Receipt.Service
                 int updateHeaderStatus = UpdateFormHeader();
                 int updateBodyStatus = UpdateFormBody();
                 _listTextData.Add(PageIndex, _listDataPerPage);
+                _setFieldData.Add(PageIndex, _setFieldDataPerPage);
                 _listDataPerPage = new List<ListTextObject>();
+                _setFieldDataPerPage = new Dictionary<string, string>();
                 if (updateHeaderStatus < 0 || updateBodyStatus < 0)
                 {
                     hasNextPage = _hasNextPage;
@@ -5395,9 +5397,9 @@ namespace Reporting.Receipt.Service
 
         private void SetFieldData(string field, string value)
         {
-            if (!string.IsNullOrEmpty(field) && !SingleData.ContainsKey(field))
+            if (!string.IsNullOrEmpty(field) && !_fileName.ContainsKey(field))
             {
-                SingleData.Add(field, value);
+                _setFieldDataPerPage.Add(field, value);
             }
         }
 
