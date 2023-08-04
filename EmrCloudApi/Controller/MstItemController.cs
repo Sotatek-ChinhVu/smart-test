@@ -5,6 +5,7 @@ using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
@@ -12,6 +13,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Document.UploadTemplateToCategory;
 using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
@@ -41,6 +43,7 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
+using UseCase.MstItem.UploadImageDrugInf;
 
 namespace EmrCloudApi.Controller
 {
@@ -308,7 +311,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetListDrugImage)]
         public ActionResult<Response<GetListDrugImageResponse>> GetListDrugImage([FromQuery] GetListDrugImageRequest request)
         {
-            var input = new GetListDrugImageInputData(request.Type, request.YjCd);
+            var input = new GetListDrugImageInputData(request.Type, request.YjCd, request.SelectedImage);
             var output = _bus.Handle(input);
             var presenter = new GetListDrugImagePresenter();
             presenter.Complete(output);
@@ -362,7 +365,7 @@ namespace EmrCloudApi.Controller
                 request.PointTo, request.KouiKbn, request.OriKouiKbn, request.KouiKbns, request.IncludeRosai, request.IncludeMisai,
                 request.SinDate, request.ItemCodeStartWith, request.IsIncludeUsage, request.OnlyUsage, request.YJCode, request.IsMasterSearch,
                 request.IsExpiredSearchIfNoData, request.IsAllowSearchDeletedItem, request.IsExpired, request.IsDeleted, request.DrugKbns,
-                request.IsSearchSanteiItem, request.IsSearchKenSaItem, request.ItemFilter, request.IsSearch831SuffixOnly, request.IsSearchSuggestion, 
+                request.IsSearchSanteiItem, request.IsSearchKenSaItem, request.ItemFilter, request.IsSearch831SuffixOnly, request.IsSearchSuggestion,
                 request.IsSearchGazoDensibaitaiHozon);
             var output = _bus.Handle(input);
             var presenter = new SearchTenMstItemPresenter();
@@ -393,7 +396,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetDrugAction)]
         public ActionResult<Response<GetDrugActionResponse>> GetDrugAction([FromQuery] GetDrugActionRequest request)
         {
-            var input = new GetDrugActionInputData( request.YjCd);
+            var input = new GetDrugActionInputData(request.YjCd);
             var output = _bus.Handle(input);
             var presenter = new GetDrugActionPresenter();
             presenter.Complete(output);
@@ -410,5 +413,22 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetDefaultPrecautionsResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.UploadImageDrugInf)]
+        public ActionResult<Response<UploadImageDrugInfResponse>> UploadImageDrugInf([FromQuery] UploadImageDrugInfRequest request)
+        {
+            if (!request.IsDeleted && Request.ContentLength > 30000000)
+            {
+                return Ok(new Response<UploadTemplateToCategoryResponse>()
+                {
+                    Message = "Invalid file size!",
+                    Status = (int)UploadImageDrugInfStatus.InvalidSizeFile
+                });
+            }
+            var input = new UploadImageDrugInfInputData(request.Type, request.YjCd, request.IsDeleted, Request.Body);
+            var output = _bus.Handle(input);
+            var presenter = new UploadImageDrugInfPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UploadImageDrugInfResponse>>(presenter.Result);
+        }
     }
 }
