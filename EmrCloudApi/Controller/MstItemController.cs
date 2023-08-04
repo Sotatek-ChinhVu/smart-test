@@ -311,7 +311,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetListDrugImage)]
         public ActionResult<Response<GetListDrugImageResponse>> GetListDrugImage([FromQuery] GetListDrugImageRequest request)
         {
-            var input = new GetListDrugImageInputData(request.Type, request.YjCd);
+            var input = new GetListDrugImageInputData(request.Type, request.YjCd, request.SelectedImage);
             var output = _bus.Handle(input);
             var presenter = new GetListDrugImagePresenter();
             presenter.Complete(output);

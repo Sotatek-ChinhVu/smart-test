@@ -80,7 +80,7 @@ namespace Interactor.MstItem
             var imageLink = images.FirstOrDefault(link => Path.GetFileName(link).Equals(keyCheck + Path.GetExtension(link)));
             DrugImageOutputItem drugImageItem = new(imageLink ?? string.Empty,
                                                     !string.IsNullOrEmpty(imageLink),
-                                                    Path.GetFileName(selectedImage).Equals(imageLink));
+                                                    selectedImage.Equals(Path.GetFileName(imageLink)));
             return drugImageItem;
         }
     }
