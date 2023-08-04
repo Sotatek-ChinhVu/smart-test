@@ -101,19 +101,19 @@ namespace Infrastructure.Repositories
                                                           DeleteTypes.None,
                                                           x.ReceSeikyuPending.ReceSeikyu.SeikyuYm != 999999,
                                                           x.recedenHenjiyuuList.Select(m => new RecedenHenJiyuuModel(hpId,
-                                                                                                                    m.RecedenHenJiyuu.PtId,
-                                                                                                                    m.PtHokenInfItem.HokenId,
+                                                                                                                    m.RecedenHenJiyuu?.PtId ?? 0,
+                                                                                                                    m.PtHokenInfItem?.HokenId ?? 0,
                                                                                                                     sinYm,
-                                                                                                                    m.RecedenHenJiyuu.SeqNo,
-                                                                                                                    m.RecedenHenJiyuu.HenreiJiyuuCd ?? string.Empty,
-                                                                                                                    m.RecedenHenJiyuu.HenreiJiyuu ?? string.Empty,
-                                                                                                                    m.RecedenHenJiyuu.Hosoku ?? string.Empty,
+                                                                                                                    m.RecedenHenJiyuu?.SeqNo ?? 0,
+                                                                                                                    m.RecedenHenJiyuu?.HenreiJiyuuCd ?? string.Empty,
+                                                                                                                    m.RecedenHenJiyuu?.HenreiJiyuu ?? string.Empty,
+                                                                                                                    m.RecedenHenJiyuu?.Hosoku ?? string.Empty,
                                                                                                                     0,
-                                                                                                                    m.PtHokenInfItem.HokenKbn,
-                                                                                                                    m.PtHokenInfItem.Houbetu ?? string.Empty,
-                                                                                                                    m.PtHokenInfItem.SikakuDate,
-                                                                                                                    m.PtHokenInfItem.EndDate,
-                                                                                                                    m.PtHokenInfItem.HokensyaNo ?? string.Empty)).ToList()
+                                                                                                                    m.PtHokenInfItem?.HokenKbn ?? 0,
+                                                                                                                    m.PtHokenInfItem?.Houbetu ?? string.Empty,
+                                                                                                                    m.PtHokenInfItem?.SikakuDate ?? 0,
+                                                                                                                    m.PtHokenInfItem?.EndDate ?? 0,
+                                                                                                                    m.PtHokenInfItem?.HokensyaNo ?? string.Empty)).ToList()
                                                           )).OrderByDescending(o => o.SeikyuKbn).ThenBy(u => u.SinYm).ThenBy(i => i.PtNum).ToList();
         }
 
