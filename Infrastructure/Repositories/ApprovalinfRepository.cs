@@ -112,6 +112,7 @@ namespace Infrastructure.Repositories
                 {
                     approvedInfos.CreateId = userId;
                     approvedInfos.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    approvedInfos.SeqNo ++ ;
                     approvedInfos.IsDeleted = x.IsDeleted;
                     approvedInfos.UpdateId = userId;
                     approvedInfos.UpdateDate = CIUtil.GetJapanDateTimeNow();
