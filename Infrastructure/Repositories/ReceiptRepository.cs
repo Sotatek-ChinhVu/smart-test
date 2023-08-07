@@ -978,7 +978,14 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         receInf.Kohi3ReceKisai,
                         receInf.Kohi4ReceKisai,
                         receInf.Tokki,
-                        LastSinDateByHokenId = kaikeiInf?.SinDate ?? 0
+                        LastSinDateByHokenId = kaikeiInf?.SinDate ?? 0,
+                        ptHokenInf.JibaiHokenName,
+                        ptHokenInf.JibaiHokenTanto,
+                        ptHokenInf.JibaiHokenTel,
+                        ptHokenInf.RousaiCityName,
+                        ptHokenInf.RousaiJigyosyoName,
+                        ptHokenInf.RousaiKofuNo,
+                        ptHokenInf.RousaiPrefName
                     };
         #endregion
 
@@ -1137,7 +1144,14 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                 data.Kohi4ReceKisai,
                                 data.Tokki,
                                 data.HokenNissu ?? 0,
-                                data.ReceCheckCmt
+                                data.ReceCheckCmt,
+                                data.JibaiHokenName,
+                                data.JibaiHokenTanto,
+                                data.JibaiHokenTel,
+                                data.RousaiCityName,
+                                data.RousaiJigyosyoName,
+                                data.RousaiKofuNo,
+                                data.RousaiPrefName
                             ))
                     .OrderBy(item => item.SinYm)
                     .ThenBy(item => item.PtNum)
