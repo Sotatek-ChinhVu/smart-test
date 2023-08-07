@@ -10,7 +10,6 @@ namespace Reporting.ReceiptList.Service
 
         public CommonExcelReportingModel GetImportCSVCoReportServiceReportingData(List<ReceiptInputCsvModel> receiptListModel, bool outputTitle = false)
         {
-            outputTitle = true;
             this.receiptListModel = receiptListModel;
 
             if (receiptListModel.Count == 0)

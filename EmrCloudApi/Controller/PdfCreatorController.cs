@@ -224,7 +224,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPrint)]
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
-        var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos);
+        var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos ?? new());
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -238,7 +238,7 @@ public class PdfCreatorController : ControllerBase
     [HttpPost(ApiPath.ReceListCsv)]
     public IActionResult GenerateKarteCsvReport([FromBody] ReceiptListExcelRequest request)
     {
-        var data = _reportService.GetReceiptListExcel(request.receiptListModel);
+        var data = _reportService.GetReceiptListExcel(request.receiptListModel, request.IsIsExportTitle);
         return RenderExcel(data);
     }
 
