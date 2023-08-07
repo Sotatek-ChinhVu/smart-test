@@ -525,8 +525,8 @@ public class ReportService : IReportService
         return _receiptPrintExcelService.GetReceiptPrintExcel(hpId, prefNo, reportId, reportEdaNo, dataKbn, seikyuYm);
     }
 
-    public CommonExcelReportingModel GetReceiptListExcel(List<ReceiptInputCsvModel> receiptListModel)
+    public CommonExcelReportingModel GetReceiptListExcel(List<ReceiptInputCsvModel> receiptListModel, bool isIsExportTitle)
     {
-        return _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(receiptListModel);
+        return _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(receiptListModel, isIsExportTitle);
     }
 }
