@@ -89,5 +89,5 @@ public interface IReportService
 
     CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm);
 
-    CommonExcelReportingModel GetReceiptListExcel(List<ReceiptInputCsvModel> receiptListModel);
+    CommonExcelReportingModel GetReceiptListExcel(List<ReceiptInputCsvModel> receiptListModel, bool isIsExportTitle);
 }

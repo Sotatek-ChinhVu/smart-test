@@ -238,7 +238,7 @@ public class PdfCreatorController : ControllerBase
     [HttpPost(ApiPath.ReceListCsv)]
     public IActionResult GenerateKarteCsvReport([FromBody] ReceiptListExcelRequest request)
     {
-        var data = _reportService.GetReceiptListExcel(request.receiptListModel);
+        var data = _reportService.GetReceiptListExcel(request.receiptListModel, request.IsIsExportTitle);
         return RenderExcel(data);
     }
 
