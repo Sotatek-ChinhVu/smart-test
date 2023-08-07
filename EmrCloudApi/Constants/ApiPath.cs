@@ -42,6 +42,7 @@
         public const string GetTeikyoByomei = "GetTeikyoByomei";
         public const string GetDrugAction = "GetDrugAction";
         public const string GetDefaultPrecautions = "GetDefaultPrecautions";
+        public const string UploadImageDrugInf = "UploadImageDrugInf";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

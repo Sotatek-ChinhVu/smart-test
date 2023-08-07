@@ -5,6 +5,7 @@ namespace EmrCloudApi.Requests.ExportPDF
 {
     public class ReceiptListExcelRequest : ReportRequestBase
     {
-        public List<ReceiptInputCsvModel> receiptListModel { get; set; }
+        public bool IsIsExportTitle { get; set; }
+        public List<ReceiptInputCsvModel> receiptListModel { get; set; } = new();
     }
 }

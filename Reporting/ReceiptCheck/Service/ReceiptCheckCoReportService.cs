@@ -20,7 +20,7 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
     private readonly char[] _arrCharNotEnd = new char[] { '(', '"', '\'', '{', '[', '’', '′', '“', '「', '【', '［', '『', '（', '’', '″', '‘', '`', '‘' };
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly List<Dictionary<string, CellModel>> _tableFieldData;
-    private bool _hasNextPage;
+    private bool _hasNextPage = true;
 
     public ReceiptCheckCoReportService(ITenantProvider tenantProvider)
     {
