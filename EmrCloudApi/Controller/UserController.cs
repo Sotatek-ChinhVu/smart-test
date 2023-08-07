@@ -91,9 +91,9 @@ public class UserController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetListUserByCurrentUser)]
-    public ActionResult<Response<GetListUserByCurrentUserResponse>> GetListUserByCurrentUser()
+    public ActionResult<Response<GetListUserByCurrentUserResponse>> GetListUserByCurrentUser([FromQuery]GetListUserByCurrentUserRequest request)
     {
-        var input = new GetListUserByCurrentUserInputData(HpId, UserId);
+        var input = new GetListUserByCurrentUserInputData(HpId, UserId, request.ManagerKbn);
         var output = _bus.Handle(input);
         var presenter = new GetListUserByCurrentUserPresenter();
         presenter.Complete(output);

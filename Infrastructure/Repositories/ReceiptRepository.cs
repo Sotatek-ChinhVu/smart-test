@@ -942,7 +942,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         IsSyoukiInfExist = syoukiInf != null ? 1 : 0,
                         IsReceCmtExist = receCmt != null ? 1 : 0,
                         IsSyobyoKeikaExist = syobyokeika != null ? 1 : 0,
-                        SeikyuCmt = receSeikyu != null ? receSeikyu.Cmt : string.Empty,
+                        SeikyuCmt = receSeikyu != null ? receSeikyu.Cmt ?? string.Empty : string.Empty,
                         LastVisitDate = ptLastVisitDate != null ? ptLastVisitDate.SinDate : 0,
                         KaName = kaMst != null ? kaMst.KaName : string.Empty,
                         UserName = userMst?.Name ?? string.Empty,
@@ -978,7 +978,14 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         receInf.Kohi3ReceKisai,
                         receInf.Kohi4ReceKisai,
                         receInf.Tokki,
-                        LastSinDateByHokenId = kaikeiInf?.SinDate ?? 0
+                        LastSinDateByHokenId = kaikeiInf?.SinDate ?? 0,
+                        JibaiHokenName = ptHokenInf?.JibaiHokenName ?? string.Empty,
+                        JibaiHokenTanto = ptHokenInf?.JibaiHokenTanto ?? string.Empty,
+                        JibaiHokenTel = ptHokenInf?.JibaiHokenTel ?? string.Empty,
+                        RousaiCityName = ptHokenInf?.RousaiCityName ?? string.Empty,
+                        RousaiJigyosyoName = ptHokenInf?.RousaiJigyosyoName ?? string.Empty,
+                        RousaiKofuNo = ptHokenInf?.RousaiKofuNo ?? string.Empty,
+                        RousaiPrefName = ptHokenInf?.RousaiPrefName ?? string.Empty
                     };
         #endregion
 
@@ -1137,7 +1144,14 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                 data.Kohi4ReceKisai,
                                 data.Tokki,
                                 data.HokenNissu ?? 0,
-                                data.ReceCheckCmt
+                                data.ReceCheckCmt,
+                                data.JibaiHokenName,
+                                data.JibaiHokenTanto,
+                                data.JibaiHokenTel,
+                                data.RousaiCityName,
+                                data.RousaiJigyosyoName,
+                                data.RousaiKofuNo,
+                                data.RousaiPrefName
                             ))
                     .OrderBy(item => item.SinYm)
                     .ThenBy(item => item.PtNum)

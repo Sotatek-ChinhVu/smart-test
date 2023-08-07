@@ -2,10 +2,10 @@
 
 public class UploadImageDrugInfResponse
 {
-    public UploadImageDrugInfResponse(bool success)
+    public UploadImageDrugInfResponse(string imageLink)
     {
-        Success = success;
+        ImageLink = imageLink;
     }
 
-    public bool Success { get; private set; }
+    public string ImageLink { get; private set; }
 }
