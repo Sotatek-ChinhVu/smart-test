@@ -942,7 +942,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         IsSyoukiInfExist = syoukiInf != null ? 1 : 0,
                         IsReceCmtExist = receCmt != null ? 1 : 0,
                         IsSyobyoKeikaExist = syobyokeika != null ? 1 : 0,
-                        SeikyuCmt = receSeikyu != null ? receSeikyu.Cmt : string.Empty,
+                        SeikyuCmt = receSeikyu != null ? receSeikyu.Cmt ?? string.Empty : string.Empty,
                         LastVisitDate = ptLastVisitDate != null ? ptLastVisitDate.SinDate : 0,
                         KaName = kaMst != null ? kaMst.KaName : string.Empty,
                         UserName = userMst?.Name ?? string.Empty,
@@ -979,13 +979,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         receInf.Kohi4ReceKisai,
                         receInf.Tokki,
                         LastSinDateByHokenId = kaikeiInf?.SinDate ?? 0,
-                        ptHokenInf.JibaiHokenName,
-                        ptHokenInf.JibaiHokenTanto,
-                        ptHokenInf.JibaiHokenTel,
-                        ptHokenInf.RousaiCityName,
-                        ptHokenInf.RousaiJigyosyoName,
-                        ptHokenInf.RousaiKofuNo,
-                        ptHokenInf.RousaiPrefName
+                        ptHokenInf?.JibaiHokenName ?? string.Empty,
+                        ptHokenInf?.JibaiHokenTanto ?? string.Empty,
+                        ptHokenInf?.JibaiHokenTel ?? string.Empty,
+                        ptHokenInf?.RousaiCityName ?? string.Empty,
+                        ptHokenInf?.RousaiJigyosyoName ?? string.Empty,
+                        ptHokenInf?.RousaiKofuNo ?? string.Empty,
+                        ptHokenInf?.RousaiPrefName ?? string.Empty
                     };
         #endregion
 
