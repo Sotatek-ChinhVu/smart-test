@@ -16,7 +16,7 @@ public class GetUserListInteractor : IGetUserListInputPort
     {
         try
         {
-            if (input.SinDate <= 0)
+            if (input.SinDate <= 0 && !input.IsAll)
             {
                 return new GetUserListOutputData(GetUserListStatus.InvalidSinDate);
             }
