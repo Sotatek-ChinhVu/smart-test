@@ -12,7 +12,7 @@ public class ReceiptPrintRequest : ReportRequestBase
 
     public int DataKbn { get; set; }
 
-    public int PtId { get; set; }
+    public long PtId { get; set; }
 
     public int SeikyuYm { get; set; }
 
@@ -41,6 +41,10 @@ public class ReceiptPrintRequest : ReportRequestBase
     public int PrintNoFrom { get; set; }
 
     public int PrintNoTo { get; set; }
+
+    public bool IsIncludeOutDrug { get; set; } = false;
+
+    public bool IncludeTester { get; set; } = false;
 
     public int Sort { get; set; }
 }

@@ -117,7 +117,7 @@ namespace Reporting.Receipt.Service
 
         private List<ReceFutanReceFutanKbnModel> ReceFutanKbns { get; set; } = new();
 
-        public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int departmentId, int doctorId, string receSbt, int printNoFrom, int printNoTo, int hokenId, int sort, bool isNoCreatingReceData = false, bool isPrintReceList = false)
+        public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, bool isNoCreatingReceData = false)
         {
             var receSeikyu = CoModelFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
 
@@ -183,54 +183,6 @@ namespace Reporting.Receipt.Service
 
             SeikyuType seikyuType = new SeikyuType(true, true, true, true, true);
 
-            if (isPrintReceList)
-            {
-                seikyuType = new SeikyuType(false, true, false, true, false);
-                SinYm = sinYm;
-                HokenId = hokenId;
-                KaId = departmentId;
-                TantoId = doctorId;
-                Target = target;
-                ReceSbt = receSbt;
-                PrintNoFrom = 0;
-                PrintNoTo = 999999999;
-                //IncludeTester = includeTester;
-                //IncludeOutDrug = includeOutDrug;
-                Sort = sort;
-
-                GrpId = 0;
-                if (Sort > 100)
-                {
-                    GrpId = Sort % 100;
-                }
-
-                if (printNoFrom > 0 && printNoTo > 0 && printNoFrom <= printNoTo)
-                {
-                    PrintNoFrom = printNoFrom;
-                    PrintNoTo = printNoTo;
-                }
-
-                InitParam(hpId, receInf.SeikyuYm
-                            , receInf.PtId
-                            , receInf.SinYm
-                            , receInf.HokenId
-                            , KaId
-                            , TantoId
-                            , Target
-                            , ReceSbt
-                            , PrintNoFrom
-                            , PrintNoTo
-                            , seikyuType
-                            , IsPtTest
-                            , IncludeOutDrug
-                            , sort: 0);
-                _PrintOut();
-
-                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-                _extralData.Add("totalPage", pageIndex.ToString());
-                return new ReceiptPreviewMapper(_setFieldData, _listTextData, _extralData, _fileName).GetData();
-            }
-
             if (isNoCreatingReceData)
             {
                 InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
@@ -262,6 +214,54 @@ namespace Reporting.Receipt.Service
                 _extralData.Add("totalPage", pageIndex.ToString());
                 return new ReceiptPreviewMapper(_setFieldData, _listTextData, _extralData, _fileName).GetData();
             }
+        }
+
+        public CommonReportingRequestModel GetReceiptDataByReceiptCheckList(int hpId,
+            int seikyuYm, List<long> ptId, int sinYm, int hokenId, int kaId, int tantoId,
+            int target, string receSbt, int printNoFrom, int printNoTo,
+            SeikyuType seikyuType, bool includeTester, bool includeOutDrug,
+            int sort
+        )
+        {
+            HpId = hpId;
+            SeikyuType = seikyuType;
+
+            SeikyuYm = seikyuYm;
+            PtId = new List<long>();
+            if (ptId != null)
+            {
+                PtId.AddRange(ptId.GroupBy(p => p).Select(p => p.Key).ToList());
+            }
+
+            SinYm = sinYm;
+            HokenId = hokenId;
+            KaId = kaId;
+            TantoId = tantoId;
+            Target = target;
+            ReceSbt = receSbt;
+            PrintNoFrom = 0;
+            PrintNoTo = 999999999;
+            IncludeTester = includeTester;
+            IncludeOutDrug = includeOutDrug;
+            Sort = sort;
+
+            GrpId = 0;
+            if (Sort > 100)
+            {
+                GrpId = Sort % 100;
+            }
+
+            if (printNoFrom > 0 && printNoTo > 0 && printNoFrom <= printNoTo)
+            {
+                PrintNoFrom = printNoFrom;
+                PrintNoTo = printNoTo;
+            }
+
+            _PrintOut();
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new ReceiptPreviewMapper(_setFieldData, _listTextData, _extralData, _fileName).GetData();
         }
 
         private void _PrintOut()
