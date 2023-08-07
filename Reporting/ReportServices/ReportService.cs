@@ -35,8 +35,6 @@ using Reporting.ReceiptList.Service;
 using Reporting.ReceiptPrint.Service;
 using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
-using Reporting.Sokatu.WelfareDisk.Service;
-using Reporting.Structs;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
 
@@ -464,7 +462,7 @@ public class ReportService : IReportService
     //Receipt Preview
     public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId)
     {
-        return _receiptCoReportService.GetReceiptData(hpId, ptId, sinYm, hokenId);
+        return _receiptCoReportService.GetReceiptData(hpId, ptId, sinYm, 0, 0, string.Empty, 0, 9999999, hokenId, 0);
     }
 
     public CommonReportingRequestModel GetKensalraiData(int hpId, int systemDate, int fromDate, int toDate, string centerCd)
@@ -472,9 +470,9 @@ public class ReportService : IReportService
         return _kensaIraiCoReportService.GetKensalraiData(hpId, systemDate, fromDate, toDate, centerCd);
     }
 
-    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos)
+    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, int hokenKbn, ReseputoShubetsuModel selectedReseputoShubeusu, int departmentId, int doctorId, int printNoFrom, int printNoTo, int sort)
     {
-        return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos);
+        return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos, hokenKbn, selectedReseputoShubeusu, departmentId, doctorId, printNoFrom, printNoTo, sort);
     }
 
     public CommonReportingRequestModel GetMemoMsgReportingData(string reportName, string title, List<string> listMessage)

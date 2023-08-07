@@ -1,4 +1,6 @@
-﻿namespace EmrCloudApi.Requests.ExportPDF;
+﻿using Reporting.ReceiptPrint.Service;
+
+namespace EmrCloudApi.Requests.ExportPDF;
 
 public class ReceiptPrintRequest : ReportRequestBase
 {
@@ -26,5 +28,19 @@ public class ReceiptPrintRequest : ReportRequestBase
 
     public string FormName { get; set; } = string.Empty;
 
-    public List<string>? PrintHokensyaNos { get; set; }
+    public List<string> PrintHokensyaNos { get; set; } = new();
+
+    public int HokenKbn { get; set; }
+
+    public ReseputoShubetsuModel SelectedReseputoShubeusu { get; set; } = new();
+
+    public int DepartmentId { get; set; }
+
+    public int DoctorId { get; set; }
+
+    public int PrintNoFrom { get; set; }
+
+    public int PrintNoTo { get; set; }
+
+    public int Sort { get; set; }
 }
