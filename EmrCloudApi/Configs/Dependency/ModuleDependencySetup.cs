@@ -966,6 +966,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaLabelCoReportService, KensaLabelCoReportService>();
             services.AddTransient<IKensaLabelFinder, KensaLabelFinder>();
             services.AddTransient<IGetCommonDrugInf, GetCommonDrugInf>();
+            services.AddTransient<ICommonReceRecalculation, CommonReceRecalculation>();
         }
 
         private void SetupUseCase(IServiceCollection services)
