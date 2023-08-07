@@ -984,8 +984,8 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                 {
                     if (ptByomei.IsFree && ptByomei.Byomei.Length > 20)
                     {
-                        string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 100);
-                        string msg2 = string.Format("({0}: {1}/20文字)", cutByomei, ptByomei.Byomei.Length);
+                        string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 84);
+                        string msg2 = string.Format("({0}...: {1}/20文字)", cutByomei, ptByomei.Byomei.Length);
                         AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.FreeTextLengthByomeiErrCd, ReceErrCdConst.FreeTextLengthByomeiErrMsg, msg2, cutByomei);
                     }
                 }
@@ -2092,5 +2092,20 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         return errorText;
     }
     #endregion
+
+    public void ReleaseResource()
+    {
+        _receiptRepository.ReleaseResource();
+        _systemConfRepository.ReleaseResource();
+        _insuranceMstRepository.ReleaseResource();
+        _mstItemRepository.ReleaseResource();
+        _ptDiseaseRepository.ReleaseResource();
+        _ordInfRepository.ReleaseResource();
+        _commonMedicalCheck.ReleaseResource();
+        _todayOdrRepository.ReleaseResource();
+        _receSeikyuRepository.ReleaseResource();
+        _drugDetailRepository.ReleaseResource();
+        _calculationInfRepository.ReleaseResource();
+    }
 
 }

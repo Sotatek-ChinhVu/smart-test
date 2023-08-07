@@ -1,7 +1,4 @@
-﻿using Domain.CalculationInf;
-using Domain.Models.Receipt;
-using Domain.Models.Receipt.Recalculation;
-using Domain.Models.SystemConf;
+﻿using Domain.Models.Receipt;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Interactor.CalculateService;
@@ -15,23 +12,18 @@ namespace Interactor.ReceiptCheck
     public class ReceCheckRecalculationInteractor : IReceiptCheckRecalculationInputPort
     {
         private readonly ICalculateService _calculateService;
-        private readonly ICalculationInfRepository _calculationInfRepository;
-        private readonly ISystemConfRepository _systemConfRepository;
         private readonly IReceiptRepository _receiptRepository;
         private readonly ICommonReceRecalculation _commonReceRecalculation;
 
-        public ReceCheckRecalculationInteractor(ICalculateService calculateService, ICalculationInfRepository calculationInfRepository, ISystemConfRepository systemConfRepository, IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation)
+        public ReceCheckRecalculationInteractor(ICalculateService calculateService, IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation)
         {
             _calculateService = calculateService;
-            _calculationInfRepository = calculationInfRepository;
-            _systemConfRepository = systemConfRepository;
             _receiptRepository = receiptRepository;
             _commonReceRecalculation = commonReceRecalculation;
         }
 
         public ReceiptCheckRecalculationOutputData Handle(ReceiptCheckRecalculationInputData inputData)
         {
-            string errorText = string.Empty;
             try
             {
                 SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・", "NotConnectSocket"));
@@ -61,8 +53,7 @@ namespace Interactor.ReceiptCheck
             finally
             {
                 SendMessenger(new RecalculationStatus(true, 5, 0, 0, string.Empty, "NotConnectSocket"));
-                _calculationInfRepository.ReleaseResource();
-                _systemConfRepository.ReleaseResource();
+                _commonReceRecalculation.ReleaseResource();
                 _receiptRepository.ReleaseResource();
             }
 
