@@ -91,6 +91,7 @@ namespace Domain.Models.HistoryOrder
             UketukeId = receptionModel.UketukeId;
             SinStartTime = receptionModel.SinStartTime;
             SinEndTime = receptionModel.SinEndTime;
+            SanteiKbn = receptionModel.SanteiKbn;
         }
     }
 }
