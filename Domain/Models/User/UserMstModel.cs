@@ -29,7 +29,10 @@ namespace Domain.Models.User
             Id = id;
             HpId = hpId;
             Permissions = new List<UserPermissionModel>();
+            FunctionMstModels = new();
         }
+
+     
 
         public UserMstModel(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId,
             string kaSName, string kanaName, string name, string sname, string drName, string loginId,
@@ -56,6 +59,7 @@ namespace Domain.Models.User
             Id = id;
             HpId = hpId;
             Permissions = new List<UserPermissionModel>();
+            FunctionMstModels = new();
         }
         public UserMstModel()
         {
@@ -70,6 +74,7 @@ namespace Domain.Models.User
             DrName = string.Empty;
             KaSName = string.Empty;
             Permissions = new List<UserPermissionModel>();
+            FunctionMstModels = new();
         }
 
         public UserMstModel(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId, string kaSName, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName, List<UserPermissionModel> permissions)
@@ -94,6 +99,32 @@ namespace Domain.Models.User
             DrName = drName;
             HpId = hpId;
             Permissions = permissions;
+            FunctionMstModels = new();
+        }
+
+        public UserMstModel(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId, string kaSName, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName, List<FunctionMstModel> functionMstModels)
+        {
+            Id = id;
+            UserId = userId;
+            JobCd = jobCd;
+            ManagerKbn = managerKbn;
+            KaId = kaId;
+            KaSName = kaSName;
+            KanaName = kanaName;
+            Name = name;
+            Sname = sname;
+            LoginId = loginId;
+            LoginPass = loginPass;
+            MayakuLicenseNo = mayakuLicenseNo;
+            StartDate = startDate;
+            EndDate = endDate;
+            SortNo = sortNo;
+            IsDeleted = isDeleted;
+            RenkeiCd1 = renkeiCd1;
+            DrName = drName;
+            HpId = hpId;
+            Permissions = new();
+            FunctionMstModels = functionMstModels;
         }
 
         public long Id { get; private set; }
@@ -135,6 +166,8 @@ namespace Domain.Models.User
         public int HpId { get; private set; }
 
         public List<UserPermissionModel> Permissions { get; private set; }
+
+        public List<FunctionMstModel> FunctionMstModels { get; private set; }
 
         public ValidationStatus Validation()
         {
