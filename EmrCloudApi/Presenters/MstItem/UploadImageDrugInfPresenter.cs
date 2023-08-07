@@ -11,7 +11,7 @@ public class UploadImageDrugInfPresenter : IUploadImageDrugInfOutputPort
 
     public void Complete(UploadImageDrugInfOutputData output)
     {
-        Result.Data = new UploadImageDrugInfResponse(output.Status == UploadImageDrugInfStatus.Successed);
+        Result.Data = new UploadImageDrugInfResponse(output.Link);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }
