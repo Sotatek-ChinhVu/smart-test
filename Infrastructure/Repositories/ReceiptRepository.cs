@@ -979,13 +979,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         receInf.Kohi4ReceKisai,
                         receInf.Tokki,
                         LastSinDateByHokenId = kaikeiInf?.SinDate ?? 0,
-                        ptHokenInf?.JibaiHokenName ?? string.Empty,
-                        ptHokenInf?.JibaiHokenTanto ?? string.Empty,
-                        ptHokenInf?.JibaiHokenTel ?? string.Empty,
-                        ptHokenInf?.RousaiCityName ?? string.Empty,
-                        ptHokenInf?.RousaiJigyosyoName ?? string.Empty,
-                        ptHokenInf?.RousaiKofuNo ?? string.Empty,
-                        ptHokenInf?.RousaiPrefName ?? string.Empty
+                        JibaiHokenName = ptHokenInf?.JibaiHokenName ?? string.Empty,
+                        JibaiHokenTanto = ptHokenInf?.JibaiHokenTanto ?? string.Empty,
+                        JibaiHokenTel = ptHokenInf?.JibaiHokenTel ?? string.Empty,
+                        RousaiCityName = ptHokenInf?.RousaiCityName ?? string.Empty,
+                        RousaiJigyosyoName = ptHokenInf?.RousaiJigyosyoName ?? string.Empty,
+                        RousaiKofuNo = ptHokenInf?.RousaiKofuNo ?? string.Empty,
+                        RousaiPrefName = ptHokenInf?.RousaiPrefName ?? string.Empty
                     };
         #endregion
 
