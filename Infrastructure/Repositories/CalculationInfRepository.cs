@@ -236,7 +236,7 @@ namespace Infrastructure.Repositories
         public List<ReceInfModel> GetReceInfModels(int hpId, List<long> ptIds, int sinYM)
         {
             List<ReceInfModel> receInfModels = new List<ReceInfModel>();
-            var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && ptIds.Contains(p.PtId) && p.IsDelete == DeleteTypes.None);
 
             var receStates = NoTrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true)).ToList();
 

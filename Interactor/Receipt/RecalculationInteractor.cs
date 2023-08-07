@@ -9,7 +9,6 @@ using Domain.Models.SystemConf;
 using Domain.Models.TodayOdr;
 using Helper.Messaging;
 using Helper.Messaging.Data;
-using Infrastructure.Repositories;
 using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using UseCase.MedicalExamination.Calculate;
@@ -20,14 +19,43 @@ namespace Interactor.Receipt;
 public class RecalculationInteractor : IRecalculationInputPort
 {
     private readonly IReceiptRepository _receiptRepository;
+    private readonly ISystemConfRepository _systemConfRepository;
+    private readonly IPtDiseaseRepository _ptDiseaseRepository;
+    private readonly IOrdInfRepository _ordInfRepository;
+    private readonly IMstItemRepository _mstItemRepository;
+    private readonly ITodayOdrRepository _todayOdrRepository;
+    private readonly ICommonMedicalCheck _commonMedicalCheck;
+    private readonly IInsuranceMstRepository _insuranceMstRepository;
+    private readonly IReceSeikyuRepository _receSeikyuRepository;
+    private readonly IDrugDetailRepository _drugDetailRepository;
     private readonly ICalculateService _calculateRepository;
     private readonly ICommonReceRecalculation _commonReceRecalculation;
 
+    private const string _hokenChar = "0";
+    private const string _kohi1Char = "1";
+    private const string _kohi2Char = "2";
+    private const string _kohi3Char = "3";
+    private const string _kohi4Char = "4";
+    private const string _suspectedSuffix = "の疑い";
+    private const string _left = "左";
+    private const string _right = "右";
+    private const string _both = "両";
+    private const string _leftRight = "左右";
+    private const string _rightLeft = "右左";
     bool isStopCalc = false;
 
-    public RecalculationInteractor(IReceiptRepository receiptRepository, ICalculateService calculateService, ICommonReceRecalculation commonReceRecalculation)
+    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository, ICommonMedicalCheck commonMedicalCheck, IInsuranceMstRepository insuranceMstRepository, IReceSeikyuRepository receSeikyuRepository, IDrugDetailRepository drugDetailRepository, ICalculateService calculateService, ICommonReceRecalculation commonReceRecalculation)
     {
         _receiptRepository = receiptRepository;
+        _systemConfRepository = systemConfRepository;
+        _ptDiseaseRepository = ptDiseaseRepository;
+        _ordInfRepository = ordInfRepository;
+        _mstItemRepository = mstItemRepository;
+        _todayOdrRepository = todayOdrRepository;
+        _commonMedicalCheck = commonMedicalCheck;
+        _insuranceMstRepository = insuranceMstRepository;
+        _receSeikyuRepository = receSeikyuRepository;
+        _drugDetailRepository = drugDetailRepository;
         _calculateRepository = calculateService;
         _commonReceRecalculation = commonReceRecalculation;
     }
@@ -55,7 +83,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             {
                 var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
                 int allCheckCount = receRecalculationList.Count;
-                
+
                 success = _commonReceRecalculation.CheckErrorInMonth(inputData.HpId, inputData.PtIdList, inputData.SinYm, inputData.UserId, receRecalculationList, allCheckCount);
             }
 
@@ -68,6 +96,15 @@ public class RecalculationInteractor : IRecalculationInputPort
         finally
         {
             _receiptRepository.ReleaseResource();
+            _systemConfRepository.ReleaseResource();
+            _ptDiseaseRepository.ReleaseResource();
+            _ordInfRepository.ReleaseResource();
+            _mstItemRepository.ReleaseResource();
+            _todayOdrRepository.ReleaseResource();
+            _insuranceMstRepository.ReleaseResource();
+            _commonMedicalCheck.ReleaseResource();
+            _receSeikyuRepository.ReleaseResource();
+            _drugDetailRepository.ReleaseResource();
         }
     }
 

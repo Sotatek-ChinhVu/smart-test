@@ -1,6 +1,7 @@
 ﻿using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.CalculationInf;
 using Domain.Models.Diseases;
 using Domain.Models.DrugDetail;
 using Domain.Models.InsuranceMst;
@@ -34,8 +35,9 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private readonly ITodayOdrRepository _todayOdrRepository;
     private readonly IReceSeikyuRepository _receSeikyuRepository;
     private readonly IDrugDetailRepository _drugDetailRepository;
+    private readonly ICalculationInfRepository _calculationInfRepository;
 
-    public CommonReceRecalculation(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IInsuranceMstRepository insuranceMstRepository, IMstItemRepository mstItemRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, ICommonMedicalCheck commonMedicalCheck, ITodayOdrRepository todayOdrRepository, IReceSeikyuRepository receSeikyuRepository, IDrugDetailRepository drugDetailRepository)
+    public CommonReceRecalculation(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IInsuranceMstRepository insuranceMstRepository, IMstItemRepository mstItemRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, ICommonMedicalCheck commonMedicalCheck, ITodayOdrRepository todayOdrRepository, IReceSeikyuRepository receSeikyuRepository, IDrugDetailRepository drugDetailRepository, ICalculationInfRepository calculationInfRepository)
     {
         _receiptRepository = receiptRepository;
         _systemConfRepository = systemConfRepository;
@@ -47,6 +49,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         _todayOdrRepository = todayOdrRepository;
         _receSeikyuRepository = receSeikyuRepository;
         _drugDetailRepository = drugDetailRepository;
+        _calculationInfRepository = calculationInfRepository;
     }
 
     bool isStopCalc = false;
@@ -62,7 +65,12 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private const string _leftRight = "左右";
     private const string _rightLeft = "右左";
 
-    public bool CheckErrorInMonth(int hpId, List<long> ptIds, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
+    public string ErrorText { get; set; } = string.Empty;
+
+    private List<ReceInfModel> _receInfModels = new List<ReceInfModel>();
+    public List<BuiErrorModel> errorOdrInfDetails = new List<BuiErrorModel>();
+
+    public bool CheckErrorInMonth(int hpId, List<long> ptIds, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount, bool receCheckCalculate = false)
     {
         List<ReceCheckErrModel> newReceCheckErrList = new();
         StringBuilder errorText = new();
@@ -78,7 +86,10 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         var allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(hpId, sinYmList, ptIdList, hokenIdList);
         var allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(hpId, kantokuCdValidList);
 
-        SendMessager(new RecalculationStatus(false, 3, allCheckCount, 0, string.Empty, string.Empty));
+        if (!receCheckCalculate)
+        {
+            SendMessager(new RecalculationStatus(false, 3, allCheckCount, 0, string.Empty, string.Empty));
+        }
         int successCount = 1;
         foreach (var recalculationItem in receRecalculationList)
         {
@@ -108,7 +119,10 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             {
                 break;
             }
-            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty, string.Empty));
+            if (!receCheckCalculate)
+            {
+                SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty, string.Empty));
+            }
             successCount++;
         }
         errorText.Append(errorTextSinKouiCount);
@@ -117,11 +131,21 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         errorText = GetErrorTextAfterCheck(hpId, sinYm, errorText, ptIdList, systemConfigList, receRecalculationList);
         if (isStopCalc || !_receiptRepository.SaveNewReceCheckErrList(hpId, userId, newReceCheckErrList))
         {
-            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty, string.Empty));
+            if (!receCheckCalculate)
+            {
+                SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty, string.Empty));
+            }
             return false;
         }
         string resultError = errorText.ToString().Replace(Environment.NewLine, "\\r\\n");
-        SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, resultError, string.Empty));
+        if (!receCheckCalculate)
+        {
+            SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, resultError, string.Empty));
+        }
+        else
+        {
+            SendMessager(new RecalculationStatus(true, 4, allCheckCount, successCount, resultError, string.Empty));
+        }
         return true;
     }
 
@@ -2068,4 +2092,5 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         return errorText;
     }
     #endregion
+
 }
