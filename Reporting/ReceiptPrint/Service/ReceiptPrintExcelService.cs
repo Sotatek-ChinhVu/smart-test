@@ -18,10 +18,12 @@ namespace Reporting.ReceiptPrint.Service
         #endregion
 
         private readonly IP24WelfareDiskService _p24WelfareDiskService;
+        private readonly IP44WelfareDiskService _p44WelfareDiskService;
 
-        public ReceiptPrintExcelService(IP24WelfareDiskService p24WelfareDiskService)
+        public ReceiptPrintExcelService(IP24WelfareDiskService p24WelfareDiskService, IP44WelfareDiskService p44WelfareDiskService)
         {
             _p24WelfareDiskService = p24WelfareDiskService;
+            _p44WelfareDiskService = p44WelfareDiskService;
         }
 
         public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
@@ -32,6 +34,11 @@ namespace Reporting.ReceiptPrint.Service
             {
                 result = _p24WelfareDiskService.GetDataP24WelfareDisk(hpId, seikyuYm, seikyuType);
             }
+            else if (prefNo == 44 && reportId == 106 && reportEdaNo == 0)
+            {
+                result = _p44WelfareDiskService.GetDataP44WelfareDisk(hpId, seikyuYm, seikyuType);
+            }
+
             return result;
         }
 
