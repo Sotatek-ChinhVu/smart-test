@@ -968,6 +968,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaLabelCoReportService, KensaLabelCoReportService>();
             services.AddTransient<IKensaLabelFinder, KensaLabelFinder>();
             services.AddTransient<IGetCommonDrugInf, GetCommonDrugInf>();
+            services.AddTransient<ICommonReceRecalculation, CommonReceRecalculation>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1412,7 +1413,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
             busBuilder.RegisterUseCase<SaveReceStatusInputData, SaveReceStatusInteractor>();
             busBuilder.RegisterUseCase<GetReceStatusInputData, GetReceStatusInteractor>();
-            busBuilder.RegisterUseCase<ReceiptCheckRecalculationInputData, ReceiptCheckRecalculationInteractor>();
+            busBuilder.RegisterUseCase<ReceiptCheckRecalculationInputData, ReceCheckRecalculationInteractor>();
             busBuilder.RegisterUseCase<DeleteReceiptInfEditInputData, DeleteReceiptInfEditInteractor>();
             busBuilder.RegisterUseCase<GetListKaikeiInfInputData, GetListKaikeiInfInteractor>();
             busBuilder.RegisterUseCase<CheckExisReceInfEditInputData, CheckExisReceInfEditInteractor>();

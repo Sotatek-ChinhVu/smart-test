@@ -15,7 +15,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -1914,6 +1913,11 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                        && item.SeikyuYm == sinYm
                                                                        && (ptIdList.Count <= 0 || ptIdList.Contains(item.PtId)))
                                                         .ToList();
+
+        if (!receInfList.Any())
+        {
+            return new();
+        }
 
         ptIdList = receInfList.Select(item => item.PtId).ToList();
 
