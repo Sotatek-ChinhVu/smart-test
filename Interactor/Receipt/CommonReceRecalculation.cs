@@ -847,7 +847,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private List<ReceCheckErrModel> CheckByomeiError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<ReceSinKouiCountModel> sinKouiCountList, ref List<BuiErrorModel> errorOdrInfDetails, List<SystemConfModel> systemConfList)
     {
         bool visibleBuiOrderCheck = GetSettingValue(systemConfList, 6003, 0) == 1;
-         // var ptByomeis = _ptDiseaseRepository.GetByomeiInThisMonth(hpId, recalculationModel.SinYm, recalculationModel.PtId, recalculationModel.HokenId);
+
         var ptByomeis = _calculationInfRepository.GetByomeiInThisMonth(hpId, recalculationModel.SinYm, recalculationModel.PtId, recalculationModel.HokenId);
         if (ptByomeis.Count == 0)
         {
