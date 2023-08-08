@@ -1788,11 +1788,11 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                     && item.HokenId == hokenId
                                                                                     && item.IsDeleted == 0
                                                                                     && item.SeqNo == model.SeqNo);
-        if (receiptEditDB == null)
+        if (receiptEditDB == null && model.SeqNo == 0 && !model.IsDeleted)
         {
             TrackingDataContext.ReceInfEdits.Add(ConvertToNewReceInfEdit(hpId, userId, seikyuYm, ptId, sinYm, hokenId, model));
         }
-        else
+        else if (receiptEditDB != null)
         {
             if (model.IsDeleted)
             {
