@@ -664,6 +664,7 @@ using UseCase.MedicalExamination.GetHeaderVistitDate;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.Reception.GetOutDrugOrderList;
+using Reporting.Sokatu.KokhoSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -886,6 +887,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
             services.AddTransient<IP26KokhoSeikyuOutCoReportService, P26KokhoSeikyuOutCoReportService>();
+            services.AddTransient<IP27KokhoSeikyuInCoReportService, P27KokhoSeikyuInCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
