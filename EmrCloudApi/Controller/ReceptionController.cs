@@ -34,6 +34,7 @@ using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastKarute;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetListRaiinInf;
+using UseCase.Reception.GetOutDrugOrderList;
 using UseCase.Reception.GetRaiinListWithKanInf;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.InitDoctorCombo;
@@ -90,6 +91,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetLastRaiinInfsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetOutDrugOrderList)]
+        public ActionResult<Response<GetOutDrugOrderListResponse>> GetOutDrugOrderList([FromQuery] GetOutDrugOrderListRequest request)
+        {
+            var input = new GetOutDrugOrderListInputData(HpId, request.FromDate, request.ToDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetOutDrugOrderListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetOutDrugOrderListResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.Insert)]
