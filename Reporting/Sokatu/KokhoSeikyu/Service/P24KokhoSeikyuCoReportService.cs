@@ -71,24 +71,27 @@ public class P24KokhoSeikyuCoReportService : IP24KokhoSeikyuCoReportService
         this.seikyuType = seikyuType;
         var getData = GetData();
 
-        foreach (string currentNo in hokensyaNos)
+        if (getData)
         {
-            currentHokensyaNo = currentNo;
-
-            //国保一般と退職は別に請求書を作成する
-            for (short kokhoKbn = 0; kokhoKbn <= 1; kokhoKbn++)
+            foreach (string currentNo in hokensyaNos)
             {
-                printKokhoKbn = kokhoKbn;
+                currentHokensyaNo = currentNo;
 
-                curReceInfs = receInfs.Where(r => (kokhoKbn == 0 ? r.IsNrAll : r.IsRetAll) && r.HokensyaNo == currentHokensyaNo).ToList();
-                if (curReceInfs.Count() == 0) continue;
-                hasNextPage = true;
-                currentPage = 1;
-
-                while (getData && hasNextPage)
+                //国保一般と退職は別に請求書を作成する
+                for (short kokhoKbn = 0; kokhoKbn <= 1; kokhoKbn++)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    printKokhoKbn = kokhoKbn;
+
+                    curReceInfs = receInfs.Where(r => (kokhoKbn == 0 ? r.IsNrAll : r.IsRetAll) && r.HokensyaNo == currentHokensyaNo).ToList();
+                    if (curReceInfs.Count() == 0) continue;
+                    hasNextPage = true;
+                    currentPage = 1;
+
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
             }
         }

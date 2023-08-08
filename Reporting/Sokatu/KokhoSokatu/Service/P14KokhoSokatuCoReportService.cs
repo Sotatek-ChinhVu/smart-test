@@ -41,7 +41,7 @@ public class P14KokhoSokatuCoReportService : IP14KokhoSokatuCoReportService
     private const string _formFileName1 = "p14KokhoSokatuP1.rse";
     private const string _formFileName2 = "p14KokhoSokatuP2.rse";
     private const string _formFileName3 = "p14KokhoSokatuP3.rse";
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -52,7 +52,7 @@ public class P14KokhoSokatuCoReportService : IP14KokhoSokatuCoReportService
     {
         _kokhoFinder = kokhoFinder;
         _singleFieldData = new();
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
@@ -94,7 +94,7 @@ public class P14KokhoSokatuCoReportService : IP14KokhoSokatuCoReportService
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new P14KokhoSokatuCoReportServiceMapper(_singleFieldDataM, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
+        return new P14KokhoSokatuCoReportServiceMapper(_setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function
