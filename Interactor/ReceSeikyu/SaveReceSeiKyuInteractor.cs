@@ -2192,7 +2192,7 @@ namespace Interactor.ReceSeikyu
                             {
                                 if (kouiDetails.Count(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key.ItemCd) >= 4)
                                 {
-                                    int santeiEndDate = santeiEndDateList[key?.PtId ?? 0];
+                                    int santeiEndDate = santeiEndDateList.ContainsKey(key?.PtId ?? 0) ? santeiEndDateList[key?.PtId ?? 0] : 0;
                                     if (allHasErrorWithSanteiByEndDateList.FirstOrDefault(item => item.PtId == key?.PtId && item.Sindate == santeiEndDate && item.ItemCd == key?.ItemCd)?.IsHasError ?? false)
                                     {
                                         var sinKouiDetail = kouiDetails.FirstOrDefault(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key?.ItemCd);
