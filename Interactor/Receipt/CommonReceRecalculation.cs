@@ -601,8 +601,8 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         }
         if (checkDuplicateSyusyokuByomei)
         {
-            List<string> syusyokuCds = currentPtByomeiModel.PrefixSuffixList.Select(item => item.Code).ToList();
-            List<string> compareSyusyokuCds = comparedPtByomeiModel.PrefixSuffixList.Select(item => item.Code).ToList();
+            List<string> syusyokuCds = currentPtByomeiModel.GetAllSyusyokuCds();
+            List<string> compareSyusyokuCds = comparedPtByomeiModel.GetAllSyusyokuCds();
             if (syusyokuCds.Count != compareSyusyokuCds.Count)
             {
                 return false;
@@ -847,7 +847,8 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private List<ReceCheckErrModel> CheckByomeiError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<ReceSinKouiCountModel> sinKouiCountList, ref List<BuiErrorModel> errorOdrInfDetails, List<SystemConfModel> systemConfList)
     {
         bool visibleBuiOrderCheck = GetSettingValue(systemConfList, 6003, 0) == 1;
-        var ptByomeis = _ptDiseaseRepository.GetByomeiInThisMonth(hpId, recalculationModel.SinYm, recalculationModel.PtId, recalculationModel.HokenId);
+         // var ptByomeis = _ptDiseaseRepository.GetByomeiInThisMonth(hpId, recalculationModel.SinYm, recalculationModel.PtId, recalculationModel.HokenId);
+        var ptByomeis = _calculationInfRepository.GetByomeiInThisMonth(hpId, recalculationModel.SinYm, recalculationModel.PtId, recalculationModel.HokenId);
         if (ptByomeis.Count == 0)
         {
             //E2001 not exist byomei in month
@@ -1039,7 +1040,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                     AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.DuplicateByomeiCheckErrCd,
                                                                           ReceErrCdConst.DuplicateByomeiCheckErrMsg,
                                                                           "（" + ptByomei.Byomei + " : " + CIUtil.SDateToShowSWDate(ptByomei.StartDate) + "）",
-                                                                          ptByomei.ByomeiCd, string.Join(string.Empty, ptByomei.PrefixSuffixList.Select(item => item.Code).ToArray()));
+                                                                          ptByomei.ByomeiCd, string.Join(string.Empty, ptByomei.GetAllSyusyokuCds().ToArray()));
                 }
             }
 
