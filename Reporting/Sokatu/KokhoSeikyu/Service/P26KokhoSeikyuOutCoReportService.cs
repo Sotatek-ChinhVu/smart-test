@@ -126,7 +126,7 @@ public class P26KokhoSeikyuOutCoReportService : IP26KokhoSeikyuOutCoReportServic
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //保険者
             fieldDataPerPage.Add("hokensyaNo", string.Format("{0, 8}", currentHokensyaNo));
-            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+            _setFieldData.Add(pageIndex, fieldDataPerPage);
             //印
             SetVisibleFieldData("inkan", seikyuYm < KaiseiDate.m202210);
             SetVisibleFieldData("inkanMaru", seikyuYm < KaiseiDate.m202210);
@@ -230,7 +230,7 @@ public class P26KokhoSeikyuOutCoReportService : IP26KokhoSeikyuOutCoReportServic
                 //合計
                 totalData.AddValue(wrkData);
             }
-            Dictionary<string, string> fieldDataPerPage = _singleFieldDataM.ContainsKey(pageIndex) ? _singleFieldDataM[pageIndex] : new();
+            Dictionary<string, string> fieldDataPerPage = _setFieldData.ContainsKey(pageIndex) ? _setFieldData[pageIndex] : new();
             //件数
             fieldDataPerPage.Add("kohiCount", totalData.Count.ToString());
             //日数
@@ -239,10 +239,10 @@ public class P26KokhoSeikyuOutCoReportService : IP26KokhoSeikyuOutCoReportServic
             fieldDataPerPage.Add("kohiTensu", totalData.Tensu.ToString());
             //一部負担金
             fieldDataPerPage.Add("kohiFutan", totalData.Futan.ToString());
-
-            if (!_singleFieldDataM.ContainsKey(pageIndex))
+            
+            if (!_setFieldData.ContainsKey(pageIndex))
             {
-                _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+                _setFieldData.Add(pageIndex, fieldDataPerPage);
             }
             #endregion
             _listTextData.Add(pageIndex, listDataPerPage);
