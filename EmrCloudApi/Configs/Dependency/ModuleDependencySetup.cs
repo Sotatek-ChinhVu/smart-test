@@ -912,6 +912,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP24WelfareSofuDiskCoReportService, P24WelfareSofuDiskCoReportService>();
             services.AddTransient<IP24WelfareSofuPaperCoReportService, P24WelfareSofuPaperCoReportService>();
             services.AddTransient<IP24WelfareSyomeiCoReportService, P24WelfareSyomeiCoReportService>();
+            services.AddTransient<IP24WelfareSyomeiListCoReportService, P24WelfareSyomeiListCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
