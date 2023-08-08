@@ -73,16 +73,19 @@ public class P23KokhoSeikyuCoReportService : IP23KokhoSeikyuCoReportService
             _formFileName = "p23KokhoSeikyu_2210.rse";
         }
 
-        foreach (string currentNo in hokensyaNos)
+        if (getData)
         {
-            currentHokensyaNo = currentNo;
-            hasNextPage = true;
-            currentPage = 1;
-
-            while (getData && hasNextPage)
+            foreach (string currentNo in hokensyaNos)
             {
-                UpdateDrawForm();
-                currentPage++;
+                currentHokensyaNo = currentNo;
+                hasNextPage = true;
+                currentPage = 1;
+
+                while (getData && hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
             }
         }
 

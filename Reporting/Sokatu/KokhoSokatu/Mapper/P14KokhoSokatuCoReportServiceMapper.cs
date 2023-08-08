@@ -4,16 +4,16 @@ namespace Reporting.Sokatu.KokhoSokatu.Mapper
 {
     public class P14KokhoSokatuCoReportServiceMapper : CommonReportingRequest
     {
-        private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+        private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, string> _extralData;
         private readonly Dictionary<string, string> _fileName;
         private readonly Dictionary<string, bool> _visibleFieldData;
 
-        public P14KokhoSokatuCoReportServiceMapper(Dictionary<int, Dictionary<string, string>> singleFieldDataM, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, Dictionary<string, string> fileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
+        public P14KokhoSokatuCoReportServiceMapper(Dictionary<int, Dictionary<string, string>> setFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, Dictionary<string, string> fileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData)
         {
-            _singleFieldDataM = singleFieldDataM;
+            _setFieldData = setFieldData;
             _listTextData = listTextData;
             _extralData = extralData;
             _fileName = fileName;
@@ -63,7 +63,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Mapper
 
         public override Dictionary<int, Dictionary<string, string>> GetSetFieldData()
         {
-            return _singleFieldDataM;
+            return _setFieldData;
         }
         public override Dictionary<string, string> GetFileNamePageMap()
         {
