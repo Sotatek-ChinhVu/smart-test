@@ -27,7 +27,7 @@ namespace Infrastructure.Services
             {
                 return string.Empty;
             }
-            return kaInfo.KaName ?? string.Empty;
+            return kaInfo.KaSname ?? string.Empty;
         }
 
         public void Reload()

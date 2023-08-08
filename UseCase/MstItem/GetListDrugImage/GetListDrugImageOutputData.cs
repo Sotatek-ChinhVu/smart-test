@@ -1,17 +1,16 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.MstItem.GetListDrugImage
+namespace UseCase.MstItem.GetListDrugImage;
+
+public class GetListDrugImageOutputData : IOutputData
 {
-    public class GetListDrugImageOutputData : IOutputData
+    public GetListDrugImageOutputData(GetListDrugImageStatus status, List<DrugImageOutputItem> imageList)
     {
-        public GetListDrugImageOutputData(GetListDrugImageStatus status, List<string> imageUrl)
-        {
-            Status = status;
-            ImageUrl = imageUrl;
-        }
-
-        public GetListDrugImageStatus Status { get; private set; }
-
-        public List<string> ImageUrl { get; private set; }
+        Status = status;
+        ImageList = imageList;
     }
+
+    public GetListDrugImageStatus Status { get; private set; }
+
+    public List<DrugImageOutputItem> ImageList { get; private set; }
 }

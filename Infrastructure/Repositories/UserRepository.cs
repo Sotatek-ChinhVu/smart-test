@@ -1,10 +1,12 @@
-﻿using Domain.Models.User;
+﻿using Domain.Core;
+using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using static Helper.Constants.UserConst;
 
@@ -72,23 +74,31 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.UserMsts.AsEnumerable().Select(u => ToModel(u)).ToList();
         }
 
-        public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly)
+        public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly, bool isAll)
         {
-            var query = NoTrackingDataContext.UserMsts.Where(u =>
-                u.StartDate <= sinDate
-                && u.EndDate >= sinDate
-                && u.IsDeleted == DeleteTypes.None);
-            if (isDoctorOnly)
+            if (isAll)
             {
-                query = query.Where(u => u.JobCd == JobCodes.Doctor);
+                var query = NoTrackingDataContext.UserMsts;
+                return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u, new())).ToList();
             }
-            var listKaMsts = NoTrackingDataContext.KaMsts.Where(item =>
-                                                                    query.Select(item => item.KaId).ToList()
-                                                                    .Contains(item.KaId)
-                                                                    && item.IsDeleted == 0
-                                                              ).ToList();
+            else
+            {
+                var query = NoTrackingDataContext.UserMsts.Where(u =>
+                    u.StartDate <= sinDate
+                    && u.EndDate >= sinDate
+                    && u.IsDeleted == DeleteTypes.None);
+                if (isDoctorOnly)
+                {
+                    query = query.Where(u => u.JobCd == JobCodes.Doctor);
+                }
+                var listKaMsts = NoTrackingDataContext.KaMsts.Where(item =>
+                                                                        query.Select(item => item.KaId).ToList()
+                                                                        .Contains(item.KaId)
+                                                                        && item.IsDeleted == 0
+                                                                  ).ToList();
 
-            return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u, listKaMsts)).ToList();
+                return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u, listKaMsts)).ToList();
+            }
         }
 
         public IEnumerable<UserMstModel> GetDoctorsList(int userId)
@@ -434,6 +444,73 @@ namespace Infrastructure.Repositories
                                                           x.User.DrName ?? string.Empty,
                                                           x.Permissions.Select(p => new UserPermissionModel(p.HpId, p.UserId, p.FunctionCd, p.Permission, false)).ToList()))
                                                      .OrderBy(item => item.SortNo).ToList();
+        }
+
+        public List<UserMstModel> GetUsersByPermission(int hpId, int managerKbn)
+        {
+
+            List<UserMstModel> result = new List<UserMstModel>();
+            var listUsers = NoTrackingDataContext.UserMsts.Where(u => u.HpId == Session.HospitalID &&
+                                                                        u.IsDeleted != 1 &&
+                                                                        u.ManagerKbn <= managerKbn);
+            var listUserPermission = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId);
+            var listFuncMst = NoTrackingDataContext.FunctionMsts.Where(u => u != null);
+            var listPerMst = NoTrackingDataContext.PermissionMsts.Where(u => u != null);
+
+            var functionMstQuery = from funcMst in listFuncMst
+                                   join perMst in listPerMst on funcMst.FunctionCd equals perMst.FunctionCd into listPermission
+                                   select new
+                                   {
+                                       FuncMst = funcMst,
+                                       ListPermission = listPermission,
+                                   };
+            var listFunction = functionMstQuery.Where(item => item.ListPermission.Any()).ToList();
+
+            var queryFinal = from user in listUsers
+                             join userPermission in listUserPermission on user.UserId equals userPermission.UserId into listUserPer
+                             select new
+                             {
+                                 User = user,
+                                 Permission = listUserPer.Select(p => new UserPermissionModel(p.HpId, p.UserId, p.FunctionCd, p.Permission, false))
+                             };
+
+            var entityList = queryFinal.OrderBy(item => item.User.SortNo).ToList();
+            foreach (var entity in entityList)
+            {
+                var functionMsts = listFunction.Select(item => new FunctionMstModel(item.FuncMst.FunctionCd, item.FuncMst.FunctionName ?? string.Empty
+                                                                                , entity.User.JobCd
+                                                                                , item.ListPermission.Select(p => new PermissionMstModel(p.FunctionCd, p.Permission)).ToList()
+                                                                                , entity.Permission.FirstOrDefault(i => i.FunctionCd == item.FuncMst.FunctionCd) ?? new UserPermissionModel(entity.User.UserId)
+                                                                                )).ToList();
+                UserMstModel newModel = new UserMstModel(entity.User.HpId,
+                                                          entity.User.Id,
+                                                          entity.User.UserId,
+                                                          entity.User.JobCd,
+                                                          entity.User.ManagerKbn,
+                                                          entity.User.KaId,
+                                                          entity.User.Sname ?? string.Empty,
+                                                          entity.User.KanaName ?? string.Empty,
+                                                          entity.User.Name ?? string.Empty,
+                                                          entity.User.Sname ?? string.Empty,
+                                                          entity.User.LoginId ?? string.Empty,
+                                                          entity.User.LoginPass ?? string.Empty,
+                                                          entity.User.MayakuLicenseNo ?? string.Empty,
+                                                          entity.User.StartDate,
+                                                          entity.User.EndDate,
+                                                          entity.User.SortNo,
+                                                          entity.User.IsDeleted,
+                                                          entity.User.RenkeiCd1 ?? string.Empty,
+                                                          entity.User.DrName ?? string.Empty,
+                                                          functionMsts);
+
+                result.Add(newModel);
+            }
+            if (result.Count == 0)
+            {
+                return new List<UserMstModel>();
+            }
+
+            return result;
         }
 
         /// <summary>

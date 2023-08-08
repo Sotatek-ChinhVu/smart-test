@@ -42,6 +42,7 @@
         public const string GetTeikyoByomei = "GetTeikyoByomei";
         public const string GetDrugAction = "GetDrugAction";
         public const string GetDefaultPrecautions = "GetDefaultPrecautions";
+        public const string UploadImageDrugInf = "UploadImageDrugInf";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -128,6 +129,7 @@
         public const string DeletePatientInfo = "DeletePatientInfo";
         public const string CheckValidSamePatient = "CheckValidSamePatient";
         public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
+        public const string SavePtKyusei = "SavePtKyusei";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -169,6 +171,8 @@
         public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
         public const string GetLastKarute = "GetLastKarute";
         public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
+        public const string GetOutDrugOrderList = "GetOutDrugOrderList";
+
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
 
@@ -290,6 +294,7 @@
         public const string GetListSinKoui = "GetListSinKoui";
         public const string DeleteReceiptInfEdit = "DeleteReceiptInfEdit";
         public const string GetListKaikeiInf = "GetListKaikeiInf";
+        public const string GetListRaiinInf = "GetListRaiinInf";
         public const string CheckExisReceInfEdit = "CheckExisReceInfEdit";
         public const string GetListSokatuMst = "GetListSokatuMst";
 

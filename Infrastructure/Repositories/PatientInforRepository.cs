@@ -2594,6 +2594,40 @@ namespace Infrastructure.Repositories
                                                                                   string.Empty)).ToList();
         }
 
+        public bool SavePtKyusei(int hpId, int userId, List<PtKyuseiModel> ptKyuseiList)
+        {
+            var seqNoList = ptKyuseiList.Select(item => item.SeqNo).Distinct().ToList();
+            var ptKyuseiDBList = TrackingDataContext.PtKyuseis.Where(item => item.HpId == hpId && seqNoList.Contains(item.SeqNo)).ToList();
+            foreach (var model in ptKyuseiList)
+            {
+                var entity = ptKyuseiDBList.FirstOrDefault(entity => entity.SeqNo == model.SeqNo && entity.PtId == model.PtId);
+                if (entity == null)
+                {
+                    entity = new PtKyusei();
+                    entity.HpId = hpId;
+                    entity.SeqNo = 0;
+                    entity.IsDeleted = 0;
+                    entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    entity.CreateId = userId;
+                    entity.PtId = model.PtId;
+                }
+                entity.Name = model.Name;
+                entity.KanaName = model.KanaName;
+                entity.EndDate = model.EndDate;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateId = userId;
+                if (model.IsDeleted)
+                {
+                    entity.IsDeleted = 1;
+                }
+                if (entity.SeqNo == 0)
+                {
+                    TrackingDataContext.PtKyuseis.Add(entity);
+                }
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
         private void CloneByomeiWithNewHokenId(List<PtByomei> ptByomeis, int hokenId, int userId)
         {
             List<PtByomei> newCloneByomeis = new();

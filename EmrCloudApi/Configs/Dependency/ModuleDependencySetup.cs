@@ -472,6 +472,7 @@ using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.Save;
 using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
+using UseCase.PatientInfor.SavePtKyusei;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
@@ -631,12 +632,44 @@ using GetDefaultSelectedTimeInputDataOfReception = UseCase.Reception.GetDefaultS
 using GetDefaultSelectedTimeInteractorOfMedical = Interactor.MedicalExamination.GetDefaultSelectedTimeInteractor;
 using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefaultSelectedTimeInteractor;
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
+using GetListRaiinInfInputDataOfReceipt = UseCase.Receipt.GetListRaiinInf.GetListRaiinInfInputData;
+using GetListRaiinInfInteractorOfReceipt = Interactor.Receipt.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetRaiinInfListInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
 using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.Receipt.ValidateCreateUKEFile;
+using Interactor.PatientInfor.SortPatientCommon;
+using Reporting.DrugNoteSeal.Service;
+using Reporting.DrugNoteSeal.DB;
+using Reporting.Sokatu.HikariDisk.DB;
+using Reporting.Sokatu.HikariDisk.Service;
+using Reporting.Sokatu.KoukiSeikyu.DB;
+using UseCase.RaiinListSetting.GetDocCategory;
+using Interactor.RaiinListSetting;
+using Domain.Models.RaiinListSetting;
+using UseCase.RaiinListSetting.GetFilingcategory;
+using Reporting.Sokatu.AfterCareSeikyu.Service;
+using Reporting.Sokatu.AfterCareSeikyu.DB;
+using Reporting.Sijisen.DB;
+using Reporting.Sokatu.Syaho.Service;
+using Reporting.Sokatu.Syaho.DB;
+using Interactor.SetMst.CommonSuperSet;
+using Reporting.Sokatu.WelfareSeikyu.DB;
+using Reporting.Byomei.DB;
+using UseCase.User.GetListUserByCurrentUser;
+using UseCase.MedicalExamination.GetHeaderVistitDate;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.MstItem.UploadImageDrugInf;
+using UseCase.Reception.GetOutDrugOrderList;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -856,6 +889,15 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP24WelfareDiskService, P24WelfareDiskService>();
             services.AddTransient<IReceiptPrintExcelService, ReceiptPrintExcelService>();
             services.AddTransient<IImportCSVCoReportService, ImportCSVCoReportService>();
+            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IP26KokhoSeikyuOutCoReportService, P26KokhoSeikyuOutCoReportService>();
+            services.AddTransient<IP27KokhoSeikyuInCoReportService, P27KokhoSeikyuInCoReportService>();
+            services.AddTransient<IP27KokhoSeikyuOutCoReportService, P27KokhoSeikyuOutCoReportService>();
+            services.AddTransient<IP28KokhoSeikyuCoReportService, P28KokhoSeikyuCoReportService>();
+            services.AddTransient<IP29KokhoSeikyuCoReportService, P29KokhoSeikyuCoReportService>();
+            services.AddTransient<IP30KokhoSeikyuCoReportService, P30KokhoSeikyuCoReportService>();
+            services.AddTransient<IP42KokhoSeikyuCoReportService, P42KokhoSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -963,6 +1005,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaLabelCoReportService, KensaLabelCoReportService>();
             services.AddTransient<IKensaLabelFinder, KensaLabelFinder>();
             services.AddTransient<IGetCommonDrugInf, GetCommonDrugInf>();
+            services.AddTransient<ICommonReceRecalculation, CommonReceRecalculation>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1022,6 +1065,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteReceptionInputData, DeleteReceptionInteractor>();
             busBuilder.RegisterUseCase<GetRaiinListWithKanInfInputData, GetRaiinListWithKanInfInteractor>();
             busBuilder.RegisterUseCase<RevertDeleteNoReceptInputData, RevertDeleteNoReceptInteractor>();
+            busBuilder.RegisterUseCase<GetOutDrugOrderListInputData, GetOutDrugOrderListInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -1062,6 +1106,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CalculationSwapHokenInputData, CalculationSwapHokenInteractor>();
             busBuilder.RegisterUseCase<CheckValidSamePatientInputData, CheckValidSamePatientInteractor>();
             busBuilder.RegisterUseCase<CheckAllowDeletePatientInfoInputData, CheckAllowDeletePatientInfoInteractor>();
+            busBuilder.RegisterUseCase<SavePtKyuseiInputData, SavePtKyuseiInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -1214,6 +1259,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTeikyoByomeiInputData, GetTeikyoByomeiInteractor>();
             busBuilder.RegisterUseCase<GetDrugActionInputData, GetDrugActionInteractor>();
             busBuilder.RegisterUseCase<GetDefaultPrecautionsInputData, GetDefaultPrecautionsInteractor>();
+            busBuilder.RegisterUseCase<UploadImageDrugInfInputData, UploadImageDrugInfInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -1404,10 +1450,11 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
             busBuilder.RegisterUseCase<SaveReceStatusInputData, SaveReceStatusInteractor>();
             busBuilder.RegisterUseCase<GetReceStatusInputData, GetReceStatusInteractor>();
-            busBuilder.RegisterUseCase<ReceiptCheckRecalculationInputData, ReceiptCheckRecalculationInteractor>();
+            busBuilder.RegisterUseCase<ReceiptCheckRecalculationInputData, ReceCheckRecalculationInteractor>();
             busBuilder.RegisterUseCase<DeleteReceiptInfEditInputData, DeleteReceiptInfEditInteractor>();
             busBuilder.RegisterUseCase<GetListKaikeiInfInputData, GetListKaikeiInfInteractor>();
             busBuilder.RegisterUseCase<CheckExisReceInfEditInputData, CheckExisReceInfEditInteractor>();
+            busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfReceipt, GetListRaiinInfInteractorOfReceipt>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
