@@ -30,7 +30,9 @@ namespace Interactor.ReceSeikyu
                                                                        inputData.IsFilterReturn, 
                                                                        inputData.IsFilterOnlineReturn);
 
-                if(data.Any())
+                data = data.OrderByDescending(u => u.SeikyuYm).ThenBy(u => u.SinYm).ThenBy(u => u.PtNum).ToList();
+
+                if (data.Any())
                     return new GetListReceSeikyuOutputData(GetListReceSeikyuStatus.Successful, data);
                 else
                     return new GetListReceSeikyuOutputData(GetListReceSeikyuStatus.NoData, data);
