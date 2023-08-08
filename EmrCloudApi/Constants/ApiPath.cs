@@ -171,6 +171,8 @@
         public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
         public const string GetLastKarute = "GetLastKarute";
         public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
+        public const string GetOutDrugOrderList = "GetOutDrugOrderList";
+
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
 
