@@ -39,7 +39,7 @@ public class CoReceiptCheckFinder : RepositoryBase, ICoReceiptCheckFinder
                                       ReceCheckErr = receiptErr
                                   };
 
-        var result = lisResultReceSeikyu.DefaultIfEmpty().AsEnumerable()
+        var result = lisResultReceSeikyu.AsEnumerable()
                                         .Select(x => new CoReceiptCheckModel(x.PtInf, x.ReceInf, x.ReceCheckErr))
                                         .OrderBy(x => x.SinYm)
                                         .ThenBy(x => x.PtId)
