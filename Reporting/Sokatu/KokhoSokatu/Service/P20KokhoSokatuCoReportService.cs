@@ -47,7 +47,7 @@ public class P20KokhoSokatuCoReportService : IP20KokhoSokatuCoReportService
     /// OutPut Data
     /// </summary>
     private const string _formFileName = "p20KokhoSokatu.rse";
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -58,7 +58,7 @@ public class P20KokhoSokatuCoReportService : IP20KokhoSokatuCoReportService
     {
         _kokhoFinder = kokhoFinder;
         _singleFieldData = new();
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
@@ -73,21 +73,24 @@ public class P20KokhoSokatuCoReportService : IP20KokhoSokatuCoReportService
         currentPage = 1;
         var getData = GetData();
         hasNextPage = true;
-        for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
+
+        if (getData)
         {
-            curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
-            if (curReceInfs.Count() == 0) continue;
-            while (getData && hasNextPage)
+            for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
             {
-                UpdateDrawForm();
-                currentPage++;
+                curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
+                if (curReceInfs.Count() == 0) continue;
+                while (getData && hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
             }
         }
-        
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function

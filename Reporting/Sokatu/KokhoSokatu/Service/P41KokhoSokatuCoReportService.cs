@@ -44,7 +44,7 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
     /// OutPut Data
     /// </summary>
     private const string _formFileName = "p41KokhoSokatu.rse";
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -55,7 +55,7 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
     {
         _kokhoFinder = kokhoFinder;
         _singleFieldData = new();
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
@@ -79,15 +79,18 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
         var getData = GetData();
         hasNextPage = true;
 
-        while (getData && hasNextPage)
+        if (getData)
         {
-            UpdateDrawForm();
-            currentPage++;
+            while (getData && hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function
@@ -152,7 +155,7 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
                     countData wrkData = new countData();
                     //件数
                     pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                    Dictionary<string, string> fieldDataPerPage = _singleFieldDataM.ContainsKey(pageIndex) ? _singleFieldDataM[pageIndex] : new();
+                    Dictionary<string, string> fieldDataPerPage = _setFieldData.ContainsKey(pageIndex) ? _setFieldData[pageIndex] : new();
 
                     wrkData.Count = wrkReces.Count;
                     fieldDataPerPage.Add(string.Format("totalCount{0}", i), wrkData.Count.ToString());
@@ -177,9 +180,9 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
                     wrkData.Count = wrkReces.Where(r => r.IsPrefIn == true).Count();
                     fieldDataPerPage.Add(string.Format("kennaiTotalCount{0}", i), wrkData.Count.ToString());
 
-                    if (!_singleFieldDataM.ContainsKey(pageIndex))
+                    if (!_setFieldData.ContainsKey(pageIndex))
                     {
-                        _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+                        _setFieldData.Add(pageIndex, fieldDataPerPage);
                     }
                 }
 

@@ -2,27 +2,30 @@
 using Helper.Constants;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
-using Reporting.Sokatu.KokhoSokatu.DB;
+using Reporting.Sokatu.KokhoSeikyu.DB;
 using Reporting.Sokatu.KokhoSokatu.Mapper;
 using Reporting.Structs;
 
-namespace Reporting.Sokatu.KokhoSokatu.Service;
+namespace Reporting.Sokatu.KokhoSeikyu.Service;
 
-public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportService
+public class P27KokhoSeikyuInCoReportService : IP27KokhoSeikyuInCoReportService
 {
     #region Constant
-    private const int myPrefNo = 26;
+    private const int myPrefNo = 27;
     #endregion
 
     #region Private properties
     /// <summary>
     /// Finder
     /// </summary>
-    private ICoKokhoSokatuFinder _kokhoFinder;
+    private ICoKokhoSeikyuFinder _kokhoFinder;
 
     /// <summary>
     /// CoReport Model
     /// </summary>
+    private string currentHokensyaNo;
+    private List<string> hokensyaNos;
+    private List<CoHokensyaMstModel> hokensyaNames;
     private List<CoReceInfModel> receInfs;
     private CoHpInfModel hpInf;
     #endregion
@@ -30,7 +33,7 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
     /// <summary>
     /// OutPut Data
     /// </summary>
-    private const string _formFileName = "p26KokhoSokatuOut.rse";
+    private const string _formFileName = "p27KokhoSeikyuIn.rse";
     private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
@@ -38,7 +41,7 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
     private readonly Dictionary<string, bool> _visibleFieldData;
 
     #region Constructor and Init
-    public P26KokhoSokatuOutCoReportService(ICoKokhoSokatuFinder kokhoFinder)
+    public P27KokhoSeikyuInCoReportService(ICoKokhoSeikyuFinder kokhoFinder)
     {
         _kokhoFinder = kokhoFinder;
         _singleFieldData = new();
@@ -53,24 +56,31 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
     private int hpId;
     private int seikyuYm;
     private SeikyuType seikyuType;
+    private List<string> printHokensyaNos;
     private bool hasNextPage;
     private int currentPage;
     #endregion
-    public CommonReportingRequestModel GetP26KokhoSokatuOutReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
+
+    public CommonReportingRequestModel GetP27KokhoSeikyuInReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
         this.hpId = hpId;
         this.seikyuYm = seikyuYm;
         this.seikyuType = seikyuType;
-        this.currentPage = 1;
         var getData = GetData();
-        hasNextPage = true;
 
         if (getData)
         {
-            while (getData && hasNextPage)
+            foreach (string currentNo in hokensyaNos)
             {
-                UpdateDrawForm();
-                currentPage++;
+                currentHokensyaNo = currentNo;
+                currentPage = 1;
+                hasNextPage = true;
+
+                while (getData && hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
             }
         }
 
@@ -82,7 +92,11 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
     #region Private function
     private bool UpdateDrawForm()
     {
-        hasNextPage = false;
+        List<ListTextObject> listDataPerPage = new();
+        Dictionary<string, string> fieldDataPerPage = new();
+        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+
+        bool _hasNextPage = false;
 
         #region SubMethod
 
@@ -92,7 +106,6 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
             //医療機関コード
             SetFieldData("hpCode", hpInf.ReceHpCd);
             //医療機関情報
-            SetFieldData("postCd", hpInf.PostCdDsp);
             SetFieldData("address1", hpInf.Address1);
             SetFieldData("address2", hpInf.Address2);
             SetFieldData("hpName", hpInf.ReceHpName);
@@ -103,11 +116,21 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
             SetFieldData("seikyuGengo", wrkYmd.Gengo);
             SetFieldData("seikyuYear", wrkYmd.Year.ToString());
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
+            //提出年月日
+            wrkYmd = CIUtil.SDateToShowWDate3(
+                CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd"))
+            );
+            SetFieldData("reportGengo", wrkYmd.Gengo);
+            SetFieldData("reportYear", wrkYmd.Year.ToString());
+            SetFieldData("reportMonth", wrkYmd.Month.ToString());
+            SetFieldData("reportDay", wrkYmd.Day.ToString());
+            //保険者
+            SetFieldData("hokensyaName", hokensyaNames.Find(h => h.HokensyaNo == currentHokensyaNo)?.Name ?? "");
+            fieldDataPerPage.Add("hokensyaNo", currentHokensyaNo);
+            _setFieldData.Add(pageIndex, fieldDataPerPage);
             //印
             SetVisibleFieldData("inkan", seikyuYm < KaiseiDate.m202210);
             SetVisibleFieldData("inkanMaru", seikyuYm < KaiseiDate.m202210);
-            SetVisibleFieldData("kbnRate9", seikyuYm < KaiseiDate.m202210);
-            SetVisibleFieldData("kbnIppan", seikyuYm >= KaiseiDate.m202210);
 
             return 1;
         }
@@ -116,46 +139,43 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
         #region Body
         int UpdateFormBody()
         {
-            List<ListTextObject> listDataPerPage = new();
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+            var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
 
-            #region Body
             countData totalData = new countData();
-            countData subData = new countData();
-            const int maxRow = 11;
+            const int maxRow = 12;
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
                 List<CoReceInfModel> wrkReces = null;
                 switch (rowNo)
                 {
-                    case 0: wrkReces = receInfs.Where(r => r.IsNrElderIppan || r.IsNrElderUpper).ToList(); break;
-                    case 1: wrkReces = receInfs.Where(r => r.IsNrMine || r.IsNrFamily || r.IsNrPreSchool).ToList(); break;
-                    case 3: break;
-                    case 4: wrkReces = receInfs.Where(r => r.IsRetMine || r.IsRetFamily || r.IsRetPreSchool).ToList(); break;
-                    case 6: break;
-                    case 7:
+                    //退職
+                    case 0: wrkReces = curReceInfs.Where(r => r.IsRetAll && r.IsHeiyo).ToList(); break;
+                    case 1: wrkReces = curReceInfs.Where(r => r.IsRetPreSchool && !r.IsHeiyo).ToList(); break;
+                    case 2: wrkReces = curReceInfs.Where(r => (r.IsRetMine || r.IsRetFamily) && !r.IsHeiyo && r.HokenRate != 30).ToList(); break;
+                    case 3: wrkReces = curReceInfs.Where(r => (r.IsRetMine || r.IsRetFamily) && !r.IsHeiyo && r.HokenRate == 30).ToList(); break;
+                    //国保
+                    case 4: wrkReces = curReceInfs.Where(r => r.IsNrAll && r.IsHeiyo).ToList(); break;
+                    case 5: wrkReces = curReceInfs.Where(r => r.IsNrPreSchool && !r.IsHeiyo).ToList(); break;
+                    case 6: break;  //在医総欄は未記載
+                    case 7: wrkReces = curReceInfs.Where(r => r.IsNrElderIppan && !r.IsHeiyo).ToList(); break;
+                    case 8: wrkReces = curReceInfs.Where(r => r.IsNrElderUpper && !r.IsHeiyo).ToList(); break;
+                    case 9: wrkReces = curReceInfs.Where(r => (r.IsNrMine || r.IsNrFamily) && !r.IsHeiyo && r.HokenRate != 30).ToList(); break;
+                    case 10: wrkReces = curReceInfs.Where(r => (r.IsNrMine || r.IsNrFamily) && !r.IsHeiyo && r.HokenRate == 30).ToList(); break;
+                    case 11:
                         //合計
                         listDataPerPage.Add(new("count", 0, rowNo, totalData.Count.ToString()));
                         listDataPerPage.Add(new("tensu", 0, rowNo, totalData.Tensu.ToString()));
                         listDataPerPage.Add(new("futan", 0, rowNo, totalData.Futan.ToString()));
-                        listDataPerPage.Add(new("chokiCnt", 0, rowNo, totalData.Choki.ToString()));
-                        subData.Clear();
-                        totalData.Clear();
-                        break;
-                    case 8: wrkReces = receInfs.Where(r => r.IsKoukiIppan).ToList(); break;
-                    case 9: wrkReces = receInfs.Where(r => r.IsKoukiUpper).ToList(); break;
-
-                    default:
-                        //小計
-                        listDataPerPage.Add(new("count", 0, rowNo, subData.Count.ToString()));
-                        listDataPerPage.Add(new("tensu", 0, rowNo, subData.Tensu.ToString()));
-                        listDataPerPage.Add(new("futan", 0, rowNo, subData.Futan.ToString()));
-                        listDataPerPage.Add(new("chokiCnt", 0, rowNo, subData.Choki.ToString()));
-                        subData.Clear();
                         break;
                 }
                 if (wrkReces == null) continue;
+
+                if (new int[] { 2, 9 }.Contains(rowNo) && wrkReces.Count >= 1)
+                {
+                    int wrkRate = (100 - wrkReces[0].HokenRate) / 10;
+                    SetFieldData(string.Format("kyufu{0}", rowNo), wrkRate.ToString());
+                }
 
                 countData wrkData = new countData();
                 //件数
@@ -167,25 +187,19 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
                 //一部負担金
                 wrkData.Futan = wrkReces.Sum(r => r.HokenReceFutan);
                 listDataPerPage.Add(new("futan", 0, rowNo, wrkData.Futan.ToString()));
-                //長
-                wrkData.Choki = wrkReces.Where(r => r.IsChoki).Count();
-                listDataPerPage.Add(new("chokiCnt", 0, rowNo, wrkData.Choki.ToString()));
 
-                //小計
-                subData.AddValue(wrkData);
-                //合計
+                //合計集計
                 totalData.AddValue(wrkData);
             }
 
-            //一部負担金減免・猶予
-            var menReces = receInfs.Where(r =>
-                new int[] { GenmenKbn.Menjyo, GenmenKbn.Yuyo }.Contains(r.GenmenKbn)
-            ).ToList();
-            SetFieldData("genmenCnt", menReces.Count.ToString());
-            SetFieldData("genmenCnt", menReces.Sum(r => r.Tensu).ToString());
-            _listTextData.Add(pageIndex, listDataPerPage);
-            #endregion
+            //「免」欄
+            int menjyoCnt = curReceInfs.Where(r => new int[] { GenmenKbn.Gengaku, GenmenKbn.Menjyo, GenmenKbn.Yuyo }.Contains(r.GenmenKbn)).Count();
+            SetFieldData("menjyoCnt", menjyoCnt.ToString());
 
+            //「他」欄
+            int prefOutKohiCnt = curReceInfs.Where(r => r.IsPrefOutKohi).Count();
+            SetFieldData("prefOutKohiCnt", prefOutKohiCnt.ToString());
+            _listTextData.Add(pageIndex, listDataPerPage);
             return 1;
         }
         #endregion
@@ -194,18 +208,27 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
 
         if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
         {
+            hasNextPage = _hasNextPage;
             return false;
         }
 
+        hasNextPage = _hasNextPage;
         return true;
     }
 
     private bool GetData()
     {
         hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
-        receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.All, PrefKbn.PrefOut, myPrefNo, HokensyaNoKbn.SumAll);
+        receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kokho, PrefKbn.PrefIn, myPrefNo, HokensyaNoKbn.SumAll);
+        //保険者番号の指定がある場合は絞り込み
+        var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
+            receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
+        //保険者番号リストを取得
+        hokensyaNos = wrkReceInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();
+        //保険者名を取得
+        hokensyaNames = _kokhoFinder.GetHokensyaName(hpId, hokensyaNos);
 
-        return true;
+        return (receInfs?.Count ?? 0) > 0;
     }
 
     private void SetFieldData(string field, string value)
