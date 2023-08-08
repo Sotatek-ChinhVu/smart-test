@@ -51,7 +51,11 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
 
     private SaveReceiptEditStatus ValidateInput(SaveReceiptEditInputData inputData)
     {
-        if (inputData.SinYm.ToString().Length != 6)
+        if (inputData.ReceiptEdit.SeqNo == 0 && inputData.ReceiptEdit.IsDeleted)
+        {
+            return SaveReceiptEditStatus.Successed;
+        }
+        else if (inputData.SinYm.ToString().Length != 6)
         {
             return SaveReceiptEditStatus.InvalidSinYm;
         }
