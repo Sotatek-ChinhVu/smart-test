@@ -2183,7 +2183,7 @@ namespace Interactor.ReceSeikyu
                             var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
                                                                                               item?.PtId ?? 0,
                                                                                               item?.ItemCd ?? string.Empty,
-                                                                                              santeiEndDateList[item?.PtId ?? 0]))
+                                                                                              santeiEndDateList.ContainsKey(item?.PtId ?? 0) ? santeiEndDateList[item?.PtId ?? 0] : 0))
                                                                           .ToList();
 
                             var allHasErrorWithSanteiByEndDateList = _receiptRepository.GetHasErrorWithSanteiByEndDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
