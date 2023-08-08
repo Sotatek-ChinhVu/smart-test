@@ -19,6 +19,7 @@ using Helper.Messaging;
 using Helper.Messaging.Data;
 using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
+using System.Linq;
 using System.Text;
 using UseCase.ReceSeikyu.Save;
 
@@ -2141,7 +2142,7 @@ namespace Interactor.ReceSeikyu
                             var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
                                                                                              item?.PtId ?? 0,
                                                                                              item?.ItemCd ?? string.Empty,
-                                                                                             santeiEndDateList[item?.PtId ?? 0]))
+                                                                                             santeiEndDateList.ContainsKey(item?.PtId ?? 0) ? santeiEndDateList[item?.PtId ?? 0] : 0))
                                                                          .ToList();
 
                             var allHasErrorWithSanteiByStartDateList = _receiptRepository.GetHasErrorWithSanteiByStartDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
