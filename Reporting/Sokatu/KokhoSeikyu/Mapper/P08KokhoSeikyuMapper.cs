@@ -13,7 +13,6 @@ namespace Reporting.Sokatu.KokhoSeikyu.Mapper
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, string> _extralData;
-        private readonly string _formFileName;
         private readonly Dictionary<string, bool> _visibleFieldData;
         private readonly Dictionary<string, string> _fileName;
 
