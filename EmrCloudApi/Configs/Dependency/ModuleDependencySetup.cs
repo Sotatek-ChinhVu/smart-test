@@ -670,6 +670,7 @@ using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -898,6 +899,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP29KokhoSeikyuCoReportService, P29KokhoSeikyuCoReportService>();
             services.AddTransient<IP30KokhoSeikyuCoReportService, P30KokhoSeikyuCoReportService>();
             services.AddTransient<IP42KokhoSeikyuCoReportService, P42KokhoSeikyuCoReportService>();
+            services.AddTransient<IP43KokhoSeikyuCoReportService, P43KokhoSeikyuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
