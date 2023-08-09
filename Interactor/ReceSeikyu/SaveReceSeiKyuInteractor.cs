@@ -94,7 +94,7 @@ namespace Interactor.ReceSeikyu
                             receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SeikyuYm));
                         }
                     }
-                    else if (modifiedReceSeikyu.IsDeleted == DeleteTypes.None)
+                    else if (modifiedReceSeikyu.IsDeleted == DeleteTypes.Deleted)
                     {
                         _receSeikyuRepository.EntryDeleteHenJiyuu(modifiedReceSeikyu.PtId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.HokenId, inputData.UserAct);
 
@@ -124,7 +124,7 @@ namespace Interactor.ReceSeikyu
 
                 #region not complete seikyu
                 bool isSuccessSeikyuProcess = true;
-                var listSourceSeikyu = inputData.ReceSeiKyus.Where(item => item.IsNotCompletedSeikyu).ToList();
+                var listSourceSeikyu = inputData.ReceSeiKyus.Where(item => item.IsNotCompletedSeikyu && item.IsModified).ToList();
                 if (listSourceSeikyu != null && listSourceSeikyu.Count > 0)
                 {
                     foreach (ReceSeikyuModel model in listSourceSeikyu)
@@ -141,7 +141,7 @@ namespace Interactor.ReceSeikyu
 
                 #region complete seikyu
                 bool isSuccessCompletedSeikyu = true;
-                var deletedSourceList = inputData.ReceSeiKyus.Where(item => item.IsCompletedSeikyu).ToList();
+                var deletedSourceList = inputData.ReceSeiKyus.Where(item => item.IsCompletedSeikyu && item.IsModified).ToList();
                 if (deletedSourceList != null && deletedSourceList.Count > 0)
                 {
                     var insertDefaultList = new List<ReceSeikyuModel>();
