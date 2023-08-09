@@ -60,7 +60,7 @@ public class RecalculationController : AuthorizeControllerBase
         }
         catch
         {
-            SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。しばらくしてからもう一度お試しください。", string.Empty));
+            SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
         }
         finally
         {
@@ -116,7 +116,7 @@ public class RecalculationController : AuthorizeControllerBase
                     }
                     catch
                     {
-                        SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。しばらくしてからもう一度お試しください。", string.Empty));
+                        SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
                     }
                 }
             });
@@ -154,7 +154,7 @@ public class RecalculationController : AuthorizeControllerBase
         }
         catch
         {
-            SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。しばらくしてからもう一度お試しください。", string.Empty));
+            SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
         }
         finally
         {
