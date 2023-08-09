@@ -670,6 +670,7 @@ using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -898,7 +899,35 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP29KokhoSeikyuCoReportService, P29KokhoSeikyuCoReportService>();
             services.AddTransient<IP30KokhoSeikyuCoReportService, P30KokhoSeikyuCoReportService>();
             services.AddTransient<IP42KokhoSeikyuCoReportService, P42KokhoSeikyuCoReportService>();
+            services.AddTransient<IP43KokhoSeikyuCoReportService, P43KokhoSeikyuCoReportService>();
+            services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
+            services.AddTransient<IP20WelfareSokatuCoReportService, P20WelfareSokatuCoReportService>();
+            services.AddTransient<IP21WelfareSeikyuCoReportService, P21WelfareSeikyuCoReportService>();
+            services.AddTransient<IP21WelfareSokatuCoReportService, P21WelfareSokatuCoReportService>();
+            services.AddTransient<IP08KokhoSeikyuCoReportService, P08KokhoSeikyuCoReportService>();
+            services.AddTransient<IP09KokhoSeikyuCoReportService, P09KokhoSeikyuCoReportService>();
+            services.AddTransient<IP22WelfareSeikyuCoReportService, P22WelfareSeikyuCoReportService>();
+            services.AddTransient<IP23NagoyaSeikyuCoReportService, P23NagoyaSeikyuCoReportService>();
+            services.AddTransient<IP23WelfareSeikyuCoReportService, P23WelfareSeikyuCoReportService>();
+            services.AddTransient<IP24WelfareSofuDiskCoReportService, P24WelfareSofuDiskCoReportService>();
+            services.AddTransient<IP24WelfareSofuPaperCoReportService, P24WelfareSofuPaperCoReportService>();
+            services.AddTransient<IP24WelfareSyomeiCoReportService, P24WelfareSyomeiCoReportService>();
+            services.AddTransient<IP24WelfareSyomeiListCoReportService, P24WelfareSyomeiListCoReportService>();
+            services.AddTransient<IP24WelfareSyomeiSofuCoReportService, P24WelfareSyomeiSofuCoReportService>();
+            services.AddTransient<IP26VaccineSokatuCoReportService, P26VaccineSokatuCoReportService>();
+            services.AddTransient<IKarte3CoReportService, Karte3CoReportService>();
+            services.AddTransient<ICoKarte3Finder, CoKarte3Finder>();
+            services.AddTransient<IP27IzumisanoSeikyuCoReportService, P27IzumisanoSeikyuCoReportService>();
+            services.AddTransient<IP35WelfareSeikyuCoReportService, P35WelfareSeikyuCoReportService>();
+            services.AddTransient<IP43KikuchiMeisai41CoReportService, P43KikuchiMeisai41CoReportService>();
+            services.AddTransient<IP43KikuchiMeisai43CoReportService, P43KikuchiMeisai43CoReportService>();
+            services.AddTransient<IP43KikuchiSeikyu41CoReportService, P43KikuchiSeikyu41CoReportService>();
+            services.AddTransient<IP43KikuchiSeikyu43CoReportService, P43KikuchiSeikyu43CoReportService>();
+            services.AddTransient<IP43KumamotoSeikyuCoReportService, P43KumamotoSeikyuCoReportService>();
+            services.AddTransient<IP44WelfareSeikyu84CoReportService, P44WelfareSeikyu84CoReportService>();
+            services.AddTransient<IP44WelfareDiskService, P44WelfareDiskService>();
 
+            services.AddTransient<IP35WelfareSokatuCoReportService, P35WelfareSokatuCoReportService>();
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
@@ -957,6 +986,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
+            services.AddTransient<IMonshinInforRepository, MonshinInforRepository>();
             services.AddTransient<IMonshinInforRepository, MonshinInforRepository>();
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
             services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
