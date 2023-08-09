@@ -388,6 +388,10 @@
         public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
         public const string CheckUpsertNextOrder = "CheckUpsertNextOrder";
 
+        //AccountingFormMst
+        public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
+        public const string UpdateAccountingFormMst = "UpdateAccountingFormMst";
+
         public const string Test = "Test";
     }
 }

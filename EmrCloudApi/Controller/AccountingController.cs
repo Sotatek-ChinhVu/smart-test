@@ -9,6 +9,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Accounting.CheckAccountingStatus;
 using UseCase.Accounting.CheckOpenAccounting;
+using UseCase.Accounting.GetAccountingFormMst;
 using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetAccountingSystemConf;
@@ -17,6 +18,7 @@ using UseCase.Accounting.GetSinMei;
 using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.Recaculate;
 using UseCase.Accounting.SaveAccounting;
+using UseCase.Accounting.UpdateAccountingFormMst;
 using UseCase.Accounting.WarningMemo;
 using UseCase.Core.Sync;
 
@@ -171,6 +173,30 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<RecaculationResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateAccountingFormMst)]
+        public ActionResult<Response<UpdateAccountingFormMstResponse>> ActionResult([FromBody] UpdateAccountingFormMstRequest request)
+        {
+            var input = new UpdateAccountingFormMstInputData(UserId, request.AccountingFormMstModels);
+            var output = _bus.Handle(input);
+
+            var presenter = new UpdateAccountingFormMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpdateAccountingFormMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetAccountingFormMst)]
+        public ActionResult<Response<GetAccountingFormMstResponse>> ActionResult()
+        {
+            var input = new GetAccountingFormMstInputData(HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetAccountingFormMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetAccountingFormMstResponse>>(presenter.Result);
         }
     }
 }
