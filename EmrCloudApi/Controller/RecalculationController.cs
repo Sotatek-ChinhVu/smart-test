@@ -154,9 +154,7 @@ public class RecalculationController : AuthorizeControllerBase
         }
         catch
         {
-            var resultForFrontEnd = Encoding.UTF8.GetBytes("\n Error");
-            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
-            HttpContext.Response.Body.FlushAsync();
+            SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。しばらくしてからもう一度お試しください。", string.Empty));
         }
         finally
         {
