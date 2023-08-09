@@ -35,14 +35,15 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
                                                                 .ToList();
 
             var syobyoKeikaDBList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-            var sindayDBList = syobyoKeikaDBList.Select(item => item.SinDay);
-            if (sindayDBList.Any() && inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && item.SeqNo == 0 && sindayDBList.Contains(item.SinDay)))
-            {
-                return new SaveSyobyoKeikaListOutputData(SaveSyobyoKeikaListStatus.InvalidSinDay, new());
-            }
-
             var seqNoListDB = syobyoKeikaDBList.Select(item => item.SeqNo).Distinct().ToList();
             List<SyobyoKeikaItem> syobyoKeikaInvalidList = inputData.SyobyoKeikaList.Where(item => item.SeqNo > 0 && !seqNoListDB.Contains(item.SeqNo)).ToList();
+
+            var sindayDBList = syobyoKeikaDBList.Select(item => item.SinDay);
+            var invalidSinDayList = inputData.SyobyoKeikaList.Where(item => !item.IsDeleted && item.SeqNo == 0 && sindayDBList.Contains(item.SinDay)).ToList();
+            if (invalidSinDayList.Any())
+            {
+                return new SaveSyobyoKeikaListOutputData(SaveSyobyoKeikaListStatus.InvalidSinDay, invalidSinDayList);
+            }
 
             if (_receiptRepository.SaveSyobyoKeikaList(inputData.HpId, inputData.UserId, listSyobyoKeikaModel))
             {
