@@ -60,9 +60,7 @@ public class RecalculationController : AuthorizeControllerBase
         }
         catch
         {
-            var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
-            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
-            HttpContext.Response.Body.FlushAsync();
+            SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
         }
         finally
         {
@@ -118,10 +116,7 @@ public class RecalculationController : AuthorizeControllerBase
                     }
                     catch
                     {
-                        var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
-                        HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
-                        HttpContext.Response.Body.FlushAsync();
-                        Console.WriteLine(data);
+                        SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
                     }
                 }
             });
@@ -159,9 +154,7 @@ public class RecalculationController : AuthorizeControllerBase
         }
         catch
         {
-            var resultForFrontEnd = Encoding.UTF8.GetBytes("\n Error");
-            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
-            HttpContext.Response.Body.FlushAsync();
+            SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
         }
         finally
         {
