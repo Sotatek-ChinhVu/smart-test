@@ -670,6 +670,7 @@ using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.Receipt.CheckExistSyobyoKeika;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1454,6 +1455,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteReceiptInfEditInputData, DeleteReceiptInfEditInteractor>();
             busBuilder.RegisterUseCase<GetListKaikeiInfInputData, GetListKaikeiInfInteractor>();
             busBuilder.RegisterUseCase<CheckExisReceInfEditInputData, CheckExisReceInfEditInteractor>();
+            busBuilder.RegisterUseCase<CheckExistSyobyoKeikaInputData, CheckExistSyobyoKeikaInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfReceipt, GetListRaiinInfInteractorOfReceipt>();
 
             //ReceSeikyu

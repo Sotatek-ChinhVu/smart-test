@@ -3648,6 +3648,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                .ToList();
     }
 
+    public bool CheckExistSyobyoKeikaSinDay(int hpId, int sinYm, long ptId, int hokenId, int sinDay)
+    {
+        return NoTrackingDataContext.SyobyoKeikas.Any(item => item.HpId == hpId
+                                                              && item.SinYm == sinYm
+                                                              && item.PtId == ptId
+                                                              && item.HokenId == hokenId
+                                                              && item.SinDay == sinDay);
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
