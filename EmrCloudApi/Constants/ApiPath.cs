@@ -376,6 +376,7 @@
         // MainMenu
         public const string GetStatisticMenuList = "GetStatisticMenuList";
         public const string SaveStatisticMenuList = "SaveStatisticMenuList";
+        public const string GetListStaticReport = "GetListStaticReport";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
