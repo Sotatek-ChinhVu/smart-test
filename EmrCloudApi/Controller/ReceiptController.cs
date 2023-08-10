@@ -50,6 +50,7 @@ using UseCase.Receipt.ValidateCreateUKEFile;
 using UseCase.SinKoui.GetSinKoui;
 using UseCase.Receipt.GetListSokatuMst;
 using UseCase.Receipt.GetListRaiinInf;
+using UseCase.Receipt.CheckExistSyobyoKeika;
 
 namespace EmrCloudApi.Controller;
 
@@ -530,6 +531,19 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListSokatuMstResponse>>(presenter.Result);
+    }
+    
+
+    [HttpGet(ApiPath.CheckExistSyobyoKeika)]
+    public ActionResult<Response<CheckExistSyobyoKeikaResponse>> CheckExistSyobyoKeika([FromQuery] CheckExistSyobyoKeikaRequest request)
+    {
+        var input = new CheckExistSyobyoKeikaInputData(HpId, request.PtId, request.SinYm, request.HokenId, request.SinDay);
+        var output = _bus.Handle(input);
+
+        var presenter = new CheckExistSyobyoKeikaPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<CheckExistSyobyoKeikaResponse>>(presenter.Result);
     }
 
     #region Private function

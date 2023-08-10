@@ -1409,22 +1409,40 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public bool SaveSyobyoKeikaList(int hpId, int userId, List<SyobyoKeikaModel> syoukiInfList)
     {
-        var syobyoKeikaUpdateList = syoukiInfList.Where(item => item.SeqNo > 0).ToList();
+        if (!syoukiInfList.Any())
+        {
+            return false;
+        }
+
+        var ptId = syoukiInfList.First().PtId;
+        var sinYm = syoukiInfList.First().SinYm;
+        var hokenId = syoukiInfList.First().HokenId;
         var syobyoKeikaUpdateDBList = TrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
-                                                                                   && item.IsDeleted == DeleteTypes.None
-                                                                                   && syobyoKeikaUpdateList.Select(item => item.SeqNo).Contains(item.SeqNo))
+                                                                                     && item.IsDeleted == DeleteTypes.None
+                                                                                     && item.PtId == ptId
+                                                                                     && item.SinYm == sinYm
+                                                                                     && item.HokenId == hokenId)
                                                                       .ToList();
 
-        var syobyoKeikaAddNewList = syoukiInfList.Where(item => item.SeqNo == 0 && !item.IsDeleted)
-                                                 .Select(item => ConvertToNewSyobyoKeika(hpId, userId, item))
-                                                 .ToList();
-        TrackingDataContext.SyobyoKeikas.AddRange(syobyoKeikaAddNewList);
-        foreach (var model in syobyoKeikaUpdateList)
+        foreach (var model in syoukiInfList)
         {
-            var entity = syobyoKeikaUpdateDBList.FirstOrDefault(item => item.SeqNo == model.SeqNo);
+            var entity = syobyoKeikaUpdateDBList.FirstOrDefault(item => model.SeqNo > 0 && item.SeqNo == model.SeqNo);
             if (entity == null)
             {
-                continue;
+                if (model.SeqNo > 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    entity = syobyoKeikaUpdateDBList.FirstOrDefault(item => item.SinDay == model.SinDay && !model.IsDeleted);
+                    if (entity == null)
+                    {
+                        entity = ConvertToNewSyobyoKeika(hpId, userId, model);
+                        TrackingDataContext.Add(entity);
+                        continue;
+                    }
+                }
             }
             entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             entity.UpdateId = userId;
@@ -3628,6 +3646,16 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                  item.SinEndTime ?? string.Empty,
                                                                                  item.Status))
                                                .ToList();
+    }
+
+    public bool CheckExistSyobyoKeikaSinDay(int hpId, int sinYm, long ptId, int hokenId, int sinDay)
+    {
+        return NoTrackingDataContext.SyobyoKeikas.Any(item => item.HpId == hpId
+                                                              && item.SinYm == sinYm
+                                                              && item.PtId == ptId
+                                                              && item.HokenId == hokenId
+                                                              && item.SinDay == sinDay
+                                                              && item.IsDeleted == 0);
     }
 
     public void ReleaseResource()
