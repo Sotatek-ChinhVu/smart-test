@@ -41,5 +41,7 @@ namespace Domain.Models.ReceSeikyu
         ReceSeikyuModel GetReceSeikyuDuplicate(int hpId, long ptId, int sinYm, int hokenId);
 
         bool SaveChangeImportFileRececeikyus();
+
+        ReceSeikyuModel GetReceSeikyModelByPtNum(int hpId, int sinDate, int sinYm, long ptNum);
     }
 }

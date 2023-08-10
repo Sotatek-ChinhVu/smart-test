@@ -670,6 +670,7 @@ using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.ReceSeikyu.GetReceSeikyModelByPtNum;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1462,6 +1463,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
             busBuilder.RegisterUseCase<ImportFileReceSeikyuInputData, ImportFileReceSeikyuInteractor>();
             busBuilder.RegisterUseCase<CancelSeikyuInputData, CancelSeikyuInteractor>();
+            busBuilder.RegisterUseCase<GetReceSeikyModelByPtNumInputData, GetReceSeikyModelByPtNumInteractor>();
 
             //WeightedSetConfirmation
             busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
