@@ -3630,10 +3630,17 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                .ToList();
     }
 
+    public bool CheckExistsReceInf(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId)
+    {
+        var existReceInf = NoTrackingDataContext.ReceInfs.Any(item => item.HpId == hpId
+                                                                      && item.SeikyuYm == seikyuYm
+                                                                      && item.PtId == ptId
+                                                                      && item.SinYm == sinYm
+                                                                      && item.HokenId == hokenId);
+        return existReceInf;
+    }
     public void ReleaseResource()
     {
         DisposeDataContext();
     }
-
-
 }
