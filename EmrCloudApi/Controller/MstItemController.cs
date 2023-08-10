@@ -301,6 +301,11 @@ namespace EmrCloudApi.Controller
 
             SetDataTenMstOriginModel setData = new SetDataTenMstOriginModel(basicSettingTab, ijiSettingTab, precriptionSettingTab, usageSettingTab, drugInfomationTab, teikyoByomeiTab, santeiKaishuTab, haihanTab, houkatsuTab, combinedContraindicationTab);
 
+            foreach (var item in tenOrigins)
+            {
+                item.ChangeHpId(HpId);
+            }
+
             var input = new SaveSetDataTenMstInputData(HpId, UserId, request.ItemCd, tenOrigins, setData);
             var output = _bus.Handle(input);
             var presenter = new SaveSetDataTenMstPresenter();

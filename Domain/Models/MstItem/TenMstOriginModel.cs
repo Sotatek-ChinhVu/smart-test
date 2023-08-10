@@ -1921,5 +1921,11 @@ namespace Domain.Models.MstItem
             }
             return ItemTypeEnums.Other;
         }
+
+        public TenMstOriginModel ChangeHpId(int hpId)
+        {
+            HpId = hpId;
+            return this;
+        }
     }
 }
