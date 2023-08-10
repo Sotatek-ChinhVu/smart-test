@@ -16,7 +16,7 @@ public class CheckExistsReceInfInteractor : ICheckExistsReceInfInputPort
     {
         try
         {
-            return new CheckExistsReceInfOutputData(_receiptRepository.CheckExisReceInfEdit(inputData.HpId, inputData.SeikyuYm, inputData.PtId, inputData.SinYm, inputData.HokenId), CheckExistsReceInfStatus.Successed);
+            return new CheckExistsReceInfOutputData(_receiptRepository.CheckExistsReceInf(inputData.HpId, inputData.SeikyuYm, inputData.PtId, inputData.SinYm, inputData.HokenId), CheckExistsReceInfStatus.Successed);
         }
         finally
         {
