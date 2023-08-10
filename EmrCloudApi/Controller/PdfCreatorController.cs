@@ -235,13 +235,6 @@ public class PdfCreatorController : ControllerBase
         return RenderExcel(data);
     }
 
-    [HttpPost(ApiPath.ReceListCsv)]
-    public IActionResult GenerateKarteCsvReport([FromBody] ReceiptListExcelRequest request)
-    {
-        var data = _reportService.GetReceiptListExcel(request.receiptListModel, request.IsIsExportTitle);
-        return RenderExcel(data);
-    }
-
 
     [HttpPost(ApiPath.MemoMsgPrint)]
     public async Task<IActionResult> MemoMsgPrint([FromForm] StringObjectRequest requestString)
