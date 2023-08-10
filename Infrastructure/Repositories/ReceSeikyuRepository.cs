@@ -45,7 +45,7 @@ namespace Infrastructure.Repositories
                                       };
             if (isGetDataPending)
             {
-                var receSeikyuInf = from receSeikyu in listReceSeikyu
+                var receSeikyuInf = from receSeikyu in listReceSeikyu.AsEnumerable()
                                     join ptHokenInf in ptHoken on
                                       new { receSeikyu.PtId, receSeikyu.HokenId } equals
                                       new { ptHokenInf.PtId, ptHokenInf.HokenId } into ptHokenList
@@ -54,8 +54,9 @@ namespace Infrastructure.Repositories
                                     {
                                         PtInfo = ptInf,
                                         ReceSeikyu = receSeikyu,
-                                        PtHokenInfItem = ptHokenList.FirstOrDefault()
+                                        PtHokenInfItem = ptHokenList?.FirstOrDefault() ?? new()
                                     };
+
                 var query = from receSeikyu in receSeikyuInf
                             join recedenHenjiyuu in recedenHenjiyuuInfo on
                             new { receSeikyu.ReceSeikyu.PtId, receSeikyu.ReceSeikyu.SinYm, HokenId = receSeikyu.ReceSeikyu.PreHokenId } equals
@@ -66,6 +67,7 @@ namespace Infrastructure.Repositories
                                 recedenHenjiyuuList = recedenHenjiyuuList,
                                 ReceSeikyuPending = receSeikyu,
                             };
+
                 var result = query.AsEnumerable().Select(u => new ReceSeikyuModel(sinDate,
                                                                               u.ReceSeikyuPending?.PtInfo?.HpId ??0,
                                                                               u.ReceSeikyuPending?.PtInfo?.PtId ?? 0,
@@ -187,7 +189,7 @@ namespace Infrastructure.Repositories
                                                                                                                         m.PtHokenInfItem?.HokensyaNo ?? string.Empty)).ToList()
                                                               )).OrderByDescending(o => o.SeikyuKbn).ThenBy(u => u.SinYm).ThenBy(i => i.PtNum).ToList();
             }
-           
+
         }
 
         public List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int seikyuYm, List<long> ptIdList)
