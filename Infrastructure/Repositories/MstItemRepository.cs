@@ -3739,7 +3739,7 @@ namespace Infrastructure.Repositories
                 List<DrugInfModel> drugModels = setDataTen.DrugInfomationTab.DrugInfs;
                 for (int i = 1; i < 3; i++)
                 {
-                    if (string.IsNullOrEmpty(drugModels[i].DrugInfo) && !string.IsNullOrEmpty(drugModels[i].OldDrugInfo))
+                    if (drugModels.ElementAtOrDefault(i) != null && string.IsNullOrEmpty(drugModels[i].DrugInfo) && !string.IsNullOrEmpty(drugModels[i].OldDrugInfo))
                     {
                         drugModels[i].SetDrugInfo(drugModels[i].OldDrugInfo);
                         drugModels[i].SetIsDeleted(DeleteTypes.Deleted);
