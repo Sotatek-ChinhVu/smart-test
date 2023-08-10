@@ -108,11 +108,7 @@ public class ImportCSVController : AuthorizeControllerBase
         var dataList = dataModel.Data;
         if (!dataList.Any())
         {
-            return Content(@"
-            <meta charset=""utf-8"">
-            <title>印刷対象が見つかりません。</title>
-            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
-            ", "text/html");
+            return Content(@"", "text/html"); ;
         }
         string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         using (var workbook = new XLWorkbook())

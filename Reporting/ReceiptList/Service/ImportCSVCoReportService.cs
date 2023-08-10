@@ -52,15 +52,18 @@ namespace Reporting.ReceiptList.Service
                                                                      seikyuYm,
                                                                      inputData);
 
+            List<string> output = new List<string>();
+
+            string sheetName = "レセチェック一覧表";
+
             if (result.Count == 0)
             {
-                return new();
+                return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, output);
             }
-
-            List<string> output = new List<string>
+            else
             {
-                // ヘッダー
-                "請求," +
+                output.Add(
+                    "請求," +
                     "診療年月," +
                     "変更," +
                     "紙," +
@@ -98,98 +101,97 @@ namespace Reporting.ReceiptList.Service
                     "労災都道府県名," +
                     "労災所在地郡市区名," +
                     "自賠保険会社名," +
-                "自賠保険担当者," +
-                "自賠保険連絡先"
-            };
+                    "自賠保険担当者," +
+                    "自賠保険連絡先"
+                    );
 
-            foreach (ReceiptInputCsvModel receiptList in result)
-            {
-                string line = "";
-                // 請求
-                line += $"{seikyuYm},";
-                // 診療年月
-                line += $"{receiptList.SinYm},";
-                // 変更
-                line += $"{receiptList.ReceInfDetailExistDisplay},";
-                // 紙
-                line += $"{receiptList.PaperReceDisplay},";
-                // 印刷
-                line += $"{receiptList.OutputDisplay},";
-                // 付箋
-                line += $"{receiptList.FusenKbnDisplay},";
-                // 確認
-                line += $"{receiptList.StatusKbnDisplay},";
-                // コメント
-                line += $"{receiptList.ReceCheckCmt},";
-                // 患者番号
-                line += $"{receiptList.PtNum},";
-                // カナ
-                line += $"{receiptList.KanaName},";
-                // 氏名
-                line += $"{receiptList.Name},";
-                // 性
-                line += $"{receiptList.SexDisplay},";
-                // 年齢
-                line += $"{receiptList.Age},";
-                // 生年月日
-                line += $"{receiptList.BirthDay},";
-                // レセプト種別コード
-                line += $"{receiptList.ReceSbt},";
-                // レセプト種別
-                line += $"{receiptList.ReceSbtDisplay},";
-                // 保険者番号
-                line += $"{receiptList.HokensyaNo},";
-                // 点数
-                line += $"{receiptList.Tensu},";
-                // 実日数
-                //line += $"{receiptList.HokenNissu},";
-                line += $"{receiptList.Nissu},";
-                // 症状詳記
-                line += $"{receiptList.SyoukiInfExistDisplay},";
-                // レセコメント
-                line += $"{receiptList.ReceCmtExistDisplay},";
-                // 傷病の経過
-                line += $"{receiptList.SyobyoKeikaExistDisplay},";
-                // 再請求コメント
-                line += $"{receiptList.ReceSeikyuCmt},";
-                // 最終来院日
-                line += $"{receiptList.LastVisitDate},";
-                // 診療科
-                line += $"{receiptList.KaName},";
-                // 担当医
-                line += $"{receiptList.SName},";
-                // 旧姓
-                line += $"{receiptList.PtKyuseiExistDisplay},";
-                // 公１負担者番号
-                line += $"{receiptList.FutansyaNoKohi1},";
-                // 公２負担者番号
-                line += $"{receiptList.FutansyaNoKohi2},";
-                // 公３負担者番号
-                line += $"{receiptList.FutansyaNoKohi3},";
-                // 公４負担者番号
-                line += $"{receiptList.FutansyaNoKohi4},";
-                // テスト患者
-                line += $"{receiptList.IsPtTestDisplay},";
-                // 振込予定金額
-                line += $"{receiptList.ExpectedPayment},";
-                // 労災交付番号
-                line += $"{receiptList.RousaiKofuNo},";
-                // 労災事業所名
-                line += $"{receiptList.RousaiJigyosyoName},";
-                // 労災都道府県名
-                line += $"{receiptList.RousaiPrefName},";
-                // 労災所在地郡市区名
-                line += $"{receiptList.RousaiCityName},";
-                // 自賠保険会社名
-                line += $"{receiptList.JibaiHokenName},";
-                // 自賠保険担当者
-                line += $"{receiptList.JibaiHokenTanto},";
-                // 自賠保険連絡先
-                line += $"{receiptList.JibaiHokenTel}";
-                output.Add(line);
+                foreach (ReceiptInputCsvModel receiptList in result)
+                {
+                    string line = "";
+                    // 請求
+                    line += $"{seikyuYm},";
+                    // 診療年月
+                    line += $"{receiptList.SinYm},";
+                    // 変更
+                    line += $"{receiptList.ReceInfDetailExistDisplay},";
+                    // 紙
+                    line += $"{receiptList.PaperReceDisplay},";
+                    // 印刷
+                    line += $"{receiptList.OutputDisplay},";
+                    // 付箋
+                    line += $"{receiptList.FusenKbnDisplay},";
+                    // 確認
+                    line += $"{receiptList.StatusKbnDisplay},";
+                    // コメント
+                    line += $"{receiptList.ReceCheckCmt},";
+                    // 患者番号
+                    line += $"{receiptList.PtNum},";
+                    // カナ
+                    line += $"{receiptList.KanaName},";
+                    // 氏名
+                    line += $"{receiptList.Name},";
+                    // 性
+                    line += $"{receiptList.SexDisplay},";
+                    // 年齢
+                    line += $"{receiptList.Age},";
+                    // 生年月日
+                    line += $"{receiptList.BirthDay},";
+                    // レセプト種別コード
+                    line += $"{receiptList.ReceSbt},";
+                    // レセプト種別
+                    line += $"{receiptList.ReceSbtDisplay},";
+                    // 保険者番号
+                    line += $"{receiptList.HokensyaNo},";
+                    // 点数
+                    line += $"{receiptList.Tensu},";
+                    // 実日数
+                    //line += $"{receiptList.HokenNissu},";
+                    line += $"{receiptList.Nissu},";
+                    // 症状詳記
+                    line += $"{receiptList.SyoukiInfExistDisplay},";
+                    // レセコメント
+                    line += $"{receiptList.ReceCmtExistDisplay},";
+                    // 傷病の経過
+                    line += $"{receiptList.SyobyoKeikaExistDisplay},";
+                    // 再請求コメント
+                    line += $"{receiptList.ReceSeikyuCmt},";
+                    // 最終来院日
+                    line += $"{receiptList.LastVisitDate},";
+                    // 診療科
+                    line += $"{receiptList.KaName},";
+                    // 担当医
+                    line += $"{receiptList.SName},";
+                    // 旧姓
+                    line += $"{receiptList.PtKyuseiExistDisplay},";
+                    // 公１負担者番号
+                    line += $"{receiptList.FutansyaNoKohi1},";
+                    // 公２負担者番号
+                    line += $"{receiptList.FutansyaNoKohi2},";
+                    // 公３負担者番号
+                    line += $"{receiptList.FutansyaNoKohi3},";
+                    // 公４負担者番号
+                    line += $"{receiptList.FutansyaNoKohi4},";
+                    // テスト患者
+                    line += $"{receiptList.IsPtTestDisplay},";
+                    // 振込予定金額
+                    line += $"{receiptList.ExpectedPayment},";
+                    // 労災交付番号
+                    line += $"{receiptList.RousaiKofuNo},";
+                    // 労災事業所名
+                    line += $"{receiptList.RousaiJigyosyoName},";
+                    // 労災都道府県名
+                    line += $"{receiptList.RousaiPrefName},";
+                    // 労災所在地郡市区名
+                    line += $"{receiptList.RousaiCityName},";
+                    // 自賠保険会社名
+                    line += $"{receiptList.JibaiHokenName},";
+                    // 自賠保険担当者
+                    line += $"{receiptList.JibaiHokenTanto},";
+                    // 自賠保険連絡先
+                    line += $"{receiptList.JibaiHokenTel}";
+                    output.Add(line);
+                }
             }
-
-            string sheetName = "レセチェック一覧表";
 
             return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, output);
         }
