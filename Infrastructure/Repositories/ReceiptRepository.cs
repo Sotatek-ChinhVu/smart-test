@@ -3654,7 +3654,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                               && item.SinYm == sinYm
                                                               && item.PtId == ptId
                                                               && item.HokenId == hokenId
-                                                              && item.SinDay == sinDay);
+                                                              && item.SinDay == sinDay
+                                                              && item.IsDeleted == 0);
     }
 
     public void ReleaseResource()

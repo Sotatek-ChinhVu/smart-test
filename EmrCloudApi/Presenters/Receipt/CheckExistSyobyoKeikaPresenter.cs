@@ -12,14 +12,7 @@ public class CheckExistSyobyoKeikaPresenter : ICheckExistSyobyoKeikaOutputPort
     public void Complete(CheckExistSyobyoKeikaOutputData outputData)
     {
         Result.Data = new CheckExistSyobyoKeikaResponse(outputData.Status == CheckExistSyobyoKeikaStatus.IsExisted);
-        Result.Message = GetMessage(outputData.Status);
+        Result.Message = ResponseMessage.Success;
         Result.Status = (int)outputData.Status;
     }
-
-    private string GetMessage(CheckExistSyobyoKeikaStatus status) => status switch
-    {
-        CheckExistSyobyoKeikaStatus.IsExisted => ResponseMessage.Success,
-        CheckExistSyobyoKeikaStatus.IsNotExisted => ResponseMessage.Failed,
-        _ => string.Empty
-    };
 }
