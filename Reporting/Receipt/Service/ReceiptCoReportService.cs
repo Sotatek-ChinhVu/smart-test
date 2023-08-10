@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.Accounting;
 using Domain.Models.SystemConf;
+using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
@@ -123,8 +124,43 @@ namespace Reporting.Receipt.Service
 
         private List<ReceFutanReceFutanKbnModel> ReceFutanKbns { get; set; } = new();
 
-        public CommonReportingRequestModel ShowRecePreviewAccounting(int hpId, long ptId, int sinDate, long raiinNo)
+        public CommonReportingRequestModel ShowRecePreviewAccounting(int hpId, long ptId, int sinDate, long raiinNo,int hokenId, bool isIncludeOutDrug = false)
         {
+            IncludeOutDrug = isIncludeOutDrug;
+
+            ReceFutanViewModel receFutanViewModel = new ReceFutanViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
+            var sinYm = sinDate / 100;
+
+            receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, sinYm);
+
+            var receSeikyu = CoModelFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
+            if (receSeikyu != null)
+            {
+                if (receSeikyu.SeikyuYm != 999999)
+                {
+                    var receInf = CoModelFinder.GetReceInf(hpId, ptId, hokenId, sinYm, receSeikyu.SeikyuYm);
+                    if (receInf == null)
+                    {
+                        receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, receSeikyu.SeikyuYm);
+                    }
+                }
+                else
+                {
+                    var receInfModels = receFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
+                    var receFutanKbnModels = receFutanViewModel.ReceFutanKbns;
+                    var receInf = receInfModels.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
+                    if (receInf != null)
+                    {
+                        ReceFutanKbnModels = receFutanKbnModels;
+                        ReceInf = receInf;
+                    }
+                }
+            }
+            else
+            {
+                // Messenger.Default.Send(new ShowReceiptPreviewWindowMessage(PreviewOwner.Accounting, ptId, hokenId, sinYm, sinYm, IsIncludeOutDrug));
+            }
+
             var raiinInf = _accountingRepository.GetListRaiinInf(hpId, ptId, sinDate, raiinNo).FirstOrDefault();
 
             if (raiinInf == null)
@@ -155,81 +191,44 @@ namespace Reporting.Receipt.Service
 
             if (listHoken.Count == 1)
             {
-                return GetReceiptDataFromAccounting(hpId, ptId, sinDate, listHoken[0].HokenId);
+                return GetReceiptDataFromAccounting(hpId, ptId, sinYm, listHoken[0].HokenId);
             }
-            else
-            {
-                var hokenSeleted = ListHokenSelect.FirstOrDefault(item => item.IsChecked);
-                if (hokenSeleted != null)
-                {
-                    var hoken = listHoken.FirstOrDefault(item => item.HokenId == hokenSeleted.HokenId);
-                    if (hoken != null)
-                    {
-                        hoken.IsChecked = true;
-                    }
-                    else
-                    {
-                        listHoken[0].IsChecked = true;
-                    }
-                }
-                else
-                {
-                    var hoken = listHoken.FirstOrDefault(item => item.HokenId == raiinInf.HokenId);
-                    if (hoken != null)
-                    {
-                        hoken.IsChecked = true;
-                    }
-                    else
-                    {
-                        listHoken[0].IsChecked = true;
-                    }
-                }
+            //else
+            //{
+            //    var hokenSeleted = ListHokenSelect.FirstOrDefault(item => item.IsChecked);
+            //    if (hokenSeleted != null)
+            //    {
+            //        var hoken = listHoken.FirstOrDefault(item => item.HokenId == hokenSeleted.HokenId);
+            //        if (hoken != null)
+            //        {
+            //            hoken.IsChecked = true;
+            //        }
+            //        else
+            //        {
+            //            listHoken[0].IsChecked = true;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        var hoken = listHoken.FirstOrDefault(item => item.HokenId == raiinInf.HokenId);
+            //        if (hoken != null)
+            //        {
+            //            hoken.IsChecked = true;
+            //        }
+            //        else
+            //        {
+            //            listHoken[0].IsChecked = true;
+            //        }
+            //    }
 
-                ListHokenSelect = listHoken;
-                HokenSelectVisibility = Visibility.Visible;
-            }
+            //    ListHokenSelect = listHoken;
+            //    HokenSelectVisibility = Visibility.Visible;
+            //}
+            return new();
         }
 
-        public CommonReportingRequestModel GetReceiptDataFromAccounting(int hpId, long ptId, int sinDate, int hokenId, bool isIncludeOutDrug, bool isOpenedFromAccounting)
+        public CommonReportingRequestModel GetReceiptDataFromAccounting(int hpId, long ptId, int sinYm, int hokenId,  bool isOpenedFromAccounting = true)
         {
-            ReceFutanViewModel ReceFutanViewModel = new ReceFutanViewModel();
-            var sinYm = sinDate / 100;
-
-            ReceFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, sinYm);
-
-            var receSeikyu = CoModelFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
-            if (receSeikyu != null)
-            {
-                if (receSeikyu.SeikyuYm != 999999)
-                {
-                    var receInf = CoModelFinder.GetReceInf(hpId, ptId, hokenId, sinYm, receSeikyu.SeikyuYm);
-                    if (receInf == null)
-                    {
-                        ReceFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, receSeikyu.SeikyuYm);
-                    }
-
-                    Messenger.Default.Send(new ShowReceiptPreviewWindowMessage(PreviewOwner.Accounting, ptId, hokenId, sinYm, receSeikyu.SeikyuYm, IsIncludeOutDrug));
-                }
-                else
-                {
-                    List<Emr.Calculate.ReceFutan.Models.ReceInfModel> ReceInfModels = ReceFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
-                    List<Emr.Calculate.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbnModels = ReceFutanViewModel.ReceFutanKbns;
-                    var receInf = ReceInfModels.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
-                    if (receInf != null)
-                    {
-                        Messenger.Default.Send(new ShowReceiptPreviewWindowMessage(PreviewOwner.Accounting, ptId, hokenId, sinYm, sinYm, IsIncludeOutDrug)
-                        {
-                            ReceFutanKbnModels = ReceFutanKbnModels,
-                            ReceInf = receInf
-                        });
-                    }
-                }
-            }
-            else
-            {
-                Messenger.Default.Send(new ShowReceiptPreviewWindowMessage(PreviewOwner.Accounting, ptId, hokenId, sinYm, sinYm, IsIncludeOutDrug));
-            }
-
             bool isNoCreatingReceData = true;
 
             var listReceInf = CoModelFinder.GetReceInf(hpId, ptId);
@@ -245,7 +244,7 @@ namespace Reporting.Receipt.Service
             if (ReceInf == null)
             {
                 var receInf = listReceInf.FirstOrDefault(item => item.HpId == Session.HospitalID &&
-                item.SeikyuYm == SeikyuYm &&
+                item.SeikyuYm == 20230810 &&
                 item.PtId == ptId &&
                 item.SinYm == sinYm &&
                 (item.HokenId == hokenId || item.HOkenId2 == hokenId));
@@ -256,41 +255,12 @@ namespace Reporting.Receipt.Service
                 isNoCreatingReceData = false;
             }
 
-            return GetReceiptData(hpId, ); 
+            return GetReceiptData(hpId, ptId, sinYm, hokenId, isNoCreatingReceData, isOpenedFromAccounting);
 
         }
 
-        public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, bool isNoCreatingReceData = false, bool isOpenedFromAccounting)
+        public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, bool isNoCreatingReceData, bool isOpenedFromAccounting)
         {
-            //var receSeikyu = CoModelFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
-
-            //var receFutanViewModel = new ReceFutanViewModel();
-
-            //if (receSeikyu == null)
-            //{
-            //    SeikyuYm = sinYm;
-            //}
-            //else
-            //{
-            //    if (receSeikyu.SeikyuYm != 999999)
-            //    {
-
-            //        SeikyuYm = receSeikyu.SeikyuYm;
-            //    }
-            //    else
-            //    {
-            //        List<ReceFutanReceInfModel> ReceInfs = receFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
-            //        List<ReceFutanReceFutanKbnModel> ReceFutanKbn = receFutanViewModel.ReceFutanKbns;
-            //        var receInfCheck = ReceInfs.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
-
-            //        if (receInfCheck != null)
-            //        {
-            //            SeikyuYm = sinYm;
-            //            ReceFutanKbnModels = ReceFutanKbn;
-            //        }
-            //    }
-            //}
-
             RecePreviewModel receInf = new RecePreviewModel(new ReceInf());
 
             if (isOpenedFromAccounting)
@@ -299,10 +269,8 @@ namespace Reporting.Receipt.Service
             }
             else
             {
-                receInf = CoModelFinder.GetReceInf(hpId, ptId);
+                receInf = new RecePreviewModel(CoModelFinder.GetReceInf(hpId, ptId, SeikyuYm, sinYm, hokenId) ?? new());
             }
-
-            var receInf = CoModelFinder.GetReceInf(hpId, ptId, SeikyuYm, sinYm, hokenId);
 
             if (receInf == null) return new();
 

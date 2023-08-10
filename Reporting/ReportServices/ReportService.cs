@@ -35,8 +35,6 @@ using Reporting.ReceiptList.Service;
 using Reporting.ReceiptPrint.Service;
 using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
-using Reporting.Sokatu.WelfareDisk.Service;
-using Reporting.Structs;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
 
@@ -462,9 +460,16 @@ public class ReportService : IReportService
     }
 
     //Receipt Preview
-    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId)
+    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, int sinDate, long raiinNo, bool isOpenedFromAccounting)
     {
-        return _receiptCoReportService.GetReceiptData(hpId, ptId, sinYm, hokenId);
+        if (isOpenedFromAccounting)
+        {
+            return _receiptCoReportService.ShowRecePreviewAccounting(hpId, ptId, sinDate, raiinNo, hokenId);
+        }
+        else
+        {
+            return _receiptCoReportService.GetReceiptData(hpId, ptId, sinYm, hokenId, false, false);
+        }
     }
 
     public CommonReportingRequestModel GetKensalraiData(int hpId, int systemDate, int fromDate, int toDate, string centerCd)
