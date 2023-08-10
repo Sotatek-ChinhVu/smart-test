@@ -77,6 +77,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             var getData = GetData();
             int indexPage = 1;
             var fileName = new Dictionary<string, string>();
+
             if (getData)
             {
                 foreach (string currentNo in hokensyaNos)

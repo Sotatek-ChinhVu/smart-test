@@ -73,24 +73,27 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
         int indexPage = 1;
         var fileName = new Dictionary<string, string>();
 
-        foreach (string currentNo in hokensyaNos)
+        if (getData)
         {
-            currentPage = 1;
-            currentHokensyaNo = currentNo;
-            hasNextPage = true;
-            while (getData && hasNextPage)
+            foreach (string currentNo in hokensyaNos)
             {
-                UpdateDrawForm();
-                if (currentPage == 2)
+                currentPage = 1;
+                currentHokensyaNo = currentNo;
+                hasNextPage = true;
+                while (getData && hasNextPage)
                 {
-                    fileName.Add(indexPage.ToString(), _formFileNameP2);
+                    UpdateDrawForm();
+                    if (currentPage == 2)
+                    {
+                        fileName.Add(indexPage.ToString(), _formFileNameP2);
+                    }
+                    else
+                    {
+                        fileName.Add(indexPage.ToString(), _formFileNameP1);
+                    }
+                    currentPage++;
+                    indexPage++;
                 }
-                else
-                {
-                    fileName.Add(indexPage.ToString(), _formFileNameP1);
-                }
-                currentPage++;
-                indexPage++;
             }
         }
 

@@ -90,6 +90,8 @@ namespace Infrastructure.Repositories
 
             var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => byomeiCds.Contains(b.ByomeiCd)).ToList();
 
+            string fullByomei = string.Empty;
+
             foreach (var item in byomeiCds)
             {
                 var byomei = byomeiMstList.FirstOrDefault(b => item == b.ByomeiCd);
@@ -100,18 +102,19 @@ namespace Infrastructure.Repositories
 
                 if (byomei.ByomeiCd.StartsWith('8'))
                 {
-                    ptByomei.Byomei = ptByomei.Byomei + byomei.Byomei;
+                    ptByomei.Byomei += byomei.Byomei;
                 }
                 else
                 {
-                    ptByomei.Byomei = byomei.Byomei + ptByomei.Byomei;
+                    fullByomei += byomei.Byomei;
                 }
-
             }
+
+            fullByomei += ptByomei.Byomei;
 
             return new PtDiseaseModel(ptByomei != null ? ptByomei.HokenPid : 0,
                                       ptByomei != null ? ptByomei.ByomeiCd ?? string.Empty : string.Empty,
-                                      ptByomei != null ? ptByomei.Byomei ?? string.Empty : string.Empty,
+                                      fullByomei,
                                       ptByomei != null ? ptByomei.StartDate : 0,
                                       ptByomei != null ? ptByomei.TenkiDate : 0,
                                       ptByomei != null ? ptByomei.SyubyoKbn : 0,
@@ -236,7 +239,7 @@ namespace Infrastructure.Repositories
         public List<ReceInfModel> GetReceInfModels(int hpId, List<long> ptIds, int sinYM)
         {
             List<ReceInfModel> receInfModels = new List<ReceInfModel>();
-            var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && ptIds.Contains(p.PtId) && p.IsDelete == DeleteTypes.None);
 
             var receStates = NoTrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true)).ToList();
 

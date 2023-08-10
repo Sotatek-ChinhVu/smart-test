@@ -67,47 +67,10 @@ namespace Reporting.ReceiptList.Model
 
         public int RosaiReceden { get; set; }
 
-        public string RosaiRecedenTerm { get; set; }
-
         /// <summary>
         /// 紙
         /// </summary>
-        private int _isPaperRece;
-        public int IsPaperRece
-        {
-            get
-            {
-                int ret = 0;
-
-                if (_isPaperRece == 1)
-                {
-                    ret = 1;
-                }
-                else if (SeikyuKbn == 2)
-                {
-                    ret = 1;
-                }
-                else if (HokenKbn == 0)
-                {
-                    ret = 1;
-                }
-                else if (HokenKbn == 13 || HokenKbn == 14)
-                {
-                    ret = 1;
-                }
-                else if (((RosaiReceden != 1) ||
-                       (RosaiReceden == 1 && SeikyuYm < CIUtil.StrToIntDef(RosaiRecedenTerm, 0))) &&
-                       (HokenKbn == 11 || HokenKbn == 12))
-                {
-                    ret = 1;
-                }
-                return ret;
-            }
-            set
-            {
-                _isPaperRece = value;
-            }
-        }
+        public int IsPaperRece { get; set; }
 
         public string PaperReceDisplay
         {

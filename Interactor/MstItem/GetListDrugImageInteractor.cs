@@ -56,7 +56,16 @@ namespace Interactor.MstItem
 
                 foreach (var extention in "ABCDEFGHIJZ")
                 {
-                    result.Add(SetItemData(extention.ToString(), inputData.YjCd, inputData.SelectedImage, images));
+                    var drugImageItem = SetItemData(extention.ToString(), inputData.YjCd, inputData.SelectedImage, images);
+                    if (extention.ToString().Equals("A") && string.IsNullOrEmpty(result.First().FileLink))
+                    {
+                        result = new();
+                    }
+                    if (extention.ToString().Equals("Z") && result.Count == 10)
+                    {
+                        result.Add(new());
+                    }
+                    result.Add(drugImageItem);
                 }
 
                 return new GetListDrugImageOutputData(GetListDrugImageStatus.Successful, result);

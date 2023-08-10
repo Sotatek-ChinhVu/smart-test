@@ -640,7 +640,38 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.Receipt.ValidateCreateUKEFile;
+using Interactor.PatientInfor.SortPatientCommon;
+using Reporting.DrugNoteSeal.Service;
+using Reporting.DrugNoteSeal.DB;
+using Reporting.Sokatu.HikariDisk.DB;
+using Reporting.Sokatu.HikariDisk.Service;
+using Reporting.Sokatu.KoukiSeikyu.DB;
+using UseCase.RaiinListSetting.GetDocCategory;
+using Interactor.RaiinListSetting;
+using Domain.Models.RaiinListSetting;
+using UseCase.RaiinListSetting.GetFilingcategory;
+using Reporting.Sokatu.AfterCareSeikyu.Service;
+using Reporting.Sokatu.AfterCareSeikyu.DB;
+using Reporting.Sijisen.DB;
+using Reporting.Sokatu.Syaho.Service;
+using Reporting.Sokatu.Syaho.DB;
+using Interactor.SetMst.CommonSuperSet;
+using Reporting.Sokatu.WelfareSeikyu.DB;
+using Reporting.Byomei.DB;
+using UseCase.User.GetListUserByCurrentUser;
+using UseCase.MedicalExamination.GetHeaderVistitDate;
+using Reporting.Sokatu.KokhoSeikyu.Service;
 using UseCase.MstItem.UploadImageDrugInf;
+using UseCase.Reception.GetOutDrugOrderList;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.Receipt.CheckExistSyobyoKeika;
+using Reporting.Sokatu.KokhoSeikyu.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -860,7 +891,44 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP24WelfareDiskService, P24WelfareDiskService>();
             services.AddTransient<IReceiptPrintExcelService, ReceiptPrintExcelService>();
             services.AddTransient<IImportCSVCoReportService, ImportCSVCoReportService>();
+            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IP26KokhoSeikyuOutCoReportService, P26KokhoSeikyuOutCoReportService>();
+            services.AddTransient<IP27KokhoSeikyuInCoReportService, P27KokhoSeikyuInCoReportService>();
+            services.AddTransient<IP27KokhoSeikyuOutCoReportService, P27KokhoSeikyuOutCoReportService>();
+            services.AddTransient<IP28KokhoSeikyuCoReportService, P28KokhoSeikyuCoReportService>();
+            services.AddTransient<IP29KokhoSeikyuCoReportService, P29KokhoSeikyuCoReportService>();
+            services.AddTransient<IP30KokhoSeikyuCoReportService, P30KokhoSeikyuCoReportService>();
+            services.AddTransient<IP42KokhoSeikyuCoReportService, P42KokhoSeikyuCoReportService>();
+            services.AddTransient<IP43KokhoSeikyuCoReportService, P43KokhoSeikyuCoReportService>();
+            services.AddTransient<IP13WelfareSeikyuCoReportService, P13WelfareSeikyuCoReportService>();
+            services.AddTransient<IP20WelfareSokatuCoReportService, P20WelfareSokatuCoReportService>();
+            services.AddTransient<IP21WelfareSeikyuCoReportService, P21WelfareSeikyuCoReportService>();
+            services.AddTransient<IP21WelfareSokatuCoReportService, P21WelfareSokatuCoReportService>();
+            services.AddTransient<IP08KokhoSeikyuCoReportService, P08KokhoSeikyuCoReportService>();
+            services.AddTransient<IP09KokhoSeikyuCoReportService, P09KokhoSeikyuCoReportService>();
+            services.AddTransient<IP22WelfareSeikyuCoReportService, P22WelfareSeikyuCoReportService>();
+            services.AddTransient<IP23NagoyaSeikyuCoReportService, P23NagoyaSeikyuCoReportService>();
+            services.AddTransient<IP23WelfareSeikyuCoReportService, P23WelfareSeikyuCoReportService>();
+            services.AddTransient<IP24WelfareSofuDiskCoReportService, P24WelfareSofuDiskCoReportService>();
+            services.AddTransient<IP24WelfareSofuPaperCoReportService, P24WelfareSofuPaperCoReportService>();
+            services.AddTransient<IP24WelfareSyomeiCoReportService, P24WelfareSyomeiCoReportService>();
+            services.AddTransient<IP24WelfareSyomeiListCoReportService, P24WelfareSyomeiListCoReportService>();
+            services.AddTransient<IP24WelfareSyomeiSofuCoReportService, P24WelfareSyomeiSofuCoReportService>();
+            services.AddTransient<IP26VaccineSokatuCoReportService, P26VaccineSokatuCoReportService>();
+            services.AddTransient<IKarte3CoReportService, Karte3CoReportService>();
+            services.AddTransient<ICoKarte3Finder, CoKarte3Finder>();
+            services.AddTransient<IP27IzumisanoSeikyuCoReportService, P27IzumisanoSeikyuCoReportService>();
+            services.AddTransient<IP35WelfareSeikyuCoReportService, P35WelfareSeikyuCoReportService>();
+            services.AddTransient<IP43KikuchiMeisai41CoReportService, P43KikuchiMeisai41CoReportService>();
+            services.AddTransient<IP43KikuchiMeisai43CoReportService, P43KikuchiMeisai43CoReportService>();
+            services.AddTransient<IP43KikuchiSeikyu41CoReportService, P43KikuchiSeikyu41CoReportService>();
+            services.AddTransient<IP43KikuchiSeikyu43CoReportService, P43KikuchiSeikyu43CoReportService>();
+            services.AddTransient<IP43KumamotoSeikyuCoReportService, P43KumamotoSeikyuCoReportService>();
+            services.AddTransient<IP44WelfareSeikyu84CoReportService, P44WelfareSeikyu84CoReportService>();
+            services.AddTransient<IP44WelfareDiskService, P44WelfareDiskService>();
 
+            services.AddTransient<IP35WelfareSokatuCoReportService, P35WelfareSokatuCoReportService>();
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
@@ -920,6 +988,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
             services.AddTransient<IMonshinInforRepository, MonshinInforRepository>();
+            services.AddTransient<IMonshinInforRepository, MonshinInforRepository>();
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
             services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
             services.AddTransient<IHpInfRepository, HpInfRepository>();
@@ -967,6 +1036,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaLabelCoReportService, KensaLabelCoReportService>();
             services.AddTransient<IKensaLabelFinder, KensaLabelFinder>();
             services.AddTransient<IGetCommonDrugInf, GetCommonDrugInf>();
+            services.AddTransient<ICommonReceRecalculation, CommonReceRecalculation>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1026,6 +1096,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteReceptionInputData, DeleteReceptionInteractor>();
             busBuilder.RegisterUseCase<GetRaiinListWithKanInfInputData, GetRaiinListWithKanInfInteractor>();
             busBuilder.RegisterUseCase<RevertDeleteNoReceptInputData, RevertDeleteNoReceptInteractor>();
+            busBuilder.RegisterUseCase<GetOutDrugOrderListInputData, GetOutDrugOrderListInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -1410,10 +1481,11 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
             busBuilder.RegisterUseCase<SaveReceStatusInputData, SaveReceStatusInteractor>();
             busBuilder.RegisterUseCase<GetReceStatusInputData, GetReceStatusInteractor>();
-            busBuilder.RegisterUseCase<ReceiptCheckRecalculationInputData, ReceiptCheckRecalculationInteractor>();
+            busBuilder.RegisterUseCase<ReceiptCheckRecalculationInputData, ReceCheckRecalculationInteractor>();
             busBuilder.RegisterUseCase<DeleteReceiptInfEditInputData, DeleteReceiptInfEditInteractor>();
             busBuilder.RegisterUseCase<GetListKaikeiInfInputData, GetListKaikeiInfInteractor>();
             busBuilder.RegisterUseCase<CheckExisReceInfEditInputData, CheckExisReceInfEditInteractor>();
+            busBuilder.RegisterUseCase<CheckExistSyobyoKeikaInputData, CheckExistSyobyoKeikaInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfReceipt, GetListRaiinInfInteractorOfReceipt>();
 
             //ReceSeikyu

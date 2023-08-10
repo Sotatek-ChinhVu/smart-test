@@ -8,6 +8,12 @@ public class DrugImageOutputItem
         IsEnable = isEnable;
         IsSelected = isSelected;
     }
+    public DrugImageOutputItem()
+    {
+        FileLink = string.Empty;
+        IsEnable = false;
+        IsSelected = false;
+    }
 
     public string FileLink { get; private set; }
 

@@ -22,7 +22,7 @@ namespace Domain.Models.User
 
         IEnumerable<UserMstModel> GetAll();
 
-        List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly);
+        List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly, bool isAll);
 
         int MaxUserId();
 

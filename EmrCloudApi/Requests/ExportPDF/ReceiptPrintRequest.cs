@@ -1,4 +1,5 @@
 ﻿using Reporting.ReceiptPrint.Service;
+using System.Collections.Generic;
 
 namespace EmrCloudApi.Requests.ExportPDF;
 
@@ -47,4 +48,6 @@ public class ReceiptPrintRequest : ReportRequestBase
     public bool IncludeTester { get; set; } = false;
 
     public int Sort { get; set; }
+
+    public List<long> PrintPtIds { get; set; } = new();
 }

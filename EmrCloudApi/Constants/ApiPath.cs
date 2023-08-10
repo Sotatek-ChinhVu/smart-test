@@ -171,6 +171,8 @@
         public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
         public const string GetLastKarute = "GetLastKarute";
         public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
+        public const string GetOutDrugOrderList = "GetOutDrugOrderList";
+
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
 
@@ -295,6 +297,7 @@
         public const string GetListRaiinInf = "GetListRaiinInf";
         public const string CheckExisReceInfEdit = "CheckExisReceInfEdit";
         public const string GetListSokatuMst = "GetListSokatuMst";
+        public const string CheckExistSyobyoKeika = "CheckExistSyobyoKeika";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";

@@ -144,7 +144,7 @@
         public static readonly string InvalidTodoGrpName = "Invalid TodoGrpName";
         public static readonly string InvalidTodoGrpNo = "Invalid TodoGrpNo";
         public static readonly string InvalidTodoGrpMst = "Invalid TodoGrpMst";
-        public static readonly string InvalidExistedTodoGrpNo = "Invalid Existed TodoGrpNo";
+        public static readonly string InvalidExistedTodoGrpNoIsDeleted = "Invalid Existed TodoGrpNo IsDeleted";
 
         //TodoInf
         public static readonly string InvalidTodoNo = "Invalid TodoNo";

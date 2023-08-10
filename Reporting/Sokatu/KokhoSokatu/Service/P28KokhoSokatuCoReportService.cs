@@ -1,9 +1,7 @@
 ﻿using Helper.Common;
-using Helper.Constants;
 using Helper.Extension;
 using Reporting.Calculate.Constants;
 using Reporting.Mappers.Common;
-using Reporting.ReadRseReportFile.Service;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.KokhoSokatu.DB;
 using Reporting.Sokatu.KokhoSokatu.Mapper;
@@ -66,6 +64,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             var getData = GetData();
             _hasNextPage = true;
             _currentPage = 1;
+
             if (getData)
             {
                 while (getData && _hasNextPage)
@@ -234,14 +233,5 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 _singleFieldData.Add(field, value);
             }
         }
-
-        private void AddListData(ref Dictionary<string, CellModel> dictionary, string field, string value)
-        {
-            if (!string.IsNullOrEmpty(field) && !dictionary.ContainsKey(field))
-            {
-                dictionary.Add(field, new CellModel(value));
-            }
-        }
-
     }
 }

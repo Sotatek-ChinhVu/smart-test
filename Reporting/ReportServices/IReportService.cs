@@ -9,6 +9,8 @@ using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
 using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
+using Reporting.Structs;
+using System.Collections.Generic;
 using Reporting.ReceiptPrint.Service;
 
 namespace Reporting.ReportServices;
@@ -63,7 +65,7 @@ public interface IReportService
 
     CommonReportingRequestModel GetMemoMsgReportingData(string reportName, string title, List<string> listMessage);
 
-    CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, long ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, int hokenKbn, ReseputoShubetsuModel selectedReseputoShubeusu, int departmentId, int doctorId, int printNoFrom, int printNoTo, bool includeTester, bool includeOutDrug, int sort);
+    CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, long ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, int hokenKbn, ReseputoShubetsuModel selectedReseputoShubeusu, int departmentId, int doctorId, int printNoFrom, int printNoTo, bool includeTester, bool includeOutDrug, int sort, List<long> printPtIds);
 
     CommonReportingRequestModel GetReceTargetPrint(int hpId, int seikyuYm);
 
