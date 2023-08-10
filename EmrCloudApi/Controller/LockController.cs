@@ -68,7 +68,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.CheckLock)]
         public ActionResult<Response<LockResponse>> CheckLock([FromBody] CheckLockRequest request)
         {
-            var input = new CheckLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
+            var input = new CheckLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, request.TabKey);
             var output = _bus.Handle(input);
 
             var presenter = new CheckLockPresenter();
@@ -164,7 +164,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.CheckLockVisiting)]
         public ActionResult<Response<CheckLockVisitingResponse>> CheckLockVisiting([FromQuery] CheckLockVisitingRequest request)
         {
-            var input = new CheckLockVisitingInputData(HpId, UserId, request.PtId, request.SinDate, request.FunctionCode, Token);
+            var input = new CheckLockVisitingInputData(HpId, UserId, request.PtId, request.SinDate, request.FunctionCode, request.TabKey);
             var output = _bus.Handle(input);
 
             var presenter = new CheckLockVisitingPresenter();
