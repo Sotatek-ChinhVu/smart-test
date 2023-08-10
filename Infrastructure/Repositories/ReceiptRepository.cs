@@ -1280,7 +1280,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                              && item.HokenId == hokenId)
                                                               .ToList();
 
-        int seqNo = 1;
+        int seqNo = receCmtUpdateDBList.Any() ? receCmtUpdateDBList.Max(item => item.SeqNo) + 1 : 1;
         foreach (var model in receCmtList)
         {
             var entity = receCmtUpdateDBList.FirstOrDefault(item => item.Id == model.Id);
