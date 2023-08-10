@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int sinDate, int sinYm, bool isIncludingUnConfirmed, long ptNumSearch, bool noFilter, bool isFilterMonthlyDelay, bool isFilterReturn, bool isFilterOnlineReturn)
+        public List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int sinDate, int sinYm, bool isIncludingUnConfirmed, long ptNumSearch, bool noFilter, bool isFilterMonthlyDelay, bool isFilterReturn, bool isFilterOnlineReturn, bool isGetDataPending)
         {
             var ptInfo = NoTrackingDataContext.PtInfs.Where(u => u.HpId == hpId &&
                                                                                 u.IsDelete == 0);
@@ -43,78 +43,151 @@ namespace Infrastructure.Repositories
                                           RecedenHenJiyuu = recedenHenjiyuu,
                                           PtHokenInfItem = item
                                       };
+            if (isGetDataPending)
+            {
+                var receSeikyuInf = from receSeikyu in listReceSeikyu
+                                    join ptHokenInf in ptHoken on
+                                      new { receSeikyu.PtId, receSeikyu.HokenId } equals
+                                      new { ptHokenInf.PtId, ptHokenInf.HokenId } into ptHokenList
+                                    join ptInf in ptInfo on receSeikyu.PtId equals ptInf.PtId
+                                    select new
+                                    {
+                                        PtInfo = ptInf,
+                                        ReceSeikyu = receSeikyu,
+                                        PtHokenInfItem = ptHokenList.FirstOrDefault()
+                                    };
+                var query = from receSeikyu in receSeikyuInf
+                            join recedenHenjiyuu in recedenHenjiyuuInfo on
+                            new { receSeikyu.ReceSeikyu.PtId, receSeikyu.ReceSeikyu.SinYm, HokenId = receSeikyu.ReceSeikyu.PreHokenId } equals
+                            new { recedenHenjiyuu.RecedenHenJiyuu.PtId, recedenHenjiyuu.RecedenHenJiyuu.SinYm, HokenId = recedenHenjiyuu.RecedenHenJiyuu.HokenId }
+                            into recedenHenjiyuuList
+                            select new
+                            {
+                                recedenHenjiyuuList = recedenHenjiyuuList,
+                                ReceSeikyuPending = receSeikyu,
+                            };
+                var result = query.AsEnumerable().Select(u => new ReceSeikyuModel(sinDate,
+                                                                              u.ReceSeikyuPending.PtInfo.HpId,
+                                                                              u.ReceSeikyuPending.PtInfo.PtId,
+                                                                              u.ReceSeikyuPending.PtInfo.Name ?? string.Empty,
+                                                                              sinYm,
+                                                                              u.ReceSeikyuPending.ReceSeikyu.SinYm,
+                                                                              u.ReceSeikyuPending.PtHokenInfItem.HokenId,
+                                                                              u.ReceSeikyuPending.PtHokenInfItem.HokensyaNo ?? string.Empty,
+                                                                              u.ReceSeikyuPending.ReceSeikyu.SeqNo,
+                                                                              u.ReceSeikyuPending.ReceSeikyu.SeikyuYm,
+                                                                              u.ReceSeikyuPending.ReceSeikyu.SeikyuKbn,
+                                                                              u.ReceSeikyuPending.ReceSeikyu.PreHokenId,
+                                                                              u.ReceSeikyuPending.ReceSeikyu.Cmt ?? string.Empty,
+                                                                              u.ReceSeikyuPending.PtInfo.PtNum,
+                                                                              u.ReceSeikyuPending.PtHokenInfItem.HokenKbn,
+                                                                              u.ReceSeikyuPending.PtHokenInfItem.Houbetu ?? string.Empty,
+                                                                              u.ReceSeikyuPending.PtHokenInfItem.StartDate,
+                                                                              u.ReceSeikyuPending.PtHokenInfItem.EndDate,
+                                                                              false,
+                                                                              u.ReceSeikyuPending.ReceSeikyu.SeikyuYm,
+                                                                              u.ReceSeikyuPending.ReceSeikyu.SinYm,
+                                                                              false,
+                                                                              DeleteTypes.None,
+                                                                              u.ReceSeikyuPending.ReceSeikyu.SeikyuYm != 999999,
+                                                                              u.recedenHenjiyuuList.Select(p => new RecedenHenJiyuuModel(p.RecedenHenJiyuu.HpId,
+                                                                              p.RecedenHenJiyuu.PtId,
+                                                                              p.RecedenHenJiyuu.HokenId,
+                                                                              p.RecedenHenJiyuu.SinYm,
+                                                                              p.RecedenHenJiyuu.SeqNo,
+                                                                              p.RecedenHenJiyuu.HenreiJiyuuCd ?? string.Empty,
+                                                                              p.RecedenHenJiyuu.HenreiJiyuu ?? string.Empty,
+                                                                              p.RecedenHenJiyuu.Hosoku ?? string.Empty,
+                                                                              p.RecedenHenJiyuu.IsDeleted,
+                                                                              p.PtHokenInfItem.HokenKbn,
+                                                                              p.PtHokenInfItem.Houbetu ?? string.Empty,
+                                                                              p.PtHokenInfItem.StartDate,
+                                                                              p.PtHokenInfItem.EndDate,
+                                                                              p.PtHokenInfItem.HokensyaNo ?? string.Empty)).ToList())
+                {
+                    OriginSeikyuYm = u.ReceSeikyuPending.ReceSeikyu.SeikyuYm,
+                    OriginSinYm = u.ReceSeikyuPending.ReceSeikyu.SinYm,
+                    IsChecked = u.ReceSeikyuPending.ReceSeikyu.SeikyuYm != 999999
+                }
+                ).OrderByDescending(u => u.SeikyuYm).ThenBy(u => u.SinYm).ThenBy(u => u.PtNum).ToList();
 
-            var receSeikyuInf = from receSeikyu in listReceSeikyu
-                                join ptHokenInf in ptHoken on
-                                  new { receSeikyu.PtId, receSeikyu.HokenId } equals
-                                  new { ptHokenInf.PtId, ptHokenInf.HokenId } into ptHokenList
-                                from item in ptHokenList.DefaultIfEmpty()
-                                join ptInf in ptInfo on receSeikyu.PtId equals ptInf.PtId
-                                where receSeikyu.IsDeleted == DeleteTypes.None
-                                      && !(!isIncludingUnConfirmed && receSeikyu.SeikyuYm == 999999)
-                                      && !(sinYm > 0 && receSeikyu.SeikyuYm != 999999 && receSeikyu.SeikyuYm != sinYm)
+                return result;
+            }
+            else
+            {
+                var receSeikyuInf = from receSeikyu in listReceSeikyu
+                                    join ptHokenInf in ptHoken on
+                                      new { receSeikyu.PtId, receSeikyu.HokenId } equals
+                                      new { ptHokenInf.PtId, ptHokenInf.HokenId } into ptHokenList
+                                    from item in ptHokenList.DefaultIfEmpty()
+                                    join ptInf in ptInfo on receSeikyu.PtId equals ptInf.PtId
+                                    where receSeikyu.IsDeleted == DeleteTypes.None
+                                          && !(!isIncludingUnConfirmed && receSeikyu.SeikyuYm == 999999)
+                                          && !(sinYm > 0 && receSeikyu.SeikyuYm != 999999 && receSeikyu.SeikyuYm != sinYm)
 
-                                      && (ptNumSearch == 0 || ptInf.PtNum == ptNumSearch)
-                                      && (noFilter ||
-                                            (isFilterMonthlyDelay && receSeikyu.SeikyuKbn == 1) ||
-                                            (isFilterReturn && receSeikyu.SeikyuKbn == 2) ||
-                                            (isFilterOnlineReturn && receSeikyu.SeikyuKbn == 3)
-                                          )
-                                select new
-                                {
-                                    PtInfo = ptInf,
-                                    ReceSeikyu = receSeikyu,
-                                    PtHokenInfItem = item ?? new PtHokenInf()
-                                };
+                                          && (ptNumSearch == 0 || ptInf.PtNum == ptNumSearch)
+                                          && (noFilter ||
+                                                (isFilterMonthlyDelay && receSeikyu.SeikyuKbn == 1) ||
+                                                (isFilterReturn && receSeikyu.SeikyuKbn == 2) ||
+                                                (isFilterOnlineReturn && receSeikyu.SeikyuKbn == 3)
+                                              )
+                                    select new
+                                    {
+                                        PtInfo = ptInf,
+                                        ReceSeikyu = receSeikyu,
+                                        PtHokenInfItem = item ?? new PtHokenInf()
+                                    };
 
-            var query = from receSeikyu in receSeikyuInf
-                        select new
-                        {
-                            recedenHenjiyuuList = recedenHenjiyuuInfo.Where(x => x.RecedenHenJiyuu.PtId == receSeikyu.ReceSeikyu.PtId
-                                                                                && x.RecedenHenJiyuu.SinYm == receSeikyu.ReceSeikyu.SinYm
-                                                                                && x.RecedenHenJiyuu.HokenId == receSeikyu.ReceSeikyu.HokenId).AsEnumerable(),
-                            ReceSeikyuPending = receSeikyu,
-                        };
+                var query = from receSeikyu in receSeikyuInf
+                            select new
+                            {
+                                recedenHenjiyuuList = recedenHenjiyuuInfo.Where(x => x.RecedenHenJiyuu.PtId == receSeikyu.ReceSeikyu.PtId
+                                                                                    && x.RecedenHenJiyuu.SinYm == receSeikyu.ReceSeikyu.SinYm
+                                                                                    && x.RecedenHenJiyuu.HokenId == receSeikyu.ReceSeikyu.HokenId).AsEnumerable(),
+                                ReceSeikyuPending = receSeikyu,
+                            };
 
-            return query.AsEnumerable().Select(x => new ReceSeikyuModel(sinDate,
-                                                          x.ReceSeikyuPending.PtInfo.HpId,
-                                                          x.ReceSeikyuPending.PtInfo.PtId,
-                                                          x.ReceSeikyuPending.PtInfo.Name ?? string.Empty,
-                                                          x.ReceSeikyuPending.ReceSeikyu.SinYm,
-                                                          sinYm,
-                                                          x.ReceSeikyuPending.PtHokenInfItem.HokenId,
-                                                          x.ReceSeikyuPending.PtHokenInfItem.HokensyaNo ?? string.Empty,
-                                                          x.ReceSeikyuPending.ReceSeikyu.SeqNo,
-                                                          x.ReceSeikyuPending.ReceSeikyu.SeikyuYm,
-                                                          x.ReceSeikyuPending.ReceSeikyu.SeikyuKbn,
-                                                          x.ReceSeikyuPending.ReceSeikyu.PreHokenId,
-                                                          x.ReceSeikyuPending.ReceSeikyu.Cmt ?? string.Empty,
-                                                          x.ReceSeikyuPending.PtInfo.PtNum,
-                                                          x.ReceSeikyuPending.PtHokenInfItem.HokenKbn,
-                                                          x.ReceSeikyuPending.PtHokenInfItem.Houbetu ?? string.Empty,
-                                                          x.ReceSeikyuPending.PtHokenInfItem.StartDate,
-                                                          x.ReceSeikyuPending.PtHokenInfItem.EndDate,
-                                                          false,
-                                                          x.ReceSeikyuPending.ReceSeikyu.SeikyuYm,
-                                                          x.ReceSeikyuPending.ReceSeikyu.SinYm,
-                                                          false,
-                                                          DeleteTypes.None,
-                                                          x.ReceSeikyuPending.ReceSeikyu.SeikyuYm != 999999,
-                                                          x.recedenHenjiyuuList.Select(m => new RecedenHenJiyuuModel(hpId,
-                                                                                                                    m.RecedenHenJiyuu?.PtId ?? 0,
-                                                                                                                    m.PtHokenInfItem?.HokenId ?? 0,
-                                                                                                                    sinYm,
-                                                                                                                    m.RecedenHenJiyuu?.SeqNo ?? 0,
-                                                                                                                    m.RecedenHenJiyuu?.HenreiJiyuuCd ?? string.Empty,
-                                                                                                                    m.RecedenHenJiyuu?.HenreiJiyuu ?? string.Empty,
-                                                                                                                    m.RecedenHenJiyuu?.Hosoku ?? string.Empty,
-                                                                                                                    0,
-                                                                                                                    m.PtHokenInfItem?.HokenKbn ?? 0,
-                                                                                                                    m.PtHokenInfItem?.Houbetu ?? string.Empty,
-                                                                                                                    m.PtHokenInfItem?.SikakuDate ?? 0,
-                                                                                                                    m.PtHokenInfItem?.EndDate ?? 0,
-                                                                                                                    m.PtHokenInfItem?.HokensyaNo ?? string.Empty)).ToList()
-                                                          )).OrderByDescending(o => o.SeikyuKbn).ThenBy(u => u.SinYm).ThenBy(i => i.PtNum).ToList();
+                return query.AsEnumerable().Select(x => new ReceSeikyuModel(sinDate,
+                                                              x.ReceSeikyuPending.PtInfo.HpId,
+                                                              x.ReceSeikyuPending.PtInfo.PtId,
+                                                              x.ReceSeikyuPending.PtInfo.Name ?? string.Empty,
+                                                              x.ReceSeikyuPending.ReceSeikyu.SinYm,
+                                                              sinYm,
+                                                              x.ReceSeikyuPending.PtHokenInfItem.HokenId,
+                                                              x.ReceSeikyuPending.PtHokenInfItem.HokensyaNo ?? string.Empty,
+                                                              x.ReceSeikyuPending.ReceSeikyu.SeqNo,
+                                                              x.ReceSeikyuPending.ReceSeikyu.SeikyuYm,
+                                                              x.ReceSeikyuPending.ReceSeikyu.SeikyuKbn,
+                                                              x.ReceSeikyuPending.ReceSeikyu.PreHokenId,
+                                                              x.ReceSeikyuPending.ReceSeikyu.Cmt ?? string.Empty,
+                                                              x.ReceSeikyuPending.PtInfo.PtNum,
+                                                              x.ReceSeikyuPending.PtHokenInfItem.HokenKbn,
+                                                              x.ReceSeikyuPending.PtHokenInfItem.Houbetu ?? string.Empty,
+                                                              x.ReceSeikyuPending.PtHokenInfItem.StartDate,
+                                                              x.ReceSeikyuPending.PtHokenInfItem.EndDate,
+                                                              false,
+                                                              x.ReceSeikyuPending.ReceSeikyu.SeikyuYm,
+                                                              x.ReceSeikyuPending.ReceSeikyu.SinYm,
+                                                              false,
+                                                              DeleteTypes.None,
+                                                              x.ReceSeikyuPending.ReceSeikyu.SeikyuYm != 999999,
+                                                              x.recedenHenjiyuuList.Select(m => new RecedenHenJiyuuModel(hpId,
+                                                                                                                        m.RecedenHenJiyuu?.PtId ?? 0,
+                                                                                                                        m.PtHokenInfItem?.HokenId ?? 0,
+                                                                                                                        sinYm,
+                                                                                                                        m.RecedenHenJiyuu?.SeqNo ?? 0,
+                                                                                                                        m.RecedenHenJiyuu?.HenreiJiyuuCd ?? string.Empty,
+                                                                                                                        m.RecedenHenJiyuu?.HenreiJiyuu ?? string.Empty,
+                                                                                                                        m.RecedenHenJiyuu?.Hosoku ?? string.Empty,
+                                                                                                                        0,
+                                                                                                                        m.PtHokenInfItem?.HokenKbn ?? 0,
+                                                                                                                        m.PtHokenInfItem?.Houbetu ?? string.Empty,
+                                                                                                                        m.PtHokenInfItem?.SikakuDate ?? 0,
+                                                                                                                        m.PtHokenInfItem?.EndDate ?? 0,
+                                                                                                                        m.PtHokenInfItem?.HokensyaNo ?? string.Empty)).ToList()
+                                                              )).OrderByDescending(o => o.SeikyuKbn).ThenBy(u => u.SinYm).ThenBy(i => i.PtNum).ToList();
+            }
+           
         }
 
         public List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int seikyuYm, List<long> ptIdList)

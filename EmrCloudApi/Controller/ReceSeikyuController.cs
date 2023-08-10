@@ -42,7 +42,9 @@ namespace EmrCloudApi.Controller
                                                        request.NoFilter,
                                                        request.IsFilterMonthlyDelay,
                                                        request.IsFilterReturn,
-                                                       request.IsFilterOnlineReturn);
+                                                       request.IsFilterOnlineReturn,
+                                                       request.IsGetDataPending
+                                                       );
             var output = _bus.Handle(input);
             var presenter = new GetListReceSeikyuPresenter();
             presenter.Complete(output);
