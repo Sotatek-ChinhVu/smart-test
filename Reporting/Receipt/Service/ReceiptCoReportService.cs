@@ -1,6 +1,10 @@
 ﻿using Domain.Constant;
+using Domain.Models.Accounting;
 using Domain.Models.SystemConf;
 using Helper.Common;
+using Helper.Constants;
+using Helper.Extension;
+using Helper.Messaging;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.Calculate.Constants;
@@ -53,8 +57,9 @@ namespace Reporting.Receipt.Service
         private readonly IEmrLogger _emrLogger;
         private readonly ITenantProvider _tenantProvider;
         private readonly IReadRseReportFileService _readRseReportFileService;
+        private readonly IAccountingRepository _accountingRepository;
 
-        public ReceiptCoReportService(ITenantProvider tenantProvider, ICoReceiptFinder coReceiptFinder, ISystemConfRepository systemConfRepository, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IReadRseReportFileService readRseReportFileService) : base(tenantProvider)
+        public ReceiptCoReportService(ITenantProvider tenantProvider, ICoReceiptFinder coReceiptFinder, ISystemConfRepository systemConfRepository, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IReadRseReportFileService readRseReportFileService, IAccountingRepository accountingRepository) : base(tenantProvider)
         {
             CoModelFinder = coReceiptFinder;
             _systemConfRepository = systemConfRepository;
@@ -62,6 +67,7 @@ namespace Reporting.Receipt.Service
             _emrLogger = emrLogger;
             _tenantProvider = tenantProvider;
             _readRseReportFileService = readRseReportFileService;
+            _accountingRepository = accountingRepository;
         }
 
         private List<ReceFutanReceFutanKbnModel> ReceFutanKbnModels = new();
@@ -117,35 +123,183 @@ namespace Reporting.Receipt.Service
 
         private List<ReceFutanReceFutanKbnModel> ReceFutanKbns { get; set; } = new();
 
-        public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, bool isNoCreatingReceData = false)
+        public CommonReportingRequestModel ShowRecePreviewAccounting(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            var receSeikyu = CoModelFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
+            var raiinInf = _accountingRepository.GetListRaiinInf(hpId, ptId, sinDate, raiinNo).FirstOrDefault();
 
-            var receFutanViewModel = new ReceFutanViewModel();
+            if (raiinInf == null)
+                return new();
 
-            if (receSeikyu == null)
+            var listKaikeiInf = raiinInf.KaikeiInfModels.Where(item =>
+            !item.HokenSbtCd.AsString().StartsWith("1") &&
+            !item.HokenSbtCd.AsString().StartsWith("5") &&
+            !item.ReceSbt.StartsWith("8")).ToList();
+
+            var kaikeiInfSbt = raiinInf.KaikeiInfModels.FirstOrDefault(item => item.HokenSbtCd.AsString().StartsWith("1"));
+            if (kaikeiInfSbt != null)
             {
-                SeikyuYm = sinYm;
+                listKaikeiInf.Add(kaikeiInfSbt);
             }
             else
             {
-                if (receSeikyu.SeikyuYm != 999999)
+                kaikeiInfSbt = raiinInf.KaikeiInfModels.FirstOrDefault(item => item.HokenSbtCd.AsString().StartsWith("5"));
+                if (kaikeiInfSbt != null)
                 {
+                    listKaikeiInf.Add(kaikeiInfSbt);
+                }
+            }
 
-                    SeikyuYm = receSeikyu.SeikyuYm;
+            var listHoken = CoModelFinder.GetListHokenSelect(hpId, listKaikeiInf, ptId);
+            if (listHoken == null || listHoken.Count <= 0)
+                return new();
+
+            if (listHoken.Count == 1)
+            {
+                return GetReceiptDataFromAccounting(hpId, ptId, sinDate, listHoken[0].HokenId);
+            }
+            else
+            {
+                var hokenSeleted = ListHokenSelect.FirstOrDefault(item => item.IsChecked);
+                if (hokenSeleted != null)
+                {
+                    var hoken = listHoken.FirstOrDefault(item => item.HokenId == hokenSeleted.HokenId);
+                    if (hoken != null)
+                    {
+                        hoken.IsChecked = true;
+                    }
+                    else
+                    {
+                        listHoken[0].IsChecked = true;
+                    }
                 }
                 else
                 {
-                    List<ReceFutanReceInfModel> ReceInfs = receFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
-                    List<ReceFutanReceFutanKbnModel> ReceFutanKbn = receFutanViewModel.ReceFutanKbns;
-                    var receInfCheck = ReceInfs.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
-
-                    if (receInfCheck != null)
+                    var hoken = listHoken.FirstOrDefault(item => item.HokenId == raiinInf.HokenId);
+                    if (hoken != null)
                     {
-                        SeikyuYm = sinYm;
-                        ReceFutanKbnModels = ReceFutanKbn;
+                        hoken.IsChecked = true;
+                    }
+                    else
+                    {
+                        listHoken[0].IsChecked = true;
                     }
                 }
+
+                ListHokenSelect = listHoken;
+                HokenSelectVisibility = Visibility.Visible;
+            }
+        }
+
+        public CommonReportingRequestModel GetReceiptDataFromAccounting(int hpId, long ptId, int sinDate, int hokenId, bool isIncludeOutDrug, bool isOpenedFromAccounting)
+        {
+            ReceFutanViewModel ReceFutanViewModel = new ReceFutanViewModel();
+            var sinYm = sinDate / 100;
+
+            ReceFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, sinYm);
+
+            var receSeikyu = CoModelFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
+            if (receSeikyu != null)
+            {
+                if (receSeikyu.SeikyuYm != 999999)
+                {
+                    var receInf = CoModelFinder.GetReceInf(hpId, ptId, hokenId, sinYm, receSeikyu.SeikyuYm);
+                    if (receInf == null)
+                    {
+                        ReceFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, receSeikyu.SeikyuYm);
+                    }
+
+                    Messenger.Default.Send(new ShowReceiptPreviewWindowMessage(PreviewOwner.Accounting, ptId, hokenId, sinYm, receSeikyu.SeikyuYm, IsIncludeOutDrug));
+                }
+                else
+                {
+                    List<Emr.Calculate.ReceFutan.Models.ReceInfModel> ReceInfModels = ReceFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
+                    List<Emr.Calculate.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbnModels = ReceFutanViewModel.ReceFutanKbns;
+                    var receInf = ReceInfModels.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
+                    if (receInf != null)
+                    {
+                        Messenger.Default.Send(new ShowReceiptPreviewWindowMessage(PreviewOwner.Accounting, ptId, hokenId, sinYm, sinYm, IsIncludeOutDrug)
+                        {
+                            ReceFutanKbnModels = ReceFutanKbnModels,
+                            ReceInf = receInf
+                        });
+                    }
+                }
+            }
+            else
+            {
+                Messenger.Default.Send(new ShowReceiptPreviewWindowMessage(PreviewOwner.Accounting, ptId, hokenId, sinYm, sinYm, IsIncludeOutDrug));
+            }
+
+            bool isNoCreatingReceData = true;
+
+            var listReceInf = CoModelFinder.GetReceInf(hpId, ptId);
+            // If ReceInf is not null
+            // It indecates that, we want to create in-memory rece data
+            if (listReceInf.Count <= 0 && ReceInf == null)
+            {
+                return new();
+            }
+
+            // In case in-memory rece data is going to be created
+            // ReceInf will not be NULL
+            if (ReceInf == null)
+            {
+                var receInf = listReceInf.FirstOrDefault(item => item.HpId == Session.HospitalID &&
+                item.SeikyuYm == SeikyuYm &&
+                item.PtId == ptId &&
+                item.SinYm == sinYm &&
+                (item.HokenId == hokenId || item.HOkenId2 == hokenId));
+
+                if (receInf == null) return new();
+
+                ReceInf = new ReceFutanReceInfModel(receInf.ReceInf);
+                isNoCreatingReceData = false;
+            }
+
+            return GetReceiptData(hpId, ); 
+
+        }
+
+        public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, bool isNoCreatingReceData = false, bool isOpenedFromAccounting)
+        {
+            //var receSeikyu = CoModelFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
+
+            //var receFutanViewModel = new ReceFutanViewModel();
+
+            //if (receSeikyu == null)
+            //{
+            //    SeikyuYm = sinYm;
+            //}
+            //else
+            //{
+            //    if (receSeikyu.SeikyuYm != 999999)
+            //    {
+
+            //        SeikyuYm = receSeikyu.SeikyuYm;
+            //    }
+            //    else
+            //    {
+            //        List<ReceFutanReceInfModel> ReceInfs = receFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
+            //        List<ReceFutanReceFutanKbnModel> ReceFutanKbn = receFutanViewModel.ReceFutanKbns;
+            //        var receInfCheck = ReceInfs.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
+
+            //        if (receInfCheck != null)
+            //        {
+            //            SeikyuYm = sinYm;
+            //            ReceFutanKbnModels = ReceFutanKbn;
+            //        }
+            //    }
+            //}
+
+            RecePreviewModel receInf = new RecePreviewModel(new ReceInf());
+
+            if (isOpenedFromAccounting)
+            {
+                receInf = new RecePreviewModel(ReceInf.ReceInf);
+            }
+            else
+            {
+                receInf = CoModelFinder.GetReceInf(hpId, ptId);
             }
 
             var receInf = CoModelFinder.GetReceInf(hpId, ptId, SeikyuYm, sinYm, hokenId);
@@ -211,7 +365,7 @@ namespace Reporting.Receipt.Service
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
                 _extralData.Add("totalPage", pageIndex.ToString());
-                return new ReceiptPreviewMapper(_setFieldData,_listTextData, _extralData, _fileName).GetData();
+                return new ReceiptPreviewMapper(_setFieldData, _listTextData, _extralData, _fileName).GetData();
             }
         }
 
