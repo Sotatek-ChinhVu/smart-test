@@ -11,7 +11,7 @@ public class SaveReceCmtListPresenter : ISaveReceCmtListOutputPort
 
     public void Complete(SaveReceCmtListOutputData outputData)
     {
-        Result.Data = new SaveReceCmtListResponse(outputData.Status == SaveReceCmtListStatus.Successed);
+        Result.Data = new SaveReceCmtListResponse(outputData.ReceCmtInvalidList, outputData.Status == SaveReceCmtListStatus.Successed);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }
