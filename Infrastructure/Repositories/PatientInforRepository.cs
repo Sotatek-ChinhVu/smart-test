@@ -91,7 +91,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo)
+        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo, bool isShowKyuSeiName = false)
         {
             var itemData = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
 
@@ -123,14 +123,33 @@ namespace Infrastructure.Repositories
             int firstDate = _receptionRepository.GetFirstVisitWithSyosin(hpId, ptId, sinDate);
             string comment = NoTrackingDataContext.PtCmtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)?.Text ?? string.Empty;
 
+            var name = itemData.Name ?? string.Empty;
+            var kanaName = itemData.KanaName ?? string.Empty;
+            bool isKyuSeiName = false;
+            if (isShowKyuSeiName)
+            {
+                var ptKyusei = NoTrackingDataContext.PtKyuseis.Where(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && item.EndDate >= sinDate
+                                                                            && item.IsDeleted != 1)
+                                                              .OrderBy(x => x.EndDate)
+                                                              .FirstOrDefault();
+                if (ptKyusei != null)
+                {
+                    name = ptKyusei.Name;
+                    kanaName = ptKyusei.KanaName;
+                    isKyuSeiName = true;
+                }
+            }
+
             return new PatientInforModel(
                 itemData.HpId,
                 itemData.PtId,
                 itemData.ReferenceNo,
                 itemData.SeqNo,
                 itemData.PtNum,
-                itemData.KanaName ?? string.Empty,
-                itemData.Name ?? string.Empty,
+                kanaName ?? string.Empty,
+                name ?? string.Empty,
                 itemData.Sex,
                 itemData.Birthday,
                 itemData.LimitConsFlg,
@@ -165,7 +184,8 @@ namespace Infrastructure.Repositories
                 lastVisitDate,
                 firstDate,
                 raiinCount,
-                comment);
+                comment,
+                isKyuSeiName);
         }
 
         public bool CheckExistIdList(List<long> ptIds)
@@ -2591,7 +2611,8 @@ namespace Infrastructure.Repositories
                                                                                   0,
                                                                                   0,
                                                                                   0,
-                                                                                  string.Empty)).ToList();
+                                                                                  string.Empty,
+                                                                                  false)).ToList();
         }
 
         public bool SavePtKyusei(int hpId, int userId, List<PtKyuseiModel> ptKyuseiList)

@@ -129,7 +129,7 @@ namespace EmrCloudApi.Controller
         [HttpGet("GetPatientById")]
         public ActionResult<Response<GetPatientInforByIdResponse>> GetPatientById([FromQuery] GetByIdRequest request)
         {
-            var input = new GetPatientInforByIdInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var input = new GetPatientInforByIdInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.IsShowKyuSeiName);
             var output = _bus.Handle(input);
 
             var present = new GetPatientInforByIdPresenter();
