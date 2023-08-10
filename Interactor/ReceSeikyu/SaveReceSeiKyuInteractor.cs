@@ -75,11 +75,6 @@ namespace Interactor.ReceSeikyu
             {
                 List<ReceInfo> receInfos = new List<ReceInfo>();
 
-                foreach (var item in inputData.ReceSeiKyus)
-                {
-                    item.OriginSeikyuYm = 999999;
-                }
-
                 if (inputData.HpId <= 0)
                     return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidHpId);
 
@@ -91,7 +86,7 @@ namespace Interactor.ReceSeikyu
                     if (modifiedReceSeikyu.IsAddNew && modifiedReceSeikyu.IsDeleted == 1) continue;
                     if (modifiedReceSeikyu.IsAddNew)
                     {
-                        receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SeikyuYm));
+                        receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SinYm));
 
                         if (modifiedReceSeikyu.IsChecked)
                         {
