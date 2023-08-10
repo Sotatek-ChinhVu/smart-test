@@ -62,6 +62,7 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
                     listFile.Add(new KarteFileOutputItem(file.IsSchema, fileLink.ToString()));
                 }
             }
+            var isKarteExisted = !string.IsNullOrEmpty(karteInfModel.FirstOrDefault()?.Text) || listFile.Any();
 
             return new GetListKarteInfOutputData(karteInfModel.Select(k =>
                                                         new GetListKarteInfOuputItem(
@@ -76,6 +77,7 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
                                                             k.RichText
                                                         )).ToList(),
                                                         listFile,
+                                                        isKarteExisted,
                                                         GetListKarteInfStatus.Successed);
         }
         finally
