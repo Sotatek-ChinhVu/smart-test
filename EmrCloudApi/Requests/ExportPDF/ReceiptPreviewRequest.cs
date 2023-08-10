@@ -1,4 +1,6 @@
-﻿namespace EmrCloudApi.Requests.ExportPDF;
+﻿using System.Security.Principal;
+
+namespace EmrCloudApi.Requests.ExportPDF;
 
 public class ReceiptPreviewRequest : ReportRequestBase
 {
@@ -6,11 +8,15 @@ public class ReceiptPreviewRequest : ReportRequestBase
 
     public int SinYm { get; set; }
 
+    public int SeiKyuYm { get; set; }
+
     public int HokenId { get; set; }
+
+    public int HokenKbn { get; set; }
 
     public int SinDate { get; set; }
 
     public long RaiinNo { get; set; }
 
-    public bool isOpenedFromAccounting { get; set; } = true;
+    public bool isOpenedFromAccounting { get; set; } = false;
 }

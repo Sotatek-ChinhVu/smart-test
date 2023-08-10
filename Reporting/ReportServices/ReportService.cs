@@ -460,7 +460,7 @@ public class ReportService : IReportService
     }
 
     //Receipt Preview
-    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, int sinDate, long raiinNo, bool isOpenedFromAccounting)
+    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, int sinDate, long raiinNo,int seikyuYm, int hokenKbn, bool isOpenedFromAccounting)
     {
         if (isOpenedFromAccounting)
         {
@@ -468,7 +468,7 @@ public class ReportService : IReportService
         }
         else
         {
-            return _receiptCoReportService.GetReceiptData(hpId, ptId, sinYm, hokenId, false, false);
+            return _receiptCoReportService.GetReceiptDataFromReceCheck(hpId, ptId, sinYm, seikyuYm,hokenId, hokenKbn);
         }
     }
 
