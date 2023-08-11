@@ -45,7 +45,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
             var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.FindListQueryableNoTrack(
                 p => p.IsDeleted == 0
             );
-            var ptKohis = NoTrackingDataContext.PtHokenInfs.FindListQueryableNoTrack(
+            var ptKohis = NoTrackingDataContext.PtKohis.FindListQueryableNoTrack(
                 p => p.IsDeleted == 0
             );
             var ptInfs = NoTrackingDataContext.PtInfs.FindListQueryableNoTrack(
@@ -156,6 +156,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                         (kohiHokenNos.Contains(r.ptKohi3.HokenNo) && r.receInf.Kohi3Futan10en >= lowKohiFutan10en && r.receInf.Kohi3Futan >= lowKohiFutan && r.receInf.Kohi3IchibuSotogaku + r.receInf.Kohi3Futan >= lowIchibuFutan && r.receInf.Kohi3ReceKisai == 0) ||
                         (kohiHokenNos.Contains(r.ptKohi4.HokenNo) && r.receInf.Kohi4Futan10en >= lowKohiFutan10en && r.receInf.Kohi4Futan >= lowKohiFutan && r.receInf.Kohi4IchibuSotogaku + r.receInf.Kohi4Futan >= lowIchibuFutan && r.receInf.Kohi4ReceKisai == 0)
                     );
+                    
                 }
                 //法別番号指定
                 if (kohiHoubetus?.Count >= 1)
