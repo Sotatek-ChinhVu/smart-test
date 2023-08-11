@@ -297,6 +297,7 @@
         public const string GetListRaiinInf = "GetListRaiinInf";
         public const string CheckExisReceInfEdit = "CheckExisReceInfEdit";
         public const string GetListSokatuMst = "GetListSokatuMst";
+        public const string CheckExistSyobyoKeika = "CheckExistSyobyoKeika";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
