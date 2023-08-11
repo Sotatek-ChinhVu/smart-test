@@ -23,25 +23,38 @@ namespace Interactor.Lock
                 int userId = inputData.UserId;
                 string tabKey = inputData.TabKey;
 
-                List<long> result;
+                List<long> raiinNoList;
                 if (inputData.IsRemoveAllLock)
                 {
-                    result = _lockRepository.RemoveAllLock(hpId, userId);
+                    raiinNoList = _lockRepository.RemoveAllLock(hpId, userId);
                     raiinNo = 0;
                 }
                 else if (inputData.IsRemoveAllLockPtId)
                 {
-                    result = _lockRepository.RemoveAllLock(hpId, userId, ptId, sinDate, functionCode, tabKey);
+                    raiinNoList = _lockRepository.RemoveAllLock(hpId, userId, ptId, sinDate, functionCode, tabKey);
+                    raiinNo = 0;
+                }
+                else if (inputData.IsRemoveLockWhenLogOut)
+                {
+                    raiinNoList = _lockRepository.RemoveAllLock(hpId, userId, inputData.LoginKey);
                     raiinNo = 0;
                 }
                 else
                 {
-                    result = _lockRepository.RemoveLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, tabKey);
+                    raiinNoList = _lockRepository.RemoveLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, tabKey);
                     raiinNo = 0;
                 }
-                if (result.Any())
+                if (raiinNoList.Any())
                 {
-                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate, raiinNo);
+                    List<ResponseLockModel> responseLockList;
+                    if (inputData.IsRemoveLockWhenLogOut)
+                    {
+                        responseLockList = _lockRepository.GetResponseLockModel(hpId, raiinNoList);
+                    }
+                    else
+                    {
+                        responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate, raiinNo);
+                    }
                     return new RemoveLockOutputData(RemoveLockStatus.Successed, responseLockList);
                 }
                 return new RemoveLockOutputData(RemoveLockStatus.Failed, new());
