@@ -1,11 +1,9 @@
-﻿using Domain.Models.AccountDue;
-using Reporting.Accounting.Model;
+﻿using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.AccountingCardList.Model;
 using Reporting.CommonMasters.Enums;
 using Reporting.DrugInfo.Model;
 using Reporting.GrowthCurve.Model;
-using Reporting.Karte1.Mapper;
 using Reporting.KensaLabel.Model;
 using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
@@ -13,6 +11,7 @@ using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
 using Reporting.Structs;
 using System.Collections.Generic;
+using Reporting.ReceiptPrint.Service;
 
 namespace Reporting.ReportServices;
 
@@ -66,7 +65,7 @@ public interface IReportService
 
     CommonReportingRequestModel GetMemoMsgReportingData(string reportName, string title, List<string> listMessage);
 
-    CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, List<long> printPtIds);
+    CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, long ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, int hokenKbn, ReseputoShubetsuModel selectedReseputoShubeusu, int departmentId, int doctorId, int printNoFrom, int printNoTo, bool includeTester, bool includeOutDrug, int sort, List<long> printPtIds);
 
     CommonReportingRequestModel GetReceTargetPrint(int hpId, int seikyuYm);
 
