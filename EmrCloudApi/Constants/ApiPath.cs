@@ -337,6 +337,7 @@
         public const string SaveReceSeikyu = "SaveReceSeikyu";
         public const string CancelSeikyu = "CancelSeikyu";
         public const string ImportFileReceSeikyu = "ImportFileReceSeikyu";
+        public const string GetReceSeikyModelByPtNum = "GetReceSeikyModelByPtNum";
 
         //WeightedSetConfirmation
         public const string IsOpenWeightChecking = "IsOpenWeightChecking";

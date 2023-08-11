@@ -17,6 +17,7 @@ using UseCase.ReceSeikyu.ImportFile;
 using UseCase.ReceSeikyu.CancelSeikyu;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Linq.Dynamic.Core.Tokenizer;
+using UseCase.ReceSeikyu.GetReceSeikyModelByPtNum;
 
 namespace EmrCloudApi.Controller
 {
@@ -42,7 +43,9 @@ namespace EmrCloudApi.Controller
                                                        request.NoFilter,
                                                        request.IsFilterMonthlyDelay,
                                                        request.IsFilterReturn,
-                                                       request.IsFilterOnlineReturn);
+                                                       request.IsFilterOnlineReturn,
+                                                       request.IsGetDataPending
+                                                       );
             var output = _bus.Handle(input);
             var presenter = new GetListReceSeikyuPresenter();
             presenter.Complete(output);
@@ -135,6 +138,20 @@ namespace EmrCloudApi.Controller
             var presenter = new ImportFileReceSeikyuPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<ImportFileReceSeikyuResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetReceSeikyModelByPtNum)]
+        public ActionResult<Response<GetReceSeikyModelByPtNumResponse>> GetReceSeikyModelByPtNum([FromQuery] GetReceSeikyModelByPtNumRequest request)
+        {
+            var input = new GetReceSeikyModelByPtNumInputData(HpId,
+                                                       request.SinDate,
+                                                       request.SinYm,
+                                                       request.PtNum
+                                                       );
+            var output = _bus.Handle(input);
+            var presenter = new GetReceSeikyModelByPtNumPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetReceSeikyModelByPtNumResponse>>(presenter.Result);
         }
 
         private void StopCalculation(RecalculateInSeikyuPendingStop stopCalcStatus)
