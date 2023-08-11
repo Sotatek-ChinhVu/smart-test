@@ -86,17 +86,17 @@ public class P17WelfareSeikyuCoReportService : IP17WelfareSeikyuCoReportService
         this.hpId = hpId;
         this.seikyuYm = seikyuYm;
         this.seikyuType = seikyuType;
-
         var getData = GetData();
-
-
         currentPage = 1;
         hasNextPage = true;
 
-        while (getData && hasNextPage)
+        if (getData)
         {
-            UpdateDrawForm();
-            currentPage++;
+            while (getData && hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
