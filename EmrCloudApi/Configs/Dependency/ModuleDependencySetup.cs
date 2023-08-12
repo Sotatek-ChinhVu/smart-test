@@ -933,6 +933,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP11KokhoSeikyuCoReportService, P11KokhoSeikyuCoReportService>();
 
             services.AddTransient<IP35WelfareSokatuCoReportService, P35WelfareSokatuCoReportService>();
+            services.AddTransient<IP25WelfareSeikyuCoReportService, P25WelfareSeikyuCoReportService>();
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
