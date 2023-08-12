@@ -67,10 +67,13 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             currentPage = 1;
             hasNextPage = true;
 
-            while (getData && hasNextPage)
+            if (getData)
             {
-                UpdateDrawForm();
-                currentPage++;
+                while (getData && hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
             }
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();

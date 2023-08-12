@@ -93,6 +93,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
             currentPage = 1;
             hasNextPage = true;
+
             if (getData)
             {
                 while (getData && hasNextPage)

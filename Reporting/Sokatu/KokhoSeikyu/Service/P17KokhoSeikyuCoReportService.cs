@@ -71,25 +71,28 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             int indexPage = 1;
             var fileName = new Dictionary<string, string>();
 
-            foreach (string currentNo in hokensyaNos)
+            if (getData)
             {
-                currentPage = 1;
-                currentHokensyaNo = currentNo;
-                hasNextPage = true;
-                while (getData && hasNextPage)
+                foreach (string currentNo in hokensyaNos)
                 {
-                    UpdateDrawForm();
-                    if (currentPage >= 2)
+                    currentPage = 1;
+                    currentHokensyaNo = currentNo;
+                    hasNextPage = true;
+                    while (getData && hasNextPage)
                     {
-                        fileName.Add(indexPage.ToString(), _formFileNameP2);
-                    }
-                    else
-                    {
-                        fileName.Add(indexPage.ToString(), _formFileNameP1);
-                    }
-                    currentPage++;
+                        UpdateDrawForm();
+                        if (currentPage >= 2)
+                        {
+                            fileName.Add(indexPage.ToString(), _formFileNameP2);
+                        }
+                        else
+                        {
+                            fileName.Add(indexPage.ToString(), _formFileNameP1);
+                        }
+                        currentPage++;
 
-                    indexPage++;
+                        indexPage++;
+                    }
                 }
             }
 
@@ -152,7 +155,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 List<ListTextObject> listDataPerPage = new();
 
-                if (pageIndex % 2 != 0) 
+                if (pageIndex % 2 != 0)
                 {
                     var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
 
@@ -229,10 +232,10 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                     }
                     _hasNextPage = !curReceInfs.FirstOrDefault().IsPrefIn;
                 }
-                
+
                 _listTextData.Add(pageIndex, listDataPerPage);
                 //県外保険者は2ページ目も印刷する
-                
+
 
                 return 1;
             }
