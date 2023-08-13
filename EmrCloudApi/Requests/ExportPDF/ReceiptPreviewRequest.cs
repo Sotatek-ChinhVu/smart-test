@@ -1,6 +1,4 @@
-﻿using System.Security.Principal;
-
-namespace EmrCloudApi.Requests.ExportPDF;
+﻿namespace EmrCloudApi.Requests.ExportPDF;
 
 public class ReceiptPreviewRequest : ReportRequestBase
 {
@@ -14,7 +12,9 @@ public class ReceiptPreviewRequest : ReportRequestBase
 
     public int HokenKbn { get; set; }
 
-    public bool IsIncludeOutDrug { get; set; }
+    public bool IsIncludeOutDrug { get; set; } = false;
+
+    public bool IsModePrint { get; set; } = false;
 
     public bool isOpenedFromAccounting { get; set; } = false;
 }

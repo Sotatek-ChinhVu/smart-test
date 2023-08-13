@@ -83,10 +83,11 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
     private string ReceSbt;
     private int PrintNoFrom;
     private int PrintNoTo;
+    private bool IsModePrint = false;
 
     private int PaperKbn;
     private bool IncludeTester;
-    private bool IncludeOutDrug;
+    private bool IncludeOutDrug = false;
     private bool IsPtTest;
     private int Sort;
     private int CurrentPage;
@@ -121,10 +122,8 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
 
     private List<ReceFutanReceFutanKbnModel> ReceFutanKbns { get; set; } = new();
 
-    public CommonReportingRequestModel GetReceiptDataFromAccounting(int hpId, long ptId, int sinYm, int hokenId, bool isIncludeOutDrug = false)
+    public CommonReportingRequestModel GetReceiptDataFromAccounting(int hpId, long ptId, int sinYm, int hokenId, bool isIncludeOutDrug, bool isModePrint)
     {
-        IncludeOutDrug = isIncludeOutDrug;
-
         ReceFutanViewModel receFutanViewModel = new ReceFutanViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
 
         receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, sinYm);
@@ -192,17 +191,20 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
         }
 
         var recePreview = new RecePreviewModel(ReceInf.ReceInf);
-        return GetReceiptData(hpId, recePreview.PtId, recePreview.SinYm, recePreview.SeikyuYm, recePreview.HokenId, recePreview.HokenKbn, isNoCreatingReceData);
+        return GetReceiptData(hpId, recePreview.PtId, recePreview.SinYm, recePreview.SeikyuYm, recePreview.HokenId, recePreview.HokenKbn, isNoCreatingReceData, isIncludeOutDrug, isModePrint);
 
     }
 
-    public CommonReportingRequestModel GetReceiptDataFromReceCheck(int hpId, long ptId, int sinYm, int seikyuYm, int hokenId, int hokenKbn)
+    public CommonReportingRequestModel GetReceiptDataFromReceCheck(int hpId, long ptId, int sinYm, int seikyuYm, int hokenId, int hokenKbn, bool isIncludeOutDrug, bool isModePrint)
     {
-        return GetReceiptData(hpId, ptId, sinYm, seikyuYm, hokenId, hokenKbn, false);
+        return GetReceiptData(hpId, ptId, sinYm, seikyuYm, hokenId, hokenKbn, false, isIncludeOutDrug, isModePrint);
     }
 
-    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int seikyuYm, int hokenId, int hokenKbn, bool isNoCreatingReceData)
+    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int seikyuYm, int hokenId, int hokenKbn, bool isNoCreatingReceData, bool isIncludeOutDrug, bool isModePrint)
     {
+        IsModePrint = isModePrint;
+        IncludeOutDrug = isIncludeOutDrug;
+
         // TODO message or something process here
         var target = -1;
         switch (hokenKbn)
@@ -518,43 +520,43 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
                         // 1ページ目
                         if ((int)_systemConfRepository.GetSettingValue(94002, 0, HpId) == 1)
                         {
-                            // 2019/05 元号対応様式変更
-                            //if (OutputMode == CoOutputMode.Print && Preview == false)
-                            //{
-                            //    // 紙出力
-                            //    ret = string.Format(RECEIPT_ROSAI_TANKI_201905_FORM_FILE_NAME, 1);
-                            //}
-                            //else
-                            //{
-                            // プレビュー
-                            ret = RECEIPT_ROSAI_TANKI_201905_OVERLAY_FORM_FILE_NAME;
-                            //}
+                            //2019 / 05 元号対応様式変更
+                            if (IsModePrint)
+                            {
+                                // 紙出力
+                                ret = string.Format(RECEIPT_ROSAI_TANKI_201905_FORM_FILE_NAME, 1);
+                            }
+                            else
+                            {
+                                //プレビュー
+                                ret = RECEIPT_ROSAI_TANKI_201905_OVERLAY_FORM_FILE_NAME;
+                            }
                         }
                         else
                         {
-                            //if (OutputMode == CoOutputMode.Print && Preview == false)
-                            //{
-                            //    // 紙出力
-                            //    ret = string.Format(RECEIPT_ROSAI_TANKI_FORM_FILE_NAME, 1);
-                            //}
-                            //else
-                            //{
-                            // プレビュー
-                            ret = RECEIPT_ROSAI_TANKI_OVERLAY_FORM_FILE_NAME;
-                            //}
+                            if (IsModePrint)
+                            {
+                                // 紙出力
+                                ret = string.Format(RECEIPT_ROSAI_TANKI_FORM_FILE_NAME, 1);
+                            }
+                            else
+                            {
+                                //プレビュー
+                                ret = RECEIPT_ROSAI_TANKI_OVERLAY_FORM_FILE_NAME;
+                            }
                         }
                     }
                     else
                     {
-                        // 2ページ目以降
-                        //if (OutputMode == CoOutputMode.Print && Preview == false)
-                        //{
-                        //    ret = RECEIPT_ROSAI_PAGE2_FORM_FILE_NAME;
-                        //}
-                        //else
-                        //{
-                        ret = RECEIPT_ROSAI_PAGE2_OVERLAY_FORM_FILE_NAME;
-                        //}
+                        //2ページ目以降
+                        if (IsModePrint)
+                        {
+                            ret = RECEIPT_ROSAI_PAGE2_FORM_FILE_NAME;
+                        }
+                        else
+                        {
+                            ret = RECEIPT_ROSAI_PAGE2_OVERLAY_FORM_FILE_NAME;
+                        }
                     }
                     break;
                 case TargetConst.RousaiNenkin:
@@ -564,30 +566,30 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
                         // 1ページ目
 
                         // 2019/05 以前
-                        //if (OutputMode == CoOutputMode.Print && Preview == false)
-                        //{
-                        //    // 紙出力
-                        //    ret = string.Format(Paths.RECEIPT_ROSAI_NENKIN_FORM_FILE_NAME, 1);
-                        //}
-                        //else
-                        //{
-                        // プレビュー
-                        ret = RECEIPT_ROSAI_NENKIN_OVERLAY_FORM_FILE_NAME;
-                        //}
+                        if (IsModePrint)
+                        {
+                            // 紙出力
+                            ret = string.Format(RECEIPT_ROSAI_NENKIN_FORM_FILE_NAME, 1);
+                        }
+                        else
+                        {
+                            // プレビュー
+                            ret = RECEIPT_ROSAI_NENKIN_OVERLAY_FORM_FILE_NAME;
+                        }
                     }
                     else
                     {
                         // 2ページ目以降
-                        //if (OutputMode == CoOutputMode.Print && Preview == false)
-                        //{
-                        //    // 紙出力
-                        //    ret = Paths.RECEIPT_ROSAI_PAGE2_FORM_FILE_NAME;
-                        //}
-                        //else
-                        //{
-                        // プレビュー
-                        ret = RECEIPT_ROSAI_PAGE2_OVERLAY_FORM_FILE_NAME;
-                        //}
+                        if (IsModePrint)
+                        {
+                            // 紙出力
+                            ret = RECEIPT_ROSAI_PAGE2_FORM_FILE_NAME;
+                        }
+                        else
+                        {
+                            // プレビュー
+                            ret = RECEIPT_ROSAI_PAGE2_OVERLAY_FORM_FILE_NAME;
+                        }
                     }
                     break;
                 case TargetConst.RousaiAfter:
@@ -595,46 +597,46 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
                     if (page <= 1)
                     {
                         // 1ページ目
-                        //if (OutputMode == CoOutputMode.Print && Preview == false)
-                        //{
-                        //    // 紙出力
-                        //    ret = Paths.RECEIPT_ROSAI_AFTER_FORM_FILE_NAME;
-                        //}
-                        //else
-                        //{
-                        // プレビュー
-                        ret = RECEIPT_ROSAI_AFTER_OVERLAY_FORM_FILE_NAME;
-                        // }
+                        if (IsModePrint)
+                        {
+                            // 紙出力
+                            ret = RECEIPT_ROSAI_AFTER_FORM_FILE_NAME;
+                        }
+                        else
+                        {
+                            // プレビュー
+                            ret = RECEIPT_ROSAI_AFTER_OVERLAY_FORM_FILE_NAME;
+                        }
                     }
                     else
                     {
                         // 2ページ目以降
-                        //if (OutputMode == CoOutputMode.Print && Preview == false)
-                        //{
-                        //    // 紙出力
-                        //    ret = Paths.RECEIPT_ROSAI_AFTER_PAGE2_FORM_FILE_NAME;
-                        //}
-                        //else
-                        //{
-                        // プレビュー
-                        ret = RECEIPT_ROSAI_AFTER_PAGE2_OVERLAY_FORM_FILE_NAME;
-                        //}
+                        if (IsModePrint)
+                        {
+                            // 紙出力
+                            ret = RECEIPT_ROSAI_AFTER_PAGE2_FORM_FILE_NAME;
+                        }
+                        else
+                        {
+                            // プレビュー
+                            ret = RECEIPT_ROSAI_AFTER_PAGE2_OVERLAY_FORM_FILE_NAME;
+                        }
                     }
                     break;
                 case TargetConst.Jibai:
                     // 自賠
                     if (page <= 1)
                     {
-                        //if (SystemConfig.Instance.JibaiJunkyo == 0)
-                        //{
-                        //    // 健保準拠
-                        //    ret = Paths.RECEIPT_JIBAI_KENPO_FORM_FILE_NAME;
-                        //}
-                        //else
-                        //{
-                        // 労災準拠
-                        ret = RECEIPT_JIBAI_ROSAI_FORM_FILE_NAME;
-                        // }
+                        if (_systemConfRepository.GetSettingValue(3001, 0, HpId) == 0)
+                        {
+                            // 健保準拠
+                            ret = RECEIPT_JIBAI_KENPO_FORM_FILE_NAME;
+                        }
+                        else
+                        {
+                            // 労災準拠
+                            ret = RECEIPT_JIBAI_ROSAI_FORM_FILE_NAME;
+                        }
                     }
                     else
                     {
