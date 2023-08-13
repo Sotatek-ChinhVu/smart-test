@@ -9,8 +9,6 @@ using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
 using Reporting.OutDrug.Model.Output;
 using Reporting.ReceiptList.Model;
-using Reporting.Structs;
-using System.Collections.Generic;
 using Reporting.ReceiptPrint.Service;
 
 namespace Reporting.ReportServices;
@@ -55,7 +53,7 @@ public interface IReportService
 
     CommonReportingRequestModel GetStatisticReportingData(int hpId, string formName, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0);
 
-    CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, int sinDate, long raiinNo, int seikyuYm, int hokenKbn, bool isOpenedFromAccounting);
+    CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, int seikyuYm, int hokenKbn, bool IsIncludeOutDrug, bool isOpenedFromAccounting);
 
     CommonReportingRequestModel GetPatientManagement(int hpId, int menuId);
 

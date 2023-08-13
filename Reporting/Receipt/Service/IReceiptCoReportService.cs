@@ -5,7 +5,7 @@ namespace Reporting.Receipt.Service
 {
     public interface IReceiptCoReportService
     {
-        CommonReportingRequestModel ShowRecePreviewAccounting(int hpId, long ptId, int sinDate, long raiinNo, int hokenId, bool isIncludeOutDrug = false);
+        CommonReportingRequestModel GetReceiptDataFromAccounting(int hpId, long ptId, int sinDate, int hokenId, bool isIncludeOutDrug);
 
         CommonReportingRequestModel GetReceiptDataFromReceCheck(int hpId, long ptId, int sinYm, int seikyuYm, int hokenId, int hokenKbn);
 

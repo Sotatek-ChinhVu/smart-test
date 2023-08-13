@@ -37,7 +37,6 @@ using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
-using System.Collections.Generic;
 
 namespace Reporting.ReportServices;
 
@@ -461,15 +460,15 @@ public class ReportService : IReportService
     }
 
     //Receipt Preview
-    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, int sinDate, long raiinNo,int seikyuYm, int hokenKbn, bool isOpenedFromAccounting)
+    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, int seikyuYm, int hokenKbn, bool isIncludeOutDrug, bool isOpenedFromAccounting)
     {
         if (isOpenedFromAccounting)
         {
-            return _receiptCoReportService.ShowRecePreviewAccounting(hpId, ptId, sinDate, raiinNo, hokenId);
+            return _receiptCoReportService.GetReceiptDataFromAccounting(hpId, ptId, sinYm, hokenId, isIncludeOutDrug);
         }
         else
         {
-            return _receiptCoReportService.GetReceiptDataFromReceCheck(hpId, ptId, sinYm, seikyuYm,hokenId, hokenKbn);
+            return _receiptCoReportService.GetReceiptDataFromReceCheck(hpId, ptId, sinYm, seikyuYm, hokenId, hokenKbn);
         }
     }
 

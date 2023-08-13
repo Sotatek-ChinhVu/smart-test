@@ -28,5 +28,7 @@ namespace Domain.Models.Accounting
         bool CheckSyunoStatus(int hpId, long raiinNo, long ptId);
         ReceptionDto GetRaiinInfModel(int hpId, long ptId, int sinDate, long raiinNo, List<KaikeiInfModel> kaikeis);
         List<HokenPatternModel> FindPtHokenPatternList(int hpId, long ptId, int sinDay, bool isGetDeleted = false);
+
+        List<HokenInfModel> GetListHokenSelect(int hpId, List<KaikeiInfModel> listKaikeiInf, long ptId);
     }
 }

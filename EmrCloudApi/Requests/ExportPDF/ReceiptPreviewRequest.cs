@@ -14,9 +14,7 @@ public class ReceiptPreviewRequest : ReportRequestBase
 
     public int HokenKbn { get; set; }
 
-    public int SinDate { get; set; }
-
-    public long RaiinNo { get; set; }
+    public bool IsIncludeOutDrug { get; set; }
 
     public bool isOpenedFromAccounting { get; set; } = false;
 }

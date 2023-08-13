@@ -70,8 +70,6 @@ namespace Reporting.Receipt.DB
 
         ReceSeikyu? GetReceSeikyu(int hpId, long ptId, int hokenId, int sinYm);
 
-        List<HokenSelectModel> GetListHokenSelect(int hpId, List<KaikeiInfModel> listKaikeiInf, long ptId);
-
         List<RecePreviewModel> GetReceInf(int hpId, long ptId);
     }
 }

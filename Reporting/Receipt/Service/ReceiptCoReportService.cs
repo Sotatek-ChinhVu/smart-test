@@ -3,7 +3,6 @@ using Domain.Models.Accounting;
 using Domain.Models.SystemConf;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.Calculate.Constants;
@@ -122,81 +121,11 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
 
     private List<ReceFutanReceFutanKbnModel> ReceFutanKbns { get; set; } = new();
 
-    public CommonReportingRequestModel ShowRecePreviewAccounting(int hpId, long ptId, int sinDate, long raiinNo, int hokenId, bool isIncludeOutDrug = false)
+    public CommonReportingRequestModel GetReceiptDataFromAccounting(int hpId, long ptId, int sinYm, int hokenId, bool isIncludeOutDrug = false)
     {
         IncludeOutDrug = isIncludeOutDrug;
 
-        var raiinInf = _accountingRepository.GetListRaiinInf(hpId, ptId, sinDate, raiinNo).FirstOrDefault();
-
-        if (raiinInf == null)
-            return new();
-
-        var listKaikeiInf = raiinInf.KaikeiInfModels.Where(item =>
-        !item.HokenSbtCd.AsString().StartsWith("1") &&
-        !item.HokenSbtCd.AsString().StartsWith("5") &&
-        !item.ReceSbt.StartsWith("8")).ToList();
-
-        var kaikeiInfSbt = raiinInf.KaikeiInfModels.FirstOrDefault(item => item.HokenSbtCd.AsString().StartsWith("1"));
-        if (kaikeiInfSbt != null)
-        {
-            listKaikeiInf.Add(kaikeiInfSbt);
-        }
-        else
-        {
-            kaikeiInfSbt = raiinInf.KaikeiInfModels.FirstOrDefault(item => item.HokenSbtCd.AsString().StartsWith("5"));
-            if (kaikeiInfSbt != null)
-            {
-                listKaikeiInf.Add(kaikeiInfSbt);
-            }
-        }
-
-        var listHoken = CoModelFinder.GetListHokenSelect(hpId, listKaikeiInf, ptId);
-        if (listHoken == null || listHoken.Count <= 0)
-            return new();
-
-        if (listHoken.Count == 1)
-        {
-            return GetReceiptDataFromAccounting(hpId, ptId, sinDate, listHoken[0].HokenId);
-        }
-        //else
-        //{
-        //    var hokenSeleted = ListHokenSelect.FirstOrDefault(item => item.IsChecked);
-        //    if (hokenSeleted != null)
-        //    {
-        //        var hoken = listHoken.FirstOrDefault(item => item.HokenId == hokenSeleted.HokenId);
-        //        if (hoken != null)
-        //        {
-        //            hoken.IsChecked = true;
-        //        }
-        //        else
-        //        {
-        //            listHoken[0].IsChecked = true;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        var hoken = listHoken.FirstOrDefault(item => item.HokenId == raiinInf.HokenId);
-        //        if (hoken != null)
-        //        {
-        //            hoken.IsChecked = true;
-        //        }
-        //        else
-        //        {
-        //            listHoken[0].IsChecked = true;
-        //        }
-        //    }
-
-        //    ListHokenSelect = listHoken;
-        //    HokenSelectVisibility = Visibility.Visible;
-        //}
-
-        return new();
-    }
-
-    public CommonReportingRequestModel GetReceiptDataFromAccounting(int hpId, long ptId, int sinDate, int hokenId)
-    {
         ReceFutanViewModel receFutanViewModel = new ReceFutanViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
-        var sinYm = sinDate / 100;
 
         receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, sinYm);
 

@@ -1701,28 +1701,6 @@ namespace Reporting.Receipt.DB
             return result;
         }
 
-        public List<HokenSelectModel> GetListHokenSelect(int hpId, List<KaikeiInfModel> listKaikeiInf, long ptId)
-        {
-            if (listKaikeiInf == null || listKaikeiInf.Count <= 0)
-                return new List<HokenSelectModel>();
-
-            var listHokenId = listKaikeiInf.Select(item => item.HokenId).Distinct().ToList();
-
-            var listHokenInf = NoTrackingDataContext.PtHokenInfs.Where(item =>
-                item.HpId == hpId && item.PtId == ptId && item.IsDeleted == 0 && listHokenId.Contains(item.HokenId) && item.HokenId > 0);
-
-            var listHokenSeleted = from kaikeiInf in listKaikeiInf
-                                   join ptHokenInf in listHokenInf on
-                                       kaikeiInf.HokenId equals ptHokenInf.HokenId
-                                   select new
-                                   {
-                                       KaikeiInf = kaikeiInf,
-                                       PtHokenInf = ptHokenInf
-                                   };
-
-            return listHokenSeleted.Select(item => new HokenSelectModel(item.KaikeiInf, item.PtHokenInf)).OrderBy(item => item.HokenId).ToList();
-        }
-
         public List<RecePreviewModel> GetReceInf(int hpId, long ptId)
         {
             try
