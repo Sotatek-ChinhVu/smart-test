@@ -160,26 +160,33 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
             var receSeikyus = _tenantDataContext.ReceSeikyus.FindListQueryableNoTrack(r => r.IsDeleted == DeleteStatus.None);
 
-            var maxReceSeikyus = _tenantDataContext.ReceSeikyus.FindListQueryableNoTrack(
-                r => r.IsDeleted == DeleteStatus.None
-            ).GroupBy(
-                r => new { r.HpId, r.SinYm, r.PtId, r.HokenId }
-            ).Select(
-                r => new
-                {
-                    r.Key.HpId,
-                    r.Key.SinYm,
-                    r.Key.PtId,
-                    r.Key.HokenId,
-                    SeikyuYm = r.Max(x => x.SeikyuYm)
-                }
-            );
 
             var raiinInfs = _tenantDataContext.RaiinInfs.FindListQueryableNoTrack();
             if (ptIds?.Count >= 1)
             {
                 raiinInfs = raiinInfs.Where(r => ptIds.Contains(r.PtId));
             }
+
+            List<long> ptIdList = raiinInfs
+                .Where(r => fromSinDate <= r.SinDate && r.SinDate <= toSinDate)
+                .Select(r => r.PtId )
+                .Distinct()
+                .ToList();
+
+
+            var maxReceSeikyus = _tenantDataContext.ReceSeikyus
+                .FindListQueryableNoTrack(r => r.IsDeleted == DeleteStatus.None && ptIdList.Contains(r.PtId))
+                .GroupBy(r => new { r.HpId, r.SinYm, r.PtId, r.HokenId })
+                .Select(r => new
+                {
+                    r.Key.HpId,
+                    r.Key.SinYm,
+                    r.Key.PtId,
+                    r.Key.HokenId,
+                    SeikyuYm = r.Max(x => x.SeikyuYm)
+                })
+                .Where(r => r.HpId == hpId && r.SeikyuYm == seikyuYm)
+                .ToList();
 
             var joinQuery = (
                 from raiinInf in raiinInfs.AsEnumerable()
@@ -196,13 +203,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                                 (raiinInf.SinDate >= fromSinDate && raiinInf.SinDate <= toSinDate) ||
                                 //月遅れ・返戻分
                                 (
-                                    (
-                                        from rs1 in maxReceSeikyus
-                                        where
-                                            rs1.HpId == hpId &&
-                                            rs1.SeikyuYm == seikyuYm
-                                        select rs1
-                                    ).Any(
+                                    maxReceSeikyus.Any(
                                         r =>
                                             r.HpId == raiinInf.HpId &&
                                             r.PtId == raiinInf.PtId &&
