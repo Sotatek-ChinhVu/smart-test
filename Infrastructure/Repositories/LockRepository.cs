@@ -66,7 +66,8 @@ namespace Infrastructure.Repositories
                        functionInf?.FunctionName ?? string.Empty,
                        lockInf.FunctionCd,
                        0,
-                       0
+                       0,
+                       lockInf.Machine ?? string.Empty
                 );
         }
 
@@ -150,7 +151,8 @@ namespace Infrastructure.Repositories
                     checkedResult.functionMst.FunctionName ?? string.Empty,
                     checkedResult.lockInf.FunctionCd,
                     checkedResult.lockMst.LockLevel,
-                    checkedResult.lockMst.LockRange));
+                    checkedResult.lockMst.LockRange,
+                    checkedResult.lockInf.Machine ?? string.Empty));
             }
 
             return result;
@@ -264,7 +266,8 @@ namespace Infrastructure.Repositories
                                                         x.functionMst.FunctionName ?? string.Empty,
                                                         x.lockInf.FunctionCd,
                                                         x.lockMst.LockLevel,
-                                                        x.lockMst.LockRange)).ToList();
+                                                        x.lockMst.LockRange,
+                                                        x.lockInf.Machine ?? string.Empty)).ToList();
             return result;
         }
 
@@ -308,7 +311,8 @@ namespace Infrastructure.Repositories
                                     functionMst?.FunctionName ?? string.Empty,
                                     lockInf.FunctionCd,
                                     lockMst?.LockLevel ?? 0,
-                                    lockMst?.LockRange ?? 0);
+                                    lockMst?.LockRange ?? 0,
+                                    lockInf.Machine ?? string.Empty);
                 result.Add(lockModel);
             }
             return result;
@@ -415,7 +419,8 @@ namespace Infrastructure.Repositories
                                     functionMst?.FunctionName ?? string.Empty,
                                     lockInf.FunctionCd,
                                     lockMst?.LockLevel ?? 0,
-                                    lockMst?.LockRange ?? 0);
+                                    lockMst?.LockRange ?? 0,
+                                    lockInf.Machine ?? string.Empty);
                 result.Add(lockModel);
             }
             return result;
