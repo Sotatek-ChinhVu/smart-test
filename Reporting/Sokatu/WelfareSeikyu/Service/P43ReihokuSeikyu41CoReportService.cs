@@ -81,10 +81,14 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             currentPage = 1;
             hasNextPage = true;
             GetRowCount("p43ReihokuSeikyu41.rse");
-            while (getData && hasNextPage)
+
+            if (getData)
             {
-                UpdateDrawForm();
-                currentPage++;
+                while (getData && hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
             }
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
@@ -189,10 +193,34 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                 {
                     //合計
                     wrkRow = (short)(maxRow + 1);
-                    listDataPerPage.Add(new("nissu", 0, wrkRow, receInfs.Sum(r => r.KohiNissu).ToString()));
-                    listDataPerPage.Add(new("tensu", 0, wrkRow, receInfs.Sum(r => r.KohiTensu).ToString()));
+                    if (receInfs.Sum(r => r.KohiNissu) == 0)
+                    {
+                        listDataPerPage.Add(new("nissu", 0, wrkRow, ""));
+                    }
+                    else
+                    {
+                        listDataPerPage.Add(new("nissu", 0, wrkRow, receInfs.Sum(r => r.KohiNissu).ToString()));
+                    }
+
+                    if (receInfs.Sum(r => r.KohiTensu) == 0)
+                    {
+                        listDataPerPage.Add(new("tensu", 0, wrkRow, ""));
+                    }
+                    else
+                    {
+                        listDataPerPage.Add(new("tensu", 0, wrkRow, receInfs.Sum(r => r.KohiTensu).ToString()));
+                    }
+
+                    if (receInfs.Sum(r => r.IchibuFutan) == 0)
+                    {
+                        listDataPerPage.Add(new("futan", 0, wrkRow, ""));
+                    }
+                    else
+                    {
+                        listDataPerPage.Add(new("futan", 0, wrkRow, receInfs.Sum(r => r.IchibuFutan).ToString()));
+                    }
+
                     listDataPerPage.Add(new("kohiFutan", 0, wrkRow, "0"));
-                    listDataPerPage.Add(new("futan", 0, wrkRow, receInfs.Sum(r => r.IchibuFutan).ToString()));
                 }
                 _listTextData.Add(pageIndex, listDataPerPage);
 
