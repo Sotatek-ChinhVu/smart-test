@@ -7,6 +7,7 @@ using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Interactor.CalculateService;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.TrailAccounting;
 
@@ -35,6 +36,19 @@ namespace Interactor.MedicalExamination
                 if (notAllowSave)
                 {
                     return new GetTrialAccountingOutputData(GetTrialAccountingStatus.MedicalScreenLocked);
+                }
+                var maxRpNo = inputData.OdrInfItems.Count() > 0 ? inputData.OdrInfItems.Max(o => o.RpNo) : 0;
+                var odrItemAdd = inputData.OdrInfItems.Where(o => o.RpNo == 0 && o.RpEdaNo == 0);
+                foreach (var item in odrItemAdd)
+                {
+                    item.RpNo = maxRpNo + 1;
+                    item.RpEdaNo = 1;
+                    foreach (var itemDetail in item.DetailInfoList)
+                    {
+                        itemDetail.RpNo = maxRpNo + 1;
+                        itemDetail.RpEdaNo = 1;
+                    }
+                    maxRpNo++;
                 }
                 var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
                 var requestRaiinInf = new ReceptionItem(raiinInf);

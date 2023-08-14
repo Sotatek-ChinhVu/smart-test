@@ -91,7 +91,8 @@ namespace Infrastructure.Repositories
         {
             approvalInfs.ForEach(x =>
             {
-                if (!NoTrackingDataContext.ApprovalInfs.Any(p => p.HpId == hpId && p.PtId == x.PtId && p.RaiinNo == x.RaiinNo && p.SinDate == x.SinDate))
+                var approvedInfos = TrackingDataContext.ApprovalInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == x.PtId && p.RaiinNo == x.RaiinNo && p.SinDate == x.SinDate);
+                if (approvedInfos == null)
                 {
                     TrackingDataContext.ApprovalInfs.Add(new ApprovalInf()
                     {
@@ -106,6 +107,15 @@ namespace Infrastructure.Repositories
                         UpdateId = userId,
                         UpdateDate = CIUtil.GetJapanDateTimeNow()
                     });
+                }
+                else
+                {
+                    approvedInfos.CreateId = userId;
+                    approvedInfos.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    approvedInfos.SeqNo ++ ;
+                    approvedInfos.IsDeleted = x.IsDeleted;
+                    approvedInfos.UpdateId = userId;
+                    approvedInfos.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 }
             });
             return TrackingDataContext.SaveChanges() > 0;
@@ -199,7 +209,7 @@ namespace Infrastructure.Repositories
                 foreach (var approvedInf in approvedInfs)
                 {
                     approvedInf.IsDeleted = 1;
-                    approvedInf.UpdateId = Session.UserID;
+                    approvedInf.UpdateId = userId;
                     approvedInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 }
             }

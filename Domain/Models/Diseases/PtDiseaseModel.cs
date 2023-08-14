@@ -1,6 +1,5 @@
 ﻿using Domain.Constant;
 using Helper.Common;
-using Helper.Constants;
 using System.Text.Json.Serialization;
 using static Helper.Constants.PtDiseaseConst;
 
@@ -387,7 +386,7 @@ namespace Domain.Models.Diseases
             UpdateDate = string.Empty;
         }
 
-        public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList)
+        public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList, int tenkiKbn)
         {
             PtId = ptId;
             ByomeiCd = byomeiCd;
@@ -397,6 +396,7 @@ namespace Domain.Models.Diseases
             SortNo = sortNo;
             Byomei = byomei;
             StartDate = startDate;
+            TenkiKbn = tenkiKbn;
             TenkiDate = tenkiDate;
             HosokuCmt = hosokuCmt;
             TogetuByomei = togetuByomei;
@@ -469,6 +469,20 @@ namespace Domain.Models.Diseases
             CreateDate = createDate == DateTime.MinValue ? string.Empty : CIUtil.GetCIDateTimeStr(createDate);
             UpdateDate = updateDate == DateTime.MinValue ? string.Empty : CIUtil.GetCIDateTimeStr(updateDate);
             return this;
+        }
+
+        public PtDiseaseModel(int hokenId, string byomeiCd, string byomei, int startDate, int tenkiDate, int syubyoKbn, long id, int delDate, int tenkiKbn, List<PrefixSuffixModel> prefixSuffixList)
+        {
+            HokenId = hokenId;
+            ByomeiCd = byomeiCd;
+            Byomei = byomei;
+            StartDate = startDate;
+            TenkiDate = tenkiDate;
+            SyubyoKbn = syubyoKbn;
+            Id = id;
+            DelDate = delDate;
+            TenkiKbn = tenkiKbn;
+            PrefixSuffixList = prefixSuffixList;
         }
 
         public ValidationStatus Validation()
@@ -596,6 +610,8 @@ namespace Domain.Models.Diseases
             get => IsContinous || (StartDate <= (SinDate / 100 * 100 + 31) && TenkiDate >= (SinDate / 100 * 100 + 1));
         }
 
+        public int HokenId { get; private set; }
+
         public int HokenPid { get; private set; }
 
         public string Icd10 { get; set; }
@@ -710,5 +726,23 @@ namespace Domain.Models.Diseases
             SikkanCd = sikkanCd;
             return this;
         }
+
+        public List<string> GetAllSyusyokuCds()
+        {
+            var syusyokuCds = new List<string>();
+
+            foreach (var item in PrefixSuffixList)
+            {
+                if (string.IsNullOrEmpty(item.Name))
+                {
+                    continue;
+                }
+                syusyokuCds.Add(item.Name);
+            }
+
+            syusyokuCds.Sort();
+            return syusyokuCds;
+        }
+
     }
 }

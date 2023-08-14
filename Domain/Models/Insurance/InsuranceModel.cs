@@ -250,7 +250,11 @@ namespace Domain.Models.InsuranceInfor
 
         public bool IsAddNew { get; private set; }
 
-        public bool IsExpirated => !(StartDate <= SinDate && EndDate >= SinDate);
+        public bool IsExpirated => ((!HokenInf.IsEmptyModel && HokenInf.IsExpirated) || 
+                 (!Kohi1.IsEmptyModel && Kohi1.IsExpirated) ||
+                 (!Kohi2.IsEmptyModel && Kohi2.IsExpirated) ||
+                 (!Kohi3.IsEmptyModel && Kohi3.IsExpirated) ||
+                 (!Kohi4.IsEmptyModel && Kohi4.IsExpirated));
 
         #endregion
 
@@ -278,7 +282,12 @@ namespace Domain.Models.InsuranceInfor
         {
             string hokenName = HokenPid.ToString().PadLeft(3, '0') + ". ";
 
-            if (!(HokenInf.StartDate <= SinDate && HokenInf.EndDate >= SinDate))
+            if ((!HokenInf.IsEmptyModel && HokenInf.IsExpirated) || 
+                 (!Kohi1.IsEmptyModel && Kohi1.IsExpirated) ||
+                 (!Kohi2.IsEmptyModel && Kohi2.IsExpirated) ||
+                 (!Kohi3.IsEmptyModel && Kohi3.IsExpirated) ||
+                 (!Kohi4.IsEmptyModel && Kohi4.IsExpirated)
+                )
             {
                 hokenName = "×" + hokenName;
             }

@@ -447,22 +447,22 @@ public class Sta9000CoReportService : ISta9000CoReportService
         string formFileName = reportInfs[reportType].FormFileName;
         int maxRow = reportInfs[reportType].MaxRow;
         GetFieldNameList(formFileName);
-        GetData(hpId);
         _extralData.Add("maxRow", maxRow.ToString());
-
         currentPage = 1;
 
-        //印刷
-        while (hasNextPage)
+        if (GetData(hpId))
         {
-            UpdateDrawForm();
-            currentPage++;
+            while (hasNextPage)
+            {
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
 
         return new Sta9000Mapper(_singleFieldData, _tableFieldData, _extralData, formFileName).GetData();
     }
 
-    private void GetData(int hpId)
+    private bool GetData(int hpId)
     {
         void MakePrintData()
         {
@@ -799,7 +799,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
         ptInfs = _finder.GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf, kensaConf);
         if ((ptInfs?.Count ?? 0) == 0)
         {
-            return;
+            return false;
         }
 
         nowDate = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
@@ -844,6 +844,8 @@ public class Sta9000CoReportService : ISta9000CoReportService
 
         //印刷用データの作成
         MakePrintData();
+
+        return printDatas.Count > 0;
     }
 
     private void UpdateDrawForm()

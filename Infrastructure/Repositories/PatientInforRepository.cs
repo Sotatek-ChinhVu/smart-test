@@ -1,4 +1,5 @@
-﻿using Domain.Models.CalculationInf;
+﻿using Domain.Constant;
+using Domain.Models.CalculationInf;
 using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
@@ -14,6 +15,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -89,7 +91,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo)
+        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo, bool isShowKyuSeiName = false)
         {
             var itemData = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
 
@@ -121,14 +123,33 @@ namespace Infrastructure.Repositories
             int firstDate = _receptionRepository.GetFirstVisitWithSyosin(hpId, ptId, sinDate);
             string comment = NoTrackingDataContext.PtCmtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)?.Text ?? string.Empty;
 
+            var name = itemData.Name ?? string.Empty;
+            var kanaName = itemData.KanaName ?? string.Empty;
+            bool isKyuSeiName = false;
+            if (isShowKyuSeiName)
+            {
+                var ptKyusei = NoTrackingDataContext.PtKyuseis.Where(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && item.EndDate >= sinDate
+                                                                            && item.IsDeleted != 1)
+                                                              .OrderBy(x => x.EndDate)
+                                                              .FirstOrDefault();
+                if (ptKyusei != null)
+                {
+                    name = ptKyusei.Name;
+                    kanaName = ptKyusei.KanaName;
+                    isKyuSeiName = true;
+                }
+            }
+
             return new PatientInforModel(
                 itemData.HpId,
                 itemData.PtId,
                 itemData.ReferenceNo,
                 itemData.SeqNo,
                 itemData.PtNum,
-                itemData.KanaName ?? string.Empty,
-                itemData.Name ?? string.Empty,
+                kanaName ?? string.Empty,
+                name ?? string.Empty,
                 itemData.Sex,
                 itemData.Birthday,
                 itemData.LimitConsFlg,
@@ -163,7 +184,8 @@ namespace Infrastructure.Repositories
                 lastVisitDate,
                 firstDate,
                 raiinCount,
-                comment);
+                comment,
+                isKyuSeiName);
         }
 
         public bool CheckExistIdList(List<long> ptIds)
@@ -1327,10 +1349,35 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public (bool resultSave, long ptId) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
+        public (bool resultSave, long ptId) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId, List<int> hokenIdList)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
+
+            #region CloneByomeiWithNewHokenId
+            if (hokenIdList.Any())
+            {
+                //if add new hoken => confirm clone byomei
+                var hokenInf = hokenInfs.OrderByDescending(p => p.EndDateSort)
+                                        .ThenByDescending(p => p.HokenId)
+                                        .FirstOrDefault(p => p.IsDeleted == DeleteTypes.None && !p.IsAddNew);
+                if (hokenInf != null)
+                {
+                    var ptByomeis = TrackingDataContext.PtByomeis.Where(item => item.PtId == ptInf.PtId
+                                                                                && item.HokenPid == hokenInf.HokenId
+                                                                                && item.IsDeleted == DeleteTypes.None
+                                                                                && item.TenkiKbn == TenkiKbnConst.Continued)
+                                                                 .ToList();
+                    if (ptByomeis.Count > 0)
+                    {
+                        foreach (var hokenId in hokenIdList)
+                        {
+                            CloneByomeiWithNewHokenId(ptByomeis, hokenId, userId);
+                        }
+                    }
+                }
+            }
+            #endregion
 
             #region Patient-info
             PtInf? patientInfo = TrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptInf.PtId);
@@ -1538,7 +1585,6 @@ namespace Infrastructure.Repositories
                 }
             }
             #endregion
-
 
             var databaseHokenPartterns = TrackingDataContext.PtHokenPatterns.Where(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == DeleteTypes.None).ToList();
             var databaseHoKentInfs = TrackingDataContext.PtHokenInfs.Where(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == DeleteTypes.None).ToList();
@@ -2565,7 +2611,64 @@ namespace Infrastructure.Repositories
                                                                                   0,
                                                                                   0,
                                                                                   0,
-                                                                                  string.Empty)).ToList();
+                                                                                  string.Empty,
+                                                                                  false)).ToList();
+        }
+
+        public bool SavePtKyusei(int hpId, int userId, List<PtKyuseiModel> ptKyuseiList)
+        {
+            var seqNoList = ptKyuseiList.Select(item => item.SeqNo).Distinct().ToList();
+            var ptKyuseiDBList = TrackingDataContext.PtKyuseis.Where(item => item.HpId == hpId && seqNoList.Contains(item.SeqNo)).ToList();
+            foreach (var model in ptKyuseiList)
+            {
+                var entity = ptKyuseiDBList.FirstOrDefault(entity => entity.SeqNo == model.SeqNo && entity.PtId == model.PtId);
+                if (entity == null)
+                {
+                    entity = new PtKyusei();
+                    entity.HpId = hpId;
+                    entity.SeqNo = 0;
+                    entity.IsDeleted = 0;
+                    entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    entity.CreateId = userId;
+                    entity.PtId = model.PtId;
+                }
+                entity.Name = model.Name;
+                entity.KanaName = model.KanaName;
+                entity.EndDate = model.EndDate;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateId = userId;
+                if (model.IsDeleted)
+                {
+                    entity.IsDeleted = 1;
+                }
+                if (entity.SeqNo == 0)
+                {
+                    TrackingDataContext.PtKyuseis.Add(entity);
+                }
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        private void CloneByomeiWithNewHokenId(List<PtByomei> ptByomeis, int hokenId, int userId)
+        {
+            List<PtByomei> newCloneByomeis = new();
+            foreach (var ptByomei in ptByomeis)
+            {
+                var cloneByomei = ptByomei.Clone();
+                cloneByomei.CreateId = userId;
+                cloneByomei.UpdateId = userId;
+                cloneByomei.CreateDate = CIUtil.GetJapanDateTimeNow();
+                cloneByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                cloneByomei.HokenPid = hokenId;
+                cloneByomei.Id = 0;
+                newCloneByomeis.Add(cloneByomei);
+            }
+            TrackingDataContext.PtByomeis.AddRange(newCloneByomeis);
+
+            foreach (var newCloneByomei in newCloneByomeis)
+            {
+                newCloneByomei.SeqNo = newCloneByomei.Id;
+            }
         }
     }
 }

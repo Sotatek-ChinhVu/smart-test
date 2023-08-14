@@ -1,7 +1,7 @@
 ﻿using Domain.Models.Accounting;
 using Domain.Models.HpInf;
-using Domain.Models.Lock;
 using Domain.Models.PatientInfor;
+using Domain.Models.Reception;
 using Domain.Models.SystemConf;
 using Domain.Models.User;
 using Helper.Constants;
@@ -16,14 +16,16 @@ namespace Interactor.Accounting
         private readonly IUserRepository _userRepository;
         private readonly IHpInfRepository _hpInfRepository;
         private readonly IPatientInforRepository _patientInforRepository;
+        private readonly IReceptionRepository _receptionRepository;
 
-        public SaveAccountingInteractor(IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository)
+        public SaveAccountingInteractor(IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository)
         {
             _accountingRepository = accountingRepository;
             _systemConfRepository = systemConfRepository;
             _userRepository = userRepository;
             _hpInfRepository = hpInfRepository;
             _patientInforRepository = patientInforRepository;
+            _receptionRepository = receptionRepository;
         }
 
         public SaveAccountingOutputData Handle(SaveAccountingInputData inputData)
@@ -31,7 +33,7 @@ namespace Interactor.Accounting
             try
             {
                 var validateResult = ValidateInputData(inputData);
-                if (validateResult != SaveAccountingStatus.ValidateSuccess) return new SaveAccountingOutputData(validateResult);
+                if (validateResult != SaveAccountingStatus.ValidateSuccess) return new SaveAccountingOutputData(validateResult, new(), new());
 
                 var raiinInfList = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
 
@@ -43,7 +45,7 @@ namespace Interactor.Accounting
 
                 if (syunoSeikyu == null)
                 {
-                    return new SaveAccountingOutputData(SaveAccountingStatus.InputDataNull);
+                    return new SaveAccountingOutputData(SaveAccountingStatus.InputDataNull, new(), new());
                 }
                 else if (syunoSeikyu.NyukinKbn == 0)
                 {
@@ -70,11 +72,13 @@ namespace Interactor.Accounting
                                                                 inputData.PayType, inputData.Comment, inputData.IsDisCharged, inputData.KaikeiTime);
                 if (save)
                 {
-                    return new SaveAccountingOutputData(SaveAccountingStatus.Success);
+                    var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, CommonConstants.InvalidId, inputData.PtId, isDeleted: 0);
+                    var sameVisitList = _receptionRepository.GetListSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
+                    return new SaveAccountingOutputData(SaveAccountingStatus.Success, receptionInfos, sameVisitList);
                 }
                 else
                 {
-                    return new SaveAccountingOutputData(SaveAccountingStatus.Failed);
+                    return new SaveAccountingOutputData(SaveAccountingStatus.Failed, new(), new());
                 }
             }
             finally

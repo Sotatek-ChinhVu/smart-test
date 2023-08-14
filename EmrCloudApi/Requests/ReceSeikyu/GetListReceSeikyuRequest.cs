@@ -17,5 +17,7 @@
         public bool IsFilterReturn { get; set; }
 
         public bool IsFilterOnlineReturn { get; set; }
+
+        public bool IsGetDataPending { get; set; }
     }
 }

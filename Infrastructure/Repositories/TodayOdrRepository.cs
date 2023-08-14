@@ -43,6 +43,10 @@ namespace Infrastructure.Repositories
             _approvalInfRepository = approvalInfRepository;
         }
 
+        public TodayOdrRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        {
+        }
+
         public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, byte status)
         {
             bool isUpdateApproveInf = false;
@@ -1851,7 +1855,7 @@ namespace Infrastructure.Repositories
                 itemCd.StartsWith(ItemCdConst.Comment842Pattern) || itemCd.StartsWith(ItemCdConst.Comment880Pattern));
         }
 
-        private int GetLastDaySantei(int hpId, long ptId, int sinDate, long raiinNo, string itemCd)
+        public int GetLastDaySantei(int hpId, long ptId, int sinDate, long raiinNo, string itemCd)
         {
             int result = 0;
             var sinKouiCountDiffDayQuery = NoTrackingDataContext.SinKouiCounts.Where(s => s.HpId == hpId && s.PtId == ptId && (s.SinYm * 100 + s.SinDay) < sinDate);

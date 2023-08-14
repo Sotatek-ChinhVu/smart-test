@@ -1,12 +1,14 @@
-﻿namespace EmrCloudApi.Responses.MstItem
+﻿using UseCase.MstItem.GetListDrugImage;
+
+namespace EmrCloudApi.Responses.MstItem
 {
     public class GetListDrugImageResponse
     {
-        public GetListDrugImageResponse(List<string> drugImages)
+        public GetListDrugImageResponse(List<DrugImageOutputItem> imageList)
         {
-            DrugImages = drugImages;
+            ImageLists = imageList;
         }
 
-        public List<string> DrugImages { get; private set; }
+        public List<DrugImageOutputItem> ImageLists { get; private set; }
     }
 }

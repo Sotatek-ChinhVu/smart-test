@@ -123,7 +123,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         /// <param name="kohiHoubetus">法別番号</param>
         /// <returns></returns>
-        public string JyukyusyaNo(List<string> kohiHoubetus)
+        public string? JyukyusyaNo(List<string> kohiHoubetus)
         {
             return
                 kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1.JyukyusyaNo :
@@ -537,7 +537,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public string ReceSbt
         {
-            get => ReceInf.ReceSbt;
+            get => ReceInf.ReceSbt ?? string.Empty;
         }
 
         /// <summary>

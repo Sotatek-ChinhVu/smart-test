@@ -6,6 +6,8 @@ using EmrCalculateApi.ReceFutan.Models;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Messaging.Data;
+using Helper.Messaging;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -85,10 +87,11 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
         /// <param name="ptIds">患者ID(null:未指定)</param>
         /// <param name="seikyuYm">請求年月</param>
         public void ReceFutanCalculateMain(
-            List<long> ptIds, int seikyuYm
+            List<long> ptIds, int seikyuYm, string uniqueKey
         )
         {
             const string conFncName = nameof(ReceFutanCalculateMain);
+            UniqueKey = uniqueKey;
             try
             {
                 _emrLogger.WriteLogStart(this, conFncName, $"ptIds.Count:{ptIds?.Count ?? 0} seikyuYm:{seikyuYm}");
@@ -128,12 +131,21 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                 }
 
                 _emrLogger.WriteLogEnd(this, conFncName, $"ptIds.Count:{ptIds?.Count ?? 0} seikyuYm:{seikyuYm}");
+                if (AllowSendProgress)
+                {
+                    SendMessager(new RecalculationStatus(true, 2, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                }
             }
             catch (Exception E)
             {
                 _emrLogger.WriteLogError(this, conFncName, E);
                 throw;
             }
+        }
+
+        private void SendMessager(RecalculationStatus status)
+        {
+            Messenger.Instance.Send(status);
         }
 
         /// <summary>
@@ -185,6 +197,10 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
 
         public bool IsStopCalc { get; set; }
 
+        public string UniqueKey { get; set; } = string.Empty;
+
+        public bool AllowSendProgress { get => !string.IsNullOrEmpty(UniqueKey); }
+
         public AfterCalcItem AfterCalcItemEvent { get; set; }
 
         public CancellationToken CancellationToken { get; set; }
@@ -234,10 +250,22 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
             }
 
             AllCalcCount = ReceInfs.Count;
+            if (AllowSendProgress)
+            {
+                SendMessager(new RecalculationStatus(false, 2, AllCalcCount, 0, string.Empty, UniqueKey));
+            }
             CalculatedCount = 0;
-
             for (int rCnt = ReceInfs.Count - 1; rCnt >= 0 && !IsStopCalc; rCnt--)
             {
+                //if (AllowSendProgress)
+                //{
+                //    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                //    IsStopCalc = statusCallBack.Result.Result;
+                //}
+                if (IsStopCalc)
+                {
+                    return;
+                }
                 if (CancellationToken.IsCancellationRequested) return;
                 ReceInfModel receInf = ReceInfs[rCnt];
 
@@ -342,6 +370,15 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                     SetReceInfJd(receInf);
 
                     CalculatedCount++;
+
+                    if (AllCalcCount == CalculatedCount)
+                    {
+                        break;
+                    }
+                    if (AllowSendProgress)
+                    {
+                        SendMessager(new RecalculationStatus(false, 2, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                    }
                 }
                 catch (Exception E)
                 {

@@ -98,20 +98,23 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
             _formFileName = "p22WelfareSeikyu84.rse";
         }
 
-        foreach ((int currentYm, string currentCode, string currentCity) in cityNames)
+        if(getData)
         {
-            totalData = new countData();
-
-            currentFutansyaNo = currentCode;
-            currentCityName = currentCity;
-            currentSinYm = currentYm;
-            currentPage = 1;
-            hasNextPage = true;
-
-            while (getData && hasNextPage)
+            foreach ((int currentYm, string currentCode, string currentCity) in cityNames)
             {
-                UpdateDrawForm();
-                currentPage++;
+                totalData = new countData();
+
+                currentFutansyaNo = currentCode;
+                currentCityName = currentCity;
+                currentSinYm = currentYm;
+                currentPage = 1;
+                hasNextPage = true;
+
+                while (getData && hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
             }
         }
 

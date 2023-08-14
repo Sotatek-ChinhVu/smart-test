@@ -39,7 +39,7 @@ public class UpdateReceptionInteractor : IUpdateReceptionInputPort
             var status = success ? UpdateReceptionStatus.Success : UpdateReceptionStatus.NotFound;
             if (success)
             {
-                receptionInfos = _receptionRepository.GetList(input.HpId, dto.Reception.SinDate, dto.Reception.RaiinNo, dto.Reception.PtId);
+                receptionInfos = _receptionRepository.GetList(input.HpId, dto.Reception.SinDate, dto.Reception.RaiinNo, dto.Reception.PtId, isDeleted: 0);
                 sameVisitList = _receptionRepository.GetListSameVisit(input.HpId, dto.Reception.PtId, dto.Reception.SinDate);
             }
             return new UpdateReceptionOutputData(status, receptionInfos, sameVisitList);

@@ -23,6 +23,6 @@ namespace Domain.Models.KarteInfs
 
         long ConvertTextToRichText(int hpId, long ptId);
 
-        Dictionary<string, bool> ListCheckIsSchema(int hpId, long ptId, Dictionary<string, string> fileInfUpdateTemp);
+        Dictionary<string, bool> ListCheckIsSchema(int hpId, long ptId, List<FileMapCopyItem> fileInfUpdateTemp);
     }
 }

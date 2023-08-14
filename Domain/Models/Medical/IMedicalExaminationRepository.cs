@@ -41,5 +41,7 @@ namespace Domain.Models.MedicalExamination
         List<KensaPrinterItemModel> GetContainerMstModels(int hpId, int sinDate, List<Tuple<int, int, int, List<Tuple<string, string>>>> orderInfs, bool defaultChecked);
 
         List<SinKouiCountModel> GetSinkouCountInMonth(int hpId, long ptId, int sinDate, string itemCd);
+
+        List<CheckedOrderModel> TrialIryoJyohoKibanCalculation(int hpId, long ptId, int sinDate, long raiinNo, List<OrdInfDetailModel> allOdrInfDetail);
     }
 }

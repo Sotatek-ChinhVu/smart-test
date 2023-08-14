@@ -11,7 +11,7 @@ public class SaveSyobyoKeikaListPresenter : ISaveSyobyoKeikaListOutputPort
 
     public void Complete(SaveSyobyoKeikaListOutputData outputData)
     {
-        Result.Data = new SaveSyobyoKeikaListResponse(outputData.Status == SaveSyobyoKeikaListStatus.Successed);
+        Result.Data = new SaveSyobyoKeikaListResponse(outputData.Status == SaveSyobyoKeikaListStatus.Successed, outputData.SyobyoKeikaInvalidList);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

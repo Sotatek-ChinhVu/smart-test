@@ -5,6 +5,7 @@ using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
@@ -12,13 +13,17 @@ using Helper.Extension;
 using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Document.UploadTemplateToCategory;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
+using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDosageDrugList;
+using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetListDrugImage;
@@ -26,6 +31,8 @@ using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
+using UseCase.MstItem.GetTeikyoByomei;
+using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -37,6 +44,7 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
+using UseCase.MstItem.UploadImageDrugInf;
 
 namespace EmrCloudApi.Controller
 {
@@ -304,7 +312,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetListDrugImage)]
         public ActionResult<Response<GetListDrugImageResponse>> GetListDrugImage([FromQuery] GetListDrugImageRequest request)
         {
-            var input = new GetListDrugImageInputData(request.Type, request.YjCd);
+            var input = new GetListDrugImageInputData(request.Type, request.YjCd, request.SelectedImage);
             var output = _bus.Handle(input);
             var presenter = new GetListDrugImagePresenter();
             presenter.Complete(output);
@@ -358,11 +366,80 @@ namespace EmrCloudApi.Controller
                 request.PointTo, request.KouiKbn, request.OriKouiKbn, request.KouiKbns, request.IncludeRosai, request.IncludeMisai,
                 request.SinDate, request.ItemCodeStartWith, request.IsIncludeUsage, request.OnlyUsage, request.YJCode, request.IsMasterSearch,
                 request.IsExpiredSearchIfNoData, request.IsAllowSearchDeletedItem, request.IsExpired, request.IsDeleted, request.DrugKbns,
-                request.IsSearchSanteiItem, request.IsSearchKenSaItem, request.ItemFilter, request.IsSearch831SuffixOnly, request.IsSearchSuggestion);
+                request.IsSearchSanteiItem, request.IsSearchKenSaItem, request.ItemFilter, request.IsSearch831SuffixOnly, request.IsSearchSuggestion,
+                request.IsSearchGazoDensibaitaiHozon);
             var output = _bus.Handle(input);
             var presenter = new SearchTenMstItemPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ConvertStringChkJISKj)]
+        public ActionResult<Response<ConvertStringChkJISKjResponse>> ConvertStringChkJISKj([FromBody] ConvertStringChkJISKjRequest request)
+        {
+            var input = new ConvertStringChkJISKjInputData(request.InputList);
+            var output = _bus.Handle(input);
+            var presenter = new ConvertStringChkJISKjPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTeikyoByomei)]
+        public ActionResult<Response<GetTeikyoByomeiResponse>> GetTeikyoByomei([FromQuery] GetTeikyoByomeiRequest request)
+        {
+            var input = new GetTeikyoByomeiInputData(HpId, request.ItemCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetTeikyoByomeiPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDrugAction)]
+        public ActionResult<Response<GetDrugActionResponse>> GetDrugAction([FromQuery] GetDrugActionRequest request)
+        {
+            var input = new GetDrugActionInputData(request.YjCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetDrugActionPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetDrugActionResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetList)]
+        public ActionResult<Response<GetTenMstListResponse>> GetTenMstList([FromBody] GetTenMstListRequest request)
+        {
+            var input = new GetTenMstListInputData(HpId, request.SinDate, request.ItemCdList);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenMstListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenMstListResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDefaultPrecautions)]
+        public ActionResult<Response<GetDefaultPrecautionsResponse>> GetDefaultPrecautions([FromQuery] GetDefaultPrecautionsRequest request)
+        {
+            var input = new GetDefaultPrecautionsInputData(request.YjCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetDefaultPrecautionsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetDefaultPrecautionsResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UploadImageDrugInf)]
+        public ActionResult<Response<UploadImageDrugInfResponse>> UploadImageDrugInf([FromQuery] UploadImageDrugInfRequest request)
+        {
+            if (!request.IsDeleted && Request.ContentLength > 30000000)
+            {
+                return Ok(new Response<UploadTemplateToCategoryResponse>()
+                {
+                    Message = "Invalid file size!",
+                    Status = (int)UploadImageDrugInfStatus.InvalidSizeFile
+                });
+            }
+            var input = new UploadImageDrugInfInputData(request.Type, request.YjCd, request.IsDeleted, Request.Body);
+            var output = _bus.Handle(input);
+            var presenter = new UploadImageDrugInfPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UploadImageDrugInfResponse>>(presenter.Result);
         }
     }
 }

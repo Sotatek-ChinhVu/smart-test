@@ -51,7 +51,11 @@ public class GetReceiCheckListInteractor : IGetReceiCheckListInputPort
             var receCheckErrItem = new ReceiptCheckCmtErrListItem(
                                         err.IsChecked == 1,
                                         err.Message1,
-                                        err.Message2
+                                        err.Message2,
+                                        err.ErrCd,
+                                        err.ACd,
+                                        err.BCd,
+                                        err.SinDate
                                        );
             result.Add(receCheckErrItem);
         }

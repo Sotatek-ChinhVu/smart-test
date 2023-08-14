@@ -4339,6 +4339,8 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "StartDate", "IpnNameCd", "SeqNo");
 
+                    b.HasIndex(new[] { "HpId", "StartDate", "EndDate", "IpnNameCd" }, "IPN_KASAN_EXCLUDE_IDX01");
+
                     b.ToTable("IPN_KASAN_EXCLUDE");
                 });
 
@@ -4391,6 +4393,8 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("HpId", "StartDate", "ItemCd");
+
+                    b.HasIndex(new[] { "HpId", "StartDate", "EndDate", "ItemCd" }, "IPN_KASAN_EXCLUDE_ITEM_IDX01");
 
                     b.ToTable("IPN_KASAN_EXCLUDE_ITEM");
                 });
@@ -4537,6 +4541,8 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex(new[] { "HpId", "IpnNameCd", "StartDate" }, "IPN_MIN_YAKKA_MST_IDX01");
 
+                    b.HasIndex(new[] { "HpId", "StartDate", "EndDate", "IpnNameCd" }, "IPN_MIN_YAKKA_MST_IDX02");
+
                     b.ToTable("IPN_MIN_YAKKA_MST");
                 });
 
@@ -4603,6 +4609,8 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("HpId", "IpnNameCd", "StartDate", "SeqNo");
+
+                    b.HasIndex(new[] { "IpnNameCd" }, "IPN_NAME_MST_IDX01");
 
                     b.ToTable("IPN_NAME_MST");
                 });
@@ -6377,6 +6385,8 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "KensaItemCd", "KensaItemSeqNo");
 
+                    b.HasIndex(new[] { "KensaItemCd" }, "KENSA_MST_IDX01");
+
                     b.ToTable("KENSA_MST");
                 });
 
@@ -7187,7 +7197,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "UserId")
                         .IsUnique()
-                        .HasFilter("FunctionCd = \"02000000\"");
+                        .HasFilter("FunctionCd IN (02000000, 03000000)");
 
                     b.ToTable("LOCK_INF");
                 });
@@ -13727,6 +13737,8 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex(new[] { "HpId", "PtId", "SinDate", "Status", "SyosaisinKbn", "IsDeleted" }, "RAIIN_INF_IDX02");
 
+                    b.HasIndex(new[] { "IsDeleted", "SinDate", "PtId" }, "RAIIN_INF_IDX03");
+
                     b.ToTable("RAIIN_INF");
                 });
 
@@ -18394,6 +18406,10 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("HpId", "PtId", "RsvkrtNo");
+
+                    b.HasIndex("HpId", "PtId", "RsvDate")
+                        .IsUnique()
+                        .HasFilter("RsvkrtKbn = 0 AND IsDeleted = 0");
 
                     b.ToTable("RSVKRT_MST");
                 });
@@ -23717,6 +23733,8 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "ItemCd", "StartDate");
 
+                    b.HasIndex(new[] { "HpId", "ItemCd", "StartDate", "EndDate", "Name", "KanaName1", "KanaName2", "KanaName3", "KanaName4", "KanaName5", "KanaName6", "KanaName7", "IsDeleted", "IsAdopted" }, "TEN_MST_IDX08");
+
                     b.ToTable("TEN_MST");
                 });
 
@@ -25917,6 +25935,8 @@ namespace TenantMigration.Migrations
                         .HasColumnName("YAKKA");
 
                     b.HasKey("HpId", "YakkaCd", "ItemCd", "StartDate");
+
+                    b.HasIndex(new[] { "StartDate", "EndDate" }, "YAKKA_SYUSAI_MST_IDX01");
 
                     b.ToTable("YAKKA_SYUSAI_MST");
                 });

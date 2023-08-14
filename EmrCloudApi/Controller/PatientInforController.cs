@@ -98,6 +98,8 @@ using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Calculation;
 using UseCase.SwapHoken.Save;
 using UseCase.SwapHoken.Validate;
+using UseCase.PatientInfor.SavePtKyusei;
+using UseCase.PatientInfor;
 
 namespace EmrCloudApi.Controller
 {
@@ -127,7 +129,7 @@ namespace EmrCloudApi.Controller
         [HttpGet("GetPatientById")]
         public ActionResult<Response<GetPatientInforByIdResponse>> GetPatientById([FromQuery] GetByIdRequest request)
         {
-            var input = new GetPatientInforByIdInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var input = new GetPatientInforByIdInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.IsShowKyuSeiName);
             var output = _bus.Handle(input);
 
             var present = new GetPatientInforByIdPresenter();
@@ -614,8 +616,14 @@ namespace EmrCloudApi.Controller
                                                                     x.IsDeleted,
                                                                     string.Empty)).ToList();
 
+            List<int> hokenIdList = new();
+            if (patientInfo.ReactSave.ConfirmCloneByomei)
+            {
+                hokenIdList = patientInfo.HokenIdList;
+            }
+
             var input = new SavePatientInfoInputData(patient,
-                 patientInfo.PtKyuseis,
+                 patientInfo.PtKyuseis.Select(item => new PtKyuseiModel(HpId, item.PtId, item.SeqNo, item.KanaName, item.Name, item.EndDate)).ToList(),
                  patientInfo.PtSanteis,
                  insurances,
                  hokenInfs,
@@ -624,6 +632,7 @@ namespace EmrCloudApi.Controller
                  patientInfo.ReactSave,
                  patientInfo.MaxMoneys,
                  insuranceScans,
+                 hokenIdList,
                  UserId,
                  HpId
                  );
@@ -647,8 +656,7 @@ namespace EmrCloudApi.Controller
 
             if (output.Status == DeletePatientInfoStatus.Successful)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.DeletePtInfChanged,
-                    new CommonMessage { PtId = input.PtId, SinDate = 0, RaiinNo = 0 });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new DeletePatientInfoPresenter();
@@ -974,6 +982,26 @@ namespace EmrCloudApi.Controller
             var presenter = new CheckValidSamePatientPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CheckValidSamePatientResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SavePtKyusei)]
+        public ActionResult<Response<SavePtKyuseiResponse>> SavePtKyuseiPatient([FromBody] SavePtKyuseiRequest request)
+        {
+            var input = new SavePtKyuseiInputData(HpId,
+                                                  UserId,
+                                                  request.PtId,
+                                                  request.PtKyuseiList.Select(item => new PtKyuseiItem(
+                                                           HpId,
+                                                           request.PtId,
+                                                           item.SeqNo,
+                                                           item.KanaName,
+                                                           item.Name,
+                                                           item.EndDate,
+                                                           item.IsDeleted)).ToList());
+            var output = _bus.Handle(input);
+            var presenter = new SavePtKyuseiPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SavePtKyuseiResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.CheckAllowDeletePatientInfo)]
