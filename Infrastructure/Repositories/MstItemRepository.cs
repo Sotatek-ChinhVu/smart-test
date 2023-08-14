@@ -3862,11 +3862,31 @@ namespace Infrastructure.Repositories
                 }
 
                 var tekiouByomeiMstExcluded = setDataTen.TeikyoByomeiTab.TekiouByomeiMstExcluded;
+                var entityTekiouByomeiMstExcluded = TrackingDataContext.TekiouByomeiMstExcludeds.FirstOrDefault(
+                                                x => x.HpId == hpId &&
+                                                     x.ItemCd == tekiouByomeiMstExcluded.ItemCd &&
+                                                     x.SeqNo == tekiouByomeiMstExcluded.SeqNo);
 
-                if (tekiouByomeiMstExcluded.IsDeleted == DeleteTypes.Deleted)
+                if (entityTekiouByomeiMstExcluded != null)
                 {
-
+                    if (tekiouByomeiMstExcluded.IsDeleted == DeleteTypes.Deleted)
+                    {
+                        entityTekiouByomeiMstExcluded.IsDeleted = DeleteTypes.Deleted;
+                        entityTekiouByomeiMstExcluded.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        entityTekiouByomeiMstExcluded.UpdateId = userId;
+                    }
+                    else
+                    {
+                        entityTekiouByomeiMstExcluded.ItemCd = tekiouByomeiMstExcluded.ItemCd;
+                        entityTekiouByomeiMstExcluded.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        entityTekiouByomeiMstExcluded.UpdateId = userId;
+                    }
                 }
+                else
+                {
+                    TrackingDataContext.Add(new TekiouByomeiMstExcluded { HpId = hpId, CreateDate = CIUtil.GetJapanDateTimeNow(), CreateId = userId, UpdateDate = CIUtil.GetJapanDateTimeNow(), UpdateId = userId, ItemCd = tekiouByomeiMstExcluded.ItemCd });
+                }
+            
             }
 
             void SanteiKaishuUpdate()
