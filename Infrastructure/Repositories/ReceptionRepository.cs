@@ -1655,5 +1655,17 @@ namespace Infrastructure.Repositories
 
             return result;
         }
+
+        public int GetStatusRaiinInf(int hpId, long raiinNo, long ptId)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                  && item.PtId == ptId
+                                                                                  && item.RaiinNo == raiinNo);
+            if (raiinInf == null)
+            {
+                return 0;
+            }
+            return raiinInf.Status;
+        }
     }
 }

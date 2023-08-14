@@ -670,6 +670,8 @@ using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.ReceSeikyu.GetReceSeikyModelByPtNum;
+using UseCase.Receipt.CheckExistSyobyoKeika;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using UseCase.Receipt.CheckExistsReceInf;
 
@@ -1486,6 +1488,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListKaikeiInfInputData, GetListKaikeiInfInteractor>();
             busBuilder.RegisterUseCase<CheckExisReceInfEditInputData, CheckExisReceInfEditInteractor>();
             busBuilder.RegisterUseCase<CheckExistsReceInfInputData, CheckExistsReceInfInteractor>();
+            busBuilder.RegisterUseCase<CheckExistSyobyoKeikaInputData, CheckExistSyobyoKeikaInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfReceipt, GetListRaiinInfInteractorOfReceipt>();
 
             //ReceSeikyu
@@ -1494,6 +1497,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
             busBuilder.RegisterUseCase<ImportFileReceSeikyuInputData, ImportFileReceSeikyuInteractor>();
             busBuilder.RegisterUseCase<CancelSeikyuInputData, CancelSeikyuInteractor>();
+            busBuilder.RegisterUseCase<GetReceSeikyModelByPtNumInputData, GetReceSeikyModelByPtNumInteractor>();
 
             //WeightedSetConfirmation
             busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
