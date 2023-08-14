@@ -1,4 +1,5 @@
-﻿using Reporting.Accounting.Model;
+﻿using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.AccountingCardList.Model;
 using Reporting.CommonMasters.Enums;
@@ -91,5 +92,5 @@ public interface IReportService
 
     CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm);
 
-    CommonExcelReportingModel GetReceiptListExcel(List<ReceiptInputCsvModel> receiptListModel, bool isIsExportTitle);
+    CommonExcelReportingModel GetReceiptListExcel(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput receiptListModel, bool isIsExportTitle);
 }

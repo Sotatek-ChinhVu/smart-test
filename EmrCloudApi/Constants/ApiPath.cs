@@ -297,6 +297,7 @@
         public const string GetListRaiinInf = "GetListRaiinInf";
         public const string CheckExisReceInfEdit = "CheckExisReceInfEdit";
         public const string GetListSokatuMst = "GetListSokatuMst";
+        public const string CheckExistsReceInf = "CheckExistsReceInf";
         public const string CheckExistSyobyoKeika = "CheckExistSyobyoKeika";
 
         //Accounting
@@ -378,6 +379,7 @@
         // MainMenu
         public const string GetStatisticMenuList = "GetStatisticMenuList";
         public const string SaveStatisticMenuList = "SaveStatisticMenuList";
+        public const string GetListStaticReport = "GetListStaticReport";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
