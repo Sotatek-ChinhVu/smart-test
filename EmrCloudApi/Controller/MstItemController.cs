@@ -32,6 +32,7 @@ using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
 using UseCase.MstItem.GetTeikyoByomei;
+using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -300,7 +301,7 @@ namespace EmrCloudApi.Controller
             CombinedContraindicationTabModel combinedContraindicationTab = new CombinedContraindicationTabModel(Mapper.Map<CombinedContraindicationModelDto, CombinedContraindicationModel>(request.CombinedContraindications));
 
             SetDataTenMstOriginModel setData = new SetDataTenMstOriginModel(basicSettingTab, ijiSettingTab, precriptionSettingTab, usageSettingTab, drugInfomationTab, teikyoByomeiTab, santeiKaishuTab, haihanTab, houkatsuTab, combinedContraindicationTab);
-            
+
             var input = new SaveSetDataTenMstInputData(HpId, UserId, request.ItemCd, tenOrigins, setData);
             var output = _bus.Handle(input);
             var presenter = new SaveSetDataTenMstPresenter();
@@ -401,6 +402,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetDrugActionPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetDrugActionResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetList)]
+        public ActionResult<Response<GetTenMstListResponse>> GetTenMstList([FromBody] GetTenMstListRequest request)
+        {
+            var input = new GetTenMstListInputData(HpId, request.SinDate, request.ItemCdList);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenMstListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenMstListResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetDefaultPrecautions)]
