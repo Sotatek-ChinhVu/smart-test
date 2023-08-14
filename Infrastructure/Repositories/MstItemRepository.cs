@@ -1591,61 +1591,6 @@ namespace Infrastructure.Repositories
                )).ToList();
         }
 
-        public List<TenItemModel> FindTenMst(int hpId, List<string> itemCds)
-        {
-            var entities = NoTrackingDataContext.TenMsts.Where(p =>
-                   p.HpId == hpId &&
-                   itemCds.Contains(p.ItemCd));
-
-            return entities.Select(entity => new TenItemModel(
-                    entity.HpId,
-                    entity.ItemCd,
-                    entity.RousaiKbn,
-                    entity.KanaName1 ?? string.Empty,
-                    entity.Name ?? string.Empty,
-                    entity.KohatuKbn,
-                    entity.MadokuKbn,
-                    entity.KouseisinKbn,
-                    entity.OdrUnitName ?? string.Empty,
-                    entity.EndDate,
-                    entity.DrugKbn,
-                    entity.MasterSbt ?? string.Empty,
-                    entity.BuiKbn,
-                    entity.IsAdopted,
-                    entity.Ten,
-                    entity.TenId,
-                    string.Empty,
-                    string.Empty,
-                    entity.CmtCol1,
-                    entity.IpnNameCd ?? string.Empty,
-                    entity.SinKouiKbn,
-                    entity.YjCd ?? string.Empty,
-                    entity.CnvUnitName ?? string.Empty,
-                    entity.StartDate,
-                    entity.YohoKbn,
-                    entity.CmtColKeta1,
-                    entity.CmtColKeta2,
-                    entity.CmtColKeta3,
-                    entity.CmtColKeta4,
-                    entity.CmtCol2,
-                    entity.CmtCol3,
-                    entity.CmtCol4,
-                    entity.IpnNameCd ?? string.Empty,
-                    entity.MinAge ?? string.Empty,
-                    entity.MaxAge ?? string.Empty,
-                    entity.SanteiItemCd ?? string.Empty,
-                    entity.OdrTermVal,
-                    entity.CnvTermVal,
-                    entity.DefaultVal,
-                    entity.Kokuji1 ?? string.Empty,
-                    entity.Kokuji2 ?? string.Empty,
-                    string.Empty,
-                    0,
-                    0,
-                    true
-               )).ToList();
-        }
-
         public List<TenItemModel> GetTenMstList(int hpId, List<string> itemCds)
         {
             itemCds = itemCds.Distinct().ToList();
@@ -1696,7 +1641,7 @@ namespace Infrastructure.Repositories
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
                     string.Empty,
-                    0,
+                    entity.IsDeleted,
                     0,
                     true
                )).ToList();
