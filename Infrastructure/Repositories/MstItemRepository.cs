@@ -3708,6 +3708,11 @@ namespace Infrastructure.Repositories
                     }
                 });
                 #endregion
+
+                #region TeikyoByomeiTabModel
+                
+
+                #endregion
             }
 
             void UsageSettingUpdate()
@@ -3856,6 +3861,12 @@ namespace Infrastructure.Repositories
                     }
                 }
 
+                var tekiouByomeiMstExcluded = setDataTen.TeikyoByomeiTab.TekiouByomeiMstExcluded;
+
+                if (tekiouByomeiMstExcluded.IsDeleted == DeleteTypes.Deleted)
+                {
+
+                }
             }
 
             void SanteiKaishuUpdate()
