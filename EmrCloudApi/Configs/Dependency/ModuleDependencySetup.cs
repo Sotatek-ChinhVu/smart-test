@@ -644,6 +644,8 @@ using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.Reception.GetOutDrugOrderList;
 using UseCase.ReceSeikyu.GetReceSeikyModelByPtNum;
 using UseCase.Receipt.CheckExistSyobyoKeika;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.Receipt.CheckExistsReceInf;
 using UseCase.MstItem.GetTenMstList;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -1459,6 +1461,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteReceiptInfEditInputData, DeleteReceiptInfEditInteractor>();
             busBuilder.RegisterUseCase<GetListKaikeiInfInputData, GetListKaikeiInfInteractor>();
             busBuilder.RegisterUseCase<CheckExisReceInfEditInputData, CheckExisReceInfEditInteractor>();
+            busBuilder.RegisterUseCase<CheckExistsReceInfInputData, CheckExistsReceInfInteractor>();
             busBuilder.RegisterUseCase<CheckExistSyobyoKeikaInputData, CheckExistSyobyoKeikaInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfReceipt, GetListRaiinInfInteractorOfReceipt>();
 

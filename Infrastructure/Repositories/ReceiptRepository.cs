@@ -3690,6 +3690,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                .ToList();
     }
 
+    public bool CheckExistsReceInf(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId)
+    {
+        var existReceInf = NoTrackingDataContext.ReceInfs.Any(item => item.HpId == hpId
+                                                                      && item.SeikyuYm == seikyuYm
+                                                                      && item.PtId == ptId
+                                                                      && item.SinYm == sinYm
+                                                                      && item.HokenId == hokenId);
+        return existReceInf;
+    }
     public bool CheckExistSyobyoKeikaSinDay(int hpId, int sinYm, long ptId, int hokenId, int sinDay)
     {
         return NoTrackingDataContext.SyobyoKeikas.Any(item => item.HpId == hpId
@@ -3704,6 +3713,4 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     {
         DisposeDataContext();
     }
-
-
 }
