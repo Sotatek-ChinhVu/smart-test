@@ -1275,12 +1275,6 @@ namespace Infrastructure.Repositories
                                  .Take(pageCount)
             };
 
-            //var pagedQuery = orderedQuery
-            //    .ThenBy(item => item.KanaName1)
-            //    .ThenBy(item => item.Name)
-            //    .Skip((pageIndex - 1) * pageCount)
-            //    .Take(pageCount);
-
             tenMstModels = orderedQuery.ToList();
 
             if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
