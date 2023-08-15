@@ -1244,12 +1244,13 @@ namespace Infrastructure.Repositories
 
             var orderedQuery = sortMode switch
             {
+                FilterTenMstEnum.None => tenMstModels.OrderBy(item => item.KanaName1).ThenBy(item => item.Name),
                 FilterTenMstEnum.RousaiKbnAsc => tenMstModels.OrderBy(item => item.RousaiKbnDisplay),
                 FilterTenMstEnum.RousaiKbnDec => tenMstModels.OrderByDescending(item => item.RousaiKbnDisplay),
-                //FilterTenMstEnum.KanaName1Asc => tenMstModels.OrderBy(item => item.KanaName1),
+                FilterTenMstEnum.KanaName1Asc => tenMstModels.OrderBy(item => item.KanaName1),
                 FilterTenMstEnum.KanaName1Dec => tenMstModels.OrderByDescending(item => item.KanaName1),
                 FilterTenMstEnum.KouiNameAsc => tenMstModels.OrderBy(item => item.KouiName),
-                FilterTenMstEnum.KouiNameDec => tenMstModels.OrderBy(item => item.KouiName),
+                FilterTenMstEnum.KouiNameDec => tenMstModels.OrderByDescending(item => item.KouiName),
                 FilterTenMstEnum.NameAsc => tenMstModels.OrderBy(item => item.Name),
                 FilterTenMstEnum.NameDec => tenMstModels.OrderByDescending(item => item.Name),
                 FilterTenMstEnum.KohatuKbnAsc => tenMstModels.OrderBy(item => item.KohatuKbnDisplay),
@@ -1270,16 +1271,17 @@ namespace Infrastructure.Repositories
                 FilterTenMstEnum.EndDateDec => tenMstModels.OrderByDescending(item => item.EndDate),
                 FilterTenMstEnum.IsDeletedAsc => tenMstModels.OrderBy(item => item.IsDeleted),
                 FilterTenMstEnum.IsDeletedDec => tenMstModels.OrderByDescending(item => item.IsDeleted),
-                _ => tenMstModels.OrderBy(item => item.KanaName1)
+                _ => tenMstModels.Skip((pageIndex - 1) * pageCount)
+                                 .Take(pageCount)
             };
 
-            var pagedQuery = orderedQuery
-                .ThenBy(item => item.KanaName1)
-                .ThenBy(item => item.Name)
-                .Skip((pageIndex - 1) * pageCount)
-                .Take(pageCount);
+            //var pagedQuery = orderedQuery
+            //    .ThenBy(item => item.KanaName1)
+            //    .ThenBy(item => item.Name)
+            //    .Skip((pageIndex - 1) * pageCount)
+            //    .Take(pageCount);
 
-            tenMstModels = pagedQuery.ToList();
+            tenMstModels = orderedQuery.ToList();
 
             if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
             {
