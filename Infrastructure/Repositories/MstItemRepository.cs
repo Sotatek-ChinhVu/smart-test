@@ -1244,7 +1244,6 @@ namespace Infrastructure.Repositories
 
             var orderedQuery = sortMode switch
             {
-                FilterTenMstEnum.None => tenMstModels.OrderBy(item => item.KanaName1).ThenBy(item => item.Name),
                 FilterTenMstEnum.RousaiKbnAsc => tenMstModels.OrderBy(item => item.RousaiKbnDisplay),
                 FilterTenMstEnum.RousaiKbnDec => tenMstModels.OrderByDescending(item => item.RousaiKbnDisplay),
                 FilterTenMstEnum.KanaName1Asc => tenMstModels.OrderBy(item => item.KanaName1),
@@ -1271,11 +1270,11 @@ namespace Infrastructure.Repositories
                 FilterTenMstEnum.EndDateDec => tenMstModels.OrderByDescending(item => item.EndDate),
                 FilterTenMstEnum.IsDeletedAsc => tenMstModels.OrderBy(item => item.IsDeleted),
                 FilterTenMstEnum.IsDeletedDec => tenMstModels.OrderByDescending(item => item.IsDeleted),
-                _ => tenMstModels.Skip((pageIndex - 1) * pageCount)
-                                 .Take(pageCount)
+                _ => tenMstModels.OrderBy(item => item.KanaName1).ThenBy(item => item.Name)
             };
 
-            tenMstModels = orderedQuery.ToList();
+            tenMstModels = orderedQuery.Skip((pageIndex - 1) * pageCount)
+                                       .Take(pageCount).ToList();
 
             if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
             {
