@@ -6,7 +6,7 @@ namespace Reporting.AccountingCard.Model
 {
     public class CoAccountingCardModel
     {
-        List<CoKaikeiInfModel> KaikeiInfModels { get; } = null;
+        public List<CoKaikeiInfModel> KaikeiInfModels { get; } = null;
         public CoPtInfModel PtInfModel { get; } = null;
         public SinMeiViewModel SinMeiViewModel { get; } = null;
         public List<CoPtByomeiModel> PtByomeiModels { get; } = null;
@@ -305,7 +305,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public int? HokenRate
         {
-            get => KaikeiInfModels.First().HokenRate;
+            get => KaikeiInfModels != null ? KaikeiInfModels?.FirstOrDefault()?.HokenRate ?? 0 : 0;
         }
 
         /// <summary>
