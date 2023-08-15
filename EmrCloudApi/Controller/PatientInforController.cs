@@ -897,7 +897,17 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetGroupNameMst)]
         public ActionResult<Response<GetGroupNameMstResponse>> GetGroupNameMst()
         {
-            var input = new GetGroupNameMstInputData(HpId);
+            var input = new GetGroupNameMstInputData(HpId, true);
+            var output = _bus.Handle(input);
+            var presenter = new GetGroupNameMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetGroupNameMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListGroupInfo)]
+        public ActionResult<Response<GetGroupNameMstResponse>> GetListGroupInfo()
+        {
+            var input = new GetGroupNameMstInputData(HpId, false);
             var output = _bus.Handle(input);
             var presenter = new GetGroupNameMstPresenter();
             presenter.Complete(output);
