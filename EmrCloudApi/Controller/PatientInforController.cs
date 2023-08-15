@@ -937,7 +937,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.SearchPatientInfoByPtNum)]
         public ActionResult<Response<SearchPatientInfoByPtNumResponse>> SearchPatientInfoByPtNum([FromQuery] SearchPatientInfoByPtNumRequest request)
         {
-            var input = new SearchPatientInfoByPtNumInputData(HpId, request.PtNum);
+            var input = new SearchPatientInfoByPtNumInputData(HpId, request.PtNum, request.SinDate);
             var output = _bus.Handle(input);
             var presenter = new SearchPatientInfoByPtNumPresenter();
             presenter.Complete(output);
