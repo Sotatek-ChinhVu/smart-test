@@ -1,4 +1,5 @@
-﻿using Reporting.Accounting.DB;
+﻿using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.Accounting.Service;
@@ -35,10 +36,9 @@ using Reporting.ReceiptList.Service;
 using Reporting.ReceiptPrint.Service;
 using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
-using Reporting.Sokatu.WelfareDisk.Service;
-using Reporting.Structs;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
+using System.Collections.Generic;
 
 namespace Reporting.ReportServices;
 
@@ -74,8 +74,9 @@ public class ReportService : IReportService
     private readonly IGrowthCurveA5CoReportService _growthCurveA5CoReportService;
     private readonly IKensaLabelCoReportService _kensaLabelCoReportService;
     private readonly IReceiptPrintExcelService _receiptPrintExcelService;
+    private readonly IImportCSVCoReportService _importCSVCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService, IReceiptPrintExcelService receiptPrintExcelService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService, IReceiptPrintExcelService receiptPrintExcelService, IImportCSVCoReportService importCSVCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -107,6 +108,7 @@ public class ReportService : IReportService
         _growthCurveA5CoReportService = growthCurveA5CoReportService;
         _kensaLabelCoReportService = kensaLabelCoReportService;
         _receiptPrintExcelService = receiptPrintExcelService;
+        _importCSVCoReportService = importCSVCoReportService;
     }
 
     //Byomei
@@ -470,9 +472,14 @@ public class ReportService : IReportService
         return _kensaIraiCoReportService.GetKensalraiData(hpId, systemDate, fromDate, toDate, centerCd);
     }
 
-    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos)
+    //public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, List<long> printPtIds)
+    //{
+    //    return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos, printPtIds);
+    //}
+
+    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, long ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, int hokenKbn, ReseputoShubetsuModel selectedReseputoShubeusu, int departmentId, int doctorId, int printNoFrom, int printNoTo, bool includeTester, bool includeOutDrug, int sort, List<long> listPtId)
     {
-        return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos);
+        return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos, hokenKbn, selectedReseputoShubeusu, departmentId, doctorId, printNoFrom, printNoTo, includeTester, includeOutDrug, sort, listPtId);
     }
 
     public CommonReportingRequestModel GetMemoMsgReportingData(string reportName, string title, List<string> listMessage)
@@ -521,5 +528,10 @@ public class ReportService : IReportService
     public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
     {
         return _receiptPrintExcelService.GetReceiptPrintExcel(hpId, prefNo, reportId, reportEdaNo, dataKbn, seikyuYm);
+    }
+
+    public CommonExcelReportingModel GetReceiptListExcel(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput receiptListModel, bool isIsExportTitle)
+    {
+        return _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(hpId, seikyuYm, receiptListModel, isIsExportTitle);
     }
 }

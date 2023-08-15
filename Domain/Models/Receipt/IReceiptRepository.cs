@@ -34,6 +34,10 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int sinYm);
 
+    bool CheckExisReceInfEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    List<SokatuMstModel> GetSokatuMstModels(int hpId, int SeikyuYm);
+
     bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
 
     bool SaveSyoukiInfList(int hpId, int userId, List<SyoukiInfModel> syoukiInfList);
@@ -132,5 +136,11 @@ public interface IReceiptRepository : IRepositoryBase
 
     void UpdateReceStatus(ReceStatusModel receStatusUpdate, int hpId, int userId);
 
-    void ClearReceCmtErr(int hpId, List<ReceCheckErrModel> receRecalculationList);
+    void ClearReceCmtErr(int hpId, List<ReceRecalculationModel> receRecalculationList);
+
+    List<RaiinInfModel> GetListRaiinInf(int hpId, long ptId, int sinYm, int dayInMonth, int rpNo, int seqNo);
+
+    bool CheckExistsReceInf(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    bool CheckExistSyobyoKeikaSinDay(int hpId, int sinYm, long ptId, int hokenId, int sinDay);
 }

@@ -1,4 +1,5 @@
 ﻿using Helper;
+using Infrastructure.Interfaces;
 using Interactor.CalculateService;
 using Newtonsoft.Json;
 using System.Net;
@@ -9,17 +10,21 @@ namespace EmrCloudApi.Services
     public class CalcultateCustomerService : ICalcultateCustomerService
     {
         private readonly HttpClient _httpClient = new HttpClient();
+        private readonly ITenantProvider _tenantProvider;
 
-        public CalcultateCustomerService(IConfiguration configuration)
+        public CalcultateCustomerService(IConfiguration configuration, ITenantProvider tenantProvider)
         {
             _httpClient.BaseAddress = new Uri(configuration.GetSection("CalculateApi")["BasePath"] ?? "");
+            _tenantProvider = tenantProvider;
         }
 
         public async Task<CalcultateCustomerResponse<T>> RunCaculationPostAsync<T>(TypeCalculate type, object input)
         {
             try
             {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
+                //StringContent content = new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
+                var content = JsonContent.Create(input);
+                content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
                 HttpResponseMessage result = await _httpClient.PostAsync(type.GetDescription(), content);
                 result.EnsureSuccessStatusCode();
 
@@ -42,7 +47,9 @@ namespace EmrCloudApi.Services
         {
             try
             {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
+                //StringContent content = new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
+                var content = JsonContent.Create(input);
+                content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
                 HttpResponseMessage result = await _httpClient.PostAsync(type.GetDescription(), content);
                 result.EnsureSuccessStatusCode();
             }

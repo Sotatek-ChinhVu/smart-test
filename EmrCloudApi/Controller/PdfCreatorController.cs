@@ -134,8 +134,8 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
-    [HttpGet(ApiPath.PeriodReceiptReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromQuery] PeriodReceiptRequest request)
+    [HttpPost(ApiPath.PeriodReceiptReport)]
+    public async Task<IActionResult> GenerateAccountingReport([FromBody] PeriodReceiptRequest request)
     {
         List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
                                                                                            item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
@@ -224,7 +224,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPrint)]
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
-        var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos);
+        var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos, request.HokenKbn, request.SelectedReseputoShubeusu, request.DepartmentId, request.DoctorId, request.PrintNoFrom, request.PrintNoTo, request.IncludeTester, request.IsIncludeOutDrug, request.Sort, request.PrintPtIds);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -463,8 +463,7 @@ public class PdfCreatorController : ControllerBase
                 && !data.ListTextData.Any()
                 && !data.SingleFieldList.Any()
                 && !data.SetFieldData.Any()
-                && data.ReportType != (int)CoReportType.MemoMsg
-                && data.ReportType != (int)CoReportType.Receipt))
+                && data.ReportType != (int)CoReportType.MemoMsg))
         {
             returnNoData = true;
         }

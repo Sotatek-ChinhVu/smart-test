@@ -11,7 +11,7 @@ namespace Domain.Models.PatientInfor
 {
     public interface IPatientInforRepository : IRepositoryBase
     {
-        PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo);
+        PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo, bool isShowKyuSeiName = false);
 
         (PatientInforModel ptInfModel, bool isFound) SearchExactlyPtNum(long ptNum, int hpId);
 
@@ -68,6 +68,8 @@ namespace Domain.Models.PatientInfor
 
         int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus);
 
-        List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex , int birthDay);
+        List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex, int birthDay);
+
+        bool SavePtKyusei(int hpId, int userId, List<PtKyuseiModel> ptKyuseiList);
     }
 }

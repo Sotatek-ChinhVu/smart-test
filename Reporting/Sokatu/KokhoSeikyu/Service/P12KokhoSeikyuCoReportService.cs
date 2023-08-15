@@ -33,7 +33,7 @@ public class P12KokhoSeikyuCoReportService : IP12KokhoSeikyuCoReportService
     /// OutPut Data
     /// </summary>
     private const string _formFileName = "p12KokhoSeikyu.rse";
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -44,7 +44,7 @@ public class P12KokhoSeikyuCoReportService : IP12KokhoSeikyuCoReportService
     {
         _kokhoFinder = kokhoFinder;
         _singleFieldData = new();
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
@@ -69,57 +69,60 @@ public class P12KokhoSeikyuCoReportService : IP12KokhoSeikyuCoReportService
         this.seikyuType = seikyuType;
         var getData = GetData();
 
-        foreach (string currentNo in hokensyaNos)
+        if (getData)
         {
-            currentHokensyaNo = currentNo;
-
-            //国保一般被保険者分については、給付割合毎に作成する
-            for (int rateCnt = 0; rateCnt <= 3; rateCnt++)
+            foreach (string currentNo in hokensyaNos)
             {
-                curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo).ToList();
+                currentHokensyaNo = currentNo;
 
-                hokenRate = 30;
-                switch (rateCnt)
+                //国保一般被保険者分については、給付割合毎に作成する
+                for (int rateCnt = 0; rateCnt <= 3; rateCnt++)
                 {
-                    case 1: hokenRate = 20; break;
-                    case 2: hokenRate = 10; break;
-                    case 3: hokenRate = 0; break;
-                }
+                    curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo).ToList();
 
-                switch (rateCnt)
-                {
-                    case 0:
-                        curReceInfs = curReceInfs.Where(r => ((r.IsNrMine || r.IsNrFamily) && r.HokenRate == hokenRate) || !r.IsNrMine || !r.IsNrFamily).ToList();
-                        break;
-                    default:
-                        //法定外給付
-                        curReceInfs = curReceInfs.Where(r => (r.IsNrMine || r.IsNrFamily) && r.HokenRate == hokenRate).ToList();
-                        break;
-                }
-                if (curReceInfs.Count() == 0) continue;
-
-                
-                try
-                {
-                    currentPage = 1;
-                    hasNextPage = true;
-                    while (getData && hasNextPage)
+                    hokenRate = 30;
+                    switch (rateCnt)
                     {
-                        UpdateDrawForm();
-                        currentPage++;
+                        case 1: hokenRate = 20; break;
+                        case 2: hokenRate = 10; break;
+                        case 3: hokenRate = 0; break;
                     }
-                }
-                finally
-                {
-                    currentPage = 1;
-                    currentHokensyaNo = null;
+
+                    switch (rateCnt)
+                    {
+                        case 0:
+                            curReceInfs = curReceInfs.Where(r => ((r.IsNrMine || r.IsNrFamily) && r.HokenRate == hokenRate) || !r.IsNrMine || !r.IsNrFamily).ToList();
+                            break;
+                        default:
+                            //法定外給付
+                            curReceInfs = curReceInfs.Where(r => (r.IsNrMine || r.IsNrFamily) && r.HokenRate == hokenRate).ToList();
+                            break;
+                    }
+                    if (curReceInfs.Count() == 0) continue;
+
+
+                    try
+                    {
+                        currentPage = 1;
+                        hasNextPage = true;
+                        while (getData && hasNextPage)
+                        {
+                            UpdateDrawForm();
+                            currentPage++;
+                        }
+                    }
+                    finally
+                    {
+                        currentPage = 1;
+                        currentHokensyaNo = null;
+                    }
                 }
             }
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSeikyuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KokhoSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function
@@ -162,7 +165,7 @@ public class P12KokhoSeikyuCoReportService : IP12KokhoSeikyuCoReportService
                 SetFieldData(string.Format("kyufuRate{0}", (100 - hokenRate) / 10), "〇");
             }
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+            _setFieldData.Add(pageIndex, fieldDataPerPage);
             return 1;
         }
         #endregion

@@ -1591,61 +1591,6 @@ namespace Infrastructure.Repositories
                )).ToList();
         }
 
-        public List<TenItemModel> FindTenMst(int hpId, List<string> itemCds)
-        {
-            var entities = NoTrackingDataContext.TenMsts.Where(p =>
-                   p.HpId == hpId &&
-                   itemCds.Contains(p.ItemCd));
-
-            return entities.Select(entity => new TenItemModel(
-                    entity.HpId,
-                    entity.ItemCd,
-                    entity.RousaiKbn,
-                    entity.KanaName1 ?? string.Empty,
-                    entity.Name ?? string.Empty,
-                    entity.KohatuKbn,
-                    entity.MadokuKbn,
-                    entity.KouseisinKbn,
-                    entity.OdrUnitName ?? string.Empty,
-                    entity.EndDate,
-                    entity.DrugKbn,
-                    entity.MasterSbt ?? string.Empty,
-                    entity.BuiKbn,
-                    entity.IsAdopted,
-                    entity.Ten,
-                    entity.TenId,
-                    string.Empty,
-                    string.Empty,
-                    entity.CmtCol1,
-                    entity.IpnNameCd ?? string.Empty,
-                    entity.SinKouiKbn,
-                    entity.YjCd ?? string.Empty,
-                    entity.CnvUnitName ?? string.Empty,
-                    entity.StartDate,
-                    entity.YohoKbn,
-                    entity.CmtColKeta1,
-                    entity.CmtColKeta2,
-                    entity.CmtColKeta3,
-                    entity.CmtColKeta4,
-                    entity.CmtCol2,
-                    entity.CmtCol3,
-                    entity.CmtCol4,
-                    entity.IpnNameCd ?? string.Empty,
-                    entity.MinAge ?? string.Empty,
-                    entity.MaxAge ?? string.Empty,
-                    entity.SanteiItemCd ?? string.Empty,
-                    entity.OdrTermVal,
-                    entity.CnvTermVal,
-                    entity.DefaultVal,
-                    entity.Kokuji1 ?? string.Empty,
-                    entity.Kokuji2 ?? string.Empty,
-                    string.Empty,
-                    0,
-                    0,
-                    true
-               )).ToList();
-        }
-
         public List<TenItemModel> GetTenMstList(int hpId, List<string> itemCds)
         {
             itemCds = itemCds.Distinct().ToList();
@@ -1696,7 +1641,7 @@ namespace Infrastructure.Repositories
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
                     string.Empty,
-                    0,
+                    entity.IsDeleted,
                     0,
                     true
                )).ToList();
@@ -3739,7 +3684,7 @@ namespace Infrastructure.Repositories
                 List<DrugInfModel> drugModels = setDataTen.DrugInfomationTab.DrugInfs;
                 for (int i = 1; i < 3; i++)
                 {
-                    if (string.IsNullOrEmpty(drugModels[i].DrugInfo) && !string.IsNullOrEmpty(drugModels[i].OldDrugInfo))
+                    if (drugModels.ElementAtOrDefault(i) != null && string.IsNullOrEmpty(drugModels[i].DrugInfo) && !string.IsNullOrEmpty(drugModels[i].OldDrugInfo))
                     {
                         drugModels[i].SetDrugInfo(drugModels[i].OldDrugInfo);
                         drugModels[i].SetIsDeleted(DeleteTypes.Deleted);
@@ -5221,6 +5166,38 @@ namespace Infrastructure.Repositories
                                                             )).ToList();
 
             return (tenMstModels, totalCount);
+        }
+
+        public string GetDrugAction(string yjCd)
+        {
+            var m34DrugInfMain = NoTrackingDataContext.M34DrugInfoMains.Where(drug => drug.YjCd == yjCd);
+            var m34IndicationCode = NoTrackingDataContext.M34IndicationCodes.Where(ind => ind.KonoCd != null);
+            var query = (from drug in m34DrugInfMain
+                         join ind in m34IndicationCode on drug.KonoCd equals ind.KonoCd
+                         select new
+                         {
+                             M34IndicationCode = ind
+                         }).FirstOrDefault();
+
+            var result = query != null ? query.M34IndicationCode.KonoSimpleCmt ?? string.Empty : string.Empty;
+
+            return result;
+        }
+
+        public string GetPrecautions(string yjCd)
+        {
+            string result = string.Empty;
+
+            var listPrecautionCode = NoTrackingDataContext.M34Precautions.Where(pre => pre.YjCd == yjCd).ToList().Select(u => u.PrecautionCd).ToList();
+            if (listPrecautionCode.Count == 0) return string.Empty;
+            var listPrecautionInf = NoTrackingDataContext.M34PrecautionCodes.Where(preCode => listPrecautionCode.Contains(preCode.PrecautionCd)).ToList();
+            foreach (var item in listPrecautionInf)
+            {
+                result += item.PrecautionCmt + Environment.NewLine;
+            }
+            result?.TrimEnd(Environment.NewLine.ToCharArray());
+
+            return result ?? string.Empty;
         }
     }
 }

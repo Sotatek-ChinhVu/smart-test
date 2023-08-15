@@ -45,6 +45,13 @@ public class ReceiptListAdvancedSearchItem
         IsPtTest = model.IsPtTest;
         HokenNissu = model.HokenNissu;
         ReceCheckCmt = model.ReceCheckCmt;
+        JibaiHokenName = model.JibaiHokenName;
+        JibaiHokenTanto = model.JibaiHokenTanto;
+        JibaiHokenTel = model.JibaiHokenTel;
+        RousaiCityName = model.RousaiCityName;
+        RousaiJigyosyoName = model.RousaiJigyosyoName;
+        RousaiKofuNo = model.RousaiKofuNo;
+        RousaiPrefName = model.RousaiPrefName;
     }
 
     public int SeikyuKbn { get; private set; }
@@ -134,5 +141,21 @@ public class ReceiptListAdvancedSearchItem
     {
         get => CIUtil.SDateToShowSDate(LastVisitDate);
     }
+    #endregion
+
+    #region export csv
+    public string JibaiHokenName { get; private set; }
+
+    public string JibaiHokenTanto { get; private set; }
+
+    public string JibaiHokenTel { get; private set; }
+
+    public string RousaiCityName { get; private set; }
+
+    public string RousaiJigyosyoName { get; private set; }
+
+    public string RousaiKofuNo { get; private set; }
+
+    public string RousaiPrefName { get; private set; }
     #endregion
 }

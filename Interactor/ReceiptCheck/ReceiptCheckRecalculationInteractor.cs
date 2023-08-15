@@ -91,7 +91,7 @@ namespace Interactor.ReceiptCheck
                     seikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month;
                 }
 
-                SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・"));
+                SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・", "NotConnectSocket"));
                 _calculateService.RunCalculateMonth(
                     new Request.CalculateMonthRequest()
                     {
@@ -99,28 +99,24 @@ namespace Interactor.ReceiptCheck
                         SeikyuYm = inputData.SeikyuYm,
                         PtIds = inputData.PtIds,
                         PreFix = ""
-                    });
+                    }, CancellationToken.None);
 
-                SendMessenger(new RecalculationStatus(false, 2, 0, 0, "レセ集計中・・・"));
-                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm));
+                SendMessenger(new RecalculationStatus(false, 2, 0, 0, "レセ集計中・・・", "NotConnectSocket"));
+                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm, string.Empty), CancellationToken.None);
 
-                SendMessenger(new RecalculationStatus(false, 3, 0, 0, "レセチェック中・・・"));
+                SendMessenger(new RecalculationStatus(false, 3, 0, 0, "レセチェック中・・・", "NotConnectSocket"));
                 CheckErrorInMonth(inputData.HpId, inputData.UserId, inputData.SeikyuYm, inputData.PtIds);
 
                 errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.PtIds, inputData.SeikyuYm);
 
+                SendMessenger(new RecalculationStatus(false, 4, 0, 0, errorText, "NotConnectSocket"));
                 _receiptRepository.UpdateReceStatus(inputData.ReceStatus, inputData.HpId, inputData.UserId);
 
                 return new ReceiptCheckRecalculationOutputData(true);
             }
             finally
             {
-                if (!string.IsNullOrEmpty(errorText))
-                {
-                    SendMessenger(new RecalculationStatus(false, 4, 0, 0, errorText));
-                }
-
-                SendMessenger(new RecalculationStatus(true, 5, 0, 0, errorText));
+                SendMessenger(new RecalculationStatus(true, 5, 0, 0, string.Empty, "NotConnectSocket"));
 
                 _calculationInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
@@ -484,8 +480,8 @@ namespace Interactor.ReceiptCheck
                     {
                         if (ptByomei.IsFree && ptByomei.Byomei.Length > 20)
                         {
-                            string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 100);
-                            string msg2 = string.Format("({0}: {1}/20文字)", cutByomei, ptByomei.Byomei.Length);
+                            string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 84);
+                            string msg2 = string.Format("({0}...: {1}/20文字)", cutByomei, ptByomei.Byomei.Length);
                             InsertReceCmtErr(hpId, receInfModel, ReceErrCdConst.FreeTextLengthByomeiErrCd, ReceErrCdConst.FreeTextLengthByomeiErrMsg, msg2, cutByomei);
                         }
                     }
@@ -1408,9 +1404,8 @@ namespace Interactor.ReceiptCheck
                     orderRosaiErrors.Insert(0, "■健康保険のレセプトで労災項目がオーダーされています。");
                     foreach (var error in orderRosaiErrors)
                     {
-                        ErrorText += Environment.NewLine + error;
+                        ErrorText += error + Environment.NewLine;
                     }
-                    ErrorText += Environment.NewLine;
                 }
             }
 
@@ -1843,9 +1838,8 @@ namespace Interactor.ReceiptCheck
                 errors.Insert(0, "■請求できない項目がオーダーされています。");
                 foreach (var error in errors)
                 {
-                    ErrorText += Environment.NewLine + error;
+                    ErrorText += error + Environment.NewLine;
                 }
-                ErrorText += Environment.NewLine;
             }
 
             //check use Rosai Receden but not set 災害区分
@@ -1867,9 +1861,8 @@ namespace Interactor.ReceiptCheck
                     rosaiRecedenErrors.Insert(0, "■災害区分が設定されていません。");
                     foreach (var error in rosaiRecedenErrors)
                     {
-                        ErrorText += Environment.NewLine + error;
+                        ErrorText += error + Environment.NewLine;
                     }
-                    ErrorText += Environment.NewLine;
                 }
             }
 
@@ -1893,9 +1886,8 @@ namespace Interactor.ReceiptCheck
                 receSeiKyuErrors.Insert(0, "■返戻/月遅れ登録に誤りがあるため、レセプトを作成できません。");
                 foreach (var error in receSeiKyuErrors)
                 {
-                    ErrorText += Environment.NewLine + error;
+                    ErrorText += error + Environment.NewLine;
                 }
-                ErrorText += Environment.NewLine;
             }
 
             //check patient ZaiganIso(在がん医総）
@@ -1935,9 +1927,8 @@ namespace Interactor.ReceiptCheck
                                                                 Environment.NewLine + "    診療内容を確認してください。");
                                 foreach (var error in santeiNextMonthErrors)
                                 {
-                                    ErrorText += Environment.NewLine + error;
+                                    ErrorText += error + Environment.NewLine;
                                 }
-                                ErrorText += Environment.NewLine;
                             }
                         }
                     }
@@ -1970,9 +1961,8 @@ namespace Interactor.ReceiptCheck
                                                                 Environment.NewLine + "    診療内容を確認してください。");
                                 foreach (var error in santeiLastMonthErrors)
                                 {
-                                    ErrorText += Environment.NewLine + error;
+                                    ErrorText += error + Environment.NewLine;
                                 }
-                                ErrorText += Environment.NewLine;
                             }
                         }
                     }

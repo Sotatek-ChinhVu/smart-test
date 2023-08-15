@@ -1,5 +1,7 @@
 ﻿using Domain.Models.CalculateModel;
 using Helper.Enum;
+using Helper.Messaging.Data;
+using Helper.Messaging;
 using Infrastructure.Interfaces;
 using Interactor.CalculateService;
 using Newtonsoft.Json;
@@ -63,6 +65,60 @@ namespace EmrCloudApi.Services
                 var httpMessage = new HttpRequestMessage();
                 content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
                 var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    return new CalculateResponse(responseContent, ResponseStatus.Successed);
+                }
+
+                return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
+
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine("Function CallCalculate " + ex);
+                return new CalculateResponse("Failed: Could not connect to Calculate API", ResponseStatus.ConnectFailed);
+            }
+        }
+
+        public async Task<CalculateResponse> CallCalculate(CalculateApiPath path, object inputData, CancellationToken cancellationToken)
+        {
+            var content = JsonContent.Create(inputData);
+
+            var basePath = _configuration.GetSection("CalculateApi")["BasePath"]!;
+            string functionName = string.Empty;
+            switch (path)
+            {
+                case CalculateApiPath.GetSinMeiList:
+                    functionName = "SinMei/GetSinMeiList";
+                    break;
+                case CalculateApiPath.RunCalculate:
+                    functionName = "Calculate/RunCalculate";
+                    break;
+                case CalculateApiPath.GetListReceInf:
+                    functionName = "ReceFutan/GetListReceInf";
+                    break;
+                case CalculateApiPath.RunTrialCalculate:
+                    functionName = "Calculate/RunTrialCalculate";
+                    break;
+                case CalculateApiPath.RunCalculateOne:
+                    functionName = "Calculate/RunCalculateOne";
+                    break;
+                case CalculateApiPath.ReceFutanCalculateMain:
+                    functionName = "ReceFutan/ReceFutanCalculateMain";
+                    break;
+                case CalculateApiPath.RunCalculateMonth:
+                    functionName = "Calculate/RunCalculateMonth";
+                    break;
+                default:
+                    throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
+            }
+
+            try
+            {
+                var httpMessage = new HttpRequestMessage();
+                content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
+                var response = await _httpClient.PostAsync($"{basePath}{functionName}", content, cancellationToken);
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
@@ -172,7 +228,7 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public bool ReceFutanCalculateMain(ReceCalculateRequest inputData)
+        public bool ReceFutanCalculateMain(ReceCalculateRequest inputData, CancellationToken cancellationToken)
         {
             try
             {
@@ -190,7 +246,7 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public bool RunCalculateMonth(CalculateMonthRequest inputData)
+        public bool RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken)
         {
             try
             {

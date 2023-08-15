@@ -1,4 +1,6 @@
-﻿using Reporting.Mappers.Common;
+﻿using Reporting.CommonMasters.Enums;
+using Reporting.Mappers.Common;
+using Reporting.ReceiptList.Model;
 
 namespace Reporting.ReceiptPrint.Service
 {

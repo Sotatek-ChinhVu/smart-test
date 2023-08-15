@@ -27,13 +27,18 @@ namespace Infrastructure.Services
             {
                 return string.Empty;
             }
-            return kaInfo.KaName ?? string.Empty;
+            return kaInfo.KaSname ?? string.Empty;
         }
 
         public void Reload()
         {
             _kaInfoList = _tenantProvider.GetNoTrackingDataContext().KaMsts.ToList();
             //_memoryCache.Set(_cacheKey, _userInfoList);
+        }
+
+        public void Dispose()
+        {
+            _tenantProvider.DisposeDataContext();
         }
     }
 }

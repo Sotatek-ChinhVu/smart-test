@@ -9,5 +9,7 @@ public static class FunctionCodes
     public const string SupserSetSaveChanged = "SupserSetSaveChanged";
     public const string SupserSetReorderChanged = "SupserSetReorderChanged";
     public const string SuperCopyPasteChanged = "SuperCopyPasteChanged";
+    public const string RunCalculateMonth = "RunCalculateMonth";
     public const string ReceCheckCmtChanged = "ReceCheckCmtChanged";
+    public const string RunCalculate = "RunCalculate";
 }

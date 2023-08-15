@@ -8,10 +8,13 @@ namespace EmrCloudApi.Responses.KarteInf
 
         public List<KarteFileOutputItem> ListKarteFile { get; private set; }
 
-        public GetListKarteInfResponse(List<GetListKarteInfOuputItem> karteInfs, List<KarteFileOutputItem> listKarteFile)
+        public bool IsKarteExisted { get; private set; }
+
+        public GetListKarteInfResponse(List<GetListKarteInfOuputItem> karteInfs, List<KarteFileOutputItem> listKarteFile, bool isKarteExisted)
         {
             KarteInfs = karteInfs.Select(item => new KarteInfDto(item)).ToList();
             ListKarteFile = listKarteFile;
+            IsKarteExisted = isKarteExisted;
         }
     }
 }
