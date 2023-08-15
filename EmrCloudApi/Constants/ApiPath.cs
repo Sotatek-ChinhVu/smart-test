@@ -317,6 +317,7 @@
         // Family
         public const string GetFamilyReverserList = "GetFamilyReverserList";
         public const string GetGroupNameMst = "GetGroupNameMst";
+        public const string GetListGroupInfo = "GetListGroupInfo";
         public const string GetRaiinInfList = "GetRaiinInfList";
         public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
         public const string ValidateFamilyList = "ValidateFamilyList";
