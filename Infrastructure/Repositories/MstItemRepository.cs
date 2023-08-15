@@ -1246,7 +1246,7 @@ namespace Infrastructure.Repositories
             {
                 FilterTenMstEnum.RousaiKbnAsc => tenMstModels.OrderBy(item => item.RousaiKbnDisplay),
                 FilterTenMstEnum.RousaiKbnDec => tenMstModels.OrderByDescending(item => item.RousaiKbnDisplay),
-                FilterTenMstEnum.KanaName1Asc => tenMstModels.OrderBy(item => item.KanaName1),
+                //FilterTenMstEnum.KanaName1Asc => tenMstModels.OrderBy(item => item.KanaName1),
                 FilterTenMstEnum.KanaName1Dec => tenMstModels.OrderByDescending(item => item.KanaName1),
                 FilterTenMstEnum.KouiNameAsc => tenMstModels.OrderBy(item => item.KouiName),
                 FilterTenMstEnum.KouiNameDec => tenMstModels.OrderBy(item => item.KouiName),
@@ -1264,7 +1264,7 @@ namespace Infrastructure.Repositories
                 FilterTenMstEnum.OdrUnitNameDec => tenMstModels.OrderByDescending(item => item.OdrUnitName),
                 FilterTenMstEnum.ItemCdAsc => tenMstModels.OrderBy(item => item.ItemCd),
                 FilterTenMstEnum.ItemCdDec => tenMstModels.OrderByDescending(item => item.ItemCd),
-                FilterTenMstEnum.KensaCenterItemCDAsc => tenMstModels.OrderByDescending(item => item.KensaCenterItemCDDisplay),
+                FilterTenMstEnum.KensaCenterItemCDAsc => tenMstModels.OrderBy(item => item.KensaCenterItemCDDisplay),
                 FilterTenMstEnum.KensaCenterItemCDDec => tenMstModels.OrderByDescending(item => item.KensaCenterItemCDDisplay),
                 FilterTenMstEnum.EndDateAsc => tenMstModels.OrderBy(item => item.EndDate),
                 FilterTenMstEnum.EndDateDec => tenMstModels.OrderByDescending(item => item.EndDate),
