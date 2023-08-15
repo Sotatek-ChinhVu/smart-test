@@ -1818,7 +1818,7 @@ namespace Infrastructure.Repositories
                                    };
 
             return listHokenSeleted.Select(item => new HokenInfModel(item.PtHokenInf.PtId,
-                                                                    item.KaikeiInf.HokenId,
+                                                                     item.KaikeiInf.HokenId,
                                                                      item.KaikeiInf.HokenKbn,
                                                                      item.PtHokenInf.HokensyaNo ?? string.Empty,
                                                                      item.PtHokenInf.HonkeKbn,

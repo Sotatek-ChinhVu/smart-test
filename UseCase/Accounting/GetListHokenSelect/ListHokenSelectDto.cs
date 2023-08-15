@@ -11,6 +11,7 @@ namespace UseCase.Accounting.GetListHokenSelect
             HokenKbn = hokenInf.HokenKbn;
             HokensyaNo = hokenInf.HokensyaNo;
             Houbetu = hokenInf.Houbetu;
+            HonkeKbn = hokenInf.HonkeKbn;
             StartDate = hokenInf.StartDate;
             EndDate = hokenInf.EndDate;
             HokenName = string.Empty;
