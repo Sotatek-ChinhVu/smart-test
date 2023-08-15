@@ -58,8 +58,9 @@ public class RecalculationController : AuthorizeControllerBase
             var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, uniqueKey, cancellationToken);
             _bus.Handle(input);
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine("Exception Cloud:" + ex.Message);
             SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
         }
         finally
@@ -116,6 +117,7 @@ public class RecalculationController : AuthorizeControllerBase
                     }
                     catch
                     {
+                        Console.WriteLine("Exception Calculate:" + data);
                         SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
                     }
                 }

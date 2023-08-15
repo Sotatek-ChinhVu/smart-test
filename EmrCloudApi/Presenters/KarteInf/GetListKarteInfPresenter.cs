@@ -13,7 +13,7 @@ public class GetListKarteInfPresenter : IGetListKarteInfOutputPort
     {
         Result = new Response<GetListKarteInfResponse>()
         {
-            Data = new GetListKarteInfResponse(outputData.KarteInfs, outputData.ListKarteFile),
+            Data = new GetListKarteInfResponse(outputData.KarteInfs, outputData.ListKarteFile, outputData.IsKarteExisted),
             Status = (byte)outputData.Status
         };
         switch (outputData.Status)

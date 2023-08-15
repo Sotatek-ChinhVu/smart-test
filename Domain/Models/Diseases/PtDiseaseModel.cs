@@ -386,7 +386,7 @@ namespace Domain.Models.Diseases
             UpdateDate = string.Empty;
         }
 
-        public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList)
+        public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList, int tenkiKbn)
         {
             PtId = ptId;
             ByomeiCd = byomeiCd;
@@ -396,6 +396,7 @@ namespace Domain.Models.Diseases
             SortNo = sortNo;
             Byomei = byomei;
             StartDate = startDate;
+            TenkiKbn = tenkiKbn;
             TenkiDate = tenkiDate;
             HosokuCmt = hosokuCmt;
             TogetuByomei = togetuByomei;
