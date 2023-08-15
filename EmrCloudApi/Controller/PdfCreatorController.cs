@@ -569,7 +569,7 @@ public class PdfCreatorController : ControllerBase
                 int colIndex = 1;
                 foreach (var cellData in colDataList)
                 {
-                    worksheet.Cell(rowIndex, colIndex).Value = cellData;
+                    worksheet.Cell(rowIndex, colIndex).Value = cellData.ToString();
                     colIndex++;
                 }
                 rowIndex++;
