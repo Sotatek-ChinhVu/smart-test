@@ -1,4 +1,5 @@
 ﻿using Domain.Constant;
+using Domain.Models.Accounting;
 using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
@@ -1698,6 +1699,23 @@ namespace Reporting.Receipt.DB
             .ToList();
 
             return result;
+        }
+
+        public List<RecePreviewModel> GetReceInf(int hpId, long ptId)
+        {
+            try
+            {
+                return NoTrackingDataContext.ReceInfs
+                    .Where(item =>item.HpId == hpId && item.PtId == ptId && item.SeikyuYm != 999999)
+                    .AsEnumerable()
+                    .Select(item => new RecePreviewModel(item))
+                    .OrderByDescending(item => item.SeikyuYmDisplay)
+                    .ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
