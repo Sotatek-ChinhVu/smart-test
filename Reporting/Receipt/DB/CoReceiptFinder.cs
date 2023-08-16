@@ -5,6 +5,7 @@ using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Reporting.Calculate.Constants;
 using Reporting.Calculate.Ika.Models;
 using Reporting.Calculate.Interface;
@@ -635,7 +636,8 @@ namespace Reporting.Receipt.DB
         {
 
             var sinRps = NoTrackingDataContext.SinRpInfs.Where(s =>
-                    s.HpId == hpId);
+                    s.HpId == hpId &&
+                    s.IsDeleted == DeleteStatus.None);
             //var receInfs = NoTrackingDataContext.ReceInfRepository.Where(r =>
             //    r.HpId == hpId &&
             //    r.SeikyuYm == seikyuYm);
@@ -802,7 +804,8 @@ namespace Reporting.Receipt.DB
         {
 
             var sinKouis = NoTrackingDataContext.SinKouis.Where(s =>
-                    s.HpId == hpId);
+                    s.HpId == hpId &&
+                    s.IsDeleted == DeleteStatus.None);
             int tantoIdRaiin = 0;
             if ((int)_systemConfRepository.GetSettingValue(6002, 1, hpId) == 1)
             {
@@ -885,7 +888,8 @@ namespace Reporting.Receipt.DB
             var sinDtls = NoTrackingDataContext.SinKouiDetails.Where(s =>
                     s.HpId == hpId &&
                     (ptId.Any() ? ptId.Contains(s.PtId) : true) &&
-                    s.SinYm == (sinYm > 0 ? sinYm : s.SinYm));
+                    s.SinYm == (sinYm > 0 ? sinYm : s.SinYm) &&
+                    s.IsDeleted == DeleteStatus.None);
             var sinCounts = NoTrackingDataContext.SinKouiCounts.Where(s =>
                 s.HpId == hpId &&
                 (ptId.Any() ? ptId.Contains(s.PtId) : true) &&
@@ -904,24 +908,24 @@ namespace Reporting.Receipt.DB
                         LastDate = A.Max(a => a.sinCount.SinDate)
                     }
                 );
-            //var receInfs = NoTrackingDataContext.ReceInfRepository.Where(r =>
+            //var receInfs = NoTrackingDataContext.ReceInfRepository.FindListQueryableNoTrack(r =>
             //    r.HpId == hpId &&
             //    r.SeikyuYm == seikyuYm);
             int tantoIdRaiin = 0;
-            if ((int)_systemConfRepository.GetSettingValue(6002, 1, hpId) == 1)
+            if (_systemConfRepository.GetSettingValue(6002, 1, hpId) == 1)
             {
                 tantoIdRaiin = tantoId;
                 tantoId = 0;
             }
 
             int kaIdRaiin = 0;
-            if ((int)_systemConfRepository.GetSettingValue(6002, 0, hpId) == 1)
+            if (_systemConfRepository.GetSettingValue(6002, 0, hpId) == 1)
             {
                 kaIdRaiin = kaId;
                 kaId = 0;
             }
 
-            var receInfs = GetReceInfVar(hpId, seikyuYm, ptId, sinYm, hokenId, mode, includeTester, seikyuKbns, tantoId, kaId);
+            var receInfs = GetReceInfVar(hpId,seikyuYm, ptId, sinYm, hokenId, mode, includeTester, seikyuKbns, tantoId, kaId);
             var kaikeiInfs = GetKaikeiInfVar(hpId, ptId, sinYm, hokenId);
             var raiinInfs = GetRaiinInfVar(hpId, ptId, sinYm, tantoIdRaiin, kaIdRaiin);
             var kaikei_raiins = (
@@ -948,6 +952,8 @@ namespace Reporting.Receipt.DB
                 {
                     receInf
                 });
+            //var tenMsts = NoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(t =>
+            //    t.HpId == HpId);
 
             // 診療月の最終日を取得
             int lastDateOfMonth = 0;
@@ -961,34 +967,29 @@ namespace Reporting.Receipt.DB
             }
 
             // 一旦、診療月の最終日基準でマスタ取得
-
-            var sinDtlsData = sinDtls.ToList();
-            var itemCodeList = sinDtlsData.Select(s => s.ItemCd).ToList();
-
-            var sinCountData = sinCountMaxs.ToList();
-            var tenMstsData = NoTrackingDataContext.TenMsts
-                .Where(t =>
-                    t.HpId == hpId &&
-                    itemCodeList.Contains(t.ItemCd) &&
-                    t.StartDate <= lastDateOfMonth &&
-                    t.EndDate >= lastDateOfMonth)
-                .ToList();
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t =>
+                t.HpId == hpId &&
+                t.StartDate <= lastDateOfMonth &&
+                t.EndDate >= lastDateOfMonth);
 
             var joinQuery = (
-                from sinDtl in sinDtlsData
-                join sinCount in sinCountData on
+                from sinDtl in sinDtls
+                join sinCount in sinCountMaxs on
                     new { sinDtl.HpId, sinDtl.PtId, sinDtl.RpNo, sinDtl.SeqNo } equals
                     new { sinCount.HpId, sinCount.PtId, sinCount.RpNo, sinCount.SeqNo } into sc
                 from b in sc.DefaultIfEmpty()
-                join tenMst in tenMstsData on
+                join tenMst in tenMsts on
                     new { sinDtl.HpId, sinDtl.ItemCd } equals
                     new { tenMst.HpId, tenMst.ItemCd } into tm
                 from a in tm.DefaultIfEmpty()
                 where (
+                    //a.StartDate <= sinDtl.SinYm * 100 + 1 &&
+                    //(a.EndDate >= sinDtl.SinYm * 100 + 1 || a.EndDate == 12341234)
+                    //&&
                     (
                         from receInf in joinReceInfs
                         where
-                            receInf.receInf.HpId == hpId &&
+                            receInf.receInf.HpId ==hpId &&
                             receInf.receInf.SeikyuYm == seikyuYm
                         select receInf
                     ).Any(
@@ -1011,11 +1012,19 @@ namespace Reporting.Receipt.DB
 
             joinQuery.ForEach(entity =>
             {
+                //if (entity.TenMst == null && entity.SinKouiDetail.OdrItemCd.StartsWith("Z"))
                 if (entity.TenMst == null ||
                     entity.TenMst.StartDate > (entity.SinKouiCount == null ? entity.SinKouiDetail.SinYm * 100 + 1 : entity.SinKouiCount.LastDate) ||
                     entity.TenMst.EndDate < (entity.SinKouiCount == null ? entity.SinKouiDetail.SinYm * 100 + 1 : entity.SinKouiCount.LastDate) ||
                     (entity.SinKouiDetail.OdrItemCd != null && entity.SinKouiDetail.OdrItemCd.StartsWith("Z")))
                 {
+                    //var odrTenMst = NoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(t =>
+                    //    t.HpId == HpId &&
+                    //    t.StartDate <= entity.SinKouiDetail.SinYm * 100 + 1 &&
+                    //    (t.EndDate >= entity.SinKouiDetail.SinYm * 100 + 1 || t.EndDate == 12341234) &&
+                    //    t.ItemCd == entity.SinKouiDetail.OdrItemCd)
+                    //.ToList();
+
                     // 点数マスタが取得できなかった or 診療日が有効期間外のマスタしか取得できなかった or 特材の場合
                     // 診療日にもっとも近い点数マスタを取得する
                     int stdDate = (entity.SinKouiCount == null ? entity.SinKouiDetail.SinYm * 100 + 1 : entity.SinKouiCount.LastDate);
@@ -1153,7 +1162,8 @@ namespace Reporting.Receipt.DB
             var sinRps = NoTrackingDataContext.SinRpInfs.Where(s =>
                     s.HpId == hpId &&
                     ptId.Contains(s.PtId) &&
-                    s.SinYm == sinYm)
+                    s.SinYm == sinYm &&
+                    s.IsDeleted == DeleteStatus.None)
                 .ToList();
 
             List<SinRpInfModel> results = new List<SinRpInfModel>();
@@ -1173,7 +1183,8 @@ namespace Reporting.Receipt.DB
                     s.HpId == hpId &&
                     ptId.Contains(s.PtId) &&
                     s.SinYm == sinYm &&
-                    (s.HokenId == hokenId || s.HokenId == hokenId2)
+                    (s.HokenId == hokenId || s.HokenId == hokenId2) &&
+                    s.IsDeleted == DeleteStatus.None
                     )
                 .ToList();
 
@@ -1194,7 +1205,8 @@ namespace Reporting.Receipt.DB
             var sinDtls = NoTrackingDataContext.SinKouiDetails.Where(s =>
                     s.HpId == hpId &&
                     ptId.Contains(s.PtId) &&
-                    s.SinYm == sinYm);
+                    s.SinYm == sinYm &&
+                    s.IsDeleted == DeleteStatus.None);
             var sinCounts = NoTrackingDataContext.SinKouiCounts.Where(s =>
                     s.HpId == hpId &&
                     ptId.Contains(s.PtId) &&

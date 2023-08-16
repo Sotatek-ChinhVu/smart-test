@@ -765,7 +765,7 @@ public class ReceiptPrintService : IReceiptPrintService
 
             result = _receiptCoReportService.GetReceiptDataByReceiptCheckList(hpId
                                                                             , seikyuYm
-                                                                            , new List<long>() { ptId }
+                                                                            , printPtIds
                                                                             , sinYm: 0
                                                                             , hokenId: 0
                                                                             , departmentId
