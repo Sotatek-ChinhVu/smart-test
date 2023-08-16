@@ -415,7 +415,7 @@ namespace Infrastructure.Repositories
             List<long> raiinNoList = raiinInfList.Select(r => r.RaiinNo).ToList();
 
             List<KarteInfModel> allKarteInfList = GetKarteInfList(hpId, ptId, isDeleted, raiinNoList);
-            Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList, 0);
+            Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList, 1);
 
             List<InsuranceModel> insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
             List<RaiinListTagModel> tagModelList = _raiinListTagRepository.GetList(hpId, ptId, raiinNoList);
@@ -433,14 +433,29 @@ namespace Infrastructure.Repositories
                 ReceptionModel receptionModel = Reception.FromRaiinInf(raiinInf);
                 List<KarteInfModel> karteInfModels = allKarteInfList.Where(r => r.RaiinNo == raiinNo).ToList() ?? new();
                 allOrderInfList.TryGetValue(raiinNo, out List<OrdInfModel>? orderInfListTemp);
-                List<OrdInfModel>? orderInfList = orderInfListTemp ?? new();
+                List<OrdInfModel>? orderInfList = orderInfListTemp?.Where(o => o.OdrKouiKbn != 10).ToList() ?? new();
+                var headerOrders = orderInfListTemp?.Where(o => o.OdrKouiKbn == 10).ToList() ?? new();
+
                 InsuranceModel insuranceModel = insuranceModelList.FirstOrDefault(i => i.HokenPid == raiinInf.HokenPid) ?? new InsuranceModel();
                 RaiinListTagModel tagModel = tagModelList.FirstOrDefault(t => t.RaiinNo == raiinNo) ?? new RaiinListTagModel();
                 List<FileInfModel> listKarteFileModel = listKarteFile.Where(item => item.RaiinNo == raiinNo).ToList();
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
 
-                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tagModel.TagNo, string.Empty, listKarteFileModel));
+                var headerOrderModels = new List<HeaderOrderModel>();
+                foreach (var headerOrder in headerOrders)
+                {
+                    var insurance = insuranceModelList.FirstOrDefault(i => i.HokenPid == headerOrder.HokenPid) ?? new InsuranceModel();
+                    var hokenPattentName = insurance.HokenName;
+                    var updateName = headerOrder.UpdateName;
+                    var displaycreateDate = headerOrder.CreateDate.ToString("yyyy/MM/dd HH:mm");
+                    var syosaiKbn = headerOrder.OrdInfDetails.FirstOrDefault(od => od.ItemCd == ItemCdConst.SyosaiKihon)?.Suryo;
+                    var jikanKbn = headerOrder.OrdInfDetails.FirstOrDefault(od => od.ItemCd == ItemCdConst.JikanKihon)?.Suryo;
+                    var headerOrderModel = new HeaderOrderModel(syosaiKbn ?? 0, jikanKbn ?? 0, hokenPattentName, displaycreateDate, updateName);
+                    headerOrderModels.Add(headerOrderModel);
+                }
+
+                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tagModel.TagNo, string.Empty, listKarteFileModel, headerOrderModels));
             }
 
             return historyOrderModelList;

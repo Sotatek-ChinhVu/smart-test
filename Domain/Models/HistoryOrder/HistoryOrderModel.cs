@@ -4,6 +4,7 @@ using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
 using Domain.Models.Reception;
 using Helper.Constants;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.HistoryOrder
 {
@@ -67,6 +68,9 @@ namespace Domain.Models.HistoryOrder
 
         public string SinEndTime { get; private set; }
 
+        public List<HeaderOrderModel> HeaderOrderModels { get; private set; }
+
+        [JsonConstructor]
         public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, List<KarteInfModel> karteInfModels, string kaName, string tantoName, int tagNo, string sinryoTitle, List<FileInfModel> listKarteFile)
         {
             RaiinNo = receptionModel.RaiinNo;
@@ -92,6 +96,60 @@ namespace Domain.Models.HistoryOrder
             SinStartTime = receptionModel.SinStartTime;
             SinEndTime = receptionModel.SinEndTime;
             SanteiKbn = receptionModel.SanteiKbn;
+            HeaderOrderModels = new();
         }
+
+        public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, List<KarteInfModel> karteInfModels, string kaName, string tantoName, int tagNo, string sinryoTitle, List<FileInfModel> listKarteFile, List<HeaderOrderModel> headerOrderModels)
+        {
+            RaiinNo = receptionModel.RaiinNo;
+            SinDate = receptionModel.SinDate;
+            SyosaisinKbn = receptionModel.SyosaisinKbn;
+            KaId = receptionModel.KaId;
+            TantoId = receptionModel.TantoId;
+            JikanKbn = receptionModel.JikanKbn;
+            HokenPid = receptionModel.HokenPid;
+            HokenTitle = insuranceModel.HokenName;
+            HokenRate = insuranceModel.DisplayRateOnly;
+            HokenType = insuranceModel.GetHokenPatternType();
+            KaName = kaName;
+            TantoName = tantoName;
+            TagNo = tagNo;
+            SinryoTitle = sinryoTitle;
+            OrderInfList = orderList;
+            KarteInfModels = karteInfModels;
+            ListKarteFile = listKarteFile;
+            Status = receptionModel.Status;
+            UketukeTime = receptionModel.UketukeTime;
+            UketukeId = receptionModel.UketukeId;
+            SinStartTime = receptionModel.SinStartTime;
+            SinEndTime = receptionModel.SinEndTime;
+            SanteiKbn = receptionModel.SanteiKbn;
+            HeaderOrderModels = headerOrderModels;
+        }
+    }
+
+    public class HeaderOrderModel
+    {
+        public HeaderOrderModel(double syosaisinKbn, double jikanKbn, string hokenPattentName, string createDateBinding, string updateUserName)
+        {
+            SyosaisinKbn = syosaisinKbn;
+            JikanKbn = jikanKbn;
+            HokenPattentName = hokenPattentName;
+            CreateDateBinding = createDateBinding;
+            UpdateUserName = updateUserName;
+        }
+        public double SyosaisinKbn { get; private set; }
+
+        public double JikanKbn { get; private set; }
+
+        public string SyosaishinBinding { get => SyosaiConst.ReceptionShinDict.FirstOrDefault(x => x.Key == SyosaisinKbn).Value; }
+
+        public string JikanBinding { get => JikanConst.JikanKotokuDict.FirstOrDefault(x => x.Key == JikanKbn).Value; }
+
+        public string HokenPattentName { get; private set; }
+
+        public string CreateDateBinding { get; private set; }
+
+        public string UpdateUserName { get; private set; }
     }
 }
