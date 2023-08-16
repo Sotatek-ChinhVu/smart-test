@@ -310,6 +310,7 @@
         public const string GetMeiHoGai = "GetMeiHoGai";
         public const string CheckOpenAccounting = "CheckOpenAccounting";
         public const string IsNyukinExisted = "IsNyukinExisted";
+        public const string GetListHokenSelect = "GetListHokenSelect";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 

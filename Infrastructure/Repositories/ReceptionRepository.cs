@@ -1630,6 +1630,7 @@ namespace Infrastructure.Repositories
                                                                    data.User.Name ?? string.Empty,
                                                                    0,
                                                                    data.Raiin.KaId,
+                                                                   data.Pt.PtId,
                                                                    data.Pt.PtNum,
                                                                    data.PtHokenPatternItem.HokenHobetu ?? string.Empty,
                                                                    data.PtHokenPatternItem?.PtHokenPattern.HokenKbn ?? 0,
@@ -1650,7 +1651,8 @@ namespace Infrastructure.Repositories
                                                                    -1,
                                                                    string.Empty,
                                                                    string.Empty,
-                                                                   0, 0, 0, 0, 0, 0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty))
+                                                                   0, 0, 0, 0, 0, 0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty,
+                                                                   data.Raiin.Status))
                           .ToList();
 
             return result;
