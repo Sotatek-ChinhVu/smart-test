@@ -302,7 +302,7 @@ namespace Domain.Models.PatientInfor
 
         public int SinDate { get; private set; }
 
-        public string BirdayDisplay { get => CIUtil.SDateToShowWDate2(Birthday); }
+        public string BirthdayDisplay { get => CIUtil.SDateToShowWDate2(Birthday); }
 
         public string Age { get => CIUtil.SDateToDecodeAge(Birthday.AsString(), SinDate.AsString()); }
     }
