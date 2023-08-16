@@ -3,6 +3,7 @@ using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
+using EmrCloudApi.Requests.Diseases;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
@@ -22,6 +23,7 @@ using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDefaultPrecautions;
+using UseCase.MstItem.GetDiseaseList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
@@ -133,6 +135,18 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
 
             var presenter = new DiseaseSearchPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<DiseaseSearchResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetDiseaseList)]
+        public ActionResult<Response<DiseaseSearchResponse>> GetDiseaseList([FromBody] GetDiseaseListRequest request)
+        {
+            var input = new GetDiseaseListInputData(request.ItemCdList);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDiseaseListPresenter();
             presenter.Complete(output);
 
             return new ActionResult<Response<DiseaseSearchResponse>>(presenter.Result);

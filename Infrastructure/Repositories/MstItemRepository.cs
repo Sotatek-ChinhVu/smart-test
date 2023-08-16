@@ -1363,7 +1363,7 @@ namespace Infrastructure.Repositories
 
         public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize, bool isHasFreeByomei = true)
         {
-            var keywordHalfSize = keyword != String.Empty ? CIUtil.ToHalfsize(keyword) : "";
+            var keywordHalfSize = keyword != string.Empty ? CIUtil.ToHalfsize(keyword) : "";
 
             var query = NoTrackingDataContext.ByomeiMsts.Where(item =>
                                     (item.KanaName1 != null &&
