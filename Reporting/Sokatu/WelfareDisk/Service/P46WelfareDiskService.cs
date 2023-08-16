@@ -81,7 +81,7 @@ namespace Reporting.Sokatu.WelfareDisk.Service
 
             CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")));
             string sheetName = string.Format("461{0}-1-{1}{2}", hpInf.HpCd, wrkYmd.Year.ToString("D2"), wrkYmd.Month.ToString("D2"));
-            return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, retDatas);
+            return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
         }
 
         #region SubMethod

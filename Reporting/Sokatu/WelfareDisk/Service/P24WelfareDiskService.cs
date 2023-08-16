@@ -44,7 +44,7 @@ public class P24WelfareDiskService : IP24WelfareDiskService
         }
 
         string sheetName = string.Format("FKS_241{0}", hpInf.HpCd.PadLeft(7, '0'));
-        return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, retDatas);
+        return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
     }
 
     #region Private function

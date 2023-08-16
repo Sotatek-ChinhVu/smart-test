@@ -80,7 +80,7 @@ namespace Reporting.Sokatu.WelfareDisk.Service
 
             string sheetName = string.Format("天草市子ども医療費請求書_{0}", seikyuYm);
 
-            return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, retDatas);
+            return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
         }
 
         #region SubMethod
