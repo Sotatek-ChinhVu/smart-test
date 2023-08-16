@@ -223,7 +223,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetTenMstOriginInfoCreate)]
         public ActionResult<Response<GetTenMstOriginInfoCreateResponse>> GetTenMstOriginInfoCreate([FromQuery] GetTenMstOriginInfoCreateRequest request)
         {
-            var input = new GetTenMstOriginInfoCreateInputData(request.Type, HpId);
+            var input = new GetTenMstOriginInfoCreateInputData(request.Type, HpId, UserId, request.ItemCd);
             var output = _bus.Handle(input);
             var presenter = new GetTenMstOriginInfoCreatePresenter();
             presenter.Complete(output);
