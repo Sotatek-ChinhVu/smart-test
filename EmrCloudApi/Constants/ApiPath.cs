@@ -380,6 +380,7 @@
         public const string GetStatisticMenuList = "GetStatisticMenuList";
         public const string SaveStatisticMenuList = "SaveStatisticMenuList";
         public const string GetListStaticReport = "GetListStaticReport";
+        public const string FindPtHokenList = "FindPtHokenList";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
