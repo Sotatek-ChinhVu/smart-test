@@ -1678,13 +1678,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var ptKohi3 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi3Id);
         var ptKohi4 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi4Id);
 
-        var hokenPInf = NoTrackingDataContext.PtHokenPatterns.FirstOrDefault(item => item.HpId == hpId
-                                                                                     && item.HokenId == hokenId
-                                                                                     && hokenInf != null
-                                                                                     && item.HokenKbn == hokenInf.HokenKbn
-                                                                                     && item.IsDeleted == 0
-                                                                                     && item.StartDate / 100 <= sinYm
-                                                                                     && item.EndDate / 100 >= sinYm);
+        var hokenPInf = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
+                                                                            && item.HokenId == hokenId
+                                                                            && hokenInf != null
+                                                                            && item.HokenKbn == hokenInf.HokenKbn
+                                                                            && item.IsDeleted == 0
+                                                                            && item.StartDate / 100 <= sinYm
+                                                                            && item.EndDate / 100 >= sinYm)
+                                                             .OrderByDescending(item => item.HokenPid)
+                                                             .FirstOrDefault();
         return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new(), hokenPInf ?? new());
     }
 
