@@ -1,4 +1,5 @@
 ﻿using Reporting.Mappers.Common;
+using Reporting.Receipt.Service;
 using Reporting.Sokatu;
 using Reporting.Sokatu.AfterCareSeikyu.Service;
 using Reporting.Sokatu.HikariDisk.Service;
@@ -8,7 +9,6 @@ using Reporting.Sokatu.KoukiSeikyu.Service;
 using Reporting.Sokatu.Syaho.Service;
 using Reporting.Sokatu.WelfareSeikyu.Service;
 using Reporting.Structs;
-using System.Collections.Generic;
 
 namespace Reporting.ReceiptPrint.Service;
 
@@ -23,6 +23,7 @@ public class ReceiptPrintService : IReceiptPrintService
 
     #endregion
 
+    #region Contructor
     private readonly IP28KokhoSokatuCoReportService _p28KokhoSokatuCoReportService;
     private readonly IP11KokhoSokatuCoReportService _p11KokhoSokatuCoReportService;
     private readonly IHikariDiskCoReportService _hikariDiskCoReportService;
@@ -89,6 +90,7 @@ public class ReceiptPrintService : IReceiptPrintService
     private readonly IP22KokhoSeikyuCoReportService _p22KokhoSeikyuCoReportService;
     private readonly IP23KokhoSeikyuCoReportService _p23KokhoSeikyuCoReportService;
     private readonly IP24KokhoSeikyuCoReportService _p24KokhoSeikyuCoReportService;
+    private readonly IReceiptCoReportService _receiptCoReportService;
     private readonly IP26KokhoSeikyuOutCoReportService _p26KokhoSeikyuOutCoReportService;
     private readonly IP27KokhoSeikyuInCoReportService _p27KokhoSeikyuInCoReportService;
     private readonly IP27KokhoSeikyuOutCoReportService _p27KokhoSeikyuOutCoReportService;
@@ -110,7 +112,7 @@ public class ReceiptPrintService : IReceiptPrintService
     private readonly IP24WelfareSyomeiSofuCoReportService _p24WelfareSyomeiSofuCoReportService;
     private readonly IP26VaccineSokatuCoReportService _p26VaccineSokatuCoReportService;
     private readonly IP27IzumisanoSeikyuCoReportService _p27IzumisanoSeikyuCoReportService;
-    private readonly IP35WelfareSeikyuCoReportService _p35WelfareSeikyuCoReportService; 
+    private readonly IP35WelfareSeikyuCoReportService _p35WelfareSeikyuCoReportService;
     private readonly IP35WelfareSokatuCoReportService _p35WelfareSokatuCoReportService;
     private readonly IP43KikuchiMeisai41CoReportService _p43KikuchiMeisai41CoReportService;
     private readonly IP43KikuchiMeisai43CoReportService _p43KikuchiMeisai43CoReportService;
@@ -118,20 +120,17 @@ public class ReceiptPrintService : IReceiptPrintService
     private readonly IP43KikuchiSeikyu43CoReportService _p43KikuchiSeikyu43CoReportService;
     private readonly IP43KumamotoSeikyuCoReportService _p43KumamotoSeikyuCoReportService;
     private readonly IP44WelfareSeikyu84CoReportService _p44WelfareSeikyu84CoReportService;
-    private readonly IP14WelfareSeikyuCoReportService _p14WelfareSeikyuCoReportService;
-    private readonly IP17KokhoSeikyuCoReportService _p17KokhoSeikyuCoReportService;
-    private readonly IP17WelfareSeikyuCoReportService _p17WelfareSeikyuCoReportService;
-    private readonly IP11KokhoSeikyuCoReportService _p11KokhoSeikyuCoReportService;
-    private readonly IP25WelfareSeikyuCoReportService _p25WelfareSeikyuCoReportService; 
-    private readonly IP26WelfareSeikyuCoReportService _p26WelfareSeikyuCoReportService;
-    private readonly IP29WelfareSeikyuCoReportService _p29WelfareSeikyuCoReportService;
-    private readonly IP40WelfareSeikyuCoReportService _p40WelfareSeikyuCoReportService;
+    private readonly IP43ReihokuSeikyu41CoReportService _p43ReihokuSeikyu41CoReportService;
 
     public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService, IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService, IHikariDiskCoReportService hikariDiskCoReportService, IP28KoukiSeikyuCoReportService p28KoukiSeikyuCoReportService, IP29KoukiSeikyuCoReportService p29KoukiSeikyuCoReportService, IAfterCareSeikyuCoReportService afterCareSeikyuCoReportService, ISyahoCoReportService syahoCoReportService, IP45KoukiSeikyuCoReportService p45KoukiSeikyuCoReportService, IP33KoukiSeikyuCoReportService p33KoukiSeikyuCoReportService, IP34KoukiSeikyuCoReportService p34KoukiSeikyuCoReportService, IP35KoukiSeikyuCoReportService p35KoukiSeikyuCoReportService, IP37KoukiSeikyuCoReportService p37KoukiSeikyuCoReportService, IP40KoukiSeikyuCoReportService p40KoukiSeikyuCoReportService, IP42KoukiSeikyuCoReportService p42KoukiSeikyuCoReportService, IP09KoukiSeikyuCoReportService p09KoukiSeikyuCoReportService, IP12KoukiSeikyuCoReportService p12KoukiSeikyuCoReportService, IP13KoukiSeikyuCoReportService p13KoukiSeikyuCoReportService, IP30KoukiSeikyuCoReportService p30KoukiSeikyuCoReportService, IP41KoukiSeikyuCoReportService p41KoukiSeikyuCoReportService, IP08KokhoSokatuCoReportService p08KokhoSokatuCoReportService, IP44KoukiSeikyuCoReportService p44KoukiSeikyuCoReportService, IP08KoukiSeikyuCoReportService p08KoukiSeikyuCoReportService, IP11KoukiSeikyuCoReportService p11KoukiSeikyuCoReportService, IP14KoukiSeikyuCoReportService p14KoukiSeikyuCoReportService, IP17KoukiSeikyuCoReportService p17KoukiSeikyuCoReportService
                               , IP20KoukiSeikyuCoReportService p20KoukiSeikyuCoReportService, IP25KokhoSokatuCoReportService p25KokhoSokatuCoReportService, IP13WelfareSeikyuCoReportService p13WelfareSeikyuCoReportService, IP08KokhoSeikyuCoReportService p08KokhoSeikyuCoReportService, IP22WelfareSeikyuCoReportService p22WelfareSeikyuCoReportService, IP21KoukiSeikyuCoReportService p21KoukiSeikyuCoReportService, IP22KoukiSeikyuCoReportService p22KoukiSeikyuCoReportService, IP23KoukiSeikyuCoReportService p23KoukiSeikyuCoReportService, IP24KoukiSeikyuCoReportService p24KoukiSeikyuCoReportService, IP25KoukiSeikyuCoReportService p25KoukiSeikyuCoReportService, IP27KoukiSeikyuCoReportService p27KoukiSeikyuCoReportService, IP14KokhoSokatuCoReportService p14KokhoSokatuCoReportService, IP17KokhoSokatuCoReportService p17KokhoSokatuCoReportService, IP20KokhoSokatuCoReportService p20KokhoSokatuCoReportService, IP22KokhoSokatuCoReportService p22KokhoSokatuCoReportService, IP23KokhoSokatuCoReportService p23KokhoSokatuCoReportService, IP26KokhoSokatuInCoReportService p26KokhoSokatuInCoReportService, IP33KokhoSokatuCoReportService p33KokhoSokatuCoReportService, IP34KokhoSokatuCoReportService p34KokhoSokatuCoReportService, IP35KokhoSokatuCoReportService p35KokhoSokatuCoReportService, IP37KokhoSokatuCoReportService p37KokhoSokatuCoReportService, IP37KoukiSokatuCoReportService p37KoukiSokatuCoReportService, IP26KokhoSokatuOutCoReportService p26KokhoSokatuOutCoReportService, IP40KokhoSokatuCoReportService p40KokhoSokatuCoReportService
                               , IP41KokhoSokatuCoReportService p41KokhoSokatuCoReportService, IP42KokhoSokatuCoReportService p42KokhoSokatuCoReportService, IP12KokhoSokatuCoReportService p12KokhoSokatuCoReportService, IP13KokhoSokatuCoReportService p13KokhoSokatuCoReportService, IP43KokhoSokatuCoReportService p43KokhoSokatuCoReportService, IP43KoukiSokatuCoReportService p43KoukiSokatuCoReportService, IP44KokhoSokatuCoReportService p44KokhoSokatuCoReportService, IP45KokhoSokatuCoReportService p45KokhoSokatuCoReportService, IP45KoukiSokatuCoReportService p45KoukiSokatuCoReportService, IP12KokhoSeikyuCoReportService p12KokhoSeikyuCoReportService, IP13KokhoSeikyuCoReportService p13KokhoSeikyuCoReportService, IP14KokhoSeikyuCoReportService p14KokhoSeikyuCoReportService, IP20KokhoSeikyuCoReportService p20KokhoSeikyuCoReportService, IP21KokhoSeikyuCoReportService p21KokhoSeikyuCoReportService, IP22KokhoSeikyuCoReportService p22KokhoSeikyuCoReportService, IP23KokhoSeikyuCoReportService p23KokhoSeikyuCoReportService, IP24KokhoSeikyuCoReportService p24KokhoSeikyuCoReportService, IP26KokhoSeikyuOutCoReportService p26KokhoSeikyuOutCoReportService, IP27KokhoSeikyuInCoReportService p27KokhoSeikyuInCoReportService, IP27KokhoSeikyuOutCoReportService p27KokhoSeikyuOutCoReportService, IP28KokhoSeikyuCoReportService p28KokhoSeikyuCoReportService, IP29KokhoSeikyuCoReportService p29KokhoSeikyuCoReportService, IP30KokhoSeikyuCoReportService p30KokhoSeikyuCoReportService, IP42KokhoSeikyuCoReportService p42KokhoSeikyuCoReportService, IP43KokhoSeikyuCoReportService p43KokhoSeikyuCoReportService
-                              , IP20WelfareSokatuCoReportService p20WelfareSokatuCoReportService, IP21WelfareSeikyuCoReportService p21WelfareSeikyuCoReportService, IP21WelfareSokatuCoReportService p21WelfareSokatuCoReportService, IP09KokhoSeikyuCoReportService p09KokhoSeikyuCoReportService, IP23NagoyaSeikyuCoReportService p23NagoyaSeikyuCoReportService, IP23WelfareSeikyuCoReportService p23WelfareSeikyuCoReportService, IP24WelfareSofuDiskCoReportService p24WelfareSofuDiskCoReportService, IP24WelfareSofuPaperCoReportService p24WelfareSofuPaperCoReportService, IP24WelfareSyomeiCoReportService p24WelfareSyomeiCoReportService, IP24WelfareSyomeiListCoReportService p24WelfareSyomeiListCoReportService, IP24WelfareSyomeiSofuCoReportService p24WelfareSyomeiSofuCoReportService, IP26VaccineSokatuCoReportService p26VaccineSokatuCoReportService, IP35WelfareSeikyuCoReportService p35WelfareSeikyuCoReportService, IP35WelfareSokatuCoReportService p35WelfareSokatuCoReportService, IP43KikuchiMeisai41CoReportService p43KikuchiMeisai41CoReportService, IP43KikuchiMeisai43CoReportService p43KikuchiMeisai43CoReportService, IP43KikuchiSeikyu41CoReportService p43KikuchiSeikyu41CoReportService, IP43KikuchiSeikyu43CoReportService p43KikuchiSeikyu43CoReportService, IP43KumamotoSeikyuCoReportService p43KumamotoSeikyuCoReportService, IP44WelfareSeikyu84CoReportService p44WelfareSeikyu84CoReportService, IP14WelfareSeikyuCoReportService p14WelfareSeikyuCoReportService, IP17KokhoSeikyuCoReportService p17KokhoSeikyuCoReportService, IP17WelfareSeikyuCoReportService p17WelfareSeikyuCoReportService
-                              , IP11KokhoSeikyuCoReportService p11KokhoSeikyuCoReportService, IP25WelfareSeikyuCoReportService p25WelfareSeikyuCoReportService, IP26WelfareSeikyuCoReportService p26WelfareSeikyuCoReportService, IP29WelfareSeikyuCoReportService p29WelfareSeikyuCoReportService, IP40WelfareSeikyuCoReportService p40WelfareSeikyuCoReportService)
+                              , IP20WelfareSokatuCoReportService p20WelfareSokatuCoReportService, IP21WelfareSeikyuCoReportService p21WelfareSeikyuCoReportService, IP21WelfareSokatuCoReportService p21WelfareSokatuCoReportService, IP09KokhoSeikyuCoReportService p09KokhoSeikyuCoReportService, IP23NagoyaSeikyuCoReportService p23NagoyaSeikyuCoReportService, IP23WelfareSeikyuCoReportService p23WelfareSeikyuCoReportService, IP24WelfareSofuDiskCoReportService p24WelfareSofuDiskCoReportService, IP24WelfareSofuPaperCoReportService p24WelfareSofuPaperCoReportService, IP24WelfareSyomeiCoReportService p24WelfareSyomeiCoReportService, IP24WelfareSyomeiListCoReportService p24WelfareSyomeiListCoReportService, IP24WelfareSyomeiSofuCoReportService p24WelfareSyomeiSofuCoReportService, IP26VaccineSokatuCoReportService p26VaccineSokatuCoReportService, IP35WelfareSeikyuCoReportService p35WelfareSeikyuCoReportService, IP35WelfareSokatuCoReportService p35WelfareSokatuCoReportService, IP43KikuchiMeisai41CoReportService p43KikuchiMeisai41CoReportService, IP43KikuchiMeisai43CoReportService p43KikuchiMeisai43CoReportService, IP43KikuchiSeikyu41CoReportService p43KikuchiSeikyu41CoReportService, IP43KikuchiSeikyu43CoReportService p43KikuchiSeikyu43CoReportService, IP43KumamotoSeikyuCoReportService p43KumamotoSeikyuCoReportService, IP44WelfareSeikyu84CoReportService p44WelfareSeikyu84CoReportService
+                              , IReceiptCoReportService receiptCoReportService
+                              , IP27IzumisanoSeikyuCoReportService p27IzumisanoSeikyuCoReportService
+                              , IP43ReihokuSeikyu41CoReportService p43ReihokuSeikyu41CoReportService
+
+                              )
     {
         _p28KokhoSokatuCoReportService = p28KokhoSokatuCoReportService;
         _p11KokhoSokatuCoReportService = p11KokhoSokatuCoReportService;
@@ -227,22 +226,19 @@ public class ReceiptPrintService : IReceiptPrintService
         _p43KikuchiSeikyu43CoReportService = p43KikuchiSeikyu43CoReportService;
         _p43KumamotoSeikyuCoReportService = p43KumamotoSeikyuCoReportService;
         _p44WelfareSeikyu84CoReportService = p44WelfareSeikyu84CoReportService;
-        _p14WelfareSeikyuCoReportService = p14WelfareSeikyuCoReportService;
-        _p17KokhoSeikyuCoReportService = p17KokhoSeikyuCoReportService;
-        _p17WelfareSeikyuCoReportService = p17WelfareSeikyuCoReportService;
-        _p11KokhoSeikyuCoReportService = p11KokhoSeikyuCoReportService;
-        _p25WelfareSeikyuCoReportService = p25WelfareSeikyuCoReportService;
-        _p26WelfareSeikyuCoReportService = p26WelfareSeikyuCoReportService;
-        _p29WelfareSeikyuCoReportService = p29WelfareSeikyuCoReportService;
-        _p40WelfareSeikyuCoReportService = p40WelfareSeikyuCoReportService;
+        _receiptCoReportService = receiptCoReportService;
+        _p27IzumisanoSeikyuCoReportService = p27IzumisanoSeikyuCoReportService;
+        _p43ReihokuSeikyu41CoReportService = p43ReihokuSeikyu41CoReportService;
     }
+    #endregion
 
-    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, List<long> printPtIds)
+    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, long ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, int hokenKbn, ReseputoShubetsuModel selectedReseputoShubeusu, int departmentId, int doctorId, int printNoFrom, int printNoTo, bool includeTester, bool includeOutDrug, int sort, List<long> printPtIds)
     {
         CommonReportingRequestModel result = new();
         var seikyuType = GetSeikyuType(dataKbn);
         var prefKbn = GetPrefKbn(reportEdaNo);
 
+        #region 100 service
         if (prefNo == 28 && reportId == 102 && reportEdaNo == 0)
         {
             result = _p28KokhoSokatuCoReportService.GetP28KokhoSokatuReportingData(hpId, seikyuYm, seikyuType);
@@ -277,7 +273,6 @@ public class ReceiptPrintService : IReceiptPrintService
         }
         else if (reportId == 2 && reportEdaNo == 0)
         {
-            int hokenKbn = 1;
             result = _hikariDiskCoReportService.GetHikariDiskPrintData(hpId, seikyuYm, hokenKbn, diskKind, diskCnt);
         }
         else if (reportId == 4 && reportEdaNo == 0)
@@ -643,54 +638,157 @@ public class ReceiptPrintService : IReceiptPrintService
         {
             result = _p44WelfareSeikyu84CoReportService.GetP44WelfareSeikyu84ReportingData(hpId, seikyuYm, seikyuType);
         }
-        else if (prefNo == 14 && reportId == 105 && reportEdaNo == 0 && welfareType == 1)
+        else if (prefNo == 43 && reportId == 105 && reportEdaNo == 9)
         {
-            result = _p14WelfareSeikyuCoReportService.GetP14WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType, welfareType);
+            result = _p43ReihokuSeikyu41CoReportService.GetP43ReihokuSeikyu41ReportingData(hpId, seikyuYm, seikyuType);
         }
-        else if (prefNo == 14 && reportId == 105 && reportEdaNo == 1 && welfareType == 2)
+        #endregion
+        else
         {
-            result = _p14WelfareSeikyuCoReportService.GetP14WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType, welfareType);
+            // if (isPreview) return false;
+            // Calculate target
+            int target = hokenKbn;
+            if (reportId >= 10001)
+            {
+                target = reportId;
+            }
+            else
+            {
+                if (hokenKbn == 3 && selectedReseputoShubeusu != null)
+                {
+                    var listReceSbtShaho = new List<ReseputoShubetsuModel>()
+                    {
+                        new ReseputoShubetsuModel ("11","--■社保一般（すべて）"),
+                        new ReseputoShubetsuModel ("12","--■公費（すべて）	"),
+                        new ReseputoShubetsuModel ("1112","社保単独・本人"),
+                        new ReseputoShubetsuModel ("1114","社保単独・未就学"),
+                        new ReseputoShubetsuModel ("1116","社保単独・家族"),
+                        new ReseputoShubetsuModel ("1118","社保単独・高一/低"),
+                        new ReseputoShubetsuModel ("1110","社保単独・高７"),
+                        new ReseputoShubetsuModel ("1122","社保２併・本人"),
+                        new ReseputoShubetsuModel ("1124","社保２併・未就学"),
+                        new ReseputoShubetsuModel ("1126","社保２併・家族"),
+                        new ReseputoShubetsuModel ("1128","社保２併・高一/低"),
+                        new ReseputoShubetsuModel ("1120","社保２併・高７"),
+                        new ReseputoShubetsuModel ("1132","社保３併・本人"),
+                        new ReseputoShubetsuModel ("1134","社保３併・未就学"),
+                        new ReseputoShubetsuModel ("1136","社保３併・家族"),
+                        new ReseputoShubetsuModel ("1138","社保３併・高一/低"),
+                        new ReseputoShubetsuModel ("1130","社保３併・高７"),
+                        new ReseputoShubetsuModel ("1142","社保４併・本人"),
+                        new ReseputoShubetsuModel ("1144","社保４併・未就学"),
+                        new ReseputoShubetsuModel ("1146","社保４併・家族"),
+                        new ReseputoShubetsuModel ("1148","社保４併・高一/低"),
+                        new ReseputoShubetsuModel ("1140","社保４併・高７"),
+                        new ReseputoShubetsuModel ("1152","社保５併・本人"),
+                        new ReseputoShubetsuModel ("1154","社保５併・未就学"),
+                        new ReseputoShubetsuModel ("1156","社保５併・家族"),
+                        new ReseputoShubetsuModel ("1158","社保５併・高一/低"),
+                        new ReseputoShubetsuModel ("1150","社保５併・高７"),
+                        new ReseputoShubetsuModel ("1212","公費単独"),
+                        new ReseputoShubetsuModel ("1222","公費２併"),
+                        new ReseputoShubetsuModel ("1232","公費３併"),
+                        new ReseputoShubetsuModel ("1242","公費４併")
+                    };
+
+                    var listReceSbtKokuho = new List<ReseputoShubetsuModel>()
+                    {
+                        new ReseputoShubetsuModel ("11","--■国保一般（すべて）"),
+                        new ReseputoShubetsuModel ("14","--■退職（すべて）"),
+                        new ReseputoShubetsuModel ("13","--■後期（すべて）"),
+                        new ReseputoShubetsuModel ("1112","国保単独・本人"),
+                        new ReseputoShubetsuModel ("1114","国保単独・未就学"),
+                        new ReseputoShubetsuModel ("1116","国保単独・家族"),
+                        new ReseputoShubetsuModel ("1118","国保単独・高一/低"),
+                        new ReseputoShubetsuModel ("1110","国保単独・高７"),
+                        new ReseputoShubetsuModel ("1122","国保２併・本人"),
+                        new ReseputoShubetsuModel ("1124","国保２併・未就学"),
+                        new ReseputoShubetsuModel ("1126","国保２併・家族"),
+                        new ReseputoShubetsuModel ("1128","国保２併・高一/低"),
+                        new ReseputoShubetsuModel ("1120","国保２併・高７"),
+                        new ReseputoShubetsuModel ("1132","国保３併・本人"),
+                        new ReseputoShubetsuModel ("1134","国保３併・未就学"),
+                        new ReseputoShubetsuModel ("1136","国保３併・家族"),
+                        new ReseputoShubetsuModel ("1138","国保３併・高一/低"),
+                        new ReseputoShubetsuModel ("1130","国保３併・高７"),
+                        new ReseputoShubetsuModel ("1142","国保４併・本人"),
+                        new ReseputoShubetsuModel ("1144","国保４併・未就学"),
+                        new ReseputoShubetsuModel ("1146","国保４併・家族"),
+                        new ReseputoShubetsuModel ("1148","国保４併・高一/低"),
+                        new ReseputoShubetsuModel ("1140","国保４併・高７"),
+                        new ReseputoShubetsuModel ("1152","国保５併・本人"),
+                        new ReseputoShubetsuModel ("1154","国保５併・未就学"),
+                        new ReseputoShubetsuModel ("1156","国保５併・家族"),
+                        new ReseputoShubetsuModel ("1158","国保５併・高一/低"),
+                        new ReseputoShubetsuModel ("1150","国保５併・高７"),
+                        new ReseputoShubetsuModel ("1318","後期単独・一低"),
+                        new ReseputoShubetsuModel ("1310","後期単独・高７"),
+                        new ReseputoShubetsuModel ("1328","後期２併・一低"),
+                        new ReseputoShubetsuModel ("1320","後期２併・高７"),
+                        new ReseputoShubetsuModel ("1338","後期３併・一低"),
+                        new ReseputoShubetsuModel ("1330","後期３併・高７"),
+                        new ReseputoShubetsuModel ("1348","後期４併・一低"),
+                        new ReseputoShubetsuModel ("1340","後期４併・高７"),
+                        new ReseputoShubetsuModel ("1358","後期５併・一低"),
+                        new ReseputoShubetsuModel ("1350","後期５併・高７"),
+                        new ReseputoShubetsuModel ("1412","退職単独・本人"),
+                        new ReseputoShubetsuModel ("1414","退職単独・未就学"),
+                        new ReseputoShubetsuModel ("1416","退職単独・家族"),
+                        new ReseputoShubetsuModel ("1418","退職単独・高一/低"),
+                        new ReseputoShubetsuModel ("1410","退職単独・高７"),
+                        new ReseputoShubetsuModel ("1422","退職２併・本人"),
+                        new ReseputoShubetsuModel ("1424","退職２併・未就学"),
+                        new ReseputoShubetsuModel ("1426","退職２併・家族"),
+                        new ReseputoShubetsuModel ("1428","退職２併・高一/低"),
+                        new ReseputoShubetsuModel ("1420","退職２併・高７"),
+                        new ReseputoShubetsuModel ("1432","退職３併・本人"),
+                        new ReseputoShubetsuModel ("1434","退職３併・未就学"),
+                        new ReseputoShubetsuModel ("1436","退職３併・家族"),
+                        new ReseputoShubetsuModel ("1438","退職３併・高一/低"),
+                        new ReseputoShubetsuModel ("1430","退職３併・高７"),
+                        new ReseputoShubetsuModel ("1432","退職４併・本人"),
+                        new ReseputoShubetsuModel ("1434","退職４併・未就学"),
+                        new ReseputoShubetsuModel ("1436","退職４併・家族"),
+                        new ReseputoShubetsuModel ("1438","退職４併・高一/低"),
+                        new ReseputoShubetsuModel ("1440","退職４併・高７"),
+                        new ReseputoShubetsuModel ("1452","退職５併・本人"),
+                        new ReseputoShubetsuModel ("1454","退職５併・未就学"),
+                        new ReseputoShubetsuModel ("1456","退職５併・家族"),
+                        new ReseputoShubetsuModel ("1458","退職５併・高一/低"),
+                        new ReseputoShubetsuModel ("1450","退職５併・高７")
+                    };
+
+                    var selectedReceSbtShaho = listReceSbtShaho.FirstOrDefault(x => x.Key == selectedReseputoShubeusu.Key && (x.Value.Contains(selectedReseputoShubeusu.Value) || selectedReseputoShubeusu.Value.Contains(x.Value)));
+                    if (selectedReceSbtShaho != null)
+                    {
+                        target = 1;
+                    }
+                    var selectedReceSbtKokuho = listReceSbtKokuho.FirstOrDefault(x => x.Key == selectedReseputoShubeusu.Key && (x.Value.Contains(selectedReseputoShubeusu.Value) || selectedReseputoShubeusu.Value.Contains(x.Value)));
+                    if (selectedReceSbtKokuho != null)
+                    {
+                        target = 2;
+                    }
+                }
+            }
+
+            result = _receiptCoReportService.GetReceiptDataByReceiptCheckList(hpId
+                                                                            , seikyuYm
+                                                                            , new List<long>() { ptId }
+                                                                            , sinYm: 0
+                                                                            , hokenId: 0
+                                                                            , departmentId
+                                                                            , doctorId
+                                                                            , target
+                                                                            , receSbt: selectedReseputoShubeusu?.Key ?? string.Empty
+                                                                            , printNoFrom: printNoFrom
+                                                                            , printNoTo: printNoTo
+                                                                            , seikyuType: seikyuType
+                                                                            , includeTester
+                                                                            , includeOutDrug
+                                                                            , sort);
+
         }
-        else if (prefNo == 14 && reportId == 105 && reportEdaNo == 2 && welfareType == 0)
-        {
-            result = _p14WelfareSeikyuCoReportService.GetP14WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType, welfareType);
-        }
-        else if (prefNo == 14 && reportId == 105 && reportEdaNo == 3 && welfareType == 3)
-        {
-            result = _p14WelfareSeikyuCoReportService.GetP14WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType, welfareType);
-        }
-        else if (prefNo == 14 && reportId == 105 && reportEdaNo == 4 && welfareType == 4)
-        {
-            result = _p14WelfareSeikyuCoReportService.GetP14WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType, welfareType);
-        }
-        else if (prefNo == 17 && reportId == 103 && reportEdaNo == 0)
-        {
-            result = _p17KokhoSeikyuCoReportService.GetP17KokhoSeikyuReportingData(hpId, seikyuYm, seikyuType, printHokensyaNos);
-        }
-        else if (prefNo == 17 && reportId == 105 && reportEdaNo == 0)
-        {
-            result = _p17WelfareSeikyuCoReportService.GetP17WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType);
-        }
-        else if (prefNo == 11 && reportId == 103 && reportEdaNo == 0)
-        {
-            result = _p11KokhoSeikyuCoReportService.GetP11KokhoSeikyuReportingData(hpId, seikyuYm, seikyuType, printHokensyaNos);
-        }
-        else if (prefNo == 25 && reportId == 105 && reportEdaNo == 0)
-        {
-            result = _p25WelfareSeikyuCoReportService.GetP25WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType);
-        }
-        else if (prefNo == 26 && reportId == 105 && reportEdaNo == 0)
-        {
-            result = _p26WelfareSeikyuCoReportService.GetP26WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType);
-        }
-        else if (prefNo == 29 && reportId == 105 && reportEdaNo == 1)
-        {
-            result = _p29WelfareSeikyuCoReportService.GetP29WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType);
-        }
-        else if (prefNo == 40 && reportId == 105 && reportEdaNo == 0)
-        {
-            result = _p40WelfareSeikyuCoReportService.GetP40WelfareSeikyuReportingData(hpId, seikyuYm, seikyuType);
-        }
+
         result.JobName = formName;
 
         return result;
@@ -753,4 +851,23 @@ public class ReceiptPrintService : IReceiptPrintService
         DenshiSeikyu = 2, //電子請求
         KamiSeikyu = 3, //紙請求
     }
+}
+
+
+public class ReseputoShubetsuModel
+{
+    public ReseputoShubetsuModel(string key, string value)
+    {
+        Key = key;
+        Value = value;
+    }
+
+    public ReseputoShubetsuModel()
+    {
+        Key = string.Empty;
+        Value = string.Empty;
+    }
+    public string Key { get; private set; }
+
+    public string Value { get; private set; }
 }

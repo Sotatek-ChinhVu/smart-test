@@ -66,5 +66,7 @@ namespace Domain.Models.Reception
         bool UpdateIsDeleted(int hpId, long raiinNo);
 
         List<RaiinInfToPrintModel> GetOutDrugOrderList(int hpId, int fromDate, int toDate);
+
+        int GetStatusRaiinInf(int hpId, long raiinNo, long ptId);
     }
 }

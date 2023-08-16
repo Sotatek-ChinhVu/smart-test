@@ -32,6 +32,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
 
     public bool SaveStatisticMenu(int hpId, int userId, List<StatisticMenuModel> statisticMenuModelList)
     {
+        bool success = false;
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(
             () =>
@@ -43,6 +44,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                         SaveDailyStatisticMenuAction(hpId, userId, statisticMenuModelList);
                         TrackingDataContext.SaveChanges();
                         transaction.Commit();
+                        success = true;
                     }
                     catch
                     {
@@ -50,7 +52,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                     }
                 }
             });
-        return true;
+        return success;
     }
 
     public List<StaGrpModel> GetStaGrp(int hpId, int grpId)

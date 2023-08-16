@@ -297,6 +297,7 @@
         public const string GetListRaiinInf = "GetListRaiinInf";
         public const string CheckExisReceInfEdit = "CheckExisReceInfEdit";
         public const string GetListSokatuMst = "GetListSokatuMst";
+        public const string CheckExistsReceInf = "CheckExistsReceInf";
         public const string CheckExistSyobyoKeika = "CheckExistSyobyoKeika";
 
         //Accounting
@@ -337,6 +338,7 @@
         public const string SaveReceSeikyu = "SaveReceSeikyu";
         public const string CancelSeikyu = "CancelSeikyu";
         public const string ImportFileReceSeikyu = "ImportFileReceSeikyu";
+        public const string GetReceSeikyModelByPtNum = "GetReceSeikyModelByPtNum";
 
         //WeightedSetConfirmation
         public const string IsOpenWeightChecking = "IsOpenWeightChecking";
