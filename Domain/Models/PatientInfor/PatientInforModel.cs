@@ -304,6 +304,6 @@ namespace Domain.Models.PatientInfor
 
         public string BirthdayDisplay { get => CIUtil.SDateToShowWDate2(Birthday); }
 
-        public string Age { get => CIUtil.SDateToDecodeAge(Birthday.AsString(), SinDate.AsString()); }
+        public string Age { get => CIUtil.SDateToDecodeAge(Birthday.AsString(), SinDate > 0 ? SinDate.AsString() : CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd")); }
     }
 }
