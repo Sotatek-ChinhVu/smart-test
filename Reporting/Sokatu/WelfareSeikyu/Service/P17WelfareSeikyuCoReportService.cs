@@ -1,7 +1,4 @@
 ﻿using Helper.Common;
-using Infrastructure.Interfaces;
-using Reporting.CommonMasters.Config;
-using Reporting.CommonMasters.Constants;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.WelfareSeikyu.DB;
@@ -11,10 +8,34 @@ using Reporting.Structs;
 
 namespace Reporting.Sokatu.WelfareSeikyu.Service;
 
-public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
+public class P17WelfareSeikyuCoReportService : IP17WelfareSeikyuCoReportService
 {
     #region Constant
-    private List<string> kohiHoubetus;
+    private const int myPrefNo = 17;
+
+    private class CityKohi
+    {
+        /// <summary>
+        /// 市町コード
+        /// </summary>
+        public string cityNo;
+
+        /// <summary>
+        /// 公費の保険番号
+        /// </summary>
+        public int kohiHokenNo;
+
+        /// <summary>
+        /// 種別
+        ///     1:乳幼児, 2:児童, 3:ひとり親
+        /// </summary>
+        public int syubetu;
+    }
+
+    private readonly List<CityKohi> CityKohis = new List<CityKohi>()
+        {
+            new CityKohi(){ cityNo = "172120", kohiHokenNo = 291, syubetu = 3}
+        };
     #endregion
 
     #region Private properties
@@ -28,6 +49,7 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
     /// </summary>
     private List<CoWelfareReceInfModel> receInfs;
     private CoHpInfModel hpInf;
+    private List<int> kohiHokenNos;
     #endregion
 
     private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
@@ -36,10 +58,10 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, bool> _visibleFieldData;
     private readonly Dictionary<string, bool> _visibleAtPrint;
-    private readonly ISystemConfig _systemConfig;
+    private const string _formFileName = "p17WelfareSeikyu.rse";
 
     #region Constructor and Init
-    public P13WelfareSeikyuCoReportService(ISystemConfig systemConfig, ICoWelfareSeikyuFinder welfareFinder)
+    public P17WelfareSeikyuCoReportService(ICoWelfareSeikyuFinder welfareFinder)
     {
         _welfareFinder = welfareFinder;
         _singleFieldData = new();
@@ -48,7 +70,6 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
         _listTextData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
-        _systemConfig = systemConfig;
     }
     #endregion
 
@@ -56,47 +77,23 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
     private int hpId;
     private int seikyuYm;
     private SeikyuType seikyuType;
-    private int welfareType;
     private int currentPage;
     private bool hasNextPage;
     #endregion
 
-    public CommonReportingRequestModel GetP13WelfareSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, int welfareType)
+    public CommonReportingRequestModel GetP17WelfareSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
         this.hpId = hpId;
         this.seikyuYm = seikyuYm;
         this.seikyuType = seikyuType;
-
-        switch (welfareType)
-        {
-            //負担医療費請求書
-            case 0: kohiHoubetus = new List<string> { "82" }; break;
-            //難病医療費請求書
-            case 1: kohiHoubetus = new List<string> { "83" }; break;
-        }
         var getData = GetData();
-
-        string _formFileName = "";
-        switch (welfareType)
-        {
-            case 0: _formFileName = "p13WelfareSeikyuGreen.rse"; break;
-            case 1: _formFileName = "p13WelfareSeikyuBlue.rse"; break;
-        }
-
-        switch (welfareType)
-        {
-            case 0: _visibleAtPrint.Add("Frame", _systemConfig.P13WelfareGreenSeikyuType() == 0); break;
-            case 1: _visibleAtPrint.Add("Frame", _systemConfig.P13WelfareBlueSeikyuType() == 0); break;
-        }
-
         currentPage = 1;
         hasNextPage = true;
 
-        if(getData)
+        if (getData)
         {
             while (getData && hasNextPage)
             {
-                if (_formFileName == "") continue;
                 UpdateDrawForm();
                 currentPage++;
             }
@@ -110,7 +107,7 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
     #region Private function
     private bool UpdateDrawForm()
     {
-        const int maxRow = 10;
+        const int maxRow = 12;
         bool _hasNextPage = true;
 
         #region SubMethod
@@ -119,13 +116,13 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
         int UpdateFormHeader()
         {
             //医療機関コード
-            SetFieldData("hpCode", hpInf.HpCd);
+            SetFieldData("hpCode", string.Format("{0}{1}{2}", myPrefNo, 1, hpInf.HpCd));
             //医療機関情報
             SetFieldData("address1", hpInf.Address1);
             SetFieldData("address2", hpInf.Address2);
             SetFieldData("hpName", hpInf.ReceHpName);
-            SetFieldData("hpTel", hpInf.Tel);
             SetFieldData("kaisetuName", hpInf.KaisetuName);
+            SetFieldData("hpTel", hpInf.Tel);
             //請求年月
             CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(seikyuYm * 100 + 1);
             SetFieldData("seikyuGengo", wrkYmd.Gengo);
@@ -139,14 +136,28 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
             SetFieldData("reportYear", wrkYmd.Year.ToString());
             SetFieldData("reportMonth", wrkYmd.Month.ToString());
             SetFieldData("reportDay", wrkYmd.Day.ToString());
+            //市町コード
+            if (receInfs.Count == 0)
+            {
+                return 1;
+            }
+            int kohiHokenNo = receInfs[0].KohiHokenNo(kohiHokenNos);
+            string cityNo = CityKohis.Find(c => c.kohiHokenNo == kohiHokenNo).cityNo ?? string.Empty;
+            SetFieldData("cityNo", cityNo.ToString());
             //ページ数
-            SetFieldData("currentPage", currentPage.ToString());
+            int totalPage = (int)Math.Ceiling((double)receInfs.Count / maxRow);
+            if (totalPage >= 2)
+            {
+                SetFieldData("currentPage", currentPage.ToString());
+                SetFieldData("totalPage", totalPage.ToString());
+            }
 
             return 1;
         }
         #endregion
 
         #region Body
+
         int UpdateFormBody()
         {
             List<ListTextObject> listDataPerPage = new();
@@ -154,8 +165,7 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
 
             int ptIndex = (currentPage - 1) * maxRow;
 
-            int totalCount = 0;
-            int totalSeikyu = 0;
+            countData totalData = new countData();
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
@@ -165,58 +175,37 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
                     break;
                 }
                 var curReceInf = receInfs[ptIndex];
-
-                //負担者番号
-                if (curReceInf.FutansyaNo(kohiHoubetus) != "")
+                //特殊番号
+                if (curReceInf.TokusyuNo(kohiHokenNos) != null)
                 {
-                    listDataPerPage.Add(new("futansyaNo0", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus).Substring(0, 2)));
-                    listDataPerPage.Add(new("futansyaNo1", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus).Substring(4, 4)));
-
+                    listDataPerPage.Add(new("tokusyuNo", 0, rowNo, curReceInf.TokusyuNo(kohiHokenNos)));
                 }
-                //受給者番号
-                listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, string.Format("{0, 7}", curReceInf.JyukyusyaNo(kohiHoubetus))));
                 //保険者番号
                 listDataPerPage.Add(new("hokensyaNo", 0, rowNo, curReceInf.HokensyaNo));
-                //氏名
-                listDataPerPage.Add(new("ptName", 0, rowNo, curReceInf.PtName));
-                //負担割合
-                listDataPerPage.Add(new("hokenRate", 0, (short)(rowNo * 3 + (int)Math.Floor((double)curReceInf.HokenRate / 10) - 1), "○"));
+                //種別
+                int kohiHokenNo = curReceInf.KohiHokenNo(kohiHokenNos);
+                int sbt = CityKohis.Find(c => c.kohiHokenNo == kohiHokenNo).syubetu;
+                listDataPerPage.Add(new("syubetu", 0, rowNo, sbt.ToString()));
+                //カナ氏名
+                listDataPerPage.Add(new("kanaName", 0, rowNo, CIUtil.ToWide(curReceInf.KanaName)));
+                //生年月日(g.ee.MM.dd)
+                string WDate = CIUtil.SDateToWDate(curReceInf.BirthDay).ToString();
+                listDataPerPage.Add(new("birthday", 0, rowNo, string.Format("{0}.{1}.{2}.{3}", WDate.Substring(0, 1), WDate.Substring(1, 2), WDate.Substring(3, 2), WDate.Substring(5, 2))));
                 //入外区分
-                listDataPerPage.Add(new("gairai", 0, rowNo, "○"));
-                //診療日数
-                listDataPerPage.Add(new("nissu", 0, rowNo, curReceInf.HokenNissu.ToString()));
-                //請求額
-                listDataPerPage.Add(new("seikyu", 0, rowNo, curReceInf.KohiFutan(kohiHoubetus).ToString()));
-                totalSeikyu += curReceInf.KohiFutan(kohiHoubetus);
-                //公費分点数
-                listDataPerPage.Add(new("kohiTensu", 0, rowNo, curReceInf.KohiReceTensu(kohiHoubetus).ToString()));
-                if (welfareType == 1)
-                {
-                    //一部負担金相当額
-                    listDataPerPage.Add(new("futan", 0, rowNo, curReceInf.KohiReceFutan(kohiHoubetus).ToString()));
-                }
-                //備考
-                if (curReceInf.IsChoki)
-                {
-                    listDataPerPage.Add(new("biko", 0, rowNo, "長"));
-                    listDataPerPage.Add(new("bikoMaru", 0, rowNo, "○"));
-                }
-                else if (curReceInf.KogakuOverKbn != KogakuOverStatus.None)
-                {
-                    switch (curReceInf.KogakuKbn)
-                    {
-                        case 4: listDataPerPage.Add(new("biko", 0, rowNo, "Ⅱ")); break;
-                        case 5: listDataPerPage.Add(new("biko", 0, rowNo, "Ⅰ")); break;
-                        case 26: listDataPerPage.Add(new("biko", 0, rowNo, "ア")); break;
-                        case 27: listDataPerPage.Add(new("biko", 0, rowNo, "イ")); break;
-                        case 28: listDataPerPage.Add(new("biko", 0, rowNo, "ウ")); break;
-                        case 29: listDataPerPage.Add(new("biko", 0, rowNo, "エ")); break;
-                        case 30: listDataPerPage.Add(new("biko", 0, rowNo, "オ")); break;
-                    }
-                }
-
-                //件数
-                totalCount++;
+                listDataPerPage.Add(new("gairai", 0, rowNo, "2"));
+                //割合
+                listDataPerPage.Add(new("hokenRate", 0, rowNo, (curReceInf.HokenRate / 10).ToString()));
+                //日数
+                //入院日数のことなので印字しない
+                //合計点数
+                totalData.Tensu += curReceInf.Tensu;
+                listDataPerPage.Add(new("tensu", 0, rowNo, curReceInf.Tensu.ToString()));
+                //一部自己負担
+                totalData.Futan += curReceInf.PtFutan;
+                listDataPerPage.Add(new("futan", 0, rowNo, curReceInf.PtFutan.ToString()));
+                //診療年月(g.ee.MM)
+                WDate = CIUtil.SDateToWDate(curReceInf.SinYm * 100 + 1).ToString();
+                listDataPerPage.Add(new("sinYm", 0, rowNo, string.Format("{0}.{1}.{2}", WDate.Substring(0, 1), WDate.Substring(1, 2), WDate.Substring(3, 2))));
 
                 ptIndex++;
                 if (ptIndex >= receInfs.Count)
@@ -225,12 +214,7 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
                     break;
                 }
             }
-
-            //合計
-            SetFieldData("totalCount", totalCount.ToString());
-            SetFieldData("totalSeikyu", totalSeikyu.ToString());
             _listTextData.Add(pageIndex, listDataPerPage);
-
             return 1;
         }
         #endregion
@@ -250,10 +234,8 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
     private bool GetData()
     {
         hpInf = _welfareFinder.GetHpInf(hpId, seikyuYm);
-        var wrkReces = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, kohiHoubetus, FutanCheck.KohiFutan, HokenKbn.Kokho);
-        //都外国保+マル都(82)
-        List<string> prefIn = new List<string> { "13", "63" };
-        receInfs = wrkReces.Where(r => !prefIn.Contains(r.HokensyaNo.Substring(r.HokensyaNo.Length - 6, 2))).ToList();
+        kohiHokenNos = CityKohis.Select(c => c.kohiHokenNo).ToList();
+        receInfs = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, kohiHokenNos, FutanCheck.None, 0);
 
         return (receInfs?.Count ?? 0) > 0;
     }
