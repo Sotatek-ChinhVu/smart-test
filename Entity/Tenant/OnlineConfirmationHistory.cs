@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 資格確認履歴番号
         /// </summary>
-        
+
         [Column("ID")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ID { get; set; }
@@ -64,5 +64,33 @@ namespace Entity.Tenant
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
+
+        /// <summary>
+        /// UKETUKE_STATUS
+        /// </summary>
+        [Column("UKETUKE_STATUS")]
+        [CustomAttribute.DefaultValue(0)]
+        public int UketukeStatus { get; set; }
+
+        /// <summary>
+        /// 登録日時
+        /// </summary>
+        [Column("UPDATE_DATE")]
+        [CustomAttribute.DefaultValueSql("current_timestamp")]
+        public DateTime UpdateDate { get; set; }
+
+        /// <summary>
+        /// 登録者		
+        /// </summary>
+        [Column(name: "UPDATE_ID")]
+        [CustomAttribute.DefaultValue(0)]
+        public int UpdateId { get; set; }
+
+        /// <summary>
+        /// 登録端末			
+        /// </summary>
+        [Column(name: "UPDATE_MACHINE")]
+        [MaxLength(60)]
+        public string? UpdateMachine { get; set; }
     }
 }
