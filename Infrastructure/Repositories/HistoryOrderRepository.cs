@@ -434,7 +434,7 @@ namespace Infrastructure.Repositories
                 List<KarteInfModel> karteInfModels = allKarteInfList.Where(r => r.RaiinNo == raiinNo).ToList() ?? new();
                 allOrderInfList.TryGetValue(raiinNo, out List<OrdInfModel>? orderInfListTemp);
                 List<OrdInfModel>? orderInfList = orderInfListTemp?.Where(o => o.OdrKouiKbn != 10).ToList() ?? new();
-                var headerOrders = orderInfListTemp?.Where(o => o.OdrKouiKbn == 10).ToList() ?? new();
+                var headerOrders = orderInfListTemp?.Where(o => o.OdrKouiKbn == 10).OrderByDescending(o => o.CreateDate).ToList() ?? new();
 
                 InsuranceModel insuranceModel = insuranceModelList.FirstOrDefault(i => i.HokenPid == raiinInf.HokenPid) ?? new InsuranceModel();
                 RaiinListTagModel tagModel = tagModelList.FirstOrDefault(t => t.RaiinNo == raiinNo) ?? new RaiinListTagModel();
@@ -447,7 +447,7 @@ namespace Infrastructure.Repositories
                 {
                     var insurance = insuranceModelList.FirstOrDefault(i => i.HokenPid == headerOrder.HokenPid) ?? new InsuranceModel();
                     var hokenPattentName = insurance.HokenName;
-                    var updateName = headerOrder.UpdateName;
+                    var updateName = string.IsNullOrEmpty(headerOrder.UpdateName) ? headerOrder.CreateName : headerOrder.UpdateName;
                     var displaycreateDate = headerOrder.CreateDate.ToString("yyyy/MM/dd HH:mm");
                     var syosaiKbn = headerOrder.OrdInfDetails.FirstOrDefault(od => od.ItemCd == ItemCdConst.SyosaiKihon)?.Suryo;
                     var jikanKbn = headerOrder.OrdInfDetails.FirstOrDefault(od => od.ItemCd == ItemCdConst.JikanKihon)?.Suryo;
