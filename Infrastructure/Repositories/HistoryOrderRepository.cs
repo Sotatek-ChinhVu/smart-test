@@ -451,7 +451,7 @@ namespace Infrastructure.Repositories
                     var displaycreateDate = headerOrder.CreateDate.ToString("yyyy/MM/dd HH:mm");
                     var syosaiKbn = headerOrder.OrdInfDetails.FirstOrDefault(od => od.ItemCd == ItemCdConst.SyosaiKihon)?.Suryo;
                     var jikanKbn = headerOrder.OrdInfDetails.FirstOrDefault(od => od.ItemCd == ItemCdConst.JikanKihon)?.Suryo;
-                    var headerOrderModel = new HeaderOrderModel(syosaiKbn ?? 0, jikanKbn ?? 0, hokenPattentName, displaycreateDate, updateName);
+                    var headerOrderModel = new HeaderOrderModel(syosaiKbn ?? 0, jikanKbn ?? 0, hokenPattentName, displaycreateDate, updateName, headerOrder.IsDeleted);
                     headerOrderModels.Add(headerOrderModel);
                 }
 

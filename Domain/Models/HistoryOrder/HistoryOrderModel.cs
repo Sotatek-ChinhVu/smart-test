@@ -130,13 +130,14 @@ namespace Domain.Models.HistoryOrder
 
     public class HeaderOrderModel
     {
-        public HeaderOrderModel(double syosaisinKbn, double jikanKbn, string hokenPattentName, string createDateBinding, string updateUserName)
+        public HeaderOrderModel(double syosaisinKbn, double jikanKbn, string hokenPattentName, string createDateBinding, string updateUserName, int isDeleted)
         {
             SyosaisinKbn = syosaisinKbn;
             JikanKbn = jikanKbn;
             HokenPattentName = hokenPattentName;
             CreateDateBinding = createDateBinding;
             UpdateUserName = updateUserName;
+            IsDeleted = isDeleted;
         }
         public double SyosaisinKbn { get; private set; }
 
@@ -151,5 +152,7 @@ namespace Domain.Models.HistoryOrder
         public string CreateDateBinding { get; private set; }
 
         public string UpdateUserName { get; private set; }
+
+        public int IsDeleted { get; private set; }
     }
 }
