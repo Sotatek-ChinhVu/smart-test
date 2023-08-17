@@ -1822,7 +1822,7 @@ namespace Infrastructure.Repositories
                         accountingFormMst.UpdateId = userId;
                         if (model.FormNo == 0 && model.IsDeleted == 0)
                         {
-                            accountingFormMst.CreateDate = DateTime.Now;
+                            accountingFormMst.CreateDate = CIUtil.GetJapanDateTimeNow();
                             accountingFormMst.CreateId = userId;
 
                             entities.Add(accountingFormMst);
