@@ -557,13 +557,15 @@ public class PdfCreatorController : ControllerBase
             ", "text/html");
         }
         var csv = new StringBuilder();
+
         string contentType = "text/csv";
 
         foreach (var row in dataList)
         {
             csv.AppendLine(row);
         }
-        var content = Encoding.Unicode.GetBytes(csv.ToString());
-        return File(content, contentType, dataModel.FileName);
+        var content = Encoding.UTF8.GetBytes(csv.ToString());
+        var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray(); ;
+        return File(result, contentType, dataModel.FileName);
     }
 }
