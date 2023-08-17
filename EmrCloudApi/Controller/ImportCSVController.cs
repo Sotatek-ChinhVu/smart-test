@@ -8,6 +8,7 @@ using Helper.Extension;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Mappers.Common;
 using Reporting.ReportServices;
+using System.Text;
 using UseCase.Core.Sync;
 
 namespace EmrCloudApi.Controller;
@@ -110,30 +111,14 @@ public class ImportCSVController : AuthorizeControllerBase
         {
             return Content(@"", "text/html"); ;
         }
-        string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        using (var workbook = new XLWorkbook())
-        {
-            IXLWorksheet worksheet =
-            workbook.Worksheets.Add(dataModel.SheetName);
-            int rowIndex = 1;
-            foreach (var row in dataList)
-            {
-                List<string> colDataList = row.Split(',').ToList();
-                int colIndex = 1;
-                foreach (var cellData in colDataList)
-                {
-                    worksheet.Cell(rowIndex, colIndex).Value = cellData;
-                    colIndex++;
-                }
-                rowIndex++;
-            }
+        var csv = new StringBuilder();
+        string contentType = "text/csv";
 
-            using (var stream = new MemoryStream())
-            {
-                workbook.SaveAs(stream);
-                var content = stream.ToArray();
-                return File(content, contentType, dataModel.FileName);
-            }
-        }
+        foreach (var row in dataList)
+        {
+            csv.AppendLine(row);
+        }
+        var content = Encoding.Unicode.GetBytes(csv.ToString());
+        return File(content, contentType, dataModel.FileName);
     }
 }

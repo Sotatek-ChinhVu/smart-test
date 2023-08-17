@@ -69,7 +69,7 @@ namespace Reporting.Receipt.Mapper
 
         public override string GetJobName()
         {
-            return "レセプト";
+            return "レセプトプレビュー";
         }
     }
 }
