@@ -144,7 +144,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             {
                 return SaveDocInfStatus.InvalidPtId;
             }
-            else if (!_receptionRepository.CheckExistRaiinNo(inputData.HpId, inputData.PtId, inputData.RaiinNo))
+            else if (inputData.RaiinNo != 0 && !_receptionRepository.CheckExistRaiinNo(inputData.HpId, inputData.PtId, inputData.RaiinNo))
             {
                 return SaveDocInfStatus.InvalidRaiinNo;
             }
