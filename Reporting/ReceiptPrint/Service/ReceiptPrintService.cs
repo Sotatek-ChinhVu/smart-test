@@ -121,6 +121,7 @@ public class ReceiptPrintService : IReceiptPrintService
     private readonly IP43KumamotoSeikyuCoReportService _p43KumamotoSeikyuCoReportService;
     private readonly IP44WelfareSeikyu84CoReportService _p44WelfareSeikyu84CoReportService;
     private readonly IP43ReihokuSeikyu41CoReportService _p43ReihokuSeikyu41CoReportService;
+    private readonly IP43AmakusaSeikyu41CoReportService _p43AmakusaSeikyu41CoReportService;
 
     public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService, IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService, IHikariDiskCoReportService hikariDiskCoReportService, IP28KoukiSeikyuCoReportService p28KoukiSeikyuCoReportService, IP29KoukiSeikyuCoReportService p29KoukiSeikyuCoReportService, IAfterCareSeikyuCoReportService afterCareSeikyuCoReportService, ISyahoCoReportService syahoCoReportService, IP45KoukiSeikyuCoReportService p45KoukiSeikyuCoReportService, IP33KoukiSeikyuCoReportService p33KoukiSeikyuCoReportService, IP34KoukiSeikyuCoReportService p34KoukiSeikyuCoReportService, IP35KoukiSeikyuCoReportService p35KoukiSeikyuCoReportService, IP37KoukiSeikyuCoReportService p37KoukiSeikyuCoReportService, IP40KoukiSeikyuCoReportService p40KoukiSeikyuCoReportService, IP42KoukiSeikyuCoReportService p42KoukiSeikyuCoReportService, IP09KoukiSeikyuCoReportService p09KoukiSeikyuCoReportService, IP12KoukiSeikyuCoReportService p12KoukiSeikyuCoReportService, IP13KoukiSeikyuCoReportService p13KoukiSeikyuCoReportService, IP30KoukiSeikyuCoReportService p30KoukiSeikyuCoReportService, IP41KoukiSeikyuCoReportService p41KoukiSeikyuCoReportService, IP08KokhoSokatuCoReportService p08KokhoSokatuCoReportService, IP44KoukiSeikyuCoReportService p44KoukiSeikyuCoReportService, IP08KoukiSeikyuCoReportService p08KoukiSeikyuCoReportService, IP11KoukiSeikyuCoReportService p11KoukiSeikyuCoReportService, IP14KoukiSeikyuCoReportService p14KoukiSeikyuCoReportService, IP17KoukiSeikyuCoReportService p17KoukiSeikyuCoReportService
                               , IP20KoukiSeikyuCoReportService p20KoukiSeikyuCoReportService, IP25KokhoSokatuCoReportService p25KokhoSokatuCoReportService, IP13WelfareSeikyuCoReportService p13WelfareSeikyuCoReportService, IP08KokhoSeikyuCoReportService p08KokhoSeikyuCoReportService, IP22WelfareSeikyuCoReportService p22WelfareSeikyuCoReportService, IP21KoukiSeikyuCoReportService p21KoukiSeikyuCoReportService, IP22KoukiSeikyuCoReportService p22KoukiSeikyuCoReportService, IP23KoukiSeikyuCoReportService p23KoukiSeikyuCoReportService, IP24KoukiSeikyuCoReportService p24KoukiSeikyuCoReportService, IP25KoukiSeikyuCoReportService p25KoukiSeikyuCoReportService, IP27KoukiSeikyuCoReportService p27KoukiSeikyuCoReportService, IP14KokhoSokatuCoReportService p14KokhoSokatuCoReportService, IP17KokhoSokatuCoReportService p17KokhoSokatuCoReportService, IP20KokhoSokatuCoReportService p20KokhoSokatuCoReportService, IP22KokhoSokatuCoReportService p22KokhoSokatuCoReportService, IP23KokhoSokatuCoReportService p23KokhoSokatuCoReportService, IP26KokhoSokatuInCoReportService p26KokhoSokatuInCoReportService, IP33KokhoSokatuCoReportService p33KokhoSokatuCoReportService, IP34KokhoSokatuCoReportService p34KokhoSokatuCoReportService, IP35KokhoSokatuCoReportService p35KokhoSokatuCoReportService, IP37KokhoSokatuCoReportService p37KokhoSokatuCoReportService, IP37KoukiSokatuCoReportService p37KoukiSokatuCoReportService, IP26KokhoSokatuOutCoReportService p26KokhoSokatuOutCoReportService, IP40KokhoSokatuCoReportService p40KokhoSokatuCoReportService
@@ -129,6 +130,7 @@ public class ReceiptPrintService : IReceiptPrintService
                               , IReceiptCoReportService receiptCoReportService
                               , IP27IzumisanoSeikyuCoReportService p27IzumisanoSeikyuCoReportService
                               , IP43ReihokuSeikyu41CoReportService p43ReihokuSeikyu41CoReportService
+                              , IP43AmakusaSeikyu41CoReportService p43AmakusaSeikyu41CoReportService
 
                               )
     {
@@ -229,6 +231,7 @@ public class ReceiptPrintService : IReceiptPrintService
         _receiptCoReportService = receiptCoReportService;
         _p27IzumisanoSeikyuCoReportService = p27IzumisanoSeikyuCoReportService;
         _p43ReihokuSeikyu41CoReportService = p43ReihokuSeikyu41CoReportService;
+        _p43AmakusaSeikyu41CoReportService = p43AmakusaSeikyu41CoReportService;
     }
     #endregion
 
@@ -642,6 +645,10 @@ public class ReceiptPrintService : IReceiptPrintService
         {
             result = _p43ReihokuSeikyu41CoReportService.GetP43ReihokuSeikyu41ReportingData(hpId, seikyuYm, seikyuType);
         }
+        else if (prefNo == 43 && reportId == 105 && reportEdaNo == 7)
+        {
+            result = _p43AmakusaSeikyu41CoReportService.GetP43AmakusaSeikyu41sReportingData(hpId, seikyuYm, seikyuType);
+        }
         #endregion
         else
         {
@@ -788,7 +795,6 @@ public class ReceiptPrintService : IReceiptPrintService
                                                                             , sort);
 
         }
-
         result.JobName = formName;
 
         return result;
