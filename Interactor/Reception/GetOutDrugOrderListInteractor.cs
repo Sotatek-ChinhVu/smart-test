@@ -76,7 +76,10 @@ public class GetOutDrugOrderListInteractor : IGetOutDrugOrderListInputPort
         while (intStartDate <= intEndDate)
         {
             var receInfs = _calculateService.GetListReceInf(new GetInsuranceInfInputData(inputData.HpId, 0, intStartDate.AsInteger())).ReceInfModels;
-            listKaikeFrm.AddRange(receInfs);
+            if (receInfs != null && receInfs.Any())
+            {
+                listKaikeFrm.AddRange(receInfs);
+            }
             intStartDate += 1;
         }
 
