@@ -53,7 +53,8 @@ public class InsertOnlineConfirmHistoryInteractor : IInsertOnlineConfirmHistoryI
             }
             try
             {
-                new XmlDocument().Load(item.ConfirmationResult);
+                XmlDocument xmlDoc = new();
+                xmlDoc.LoadXml(item.ConfirmationResult);
             }
             catch
             {

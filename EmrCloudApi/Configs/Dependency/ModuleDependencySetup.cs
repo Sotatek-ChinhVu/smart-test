@@ -649,6 +649,8 @@ using UseCase.Receipt.CheckExistsReceInf;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetDiseaseList;
 using Domain.Models.Online;
+using UseCase.Online.InsertOnlineConfirmHistory;
+using Interactor.Online;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1546,6 +1548,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveRaiinListSettingInputData, SaveRaiinListSettingInteractor>();
             //SinKoui
             busBuilder.RegisterUseCase<GetListSinKouiInputData, GetListSinKouiInteractor>();
+
+            //Online
+            busBuilder.RegisterUseCase<InsertOnlineConfirmHistoryInputData, InsertOnlineConfirmHistoryInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

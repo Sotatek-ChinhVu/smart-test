@@ -395,6 +395,10 @@
         public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
         public const string CheckUpsertNextOrder = "CheckUpsertNextOrder";
 
+        // Online
+        public const string InsertOnlineConfirmHistory = "InsertOnlineConfirmHistory";
+
         public const string Test = "Test";
+
     }
 }
