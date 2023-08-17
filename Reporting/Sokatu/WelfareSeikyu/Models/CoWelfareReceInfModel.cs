@@ -5,11 +5,6 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
 {
     public class CoWelfareReceInfModel
     {
-        private PtHokenInf ptKohi1;
-        private PtHokenInf ptKohi2;
-        private PtHokenInf ptKohi3;
-        private PtHokenInf ptKohi4;
-
         public ReceInf ReceInf { get; private set; }
         public PtInf PtInf { get; private set; }
         public PtHokenInf PtHokenInf { get; private set; }
@@ -28,17 +23,6 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
             PtKohi2 = ptKohi2;
             PtKohi3 = ptKohi3;
             PtKohi4 = ptKohi4;
-        }
-
-        public CoWelfareReceInfModel(ReceInf receInf, PtInf ptInf, PtHokenInf ptHokenInf, PtHokenInf ptKohi1, PtHokenInf ptKohi2, PtHokenInf ptKohi3, PtHokenInf ptKohi4)
-        {
-            ReceInf = receInf;
-            PtInf = ptInf;
-            PtHokenInf = ptHokenInf;
-            this.ptKohi1 = ptKohi1;
-            this.ptKohi2 = ptKohi2;
-            this.ptKohi3 = ptKohi3;
-            this.ptKohi4 = ptKohi4;
         }
 
         /// <summary>

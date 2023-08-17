@@ -1,7 +1,11 @@
-﻿namespace EmrCloudApi.Responses.PtGroupMst
+﻿namespace EmrCloudApi.Responses.PtGroupMst;
+
+public class GetGroupNameMstResponse
 {
-    public class GetGroupNameMstResponse
+    public GetGroupNameMstResponse(List<GroupNameDtoResponse> data)
     {
-        public List<GroupNameDtoResponse> Data { get; set; } = new List<GroupNameDtoResponse>();
+        Data = data;
     }
+
+    public List<GroupNameDtoResponse> Data { get; private set; }
 }

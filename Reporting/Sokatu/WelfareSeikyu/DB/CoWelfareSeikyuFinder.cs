@@ -1,17 +1,12 @@
 ﻿using Domain.Constant;
 using Helper.Constants;
 using Infrastructure.Base;
-using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore.Internal;
-using PostgreDataContext;
 using Reporting.Calculate.Extensions;
 using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.WelfareSeikyu.Models;
 using Reporting.Structs;
-using System.Linq;
 
 namespace Reporting.Sokatu.WelfareSeikyu.DB
 {
@@ -162,6 +157,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                         (kohiHokenNos.Contains(r.ptKohi3.HokenNo) && r.receInf.Kohi3Futan10en >= lowKohiFutan10en && r.receInf.Kohi3Futan >= lowKohiFutan && r.receInf.Kohi3IchibuSotogaku + r.receInf.Kohi3Futan >= lowIchibuFutan && r.receInf.Kohi3ReceKisai == 0) ||
                         (kohiHokenNos.Contains(r.ptKohi4.HokenNo) && r.receInf.Kohi4Futan10en >= lowKohiFutan10en && r.receInf.Kohi4Futan >= lowKohiFutan && r.receInf.Kohi4IchibuSotogaku + r.receInf.Kohi4Futan >= lowIchibuFutan && r.receInf.Kohi4ReceKisai == 0)
                     );
+                    
                 }
                 //法別番号指定
                 if (kohiHoubetus?.Count >= 1)
@@ -174,7 +170,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                     );
                 }
             }
-            
+
             //社保国保
             if (hokenKbn == HokenKbn.Syaho)
             {

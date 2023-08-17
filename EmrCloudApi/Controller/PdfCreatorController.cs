@@ -202,7 +202,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPreview)]
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
-        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
+        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.SeiKyuYm, request.HokenKbn, request.IsIncludeOutDrug, request.IsModePrint, request.isOpenedFromAccounting);
         var result = await RenderPdf(data, ReportType.Common, data.JobName);
         return result;
     }
