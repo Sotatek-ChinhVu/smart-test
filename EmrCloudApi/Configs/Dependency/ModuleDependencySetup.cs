@@ -652,6 +652,7 @@ using UseCase.Receipt.CheckExistSyobyoKeika;
 using Reporting.Sokatu.KokhoSeikyu.Service;
 using UseCase.Receipt.CheckExistsReceInf;
 using UseCase.MstItem.GetTenMstList;
+using UseCase.MstItem.GetDiseaseList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1272,6 +1273,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDefaultPrecautionsInputData, GetDefaultPrecautionsInteractor>();
             busBuilder.RegisterUseCase<UploadImageDrugInfInputData, UploadImageDrugInfInteractor>();
             busBuilder.RegisterUseCase<GetTenMstListInputData, GetTenMstListInteractor>();
+            busBuilder.RegisterUseCase<GetDiseaseListInputData, GetDiseaseListInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
