@@ -232,7 +232,7 @@ public class PdfCreatorController : ControllerBase
     public IActionResult GenerateKarte1Report([FromQuery] ReceiptPrintExcelRequest request)
     {
         var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
-        return RenderExcel(data);
+        return RenderCsv(data);
     }
 
 
@@ -545,7 +545,7 @@ public class PdfCreatorController : ControllerBase
                );
     }
 
-    private IActionResult RenderExcel(CommonExcelReportingModel dataModel)
+    private IActionResult RenderCsv(CommonExcelReportingModel dataModel)
     {
         var dataList = dataModel.Data;
         if (!dataList.Any())
@@ -565,7 +565,7 @@ public class PdfCreatorController : ControllerBase
             csv.AppendLine(row);
         }
         var content = Encoding.UTF8.GetBytes(csv.ToString());
-        var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray(); ;
+        var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray();
         return File(result, contentType, dataModel.FileName);
     }
 }
