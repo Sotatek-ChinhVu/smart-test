@@ -277,7 +277,7 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
 
         SeikyuYm = seikyuYm;
         PtId = new List<long>();
-        if (ptId != null)
+        if (ptId.Any())
         {
             PtId.AddRange(ptId.GroupBy(p => p).Select(p => p.Key).ToList());
         }
@@ -327,9 +327,9 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
         PageCount = 0;
         PageIndex = 1;
         var formName = string.Empty;
-        bool hasNextPage = true;
         while (i < CoModels.Count())
         {
+            bool hasNextPage = true;
             CoModel = CoModels[i];
 
             // フォームチェック
