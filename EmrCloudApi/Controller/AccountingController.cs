@@ -13,6 +13,7 @@ using UseCase.Accounting.GetAccountingFormMst;
 using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetAccountingSystemConf;
+using UseCase.Accounting.GetListHokenSelect;
 using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.GetSinMei;
 using UseCase.Accounting.PaymentMethod;
@@ -197,6 +198,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetAccountingFormMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListHokenSelect)]
+        public ActionResult<Response<GetListHokenSelectResponse>> GetListHokenSelect([FromQuery] GetListHokenSelectRequest request)
+        {
+            var input = new GetListHokenSelectInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetListHokenSelectPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetListHokenSelectResponse>>(presenter.Result);
         }
     }
 }

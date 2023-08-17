@@ -170,7 +170,7 @@ namespace Domain.Models.CalculateModel
         public int Kohi4Id { get; set; }
         public int HokenKbn { get; set; }
         public int HokenSbtCd { get; set; }
-        public string receSbt { get; set; } = string.Empty;
+        public string ReceSbt { get; set; } = string.Empty;
         public string HokensyaNo { get; set; } = string.Empty;
         public string Houbetu { get; set; } = string.Empty;
         public string Kohi1Houbetu { get; set; } = string.Empty;

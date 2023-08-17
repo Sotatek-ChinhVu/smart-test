@@ -48,5 +48,7 @@ namespace Domain.Models.Accounting
         List<AccountingFormMstModel> GetAccountingFormMstModels(int hpId);
 
         void UpdateAccountingFormMst(int userId, List<AccountingFormMstModel> models);
+
+        List<HokenInfModel> GetListHokenSelect(int hpId, List<KaikeiInfModel> listKaikeiInf, long ptId);
     }
 }

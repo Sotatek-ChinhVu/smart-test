@@ -9,6 +9,28 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        public static string CalcChkDgtM10W2(string code)
+        {
+            int weight = 2;
+            int sum = 0;
+
+            for (int i = code.Length; i >= 1; i--)
+            {
+                int wrkVal = code.Substring(i - 1, 1).AsInteger() * weight;
+                //十の位と一の位を分けて足し合わせる（分割）
+                sum += wrkVal % 10 + wrkVal / 10;
+
+                //下の桁から2・1・2・1・...の順番に係数（ウエイト）をかける
+                weight = weight == 2 ? 1 : 2;
+            }
+
+            //合計を10で割り、余りを求める（モジュラス）
+            int modulus = sum % 10;
+
+            //余りを10から引いたものをチェックデジットとする（但し、余りが0の場合はチェックデジットも0）
+            return (modulus == 0 ? 0 : 10 - modulus).ToString();
+        }
+
         public static string SDateToShowSDate3(int ymd)
         {
             string WrkStr;

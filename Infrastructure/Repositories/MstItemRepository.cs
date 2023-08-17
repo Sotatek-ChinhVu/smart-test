@@ -704,7 +704,7 @@ namespace Infrastructure.Repositories
             List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage,
             bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem,
             bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter,
-            bool isSearch831SuffixOnly, bool isSearchGazoDensibaitaiHozon)
+            bool isSearch831SuffixOnly, bool isSearchGazoDensibaitaiHozon, FilterTenMstEnum sortMode)
         {
             string kanaKeyword = keyword;
             if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
@@ -1192,11 +1192,6 @@ namespace Infrastructure.Repositories
                                   Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
                               };
 
-            joinedQuery = joinedQuery.OrderBy(item => item.TenMst.KanaName1)
-                                 .ThenBy(item => item.TenMst.Name)
-                                 .Skip((pageIndex - 1) * pageCount)
-                                 .Take(pageCount);
-
             var tenMstModels = joinedQuery.Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
                                                            item.TenMst.ItemCd ?? string.Empty,
@@ -1246,6 +1241,40 @@ namespace Infrastructure.Repositories
                                                            item.Yakka == null ? 0 : item.Yakka ?? 0,
                                                            item.IsGetYakkaPrice
                                                             )).ToList();
+
+            var orderedQuery = sortMode switch
+            {
+                FilterTenMstEnum.RousaiKbnAsc => tenMstModels.OrderBy(item => item.RousaiKbnDisplay),
+                FilterTenMstEnum.RousaiKbnDec => tenMstModels.OrderByDescending(item => item.RousaiKbnDisplay),
+                FilterTenMstEnum.KanaName1Asc => tenMstModels.OrderBy(item => item.KanaName1),
+                FilterTenMstEnum.KanaName1Dec => tenMstModels.OrderByDescending(item => item.KanaName1),
+                FilterTenMstEnum.KouiNameAsc => tenMstModels.OrderBy(item => item.KouiName),
+                FilterTenMstEnum.KouiNameDec => tenMstModels.OrderByDescending(item => item.KouiName),
+                FilterTenMstEnum.NameAsc => tenMstModels.OrderBy(item => item.Name),
+                FilterTenMstEnum.NameDec => tenMstModels.OrderByDescending(item => item.Name),
+                FilterTenMstEnum.KohatuKbnAsc => tenMstModels.OrderBy(item => item.KohatuKbnDisplay),
+                FilterTenMstEnum.KohatuKbnDec => tenMstModels.OrderByDescending(item => item.KohatuKbnDisplay),
+                FilterTenMstEnum.KubunToAsc => tenMstModels.OrderBy(item => item.KubunToDisplay),
+                FilterTenMstEnum.KubunToDec => tenMstModels.OrderByDescending(item => item.KouseisinKbnDisplay),
+                FilterTenMstEnum.KouseisinKbnAsc => tenMstModels.OrderBy(item => item.KouseisinKbnDisplay),
+                FilterTenMstEnum.KouseisinKbnDec => tenMstModels.OrderByDescending(item => item.KubunToDisplay),
+                FilterTenMstEnum.TenAsc => tenMstModels.OrderBy(item => item.Ten),
+                FilterTenMstEnum.TenDec => tenMstModels.OrderByDescending(item => item.Ten),
+                FilterTenMstEnum.OdrUnitNameAsc => tenMstModels.OrderBy(item => item.OdrUnitName),
+                FilterTenMstEnum.OdrUnitNameDec => tenMstModels.OrderByDescending(item => item.OdrUnitName),
+                FilterTenMstEnum.ItemCdAsc => tenMstModels.OrderBy(item => item.ItemCd),
+                FilterTenMstEnum.ItemCdDec => tenMstModels.OrderByDescending(item => item.ItemCd),
+                FilterTenMstEnum.KensaCenterItemCDAsc => tenMstModels.OrderBy(item => item.KensaCenterItemCDDisplay),
+                FilterTenMstEnum.KensaCenterItemCDDec => tenMstModels.OrderByDescending(item => item.KensaCenterItemCDDisplay),
+                FilterTenMstEnum.EndDateAsc => tenMstModels.OrderBy(item => item.EndDate),
+                FilterTenMstEnum.EndDateDec => tenMstModels.OrderByDescending(item => item.EndDate),
+                FilterTenMstEnum.IsDeletedAsc => tenMstModels.OrderBy(item => item.IsDeleted),
+                FilterTenMstEnum.IsDeletedDec => tenMstModels.OrderByDescending(item => item.IsDeleted),
+                _ => tenMstModels.OrderBy(item => item.KanaName1).ThenBy(item => item.Name)
+            };
+
+            tenMstModels = orderedQuery.Skip((pageIndex - 1) * pageCount)
+                                       .Take(pageCount).ToList();
 
             if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
             {
@@ -1363,7 +1392,7 @@ namespace Infrastructure.Repositories
 
         public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize, bool isHasFreeByomei = true)
         {
-            var keywordHalfSize = keyword != String.Empty ? CIUtil.ToHalfsize(keyword) : "";
+            var keywordHalfSize = keyword != string.Empty ? CIUtil.ToHalfsize(keyword) : "";
 
             var query = NoTrackingDataContext.ByomeiMsts.Where(item =>
                                     (item.KanaName1 != null &&
@@ -1591,61 +1620,6 @@ namespace Infrastructure.Repositories
                )).ToList();
         }
 
-        public List<TenItemModel> FindTenMst(int hpId, List<string> itemCds)
-        {
-            var entities = NoTrackingDataContext.TenMsts.Where(p =>
-                   p.HpId == hpId &&
-                   itemCds.Contains(p.ItemCd));
-
-            return entities.Select(entity => new TenItemModel(
-                    entity.HpId,
-                    entity.ItemCd,
-                    entity.RousaiKbn,
-                    entity.KanaName1 ?? string.Empty,
-                    entity.Name ?? string.Empty,
-                    entity.KohatuKbn,
-                    entity.MadokuKbn,
-                    entity.KouseisinKbn,
-                    entity.OdrUnitName ?? string.Empty,
-                    entity.EndDate,
-                    entity.DrugKbn,
-                    entity.MasterSbt ?? string.Empty,
-                    entity.BuiKbn,
-                    entity.IsAdopted,
-                    entity.Ten,
-                    entity.TenId,
-                    string.Empty,
-                    string.Empty,
-                    entity.CmtCol1,
-                    entity.IpnNameCd ?? string.Empty,
-                    entity.SinKouiKbn,
-                    entity.YjCd ?? string.Empty,
-                    entity.CnvUnitName ?? string.Empty,
-                    entity.StartDate,
-                    entity.YohoKbn,
-                    entity.CmtColKeta1,
-                    entity.CmtColKeta2,
-                    entity.CmtColKeta3,
-                    entity.CmtColKeta4,
-                    entity.CmtCol2,
-                    entity.CmtCol3,
-                    entity.CmtCol4,
-                    entity.IpnNameCd ?? string.Empty,
-                    entity.MinAge ?? string.Empty,
-                    entity.MaxAge ?? string.Empty,
-                    entity.SanteiItemCd ?? string.Empty,
-                    entity.OdrTermVal,
-                    entity.CnvTermVal,
-                    entity.DefaultVal,
-                    entity.Kokuji1 ?? string.Empty,
-                    entity.Kokuji2 ?? string.Empty,
-                    string.Empty,
-                    0,
-                    0,
-                    true
-               )).ToList();
-        }
-
         public List<TenItemModel> GetTenMstList(int hpId, List<string> itemCds)
         {
             itemCds = itemCds.Distinct().ToList();
@@ -1696,7 +1670,7 @@ namespace Infrastructure.Repositories
                     entity.Kokuji1 ?? string.Empty,
                     entity.Kokuji2 ?? string.Empty,
                     string.Empty,
-                    0,
+                    entity.IsDeleted,
                     0,
                     true
                )).ToList();
@@ -3739,7 +3713,7 @@ namespace Infrastructure.Repositories
                 List<DrugInfModel> drugModels = setDataTen.DrugInfomationTab.DrugInfs;
                 for (int i = 1; i < 3; i++)
                 {
-                    if (string.IsNullOrEmpty(drugModels[i].DrugInfo) && !string.IsNullOrEmpty(drugModels[i].OldDrugInfo))
+                    if (drugModels.ElementAtOrDefault(i) != null && string.IsNullOrEmpty(drugModels[i].DrugInfo) && !string.IsNullOrEmpty(drugModels[i].OldDrugInfo))
                     {
                         drugModels[i].SetDrugInfo(drugModels[i].OldDrugInfo);
                         drugModels[i].SetIsDeleted(DeleteTypes.Deleted);

@@ -80,7 +80,7 @@ namespace EmrCloudApi.Services
                 return new CalculateResponse("Failed: Could not connect to Calculate API", ResponseStatus.ConnectFailed);
             }
         }
-        
+
         public async Task<CalculateResponse> CallCalculate(CalculateApiPath path, object inputData, CancellationToken cancellationToken)
         {
             var content = JsonContent.Create(inputData);
@@ -232,7 +232,7 @@ namespace EmrCloudApi.Services
         {
             try
             {
-                var task = CallCalculate(CalculateApiPath.ReceFutanCalculateMain, inputData, cancellationToken);
+                var task = CallCalculate(CalculateApiPath.ReceFutanCalculateMain, inputData);
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                 {
                     return false;

@@ -1,4 +1,5 @@
-﻿using Helper.Common;
+﻿using Domain.Models.CalculateModel;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
@@ -7,13 +8,14 @@ namespace Domain.Models.Reception;
 
 public class RaiinInfToPrintModel
 {
-    public RaiinInfToPrintModel(PrintMode batchPrintingMode, string nameBinding, string tantoIdDisplay, int receInfKaId, int raiinInfKaId, long ptNum, string houbetuForPrintPrescription, int hokenKbnForPrintPrescription, string receInfHoubetu, string hokensyaNo, int uketukeNo, int receInfSinYm, int raiinInfSinDate, int receInfTantoId, int raiinInfTantoId, string kaDisplay, int uketukeSbt, string uketsukeDisplay, int receInfHonkeKbn, int hokenPid, int hokenId, int hokenSbtCd, int hokenKbn, string receSbt, string hokenSbtStr, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int kohi1HokenSbtKbn, int kohi2HokenSbtKbn, int kohi3HokenSbtKbn, int kohi4HokenSbtKbn, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu)
+    public RaiinInfToPrintModel(PrintMode batchPrintingMode, string nameBinding, string tantoIdDisplay, int receInfKaId, int raiinInfKaId, long ptId, long ptNum, string houbetuForPrintPrescription, int hokenKbnForPrintPrescription, string receInfHoubetu, string hokensyaNo, int uketukeNo, int receInfSinYm, int raiinInfSinDate, int receInfTantoId, int raiinInfTantoId, string kaDisplay, int uketukeSbt, string uketsukeDisplay, int receInfHonkeKbn, int hokenPid, int hokenId, int hokenSbtCd, int hokenKbn, string receSbt, string hokenSbtStr, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int kohi1HokenSbtKbn, int kohi2HokenSbtKbn, int kohi3HokenSbtKbn, int kohi4HokenSbtKbn, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int raiinInfStatus)
     {
         BatchPrintingMode = batchPrintingMode;
         NameBinding = nameBinding;
         TantoIdDisplay = tantoIdDisplay;
         ReceInfKaId = receInfKaId;
         RaiinInfKaId = raiinInfKaId;
+        PtId = ptId;
         PtNum = ptNum;
         HoubetuForPrintPrescription = houbetuForPrintPrescription;
         HokenKbnForPrintPrescription = hokenKbnForPrintPrescription;
@@ -46,6 +48,52 @@ public class RaiinInfToPrintModel
         Kohi2Houbetu = kohi2Houbetu;
         Kohi3Houbetu = kohi3Houbetu;
         Kohi4Houbetu = kohi4Houbetu;
+        RaiinInfStatus = raiinInfStatus;
+    }
+
+    public RaiinInfToPrintModel(PrintMode batchPrintingMode, ReceInfModel receInf)
+    {
+        BatchPrintingMode = batchPrintingMode;
+        TantoIdDisplay = string.Empty;
+        HoubetuForPrintPrescription = string.Empty;
+        HokensyaNo = string.Empty;
+        KaDisplay = string.Empty;
+        NameBinding = string.Empty;
+        ReceInfKaId = receInf.KaId;
+        ReceInfHoubetu = receInf.Houbetu;
+        ReceInfSinYm = receInf.SinYm;
+        ReceInfTantoId = receInf.TantoId;
+        PtId = receInf.PtId;
+        UketsukeDisplay = string.Empty;
+        ReceInfHonkeKbn = receInf.HonkeKbn;
+        HokenId = receInf.HokenId;
+        HokenKbn = receInf.HokenKbn;
+        ReceSbt = receInf.ReceSbt ?? string.Empty.PadRight(4, '*');
+        Kohi1Id = receInf.Kohi1Id;
+        Kohi2Id = receInf.Kohi2Id;
+        Kohi3Id = receInf.Kohi3Id;
+        Kohi4Id = receInf.Kohi4Id;
+        Kohi1HokenSbtKbn = receInf.Kohi1HokenSbtKbn;
+        Kohi2HokenSbtKbn = receInf.Kohi2HokenSbtKbn;
+        Kohi3HokenSbtKbn = receInf.Kohi3HokenSbtKbn;
+        Kohi4HokenSbtKbn = receInf.Kohi4HokenSbtKbn;
+        Kohi1Houbetu = receInf.Kohi1Houbetu;
+        Kohi2Houbetu = receInf.Kohi2Houbetu;
+        Kohi3Houbetu = receInf.Kohi3Houbetu;
+        Kohi4Houbetu = receInf.Kohi4Houbetu;
+        HokenSbtCd = receInf.HokenSbtCd;
+        string hokenSbtCd = HokenSbtCd.AsString();
+        hokenSbtCd = hokenSbtCd.PadRight(3, '*');
+        HokenSbtStr = ConvertHokenSbtLeftToReceSbtLeftQuery(hokenSbtCd[0].AsInteger()) + hokenSbtCd[2] + ReceSbt[3];
+    }
+
+    public RaiinInfToPrintModel ChangeParams(string kaDisplay, string tantoIdDisplay, long ptNum, string nameBinding)
+    {
+        KaDisplay = kaDisplay;
+        TantoIdDisplay = tantoIdDisplay;
+        NameBinding = nameBinding;
+        PtNum = ptNum;
+        return this;
     }
 
     public PrintMode BatchPrintingMode { get; private set; }
@@ -59,6 +107,8 @@ public class RaiinInfToPrintModel
     public int RaiinInfKaId { get; private set; }
 
     public long PtNum { get; private set; }
+
+    public long PtId { get; private set; }
 
     public string HoubetuForPrintPrescription { get; private set; }
 
@@ -119,7 +169,10 @@ public class RaiinInfToPrintModel
     public string Kohi2Houbetu { get; private set; }
 
     public string Kohi3Houbetu { get; private set; }
+
     public string Kohi4Houbetu { get; private set; }
+
+    public int RaiinInfStatus { get; private set; }
 
 
     public string Houbetu

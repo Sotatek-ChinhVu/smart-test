@@ -139,4 +139,8 @@ public interface IReceiptRepository : IRepositoryBase
     void ClearReceCmtErr(int hpId, List<ReceRecalculationModel> receRecalculationList);
 
     List<RaiinInfModel> GetListRaiinInf(int hpId, long ptId, int sinYm, int dayInMonth, int rpNo, int seqNo);
+
+    bool CheckExistsReceInf(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    bool CheckExistSyobyoKeikaSinDay(int hpId, int sinYm, long ptId, int hokenId, int sinDay);
 }
