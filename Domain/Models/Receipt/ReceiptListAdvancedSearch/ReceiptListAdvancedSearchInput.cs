@@ -58,6 +58,66 @@ public class ReceiptListAdvancedSearchInput
         SeikyuKbnPaper = seikyuKbnPaper;
     }
 
+    public ReceiptListAdvancedSearchInput(int hpId, int seikyuYm, string tokki, bool isAdvanceSearch, List<int> hokenSbts, bool isAll, bool isNoSetting, bool isSystemSave, bool isSave1, bool isSave2, bool isSave3, bool isTempSave, bool isDone, int receSbtCenter, int receSbtRight, string hokenHoubetu, int kohi1Houbetu, int kohi2Houbetu, int kohi3Houbetu, int kohi4Houbetu, bool isIncludeSingle, string hokensyaNoFrom, string hokensyaNoTo, long hokensyaNoFromLong, long hokensyaNoToLong, string ptId, long ptIdFrom, long ptIdTo, PtIdSearchOptionEnum ptSearchOption, long tensuFrom, long tensuTo, int lastRaiinDateFrom, int lastRaiinDateTo, int birthDayFrom, int birthDayTo, List<ItemSearchModel> itemList, QuerySearchEnum itemQuery, bool isOnlySuspectedDisease, QuerySearchEnum byomeiQuery, List<SearchByoMstModel> byomeiCdList, bool isFutanIncludeSingle, long futansyaNoFromLong, long futansyaNoToLong, int kaId, int doctorId, string name, bool isTestPatientSearch, bool isNotDisplayPrinted, Dictionary<int, string> groupSearchModels, bool seikyuKbnAll, bool seikyuKbnDenshi, bool seikyuKbnPaper)
+    {
+        HpId = hpId;
+        SeikyuYm = seikyuYm;
+        IsAdvanceSearch = isAdvanceSearch;
+        Tokki = tokki;
+        HokenSbts = hokenSbts;
+        IsAll = isAll;
+        IsNoSetting = isNoSetting;
+        IsSystemSave = isSystemSave;
+        IsSave1 = isSave1;
+        IsSave2 = isSave2;
+        IsSave3 = isSave3;
+        IsTempSave = isTempSave;
+        IsDone = isDone;
+        ReceSbtCenter = receSbtCenter;
+        ReceSbtRight = receSbtRight;
+        HokenHoubetu = hokenHoubetu;
+        Kohi1Houbetu = kohi1Houbetu;
+        Kohi2Houbetu = kohi2Houbetu;
+        Kohi3Houbetu = kohi3Houbetu;
+        Kohi4Houbetu = kohi4Houbetu;
+        IsIncludeSingle = isIncludeSingle;
+        HokensyaNoFrom = hokensyaNoFrom;
+        HokensyaNoTo = hokensyaNoTo;
+        HokensyaNoFromLong = hokensyaNoFromLong;
+        HokensyaNoToLong = hokensyaNoToLong;
+        PtId = ptId;
+        PtIdFrom = ptIdFrom;
+        PtIdTo = ptIdTo;
+        PtSearchOption = ptSearchOption;
+        TensuFrom = tensuFrom;
+        TensuTo = tensuTo;
+        LastRaiinDateFrom = lastRaiinDateFrom;
+        LastRaiinDateTo = lastRaiinDateTo;
+        BirthDayFrom = birthDayFrom;
+        BirthDayTo = birthDayTo;
+        ItemList = itemList;
+        ItemQuery = itemQuery;
+        IsOnlySuspectedDisease = isOnlySuspectedDisease;
+        ByomeiQuery = byomeiQuery;
+        ByomeiCdList = byomeiCdList;
+        IsFutanIncludeSingle = isFutanIncludeSingle;
+        FutansyaNoFromLong = futansyaNoFromLong;
+        FutansyaNoToLong = futansyaNoToLong;
+        KaId = kaId;
+        DoctorId = doctorId;
+        Name = name;
+        IsTestPatientSearch = isTestPatientSearch;
+        IsNotDisplayPrinted = isNotDisplayPrinted;
+        GroupSearchModels = groupSearchModels;
+        SeikyuKbnAll = seikyuKbnAll;
+        SeikyuKbnDenshi = seikyuKbnDenshi;
+        SeikyuKbnPaper = seikyuKbnPaper;
+    }
+
+    public int HpId { get; private set; }
+
+    public int SeikyuYm { get; private set; }
+
     public bool IsAdvanceSearch { get; private set; }
 
     public string Tokki { get; private set; }

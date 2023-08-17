@@ -722,7 +722,7 @@ namespace Infrastructure.Repositories
             if (listPtByoMei == null || listPtByoMei.Count == 0)
                 return new List<PtDiseaseModel>();
 
-            return listPtByoMei.Select(data => new PtDiseaseModel(data.PtId, data.ByomeiCd, data.SeqNo, data.SortNo, data.SyubyoKbn, data.SikkanKbn, data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei, new List<PrefixSuffixModel>()))
+            return listPtByoMei.Select(data => new PtDiseaseModel(data.PtId, data.ByomeiCd, data.SeqNo, data.SortNo, data.SyubyoKbn, data.SikkanKbn, data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei, new List<PrefixSuffixModel>(), data.TenkiKbn))
                 .OrderBy(data => data.TenkiKbn)
                 .ThenBy(data => data.SortNo)
                 .ThenByDescending(data => data.StartDate)
@@ -1796,6 +1796,38 @@ namespace Infrastructure.Repositories
 
             return ptHokenPatternList;
 
+        }
+
+        public List<HokenInfModel> GetListHokenSelect(int hpId, List<KaikeiInfModel> listKaikeiInf, long ptId)
+        {
+            if (listKaikeiInf == null || listKaikeiInf.Count <= 0)
+                return new();
+
+            var listHokenId = listKaikeiInf.Select(item => item.HokenId).Distinct().ToList();
+
+            var listHokenInf = NoTrackingDataContext.PtHokenInfs.Where(item =>
+                item.HpId == hpId && item.PtId == ptId && item.IsDeleted == 0 && listHokenId.Contains(item.HokenId) && item.HokenId > 0);
+
+            var listHokenSeleted = from kaikeiInf in listKaikeiInf
+                                   join ptHokenInf in listHokenInf on
+                                       kaikeiInf.HokenId equals ptHokenInf.HokenId
+                                   select new
+                                   {
+                                       KaikeiInf = kaikeiInf,
+                                       PtHokenInf = ptHokenInf
+                                   };
+
+            return listHokenSeleted.Select(item => new HokenInfModel(item.PtHokenInf.PtId,
+                                                                     item.KaikeiInf.HokenId,
+                                                                     item.KaikeiInf.HokenKbn,
+                                                                     item.PtHokenInf.HokensyaNo ?? string.Empty,
+                                                                     item.PtHokenInf.HonkeKbn,
+                                                                     item.PtHokenInf.StartDate,
+                                                                     item.PtHokenInf.EndDate,
+                                                                     item.PtHokenInf.Houbetu ?? string.Empty
+                                                                     ))
+                                                                     .OrderBy(item => item.HokenId)
+                                                                     .ToList();
         }
     }
 }

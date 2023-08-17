@@ -1678,14 +1678,16 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var ptKohi3 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi3Id);
         var ptKohi4 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi4Id);
 
-        var hokenPInf = NoTrackingDataContext.PtHokenPatterns.FirstOrDefault(item => item.HpId == hpId
-                                                                                     && item.HokenId == hokenId
-                                                                                     && hokenInf != null
-                                                                                     && item.HokenKbn == hokenInf.HokenKbn
-                                                                                     && item.IsDeleted == 0
-                                                                                     && item.StartDate / 100 <= sinYm
-                                                                                     && item.EndDate / 100 >= sinYm);
-        return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new(), hokenPInf ?? new());
+        int hokenPid = 0;
+        var raiinNo = NoTrackingDataContext.SinKouiCounts.FirstOrDefault(item => item.SinYm == sinYm
+                                                                                 && item.PtId == ptId
+                                                                                 && item.HpId == hpId)?.RaiinNo ?? 0;
+        if (raiinNo != 0)
+        {
+            hokenPid = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId && item.RaiinNo == raiinNo)?.HokenPid ?? 0;
+        }
+
+        return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new(), hokenPid);
     }
 
     public bool SaveReceCheckOpt(int hpId, int userId, List<ReceCheckOptModel> receCheckOptList)
@@ -3031,7 +3033,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return receCheckCmtList.Any() ? receCheckCmtList.Max(item => item.SeqNo) : 0;
     }
 
-    private InsuranceReceInfModel ConvertToInsuranceReceInfModel(ReceInf receInf, PtHokenInf hokenInf, PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4, PtHokenPattern hokenPInf)
+    private InsuranceReceInfModel ConvertToInsuranceReceInfModel(ReceInf receInf, PtHokenInf hokenInf, PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4, int hokenPid)
     {
         return new InsuranceReceInfModel(
                 receInf.SeikyuYm,
@@ -3099,7 +3101,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 hokenInf?.Kigo ?? string.Empty,
                 hokenInf?.Bango ?? string.Empty,
                 hokenInf?.EdaNo ?? string.Empty,
-                hokenPInf?.HokenPid ?? 0
+                hokenPid
             );
     }
 
@@ -3690,6 +3692,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                .ToList();
     }
 
+    public bool CheckExistsReceInf(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId)
+    {
+        var existReceInf = NoTrackingDataContext.ReceInfs.Any(item => item.HpId == hpId
+                                                                      && item.SeikyuYm == seikyuYm
+                                                                      && item.PtId == ptId
+                                                                      && item.SinYm == sinYm
+                                                                      && item.HokenId == hokenId);
+        return existReceInf;
+    }
     public bool CheckExistSyobyoKeikaSinDay(int hpId, int sinYm, long ptId, int hokenId, int sinDay)
     {
         return NoTrackingDataContext.SyobyoKeikas.Any(item => item.HpId == hpId
@@ -3704,6 +3715,4 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     {
         DisposeDataContext();
     }
-
-
 }

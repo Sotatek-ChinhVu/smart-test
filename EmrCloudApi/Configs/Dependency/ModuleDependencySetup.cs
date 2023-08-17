@@ -287,6 +287,7 @@ using UseCase.Accounting.CheckOpenAccounting;
 using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetAccountingSystemConf;
+using UseCase.Accounting.GetListHokenSelect;
 using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.GetSinMei;
 using UseCase.Accounting.PaymentMethod;
@@ -644,6 +645,14 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.MstItem.UploadImageDrugInf;
+using UseCase.Reception.GetOutDrugOrderList;
+using UseCase.ReceSeikyu.GetReceSeikyModelByPtNum;
+using UseCase.Receipt.CheckExistSyobyoKeika;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.Receipt.CheckExistsReceInf;
+using UseCase.MstItem.GetTenMstList;
+using UseCase.MstItem.GetDiseaseList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -899,8 +908,19 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP43KumamotoSeikyuCoReportService, P43KumamotoSeikyuCoReportService>();
             services.AddTransient<IP44WelfareSeikyu84CoReportService, P44WelfareSeikyu84CoReportService>();
             services.AddTransient<IP44WelfareDiskService, P44WelfareDiskService>();
+            services.AddTransient<IP14WelfareSeikyuCoReportService, P14WelfareSeikyuCoReportService>();
+            services.AddTransient<IP17KokhoSeikyuCoReportService, P17KokhoSeikyuCoReportService>();
+            services.AddTransient<IP17WelfareSeikyuCoReportService, P17WelfareSeikyuCoReportService>();
+            services.AddTransient<IP11KokhoSeikyuCoReportService, P11KokhoSeikyuCoReportService>();
+            services.AddTransient<IP26WelfareSeikyuCoReportService, P26WelfareSeikyuCoReportService>();
+            services.AddTransient<IP29WelfareSeikyuCoReportService, P29WelfareSeikyuCoReportService>();
+            services.AddTransient<IP40WelfareSeikyuCoReportService, P40WelfareSeikyuCoReportService>();
+            services.AddTransient<IP43ReihokuSeikyu41CoReportService, P43ReihokuSeikyu41CoReportService>();
+            services.AddTransient<IP43AmakusaSeikyu41CoReportService, P43AmakusaSeikyu41CoReportService>();
+            services.AddTransient<IP43AmakusaSeikyu42CoReportService, P43AmakusaSeikyu42CoReportService>();
 
             services.AddTransient<IP35WelfareSokatuCoReportService, P35WelfareSokatuCoReportService>();
+            services.AddTransient<IP25WelfareSeikyuCoReportService, P25WelfareSeikyuCoReportService>();
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
@@ -1263,6 +1283,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDrugActionInputData, GetDrugActionInteractor>();
             busBuilder.RegisterUseCase<GetDefaultPrecautionsInputData, GetDefaultPrecautionsInteractor>();
             busBuilder.RegisterUseCase<UploadImageDrugInfInputData, UploadImageDrugInfInteractor>();
+            busBuilder.RegisterUseCase<GetTenMstListInputData, GetTenMstListInteractor>();
+            busBuilder.RegisterUseCase<GetDiseaseListInputData, GetDiseaseListInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -1347,6 +1369,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetMeiHoGaiInputData, GetMeiHoGaiInteractor>();
             busBuilder.RegisterUseCase<CheckOpenAccountingInputData, CheckOpenAccountingInteractor>();
             busBuilder.RegisterUseCase<RecaculationInputData, RecaculationInteractor>();
+            busBuilder.RegisterUseCase<GetListHokenSelectInputData, GetListHokenSelectInteractor>();
 
             //TimeZone
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputDataOfReception, GetDefaultSelectedTimeInteractorOfReception>();
@@ -1457,6 +1480,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteReceiptInfEditInputData, DeleteReceiptInfEditInteractor>();
             busBuilder.RegisterUseCase<GetListKaikeiInfInputData, GetListKaikeiInfInteractor>();
             busBuilder.RegisterUseCase<CheckExisReceInfEditInputData, CheckExisReceInfEditInteractor>();
+            busBuilder.RegisterUseCase<CheckExistsReceInfInputData, CheckExistsReceInfInteractor>();
             busBuilder.RegisterUseCase<CheckExistSyobyoKeikaInputData, CheckExistSyobyoKeikaInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfReceipt, GetListRaiinInfInteractorOfReceipt>();
 

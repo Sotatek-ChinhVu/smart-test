@@ -27,7 +27,6 @@ public class RecalculationInteractor : IRecalculationInputPort
         try
         {
             bool success = true;
-            var ptInfCount = inputData.PtIdList.Count;
             // run Recalculation
             if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
