@@ -1838,7 +1838,7 @@ namespace Infrastructure.Repositories
             var accountingFormMst = new AccountingFormMst();
             accountingFormMst.HpId = accountingFormMstModel.HpId;
             accountingFormMst.FormNo = accountingFormMstModel.FormNo;
-            accountingFormMst.FormName = accountingFormMst.FormName;
+            accountingFormMst.FormName = accountingFormMstModel.FormName;
             accountingFormMst.FormType = accountingFormMstModel.FormType;
             accountingFormMst.PrintSort = accountingFormMstModel.PrintSort;
             accountingFormMst.MiseisanKbn = accountingFormMstModel.MiseisanKbn;
