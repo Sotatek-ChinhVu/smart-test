@@ -651,6 +651,7 @@ using UseCase.MstItem.GetDiseaseList;
 using Domain.Models.Online;
 using UseCase.Online.InsertOnlineConfirmHistory;
 using Interactor.Online;
+using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1130,6 +1131,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CalculationSwapHokenInputData, CalculationSwapHokenInteractor>();
             busBuilder.RegisterUseCase<CheckValidSamePatientInputData, CheckValidSamePatientInteractor>();
             busBuilder.RegisterUseCase<CheckAllowDeletePatientInfoInputData, CheckAllowDeletePatientInfoInteractor>();
+            busBuilder.RegisterUseCase<SearchPatientInfoByPtIdListInputData, SearchPatientInfoByPtIdListInteractor>();
             busBuilder.RegisterUseCase<SavePtKyuseiInputData, SavePtKyuseiInteractor>();
 
             //RaiinKubun
