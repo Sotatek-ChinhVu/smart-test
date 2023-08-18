@@ -1855,7 +1855,7 @@ namespace Infrastructure.Repositories
             accountingFormMst.SortNo = accountingFormMstModel.SortNo;
             accountingFormMst.IsDeleted = accountingFormMstModel.IsDeleted;
             accountingFormMst.CreateId = accountingFormMstModel.CreateId;
-            accountingFormMst.CreateDate = accountingFormMstModel.CreateDate;
+            accountingFormMst.CreateDate = (accountingFormMstModel.FormNo > 0) ? TimeZoneInfo.ConvertTimeToUtc(accountingFormMstModel.CreateDate) : accountingFormMstModel.CreateDate;
             accountingFormMst.UpdateId = accountingFormMstModel.UpdateId;
             accountingFormMst.UpdateDate = accountingFormMstModel.UpdateDate;
 
