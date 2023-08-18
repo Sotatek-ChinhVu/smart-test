@@ -6,11 +6,11 @@ namespace Reporting.AccountingCard.Model
 {
     public class CoAccountingCardModel
     {
-        List<CoKaikeiInfModel> KaikeiInfModels { get; } = null;
-        public CoPtInfModel PtInfModel { get; } = null;
-        public SinMeiViewModel SinMeiViewModel { get; } = null;
-        public List<CoPtByomeiModel> PtByomeiModels { get; } = null;
-        public List<CoPtKohiModel> PtKohis { get; } = null;
+        public List<CoKaikeiInfModel>? KaikeiInfModels { get; } = null;
+        public CoPtInfModel? PtInfModel { get; } = null;
+        public SinMeiViewModel? SinMeiViewModel { get; } = null;
+        public List<CoPtByomeiModel>? PtByomeiModels { get; } = null;
+        public List<CoPtKohiModel>? PtKohis { get; } = null;
         public CoAccountingCardModel(
             List<CoKaikeiInfModel> kaikeiInfModels,
             CoPtInfModel ptInfModel, SinMeiViewModel sinMeiViewModel,
@@ -49,28 +49,28 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public long PtNum
         {
-            get => PtInfModel.PtNum;
+            get => PtInfModel?.PtNum ?? 0;
         }
         /// <summary>
         /// 患者ID
         /// </summary>
         public long PtId
         {
-            get => PtInfModel.PtId;
+            get => PtInfModel?.PtId ?? 0;
         }
         /// <summary>
         /// 患者氏名
         /// </summary>
         public string PtName
         {
-            get => PtInfModel.Name;
+            get => PtInfModel?.Name ?? string.Empty;
         }
         /// <summary>
         /// 患者カナ氏名
         /// </summary>
         public string PtKanaName
         {
-            get => PtInfModel.KanaName;
+            get => PtInfModel?.KanaName ?? string.Empty;
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Reporting.AccountingCard.Model
             {
                 string ret = "男";
 
-                if (PtInfModel.Sex == 2)
+                if (PtInfModel?.Sex == 2)
                 {
                     ret = "女";
                 }
@@ -96,17 +96,17 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string PtAddress
         {
-            get => PtInfModel.HomeAddress1 + PtInfModel.HomeAddress2;
+            get => PtInfModel?.HomeAddress1 ?? string.Empty + PtInfModel?.HomeAddress2 ?? string.Empty;
         }
 
         public string PtAddress1
         {
-            get => PtInfModel.HomeAddress1;
+            get => PtInfModel?.HomeAddress1 ?? string.Empty;
         }
 
         public string PtAddress2
         {
-            get => PtInfModel.HomeAddress2;
+            get => PtInfModel?.HomeAddress2 ?? string.Empty;
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string PtPostCd
         {
-            get => PtInfModel.HomePost;
+            get => PtInfModel?.HomePost ?? string.Empty;
         }
 
         /// <summary>
@@ -122,19 +122,19 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public int BirthDay
         {
-            get => PtInfModel.Birthday;
+            get => PtInfModel?.Birthday ?? 0;
         }
 
         public int Age
         {
-            get => PtInfModel.Age;
+            get => PtInfModel?.Age ?? 0;
         }
         /// <summary>
         /// 保険の種類
         /// </summary>
         public string HokenSbt
         {
-            get => KaikeiInfModels.First().HokenSyu;
+            get => KaikeiInfModels?.First()?.HokenSyu ?? string.Empty;
         }
 
         /// <summary>
@@ -146,16 +146,19 @@ namespace Reporting.AccountingCard.Model
             {
                 string ret = "";
 
-                foreach (CoKaikeiInfModel kaikeiInfModel in KaikeiInfModels)
+                if (KaikeiInfModels != null)
                 {
-                    if (ret == "")
+                    foreach (CoKaikeiInfModel kaikeiInfModel in KaikeiInfModels)
                     {
-                        ret = kaikeiInfModel.HokenSyu;
-                    }
-                    else if (ret != kaikeiInfModel.HokenSyu)
-                    {
-                        ret = "";
-                        break;
+                        if (ret == "")
+                        {
+                            ret = kaikeiInfModel.HokenSyu;
+                        }
+                        else if (ret != kaikeiInfModel.HokenSyu)
+                        {
+                            ret = "";
+                            break;
+                        }
                     }
                 }
 
@@ -176,7 +179,7 @@ namespace Reporting.AccountingCard.Model
                 if (new int[] { 1, 2 }.Contains(HokenKbn))
                 {
 
-                    ret = GetHokenRate(KaikeiInfModels.First().Rate, KaikeiInfModels.First().HokenSbtKbn, KaikeiInfModels.First().KogakuKbn, KaikeiInfModels.First().Houbetu);
+                    ret = GetHokenRate(KaikeiInfModels?.First().Rate ?? 0, KaikeiInfModels?.First()?.HokenSbtKbn ?? 0, KaikeiInfModels?.First()?.KogakuKbn ?? 0, KaikeiInfModels?.First()?.Houbetu ?? string.Empty);
 
                 }
                 else if (HokenKbn == 0)
@@ -243,14 +246,14 @@ namespace Reporting.AccountingCard.Model
 
                     if (IsElder() || houbetu == "39")
                     {
-                        if ((kogakuKbn == 3 && KaikeiInfModels.Last().SinDate < KaiseiDate.d20180801) ||
-                            (new int[] { 26, 27, 28 }.Contains(kogakuKbn) && KaikeiInfModels.Last().SinDate >= KaiseiDate.d20180801))
+                        if ((kogakuKbn == 3 && KaikeiInfModels?.Last()?.SinDate < KaiseiDate.d20180801) ||
+                            (new int[] { 26, 27, 28 }.Contains(kogakuKbn) && KaikeiInfModels?.Last()?.SinDate >= KaiseiDate.d20180801))
                         {
                             //後期７割 or 高齢７割
                             wrkRate = 30;
                         }
                         else if (houbetu == "39" && kogakuKbn == 41 &&
-                            KaikeiInfModels.Last().SinDate >= KaiseiDate.d20221001)
+                            KaikeiInfModels?.Last()?.SinDate >= KaiseiDate.d20221001)
                         {
                             //後期８割
                             wrkRate = 20;
@@ -269,7 +272,7 @@ namespace Reporting.AccountingCard.Model
         /// <returns></returns>
         public bool IsPreSchool()
         {
-            return !CIUtil.IsStudent(PtInfModel.Birthday, KaikeiInfModels.Last().SinDate);
+            return !CIUtil.IsStudent(PtInfModel?.Birthday ?? 0, KaikeiInfModels?.Last()?.SinDate ?? 0);
         }
 
         /// <summary>
@@ -278,7 +281,7 @@ namespace Reporting.AccountingCard.Model
         /// <returns></returns>
         public bool IsElder()
         {
-            return CIUtil.AgeChk(PtInfModel.Birthday, KaikeiInfModels.Last().SinDate, 70);
+            return CIUtil.AgeChk(PtInfModel?.Birthday ?? 0, KaikeiInfModels?.Last()?.SinDate ?? 0, 70);
         }
         /// <summary>
         /// 前期高齢2割かどうか
@@ -286,7 +289,7 @@ namespace Reporting.AccountingCard.Model
         /// <returns></returns>
         public bool IsElder20per()
         {
-            return CIUtil.Is70Zenki_20per(PtInfModel.Birthday, KaikeiInfModels.Last().SinDate);
+            return CIUtil.Is70Zenki_20per(PtInfModel?.Birthday ?? 0, KaikeiInfModels?.Last()?.SinDate ?? 0);
         }
         /// <summary>
         /// 
@@ -297,7 +300,7 @@ namespace Reporting.AccountingCard.Model
             //75歳以上で海外居住者の方は後期高齢者医療には加入せず、
             //協会、健保組合に加入することになり、高齢受給者証を提示した場合、
             //H26.5診療分からは所得に合わせ2割または3割負担となる。
-            return CIUtil.AgeChk(PtInfModel.Birthday, KaikeiInfModels.Last().SinDate, 75) && KaikeiInfModels.Last().SinDate >= 20140501;
+            return CIUtil.AgeChk(PtInfModel?.Birthday ?? 0, KaikeiInfModels?.Last()?.SinDate ?? 0, 75) && KaikeiInfModels?.Last()?.SinDate >= 20140501;
         }
 
         /// <summary>
@@ -305,7 +308,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public int? HokenRate
         {
-            get => KaikeiInfModels.First().HokenRate;
+            get => KaikeiInfModels != null ? KaikeiInfModels?.FirstOrDefault()?.HokenRate ?? 0 : 0;
         }
 
         /// <summary>

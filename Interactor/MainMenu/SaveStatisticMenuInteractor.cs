@@ -44,11 +44,11 @@ public class SaveStatisticMenuInteractor : ISaveStatisticMenuInputPort
         }
         foreach (var menu in input.StaticMenuList)
         {
-            if (menu.MenuId != 0 && !staMenuDBList.Exists(item => item.MenuId == menu.MenuId))
+            if (menu.MenuId != 0 && staMenuDBList.Any() && !staMenuDBList.Exists(item => item.MenuId == menu.MenuId))
             {
                 return SaveStatisticMenuStatus.InvalidMenuId;
             }
-            else if (!staGrpDBList.Exists(item => item.ReportId == menu.ReportId))
+            else if (staGrpDBList.Any() && !staGrpDBList.Exists(item => item.ReportId == menu.ReportId))
             {
                 return SaveStatisticMenuStatus.InvalidReportId;
             }

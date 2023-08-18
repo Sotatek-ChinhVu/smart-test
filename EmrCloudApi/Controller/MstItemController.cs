@@ -3,6 +3,7 @@ using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
+using EmrCloudApi.Requests.Diseases;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
@@ -22,6 +23,7 @@ using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDefaultPrecautions;
+using UseCase.MstItem.GetDiseaseList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
@@ -138,6 +140,18 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<DiseaseSearchResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.GetDiseaseList)]
+        public ActionResult<Response<DiseaseSearchResponse>> GetDiseaseList([FromBody] GetDiseaseListRequest request)
+        {
+            var input = new GetDiseaseListInputData(request.ItemCdList);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDiseaseListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<DiseaseSearchResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.UpdateAdoptedByomei)]
         public ActionResult<Response<UpdateAdoptedTenItemResponse>> UpdateAdoptedByomei([FromBody] UpdateAdoptedByomeiRequest request)
         {
@@ -223,7 +237,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetTenMstOriginInfoCreate)]
         public ActionResult<Response<GetTenMstOriginInfoCreateResponse>> GetTenMstOriginInfoCreate([FromQuery] GetTenMstOriginInfoCreateRequest request)
         {
-            var input = new GetTenMstOriginInfoCreateInputData(request.Type, HpId);
+            var input = new GetTenMstOriginInfoCreateInputData(request.Type, HpId, UserId, request.ItemCd);
             var output = _bus.Handle(input);
             var presenter = new GetTenMstOriginInfoCreatePresenter();
             presenter.Complete(output);
@@ -367,7 +381,7 @@ namespace EmrCloudApi.Controller
                 request.SinDate, request.ItemCodeStartWith, request.IsIncludeUsage, request.OnlyUsage, request.YJCode, request.IsMasterSearch,
                 request.IsExpiredSearchIfNoData, request.IsAllowSearchDeletedItem, request.IsExpired, request.IsDeleted, request.DrugKbns,
                 request.IsSearchSanteiItem, request.IsSearchKenSaItem, request.ItemFilter, request.IsSearch831SuffixOnly, request.IsSearchSuggestion,
-                request.IsSearchGazoDensibaitaiHozon);
+                request.IsSearchGazoDensibaitaiHozon, request.SortMode);
             var output = _bus.Handle(input);
             var presenter = new SearchTenMstItemPresenter();
             presenter.Complete(output);

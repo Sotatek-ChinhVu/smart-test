@@ -43,6 +43,7 @@
         public const string GetDrugAction = "GetDrugAction";
         public const string GetDefaultPrecautions = "GetDefaultPrecautions";
         public const string UploadImageDrugInf = "UploadImageDrugInf";
+        public const string GetDiseaseList = "GetDiseaseList";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -129,6 +130,7 @@
         public const string DeletePatientInfo = "DeletePatientInfo";
         public const string CheckValidSamePatient = "CheckValidSamePatient";
         public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
+        public const string SearchPatientInfoByPtIdList = "SearchPatientInfoByPtIdList";
         public const string SavePtKyusei = "SavePtKyusei";
 
         //HokenMst
@@ -310,12 +312,14 @@
         public const string GetMeiHoGai = "GetMeiHoGai";
         public const string CheckOpenAccounting = "CheckOpenAccounting";
         public const string IsNyukinExisted = "IsNyukinExisted";
+        public const string GetListHokenSelect = "GetListHokenSelect";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 
         // Family
         public const string GetFamilyReverserList = "GetFamilyReverserList";
         public const string GetGroupNameMst = "GetGroupNameMst";
+        public const string GetListGroupInfo = "GetListGroupInfo";
         public const string GetRaiinInfList = "GetRaiinInfList";
         public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
         public const string ValidateFamilyList = "ValidateFamilyList";
@@ -393,6 +397,10 @@
         public const string CheckNextOrdHaveOdr = "CheckNextOrdHaveOdr";
         public const string CheckUpsertNextOrder = "CheckUpsertNextOrder";
 
+        // Online
+        public const string InsertOnlineConfirmHistory = "InsertOnlineConfirmHistory";
+
         public const string Test = "Test";
+
     }
 }

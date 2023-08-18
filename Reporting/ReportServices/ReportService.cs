@@ -38,7 +38,6 @@ using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
-using System.Collections.Generic;
 
 namespace Reporting.ReportServices;
 
@@ -462,9 +461,16 @@ public class ReportService : IReportService
     }
 
     //Receipt Preview
-    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId)
+    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, int seikyuYm, int hokenKbn, bool isIncludeOutDrug, bool isModePrint, bool isOpenedFromAccounting)
     {
-        return _receiptCoReportService.GetReceiptData(hpId, ptId, sinYm, hokenId);
+        if (isOpenedFromAccounting)
+        {
+            return _receiptCoReportService.GetReceiptDataFromAccounting(hpId, ptId, sinYm, hokenId, isIncludeOutDrug, isModePrint);
+        }
+        else
+        {
+            return _receiptCoReportService.GetReceiptDataFromReceCheck(hpId, ptId, sinYm, seikyuYm, hokenId, hokenKbn, isIncludeOutDrug, isModePrint);
+        }
     }
 
     public CommonReportingRequestModel GetKensalraiData(int hpId, int systemDate, int fromDate, int toDate, string centerCd)

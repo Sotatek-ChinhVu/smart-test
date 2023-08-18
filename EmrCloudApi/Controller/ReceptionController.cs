@@ -96,7 +96,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetOutDrugOrderList)]
         public ActionResult<Response<GetOutDrugOrderListResponse>> GetOutDrugOrderList([FromQuery] GetOutDrugOrderListRequest request)
         {
-            var input = new GetOutDrugOrderListInputData(HpId, request.FromDate, request.ToDate);
+            var input = new GetOutDrugOrderListInputData(HpId, request.IsPrintPrescription, request.IsPrintAccountingCard, request.FromDate, request.ToDate, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetOutDrugOrderListPresenter();

@@ -1010,5 +1010,9 @@
 
         public static readonly string NoPermission = "No permission";
         public static readonly string InvalidContentFile = "Invalid file content";
+
+        // Online
+        public static readonly string InvalidConfirmationResult = "Invalid ConfirmationResult.";
+
     }
 }

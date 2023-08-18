@@ -8,6 +8,7 @@ using Helper.Extension;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Mappers.Common;
 using Reporting.ReportServices;
+using System.Text;
 using UseCase.Core.Sync;
 
 namespace EmrCloudApi.Controller;
@@ -28,7 +29,7 @@ public class ImportCSVController : AuthorizeControllerBase
     public IActionResult GenerateKarteCsvReport([FromBody] ReceiptListExcelRequest request)
     {
         var data = _reportService.GetReceiptListExcel(HpId, request.SeikyuYm, ConvertToReceiptListAdvancedSearchInputData(HpId, request), request.IsIsExportTitle);
-        return RenderExcel(data);
+        return RenderCsv(data);
     }
 
     private ReceiptListAdvancedSearchInput ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListExcelRequest request)
@@ -103,37 +104,23 @@ public class ImportCSVController : AuthorizeControllerBase
                    request.SeikyuKbnPaper);
     }
 
-    private IActionResult RenderExcel(CommonExcelReportingModel dataModel)
+    private IActionResult RenderCsv(CommonExcelReportingModel dataModel)
     {
         var dataList = dataModel.Data;
         if (!dataList.Any())
         {
             return Content(@"", "text/html"); ;
         }
-        string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        using (var workbook = new XLWorkbook())
-        {
-            IXLWorksheet worksheet =
-            workbook.Worksheets.Add(dataModel.SheetName);
-            int rowIndex = 1;
-            foreach (var row in dataList)
-            {
-                List<string> colDataList = row.Split(',').ToList();
-                int colIndex = 1;
-                foreach (var cellData in colDataList)
-                {
-                    worksheet.Cell(rowIndex, colIndex).Value = cellData;
-                    colIndex++;
-                }
-                rowIndex++;
-            }
+        var csv = new StringBuilder();
 
-            using (var stream = new MemoryStream())
-            {
-                workbook.SaveAs(stream);
-                var content = stream.ToArray();
-                return File(content, contentType, dataModel.FileName);
-            }
+        string contentType = "text/csv";
+
+        foreach (var row in dataList)
+        {
+            csv.AppendLine(row);
         }
+        var content = Encoding.UTF8.GetBytes(csv.ToString());
+        var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray();
+        return File(result, contentType, dataModel.FileName);
     }
 }

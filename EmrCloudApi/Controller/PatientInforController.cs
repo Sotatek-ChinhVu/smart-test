@@ -100,6 +100,7 @@ using UseCase.SwapHoken.Save;
 using UseCase.SwapHoken.Validate;
 using UseCase.PatientInfor.SavePtKyusei;
 using UseCase.PatientInfor;
+using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 
 namespace EmrCloudApi.Controller
 {
@@ -749,7 +750,6 @@ namespace EmrCloudApi.Controller
                 );
         }
 
-
         [HttpPost(ApiPath.ValidHokenInfAllType)]
         public ActionResult<Response<ValidHokenInfAllTypeResponse>> ValidHokenInfAllType([FromBody] ValidHokenInfAllTypeRequest request)
         {
@@ -897,7 +897,17 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetGroupNameMst)]
         public ActionResult<Response<GetGroupNameMstResponse>> GetGroupNameMst()
         {
-            var input = new GetGroupNameMstInputData(HpId);
+            var input = new GetGroupNameMstInputData(HpId, true);
+            var output = _bus.Handle(input);
+            var presenter = new GetGroupNameMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetGroupNameMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListGroupInfo)]
+        public ActionResult<Response<GetGroupNameMstResponse>> GetListGroupInfo()
+        {
+            var input = new GetGroupNameMstInputData(HpId, false);
             var output = _bus.Handle(input);
             var presenter = new GetGroupNameMstPresenter();
             presenter.Complete(output);
@@ -1012,6 +1022,16 @@ namespace EmrCloudApi.Controller
             var presenter = new CheckAllowDeletePatientInfoPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CheckAllowDeletePatientInfoResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SearchPatientInfoByPtIdList)]
+        public ActionResult<Response<SearchPatientInfoByPtIdListResponse>> SearchPatientInfoByPtIdList([FromBody] SearchPatientInfoByPtIdListRequest request)
+        {
+            var input = new SearchPatientInfoByPtIdListInputData(HpId, request.PtIdList);
+            var output = _bus.Handle(input);
+            var presenter = new SearchPatientInfoByPtIdListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SearchPatientInfoByPtIdListResponse>>(presenter.Result);
         }
 
         private void StopCalculationCaculaleSwapHoken(CalculationSwapHokenMessageStop stopCalcStatus)

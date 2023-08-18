@@ -193,7 +193,7 @@ namespace Reporting.ReceiptList.Service
                 }
             }
 
-            return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, output);
+            return new CommonExcelReportingModel(sheetName + ".csv", sheetName, output);
         }
 
         private List<ReceiptInputCsvModel> ActionGetReceiptList(int hpId, int fromDay, int toDay, int seikyuYm, ReceiptListAdvancedSearchInput searchModel)

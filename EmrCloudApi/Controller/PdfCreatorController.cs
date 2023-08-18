@@ -202,7 +202,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPreview)]
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
-        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
+        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.SeiKyuYm, request.HokenKbn, request.IsIncludeOutDrug, request.IsModePrint, request.isOpenedFromAccounting);
         var result = await RenderPdf(data, ReportType.Common, data.JobName);
         return result;
     }
@@ -232,7 +232,7 @@ public class PdfCreatorController : ControllerBase
     public IActionResult GenerateKarte1Report([FromQuery] ReceiptPrintExcelRequest request)
     {
         var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
-        return RenderExcel(data);
+        return RenderCsv(data);
     }
 
 
@@ -545,41 +545,27 @@ public class PdfCreatorController : ControllerBase
                );
     }
 
-    private IActionResult RenderExcel(CommonExcelReportingModel dataModel)
+    private IActionResult RenderCsv(CommonExcelReportingModel dataModel)
     {
         var dataList = dataModel.Data;
         if (!dataList.Any())
         {
             return Content(@"
-            <meta charset=""utf-8"">
-            <title>印刷対象が見つかりません。</title>
-            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
-            ", "text/html");
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
         }
-        string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        using (var workbook = new XLWorkbook())
-        {
-            IXLWorksheet worksheet =
-            workbook.Worksheets.Add(dataModel.SheetName);
-            int rowIndex = 1;
-            foreach (var row in dataList)
-            {
-                List<string> colDataList = row.Split(',').ToList();
-                int colIndex = 1;
-                foreach (var cellData in colDataList)
-                {
-                    worksheet.Cell(rowIndex, colIndex).Value = cellData;
-                    colIndex++;
-                }
-                rowIndex++;
-            }
+        var csv = new StringBuilder();
 
-            using (var stream = new MemoryStream())
-            {
-                workbook.SaveAs(stream);
-                var content = stream.ToArray();
-                return File(content, contentType, dataModel.FileName);
-            }
-        }
+        string contentType = "text/csv";
+
+        foreach (var row in dataList)
+        {
+            csv.AppendLine(row);
+        }
+        var content = Encoding.UTF8.GetBytes(csv.ToString());
+        var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray();
+        return File(result, contentType, dataModel.FileName);
     }
 }
