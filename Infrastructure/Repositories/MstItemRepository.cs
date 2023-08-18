@@ -2889,8 +2889,6 @@ namespace Infrastructure.Repositories
 
         public PiImageModel GetImagePiByItemCd(int hpId, string itemCd, int imageType)
         {
-
-
             List<string> folderPaths = new List<string>() { CommonConstants.Image, CommonConstants.Reference, CommonConstants.DrugPhoto };
             if (imageType == (int)ImageTypeDrug.HouImage)
             {
