@@ -645,15 +645,14 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.MstItem.UploadImageDrugInf;
-using UseCase.Reception.GetOutDrugOrderList;
-using UseCase.ReceSeikyu.GetReceSeikyModelByPtNum;
-using UseCase.Receipt.CheckExistSyobyoKeika;
-using Reporting.Sokatu.KokhoSeikyu.Service;
 using UseCase.Receipt.CheckExistsReceInf;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetDiseaseList;
+using Domain.Models.Online;
+using UseCase.Online.InsertOnlineConfirmHistory;
+using Interactor.Online;
 using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
+using UseCase.Insurance.FindPtHokenList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1032,6 +1031,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaLabelFinder, KensaLabelFinder>();
             services.AddTransient<IGetCommonDrugInf, GetCommonDrugInf>();
             services.AddTransient<ICommonReceRecalculation, CommonReceRecalculation>();
+            services.AddTransient<IOnlineRepository, OnlineRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1104,6 +1104,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetInsuranceComboListInputData, GetInsuranceComboListInteractor>();
             busBuilder.RegisterUseCase<ValidHokenInfAllTypeInputData, ValidHokenInfAllTypeInteractor>();
             busBuilder.RegisterUseCase<HokenPatternUsedInputData, HokenPatternUsedInteractor>();
+            busBuilder.RegisterUseCase<FindPtHokenListInputData, FindPtHokenListInteractor>();
 
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
@@ -1551,6 +1552,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveRaiinListSettingInputData, SaveRaiinListSettingInteractor>();
             //SinKoui
             busBuilder.RegisterUseCase<GetListSinKouiInputData, GetListSinKouiInteractor>();
+
+            //Online
+            busBuilder.RegisterUseCase<InsertOnlineConfirmHistoryInputData, InsertOnlineConfirmHistoryInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
