@@ -14,6 +14,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore.Metadata;
+using System.Text;
 
 namespace Infrastructure.Repositories
 {
@@ -2882,10 +2883,22 @@ namespace Infrastructure.Repositories
 
         public PiImageModel GetImagePiByItemCd(int hpId, string itemCd, int imageType)
         {
+            List<string> folderPaths = new List<string>() { CommonConstants.Image, CommonConstants.Reference, CommonConstants.DrugPhoto };
+            if (imageType == (int)ImageTypeDrug.HouImage)
+            {
+                folderPaths.Add(CommonConstants.HouSou);
+            }
+            else if (imageType == (int)ImageTypeDrug.ZaiImage)
+            {
+                folderPaths.Add(CommonConstants.ZaiKei);
+            }
+
+            string path = BuildPathAws(folderPaths);
+
             var piImage = NoTrackingDataContext.PiImages.FirstOrDefault(u => u.HpId == hpId && u.ItemCd == itemCd && u.ImageType == imageType);
             if (piImage != null)
             {
-                return new PiImageModel(piImage.HpId, piImage.ImageType, piImage.ItemCd, piImage.FileName ?? string.Empty, false, false);
+                return new PiImageModel(piImage.HpId, piImage.ImageType, piImage.ItemCd, path + piImage.FileName ?? string.Empty, false, false);
             }
             else
             {
@@ -3336,6 +3349,7 @@ namespace Infrastructure.Repositories
         public List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd)
         {
             var kinkiQuery = NoTrackingDataContext.KinkiMsts.Where(item => item.ACd == itemCd);
+            var temp = kinkiQuery.ToList();
             var itemMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate && item.IsDeleted == DeleteTypes.None);
 
             var query = from kinki in kinkiQuery
@@ -5227,6 +5241,17 @@ namespace Infrastructure.Repositories
             result?.TrimEnd(Environment.NewLine.ToCharArray());
 
             return result ?? string.Empty;
+        }
+
+        private string BuildPathAws(List<string> folders)
+        {
+            StringBuilder result = new();
+            foreach (var item in folders)
+            {
+                result.Append(item);
+                result.Append("/");
+            }
+            return result.ToString();
         }
     }
 }
