@@ -652,6 +652,7 @@ using Domain.Models.Online;
 using UseCase.Online.InsertOnlineConfirmHistory;
 using Interactor.Online;
 using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
+using UseCase.Insurance.FindPtHokenList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1103,6 +1104,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetInsuranceComboListInputData, GetInsuranceComboListInteractor>();
             busBuilder.RegisterUseCase<ValidHokenInfAllTypeInputData, ValidHokenInfAllTypeInteractor>();
             busBuilder.RegisterUseCase<HokenPatternUsedInputData, HokenPatternUsedInteractor>();
+            busBuilder.RegisterUseCase<FindPtHokenListInputData, FindPtHokenListInteractor>();
 
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
