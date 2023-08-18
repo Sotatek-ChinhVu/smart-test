@@ -790,6 +790,20 @@ namespace Infrastructure.Repositories
                 );
         }
 
+        public PatientInforModel GetPtInfByRefNo(int hpId, long refNo)
+        {
+            var ptInfWithRefNo = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                     && item.ReferenceNo == refNo
+                                                                                     && item.ReferenceNo != 0
+                                                                                     && item.IsDelete == 0
+                                                                                     && item.IsTester == 0);
+            if (ptInfWithRefNo == null)
+            {
+                return new();
+            }
+            return ToModel(ptInfWithRefNo, string.Empty, 0);
+        }
+
         public List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
         {
             var ptIdList = NoTrackingDataContext.RaiinInfs.Where(r => r.SinDate == sindate).GroupBy(r => r.PtId).Select(gr => gr.Key).ToList();
