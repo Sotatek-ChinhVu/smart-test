@@ -1805,32 +1805,38 @@ namespace Infrastructure.Repositories
             var result = new List<AccountingFormMstModel>();
             result = NoTrackingDataContext.AccountingFormMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0)
                         .AsEnumerable()
-                        .Select(x => new AccountingFormMstModel(x.HpId, x.FormNo, x.FormName ?? string.Empty, x.FormType, x.PrintSort, x.MiseisanKbn, x.SaiKbn, x.MisyuKbn, x.SeikyuKbn, x.HokenKbn, x.Form ?? string.Empty, x.Base, x.SortNo, x.IsDeleted, x.CreateDate, x.UpdateDate,x.CreateId, x.UpdateId, false))
+                        .Select(x => new AccountingFormMstModel(x.HpId, x.FormNo, x.FormName ?? string.Empty, x.FormType, x.PrintSort, x.MiseisanKbn, x.SaiKbn, x.MisyuKbn, x.SeikyuKbn, x.HokenKbn, x.Form ?? string.Empty, x.Base, x.SortNo, x.IsDeleted, x.CreateDate, x.UpdateDate, x.CreateId, x.UpdateId, false))
                         .ToList();
             return result;
         }
 
         public void UpdateAccountingFormMst(int userId, List<AccountingFormMstModel> models)
         {
-                List<AccountingFormMst> entities = new List<AccountingFormMst>();
-                foreach (var model in models)
+            List<AccountingFormMst> addEntities = new();
+            List<AccountingFormMst> updateEntities = new();
+            foreach (var model in models)
+            {
+                if (!model.CheckDefaultValue() && model.ModelModified)
                 {
-                    if (!model.CheckDefaultValue() && model.ModelModified)
+                    var accountingFormMst = ConvertAccountingFormMstModelToAccountingFormMst(model);
+                    accountingFormMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    accountingFormMst.UpdateId = userId;
+                    if (model.FormNo == 0 && model.IsDeleted == 0)
                     {
-                        var accountingFormMst = ConvertAccountingFormMstModelToAccountingFormMst(model);
-                        accountingFormMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        accountingFormMst.UpdateId = userId;
-                        if (model.FormNo == 0 && model.IsDeleted == 0)
-                        {
-                            accountingFormMst.CreateDate = CIUtil.GetJapanDateTimeNow();
-                            accountingFormMst.CreateId = userId;
+                        accountingFormMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        accountingFormMst.CreateId = userId;
 
-                            entities.Add(accountingFormMst);
-                        }
+                        addEntities.Add(accountingFormMst);
+                    }
+                    else
+                    {
+                        updateEntities.Add(accountingFormMst);
                     }
                 }
-                TrackingDataContext.AccountingFormMsts.AddRange(entities);
-                TrackingDataContext.SaveChanges();
+            }
+            TrackingDataContext.AccountingFormMsts.AddRange(addEntities);
+            TrackingDataContext.AccountingFormMsts.UpdateRange(updateEntities);
+            TrackingDataContext.SaveChanges();
         }
 
         public AccountingFormMst ConvertAccountingFormMstModelToAccountingFormMst(AccountingFormMstModel accountingFormMstModel)
