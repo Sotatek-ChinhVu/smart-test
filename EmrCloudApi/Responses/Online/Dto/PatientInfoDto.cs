@@ -14,7 +14,8 @@ public class PatientInfoDto
         KanaName = item.KanaName;
         Name = item.Name;
         RawBirthday = item.RawBirthday;
-        Gender = item.Gender;
+        Gender1 = item.Gender1;
+        Gender2 = item.Gender2;
         Address = item.Address;
         OfficePost = item.OfficePost;
         Setanusi = item.Setanusi;
@@ -27,7 +28,8 @@ public class PatientInfoDto
         ConfirmationResult = item.ConfirmationResult;
         SegmentOfResult = item.SegmentOfResult;
         ProcessingResultStatus = item.ProcessingResultStatus;
-        Sex = item.Sex;
+        Sex1 = item.Sex1;
+        Sex2 = item.Sex2;
         DisplayedValidity = item.DisplayedValidity;
         DisplayedUketukeStatus = item.DisplayedUketukeStatus;
         Result = item.Result;
@@ -53,7 +55,9 @@ public class PatientInfoDto
 
     public int RawBirthday { get; private set; }
 
-    public int Gender { get; private set; }
+    public int Gender1 { get; private set; }
+
+    public int Gender2 { get; private set; }
 
     public string Address { get; private set; }
 
@@ -79,7 +83,9 @@ public class PatientInfoDto
 
     public int ProcessingResultStatus { get; private set; }
 
-    public string Sex { get; private set; }
+    public string Sex1 { get; private set; }
+
+    public string Sex2 { get; private set; }
 
     public string DisplayedValidity { get; private set; }
 
