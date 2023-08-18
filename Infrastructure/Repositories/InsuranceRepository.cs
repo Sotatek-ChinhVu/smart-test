@@ -8,6 +8,8 @@ using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
@@ -1466,6 +1468,183 @@ namespace Infrastructure.Repositories
         {
             var check = NoTrackingDataContext.PtHokenPatterns.Any(h => h.HokenPid == hokenPid && h.IsDeleted == 0);
             return check;
+        }
+
+        public List<HokenInfModel> FindPtHokenList(int hpId, long ptId, int sinDay)
+        {
+            var prefCd = NoTrackingDataContext.HpInfs.FirstOrDefault(h => h.HpId == hpId)?.PrefNo ?? 0;
+            List<HokenInfModel> ptHokenList = new List<HokenInfModel>();
+
+            var listPtHokenInf = NoTrackingDataContext.PtHokenInfs
+                .Where(hoken => hoken.HpId == hpId
+                                                   && hoken.PtId == ptId
+                                                   && hoken.IsDeleted == 0).ToList();
+
+            var predicateHokenMst = CreateHokenMstExpression(listPtHokenInf);
+
+            if (listPtHokenInf?.Count == 0) return ptHokenList;
+
+            var hokenMstListRepo = NoTrackingDataContext.HokenMsts
+                .Where(
+                    entity => entity.HpId == hpId
+                              && (entity.PrefNo == prefCd
+                                  || entity.PrefNo == 0
+                                  || entity.IsOtherPrefValid == 1))
+                .OrderBy(e => e.HpId)
+                .ThenBy(e => e.HokenNo)
+                .ThenBy(e => e.HokenEdaNo)
+                .ThenByDescending(e => e.StartDate)
+                .ThenBy(e => e.HokenSbtKbn)
+                .ThenBy(e => e.SortNo);
+
+            var hokenMstList = predicateHokenMst == null ? new() : hokenMstListRepo.Where(predicateHokenMst).ToList();
+
+            return listPtHokenInf?.Select(item => CreatePtHokenInfModel(hpId, ptId,
+                item, hokenMstList.Where(itemMst =>
+                    itemMst.HokenNo == item.HokenNo && itemMst.HokenEdaNo == item.HokenEdaNo).ToList(), sinDay)).ToList() ?? new();
+        }
+
+        public HokenInfModel CreatePtHokenInfModel(int hpId, long ptId, PtHokenInf ePtHokenInf, List<HokenMst> hokenMstLists, int sinDay)
+        {
+            HokenInfModel? hokenInfModel = null;
+            if (ePtHokenInf != null)
+            {
+                HokenMst hokenMst;
+                var hokMstMapped = hokenMstLists
+                   .FindAll(hk =>
+                   hk.HokenNo == ePtHokenInf.HokenNo
+                   && hk.HokenEdaNo == ePtHokenInf.HokenEdaNo)
+                   .OrderByDescending(hk => hk.StartDate);
+
+                if (hokMstMapped.Count() > 1)
+                {
+                    // pick one newest within startDate <= sinday
+                    var firstMapped = hokMstMapped.FirstOrDefault(hokMst => hokMst.StartDate <= sinDay);
+                    if (firstMapped == null)
+                    {
+                        // does not exist any hoken master with startDate <= sinday, pick lastest hoken mst (with min start date)
+                        // pick last cause by all hoken master is order by start date descending
+                        hokenMst = hokMstMapped.LastOrDefault() ?? new();
+                    }
+                    else
+                    {
+                        hokenMst = firstMapped;
+                    }
+                }
+                else
+                {
+                    // have just one hoken mst with HokenNo and HokenEdaNo
+                    hokenMst = hokMstMapped?.FirstOrDefault() ?? new();
+                }
+                HokenMstModel? hokenMstModel = null;
+                if (hokenMst != null)
+                {
+                    hokenMstModel = Mapper.Map(hokenMst, new HokenMstModel(), (src, dest) =>
+                    {
+                        dest.ChangePropertiesNoAutoMap(src.HokenSname ?? string.Empty);
+                        return dest;
+                    });
+                }
+                hokenInfModel = new HokenInfModel(hpId,
+                                        ptId,
+                                        ePtHokenInf.HokenId,
+                                        ePtHokenInf.SeqNo,
+                                        ePtHokenInf.HokenNo,
+                                        ePtHokenInf.HokenEdaNo,
+                                        ePtHokenInf.HokenKbn,
+                                        ePtHokenInf.HokensyaNo ?? string.Empty,
+                                        ePtHokenInf.Kigo ?? string.Empty,
+                                        ePtHokenInf.Bango ?? string.Empty,
+                                        ePtHokenInf.EdaNo ?? string.Empty,
+                                        ePtHokenInf.HonkeKbn,
+                                        ePtHokenInf.StartDate,
+                                        ePtHokenInf.EndDate,
+                                        ePtHokenInf.SikakuDate,
+                                        ePtHokenInf.KofuDate,
+                                        new(),
+                                        ePtHokenInf.KogakuKbn,
+                                        ePtHokenInf.TasukaiYm,
+                                        ePtHokenInf.TokureiYm1,
+                                        ePtHokenInf.TokureiYm2,
+                                        ePtHokenInf.GenmenKbn,
+                                        ePtHokenInf.GenmenRate,
+                                        ePtHokenInf.GenmenGaku,
+                                        ePtHokenInf.SyokumuKbn,
+                                        ePtHokenInf.KeizokuKbn,
+                                        ePtHokenInf.Tokki1 ?? string.Empty,
+                                        ePtHokenInf.Tokki2 ?? string.Empty,
+                                        ePtHokenInf.Tokki3 ?? string.Empty,
+                                        ePtHokenInf.Tokki4 ?? string.Empty,
+                                        ePtHokenInf.Tokki5 ?? string.Empty,
+                                        ePtHokenInf.RousaiKofuNo ?? string.Empty,
+                                        ePtHokenInf.RousaiRoudouCd ?? string.Empty,
+                                        ePtHokenInf.RousaiSaigaiKbn,
+                                        ePtHokenInf.RousaiKantokuCd ?? string.Empty,
+                                        ePtHokenInf.RousaiSyobyoDate,
+                                        ePtHokenInf.RyoyoStartDate,
+                                        ePtHokenInf.RyoyoEndDate,
+                                        ePtHokenInf.RousaiSyobyoCd ?? string.Empty,
+                                        ePtHokenInf.RousaiJigyosyoName ?? string.Empty,
+                                        ePtHokenInf.RousaiPrefName ?? string.Empty,
+                                        ePtHokenInf.RousaiCityName ?? string.Empty,
+                                        ePtHokenInf.RousaiReceCount,
+                                        string.Empty,
+                                        string.Empty,
+                                        string.Empty,
+                                        sinDay,
+                                        ePtHokenInf.JibaiHokenName ?? string.Empty,
+                                        ePtHokenInf.JibaiHokenTanto ?? string.Empty,
+                                        ePtHokenInf.JibaiHokenTel ?? string.Empty,
+                                        ePtHokenInf.JibaiJyusyouDate,
+                                        ePtHokenInf.Houbetu ?? string.Empty,
+                                        new(),
+                                        new(),
+                                        false,
+                                        ePtHokenInf.IsDeleted,
+                                        hokenMstModel ?? new(),
+                                        new(),
+                                        false,
+                                        false
+                                        );
+                ;
+            }
+
+            return hokenInfModel ?? new();
+        }
+
+        private Expression<Func<HokenMst, bool>>? CreateHokenMstExpression(List<PtHokenInf>? listPtHokenInf)
+        {
+            var param = Expression.Parameter(typeof(HokenMst));
+            Expression? expression = null;
+
+            CreateHokenMstExpression(listPtHokenInf, ref expression, ref param);
+
+            return expression != null
+                ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
+                : null;
+        }
+
+        private void CreateHokenMstExpression(List<PtHokenInf>? listPtHokenInf, ref Expression? expression, ref ParameterExpression param)
+        {
+            if (listPtHokenInf != null)
+            {
+                foreach (var item in listPtHokenInf)
+                {
+                    if (item != null)
+                    {
+                        var valHokenNo = Expression.Constant(item.HokenNo);
+                        var memberHokenNo = Expression.Property(param, nameof(HokenMst.HokenNo));
+
+                        var valHokenEdaNo = Expression.Constant(item.HokenEdaNo);
+                        var memberHokenEdaNo = Expression.Property(param, nameof(HokenMst.HokenEdaNo));
+
+                        var expressionHoken = Expression.And(Expression.Equal(valHokenNo, memberHokenNo),
+                            Expression.Equal(valHokenEdaNo, memberHokenEdaNo));
+
+                        expression = expression == null ? expressionHoken : Expression.Or(expression, expressionHoken);
+                    }
+                }
+            }
         }
     }
 }

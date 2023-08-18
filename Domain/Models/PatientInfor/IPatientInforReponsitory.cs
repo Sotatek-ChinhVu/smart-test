@@ -13,7 +13,7 @@ namespace Domain.Models.PatientInfor
     {
         PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo, bool isShowKyuSeiName = false);
 
-        (PatientInforModel ptInfModel, bool isFound) SearchExactlyPtNum(long ptNum, int hpId);
+        (PatientInforModel ptInfModel, bool isFound) SearchExactlyPtNum(long ptNum, int hpId, int sinDate);
 
         List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
