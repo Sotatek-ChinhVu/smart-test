@@ -125,7 +125,10 @@ namespace Interactor.User
             }
             else
             {
-                msgResult = string.Format(ErrorMessage.MessageType_mInp00010, msg);
+                if (!string.IsNullOrEmpty(msg))
+                {
+                    msgResult = string.Format(ErrorMessage.MessageType_mInp00010, msg);
+                }
             }
 
             return msgResult;
