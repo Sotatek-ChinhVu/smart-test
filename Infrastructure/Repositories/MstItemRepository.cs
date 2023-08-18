@@ -13,15 +13,21 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Options;
 using System.Text;
 
 namespace Infrastructure.Repositories
 {
     public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
-        public MstItemRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+
+        private readonly AmazonS3Options _options;
+
+        public MstItemRepository(ITenantProvider tenantProvider, IOptions<AmazonS3Options> optionsAccessor) : base(tenantProvider)
         {
+            _options = optionsAccessor.Value;
         }
 
         private readonly List<int> _HoukatuTermExclude = new List<int> { 0, 5, 6 };
@@ -2883,6 +2889,8 @@ namespace Infrastructure.Repositories
 
         public PiImageModel GetImagePiByItemCd(int hpId, string itemCd, int imageType)
         {
+
+
             List<string> folderPaths = new List<string>() { CommonConstants.Image, CommonConstants.Reference, CommonConstants.DrugPhoto };
             if (imageType == (int)ImageTypeDrug.HouImage)
             {
@@ -2892,13 +2900,17 @@ namespace Infrastructure.Repositories
             {
                 folderPaths.Add(CommonConstants.ZaiKei);
             }
-
             string path = BuildPathAws(folderPaths);
+
+            var pathFull = new StringBuilder();
+            pathFull.Append(_options.BaseAccessUrl);
+            pathFull.Append("/");
+            pathFull.Append(path);
 
             var piImage = NoTrackingDataContext.PiImages.FirstOrDefault(u => u.HpId == hpId && u.ItemCd == itemCd && u.ImageType == imageType);
             if (piImage != null)
             {
-                return new PiImageModel(piImage.HpId, piImage.ImageType, piImage.ItemCd, path + piImage.FileName ?? string.Empty, false, false);
+                return new PiImageModel(piImage.HpId, piImage.ImageType, piImage.ItemCd, pathFull + piImage.FileName ?? string.Empty, false, false);
             }
             else
             {
