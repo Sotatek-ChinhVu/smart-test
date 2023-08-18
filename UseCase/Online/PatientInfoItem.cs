@@ -20,7 +20,7 @@ public class PatientInfoItem
         ConfirmationResult = string.Empty;
     }
 
-    public PatientInfoItem(int sinDate, long id, long ptId, long ptNum, long refNo, string kanaName, string name, int rawBirthday, int gender, string address, string officePost, string setanusi, string processingTime, string insuranceNumber, string branchNumber, string kigoBango, string validity, int uketukeStatus, string confirmationResult, int segmentOfResult, int processingResultStatus)
+    public PatientInfoItem(int sinDate, long id, long ptId, long ptNum, long refNo, string kanaName, string name, int rawBirthday, int gender1, int gender2, string address, string officePost, string setanusi, string processingTime, string insuranceNumber, string branchNumber, string kigoBango, string validity, int uketukeStatus, string confirmationResult, int segmentOfResult, int processingResultStatus)
     {
         SinDate = sinDate;
         Id = id;
@@ -30,7 +30,8 @@ public class PatientInfoItem
         KanaName = kanaName;
         Name = name;
         RawBirthday = rawBirthday;
-        Gender = gender;
+        Gender1 = gender1;
+        Gender2 = gender2;
         Address = address;
         OfficePost = officePost;
         Setanusi = setanusi;
@@ -61,7 +62,9 @@ public class PatientInfoItem
 
     public int RawBirthday { get; private set; }
 
-    public int Gender { get; private set; }
+    public int Gender1 { get; private set; }
+
+    public int Gender2 { get; private set; }
 
     public string Address { get; private set; }
 
@@ -87,7 +90,9 @@ public class PatientInfoItem
 
     public int ProcessingResultStatus { get; private set; }
 
-    public string Sex => IsDefault ? string.Empty : CIUtil.GetDisplayGender(Gender);
+    public string Sex1 => IsDefault ? string.Empty : CIUtil.GetDisplayGender(Gender1);
+
+    public string Sex2 => IsDefault ? string.Empty : CIUtil.GetDisplayGender(Gender2);
 
     public string DisplayedValidity => Validity.AsInteger() == 1 ? "有効" : string.Empty;
 

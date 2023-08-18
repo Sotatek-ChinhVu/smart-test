@@ -55,6 +55,7 @@ public class GetRegisterdPatientsFromOnlineInteractor : IGetRegisterdPatientsFro
                    oqPtInf.Name,
                    oqPtInf.Birthdate.AsInteger(),
                    oqPtInf.Sex1.AsInteger(),
+                   oqPtInf.Sex2.AsInteger(),
                    oqPtInf.Address,
                    oqPtInf.PostNumber,
                    string.Empty,
