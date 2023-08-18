@@ -1,8 +1,11 @@
-﻿using EmrCloudApi.Constants;
+﻿using DocumentFormat.OpenXml.Drawing;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportCsv;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using Reporting.CommonMasters.Enums;
 using Reporting.ReportServices;
+using Serilog;
 using System.Text;
 using UseCase.Core.Sync;
 
@@ -27,6 +30,11 @@ public class ExportCSVController : AuthorizeControllerBase
                                                               request.PtConditions.Select(p => new Tuple<long, int>(p.PtId, p.HokenId)).ToList(),
                                                               request.GrpConditions.Select(p => new Tuple<int, string>(p.GrpId, p.GrpCd)).ToList(),
                                                               request.Sort, request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn);
+        if (!data.Any())
+        {
+            return Ok("出力データがありません。");
+        }
+
         return RenderCsv(data, "期間指定請求書リスト.csv");
     }
 
