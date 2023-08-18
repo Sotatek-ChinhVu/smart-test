@@ -20,7 +20,7 @@ public class ExportCSVController : AuthorizeControllerBase
         _reportService = reportService;
     }
 
-    [HttpPost(ApiPath.ReceListCsv)]
+    [HttpPost(ApiPath.ExportPeriodReceipt)]
     public IActionResult GenerateKarteCsvReport([FromBody] ExportCsvRequest request)
     {
         var data = _reportService.OutputExcelForPeriodReceipt(HpId, request.StartDate, request.EndDate,
