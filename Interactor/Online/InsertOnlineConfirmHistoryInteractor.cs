@@ -23,6 +23,7 @@ public class InsertOnlineConfirmHistoryInteractor : IInsertOnlineConfirmHistoryI
                 return new InsertOnlineConfirmHistoryOutputData(validateResult);
             }
             var onlineModelList = inputData.OnlineList.Select(item => new OnlineConfirmationHistoryModel(
+                                                                          0,
                                                                           item.PtId,
                                                                           item.OnlineConfirmationDate,
                                                                           item.ConfirmationType,

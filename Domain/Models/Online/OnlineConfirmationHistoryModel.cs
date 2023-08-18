@@ -2,8 +2,9 @@
 
 public class OnlineConfirmationHistoryModel
 {
-    public OnlineConfirmationHistoryModel(long ptId, DateTime onlineConfirmationDate, int confirmationType, string infoConsFlg, string confirmationResult, int prescriptionIssueType, int uketukeStatus)
+    public OnlineConfirmationHistoryModel(long id, long ptId, DateTime onlineConfirmationDate, int confirmationType, string infoConsFlg, string confirmationResult, int prescriptionIssueType, int uketukeStatus)
     {
+        Id = id;
         PtId = ptId;
         OnlineConfirmationDate = onlineConfirmationDate;
         ConfirmationType = confirmationType;
@@ -12,6 +13,8 @@ public class OnlineConfirmationHistoryModel
         PrescriptionIssueType = prescriptionIssueType;
         UketukeStatus = uketukeStatus;
     }
+
+    public long Id { get; private set; }
 
     public long PtId { get; private set; }
 

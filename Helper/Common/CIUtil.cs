@@ -3737,5 +3737,10 @@ namespace Helper.Common
         {
             return value.Length;
         }
+
+        public static string GetDisplayGender(int sex)
+        {
+            return sex == 1 ? "男" : sex == 2 ? "女" : "未設定";
+        }
     }
 }

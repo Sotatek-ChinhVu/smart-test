@@ -653,6 +653,7 @@ using UseCase.Online.InsertOnlineConfirmHistory;
 using Interactor.Online;
 using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.Insurance.FindPtHokenList;
+using UseCase.Online.GetRegisterdPatientsFromOnline;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1555,6 +1556,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Online
             busBuilder.RegisterUseCase<InsertOnlineConfirmHistoryInputData, InsertOnlineConfirmHistoryInteractor>();
+            busBuilder.RegisterUseCase<GetRegisterdPatientsFromOnlineInputData, GetRegisterdPatientsFromOnlineInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
