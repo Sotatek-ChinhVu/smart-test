@@ -2910,7 +2910,7 @@ namespace Infrastructure.Repositories
             var piImage = NoTrackingDataContext.PiImages.FirstOrDefault(u => u.HpId == hpId && u.ItemCd == itemCd && u.ImageType == imageType);
             if (piImage != null)
             {
-                return new PiImageModel(piImage.HpId, piImage.ImageType, piImage.ItemCd, pathFull + piImage.FileName ?? string.Empty, false, false);
+                return new PiImageModel(piImage.HpId, piImage.ImageType, piImage.ItemCd, piImage.FileName ?? string.Empty, false, false, pathFull + piImage.FileName ?? string.Empty);
             }
             else
             {
