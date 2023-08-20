@@ -1,16 +1,17 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.Online;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.Online.GetRegisterdPatientsFromOnline;
 
 public class GetRegisterdPatientsFromOnlineOutputData : IOutputData
 {
-    public GetRegisterdPatientsFromOnlineOutputData(List<PatientInfoItem> patientInfoList, GetRegisterdPatientsFromOnlineStatus status)
+    public GetRegisterdPatientsFromOnlineOutputData(List<OnlineConfirmationHistoryModel> onlineConfirmationHistoryList, GetRegisterdPatientsFromOnlineStatus status)
     {
-        PatientInfoList = patientInfoList;
+        OnlineConfirmationHistoryList = onlineConfirmationHistoryList;
         Status = status;
     }
 
-    public List<PatientInfoItem> PatientInfoList { get; private set; }
+    public List<OnlineConfirmationHistoryModel> OnlineConfirmationHistoryList { get; private set; }
 
     public GetRegisterdPatientsFromOnlineStatus Status { get; private set; }
 }
