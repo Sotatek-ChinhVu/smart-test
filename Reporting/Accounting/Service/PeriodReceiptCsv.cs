@@ -1,14 +1,7 @@
-﻿using Domain.Models.MstItem;
-using Helper.Common;
+﻿using Helper.Common;
 using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
-using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reporting.Accounting.Service
 {
@@ -35,7 +28,7 @@ namespace Reporting.Accounting.Service
         public CommonExcelReportingModel GetPeriodReceiptCsv(int hpId, int startDate, int endDate, List<(long ptId, int hokenId)> ptConditions, List<(int grpId, string grpCd)> grpConditions, int sort, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn)
         {
             _coModelList = GetDataList(hpId, startDate, endDate, ptConditions, grpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
-            
+
             List<string> output = new List<string>();
 
             // ヘッダー
