@@ -91,4 +91,6 @@ public interface IReportService
     CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm);
 
     CommonExcelReportingModel GetReceiptListExcel(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput receiptListModel, bool isIsExportTitle);
+
+    CommonExcelReportingModel GetPeriodReceiptCsv(int hpId, int startDate, int endDate, List<(long ptId, int hokenId)> ptConditions, List<(int grpId, string grpCd)> grpConditions, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int sort, int hokenKbn);
 }
