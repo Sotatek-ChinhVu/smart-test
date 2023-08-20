@@ -12,7 +12,7 @@ public class GetRegisterdPatientsFromOnlinePresenter : IGetRegisterdPatientsFrom
 
     public void Complete(GetRegisterdPatientsFromOnlineOutputData output)
     {
-        Result.Data = new GetRegisterdPatientsFromOnlineResponse(output.PatientInfoList.Select(item => new PatientInfoDto(item)).ToList());
+        Result.Data = new GetRegisterdPatientsFromOnlineResponse(output.OnlineConfirmationHistoryList.Select(item => new OnlineConfirmationHistoryDto(item)).ToList());
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }
