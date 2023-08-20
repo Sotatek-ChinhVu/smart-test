@@ -14,12 +14,12 @@ using UseCase.Core.Sync;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class ImportCSVController : AuthorizeControllerBase
+public class ExportCSVController : AuthorizeControllerBase
 {
     private readonly IReportService _reportService;
 
     private readonly UseCaseBus _bus;
-    public ImportCSVController(UseCaseBus bus, IUserService userService, IReportService reportService) : base(userService)
+    public ExportCSVController(UseCaseBus bus, IUserService userService, IReportService reportService) : base(userService)
     {
         _bus = bus;
         _reportService = reportService;
@@ -29,6 +29,13 @@ public class ImportCSVController : AuthorizeControllerBase
     public IActionResult GenerateKarteCsvReport([FromBody] ReceiptListExcelRequest request)
     {
         var data = _reportService.GetReceiptListExcel(HpId, request.SeikyuYm, ConvertToReceiptListAdvancedSearchInputData(HpId, request), request.IsIsExportTitle);
+        return RenderExcel(data);
+    }
+
+    [HttpGet(ApiPath.PeriodReceiptCsv)]
+    public IActionResult GeneratePeriodReceiptCsv([FromQuery] PeriodReceiptCsvRequest request)
+    {
+        var data = _reportService.GetPeriodReceiptCsv(HpId, request.StartDate, request.EndDate, request.PtConditions, request.GrpConditions, request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.Sort, request.HokenKbn);
         return RenderExcel(data);
     }
 
