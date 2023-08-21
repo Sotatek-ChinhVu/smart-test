@@ -6,11 +6,14 @@ using Reporting.Accounting.Constants;
 using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
+using Reporting.Calculate.Interface;
+using Reporting.Calculate.Receipt.Constants;
+using Reporting.Calculate.Receipt.ViewModels;
 using Reporting.CommonMasters.Config;
 using Reporting.Mappers.Common;
-using System.Text;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
+using System.Text;
 using Reporting.Calculate.Receipt.ViewModels;
 using Domain.Models.CalculateModel;
 using Reporting.Calculate.Interface;
@@ -626,6 +629,8 @@ public class AccountingCoReportService : IAccountingCoReportService
     #endregion
     private void SetFormFilePath()
     {
+        formFileName = @params.FirstOrDefault()?.FormFileName ?? string.Empty;
+        jobName = "月間領収証";
         if (string.IsNullOrEmpty(formFileName))
         {
             if (printType == 0)

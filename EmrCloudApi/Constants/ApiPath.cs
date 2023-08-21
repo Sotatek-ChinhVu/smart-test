@@ -133,6 +133,8 @@
         public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
         public const string SearchPatientInfoByPtIdList = "SearchPatientInfoByPtIdList";
         public const string SavePtKyusei = "SavePtKyusei";
+        public const string GetPtInfByRefNo = "GetPtInfByRefNo";
+        public const string GetPtInfModelsByName = "GetPtInfModelsByName";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -400,6 +402,11 @@
 
         // Online
         public const string InsertOnlineConfirmHistory = "InsertOnlineConfirmHistory";
+        public const string GetRegisterdPatientsFromOnline = "GetRegisterdPatientsFromOnline";
+
+        //AccountingFormMst
+        public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
+        public const string UpdateAccountingFormMst = "UpdateAccountingFormMst";
 
         public const string Test = "Test";
 

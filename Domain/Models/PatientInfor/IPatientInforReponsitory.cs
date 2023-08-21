@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Models.CalculationInf;
 using Domain.Models.GroupInf;
+using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
@@ -28,6 +29,8 @@ namespace Domain.Models.PatientInfor
         List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
+
+        PatientInforModel GetPtInfByRefNo(int hpId, long refNo);
 
         List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting);
 
@@ -69,6 +72,8 @@ namespace Domain.Models.PatientInfor
         int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus);
 
         List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex, int birthDay);
+
+        List<PatientInforModel> GetPtInfModelsByName(int hpId, string kanaName, string name, int birthDate, int sex1, int sex2);
 
         bool SavePtKyusei(int hpId, int userId, List<PtKyuseiModel> ptKyuseiList);
     }
