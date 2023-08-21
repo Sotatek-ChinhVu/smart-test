@@ -3596,7 +3596,13 @@ namespace Infrastructure.Repositories
                 IpnNameMstModel ipnModel = setDataTen.PrecriptionSettingTab.IpnNameMst;
                 if (ipnModel.ModelModified)
                 {
-                    if (string.IsNullOrEmpty(ipnModel.IpnNameCd))
+                    var ipnDb = TrackingDataContext.IpnNameMsts.FirstOrDefault(x =>
+                          x.HpId == hpId &&
+                          x.IpnNameCd == ipnModel.IpnNameCd &&
+                          x.StartDate == ipnModel.StartDate &&
+                          x.EndDate == ipnModel.EndDate);
+
+                    if (string.IsNullOrEmpty(ipnModel.IpnNameCd) && ipnDb == null)
                     {
                         TrackingDataContext.IpnNameMsts.Add(new IpnNameMst()
                         {
@@ -3615,12 +3621,6 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        var ipnDb = TrackingDataContext.IpnNameMsts.FirstOrDefault(x =>
-                                    x.HpId == hpId &&
-                                    x.IpnNameCd == ipnModel.IpnNameCd &&
-                                    x.StartDate == ipnModel.StartDate &&
-                                    x.EndDate == ipnModel.EndDate);
-
                         if (ipnDb != null)
                         {
                             Mapper.Map(ipnModel, ipnDb, (src, dest) =>

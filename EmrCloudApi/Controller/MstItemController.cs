@@ -282,6 +282,10 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<SaveSetDataTenMstResponse>> SaveSetDataTenMst([FromBody] SaveSetDataTenMstRequest request)
         {
             List<TenMstOriginModel> tenOrigins = Mapper.Map<TenMstOriginModelDto, TenMstOriginModel>(request.TenOrigins);
+            foreach (var tenOrigin in tenOrigins)
+            {
+                tenOrigin.ChangeHpId(HpId);
+            }
 
             BasicSettingTabModel basicSettingTab = new BasicSettingTabModel(Mapper.Map<CmtKbnMstModelDto, CmtKbnMstModel>(request.CmtKbnMstModels));
 
