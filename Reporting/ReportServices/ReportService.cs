@@ -540,4 +540,9 @@ public class ReportService : IReportService
     {
         return _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(hpId, seikyuYm, receiptListModel, isIsExportTitle);
     }
+
+    public List<string> OutputExcelForPeriodReceipt(int hpId, int startDate, int endDate, List<Tuple<long, int>> ptConditions, List<Tuple<int, string>> grpConditions, int sort, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn)
+    {
+        return _accountingCoReportService.ExportCsv(hpId, startDate, endDate, ptConditions, grpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
+    }
 }

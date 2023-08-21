@@ -275,7 +275,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.KensaLabel)]
     public async Task<IActionResult> KensaLabel([FromQuery] KensaLabelRequest request)
     {
-        var data = _reportService.GetKensaLabelPrintData(request.HpId, request.PtId, request.RaiinNo, request.SinDate, new KensaPrinterModel(request.ItemCd, request.ContainerName, request.ContainerCd, request.Count, request.PrinterName, request.InoutKbn, request.OdrKouiKbn));
+        var data = _reportService.GetKensaLabelPrintData(request.HpId, request.PtId, request.RaiinNo, request.SinDate, new KensaPrinterModel(request.ItemCd, request.ContainerName, request.ContainerCd, request.Count, request.InoutKbn, request.OdrKouiKbn));
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 

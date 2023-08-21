@@ -12,7 +12,9 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using System.Linq.Expressions;
+using System.Net.WebSockets;
 
 namespace Infrastructure.Repositories
 {
@@ -1796,6 +1798,68 @@ namespace Infrastructure.Repositories
 
             return ptHokenPatternList;
 
+        }
+
+        public List<AccountingFormMstModel> GetAccountingFormMstModels(int hpId)
+        {
+            var result = new List<AccountingFormMstModel>();
+            result = NoTrackingDataContext.AccountingFormMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0)
+                        .AsEnumerable()
+                        .Select(x => new AccountingFormMstModel(x.HpId, x.FormNo, x.FormName ?? string.Empty, x.FormType, x.PrintSort, x.MiseisanKbn, x.SaiKbn, x.MisyuKbn, x.SeikyuKbn, x.HokenKbn, x.Form ?? string.Empty, x.Base, x.SortNo, x.IsDeleted, x.CreateDate, x.UpdateDate, x.CreateId, x.UpdateId, false))
+                        .ToList();
+            return result;
+        }
+
+        public void UpdateAccountingFormMst(int userId, List<AccountingFormMstModel> models)
+        {
+            List<AccountingFormMst> addEntities = new();
+            List<AccountingFormMst> updateEntities = new();
+            foreach (var model in models)
+            {
+                if (!model.CheckDefaultValue() && model.ModelModified)
+                {
+                    var accountingFormMst = ConvertAccountingFormMstModelToAccountingFormMst(model);
+                    accountingFormMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    accountingFormMst.UpdateId = userId;
+                    if (model.FormNo == 0 && model.IsDeleted == 0)
+                    {
+                        accountingFormMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        accountingFormMst.CreateId = userId;
+
+                        addEntities.Add(accountingFormMst);
+                    }
+                    else
+                    {
+                        updateEntities.Add(accountingFormMst);
+                    }
+                }
+            }
+            TrackingDataContext.AccountingFormMsts.AddRange(addEntities);
+            TrackingDataContext.AccountingFormMsts.UpdateRange(updateEntities);
+            TrackingDataContext.SaveChanges();
+        }
+
+        public AccountingFormMst ConvertAccountingFormMstModelToAccountingFormMst(AccountingFormMstModel accountingFormMstModel)
+        {
+            var accountingFormMst = new AccountingFormMst();
+            accountingFormMst.HpId = accountingFormMstModel.HpId;
+            accountingFormMst.FormNo = accountingFormMstModel.FormNo;
+            accountingFormMst.FormName = accountingFormMstModel.FormName;
+            accountingFormMst.FormType = accountingFormMstModel.FormType;
+            accountingFormMst.PrintSort = accountingFormMstModel.PrintSort;
+            accountingFormMst.MiseisanKbn = accountingFormMstModel.MiseisanKbn;
+            accountingFormMst.SaiKbn = accountingFormMstModel.SaiKbn;
+            accountingFormMst.HokenKbn = accountingFormMstModel.HokenKbn;
+            accountingFormMst.Form = accountingFormMstModel.Form;
+            accountingFormMst.Base = accountingFormMstModel.Base;
+            accountingFormMst.SortNo = accountingFormMstModel.SortNo;
+            accountingFormMst.IsDeleted = accountingFormMstModel.IsDeleted;
+            accountingFormMst.CreateId = accountingFormMstModel.CreateId;
+            accountingFormMst.CreateDate = (accountingFormMstModel.FormNo > 0) ? TimeZoneInfo.ConvertTimeToUtc(accountingFormMstModel.CreateDate) : accountingFormMstModel.CreateDate;
+            accountingFormMst.UpdateId = accountingFormMstModel.UpdateId;
+            accountingFormMst.UpdateDate = accountingFormMstModel.UpdateDate;
+
+            return accountingFormMst;
         }
 
         public List<HokenInfModel> GetListHokenSelect(int hpId, List<KaikeiInfModel> listKaikeiInf, long ptId)
