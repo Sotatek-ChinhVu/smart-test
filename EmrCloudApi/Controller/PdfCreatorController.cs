@@ -241,7 +241,7 @@ public class PdfCreatorController : ControllerBase
     {
         var request = JsonSerializer.Deserialize<MemoMsgPrintRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
-        return await RenderPdf(data, ReportType.Common, requestString.FileName);
+        return await RenderPdf(data, ReportType.Common, request.FileName);
     }
 
     [HttpGet(ApiPath.ReceTarget)]
