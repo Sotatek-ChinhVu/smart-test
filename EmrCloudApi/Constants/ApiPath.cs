@@ -403,6 +403,10 @@
         public const string InsertOnlineConfirmHistory = "InsertOnlineConfirmHistory";
         public const string GetRegisterdPatientsFromOnline = "GetRegisterdPatientsFromOnline";
 
+        //AccountingFormMst
+        public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
+        public const string UpdateAccountingFormMst = "UpdateAccountingFormMst";
+
         public const string Test = "Test";
 
     }
