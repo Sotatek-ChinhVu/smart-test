@@ -10,15 +10,13 @@ namespace EmrCloudApi.Requests.ExportPDF
 
         public int SinDate { get; set; }
 
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
-        public string ContainerName { get; set; }
+        public string ContainerName { get; set; } = string.Empty;
 
         public long ContainerCd { get; set; }
 
         public int Count { get; set; }
-
-        public string PrinterName { get; set; }
 
         public int InoutKbn { get; set; }
 
