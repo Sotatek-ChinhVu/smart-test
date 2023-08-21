@@ -135,8 +135,10 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.PeriodReceiptReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromBody] PeriodReceiptRequest request)
+    public async Task<IActionResult> GenerateAccountingReport([FromForm] StringObjectRequest requestString)
     {
+        var request = JsonSerializer.Deserialize<PeriodReceiptRequest>(requestString.StringJson) ?? new();
+
         List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
                                                                                            item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
                                                                                            request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, item.HokenKbn,
