@@ -56,6 +56,7 @@ namespace Interactor.Receipt
             string errorSyobyo = string.Empty;
             string errorSyobyoKeika = string.Empty;
             string errorRousaiSaigai = string.Empty;
+            string errorResult = string.Empty;
 
             List<ReceInfValidateModel> receInfModels = _receiptRepository.GetReceValidateReceiptCreation(hpId, new List<long>(), seikyuYm);
             foreach (var receInfItem in receInfModels)
@@ -83,19 +84,32 @@ namespace Interactor.Receipt
                     }
                 }
             }
+
             if (!string.IsNullOrEmpty(errorRousaiSaigai))
             {
-                errorRousaiSaigai = errorRousaiSaigai.Insert(0, "■災害区分が設定されていません。" + Environment.NewLine);
+                errorResult += errorRousaiSaigai.Insert(0, "■災害区分が設定されていません。" + Environment.NewLine);
             }
+
             if (!string.IsNullOrEmpty(errorSyobyo))
             {
-                errorSyobyo = Environment.NewLine + errorSyobyo.Insert(0, "■傷病開始年月日が設定されていません。" + Environment.NewLine);
+                if (errorResult != string.Empty)
+                {
+                    errorResult += Environment.NewLine;
+                }
+
+                errorResult += errorSyobyo.Insert(0, "■傷病開始年月日が設定されていません。" + Environment.NewLine);
             }
+
             if (!string.IsNullOrEmpty(errorSyobyoKeika))
             {
-                errorSyobyoKeika = Environment.NewLine + errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。" + Environment.NewLine);
+                if (errorResult != string.Empty)
+                {
+                    errorResult += Environment.NewLine;
+                }
+
+                errorResult += errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。" + Environment.NewLine);
             }
-            return errorRousaiSaigai + errorSyobyo + errorSyobyoKeika;
+            return errorResult;
         }
 
         private string ValidateAftercare(int hpId, int seikyuYm)
