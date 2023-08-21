@@ -117,6 +117,7 @@
         public const string AccountingCardList = "AccountingCardList";
         public const string WelfareDisk = "WelfareDisk";
         public const string ReceListCsv = "ReceListCsv";
+        public const string ExportPeriodReceipt = "ExportPeriodReceipt";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
