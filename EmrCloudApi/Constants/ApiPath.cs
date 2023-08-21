@@ -402,6 +402,7 @@
         // Online
         public const string InsertOnlineConfirmHistory = "InsertOnlineConfirmHistory";
         public const string GetRegisterdPatientsFromOnline = "GetRegisterdPatientsFromOnline";
+        public const string UpdateOnlineConfirmationHistory = "UpdateOnlineConfirmationHistory";
 
         public const string Test = "Test";
 
