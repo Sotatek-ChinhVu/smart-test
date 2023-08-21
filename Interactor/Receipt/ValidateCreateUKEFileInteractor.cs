@@ -69,37 +69,31 @@ namespace Interactor.Receipt
                     if (receInfItem.RousaiSaigaiKbn != 1 &&
                         receInfItem.RousaiSaigaiKbn != 2)
                     {
-                        errorRousaiSaigai += Environment.NewLine + string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId);
+                        errorRousaiSaigai += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + Environment.NewLine;
                     }
                     // check error Syobyo
                     if (receInfItem.RousaiSyobyoDate <= 0)
                     {
-                        errorSyobyo += Environment.NewLine + string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId);
+                        errorSyobyo += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + Environment.NewLine;
                     }
                     // check error SyobyoKeika
                     if (!_receiptRepository.ExistSyobyoKeikaData(hpId, receInfItem.PtId, receInfItem.SinYm, receInfItem.HokenId))
                     {
-                        errorSyobyoKeika += Environment.NewLine + string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId);
+                        errorSyobyoKeika += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + Environment.NewLine;
                     }
                 }
             }
             if (!string.IsNullOrEmpty(errorRousaiSaigai))
             {
-                errorRousaiSaigai = errorRousaiSaigai.Insert(0, "■災害区分が設定されていません。");
-                errorRousaiSaigai = errorRousaiSaigai.Insert(0, Environment.NewLine);
-                errorRousaiSaigai += Environment.NewLine;
-                errorRousaiSaigai += Environment.NewLine;
+                errorRousaiSaigai = errorRousaiSaigai.Insert(0, "■災害区分が設定されていません。" + Environment.NewLine);
             }
             if (!string.IsNullOrEmpty(errorSyobyo))
             {
-                errorSyobyo = errorSyobyo.Insert(0, "■傷病開始年月日が設定されていません。");
-                errorSyobyo += Environment.NewLine;
-                errorSyobyo += Environment.NewLine;
+                errorSyobyo = Environment.NewLine + errorSyobyo.Insert(0, "■傷病開始年月日が設定されていません。" + Environment.NewLine);
             }
             if (!string.IsNullOrEmpty(errorSyobyoKeika))
             {
-                errorSyobyoKeika = errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。");
-                errorSyobyoKeika += Environment.NewLine;
+                errorSyobyoKeika = Environment.NewLine + errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。" + Environment.NewLine);
             }
             return errorRousaiSaigai + errorSyobyo + errorSyobyoKeika;
         }
@@ -117,14 +111,13 @@ namespace Interactor.Receipt
                     // Check error SyobyoKeika 
                     if (!_receiptRepository.ExistSyobyoKeikaData(hpId, receInfItem.PtId, receInfItem.SinYm, receInfItem.HokenId))
                     {
-                        errorSyobyoKeika += Environment.NewLine + string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId);
+                        errorSyobyoKeika += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + Environment.NewLine;
                     }
                 }
             }
             if (!string.IsNullOrEmpty(errorSyobyoKeika))
             {
-                errorSyobyoKeika = errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。");
-                errorSyobyoKeika += Environment.NewLine;
+                errorSyobyoKeika = errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。" + Environment.NewLine);
             }
             return errorSyobyoKeika;
         }
