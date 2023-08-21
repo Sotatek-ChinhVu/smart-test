@@ -117,6 +117,7 @@
         public const string AccountingCardList = "AccountingCardList";
         public const string WelfareDisk = "WelfareDisk";
         public const string ReceListCsv = "ReceListCsv";
+        public const string ExportPeriodReceipt = "ExportPeriodReceipt";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -402,6 +403,10 @@
         // Online
         public const string InsertOnlineConfirmHistory = "InsertOnlineConfirmHistory";
         public const string GetRegisterdPatientsFromOnline = "GetRegisterdPatientsFromOnline";
+
+        //AccountingFormMst
+        public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
+        public const string UpdateAccountingFormMst = "UpdateAccountingFormMst";
 
         public const string Test = "Test";
 
