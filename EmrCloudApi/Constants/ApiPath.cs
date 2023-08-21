@@ -133,6 +133,7 @@
         public const string SearchPatientInfoByPtIdList = "SearchPatientInfoByPtIdList";
         public const string SavePtKyusei = "SavePtKyusei";
         public const string GetPtInfByRefNo = "GetPtInfByRefNo";
+        public const string GetPtInfModelsByName = "GetPtInfModelsByName";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";

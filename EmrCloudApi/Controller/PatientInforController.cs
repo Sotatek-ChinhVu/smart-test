@@ -102,6 +102,7 @@ using UseCase.PatientInfor.SavePtKyusei;
 using UseCase.PatientInfor;
 using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.PatientInfor.GetPtInfByRefNo;
+using UseCase.PatientInfor.GetPtInfModelsByName;
 
 namespace EmrCloudApi.Controller
 {
@@ -963,6 +964,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetPtInfByRefNoPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetPtInfByRefNoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPtInfModelsByName)]
+        public ActionResult<Response<GetPtInfModelsByNameResponse>> GetPtInfModelsByName([FromQuery] GetPtInfModelsByNameRequest request)
+        {
+            var input = new GetPtInfModelsByNameInputData(HpId, request.KanaName, request.Name, request.BirthDate, request.Sex1, request.Sex2);
+            var output = _bus.Handle(input);
+            var presenter = new GetPtInfModelsByNamePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPtInfModelsByNameResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.CalculationSwapHoken)]

@@ -804,6 +804,18 @@ namespace Infrastructure.Repositories
             return ToModel(ptInfWithRefNo, string.Empty, 0);
         }
 
+        public List<PatientInforModel> GetPtInfModelsByName(int hpId, string kanaName, string name, int birthDate, int sex1, int sex2)
+        {
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                    && (item.KanaName == kanaName || item.Name == name)
+                                                                    && item.Birthday == birthDate
+                                                                    && (item.Sex == sex1 || item.Sex == sex2)
+                                                                    && item.IsDelete == 0
+                                                                    && item.IsTester == 0)
+                                                    .ToList();
+            return ptInfs.Select(item => ToModel(item, string.Empty, 0)).ToList();
+        }
+
         public List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
         {
             var ptIdList = NoTrackingDataContext.RaiinInfs.Where(r => r.SinDate == sindate).GroupBy(r => r.PtId).Select(gr => gr.Key).ToList();
