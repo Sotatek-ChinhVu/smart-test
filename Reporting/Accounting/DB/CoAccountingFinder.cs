@@ -822,8 +822,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                 from syunoNyukinJoin in syunoNyukinJoins.DefaultIfEmpty()
                 select new
                 {
-                    syunoSeikyu,
-                    syunoNyukinJoin
+                    syunoSeikyu
                 }
             );
 

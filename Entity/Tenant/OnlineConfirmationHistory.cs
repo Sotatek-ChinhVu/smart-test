@@ -29,6 +29,10 @@ namespace Entity.Tenant
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime OnlineConfirmationDate { get; set; }
 
+        [Column("INFO_CONS_FLG")]
+        [MaxLength(10)]
+        public string? InfoConsFlg { get; set; }
+
         /// <summary>
         /// 資格確認種別
         ///     1 資格確認結果
@@ -37,6 +41,13 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CONFIRMATION_TYPE")]
         public int ConfirmationType { get; set; }
+
+        /// <summary>
+        /// PRESCRIPTION_ISSUE_TYPE
+        /// </summary>
+        [Column("PRESCRIPTION_ISSUE_TYPE")]
+        [CustomAttribute.DefaultValue(0)]
+        public int PrescriptionIssueType { get; set; }
 
         /// <summary>
         /// 資格確認結果
