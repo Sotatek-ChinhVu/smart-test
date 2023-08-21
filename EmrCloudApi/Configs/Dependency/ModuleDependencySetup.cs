@@ -654,6 +654,7 @@ using Interactor.Online;
 using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.Insurance.FindPtHokenList;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
+using UseCase.PatientInfor.GetPtInfByRefNo;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1136,6 +1137,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckAllowDeletePatientInfoInputData, CheckAllowDeletePatientInfoInteractor>();
             busBuilder.RegisterUseCase<SearchPatientInfoByPtIdListInputData, SearchPatientInfoByPtIdListInteractor>();
             busBuilder.RegisterUseCase<SavePtKyuseiInputData, SavePtKyuseiInteractor>();
+            busBuilder.RegisterUseCase<GetPtInfByRefNoInputData, GetPtInfByRefNoInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();

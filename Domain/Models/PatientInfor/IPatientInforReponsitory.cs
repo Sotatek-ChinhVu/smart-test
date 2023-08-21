@@ -29,6 +29,8 @@ namespace Domain.Models.PatientInfor
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
+        PatientInforModel GetPtInfByRefNo(int hpId, long refNo);
+
         List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting);
 
         bool CheckExistIdList(List<long> ptIds);

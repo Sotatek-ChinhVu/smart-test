@@ -132,6 +132,7 @@
         public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
         public const string SearchPatientInfoByPtIdList = "SearchPatientInfoByPtIdList";
         public const string SavePtKyusei = "SavePtKyusei";
+        public const string GetPtInfByRefNo = "GetPtInfByRefNo";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
