@@ -7,5 +7,5 @@ namespace UseCase.Online.QualificationConfirmation;
 public class ResultList
 {
     [XmlElement(ElementName = "ResultOfQualificationConfirmation")]
-    public ResultOfQualificationConfirmation[] ResultOfQualificationConfirmation;
+    public ResultOfQualificationConfirmation[] ResultOfQualificationConfirmation { get; set; }
 }
