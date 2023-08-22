@@ -14,6 +14,8 @@ using Reporting.Statistics.Sta2001.Models;
 using Reporting.Statistics.Sta2001.Service;
 using Reporting.Statistics.Sta2002.Models;
 using Reporting.Statistics.Sta2002.Service;
+using Reporting.Statistics.Sta2003.Models;
+using Reporting.Statistics.Sta2003.Service;
 
 namespace Reporting.DailyStatic.Service
 {
@@ -25,8 +27,9 @@ namespace Reporting.DailyStatic.Service
         private readonly ISta1010CoReportService _sta1010CoReportService;
         private readonly ISta2001CoReportService _sta2001CoReportService;
         private readonly ISta2002CoReportService _sta2002CoReportService;
+        private readonly ISta2003CoReportService _sta2003CoReportService;
 
-        public StaticsticExportCsvService(IDailyStatisticCommandFinder finder, ISta1001CoReportService sta1001CoReportService, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2002CoReportService sta2002CoReportService)
+        public StaticsticExportCsvService(IDailyStatisticCommandFinder finder, ISta1001CoReportService sta1001CoReportService, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2003CoReportService sta2003CoReportService)
         {
             _finder = finder;
             _sta1001CoReportService = sta1001CoReportService;
@@ -34,6 +37,7 @@ namespace Reporting.DailyStatic.Service
             _sta1010CoReportService = sta1010CoReportService;
             _sta2001CoReportService = sta2001CoReportService;
             _sta2002CoReportService = sta2002CoReportService;
+            _sta2003CoReportService = sta2003CoReportService;
         }
 
         public CommonExcelReportingModel ExportCsv(int hpId, string formName, string menuName, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0)
@@ -57,10 +61,10 @@ namespace Reporting.DailyStatic.Service
                 case StatisticReportType.Sta2002:
                     result = PrintSta2002(hpId, configDaily, monthFrom, monthTo, menuName);
                     break;
-                    /*case StatisticReportType.Sta2003:
-                        result = PrintSta2003(hpId, configDaily, monthFrom, monthTo);
-                        break;
-                    case StatisticReportType.Sta2010:
+                case StatisticReportType.Sta2003:
+                    result = PrintSta2003(hpId, configDaily, monthFrom, monthTo, menuName);
+                    break;
+                    /*case StatisticReportType.Sta2010:
                         result = PrintSta2010(hpId, configDaily, monthFrom);
                         break;
                     case StatisticReportType.Sta2011:
@@ -137,20 +141,20 @@ namespace Reporting.DailyStatic.Service
             var printConf = CreateCoSta2001PrintConf(configDaily, monthFrom, monthTo);
             return _sta2001CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId);
         }
-         
+
         private CommonExcelReportingModel PrintSta2002(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName)
         {
             var printConf = CreateCoSta2002PrintConf(configDaily, monthFrom, monthTo);
             return _sta2002CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId);
         }
 
-        /*private CommonReportingRequestModel PrintSta2003(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo)
+        private CommonExcelReportingModel PrintSta2003(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName)
         {
             var printConf = CreateCoSta2003PrintConf(configDaily, monthFrom, monthTo);
-            return _sta2003CoReportService.GetSta2003ReportingData(printConf, hpId);
+            return _sta2003CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId);
         }
 
-        private CommonReportingRequestModel PrintSta2010(int hpId, ConfigStatisticModel configDaily, int monthFrom)
+        /*private CommonReportingRequestModel PrintSta2010(int hpId, ConfigStatisticModel configDaily, int monthFrom)
         {
             var printConf = CreateCoSta2010PrintConf(configDaily, monthFrom);
             return _sta2010CoReportService.GetSta2010ReportingData(printConf, hpId);
@@ -404,7 +408,7 @@ namespace Reporting.DailyStatic.Service
             return printConf;
         }
 
-        /*private CoSta2003PrintConf CreateCoSta2003PrintConf(ConfigStatisticModel configDaily,
+        private CoSta2003PrintConf CreateCoSta2003PrintConf(ConfigStatisticModel configDaily,
                                                                      int monthFrom,
                                                                      int monthTo)
 
@@ -428,7 +432,7 @@ namespace Reporting.DailyStatic.Service
             return printConf;
         }
 
-        private CoSta2010PrintConf CreateCoSta2010PrintConf(ConfigStatisticModel configDaily, int monthFrom)
+        /*private CoSta2010PrintConf CreateCoSta2010PrintConf(ConfigStatisticModel configDaily, int monthFrom)
         {
             CoSta2010PrintConf printConf = new CoSta2010PrintConf(configDaily.MenuId);
             printConf.SeikyuYm = monthFrom;
