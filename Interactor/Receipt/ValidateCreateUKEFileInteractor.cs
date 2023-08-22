@@ -70,24 +70,24 @@ namespace Interactor.Receipt
                     if (receInfItem.RousaiSaigaiKbn != 1 &&
                         receInfItem.RousaiSaigaiKbn != 2)
                     {
-                        errorRousaiSaigai += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + Environment.NewLine;
+                        errorRousaiSaigai += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + "\r\n";
                     }
                     // check error Syobyo
                     if (receInfItem.RousaiSyobyoDate <= 0)
                     {
-                        errorSyobyo += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + Environment.NewLine;
+                        errorSyobyo += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + "\r\n";
                     }
                     // check error SyobyoKeika
                     if (!_receiptRepository.ExistSyobyoKeikaData(hpId, receInfItem.PtId, receInfItem.SinYm, receInfItem.HokenId))
                     {
-                        errorSyobyoKeika += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + Environment.NewLine;
+                        errorSyobyoKeika += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + "\r\n";
                     }
                 }
             }
 
             if (!string.IsNullOrEmpty(errorRousaiSaigai))
             {
-                errorResult += errorRousaiSaigai.Insert(0, "■災害区分が設定されていません。" + Environment.NewLine);
+                errorResult += errorRousaiSaigai.Insert(0, "■災害区分が設定されていません。" + "\r\n");
             }
 
             if (!string.IsNullOrEmpty(errorSyobyo))
@@ -97,7 +97,7 @@ namespace Interactor.Receipt
                     errorResult += Environment.NewLine;
                 }
 
-                errorResult += errorSyobyo.Insert(0, "■傷病開始年月日が設定されていません。" + Environment.NewLine);
+                errorResult += errorSyobyo.Insert(0, "■傷病開始年月日が設定されていません。" + "\r\n");
             }
 
             if (!string.IsNullOrEmpty(errorSyobyoKeika))
@@ -107,7 +107,7 @@ namespace Interactor.Receipt
                     errorResult += Environment.NewLine;
                 }
 
-                errorResult += errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。" + Environment.NewLine);
+                errorResult += errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。" + "\r\n");
             }
             return errorResult;
         }
@@ -125,13 +125,13 @@ namespace Interactor.Receipt
                     // Check error SyobyoKeika 
                     if (!_receiptRepository.ExistSyobyoKeikaData(hpId, receInfItem.PtId, receInfItem.SinYm, receInfItem.HokenId))
                     {
-                        errorSyobyoKeika += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + Environment.NewLine;
+                        errorSyobyoKeika += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + "\r\n";
                     }
                 }
             }
             if (!string.IsNullOrEmpty(errorSyobyoKeika))
             {
-                errorSyobyoKeika = errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。" + Environment.NewLine);
+                errorSyobyoKeika = errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。" + "\r\n");
             }
             return errorSyobyoKeika;
         }
