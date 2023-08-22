@@ -65,5 +65,9 @@ namespace EmrCloudApi.Requests.MstItem
         #region usageSettingTab
         public UsageSettingTabModel UsageSettingTabModel { get; set; } = new();
         #endregion
+
+        #region
+        public IjiSettingTabModel IjiSettingTabModel { get; set; } = new();
+        #endregion
     }
 }
