@@ -1,5 +1,6 @@
 ﻿using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.MstItem
 {
@@ -98,12 +99,22 @@ namespace Domain.Models.MstItem
 
     public class UsageSettingTabModel
     {
-        public UsageSettingTabModel(string yohoInfMstPrefix)
+        [JsonConstructor]
+        public UsageSettingTabModel(string yohoInfMstPrefix, string itemCd)
         {
             YohoInfMstPrefix = yohoInfMstPrefix;
+            ItemCd = itemCd;
+        }
+
+        public UsageSettingTabModel()
+        {
+            YohoInfMstPrefix = string.Empty;
+            ItemCd = string.Empty;
         }
 
         public string YohoInfMstPrefix { get; private set; }
+
+        public string ItemCd { get; private set; }
     }
 
     public class DrugInfomationTabModel

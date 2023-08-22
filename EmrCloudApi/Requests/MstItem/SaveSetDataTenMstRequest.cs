@@ -1,4 +1,6 @@
-﻿namespace EmrCloudApi.Requests.MstItem
+﻿using Domain.Models.MstItem;
+
+namespace EmrCloudApi.Requests.MstItem
 {
     public class SaveSetDataTenMstRequest
     {
@@ -58,6 +60,10 @@
 
         #region CombinedContraindicationTab
         public List<CombinedContraindicationModelDto> CombinedContraindications { get; set; } = new List<CombinedContraindicationModelDto>();
+        #endregion
+
+        #region usageSettingTab
+        public UsageSettingTabModel UsageSettingTabModel { get; set; } = new();
         #endregion
     }
 }
