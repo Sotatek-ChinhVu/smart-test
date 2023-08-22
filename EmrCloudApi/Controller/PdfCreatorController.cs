@@ -1,5 +1,4 @@
-﻿using ClosedXML.Excel;
-using EmrCloudApi.Constants;
+﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.DrugInfor;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.DrugInfor;
@@ -22,6 +21,7 @@ using Reporting.ReportServices;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
+using System.Web;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 
@@ -236,7 +236,7 @@ public class PdfCreatorController : ControllerBase
     {
         var request = JsonSerializer.Deserialize<MemoMsgPrintRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
-        return await RenderPdf(data, ReportType.Common, "MemoMsgPrint");
+        return await RenderPdf(data, ReportType.Common, request.FileName);
     }
 
     [HttpGet(ApiPath.ReceTarget)]
@@ -517,7 +517,7 @@ public class PdfCreatorController : ControllerBase
             fileName = fileName.Replace(".rse", "").Replace(".pdf", "") + ".pdf";
             ContentDisposition cd = new ContentDisposition
             {
-                FileName = fileName,
+                FileName = HttpUtility.UrlEncode(fileName),
                 Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
