@@ -4,6 +4,7 @@ using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Services;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Reporting.Mappers.Common;
 using Reporting.ReportServices;
 using System.Text;
 using UseCase.Core.Sync;
@@ -40,14 +41,9 @@ public class ExportCSVController : AuthorizeControllerBase
     [HttpGet(ApiPath.ExportStatics)]
     public IActionResult GenerateExportStatics([FromQuery] StatisticExportRequest request)
     {
-        var data = _reportService.ExportCsv(HpId, request.FormName, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo,
+        var data = _reportService.ExportCsv(HpId, request.FormName, request.MenuName, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo,
                                             request.CoFileType, request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo);
-        if (!data.Any())
-        {
-            return Ok("出力データがありません。");
-        }
-
-        return RenderCsv(data, "期間指定請求書リスト.csv");
+        return RenderCsvStatics(data);
     }
 
     private IActionResult RenderCsv(List<string> dataList, string fileName)
@@ -67,5 +63,29 @@ public class ExportCSVController : AuthorizeControllerBase
         var content = Encoding.UTF8.GetBytes(csv.ToString());
         var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray();
         return File(result, contentType, fileName);
+    }
+
+    private IActionResult RenderCsvStatics(CommonExcelReportingModel dataModel)
+    {
+        var dataList = dataModel.Data;
+        if (!dataList.Any())
+        {
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
+        }
+        var csv = new StringBuilder();
+
+        string contentType = "text/csv";
+
+        foreach (var row in dataList)
+        {
+            csv.AppendLine(row);
+        }
+        var content = Encoding.UTF8.GetBytes(csv.ToString());
+        var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray();
+        return File(result, contentType, dataModel.FileName);
     }
 }

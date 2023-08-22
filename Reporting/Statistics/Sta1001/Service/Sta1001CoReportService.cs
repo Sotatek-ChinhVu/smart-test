@@ -719,18 +719,21 @@ namespace Reporting.Statistics.Sta1001.Service
             #endregion
         }
 
-        public List<string> ExportCsv(CoSta1001PrintConf printConf, int hpId)
+        public CommonExcelReportingModel ExportCsv(CoSta1001PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId)
         {
             HpId = hpId;
             _printConf = printConf;
             isPutTotalRow = false;
             isPutColName = false;
             putCurColumns.AddRange(putColumns);
-
-            if (!GetData()) return new();
-            var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
-            if (csvDatas.Count == 0) return new();
+            string sheetName = menuName + "_" + dateFrom + "_" + dateTo;
             List<string> retDatas = new List<string>();
+
+            if (!GetData()) return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
+
+            var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+
+            if (csvDatas.Count == 0) return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
 
             //出力フィールド
             List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
@@ -738,6 +741,7 @@ namespace Reporting.Statistics.Sta1001.Service
 
             //タイトル行
             retDatas.Add("\"" + string.Join("\",\"", wrkTitles.Union(jihiSbtMsts.Select(j => string.Format("保険外金額({0})", j.Name)))) + "\"");
+
             if (isPutColName)
             {
                 retDatas.Add("\"" + string.Join("\",\"", wrkColumns.Union(jihiSbtMsts.Select(j => string.Format("JihiFutanSbt{0}", j.JihiSbt)))) + "\"");
@@ -787,7 +791,7 @@ namespace Reporting.Statistics.Sta1001.Service
                 rowOutputed++;
             }
 
-            return retDatas;
+            return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
         }
         #endregion
     }

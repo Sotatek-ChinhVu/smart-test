@@ -649,9 +649,13 @@ public class Sta1002CoReportService : ISta1002CoReportService
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
-    public List<string> ExportCsv(CoSta1002PrintConf printConf, int hpId)
+    public CommonExcelReportingModel ExportCsv(CoSta1002PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId)
     {
-        if (!GetData(hpId)) return new();
+        string fileName = menuName + "_" + dateFrom + "_" + dateTo;
+        List<string> retDatas = new List<string>();
+
+        if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
         isPutColName = false;
 
         if (isPutTotalRow)
@@ -662,7 +666,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
 
         var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
 
-        List<string> retDatas = new List<string>();
+        if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
         List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
         List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
@@ -717,6 +721,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
 
             return string.Join(",", colDatas);
         }
-        return retDatas;
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
 }
