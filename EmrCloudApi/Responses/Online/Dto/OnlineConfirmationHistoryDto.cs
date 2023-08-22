@@ -1,4 +1,6 @@
 ﻿using Domain.Models.Online;
+using System.Xml.Serialization;
+using UseCase.Online.QualificationConfirmation;
 
 namespace EmrCloudApi.Responses.Online.Dto;
 
@@ -31,4 +33,12 @@ public class OnlineConfirmationHistoryDto
     public int PrescriptionIssueType { get; private set; }
 
     public int UketukeStatus { get; private set; }
+
+    public QCXmlMsgResponse QCXmlMsgResponse { get => FormatXml(ConfirmationResult); }
+
+    private QCXmlMsgResponse FormatXml(string confirmationResult)
+    {
+        var response = new XmlSerializer(typeof(QCXmlMsgResponse)).Deserialize(new StringReader(confirmationResult)) as QCXmlMsgResponse;
+        return response ?? new();
+    }
 }

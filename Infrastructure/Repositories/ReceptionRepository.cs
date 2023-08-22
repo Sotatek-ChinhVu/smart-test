@@ -508,6 +508,47 @@ namespace Infrastructure.Repositories
 
         }
 
+        public ReceptionModel GetYoyakuRaiinInf(int hpId, long ptId, int sinDate)
+        {
+            var entity = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                       && item.SinDate == sinDate
+                                                                       && item.PtId == ptId
+                                                                       && item.IsDeleted == DeleteTypes.None
+                                                                       && item.Status == RaiinState.Reservation)
+                                                        .OrderByDescending(p => p.RaiinNo)
+                                                        .FirstOrDefault();
+            if (entity == null)
+            {
+                return new();
+            }
+            return new ReceptionModel(
+                        entity.HpId,
+                        entity.PtId,
+                        entity.SinDate,
+                        entity.RaiinNo,
+                        entity.OyaRaiinNo,
+                        entity.HokenPid,
+                        entity.SanteiKbn,
+                        entity.Status,
+                        entity.IsYoyaku,
+                        entity.YoyakuTime ?? string.Empty,
+                        entity.YoyakuId,
+                        entity.UketukeSbt,
+                        entity.UketukeTime ?? string.Empty,
+                        entity.UketukeId,
+                        entity.UketukeNo,
+                        entity.SinStartTime ?? string.Empty,
+                        entity.SinEndTime ?? string.Empty,
+                        entity.KaikeiTime ?? string.Empty,
+                        entity.KaikeiId,
+                        entity.KaId,
+                        entity.TantoId,
+                        entity.SyosaisinKbn,
+                        entity.JikanKbn,
+                        string.Empty
+                   );
+        }
+
         public List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate)
         {
             var result = NoTrackingDataContext.RaiinInfs.Where(p =>
