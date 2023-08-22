@@ -177,6 +177,7 @@
         public const string GetLastKarute = "GetLastKarute";
         public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
         public const string GetOutDrugOrderList = "GetOutDrugOrderList";
+        public const string GetYoyakuRaiinInf = "GetYoyakuRaiinInf";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
