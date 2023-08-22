@@ -47,7 +47,7 @@ public class UpdateOnlineHistoryByIdInteractor : IUpdateOnlineHistoryByIdInputPo
         {
             return UpdateOnlineHistoryByIdStatus.InvalidId;
         }
-        else if (!new List<int> { 0, 1, 9 }.Contains(inputData.UketukeStatus))
+        else if (!new List<int> { 0, 1, 2, 9 }.Contains(inputData.UketukeStatus))
         {
             return UpdateOnlineHistoryByIdStatus.InvalidUketukeStatus;
         }
