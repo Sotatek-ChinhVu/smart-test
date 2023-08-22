@@ -139,7 +139,7 @@ public class PdfCreatorController : ControllerBase
     {
         var stringJson = requestStringJson.JsonAccounting;
         var request = JsonSerializer.Deserialize<PeriodReceiptListRequest>(stringJson) ?? new();
-        var data = _reportService.GetPeriodPrintData(request.HpId, request.StartDate, request.EndDate, request.SourcePt, request.PrintSort, request.IsPrintList, request.PrintByMonth, request.PrintByGroup, request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn, request.HakkoDay, request.Memo, request.FormFileName, request.Base);
+        var data = _reportService.GetPeriodPrintData(request.HpId, request.StartDate, request.EndDate, request.SourcePt, request.PrintSort, request.IsPrintList, request.PrintByMonth, request.PrintByGroup, request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn, request.HakkoDay, request.Memo, request.FormFileName, request.NyukinBase);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 

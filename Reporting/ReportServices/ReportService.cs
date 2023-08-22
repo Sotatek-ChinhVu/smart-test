@@ -548,7 +548,7 @@ public class ReportService : IReportService
     }
 
     #region Period Report
-    public AccountingResponse GetPeriodPrintData(int hpId, int startDate, int endDate, List<PtInfInputItem> sourcePt, int printSort, bool isPrintList, bool printByMonth, bool printByGroup, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn, int hakkoDay, string memo, string formFileName, int _base)
+    public AccountingResponse GetPeriodPrintData(int hpId, int startDate, int endDate, List<PtInfInputItem> sourcePt, int printSort, bool isPrintList, bool printByMonth, bool printByGroup, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn, int hakkoDay, string memo, string formFileName, bool nyukinBase)
     {
         DateTime startDateOrigin = CIUtil.IntToDate(startDate);
         DateTime endDateOrigin = CIUtil.IntToDate(endDate);
@@ -604,7 +604,7 @@ public class ReportService : IReportService
                                                     misyuKbn,
                                                     seikyuKbn,
                                                     hokenKbn,
-                                                    nyukinBase: _base != 0,
+                                                    nyukinBase: nyukinBase,
                                                     hakkoDay: hakkoDay,
                                                     memo: memo,
                                                     formFileName: formFileName));

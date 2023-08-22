@@ -34,5 +34,5 @@ public class PeriodReceiptListRequest : ReportRequestBase
 
     public string FormFileName { get; set; }
 
-    public int Base { get; set; }
+    public bool NyukinBase { get; set; }
 }
