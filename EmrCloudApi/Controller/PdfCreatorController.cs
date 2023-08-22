@@ -1,5 +1,4 @@
-﻿using ClosedXML.Excel;
-using EmrCloudApi.Constants;
+﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.DrugInfor;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.DrugInfor;
@@ -22,6 +21,7 @@ using Reporting.ReportServices;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
+using System.Web;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 
@@ -135,8 +135,10 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.PeriodReceiptReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromBody] PeriodReceiptRequest request)
+    public async Task<IActionResult> GenerateAccountingReport([FromForm] StringObjectRequest requestString)
     {
+        var request = JsonSerializer.Deserialize<PeriodReceiptRequest>(requestString.StringJson) ?? new();
+
         List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
                                                                                            item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
                                                                                            request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, item.HokenKbn,
@@ -241,7 +243,7 @@ public class PdfCreatorController : ControllerBase
     {
         var request = JsonSerializer.Deserialize<MemoMsgPrintRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
-        return await RenderPdf(data, ReportType.Common, "MemoMsgPrint");
+        return await RenderPdf(data, ReportType.Common, request.FileName);
     }
 
     [HttpGet(ApiPath.ReceTarget)]
@@ -522,7 +524,7 @@ public class PdfCreatorController : ControllerBase
             fileName = fileName.Replace(".rse", "").Replace(".pdf", "") + ".pdf";
             ContentDisposition cd = new ContentDisposition
             {
-                FileName = fileName,
+                FileName = HttpUtility.UrlEncode(fileName),
                 Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
@@ -560,10 +562,10 @@ public class PdfCreatorController : ControllerBase
 
         string contentType = "text/csv";
 
-        foreach (var row in dataList)
+        foreach (var row in dataList)
         {
-            csv.AppendLine(row);
-        }
+            csv.AppendLine(row);
+        }
         var content = Encoding.UTF8.GetBytes(csv.ToString());
         var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray();
         return File(result, contentType, dataModel.FileName);
