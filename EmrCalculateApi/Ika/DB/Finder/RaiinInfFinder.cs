@@ -117,23 +117,22 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     raiinInf.SinDate >= sinDate / 100 * 100 + 1 &&
                     raiinInf.SinDate <= sinDate / 100 * 100 + 31 &&
                     raiinInf.IsDeleted == DeleteTypes.None
-                group raiinInf by
-                    new { HpId = raiinInf.HpId, PtId = raiinInf.PtId, SinDate = raiinInf.SinDate } into A
-                orderby
-                    A.Key.HpId, A.Key.PtId, A.Key.SinDate
-                select new
-                {
-                    A
-                }
+                //group raiinInf by
+                //    new { HpId = raiinInf.HpId, PtId = raiinInf.PtId, SinDate = raiinInf.SinDate } into A
+                //orderby
+                //    A.Key.HpId, A.Key.PtId, A.Key.SinDate
+                select raiinInf
             );
 
+            var raiinList = joinQuery.ToList();
+
+            var result = raiinList
+                .GroupBy(r => new { r.HpId, r.PtId, r.SinDate })
+                .Select(r => new RaiinDaysModel(r.Key.HpId, r.Key.PtId, r.Key.SinDate))
+                .ToList();
+
             //var entities =
-            return
-                joinQuery.Select(
-                    data =>
-                        new RaiinDaysModel(data.A.Key.HpId, data.A.Key.PtId, data.A.Key.SinDate)
-                    )
-                    .ToList();
+            return result;
 
             //List<RaiinDaysModel> results = new List<RaiinDaysModel>();
 
