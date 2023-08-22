@@ -182,7 +182,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
             }
 
             var joinQuery = (
-                from raiinInf in raiinInfs.AsEnumerable()
+                from raiinInf in raiinInfs
                 join rs in receSeikyus on
                     new { raiinInf.HpId, raiinInf.PtId, SinYm = (int)Math.Floor((double)raiinInf.SinDate / 100) } equals
                     new { rs.HpId, rs.PtId, rs.SinYm } into rsJoin
@@ -229,19 +229,16 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
                 group raiinInf by
                     new { raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate } into A
-                orderby
-                    A.Key.HpId, A.Key.PtId, A.Key.SinDate
-                select new
-                {
-                    A
-                }
+                orderby A.Key.HpId, A.Key.PtId, A.Key.SinDate
+                select new RaiinDaysModel(hpId, A.Key.PtId, A.Key.SinDate)
+                //{
+                //    HpId = hpId,
+                //    PtId = A.Key.PtId,
+                //    SinDate = A.Key.SinDate,
+                //}
             );
 
-            return
-                joinQuery.AsEnumerable().Select(
-                    data =>
-                        new RaiinDaysModel(data.A.Key.HpId, data.A.Key.PtId, data.A.Key.SinDate)
-                ).ToList();
+            return joinQuery.ToList();
         }
     }
 }
