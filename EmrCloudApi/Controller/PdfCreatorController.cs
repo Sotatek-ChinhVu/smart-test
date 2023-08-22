@@ -135,16 +135,11 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.PeriodReceiptReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromBody] PeriodReceiptRequest request)
+    public async Task<IActionResult> PeriodReceiptReport([FromForm] AccountingReportRequest requestStringJson)
     {
-        List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
-                                                                                           item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
-                                                                                           request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, item.HokenKbn,
-                                                                                           request.HokenSeikyu, request.JihiSeikyu, request.NyukinBase,
-                                                                                           request.HakkoDay, request.Memo,
-                                                                                           request.PrintType, request.FormFileName))
-                                                                       .ToList();
-        var data = _reportService.GetAccountingReportingData(request.HpId, requestConvert);
+        var stringJson = requestStringJson.JsonAccounting;
+        var request = JsonSerializer.Deserialize<PeriodReceiptListRequest>(stringJson) ?? new();
+        var data = _reportService.GetPeriodPrintData(request.HpId, request.StartDate, request.EndDate, request.SourcePt, request.PrintSort, request.IsPrintList, request.PrintByMonth, request.PrintByGroup, request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn, request.HakkoDay, request.Memo, request.FormFileName, request.Base);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
@@ -560,10 +555,10 @@ public class PdfCreatorController : ControllerBase
 
         string contentType = "text/csv";
 
-        foreach (var row in dataList)
+        foreach (var row in dataList)
         {
-            csv.AppendLine(row);
-        }
+            csv.AppendLine(row);
+        }
         var content = Encoding.UTF8.GetBytes(csv.ToString());
         var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray();
         return File(result, contentType, dataModel.FileName);

@@ -3,6 +3,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Reporting.Accounting.Model;
 
 namespace Reporting.Accounting.DB;
@@ -1904,5 +1905,25 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                               )
                               .ToList();
         return accountDueList;
+    }
+
+    public List<PtGrpNameMstModel> GetPtGrpNameMstModels(int hpId)
+    {
+        var ptgrpNameMsts = NoTrackingDataContext.PtGrpNameMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+        var grpIdList = ptgrpNameMsts.Select(item => item.GrpId).Distinct().ToList();
+        var ptGrpItems = NoTrackingDataContext.PtGrpItems.Where(x => x.HpId == hpId && x.IsDeleted == 0 && grpIdList.Contains(x.GrpId)).ToList();
+        var query = from ptGrpName in ptgrpNameMsts
+                    select new
+                    {
+                        PtGrpName = ptGrpName,
+                        PtGrpItems = from ptGrpItem in ptGrpItems
+                                     where ptGrpItem.GrpId == ptGrpName.GrpId
+                                     select ptGrpItem
+                    };
+        var result = query.Select(x => new PtGrpNameMstModel(
+                           x.PtGrpName,
+                           x.PtGrpItems.AsEnumerable().Select(grpItem => new PtGrpItemModel(grpItem)).OrderBy(gi => gi.SortNo)
+                       )).OrderBy(gr => gr.SortNo).ToList();
+        return result;
     }
 }
