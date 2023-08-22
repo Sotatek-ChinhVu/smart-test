@@ -730,6 +730,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
 
             return string.Join(",", colDatas);
         }
-        throw new NotImplementedException();
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
 }
