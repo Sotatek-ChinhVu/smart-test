@@ -12,6 +12,7 @@ using UseCase.Online;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.Online.InsertOnlineConfirmHistory;
 using UseCase.Online.UpdateOnlineConfirmationHistory;
+using UseCase.Online.UpdateOnlineHistoryById;
 
 namespace EmrCloudApi.Controller;
 
@@ -70,5 +71,17 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpdateOnlineConfirmationHistoryResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateOnlineHistoryById)]
+    public ActionResult<Response<UpdateOnlineHistoryByIdResponse>> UpdateOnlineHistoryById([FromBody] UpdateOnlineHistoryByIdRequest request)
+    {
+        var input = new UpdateOnlineHistoryByIdInputData(UserId, request.Id, request.PtId, request.UketukeStatus, request.ConfirmationType);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOnlineHistoryByIdPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOnlineHistoryByIdResponse>>(presenter.Result);
     }
 }
