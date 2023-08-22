@@ -3604,20 +3604,23 @@ namespace Infrastructure.Repositories
 
                     if (string.IsNullOrEmpty(ipnModel.IpnNameCd) && ipnDb == null)
                     {
-                        TrackingDataContext.IpnNameMsts.Add(new IpnNameMst()
+                        if (!string.IsNullOrEmpty(ipnModel.IpnNameCdOrigin))
                         {
-                            IpnNameCd = ipnModel.IpnNameCd,
-                            HpId = hpId,
-                            StartDate = ipnModel.StartDate,
-                            SeqNo = 1,
-                            EndDate = ipnModel.EndDate,
-                            IpnName = ipnModel.IpnName,
-                            CreateId = userId,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = userId,
-                            IsDeleted = DeleteTypes.None,
-                            UpdateDate = CIUtil.GetJapanDateTimeNow()
-                        });
+                            TrackingDataContext.IpnNameMsts.Add(new IpnNameMst()
+                            {
+                                IpnNameCd = ipnModel.IpnNameCdOrigin,
+                                HpId = hpId,
+                                StartDate = ipnModel.StartDate,
+                                SeqNo = 1,
+                                EndDate = ipnModel.EndDate,
+                                IpnName = ipnModel.IpnName,
+                                CreateId = userId,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = userId,
+                                IsDeleted = DeleteTypes.None,
+                                UpdateDate = CIUtil.GetJapanDateTimeNow()
+                            });
+                        }
                     }
                     else
                     {
