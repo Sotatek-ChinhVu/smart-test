@@ -231,11 +231,6 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     new { raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate } into A
                 orderby A.Key.HpId, A.Key.PtId, A.Key.SinDate
                 select new RaiinDaysModel(hpId, A.Key.PtId, A.Key.SinDate)
-                //{
-                //    HpId = hpId,
-                //    PtId = A.Key.PtId,
-                //    SinDate = A.Key.SinDate,
-                //}
             );
 
             return joinQuery.ToList();
