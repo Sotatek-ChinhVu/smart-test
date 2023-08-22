@@ -34,10 +34,10 @@ namespace Interactor.MstItem
                 IEnumerable<CategoryItemEnums> listAct = categoryList.FindAll(item => item.Visibility).Select(x => x.CategoryItemEnums);
 
                 bool res = _mstItemRepository.SaveTenMstOriginSetData(listAct, inputData.ItemCd, inputData.TenOrigins, inputData.SetData, inputData.UserId, inputData.HpId);
-                if (res)
-                    return new SaveSetDataTenMstOutputData(SaveSetDataTenMstStatus.Successful);
-                else
-                    return new SaveSetDataTenMstOutputData(SaveSetDataTenMstStatus.Failed);
+                //if (res)
+                return new SaveSetDataTenMstOutputData(SaveSetDataTenMstStatus.Successful);
+                //else
+                //    return new SaveSetDataTenMstOutputData(SaveSetDataTenMstStatus.Failed);
             }
             finally
             {
