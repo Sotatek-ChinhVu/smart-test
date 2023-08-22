@@ -497,7 +497,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<(int date, string tooltip)> GetTooltip(int hpId, long ptId, int sinDate, int startDate, int endDate)
+        public List<(int date, string tooltip)> GetTooltip(int hpId, long ptId, int sinDate, int startDate, int endDate, bool isAll)
         {
             List<int> dates = new();
             for (int i = startDate; i <= endDate; i++)
@@ -507,7 +507,7 @@ namespace Infrastructure.Repositories
 
             List<(int, string)> result = new();
             var raiinInfs = NoTrackingDataContext.RaiinInfs
-                .Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate && r.Status >= RaiinState.TempSave)
+                .Where(r => r.HpId == hpId && (isAll || r.PtId == ptId) && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate && r.Status >= RaiinState.TempSave)
                 .Select(r => new { r.SinDate, r.SyosaisinKbn, r.Status }).ToList();
             var holidays = NoTrackingDataContext.HolidayMsts.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate).Select(r => new { r.SinDate, r.HolidayName }).ToList();
 
