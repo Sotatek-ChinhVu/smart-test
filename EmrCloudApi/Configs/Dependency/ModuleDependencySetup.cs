@@ -688,6 +688,7 @@ using UseCase.Insurance.FindPtHokenList;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.PatientInfor.GetPtInfByRefNo;
 using UseCase.PatientInfor.GetPtInfModelsByName;
+using UseCase.Online.UpdateOnlineConfirmationHistory;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1593,6 +1594,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Online
             busBuilder.RegisterUseCase<InsertOnlineConfirmHistoryInputData, InsertOnlineConfirmHistoryInteractor>();
             busBuilder.RegisterUseCase<GetRegisterdPatientsFromOnlineInputData, GetRegisterdPatientsFromOnlineInteractor>();
+            busBuilder.RegisterUseCase<UpdateOnlineConfirmationHistoryInputData, UpdateOnlineConfirmationHistoryInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();

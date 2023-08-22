@@ -3,6 +3,8 @@ using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Security.AccessControl;
 
 namespace Infrastructure.Repositories;
 
@@ -49,6 +51,17 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                                .Select(item => ConvertToModel(item))
                                .ToList();
         return result;
+    }
+
+    public bool UpdateOnlineConfirmationHistory(int uketukeStatus, int id, int userId)
+    {
+        string updateDate = CIUtil.GetJapanDateTimeNow().ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+        string updateQuery = $"UPDATE \"ONLINE_CONFIRMATION_HISTORY\" SET \"UKETUKE_STATUS\" = {uketukeStatus}, \"UPDATE_DATE\" = '{updateDate}'"
+                             + $", \"UPDATE_ID\" = {userId}"
+                             + $" WHERE \"ID\" = {id} AND \"UKETUKE_STATUS\" = 0";
+
+        return TrackingDataContext.Database.ExecuteSqlRaw(updateQuery) > 0;
     }
 
     #region private function
