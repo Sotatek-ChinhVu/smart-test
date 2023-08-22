@@ -11,7 +11,7 @@ public class UpdateOnlineConfirmationHistoryPresenter : IUpdateOnlineConfirmatio
 
     public void Complete(UpdateOnlineConfirmationHistoryOutputData output)
     {
-        Result.Data = new UpdateOnlineConfirmationHistoryResponse(output.Status == UpdateOnlineConfirmationHistoryStatus.Successed);
+        Result.Data = new UpdateOnlineConfirmationHistoryResponse(output.UpdateSuccessed);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

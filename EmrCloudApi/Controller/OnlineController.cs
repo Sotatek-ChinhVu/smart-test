@@ -60,8 +60,8 @@ public class OnlineController : AuthorizeControllerBase
         return new ActionResult<Response<GetRegisterdPatientsFromOnlineResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.UpdateOnlineConfirmationHistory)]
-    public ActionResult<Response<UpdateOnlineConfirmationHistoryResponse>> UpdateOnlineConfirmationHistory([FromQuery] UpdateOnlineConfirmationHistoryRequest request)
+    [HttpPost(ApiPath.UpdateOnlineConfirmationHistory)]
+    public ActionResult<Response<UpdateOnlineConfirmationHistoryResponse>> UpdateOnlineConfirmationHistory([FromBody] UpdateOnlineConfirmationHistoryRequest request)
     {
         var input = new UpdateOnlineConfirmationHistoryInputData(request.Id, UserId, request.IsDeleted);
         var output = _bus.Handle(input);
