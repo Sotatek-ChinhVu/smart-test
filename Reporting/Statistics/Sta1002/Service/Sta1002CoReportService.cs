@@ -1,7 +1,5 @@
-﻿using Entity.Tenant;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Constants;
-using Newtonsoft.Json;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -30,6 +28,12 @@ public class Sta1002CoReportService : ISta1002CoReportService
     private List<CoJihiSbtMstModel> _jihiSbtMsts;
     private List<CoJihiSbtFutan> _jihiSbtFutans;
     private CoHpInfModel _hpInf;
+    private List<PutColumn> putCurColumns = new List<PutColumn>();
+    private List<CoJihiSbtMstModel> jihiSbtMsts;
+    private bool isPutTotalRow;
+    private List<PutColumn> csvTotalColumns = new List<PutColumn> { new PutColumn("RowType", "明細区分") };
+    private List<CoSta1002PrintData> printDatas;
+    private bool isPutColName;
 
     public Sta1002CoReportService(ICoSta1002Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -643,5 +647,76 @@ public class Sta1002CoReportService : ISta1002CoReportService
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1002, string.Empty, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
+    }
+
+    public List<string> ExportCsv(CoSta1002PrintConf printConf, int hpId)
+    {
+        if (!GetData(hpId)) return new();
+        isPutColName = false;
+
+        if (isPutTotalRow)
+        {
+            putCurColumns.AddRange(csvTotalColumns);
+        }
+        putCurColumns.AddRange(putColumns);
+
+        var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+
+        List<string> retDatas = new List<string>();
+
+        List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
+        List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
+
+        //タイトル行
+        retDatas.Add("\"" + string.Join("\",\"", wrkTitles.Union(jihiSbtMsts.Select(j => string.Format("保険外金額({0})", j.Name)))) + "\"");
+        if (isPutColName)
+        {
+            retDatas.Add("\"" + string.Join("\",\"", wrkColumns.Union(jihiSbtMsts.Select(j => string.Format("JihiFutanSbt{0}", j.JihiSbt)))) + "\"");
+        }
+
+        //データ
+        int totalRow = csvDatas.Count;
+        int rowOutputed = 0;
+        foreach (var csvData in csvDatas)
+        {
+            retDatas.Add(RecordData(csvData));
+            rowOutputed++;
+        }
+        string RecordData(CoSta1002PrintData csvData)
+        {
+            List<string> colDatas = new List<string>();
+
+            foreach (var column in putCurColumns)
+            {
+                var value = typeof(CoSta1002PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
+                if (csvData.RowType == RowType.Total && !column.IsTotal)
+                {
+                    value = string.Empty;
+                }
+                else if (value is RowType)
+                {
+                    value = (int)value;
+                }
+                colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+            }
+            //自費種別毎の金額
+            if (csvData.JihiSbtFutans != null)
+            {
+                foreach (var jihiSbtFutan in csvData.JihiSbtFutans)
+                {
+                    colDatas.Add("\"" + jihiSbtFutan + "\"");
+                }
+            }
+            else
+            {
+                foreach (var jihiSbtMst in jihiSbtMsts)
+                {
+                    colDatas.Add("\"0\"");
+                }
+            }
+
+            return string.Join(",", colDatas);
+        }
+        return retDatas;
     }
 }

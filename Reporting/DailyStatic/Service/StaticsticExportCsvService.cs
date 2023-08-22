@@ -5,6 +5,8 @@ using Reporting.DailyStatic.Enum;
 using Reporting.DailyStatic.Model;
 using Reporting.Statistics.Sta1001.Models;
 using Reporting.Statistics.Sta1001.Service;
+using Reporting.Statistics.Sta1002.Models;
+using Reporting.Statistics.Sta1002.Service;
 
 namespace Reporting.DailyStatic.Service
 {
@@ -12,11 +14,13 @@ namespace Reporting.DailyStatic.Service
     {
         private readonly IDailyStatisticCommandFinder _finder;
         private readonly ISta1001CoReportService _sta1001CoReportService;
+        private readonly ISta1002CoReportService _sta1002CoReportService;
 
-        public StaticsticExportCsvService(IDailyStatisticCommandFinder finder, ISta1001CoReportService sta1001CoReportService)
+        public StaticsticExportCsvService(IDailyStatisticCommandFinder finder, ISta1001CoReportService sta1001CoReportService, ISta1002CoReportService sta1002CoReportService)
         {
             _finder = finder;
             _sta1001CoReportService = sta1001CoReportService;
+            _sta1002CoReportService = sta1002CoReportService;
         }
 
         public List<string> ExportCsv(int hpId, string formName, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0)
@@ -28,10 +32,10 @@ namespace Reporting.DailyStatic.Service
                 case StatisticReportType.Sta1001:
                     result = PrintSta1001(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
                     break;
-                    /*case StatisticReportType.Sta1002:
-                        result = PrintSta1002(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
-                        break;
-                    case StatisticReportType.Sta1010:
+                case StatisticReportType.Sta1002:
+                    result = PrintSta1002(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
+                    break;
+                    /*case StatisticReportType.Sta1010:
                         result = PrintSta1010(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
                         break;
                     case StatisticReportType.Sta2001:
@@ -103,13 +107,13 @@ namespace Reporting.DailyStatic.Service
             return _sta1001CoReportService.ExportCsv(printConf, hpId);
         }
 
-        /*private CommonReportingRequestModel PrintSta1002(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
+        private List<string> PrintSta1002(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
         {
             CoSta1002PrintConf printConf = CreateCoSta1002PrintConf(configDaily, dateFrom, dateTo, timeFrom, timeTo);
-            return _sta1002CoReportService.(printConf, hpId);
+            return _sta1002CoReportService.ExportCsv(printConf, hpId);
         }
 
-        private CommonReportingRequestModel PrintSta1010(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
+        /*private CommonReportingRequestModel PrintSta1010(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
         {
             var printConf = CreateCoSta1010PrintConf(configDaily, dateFrom, dateTo, timeFrom, timeTo);
             return _sta1010CoReportService.GetSta1010ReportingData(printConf, hpId);
@@ -263,7 +267,7 @@ namespace Reporting.DailyStatic.Service
             return printConf;
         }
 
-        /*private CoSta1002PrintConf CreateCoSta1002PrintConf(ConfigStatisticModel configDaily,
+        private CoSta1002PrintConf CreateCoSta1002PrintConf(ConfigStatisticModel configDaily,
                                                                      int dateFrom,
                                                                      int dateTo,
                                                                      int timeFrom,
@@ -315,7 +319,7 @@ namespace Reporting.DailyStatic.Service
             return printConf;
         }
 
-        private CoSta1010PrintConf CreateCoSta1010PrintConf(ConfigStatisticModel configDaily, int dateFrom, int dateTo, long ptNumFrom, long ptNumTo)
+        /*private CoSta1010PrintConf CreateCoSta1010PrintConf(ConfigStatisticModel configDaily, int dateFrom, int dateTo, long ptNumFrom, long ptNumTo)
         {
             CoSta1010PrintConf printConf = new CoSta1010PrintConf(configDaily.MenuId);
             printConf.StartSinDate = dateFrom;
