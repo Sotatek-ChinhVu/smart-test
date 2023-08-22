@@ -12,6 +12,8 @@ using Reporting.Statistics.Sta1010.Models;
 using Reporting.Statistics.Sta1010.Service;
 using Reporting.Statistics.Sta2001.Models;
 using Reporting.Statistics.Sta2001.Service;
+using Reporting.Statistics.Sta2002.Models;
+using Reporting.Statistics.Sta2002.Service;
 
 namespace Reporting.DailyStatic.Service
 {
@@ -22,14 +24,16 @@ namespace Reporting.DailyStatic.Service
         private readonly ISta1002CoReportService _sta1002CoReportService;
         private readonly ISta1010CoReportService _sta1010CoReportService;
         private readonly ISta2001CoReportService _sta2001CoReportService;
+        private readonly ISta2002CoReportService _sta2002CoReportService;
 
-        public StaticsticExportCsvService(IDailyStatisticCommandFinder finder, ISta1001CoReportService sta1001CoReportService, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService)
+        public StaticsticExportCsvService(IDailyStatisticCommandFinder finder, ISta1001CoReportService sta1001CoReportService, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2002CoReportService sta2002CoReportService)
         {
             _finder = finder;
             _sta1001CoReportService = sta1001CoReportService;
             _sta1002CoReportService = sta1002CoReportService;
             _sta1010CoReportService = sta1010CoReportService;
             _sta2001CoReportService = sta2001CoReportService;
+            _sta2002CoReportService = sta2002CoReportService;
         }
 
         public CommonExcelReportingModel ExportCsv(int hpId, string formName, string menuName, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0)
@@ -50,10 +54,10 @@ namespace Reporting.DailyStatic.Service
                 case StatisticReportType.Sta2001:
                     result = PrintSta2001(hpId, configDaily, monthFrom, monthTo, menuName);
                     break;
-                    /*case StatisticReportType.Sta2002:
-                        result = PrintSta2002(hpId, configDaily, monthFrom, monthTo);
-                        break;
-                    case StatisticReportType.Sta2003:
+                case StatisticReportType.Sta2002:
+                    result = PrintSta2002(hpId, configDaily, monthFrom, monthTo, menuName);
+                    break;
+                    /*case StatisticReportType.Sta2003:
                         result = PrintSta2003(hpId, configDaily, monthFrom, monthTo);
                         break;
                     case StatisticReportType.Sta2010:
@@ -113,34 +117,34 @@ namespace Reporting.DailyStatic.Service
         private CommonExcelReportingModel PrintSta1001(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo, string menuName)
         {
             CoSta1001PrintConf printConf = CreateCoSta1001PrintConf(configDaily, dateFrom, dateTo, timeFrom, timeTo);
-            return _sta1001CoReportService.ExportCsv(printConf, menuName, dateFrom, dateTo, hpId);
+            return _sta1001CoReportService.ExportCsv(printConf, dateFrom, dateTo, menuName, hpId);
         }
 
         private CommonExcelReportingModel PrintSta1002(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo, string menuName)
         {
             CoSta1002PrintConf printConf = CreateCoSta1002PrintConf(configDaily, dateFrom, dateTo, timeFrom, timeTo);
-            return _sta1002CoReportService.ExportCsv(printConf, menuName, dateFrom, dateTo, hpId);
+            return _sta1002CoReportService.ExportCsv(printConf, dateFrom, dateTo, menuName, hpId);
         }
 
         private CommonExcelReportingModel PrintSta1010(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo, string menuName)
         {
             var printConf = CreateCoSta1010PrintConf(configDaily, dateFrom, dateTo, timeFrom, timeTo);
-            return _sta1010CoReportService.ExportCsv(printConf, menuName, dateFrom, dateTo, hpId);
+            return _sta1010CoReportService.ExportCsv(printConf, dateFrom, dateTo, menuName, hpId);
         }
 
         private CommonExcelReportingModel PrintSta2001(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName)
         {
             var printConf = CreateCoSta2001PrintConf(configDaily, monthFrom, monthTo);
-            return _sta2001CoReportService.ExportCsv(printConf, menuName, dateFrom, dateTo, hpId);
+            return _sta2001CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId);
         }
-
-        /*private CommonReportingRequestModel PrintSta2002(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo)
+         
+        private CommonExcelReportingModel PrintSta2002(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName)
         {
             var printConf = CreateCoSta2002PrintConf(configDaily, monthFrom, monthTo);
-            return _sta2002CoReportService.GetSta2002ReportingData(printConf, hpId);
+            return _sta2002CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId);
         }
 
-        private CommonReportingRequestModel PrintSta2003(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo)
+        /*private CommonReportingRequestModel PrintSta2003(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo)
         {
             var printConf = CreateCoSta2003PrintConf(configDaily, monthFrom, monthTo);
             return _sta2003CoReportService.GetSta2003ReportingData(printConf, hpId);
@@ -383,6 +387,23 @@ namespace Reporting.DailyStatic.Service
             return printConf;
         }
 
+        private CoSta2002PrintConf CreateCoSta2002PrintConf(ConfigStatisticModel configDaily, int monthFrom, int monthTo)
+        {
+            CoSta2002PrintConf printConf = new CoSta2002PrintConf(configDaily.MenuId);
+            printConf.StartNyukinYm = monthFrom;
+            printConf.EndNyukinYm = monthTo;
+            printConf.FormFileName = configDaily.FormReport;
+            printConf.ReportName = configDaily.ReportName;
+            printConf.PageBreak1 = configDaily.BreakPage1;
+            printConf.PageBreak2 = configDaily.BreakPage2;
+            printConf.IsTester = configDaily.TestPatient == 1;
+            printConf.IsExcludeUnpaid = configDaily.ExcludingUnpaid == 1;
+            printConf.KaIds = configDaily.KaId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+            printConf.TantoIds = configDaily.UserId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+
+            return printConf;
+        }
+
         /*private CoSta2003PrintConf CreateCoSta2003PrintConf(ConfigStatisticModel configDaily,
                                                                      int monthFrom,
                                                                      int monthTo)
@@ -404,23 +425,6 @@ namespace Reporting.DailyStatic.Service
             printConf.HokenSbts = configDaily.InsuranceType.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
             printConf.IsTensu = configDaily.MedicalTreatment;
             printConf.IsJihiFutan = configDaily.NonInsuranceAmount;
-            return printConf;
-        }
-
-        private CoSta2002PrintConf CreateCoSta2002PrintConf(ConfigStatisticModel configDaily, int monthFrom, int monthTo)
-        {
-            CoSta2002PrintConf printConf = new CoSta2002PrintConf(configDaily.MenuId);
-            printConf.StartNyukinYm = monthFrom;
-            printConf.EndNyukinYm = monthTo;
-            printConf.FormFileName = configDaily.FormReport;
-            printConf.ReportName = configDaily.ReportName;
-            printConf.PageBreak1 = configDaily.BreakPage1;
-            printConf.PageBreak2 = configDaily.BreakPage2;
-            printConf.IsTester = configDaily.TestPatient == 1;
-            printConf.IsExcludeUnpaid = configDaily.ExcludingUnpaid == 1;
-            printConf.KaIds = configDaily.KaId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
-            printConf.TantoIds = configDaily.UserId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
-
             return printConf;
         }
 

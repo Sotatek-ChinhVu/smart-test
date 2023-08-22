@@ -528,10 +528,10 @@ public class Sta2001CoReportService : ISta2001CoReportService
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
-    public CommonExcelReportingModel ExportCsv(CoSta2001PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId)
+    public CommonExcelReportingModel ExportCsv(CoSta2001PrintConf printConf, int monthFrom, int monthTo,  string menuName, int hpId)
     {
 
-        string fileName = menuName + "_" + dateFrom + "_" + dateTo;
+        string fileName = menuName + "_" + monthFrom + "_" + monthTo;
         List<string> retDatas = new List<string>();
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 

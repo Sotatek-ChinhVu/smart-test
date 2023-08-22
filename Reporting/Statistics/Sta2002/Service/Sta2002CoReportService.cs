@@ -1,5 +1,6 @@
 ﻿using Helper.Common;
 using Helper.Constants;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -9,6 +10,7 @@ using Reporting.Statistics.Sta1001.Models;
 using Reporting.Statistics.Sta2002.DB;
 using Reporting.Statistics.Sta2002.Mapper;
 using Reporting.Statistics.Sta2002.Models;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace Reporting.Statistics.Sta2002.Service
@@ -45,6 +47,11 @@ namespace Reporting.Statistics.Sta2002.Service
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
         #endregion
+
+        private List<PutColumn> csvTotalColumns = new List<PutColumn>
+        {
+            new PutColumn("RowType", "明細区分")
+        };
 
         private List<PutColumn> putColumns = new List<PutColumn>
         {
@@ -633,6 +640,83 @@ namespace Reporting.Statistics.Sta2002.Service
             CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2002, "sta2002a.rse", fieldInputList);
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             _maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? _maxRow;
+        }
+
+        public CommonExcelReportingModel ExportCsv(CoSta2002PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId)
+        {
+            string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+            List<string> retDatas = new List<string>();
+            bool isPutTotalRow = false;
+            bool isPutColName = false;
+
+            if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            if (isPutTotalRow)
+            {
+                putCurColumns.AddRange(csvTotalColumns);
+            }
+            putCurColumns.AddRange(putColumns);
+
+            var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+
+            if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
+            List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
+
+            //タイトル行
+            retDatas.Add("\"" + string.Join("\",\"", wrkTitles.Union(jihiSbtMsts.Select(j => string.Format("保険外金額({0})", j.Name)))) + "\"");
+            if (isPutColName)
+            {
+                retDatas.Add("\"" + string.Join("\",\"", wrkColumns.Union(jihiSbtMsts.Select(j => string.Format("JihiFutanSbt{0}", j.JihiSbt)))) + "\"");
+            }
+            
+            //データ
+            int totalRow = csvDatas.Count;
+            int rowOutputed = 0;
+            foreach (var csvData in csvDatas)
+            {
+                retDatas.Add(RecordData(csvData));
+                rowOutputed++;
+            }
+
+            string RecordData(CoSta2002PrintData csvData)
+            {
+                List<string> colDatas = new List<string>();
+
+                foreach (var column in putCurColumns)
+                {
+                    var value = typeof(CoSta2002PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                    if (csvData.RowType == RowType.Total && !column.IsTotal)
+                    {
+                        value = string.Empty;
+                    }
+                    else if (value is RowType)
+                    {
+                        value = (int)value;
+                    }
+                    colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+                }
+                //自費種別毎の金額
+                if (csvData.JihiSbtFutans != null)
+                {
+                    foreach (var jihiSbtFutan in csvData.JihiSbtFutans)
+                    {
+                        colDatas.Add("\"" + jihiSbtFutan + "\"");
+                    }
+                }
+                else
+                {
+                    foreach (var jihiSbtMst in jihiSbtMsts)
+                    {
+                        colDatas.Add("\"0\"");
+                    }
+                }
+
+                return string.Join(",", colDatas);
+            }
+
+            return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
         }
         #endregion
     }
