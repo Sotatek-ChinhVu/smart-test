@@ -110,21 +110,17 @@ namespace Domain.Models.MstItem
     public class UsageSettingTabModel
     {
         [JsonConstructor]
-        public UsageSettingTabModel(string yohoInfMstPrefix, string itemCd)
+        public UsageSettingTabModel(string yohoInfMstPrefix)
         {
             YohoInfMstPrefix = yohoInfMstPrefix;
-            ItemCd = itemCd;
         }
 
         public UsageSettingTabModel()
         {
             YohoInfMstPrefix = string.Empty;
-            ItemCd = string.Empty;
         }
 
         public string YohoInfMstPrefix { get; private set; }
-
-        public string ItemCd { get; private set; }
     }
 
     public class DrugInfomationTabModel

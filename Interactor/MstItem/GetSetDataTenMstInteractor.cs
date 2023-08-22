@@ -181,7 +181,7 @@ namespace Interactor.MstItem
                         precriptionSettingTab = LoadPrecriptionSetting(itemCd, jiCd, ipnNameCd, hpId, sinDate);
                         break;
                     case CategoryItemEnums.UsageSetting:
-                        usageSettingTab = new UsageSettingTabModel(_mstItemRepository.GetYohoInfMstPrefixByItemCd(itemCd), string.Empty);
+                        usageSettingTab = new UsageSettingTabModel(_mstItemRepository.GetYohoInfMstPrefixByItemCd(itemCd));
                         break;
                     case CategoryItemEnums.SpecialMaterialSetting:
                         break;
