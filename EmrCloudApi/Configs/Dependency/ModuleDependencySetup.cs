@@ -1599,7 +1599,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateAccountingFormMstInputData, UpdateAccountingFormMstInteractor>();
 
             var bus = busBuilder.Build();
-            services.AddSingleton(bus);
+            services.AddSingleton(bus); 
         }
     }
 }
