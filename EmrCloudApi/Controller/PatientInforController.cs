@@ -101,6 +101,8 @@ using UseCase.SwapHoken.Validate;
 using UseCase.PatientInfor.SavePtKyusei;
 using UseCase.PatientInfor;
 using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
+using UseCase.PatientInfor.GetPtInfByRefNo;
+using UseCase.PatientInfor.GetPtInfModelsByName;
 
 namespace EmrCloudApi.Controller
 {
@@ -937,7 +939,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.SearchPatientInfoByPtNum)]
         public ActionResult<Response<SearchPatientInfoByPtNumResponse>> SearchPatientInfoByPtNum([FromQuery] SearchPatientInfoByPtNumRequest request)
         {
-            var input = new SearchPatientInfoByPtNumInputData(HpId, request.PtNum);
+            var input = new SearchPatientInfoByPtNumInputData(HpId, request.PtNum, request.SinDate);
             var output = _bus.Handle(input);
             var presenter = new SearchPatientInfoByPtNumPresenter();
             presenter.Complete(output);
@@ -952,6 +954,26 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTokkiMstListPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTokkiMstListResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPtInfByRefNo)]
+        public ActionResult<Response<GetPtInfByRefNoResponse>> GetPtInfByRefNo([FromQuery] GetPtInfByRefNoRequest request)
+        {
+            var input = new GetPtInfByRefNoInputData(HpId, request.RefNo);
+            var output = _bus.Handle(input);
+            var presenter = new GetPtInfByRefNoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPtInfByRefNoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPtInfModelsByName)]
+        public ActionResult<Response<GetPtInfModelsByNameResponse>> GetPtInfModelsByName([FromQuery] GetPtInfModelsByNameRequest request)
+        {
+            var input = new GetPtInfModelsByNameInputData(HpId, request.KanaName, request.Name, request.BirthDate, request.Sex1, request.Sex2);
+            var output = _bus.Handle(input);
+            var presenter = new GetPtInfModelsByNamePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPtInfModelsByNameResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.CalculationSwapHoken)]

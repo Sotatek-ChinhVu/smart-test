@@ -117,6 +117,7 @@
         public const string AccountingCardList = "AccountingCardList";
         public const string WelfareDisk = "WelfareDisk";
         public const string ReceListCsv = "ReceListCsv";
+        public const string ExportPeriodReceipt = "ExportPeriodReceipt";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -132,6 +133,8 @@
         public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
         public const string SearchPatientInfoByPtIdList = "SearchPatientInfoByPtIdList";
         public const string SavePtKyusei = "SavePtKyusei";
+        public const string GetPtInfByRefNo = "GetPtInfByRefNo";
+        public const string GetPtInfModelsByName = "GetPtInfModelsByName";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -384,6 +387,7 @@
         public const string GetStatisticMenuList = "GetStatisticMenuList";
         public const string SaveStatisticMenuList = "SaveStatisticMenuList";
         public const string GetListStaticReport = "GetListStaticReport";
+        public const string FindPtHokenList = "FindPtHokenList";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
@@ -398,6 +402,11 @@
 
         // Online
         public const string InsertOnlineConfirmHistory = "InsertOnlineConfirmHistory";
+        public const string GetRegisterdPatientsFromOnline = "GetRegisterdPatientsFromOnline";
+
+        //AccountingFormMst
+        public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
+        public const string UpdateAccountingFormMst = "UpdateAccountingFormMst";
 
         public const string Test = "Test";
 

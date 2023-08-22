@@ -6,17 +6,24 @@ using Reporting.Accounting.Constants;
 using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
+using Reporting.Calculate.Interface;
+using Reporting.Calculate.Receipt.Constants;
+using Reporting.Calculate.Receipt.ViewModels;
 using Reporting.CommonMasters.Config;
 using Reporting.Mappers.Common;
-using System.Text;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
+using System.Text;
 using Reporting.Calculate.Receipt.ViewModels;
 using Domain.Models.CalculateModel;
 using Reporting.Calculate.Interface;
 using Reporting.Calculate.Receipt.Constants;
 using Amazon.Runtime.Internal;
 using Reporting.Karte1.Mapper;
+using Reporting.CommonMasters.Enums;
+using Infrastructure.Services;
+using PostgreDataContext;
+using Domain.Constant;
 
 namespace Reporting.Accounting.Service;
 
@@ -622,6 +629,8 @@ public class AccountingCoReportService : IAccountingCoReportService
     #endregion
     private void SetFormFilePath()
     {
+        formFileName = @params.FirstOrDefault()?.FormFileName ?? string.Empty;
+        jobName = "月間領収証";
         if (string.IsNullOrEmpty(formFileName))
         {
             if (printType == 0)
@@ -760,6 +769,191 @@ public class AccountingCoReportService : IAccountingCoReportService
 
         _printoutDateTime = CIUtil.GetJapanDateTimeNow();
         UpdateDrawForm();
+    }
+
+
+    public List<string> ExportCsv(int hpId, int startDate, int endDate, List<Tuple<long, int>> ptConditions, List<Tuple<int, string>> grpConditions, int sort, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn)
+    {
+        List<(long ptId, int hokenId)> dataListPtConditions = new();
+        List<(int grpId, string grpCd)> dataListGrpConditions = new();
+        foreach (var item in ptConditions)
+        {
+            dataListPtConditions.Add((item.Item1, item.Item2));
+        }
+        foreach (var item in grpConditions)
+        {
+            dataListGrpConditions.Add((item.Item1, item.Item2));
+        }
+        var coModelList = GetDataList(hpId, startDate, endDate, dataListPtConditions, dataListGrpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
+        if (coModelList == null || coModelList.KaikeiInfListModels == null || coModelList.KaikeiInfListModels.Any() == false)
+        {
+            return new();
+        }
+
+        List<string> output = new List<string>();
+
+        // ヘッダー
+        string head =
+            $"対象期間：{startDate}-{endDate} ";
+
+        List<long> ptNums = GetPtNums(hpId, ptConditions.Select(p => p.Item1).ToList());
+
+        if (ptNums.Any())
+        {
+            head += "対象患者：";
+            foreach (long ptId in ptNums)
+            {
+                head += $"{ptId}/";
+            }
+            head = head.Substring(0, head.Length - 1);
+        }
+
+        if (grpConditions != null && grpConditions.Any())
+        {
+            foreach ((int grpId, string grpCd) in grpConditions)
+            {
+                head += $" 分類{CIUtil.ToWide(grpId.ToString())}：{grpCd}";
+            }
+        }
+
+        output.Add(head);
+
+        output.Add(
+            "患者番号," +
+            "患者漢字氏名," +
+            "患者カナ氏名," +
+            "診療総点数," +
+            "診療合計額," +
+            "患者負担合計," +
+            "自費合計額," +
+            "保険外医療計," +
+            "自費分患者負担額," +
+            "外税," +
+            "入金額," +
+            "請求金額," +
+            "未収金額," +
+            "診療合計自費合計," +
+            "性別," +
+            "生年月日," +
+            "郵便番号," +
+            "住所," +
+            "電話１," +
+            "電話２," +
+            "電話３," +
+            "分類コード１," +
+            "分類名称１," +
+            "分類コード２," +
+            "分類名称２," +
+            "分類コード３," +
+            "分類名称３," +
+            "分類コード４," +
+            "分類名称４," +
+            "分類コード５," +
+            "分類名称５," +
+            "分類コード６," +
+            "分類名称６," +
+            "患者メモ１," +
+            "患者メモ２," +
+            "患者メモ３," +
+            "患者メモ４," +
+            "患者メモ５"
+            );
+
+        foreach (CoKaikeiInfListModel kaikeiInf in coModelList.KaikeiInfListModels)
+        {
+            string line = "";
+            // 患者番号
+            line += $"{kaikeiInf.PtNum},";
+            // 患者漢字氏名
+            line += $"{kaikeiInf.PtName},";
+            // 患者カナ氏名
+            line += $"{kaikeiInf.PtKanaName},";
+            // 診療総点数
+            line += $"{kaikeiInf.Tensu},";
+            // 診療合計額
+            line += $"{kaikeiInf.TotalIryohi},";
+            // 患者負担合計
+            line += $"{kaikeiInf.PtFutan},";
+            // 自費合計額
+            line += $"{kaikeiInf.JihiFutan + kaikeiInf.JihiOuttax},";
+            // 保険外医療計
+            line += $"{kaikeiInf.JihiKoumoku},";
+            // 自費分患者負担額
+            line += $"{kaikeiInf.JihiSinryo},";
+            // 消費税
+            line += $"{kaikeiInf.JihiOuttax},";
+            // 入金額
+            line += $"{kaikeiInf.NyukinGaku},";
+            // 請求金額
+            line += $"{kaikeiInf.SeikyuGaku},";
+            // 未収金額
+            line += $"{kaikeiInf.Misyu},";
+            // 診療合計自費合計
+            line += $"{kaikeiInf.TotalIryohi + kaikeiInf.JihiFutan + kaikeiInf.JihiOuttax},";
+            // 性別
+            line += $"{kaikeiInf.PtSex},";
+            // 生年月日
+            line += $"{kaikeiInf.BirthDay},";
+            // 郵便番号
+            line += $"{kaikeiInf.PostCd},";
+            // 住所
+            line += $"{kaikeiInf.Address},";
+            // 電話１
+            line += $"{kaikeiInf.Tel1},";
+            // 電話２
+            line += $"{kaikeiInf.Tel2},";
+            // 電話３
+            line += $"{kaikeiInf.RenrakuTel},";
+
+            for (int i = 1; i <= 6; i++)
+            {
+                // 分類コード１
+                line += $"{kaikeiInf.PtGroupInfCode(i)},";
+                // 分類名称１
+                line += $"{kaikeiInf.PtGroupInfCodeName(i)},";
+            }
+
+            // 患者メモ
+            if (string.IsNullOrEmpty(kaikeiInf.Memo) == false)
+            {
+                string[] del = { "\r\n", "\r", "\n" };
+                List<string> memos = kaikeiInf.Memo.Split(del, StringSplitOptions.None).ToList();
+
+                for (int i = 0; i < 5; i++)
+                {
+                    if (memos.Count() > i)
+                    {
+                        line += $"{memos[i]},";
+                    }
+                    else
+                    {
+                        line += ",";
+                    }
+                }
+            }
+
+            output.Add(line);
+        }
+        return output;
+    }
+
+    private List<long> GetPtNums(int hpId, List<long> ptIds)
+    {
+        var ptInfs = _tenantProvider.GetNoTrackingDataContext().PtInfs.Where(p =>
+            p.HpId == hpId &&
+            ptIds.Contains(p.PtId) &&
+            p.IsDelete == DeleteStatus.None
+        ).ToList();
+
+        List<long> results = new List<long>();
+
+        ptInfs?.ForEach(entity =>
+        {
+            results.Add(entity.PtNum);
+        }
+        );
+
+        return results;
     }
 
     private void PrintOutMulti()
@@ -3918,7 +4112,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         return result;
     }
 
-    private CoAccountingListModel GetDataList(
+    public CoAccountingListModel GetDataList(
         int hpId, int startDate, int endDate,
         List<(long ptId, int hokenId)> ptConditions, List<(int grpId, string grpCd)> grpConditions,
         int sort, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn)

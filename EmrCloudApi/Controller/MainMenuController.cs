@@ -14,6 +14,14 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using Reporting.ReportServices;
+using EmrCloudApi.Responses.Insurance;
+using EmrCloudApi.Presenters.Lock;
+using EmrCloudApi.Responses.Lock;
+using Org.BouncyCastle.Asn1.Ocsp;
+using UseCase.Lock.Check;
+using UseCase.Insurance.FindPtHokenList;
+using EmrCloudApi.Requests.Insurance;
+using EmrCloudApi.Presenters.Insurance;
 
 namespace EmrCloudApi.Controller;
 
@@ -74,6 +82,16 @@ public class MainMenuController : AuthorizeControllerBase
         result.Message = ResponseMessage.Success;
         result.Status = 1;
         return result;
+    }
+
+    [HttpGet(ApiPath.FindPtHokenList)]
+    public ActionResult<Response<FindPtHokenListResponse>> FindPtHokenList([FromQuery] FindPtHokenListRequest request)
+    {
+        var input = new FindPtHokenListInputData(HpId, request.PtId, request.SinDate);
+        var output = _bus.Handle(input);
+        var presenter = new FindPtHokenListPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<FindPtHokenListResponse>>(presenter.Result);
     }
 
     private List<StatisticMenuItem> ConvertToMenuItem(SaveStatisticMenuRequest request)

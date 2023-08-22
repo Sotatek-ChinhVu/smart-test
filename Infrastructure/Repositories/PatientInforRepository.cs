@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
             _receptionRepository = receptionRepository;
         }
 
-        (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId)
+        (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId, int sinDate)
         {
             var ptInf = NoTrackingDataContext.PtInfs.Where(x => x.PtNum == ptNum && x.IsDelete == 0).FirstOrDefault();
             if (ptInf == null)
@@ -53,7 +53,7 @@ namespace Infrastructure.Repositories
                 .OrderByDescending(r => r.SinDate)
                 .Select(r => r.SinDate)
                 .FirstOrDefault();
-            PatientInforModel ptInfModel = ToModel(ptInf, memo, lastVisitDate);
+            PatientInforModel ptInfModel = ToModel(ptInf, memo, lastVisitDate, sinDate);
 
             return new(ptInfModel, true);
         }
@@ -185,6 +185,7 @@ namespace Infrastructure.Repositories
                 firstDate,
                 raiinCount,
                 comment,
+                sinDate,
                 isKyuSeiName);
         }
 
@@ -679,6 +680,54 @@ namespace Infrastructure.Repositories
                     .ToList();
         }
 
+        private PatientInforModel ToModel(PtInf p, string memo, int lastVisitDate, int sinDate)
+        {
+            return new PatientInforModel(
+                p.HpId,
+                p.PtId,
+                p.ReferenceNo,
+                p.SeqNo,
+                p.PtNum,
+                p.KanaName ?? string.Empty,
+                p.Name ?? string.Empty,
+                p.Sex,
+                p.Birthday,
+                p.LimitConsFlg,
+                p.IsDead,
+                p.DeathDate,
+                p.HomePost ?? string.Empty,
+                p.HomeAddress1 ?? string.Empty,
+                p.HomeAddress2 ?? string.Empty,
+                p.Tel1 ?? string.Empty,
+                p.Tel2 ?? string.Empty,
+                p.Mail ?? string.Empty,
+                p.Setanusi ?? string.Empty,
+                p.Zokugara ?? string.Empty,
+                p.Job ?? string.Empty,
+                p.RenrakuName ?? string.Empty,
+                p.RenrakuPost ?? string.Empty,
+                p.RenrakuAddress1 ?? string.Empty,
+                p.RenrakuAddress2 ?? string.Empty,
+                p.RenrakuTel ?? string.Empty,
+                p.RenrakuMemo ?? string.Empty,
+                p.OfficeName ?? string.Empty,
+                p.OfficePost ?? string.Empty,
+                p.OfficeAddress1 ?? string.Empty,
+                p.OfficeAddress2 ?? string.Empty,
+                p.OfficeTel ?? string.Empty,
+                p.OfficeMemo ?? string.Empty,
+                p.IsRyosyoDetail,
+                p.PrimaryDoctor,
+                p.IsTester,
+                p.MainHokenPid,
+                memo,
+                lastVisitDate,
+                0,
+                0,
+                string.Empty,
+                sinDate);
+        }
+
         private PatientInforModel ToModel(PtInf p, string memo, int lastVisitDate)
         {
             return new PatientInforModel(
@@ -723,7 +772,8 @@ namespace Infrastructure.Repositories
                 lastVisitDate,
                 0,
                 0,
-                string.Empty);
+                string.Empty,
+                0);
         }
 
         public PatientInforModel PatientCommentModels(int hpId, long ptId)
@@ -738,6 +788,32 @@ namespace Infrastructure.Repositories
                 data.PtId,
                 data.Text ?? string.Empty
                 );
+        }
+
+        public PatientInforModel GetPtInfByRefNo(int hpId, long refNo)
+        {
+            var ptInfWithRefNo = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                     && item.ReferenceNo == refNo
+                                                                                     && item.ReferenceNo != 0
+                                                                                     && item.IsDelete == 0
+                                                                                     && item.IsTester == 0);
+            if (ptInfWithRefNo == null)
+            {
+                return new();
+            }
+            return ToModel(ptInfWithRefNo, string.Empty, 0);
+        }
+
+        public List<PatientInforModel> GetPtInfModelsByName(int hpId, string kanaName, string name, int birthDate, int sex1, int sex2)
+        {
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                    && (item.KanaName == kanaName || item.Name == name)
+                                                                    && item.Birthday == birthDate
+                                                                    && (item.Sex == sex1 || item.Sex == sex2)
+                                                                    && item.IsDelete == 0
+                                                                    && item.IsTester == 0)
+                                                    .ToList();
+            return ptInfs.Select(item => ToModel(item, string.Empty, 0)).ToList();
         }
 
         public List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
@@ -2120,7 +2196,8 @@ namespace Infrastructure.Repositories
                         0,
                         0,
                         0,
-                        string.Empty
+                        string.Empty,
+                        0
                     );
         }
 
@@ -2612,6 +2689,7 @@ namespace Infrastructure.Repositories
                                                                                   0,
                                                                                   0,
                                                                                   string.Empty,
+                                                                                  0,
                                                                                   false)).ToList();
         }
 

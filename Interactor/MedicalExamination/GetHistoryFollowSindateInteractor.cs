@@ -125,7 +125,8 @@ namespace Interactor.MedicalExamination
                             string.Empty,
                             string.Empty,
                             string.Empty,
-                            string.Empty
+                            string.Empty,
+                            history.HeaderOrderModels
                         );
 
                     //Excute order

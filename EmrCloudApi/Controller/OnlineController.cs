@@ -16,6 +16,7 @@ using UseCase.AccountDue.IsNyukinExisted;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Core.Sync;
 using UseCase.Online;
+using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.Online.InsertOnlineConfirmHistory;
 
 namespace EmrCloudApi.Controller;
@@ -53,4 +54,15 @@ public class OnlineController : AuthorizeControllerBase
         return new ActionResult<Response<InsertOnlineConfirmHistoryResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetRegisterdPatientsFromOnline)]
+    public ActionResult<Response<GetRegisterdPatientsFromOnlineResponse>> GetRegisterdPatientsFromOnline([FromQuery] GetRegisterdPatientsFromOnlineRequest request)
+    {
+        var input = new GetRegisterdPatientsFromOnlineInputData(request.SinDate, request.ConfirmType, request.Id);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetRegisterdPatientsFromOnlinePresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetRegisterdPatientsFromOnlineResponse>>(presenter.Result);
+    }
 }
