@@ -161,13 +161,6 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
             var receSeikyus = _tenantDataContext.ReceSeikyus.FindListQueryableNoTrack(r => r.IsDeleted == DeleteStatus.None);
 
-
-            var raiinInfs = _tenantDataContext.RaiinInfs.FindListQueryableNoTrack();
-            if (ptIds?.Count >= 1)
-            {
-                raiinInfs = raiinInfs.Where(r => ptIds.Contains(r.PtId));
-            }
-
             var maxReceSeikyus = _tenantDataContext.ReceSeikyus.FindListQueryableNoTrack(
                 r => r.IsDeleted == DeleteStatus.None
             ).GroupBy(
@@ -182,6 +175,12 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     SeikyuYm = r.Max(x => x.SeikyuYm)
                 }
             );
+
+            var raiinInfs = _tenantDataContext.RaiinInfs.FindListQueryableNoTrack();
+            if (ptIds?.Count >= 1)
+            {
+                raiinInfs = raiinInfs.Where(r => ptIds.Contains(r.PtId));
+            }
 
             var joinQuery = (
                 from raiinInf in raiinInfs
@@ -240,6 +239,6 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 .ToList();
 
             return result;
-        }
+        }    
     }
 }
