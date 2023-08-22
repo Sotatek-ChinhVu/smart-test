@@ -135,18 +135,11 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.PeriodReceiptReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromForm] StringObjectRequest requestString)
+    public async Task<IActionResult> PeriodReceiptReport([FromForm] AccountingReportRequest requestStringJson)
     {
-        var request = JsonSerializer.Deserialize<PeriodReceiptRequest>(requestString.StringJson) ?? new();
-
-        List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
-                                                                                           item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
-                                                                                           request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, item.HokenKbn,
-                                                                                           request.HokenSeikyu, request.JihiSeikyu, request.NyukinBase,
-                                                                                           request.HakkoDay, request.Memo,
-                                                                                           request.PrintType, request.FormFileName))
-                                                                       .ToList();
-        var data = _reportService.GetAccountingReportingData(request.HpId, requestConvert);
+        var stringJson = requestStringJson.JsonAccounting;
+        var request = JsonSerializer.Deserialize<PeriodReceiptListRequest>(stringJson) ?? new();
+        var data = _reportService.GetPeriodPrintData(request.HpId, request.StartDate, request.EndDate, request.SourcePt, request.PrintSort, request.IsPrintList, request.PrintByMonth, request.PrintByGroup, request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn, request.HakkoDay, request.Memo, request.FormFileName, request.NyukinBase);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
