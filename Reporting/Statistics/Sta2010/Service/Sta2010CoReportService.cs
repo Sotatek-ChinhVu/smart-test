@@ -1,4 +1,5 @@
-﻿using Helper.Common;
+﻿using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
@@ -1397,6 +1398,68 @@ namespace Reporting.Statistics.Sta2010.Service
             CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2010, "sta2010a.rse", fieldInputList);
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             _maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? _maxRow;
+        }
+
+        public CommonExcelReportingModel ExportCsv(CoSta2010PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId)
+        {
+            string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+            List<string> retDatas = new List<string>();
+            bool isPutTotalRow = false;
+            bool isPutColName = false;
+
+            if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            if (isPutTotalRow)
+            {
+                putCurColumns.AddRange(csvTotalColumns);
+            }
+            putCurColumns.AddRange(putColumns);
+
+            var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+
+            if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
+            List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
+
+            //タイトル行
+            retDatas.Add("\"" + string.Join("\",\"", wrkTitles) + "\"");
+            if (isPutColName)
+            {
+                retDatas.Add("\"" + string.Join("\",\"", wrkColumns) + "\"");
+            }
+
+            //データ
+            int totalRow = csvDatas.Count;
+            int rowOutputed = 0;
+            foreach (var csvData in csvDatas)
+            {
+                retDatas.Add(RecordData(csvData));
+                rowOutputed++;
+            }
+
+            string RecordData(CoSta2010PrintData csvData)
+            {
+                List<string> colDatas = new List<string>();
+
+                foreach (var column in putCurColumns)
+                {
+                    var value = typeof(CoSta2010PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                    if (csvData.RowType == RowType.Total && !column.IsTotal)
+                    {
+                        value = string.Empty;
+                    }
+                    else if (value is RowType)
+                    {
+                        value = (int)value;
+                    }
+                    colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+                }
+
+                return string.Join(",", colDatas);
+            }
+
+            return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
         }
         #endregion
     }
