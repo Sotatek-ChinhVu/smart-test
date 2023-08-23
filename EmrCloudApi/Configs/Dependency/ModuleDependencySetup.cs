@@ -691,6 +691,7 @@ using UseCase.PatientInfor.GetPtInfModelsByName;
 using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineHistoryById;
 using UseCase.Reception.GetYoyakuRaiinInf;
+using UseCase.Insurance.FindHokenInfByPtId;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1245,6 +1246,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDefaultSelectPatternInputData, GetDefaultSelectPatternInteractor>();
             busBuilder.RegisterUseCase<GetInsuranceMasterDetailInputData, GetInsuranceMasterDetailInteractor>();
             busBuilder.RegisterUseCase<GetSelectMaintenanceInputData, GetSelectMaintenanceInteractor>();
+            busBuilder.RegisterUseCase<FindHokenInfByPtIdInputData, FindHokenInfByPtIdInteractor>();
 
 
             busBuilder.RegisterUseCase<DeleteHokenMasterInputData, DeleteHokenMasterInteractor>();
