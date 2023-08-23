@@ -74,9 +74,18 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         }
         onlineHistory.UpdateDate = CIUtil.GetJapanDateTimeNow();
         onlineHistory.UpdateId = userId;
-        onlineHistory.UketukeStatus = uketukeStatus;
-        onlineHistory.PtId = ptId;
-        onlineHistory.ConfirmationType = confirmationType;
+        if (uketukeStatus != -1)
+        {
+            onlineHistory.UketukeStatus = uketukeStatus;
+        }
+        if (ptId != -1)
+        {
+            onlineHistory.PtId = ptId;
+        }
+        if (confirmationType != -1)
+        {
+            onlineHistory.ConfirmationType = confirmationType;
+        }
         return TrackingDataContext.SaveChanges() > 0;
     }
 
