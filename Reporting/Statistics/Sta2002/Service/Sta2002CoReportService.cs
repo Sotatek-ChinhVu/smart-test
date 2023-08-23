@@ -642,12 +642,10 @@ namespace Reporting.Statistics.Sta2002.Service
             _maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? _maxRow;
         }
 
-        public CommonExcelReportingModel ExportCsv(CoSta2002PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId)
+        public CommonExcelReportingModel ExportCsv(CoSta2002PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
         {
             string fileName = menuName + "_" + monthFrom + "_" + monthTo;
             List<string> retDatas = new List<string>();
-            bool isPutTotalRow = false;
-            bool isPutColName = false;
 
             if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 

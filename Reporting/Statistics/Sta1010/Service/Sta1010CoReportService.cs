@@ -24,7 +24,6 @@ public class Sta1010CoReportService : ISta1010CoReportService
     private List<string> _headerL1;
     private List<CoSyunoInfModel>? _syunoInfs;
     private CoHpInfModel _hpInf;
-    private bool isPutTotalRow;
     private List<PutColumn> putCurColumns = new List<PutColumn>();
     private List<CoSta1010PrintData> printDatas;
 
@@ -535,13 +534,11 @@ public class Sta1010CoReportService : ISta1010CoReportService
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
-    public CommonExcelReportingModel ExportCsv(CoSta1010PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId)
+    public CommonExcelReportingModel ExportCsv(CoSta1010PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
     {
 
         string fileName = menuName + "_" + dateFrom + "_" + dateTo;
         List<string> retDatas = new List<string>();
-        isPutTotalRow = false;
-        bool isPutColName = false;
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
         if (isPutTotalRow)

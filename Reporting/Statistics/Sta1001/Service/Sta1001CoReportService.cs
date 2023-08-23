@@ -34,8 +34,6 @@ namespace Reporting.Statistics.Sta1001.Service
         private int _currentPage;
         private string _rowCountFieldName = string.Empty;
         private bool _hasNextPage;
-        private bool isPutTotalRow;
-        private bool isPutColName;
 
         Dictionary<string, string> _extralData = new Dictionary<string, string>();
         Dictionary<string, string> SingleData = new Dictionary<string, string>();
@@ -719,12 +717,10 @@ namespace Reporting.Statistics.Sta1001.Service
             #endregion
         }
 
-        public CommonExcelReportingModel ExportCsv(CoSta1001PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId)
+        public CommonExcelReportingModel ExportCsv(CoSta1001PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
         {
             HpId = hpId;
             _printConf = printConf;
-            isPutTotalRow = false;
-            isPutColName = false;
             putCurColumns.AddRange(putColumns);
             string sheetName = menuName + "_" + dateFrom + "_" + dateTo;
             List<string> retDatas = new List<string>();

@@ -8,6 +8,6 @@ namespace Reporting.Statistics.Sta2010.Service
     {
         CommonReportingRequestModel GetSta2010ReportingData(CoSta2010PrintConf printConf, int hpId);
 
-        CommonExcelReportingModel ExportCsv(CoSta2010PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId);
+        CommonExcelReportingModel ExportCsv(CoSta2010PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow);
     }
 }

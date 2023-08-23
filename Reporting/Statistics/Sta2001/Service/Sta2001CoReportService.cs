@@ -31,8 +31,6 @@ public class Sta2001CoReportService : ISta2001CoReportService
     private List<CoJihiSbtFutan> _jihiSbtFutans;
     private CoHpInfModel _hpInf;
     private List<PutColumn> putCurColumns = new List<PutColumn>();
-    private bool isPutTotalRow = false;
-    private bool isPutColName = false;
 
     private List<PutColumn> csvTotalColumns = new List<PutColumn>
         {
@@ -528,7 +526,7 @@ public class Sta2001CoReportService : ISta2001CoReportService
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
-    public CommonExcelReportingModel ExportCsv(CoSta2001PrintConf printConf, int monthFrom, int monthTo,  string menuName, int hpId)
+    public CommonExcelReportingModel ExportCsv(CoSta2001PrintConf printConf, int monthFrom, int monthTo,  string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
     {
 
         string fileName = menuName + "_" + monthFrom + "_" + monthTo;

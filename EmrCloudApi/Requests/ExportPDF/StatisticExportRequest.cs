@@ -37,4 +37,6 @@ public class StatisticExportRequest : ReportRequestBase
     public string FormName { get; set; } = string.Empty;
 
     public string MenuName { get; set; } = string.Empty;
+
+    public bool? IsPutColName { get; set; } = false;
 }

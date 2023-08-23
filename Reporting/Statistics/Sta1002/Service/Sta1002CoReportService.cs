@@ -30,10 +30,8 @@ public class Sta1002CoReportService : ISta1002CoReportService
     private CoHpInfModel _hpInf;
     private List<PutColumn> putCurColumns = new List<PutColumn>();
     private List<CoJihiSbtMstModel> jihiSbtMsts;
-    private bool isPutTotalRow;
     private List<PutColumn> csvTotalColumns = new List<PutColumn> { new PutColumn("RowType", "明細区分") };
     private List<CoSta1002PrintData> printDatas;
-    private bool isPutColName;
 
     public Sta1002CoReportService(ICoSta1002Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -649,14 +647,12 @@ public class Sta1002CoReportService : ISta1002CoReportService
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
-    public CommonExcelReportingModel ExportCsv(CoSta1002PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId)
+    public CommonExcelReportingModel ExportCsv(CoSta1002PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
     {
         string fileName = menuName + "_" + dateFrom + "_" + dateTo;
         List<string> retDatas = new List<string>();
 
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
-
-        isPutColName = false;
 
         if (isPutTotalRow)
         {
