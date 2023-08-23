@@ -38,6 +38,8 @@ using Reporting.Statistics.Sta3041.Models;
 using Reporting.Statistics.Sta3041.Service;
 using Reporting.Statistics.Sta3050.Models;
 using Reporting.Statistics.Sta3050.Service;
+using Reporting.Statistics.Sta3060.Models;
+using Reporting.Statistics.Sta3060.Service;
 using Reporting.Statistics.Sta3071.Models;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.Models;
@@ -67,10 +69,11 @@ namespace Reporting.DailyStatic.Service
         private readonly ISta3040CoReportService _sta3040CoReportService;
         private readonly ISta3041CoReportService _sta3041CoReportService;
         private readonly ISta3050CoReportService _sta3050CoReportService;
+        private readonly ISta3060CoReportService _sta3060CoReportService;
 
         public StaticsticExportCsvService(IDailyStatisticCommandFinder finder, ISta1001CoReportService sta1001CoReportService, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2003CoReportService sta2003CoReportService, ISta2010CoReportService sta2010CoReportService,
                                           ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService, ISta3071CoReportService sta3071CoReportService, ISta2020CoReportService sta2020CoReportService, ISta3010CoReportService sta3010CoReportService, ISta3001CoReportService sta3001CoReportService,
-                                          ISta3030CoReportService sta3030CoReportService, ISta3040CoReportService sta3040CoReportService, ISta3041CoReportService sta3041CoReportService, ISta3050CoReportService sta3050CoReportService)
+                                          ISta3030CoReportService sta3030CoReportService, ISta3040CoReportService sta3040CoReportService, ISta3041CoReportService sta3041CoReportService, ISta3050CoReportService sta3050CoReportService, ISta3060CoReportService sta3060CoReportService)
         {
             _finder = finder;
             _sta1001CoReportService = sta1001CoReportService;
@@ -92,6 +95,7 @@ namespace Reporting.DailyStatic.Service
             _sta3040CoReportService = sta3040CoReportService;
             _sta3041CoReportService = sta3041CoReportService;
             _sta3050CoReportService = sta3050CoReportService;
+            _sta3060CoReportService = sta3060CoReportService;
         }
 
         public CommonExcelReportingModel ExportCsv(int hpId, string formName, string menuName, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0, bool? isPutColName = false)
@@ -157,10 +161,10 @@ namespace Reporting.DailyStatic.Service
                 case StatisticReportType.Sta3050:
                     result = PrintSta3050(hpId, configDaily, dateFrom, dateTo, ptNumFrom ?? 0, ptNumTo ?? 0, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
                     break;
-                    /*case StatisticReportType.Sta3060:
-                        result = PrintSta3060(hpId, configDaily, monthFrom, monthTo, coFileType);
-                        break;
-                    case StatisticReportType.Sta3070:
+                case StatisticReportType.Sta3060:
+                    result = PrintSta3060(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    break;
+                    /*case StatisticReportType.Sta3070:
                         result = PrintSta3070(hpId, configDaily, monthFrom, monthTo, coFileType);
                         break;
                     case StatisticReportType.Sta3061:
@@ -279,12 +283,12 @@ namespace Reporting.DailyStatic.Service
             return _sta3050CoReportService.ExportCsv(CreateCoSta3050PrintConf(configDaily.ConfigStatistic3050, startDateFrom, startDateTo, ptNumFrom, ptNumTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
         }
 
-        /*private CommonReportingRequestModel PrintSta3060(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, CoFileType? coFileType)
+        private CommonExcelReportingModel PrintSta3060(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
         {
-            return _sta3060CoReportService.GetSta3060ReportingData(CreateCoSta3060PrintConf(configDaily.ConfigStatistic3060, monthFrom, monthTo), hpId, coFileType ?? CoFileType.Binary);
+            return _sta3060CoReportService.ExportCsv(CreateCoSta3060PrintConf(configDaily.ConfigStatistic3060, monthFrom, monthTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
         }
 
-        private CommonReportingRequestModel PrintSta3070(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, CoFileType? coFileType)
+        /*private CommonReportingRequestModel PrintSta3070(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, CoFileType? coFileType)
         {
             return _sta3070CoReportService.GetSta3070ReportingData(CreateCoSta3070PrintConf(configDaily.ConfigStatistic3070, monthFrom, monthTo), hpId, coFileType ?? CoFileType.Binary);
         }
@@ -1452,7 +1456,7 @@ namespace Reporting.DailyStatic.Service
             return printConf;
         }
 
-        /*private CoSta3060PrintConf CreateCoSta3060PrintConf(ConfigStatistic3060Model configStatistic, int monthFrom, int monthTo)
+        private CoSta3060PrintConf CreateCoSta3060PrintConf(ConfigStatistic3060Model configStatistic, int monthFrom, int monthTo)
         {
             CoSta3060PrintConf printConf = new CoSta3060PrintConf(configStatistic.MenuId);
             printConf.FormFileName = configStatistic.FormReport;
@@ -1472,7 +1476,7 @@ namespace Reporting.DailyStatic.Service
             return printConf;
         }
 
-        private CoSta3061PrintConf CreateCoSta3061PrintConf(ConfigStatistic3061Model configStatistic, int startDateFrom, int StartDateTo)
+        /*private CoSta3061PrintConf CreateCoSta3061PrintConf(ConfigStatistic3061Model configStatistic, int startDateFrom, int StartDateTo)
         {
             CoSta3061PrintConf printConf = new CoSta3061PrintConf(configStatistic.MenuId);
             printConf.FormFileName = configStatistic.FormReport;
