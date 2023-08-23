@@ -20,6 +20,8 @@ using Reporting.Statistics.Sta2010.Models;
 using Reporting.Statistics.Sta2010.Service;
 using Reporting.Statistics.Sta2011.Models;
 using Reporting.Statistics.Sta2011.Service;
+using Reporting.Statistics.Sta2021.Models;
+using Reporting.Statistics.Sta2021.Service;
 
 namespace Reporting.DailyStatic.Service
 {
@@ -34,9 +36,10 @@ namespace Reporting.DailyStatic.Service
         private readonly ISta2003CoReportService _sta2003CoReportService;
         private readonly ISta2010CoReportService _sta2010CoReportService;
         private readonly ISta2011CoReportService _sta2011CoReportService;
+        private readonly ISta2021CoReportService _sta2021CoReportService;
 
         public StaticsticExportCsvService(IDailyStatisticCommandFinder finder, ISta1001CoReportService sta1001CoReportService, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2003CoReportService sta2003CoReportService, ISta2010CoReportService sta2010CoReportService,
-                                          ISta2011CoReportService sta2011CoReportService)
+                                          ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService)
         {
             _finder = finder;
             _sta1001CoReportService = sta1001CoReportService;
@@ -47,6 +50,7 @@ namespace Reporting.DailyStatic.Service
             _sta2003CoReportService = sta2003CoReportService;
             _sta2010CoReportService = sta2010CoReportService;
             _sta2011CoReportService = sta2011CoReportService;
+            _sta2021CoReportService = sta2021CoReportService;
         }
 
         public CommonExcelReportingModel ExportCsv(int hpId, string formName, string menuName, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0, bool? isPutColName = false)
@@ -79,10 +83,10 @@ namespace Reporting.DailyStatic.Service
                 case StatisticReportType.Sta2011:
                     result = PrintSta2011(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
                     break;
-                    /*case StatisticReportType.Sta2021:
-                        result = PrintSta2021(hpId, configDaily, monthFrom, monthTo);
-                        break;
-                    case StatisticReportType.Sta3020:
+                case StatisticReportType.Sta2021:
+                    result = PrintSta2021(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    break;
+                    /*case StatisticReportType.Sta3020:
                         result = PrintSta3020(hpId, configDaily, dateFrom);
                         break;
                     case StatisticReportType.Sta3080:
@@ -175,13 +179,13 @@ namespace Reporting.DailyStatic.Service
             return _sta2011CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
         }
 
-        /*private CommonReportingRequestModel PrintSta2021(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo)
+        private CommonExcelReportingModel PrintSta2021(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName,bool? isPutColName, bool? isPutTotalRow)
         {
             var printConf = CreateCoSta2021PrintConf(configDaily.ConfigStatistic2021, monthFrom, monthTo);
-            return _sta2021CoReportService.GetSta2021ReportingData(printConf, hpId);
+            return _sta2021CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
         }
 
-        private CommonReportingRequestModel PrintSta3020(int hpId, ConfigStatisticModel configDaily, int dateFrom)
+        /*private CommonReportingRequestModel PrintSta3020(int hpId, ConfigStatisticModel configDaily, int dateFrom)
         {
             var printConf = CreateCoSta3020PrintConf(configDaily.ConfigStatistic3020, dateFrom);
             return _sta3020CoReportService.GetSta3020ReportingData(printConf, hpId);
@@ -479,7 +483,7 @@ namespace Reporting.DailyStatic.Service
             return printConf;
         }
 
-        /*private CoSta2021PrintConf CreateCoSta2021PrintConf(ConfigStatistic2021Model configStatistic, int monthFrom, int monthTo)
+        private CoSta2021PrintConf CreateCoSta2021PrintConf(ConfigStatistic2021Model configStatistic, int monthFrom, int monthTo)
         {
             CoSta2021PrintConf printConf = new CoSta2021PrintConf(configStatistic.MenuId);
             printConf.FormFileName = configStatistic.FormReport;
@@ -516,7 +520,7 @@ namespace Reporting.DailyStatic.Service
             return printConf;
         }
 
-        private CoSta3020PrintConf CreateCoSta3020PrintConf(ConfigStatistic3020Model configStatistic, int stdDate)
+        /*private CoSta3020PrintConf CreateCoSta3020PrintConf(ConfigStatistic3020Model configStatistic, int stdDate)
         {
             CoSta3020PrintConf printConf = new CoSta3020PrintConf(configStatistic.MenuId);
             printConf.StdDate = stdDate;
