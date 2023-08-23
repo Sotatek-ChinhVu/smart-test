@@ -9,19 +9,13 @@ using UseCase.MainMenu.GetStatisticMenu;
 using EmrCloudApi.Presenters.MainMenu;
 using UseCase.MainMenu.SaveStatisticMenu;
 using UseCase.MainMenu;
-using Reporting.ReadRseReportFile.Model;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using Reporting.ReportServices;
 using EmrCloudApi.Responses.Insurance;
-using EmrCloudApi.Presenters.Lock;
-using EmrCloudApi.Responses.Lock;
-using Org.BouncyCastle.Asn1.Ocsp;
-using UseCase.Lock.Check;
 using UseCase.Insurance.FindPtHokenList;
 using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Presenters.Insurance;
+using UseCase.Insurance.FindHokenInfByPtId;
 
 namespace EmrCloudApi.Controller;
 
