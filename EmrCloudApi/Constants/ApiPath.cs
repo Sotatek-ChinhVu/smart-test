@@ -139,6 +139,7 @@
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
         public const string GetHokenMasterReadOnly = "GetHokenMasterReadOnly";
+        public const string FindHokenInfByPtId = "FindHokenInfByPtId";
 
         //Validate Main Insurance
         public const string ValidateMainInsurance = "ValidateMainInsurance";

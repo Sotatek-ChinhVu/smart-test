@@ -36,5 +36,7 @@ namespace Domain.Models.Insurance
         int GetHokenKbnByHokenId(int hpId, int hokenId, long ptId);
 
         List<HokenInfModel> FindPtHokenList(int hpId, long ptId, int sinDay);
+
+        List<HokenInfModel> FindHokenInfByPtId(int hpId, long ptId);
     }
 }
