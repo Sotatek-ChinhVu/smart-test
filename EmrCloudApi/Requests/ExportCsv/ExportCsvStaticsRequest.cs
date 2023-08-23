@@ -6,13 +6,13 @@ namespace EmrCloudApi.Requests.ExportCsv
     {
         public int MenuId { get; set; }
 
-        public int MonthFrom { get; set; }
+        public int? MonthFrom { get; set; } = 0;
 
-        public int MonthTo { get; set; }
+        public int? MonthTo { get; set; } = 0;
 
-        public int DateFrom { get; set; }
+        public int? DateFrom { get; set; } = 0;
 
-        public int DateTo { get; set; }
+        public int? DateTo { get; set; } = 0;
 
         public int TimeFrom { get; set; }
 

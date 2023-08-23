@@ -107,77 +107,77 @@ namespace Reporting.DailyStatic.Service
 
         }
 
-        public CommonExcelReportingModel ExportCsv(int hpId, string menuName, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0, bool? isPutColName = false)
+        public CommonExcelReportingModel ExportCsv(int hpId, string menuName, int menuId, int timeFrom, int timeTo, int? monthFrom = 0, int? monthTo = 0, int? dateFrom = 0, int? dateTo = 0, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0, bool? isPutColName = false)
         {
             var configDaily = _finder.GetDailyConfigStatisticMenu(hpId, menuId);
             CommonExcelReportingModel result = new();
             switch ((StatisticReportType)configDaily.ReportId)
             {
                 case StatisticReportType.Sta1001:
-                    result = PrintSta1001(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta1001(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, timeFrom, timeTo, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta1002:
-                    result = PrintSta1002(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta1002(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, timeFrom, timeTo, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta1010:
-                    result = PrintSta1010(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta1010(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, timeFrom, timeTo, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta2001:
-                    result = PrintSta2001(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta2001(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta2002:
-                    result = PrintSta2002(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta2002(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta2003:
-                    result = PrintSta2003(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta2003(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta2010:
-                    result = PrintSta2010(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta2010(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta2011:
-                    result = PrintSta2011(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta2011(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta2021:
-                    result = PrintSta2021(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta2021(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3020:
-                    result = PrintSta3020(hpId, configDaily, dateFrom, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3020(hpId, configDaily, dateFrom ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3080:
-                    result = PrintSta3080(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3080(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3071:
-                    result = PrintSta3071(hpId, configDaily, dateFrom, dateTo, isPutTotalRow, isPutColName, monthFrom, monthTo, menuName);
+                    result = PrintSta3071(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, isPutTotalRow, isPutColName, monthFrom ?? 0, monthTo ?? 0, menuName);
                     break;
                 case StatisticReportType.Sta2020:
-                    result = PrintSta2020(hpId, configDaily, timeFrom, timeTo, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta2020(hpId, configDaily, timeFrom, timeTo, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3010:
-                    result = PrintSta3010(hpId, configDaily, dateFrom, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3010(hpId, configDaily, dateFrom ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3001:
-                    result = PrintSta3001(hpId, configDaily, dateFrom, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3001(hpId, configDaily, dateFrom ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3030:
-                    result = PrintSta3030(hpId, configDaily, dateFrom, dateTo, tenkiDateFrom ?? -1, tenkiDateTo ?? -1, enableRangeFrom ?? -1, enableRangeTo ?? -1, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3030(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, tenkiDateFrom ?? -1, tenkiDateTo ?? -1, enableRangeFrom ?? -1, enableRangeTo ?? -1, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3040:
-                    result = PrintSta3040(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3040(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3041:
-                    result = PrintSta3041(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3041(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3050:
-                    result = PrintSta3050(hpId, configDaily, dateFrom, dateTo, ptNumFrom ?? 0, ptNumTo ?? 0, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3050(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, ptNumFrom ?? 0, ptNumTo ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3060:
-                    result = PrintSta3060(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3060(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3070:
-                    result = PrintSta3070(hpId, configDaily, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3070(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3061:
-                    result = PrintSta3061(hpId, configDaily, dateFrom, dateTo, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3061(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
             }
             
