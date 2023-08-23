@@ -721,6 +721,12 @@ namespace Reporting.Statistics.Sta1001.Service
         {
             HpId = hpId;
             _printConf = printConf;
+
+            if (isPutTotalRow)
+            {
+                putCurColumns.AddRange(csvTotalColumns);
+            }
+
             putCurColumns.AddRange(putColumns);
             string sheetName = menuName + "_" + dateFrom + "_" + dateTo;
             List<string> retDatas = new List<string>();

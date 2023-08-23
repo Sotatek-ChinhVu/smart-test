@@ -536,7 +536,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
 
     public CommonExcelReportingModel ExportCsv(CoSta1010PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
     {
-
+        _printConf = printConf;
         string fileName = menuName + "_" + dateFrom + "_" + dateTo;
         List<string> retDatas = new List<string>();
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
@@ -545,6 +545,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
         {
             putCurColumns.AddRange(csvTotalColumns);
         }
+
         putCurColumns.AddRange(putColumns);
         var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
 

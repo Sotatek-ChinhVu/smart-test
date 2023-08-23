@@ -528,7 +528,7 @@ public class Sta2001CoReportService : ISta2001CoReportService
 
     public CommonExcelReportingModel ExportCsv(CoSta2001PrintConf printConf, int monthFrom, int monthTo,  string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
     {
-
+        _printConf = printConf;
         string fileName = menuName + "_" + monthFrom + "_" + monthTo;
         List<string> retDatas = new List<string>();
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);

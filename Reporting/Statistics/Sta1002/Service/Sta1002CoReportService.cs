@@ -651,7 +651,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
     {
         string fileName = menuName + "_" + dateFrom + "_" + dateTo;
         List<string> retDatas = new List<string>();
-
+        _printConf = printConf;
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
         if (isPutTotalRow)
