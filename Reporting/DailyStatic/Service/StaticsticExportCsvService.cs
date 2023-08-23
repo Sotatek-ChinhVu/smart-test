@@ -24,6 +24,8 @@ using Reporting.Statistics.Sta2021.Models;
 using Reporting.Statistics.Sta2021.Service;
 using Reporting.Statistics.Sta3020.Models;
 using Reporting.Statistics.Sta3020.Service;
+using Reporting.Statistics.Sta3080.Models;
+using Reporting.Statistics.Sta3080.Service;
 
 namespace Reporting.DailyStatic.Service
 {
@@ -40,9 +42,10 @@ namespace Reporting.DailyStatic.Service
         private readonly ISta2011CoReportService _sta2011CoReportService;
         private readonly ISta2021CoReportService _sta2021CoReportService;
         private readonly ISta3020CoReportService _sta3020CoReportService;
+        private readonly ISta3080CoReportService _sta3080CoReportService;
 
         public StaticsticExportCsvService(IDailyStatisticCommandFinder finder, ISta1001CoReportService sta1001CoReportService, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2003CoReportService sta2003CoReportService, ISta2010CoReportService sta2010CoReportService,
-                                          ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService)
+                                          ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService)
         {
             _finder = finder;
             _sta1001CoReportService = sta1001CoReportService;
@@ -55,6 +58,7 @@ namespace Reporting.DailyStatic.Service
             _sta2011CoReportService = sta2011CoReportService;
             _sta2021CoReportService = sta2021CoReportService;
             _sta3020CoReportService = sta3020CoReportService;
+            _sta3080CoReportService = sta3080CoReportService;
         }
 
         public CommonExcelReportingModel ExportCsv(int hpId, string formName, string menuName, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0, bool? isPutColName = false)
@@ -93,10 +97,10 @@ namespace Reporting.DailyStatic.Service
                 case StatisticReportType.Sta3020:
                     result = PrintSta3020(hpId, configDaily, dateFrom, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
                     break;
-                    /*case StatisticReportType.Sta3080:
-                        result = PrintSta3080(hpId, configDaily, monthFrom, monthTo, coFileType);
-                        break;
-                    case StatisticReportType.Sta3071:
+                case StatisticReportType.Sta3080:
+                    result = PrintSta3080(hpId, configDaily, monthFrom, monthTo, coFileType, menuName, isPutColName, isPutTotalRow);
+                    break;
+                    /*case StatisticReportType.Sta3071:
                         result = PrintSta3071(hpId, configDaily, dateFrom, dateTo, coFileType, isPutTotalRow);
                         break;
                     case StatisticReportType.Sta2020:
@@ -195,12 +199,12 @@ namespace Reporting.DailyStatic.Service
             return _sta3020CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
         }
 
-        /*private CommonReportingRequestModel PrintSta3080(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, CoFileType? coFileType)
+        private CommonExcelReportingModel PrintSta3080(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, CoFileType? coFileType, string menuName, bool? isPutColName, bool? isPutTotalRow)
         {
-            return _sta3080CoReportService.GetSta3080ReportingData(CreateCoSta3080PrintConf(configDaily.ConfigStatistic3080, monthFrom, monthTo), hpId, coFileType ?? CoFileType.Binary);
+            return _sta3080CoReportService.ExportCsv(CreateCoSta3080PrintConf(configDaily.ConfigStatistic3080, monthFrom, monthTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
         }
 
-        private CommonReportingRequestModel PrintSta3071(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, CoFileType? coFileType, bool? isPutTotalRow)
+        /*private CommonReportingRequestModel PrintSta3071(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, CoFileType? coFileType, bool? isPutTotalRow)
         {
             return _sta3071CoReportService.GetSta3071ReportingData(CreateCoSta3071PrintConf(configDaily.ConfigStatistic3071, dateFrom, dateTo), hpId, coFileType ?? CoFileType.Binary, isPutTotalRow ?? false);
         }
@@ -564,6 +568,17 @@ namespace Reporting.DailyStatic.Service
             return printConf;
         }
 
+        private CoSta3080PrintConf CreateCoSta3080PrintConf(ConfigStatistic3080Model configStatistic, int timeFrom, int timeTo)
+        {
+            CoSta3080PrintConf printConf = new CoSta3080PrintConf(configStatistic.MenuId);
+            printConf.FormFileName = configStatistic.FormReport;
+            printConf.ReportName = configStatistic.ReportName;
+            printConf.IsTester = configStatistic.TestPatient == 1;
+            printConf.FromYm = timeFrom;
+            printConf.ToYm = timeTo;
+            return printConf;
+        }
+
         /*private CoSta2020PrintConf CreateCoSta2020PrintConf(ConfigStatisticModel configDaily, int dateFrom, int dateTo)
 
         {
@@ -610,16 +625,7 @@ namespace Reporting.DailyStatic.Service
             return printConf;
         }
 
-        private CoSta3080PrintConf CreateCoSta3080PrintConf(ConfigStatistic3080Model configStatistic, int timeFrom, int timeTo)
-        {
-            CoSta3080PrintConf printConf = new CoSta3080PrintConf(configStatistic.MenuId);
-            printConf.FormFileName = configStatistic.FormReport;
-            printConf.ReportName = configStatistic.ReportName;
-            printConf.IsTester = configStatistic.TestPatient == 1;
-            printConf.FromYm = timeFrom;
-            printConf.ToYm = timeTo;
-            return printConf;
-        }
+        
 
         private CoSta3010PrintConf CreateCoSta3010PrintConf(ConfigStatistic3010Model configStatistic, int stdDate)
         {
