@@ -575,6 +575,22 @@ public class AccountingCoReportService : IAccountingCoReportService
         return CheckOpenReportingForm(hpId, coAccountingParamModels);
     }
 
+    public bool CheckExistTemplate(string templateName, int printType)
+    {
+        formFileName = templateName;
+        this.printType = printType;
+        bool isExist = true;
+        try
+        {
+            GetParamFromRseFile();
+        }
+        catch
+        {
+            isExist = false;
+        }
+        return isExist;
+    }
+
     public bool CheckOpenReportingForm(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
     {
         this.hpId = hpId;
