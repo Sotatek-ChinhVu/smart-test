@@ -903,7 +903,7 @@ namespace Reporting.Statistics.Sta2011.Service
                 return string.Join(",", colDatas);
             }
 
-            throw new NotImplementedException();
+            return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
         }
         #endregion
     }
