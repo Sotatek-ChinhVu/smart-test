@@ -4,11 +4,9 @@ using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.Models;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Reporting.Statistics.Sta1001.DB;
 
@@ -42,12 +40,13 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         var payMsts = NoTrackingDataContext.PaymentMethodMsts.Where(p => p.IsDeleted == DeleteStatus.None);
         //請求情報
         var syunoSeikyus = NoTrackingDataContext.SyunoSeikyus.Where(s => s.NyukinKbn != 0);  //0:未精算を除く
-                                                                                                             //会計情報
-                                                                                                             //var kaikeiInfs = dbService.KaikeiInfRepository.FindListQueryableNoTrack();
+                                                                                             //会計情報
+                                                                                             //var kaikeiInfs = dbService.KaikeiInfRepository.FindListQueryableNoTrack();
         var kaikeiFutans = NoTrackingDataContext.KaikeiInfs
             .GroupBy(k => new { k.HpId, k.PtId, k.RaiinNo })
             .Select(k =>
-                new {
+                new
+                {
                     k.Key.HpId,
                     k.Key.PtId,
                     k.Key.RaiinNo,
@@ -56,7 +55,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                     JihiTax = k.Sum(x => x.JihiTax + x.JihiOuttax),
                     AdjustFutan = k.Sum(x => x.AdjustFutan),
                 });
-        
+
 
         //var test = kaikeiHokens.ToList();
 
@@ -185,10 +184,10 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 new { raiinInf.HpId, raiinInf.UketukeId } equals
                 new { userMst.HpId, UketukeId = userMst.UserId } into uketukeUserMstJoin
             from uketukeUserMst in uketukeUserMstJoin.DefaultIfEmpty()
-            //join kaikeiHoken in kaikeiHokens on
-            //    new { raiinInf.HpId, raiinInf.RaiinNo } equals
-            //    new { kaikeiHoken.HpId, kaikeiHoken.RaiinNo } into kaikeiHokenJoin
-            //from kaikeiHokenj in kaikeiHokenJoin.DefaultIfEmpty()
+                //join kaikeiHoken in kaikeiHokens on
+                //    new { raiinInf.HpId, raiinInf.RaiinNo } equals
+                //    new { kaikeiHoken.HpId, kaikeiHoken.RaiinNo } into kaikeiHokenJoin
+                //from kaikeiHokenj in kaikeiHokenJoin.DefaultIfEmpty()
             where
                 syunoNyukin.HpId == hpId &&
                 (
@@ -218,29 +217,29 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 NewSeikyuTensu = syunoSeikyu.NewSeikyuTensu,
                 SeikyuGaku = syunoSeikyu.SeikyuGaku,
                 NewSeikyuGaku = syunoSeikyu.NewSeikyuGaku,
-                PtFutan = kaikeiFutanj.PtFutan,
-                JihiFutan = kaikeiFutanj.JihiFutan,
-                JihiTax = kaikeiFutanj.JihiTax,
-                KaikeiAdjustFutan = -kaikeiFutanj.AdjustFutan,
+                PtFutan = kaikeiFutanj != null ? kaikeiFutanj.PtFutan : 0,
+                JihiFutan = kaikeiFutanj != null ? kaikeiFutanj.JihiFutan : 0,
+                JihiTax = kaikeiFutanj != null ? kaikeiFutanj.JihiTax : 0,
+                KaikeiAdjustFutan = kaikeiFutanj != null ? -kaikeiFutanj.AdjustFutan : 0,
                 //HokenKbn = kaikeiHokenj.HokenKbn,
                 //HokenSbtCd = kaikeiHokenj.HokenSbtCd,
                 //ReceSbt = kaikeiHokenj.ReceSbt,
-                payMstj.PaySname,
+                PaySname = payMstj != null ? payMstj.PaySname : string.Empty,
                 raiinInf.OyaRaiinNo,
                 raiinInf.KaId,
-                kaMstj.KaSname,
+                KaSname = kaMstj != null ? kaMstj.KaSname : string.Empty,
                 raiinInf.TantoId,
-                TantoSname = tantoMst.Sname,
+                TantoSname = tantoMst != null ? tantoMst.Sname : string.Empty,
                 raiinInf.UketukeTime,
                 raiinInf.KaikeiTime,
                 raiinInf.UketukeId,
-                UketukeSname = uketukeUserMst.Sname,
+                UketukeSname = uketukeUserMst != null ? uketukeUserMst.Sname : string.Empty,
                 raiinInf.SyosaisinKbn,
                 ptInf.PtNum,
                 PtName = ptInf.Name,
                 PtKanaName = ptInf.KanaName,
-                UketukeSbtName = uketukeSbtMstj.KbnName,
-                NyukinUserSname = nyukinUserMst.Sname,
+                UketukeSbtName = uketukeSbtMstj != null ? uketukeSbtMstj.KbnName : string.Empty,
+                NyukinUserSname = nyukinUserMst != null ? nyukinUserMst.Sname : string.Empty,
                 firstRaiin.FirstRaiinDate
             }
         );
@@ -405,10 +404,10 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                     new { raiinInf.HpId, raiinInf.UketukeId } equals
                     new { userMst.HpId, UketukeId = userMst.UserId } into uketukeUserMstJoin
                 from uketukeUserMst in uketukeUserMstJoin.DefaultIfEmpty()
-                //join kaikeiHoken in kaikeiHokens on
-                //    new { raiinInf.HpId, raiinInf.RaiinNo } equals
-                //    new { kaikeiHoken.HpId, kaikeiHoken.RaiinNo } into kaikeiHokenJoin
-                //from kaikeiHokenj in kaikeiHokenJoin.DefaultIfEmpty()
+                    //join kaikeiHoken in kaikeiHokens on
+                    //    new { raiinInf.HpId, raiinInf.RaiinNo } equals
+                    //    new { kaikeiHoken.HpId, kaikeiHoken.RaiinNo } into kaikeiHokenJoin
+                    //from kaikeiHokenj in kaikeiHokenJoin.DefaultIfEmpty()
                 select new
                 {
                     RaiinNo = unSeikyu.RaiinNo,
