@@ -7,7 +7,6 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1010.DB;
 using Reporting.Statistics.Sta1010.Mapper;
 using Reporting.Statistics.Sta1010.Models;
-using System.ComponentModel;
 using System.Globalization;
 
 namespace Reporting.Statistics.Sta1010.Service;

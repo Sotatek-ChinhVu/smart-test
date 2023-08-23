@@ -1,6 +1,5 @@
 ﻿using Helper.Common;
 using Helper.Constants;
-using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -10,7 +9,6 @@ using Reporting.Statistics.Sta1001.Models;
 using Reporting.Statistics.Sta2002.DB;
 using Reporting.Statistics.Sta2002.Mapper;
 using Reporting.Statistics.Sta2002.Models;
-using System.ComponentModel;
 using System.Globalization;
 
 namespace Reporting.Statistics.Sta2002.Service
@@ -107,7 +105,7 @@ namespace Reporting.Statistics.Sta2002.Service
                     _currentPage++;
                 }
             }
-            
+
 
             return new Sta2002Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
         }
@@ -669,7 +667,7 @@ namespace Reporting.Statistics.Sta2002.Service
             {
                 retDatas.Add("\"" + string.Join("\",\"", wrkColumns.Union(jihiSbtMsts.Select(j => string.Format("JihiFutanSbt{0}", j.JihiSbt)))) + "\"");
             }
-            
+
             //データ
             int totalRow = csvDatas.Count;
             int rowOutputed = 0;

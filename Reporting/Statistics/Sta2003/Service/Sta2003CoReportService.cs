@@ -1,5 +1,4 @@
-﻿using Entity.Tenant;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Extension;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
@@ -207,7 +206,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
                 _currentPage++;
             }
         }
-        
+
         return new Sta2003Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, formFileName).GetData();
     }
 

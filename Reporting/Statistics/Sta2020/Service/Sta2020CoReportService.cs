@@ -1,5 +1,4 @@
 ﻿using Helper.Common;
-using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;

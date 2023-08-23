@@ -1,6 +1,5 @@
 ﻿using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
-using Reporting.Statistics.Sta2011.Models;
 using Reporting.Statistics.Sta3070.Models;
 
 namespace Reporting.Statistics.Sta3070.Service;

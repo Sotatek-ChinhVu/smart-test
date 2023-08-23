@@ -1,7 +1,5 @@
-﻿using Entity.Tenant;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Constants;
-using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -127,7 +125,7 @@ public class Sta2001CoReportService : ISta2001CoReportService
                 _currentPage++;
             }
         }
-        
+
         return new Sta2001Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, formFileName).GetData();
     }
 
@@ -526,7 +524,7 @@ public class Sta2001CoReportService : ISta2001CoReportService
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
-    public CommonExcelReportingModel ExportCsv(CoSta2001PrintConf printConf, int monthFrom, int monthTo,  string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+    public CommonExcelReportingModel ExportCsv(CoSta2001PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
     {
         _printConf = printConf;
         string fileName = menuName + "_" + monthFrom + "_" + monthTo;

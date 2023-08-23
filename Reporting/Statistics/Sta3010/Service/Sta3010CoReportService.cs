@@ -8,7 +8,6 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3010.DB;
 using Reporting.Statistics.Sta3010.Mapper;
 using Reporting.Statistics.Sta3010.Models;
-using System.ComponentModel;
 
 namespace Reporting.Statistics.Sta3010.Service;
 

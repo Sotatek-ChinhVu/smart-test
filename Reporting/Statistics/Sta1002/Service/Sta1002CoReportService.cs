@@ -658,7 +658,6 @@ public class Sta1002CoReportService : ISta1002CoReportService
         {
             putCurColumns.AddRange(csvTotalColumns);
         }
-        putCurColumns.AddRange(putColumns);
 
         var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
 

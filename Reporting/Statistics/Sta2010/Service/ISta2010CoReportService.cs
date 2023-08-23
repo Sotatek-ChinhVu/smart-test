@@ -1,5 +1,4 @@
 ﻿using Reporting.Mappers.Common;
-using Reporting.Statistics.Sta2003.Models;
 using Reporting.Statistics.Sta2010.Models;
 
 namespace Reporting.Statistics.Sta2010.Service

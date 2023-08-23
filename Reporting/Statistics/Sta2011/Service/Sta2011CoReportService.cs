@@ -1,6 +1,5 @@
 ﻿using Helper.Common;
 using Helper.Constants;
-using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -9,7 +8,6 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta2011.DB;
 using Reporting.Statistics.Sta2011.Mapper;
 using Reporting.Statistics.Sta2011.Models;
-using System.ComponentModel;
 
 namespace Reporting.Statistics.Sta2011.Service
 {

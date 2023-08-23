@@ -180,7 +180,7 @@ namespace Reporting.DailyStatic.Service
                     result = PrintSta3061(hpId, configDaily, dateFrom, dateTo, monthFrom, monthTo, menuName, isPutColName, isPutTotalRow);
                     break;
             }
-            //result.JobName = formName;
+            
             return result;
         }
 
@@ -686,8 +686,6 @@ namespace Reporting.DailyStatic.Service
 
             return printConf;
         }
-
-
 
         private CoSta3010PrintConf CreateCoSta3010PrintConf(ConfigStatistic3010Model configStatistic, int stdDate)
         {
@@ -1532,9 +1530,6 @@ namespace Reporting.DailyStatic.Service
             printConf.PtGrps = configStatistic.ListPtGrps;
             return printConf;
         }
-
-
-
         #endregion
     }
 }

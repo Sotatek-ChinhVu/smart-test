@@ -728,14 +728,14 @@ namespace Reporting.Statistics.Sta1001.Service
             }
 
             putCurColumns.AddRange(putColumns);
-            string sheetName = menuName + "_" + dateFrom + "_" + dateTo;
+            string fileName = menuName + "_" + dateFrom + "_" + dateTo;
             List<string> retDatas = new List<string>();
 
-            if (!GetData()) return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
+            if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
             var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
 
-            if (csvDatas.Count == 0) return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
+            if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
             //出力フィールド
             List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
@@ -793,7 +793,7 @@ namespace Reporting.Statistics.Sta1001.Service
                 rowOutputed++;
             }
 
-            return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
+            return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
         }
         #endregion
     }
