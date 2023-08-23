@@ -39,9 +39,9 @@ public class ExportCSVController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.ExportStatics)]
-    public IActionResult GenerateExportStatics([FromQuery] StatisticExportRequest request)
+    public IActionResult GenerateExportStatics([FromQuery] ExportCsvStaticsRequest request)
     {
-        var data = _reportService.ExportCsv(HpId, request.FormName, request.MenuName, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo, request.CoFileType, 
+        var data = _reportService.ExportCsv(HpId, request.MenuName, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo, 
                                             request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo, request.IsPutColName);
         return RenderCsvStatics(data);
     }
