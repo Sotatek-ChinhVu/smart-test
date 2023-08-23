@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Extension;
 using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
@@ -694,5 +693,49 @@ public class Sta3070CoReportService : ISta3070CoReportService
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3070, fileName, new());
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         objectRseList = javaOutputData.objectNames;
+    }
+
+    public CommonExcelReportingModel ExportCsv(CoSta3070PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+    {
+        this.printConf = printConf;
+        string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+        List<string> retDatas = new List<string>();
+
+        if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        var csvDatas = printDatas.Where(p => p.RowType == RowType.Data).ToList();
+        if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        int totalRow = putRecords.Count;
+        int rowOutputed = 0;
+        foreach (var putRecord in putRecords)
+        {
+            //CSV出力時は２行タイプのタイトルを出力しない
+            if (!putRecord.ColName.StartsWith("ColTitleA"))
+            {
+                //１行ごとにデータをセット
+                retDatas.Add(RecordData(putRecord, csvDatas));
+            }
+
+            rowOutputed++;
+        }
+
+        string RecordData(PutColumn putRec, List<CoSta3070PrintData> putDatas)
+        {
+            List<string> colDatas = new List<string>();
+            //行タイトル
+            colDatas.Add("\"" + putRec.JpName + "\"");
+
+            //データ
+            foreach (var putData in putDatas)
+            {
+                var value = typeof(CoSta3070PrintData).GetProperty(putRec.ColName).GetValue(putData);
+                colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+            }
+
+            return string.Join(",", colDatas);
+        }
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
 }
