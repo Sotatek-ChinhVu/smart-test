@@ -220,7 +220,7 @@ namespace Reporting.DailyStatic.Service
         private CommonExcelReportingModel PrintSta2020(int hpId, ConfigStatisticModel configDaily, int timeFrom, int timeTo, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
         {
             var printConf = CreateCoSta2020PrintConf(configDaily, timeFrom, timeTo);
-            return _sta2020CoReportService.GetSta2020ReportingData(printConf, monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
+            return _sta2020CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
         }
 
         /*private CommonReportingRequestModel PrintSta3001(int hpId, ConfigStatisticModel configDaily, int dateFrom)
