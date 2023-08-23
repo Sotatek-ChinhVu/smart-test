@@ -407,6 +407,7 @@
         public const string GetRegisterdPatientsFromOnline = "GetRegisterdPatientsFromOnline";
         public const string UpdateOnlineConfirmationHistory = "UpdateOnlineConfirmationHistory";
         public const string UpdateOnlineHistoryById = "UpdateOnlineHistoryById";
+        public const string UpdateOQConfirmation = "UpdateOQConfirmation";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";

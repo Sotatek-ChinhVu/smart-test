@@ -1,10 +1,11 @@
 ﻿using Domain.Models.Online;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Security.AccessControl;
+using System.Text;
 
 namespace Infrastructure.Repositories;
 
@@ -86,6 +87,51 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return idList.Count == countId;
     }
 
+    public bool UpdateOQConfirmation(int hpId, int userId, long onlineHistoryId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
+    {
+        if (!onlQuaResFileDict.Any())
+        {
+            return false;
+        }
+        var history = TrackingDataContext.OnlineConfirmationHistories.FirstOrDefault(x => x.ID == onlineHistoryId);
+        if (history == null)
+        {
+            return false;
+        }
+        bool success = false;
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
+            {
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
+                {
+                    var item = onlQuaResFileDict.First();
+                    history.ConfirmationType = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].confirmationType : 1;
+                    history.InfoConsFlg = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].infConsFlg : "    ";
+                    history.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    history.UpdateId = userId;
+                    TrackingDataContext.SaveChanges();
+
+                    int sindate = CIUtil.DateTimeToInt(history.OnlineConfirmationDate);
+                    var raiinInfsInSameday = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sindate && x.PtId == history.PtId).ToList();
+
+                    UpdateConfirmationTypeInRaiinInf(userId, raiinInfsInSameday, history.ConfirmationType);
+                    if (!string.IsNullOrEmpty(history.InfoConsFlg))
+                    {
+                        UpdateInfConsFlgInRaiinInf(userId, raiinInfsInSameday, history.InfoConsFlg);
+                    }
+                    transaction.Commit();
+                    success = true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+            });
+        return success;
+    }
+
     #region private function
     private OnlineConfirmationHistoryModel ConvertToModel(OnlineConfirmationHistory entity)
     {
@@ -101,6 +147,130 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                );
     }
 
+    public bool UpdateConfirmationTypeInRaiinInf(int userId, List<RaiinInf> raiinInfsInSameday, int confirmationType)
+    {
+        var unConfirmedRaiinInfs = raiinInfsInSameday.Where(x => x.ConfirmationType == 0);
+        var confirmedRaiininfs = raiinInfsInSameday.Where(x => x.ConfirmationType > 0);
+        if (!confirmedRaiininfs.Any())
+        {
+            foreach (var raiinInf in unConfirmedRaiinInfs)
+            {
+                raiinInf.ConfirmationType = confirmationType;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+            }
+        }
+        else
+        {
+            int minConfirmationType = confirmedRaiininfs.Min(x => x.ConfirmationType);
+            int newConfirmationType = minConfirmationType > confirmationType ? confirmationType : minConfirmationType;
+            foreach (var raiinInf in confirmedRaiininfs)
+            {
+                raiinInf.ConfirmationType = newConfirmationType;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+            }
+            foreach (var raiinInf in unConfirmedRaiinInfs)
+            {
+                raiinInf.ConfirmationType = newConfirmationType;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+            }
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public void UpdateInfConsFlgInRaiinInf(int userId, List<RaiinInf> raiinInfsInSameday, string infConsFlg)
+    {
+        var unConfirmedRaiinInfs = raiinInfsInSameday.Where(x => string.IsNullOrEmpty(x.InfoConsFlg));
+        var confirmedRaiininfs = raiinInfsInSameday.Except(unConfirmedRaiinInfs).ToList();
+        if (!confirmedRaiininfs.Any())
+        {
+            foreach (var raiinInf in unConfirmedRaiinInfs)
+            {
+                raiinInf.InfoConsFlg = infConsFlg;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+            }
+        }
+        else
+        {
+            void UpdateFlgValue(int flgIdx)
+            {
+                char flgToChar(int flg)
+                {
+                    if (flg == 1)
+                    {
+                        return '1';
+                    }
+                    else if (flg == 2)
+                    {
+                        return '2';
+                    }
+                    return ' ';
+                }
+                var unCofirmedFlgRaiinInfs = confirmedRaiininfs.Where(x => x.InfoConsFlg?.Length > flgIdx && x.InfoConsFlg[flgIdx] == ' ');
+                var confirmedFlgRaiinInfs = confirmedRaiininfs.Where(x => x.InfoConsFlg?.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
+                if (!confirmedFlgRaiinInfs.Any())
+                {
+                    foreach (var raiinInf in unCofirmedFlgRaiinInfs)
+                    {
+                        raiinInf.InfoConsFlg = ReplaceAt(raiinInf.InfoConsFlg ?? string.Empty, flgIdx, infConsFlg[flgIdx]);
+                        raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        raiinInf.UpdateId = userId;
+                    }
+                }
+                else
+                {
+                    int minFlg = confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg![flgIdx].AsInteger());
+                    int respondedFlg = infConsFlg[flgIdx] == ' ' ? 0 : infConsFlg![flgIdx].AsInteger();
+                    int newFlg = respondedFlg == 0 ? minFlg : (minFlg > respondedFlg ? respondedFlg : minFlg);
+                    foreach (var raiinInf in confirmedFlgRaiinInfs)
+                    {
+                        raiinInf.InfoConsFlg = ReplaceAt(raiinInf.InfoConsFlg ?? string.Empty, flgIdx, flgToChar(newFlg));
+                        raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        raiinInf.UpdateId = userId;
+                    }
+                    foreach (var raiinInf in unCofirmedFlgRaiinInfs)
+                    {
+                        raiinInf.InfoConsFlg = ReplaceAt(raiinInf.InfoConsFlg ?? string.Empty, flgIdx, flgToChar(newFlg));
+                        raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        raiinInf.UpdateId = userId;
+                    }
+                }
+            }
+            //Update PharmacistsInfoConsFlg
+            UpdateFlgValue(0);
+            //Update SpecificHealthCheckupsInfoConsFlg
+            UpdateFlgValue(1);
+            //Update DiagnosisInfoConsFlg
+            UpdateFlgValue(2);
+            //Update OperationInfoConsFlg
+            UpdateFlgValue(3);
+
+            //Apply computed infoconsflg for the new raiininf which has nullable infoconsFlg value
+            string newInfoConsFlg = confirmedRaiininfs.FirstOrDefault()?.InfoConsFlg ?? string.Empty;
+            foreach (var raiinInf in unConfirmedRaiinInfs)
+            {
+                raiinInf.InfoConsFlg = newInfoConsFlg;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+
+            }
+        }
+        NoTrackingDataContext.SaveChanges();
+    }
+
+    public string ReplaceAt(string input, int index, char newChar)
+    {
+        if (input == null)
+        {
+            throw new ArgumentNullException("input");
+        }
+        StringBuilder builder = new StringBuilder(input);
+        builder[index] = newChar;
+        return builder.ToString();
+    }
     #endregion
 
     public void ReleaseResource()

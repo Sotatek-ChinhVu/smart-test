@@ -13,4 +13,6 @@ public interface IOnlineRepository : IRepositoryBase
     bool UpdateOnlineHistoryById(int userId, long id, long ptId, int uketukeStatus, int confirmationType);
 
     bool CheckExistIdList(List<long> idList);
+
+    bool UpdateOQConfirmation(int hpId, int userId, long onlineHistoryId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict);
 }
