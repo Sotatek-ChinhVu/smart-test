@@ -282,6 +282,10 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<SaveSetDataTenMstResponse>> SaveSetDataTenMst([FromBody] SaveSetDataTenMstRequest request)
         {
             List<TenMstOriginModel> tenOrigins = Mapper.Map<TenMstOriginModelDto, TenMstOriginModel>(request.TenOrigins);
+            foreach (var tenOrigin in tenOrigins)
+            {
+                tenOrigin.ChangeHpId(HpId);
+            }
 
             BasicSettingTabModel basicSettingTab = new BasicSettingTabModel(Mapper.Map<CmtKbnMstModelDto, CmtKbnMstModel>(request.CmtKbnMstModels));
 
@@ -314,7 +318,7 @@ namespace EmrCloudApi.Controller
 
             CombinedContraindicationTabModel combinedContraindicationTab = new CombinedContraindicationTabModel(Mapper.Map<CombinedContraindicationModelDto, CombinedContraindicationModel>(request.CombinedContraindications));
 
-            SetDataTenMstOriginModel setData = new SetDataTenMstOriginModel(basicSettingTab, ijiSettingTab, precriptionSettingTab, usageSettingTab, drugInfomationTab, teikyoByomeiTab, santeiKaishuTab, haihanTab, houkatsuTab, combinedContraindicationTab);
+            SetDataTenMstOriginModel setData = new SetDataTenMstOriginModel(basicSettingTab, request.IjiSettingTabModel, precriptionSettingTab, request.UsageSettingTabModel, drugInfomationTab, teikyoByomeiTab, santeiKaishuTab, haihanTab, houkatsuTab, combinedContraindicationTab);
 
             var input = new SaveSetDataTenMstInputData(HpId, UserId, request.ItemCd, tenOrigins, setData);
             var output = _bus.Handle(input);
