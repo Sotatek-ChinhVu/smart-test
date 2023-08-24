@@ -503,4 +503,28 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             item.UpdateId = userId;
         }
     }
+
+    public List<SystemConfListXmlPathModel> GetSystemConfXmlPath(int hpId, int grpCd, string machine)
+    {
+        List<PathConf> pathConf;
+
+        pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId 
+                                                                           && item.GrpCd == grpCd 
+                                                                           && item.Machine == machine)
+                                                                           .ToList();
+        if (pathConf == null || !pathConf.Any())
+        {
+            pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId
+                                                                           && item.GrpCd == grpCd
+                                                                           && item.Machine == string.Empty)
+                                                                           .ToList();
+        }
+
+        return pathConf.Select(item => ToModel(item)).ToList();
+    }
+
+    private SystemConfListXmlPathModel ToModel(PathConf pathConf)
+    {
+        return new SystemConfListXmlPathModel(pathConf.HpId, pathConf.GrpCd, pathConf.Machine, pathConf.Path);
+    }
 }
