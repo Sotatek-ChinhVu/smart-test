@@ -34,7 +34,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
     public List<CoSyunoInfModel> GetSyunoInfs(int hpId, CoSta1001PrintConf printConf, int staMonthType)
     {
         //入金情報
-        var syunoNyukins = NoTrackingDataContext.SyunoNyukin.FindListQueryableNoTrack(s => s.IsDeleted == 0);
+        var syunoNyukins = NoTrackingDataContext.SyunoNyukin.FindListQueryableNoTrack(s => s.IsDeleted == 0 && s.SinDate >= printConf.StartNyukinDate && s.SinDate <= printConf.EndNyukinDate);
 
         //var minSinDate = syunoNyukins.Count > 0 ? syunoNyukins.Select(x => x.SinDate).Min() : 0;
         //var maxSinDate = syunoNyukins.Count > 0 ? syunoNyukins.Select(x => x.SinDate).Max() : 0;
@@ -42,7 +42,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         var payMsts = NoTrackingDataContext.PaymentMethodMsts.FindListQueryableNoTrack(p => p.IsDeleted == DeleteStatus.None);
         //請求情報
         var syunoSeikyus = NoTrackingDataContext.SyunoSeikyus.FindListQueryableNoTrack(s => 
-                                                                        s.NyukinKbn != 0);  //0:未精算を除く
+                                                                        s.NyukinKbn != 0 && s.SinDate >= printConf.StartNyukinDate && s.SinDate <= printConf.EndNyukinDate);  //0:未精算を除く
                                                                                             //会計情報
                                                                                             //var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where();
         var kaikeiFutans = NoTrackingDataContext.KaikeiInfs.FindListQueryableNoTrack()
