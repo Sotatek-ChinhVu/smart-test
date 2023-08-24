@@ -38,7 +38,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         var syunoNyukins = NoTrackingDataContext.SyunoNyukin.Where(s => s.IsDeleted == DeleteStatus.None);
 
         //支払方法
-        var payMsts = NoTrackingDataContext.PaymentMethodMsts.FindListQueryableNoTrack(p => p.IsDeleted == DeleteStatus.None);
+        var payMsts = NoTrackingDataContext.PaymentMethodMsts.Where(p => p.IsDeleted == DeleteStatus.None);
         //請求情報
         var syunoSeikyus = NoTrackingDataContext.SyunoSeikyus.Where(s => s.NyukinKbn != 0);  //0:未精算を除く
                                                                                              //会計情報

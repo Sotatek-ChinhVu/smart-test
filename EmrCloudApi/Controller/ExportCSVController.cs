@@ -43,6 +43,10 @@ public class ExportCSVController : AuthorizeControllerBase
     {
         var data = _reportService.ExportCsv(HpId, request.MenuName, request.MenuId, request.TimeFrom, request.TimeTo, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, 
                                             request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo, request.IsPutColName);
+        if (!data.Data.Any())
+        {
+            return Ok("EndNoData");
+        }
         return RenderCsvStatics(data);
     }
 
