@@ -12,6 +12,7 @@ using UseCase.Online;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.Online.InsertOnlineConfirmHistory;
 using UseCase.Online.SaveAllOQConfirmation;
+using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineHistoryById;
 using UseCase.Online.UpdateOQConfirmation;
@@ -85,6 +86,18 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpdateOnlineHistoryByIdResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveOQConfirmation)]
+    public ActionResult<Response<SaveOQConfirmationResponse>> SaveOQConfirmation([FromBody] SaveOQConfirmationRequest request)
+    {
+        var input = new SaveOQConfirmationInputData(HpId, UserId, request.OnlineHistoryId, request.PtId, request.ConfirmationResult, request.OnlineConfirmationDate, request.ConfirmationType, request.InfConsFlg, request.UketukeStatus, request.IsUpdateRaiinInf);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveOQConfirmationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveOQConfirmationResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.UpdateOQConfirmation)]

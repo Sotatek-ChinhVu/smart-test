@@ -198,7 +198,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return success;
     }
 
-    public bool SaveOQConfirmation(int hpId, int userId, long onlineHistoryId, long ptId, string confirmationResult, string onlineConfirmationDateString, int confirmationType, string infConsFlg, int uketukeStatus = 0)
+    public bool SaveOQConfirmation(int hpId, int userId, long onlineHistoryId, long ptId, string confirmationResult, string onlineConfirmationDateString, int confirmationType, string infConsFlg, int uketukeStatus = 0, bool isUpdateRaiinInf = true)
     {
         bool success = false;
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
@@ -243,9 +243,33 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                         }
                     }
                     TrackingDataContext.SaveChanges();
+                    if (isUpdateRaiinInf)
+                    {
+                        UpdateOnlineInRaiinInf(hpId, userId, ptId, onlineConfirmationDate, confirmationType, infConsFlg);
+                    }
+                    transaction.Commit();
+                    success = true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+            });
+        return success;
+    }
 
+    public bool UpdateOnlineInRaiinInf(int hpId, int userId, long ptId, DateTime onlineConfirmationDate, int confirmationType, string infConsFlg)
+    {
+        bool success = false;
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
+            {
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
+                {
                     int sindate = CIUtil.DateTimeToInt(onlineConfirmationDate);
-                    var raiinInfsInSameday = TrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId && item.SinDate == sindate && item.PtId == ptId).ToList();
+                    var raiinInfsInSameday = TrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sindate && x.PtId == ptId).ToList();
                     UpdateConfirmationTypeInRaiinInf(userId, raiinInfsInSameday, confirmationType);
                     if (!string.IsNullOrEmpty(infConsFlg))
                     {
