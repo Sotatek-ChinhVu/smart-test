@@ -159,9 +159,8 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 new { firstRaiin.HpId, firstRaiin.PtId }
             join kaikeiFutan in kaikeiFutans on
                 new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
-                new { kaikeiFutan.HpId, kaikeiFutan.RaiinNo } 
-            //    into kaikeiFutanJoin
-            //from kaikeiFutanj in kaikeiFutanJoin.DefaultIfEmpty()
+                new { kaikeiFutan.HpId, kaikeiFutan.RaiinNo } into kaikeiFutanJoin
+            from kaikeiFutanj in kaikeiFutanJoin.DefaultIfEmpty()
             join ptInf in ptInfs on
                 new { syunoNyukin.HpId, syunoNyukin.PtId } equals
                 new { ptInf.HpId, ptInf.PtId }
@@ -218,10 +217,10 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 NewSeikyuTensu = syunoSeikyu.NewSeikyuTensu,
                 SeikyuGaku = syunoSeikyu.SeikyuGaku,
                 NewSeikyuGaku = syunoSeikyu.NewSeikyuGaku,
-                PtFutan = kaikeiFutan != null ? kaikeiFutan.PtFutan : 0,
-                JihiFutan = kaikeiFutan != null ? kaikeiFutan.JihiFutan : 0,
-                JihiTax = kaikeiFutan != null ? kaikeiFutan.JihiTax : 0,
-                KaikeiAdjustFutan = kaikeiFutan != null ? -kaikeiFutan.AdjustFutan : 0,
+                PtFutan = kaikeiFutanj != null ? kaikeiFutanj.PtFutan : 0,
+                JihiFutan = kaikeiFutanj != null ? kaikeiFutanj.JihiFutan : 0,
+                JihiTax = kaikeiFutanj != null ? kaikeiFutanj.JihiTax : 0,
+                KaikeiAdjustFutan = kaikeiFutanj != null ? -kaikeiFutanj.AdjustFutan : 0,
                 //HokenKbn = kaikeiHokenj.HokenKbn,
                 //HokenSbtCd = kaikeiHokenj.HokenSbtCd,
                 //ReceSbt = kaikeiHokenj.ReceSbt,
