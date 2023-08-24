@@ -3671,6 +3671,7 @@ namespace Infrastructure.Repositories
                                 updateIpnYk.StartDate = x.StartDate;
                                 updateIpnYk.EndDate = x.EndDate;
                                 updateIpnYk.Yakka = x.Yakka;
+                                updateIpnYk.IsDeleted = x.IsDeleted;
                             }
                         }
                     }
@@ -3704,6 +3705,7 @@ namespace Infrastructure.Repositories
                                 updateDrudDay.LimitDay = x.LimitDay;
                                 updateDrudDay.StartDate = x.StartDate;
                                 updateDrudDay.EndDate = x.EndDate;
+                                updateDrudDay.IsDeleted = x.IsDeleted;
                             }
                         }
                     }
