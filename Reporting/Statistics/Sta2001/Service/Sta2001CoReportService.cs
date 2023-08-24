@@ -185,7 +185,7 @@ public class Sta2001CoReportService : ISta2001CoReportService
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    var value = typeof(CoSta2001PrintData).GetProperty(colName).GetValue(printData);
+                    var value = typeof(CoSta2001PrintData).GetProperty(colName)?.GetValue(printData);
                     string valueInput = value?.ToString() ?? string.Empty;
                     AddListData(ref data, colName, valueInput);
 
@@ -237,9 +237,9 @@ public class Sta2001CoReportService : ISta2001CoReportService
     {
         void MakePrintData()
         {
-            _printDatas = new();
-            _headerL1 = new();
-            _headerL2 = new();
+            _printDatas = new List<CoSta2001PrintData>();
+            _headerL1 = new List<string>();
+            _headerL2 = new List<string>();
 
             //改ページ条件
             bool pbKaId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2 }.Contains(1);
@@ -256,14 +256,11 @@ public class Sta2001CoReportService : ISta2001CoReportService
                     {
                         var curDatas = _syunoInfs?.Where(s =>
                             s.NyukinYm == nyukinYm &&
-                            (!pbKaId || (kaIds != null && kaIds.Contains(j) && s.KaId == kaIds[j])) &&
-                            (!pbTantoId || (tantoIds != null && tantoIds.Contains(k) && s.TantoId == tantoIds[k]))
+                            (pbKaId ? s.KaId == kaIds?[j] : true) &&
+                            (pbTantoId ? s.TantoId == tantoIds?[k] : true)
                         ).ToList();
 
-                        if (curDatas?.Count == 0)
-                        {
-                            continue;
-                        }
+                        if (curDatas?.Count == 0) continue;
 
                         //明細
                         for (int rowNo = 0; rowNo <= maxRow - 1; rowNo++)
@@ -363,8 +360,8 @@ public class Sta2001CoReportService : ISta2001CoReportService
                             int wrkNewSeikyu = 0;
                             foreach (var wrkNyukin in wrkNyukins)
                             {
-                                wrkSeikyu += wrkDatas?.FirstOrDefault(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.SeikyuGaku ?? 0;
-                                wrkNewSeikyu += wrkDatas?.FirstOrDefault(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.NewSeikyuGaku ?? 0;
+                                wrkSeikyu += wrkDatas?.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.SeikyuGaku ?? 0;
+                                wrkNewSeikyu += wrkDatas?.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.NewSeikyuGaku ?? 0;
                             }
                             printData.SeikyuGaku = wrkSeikyu.ToString("#,0");
                             printData.NewSeikyuGaku = wrkNewSeikyu.ToString("#,0");
@@ -459,8 +456,8 @@ public class Sta2001CoReportService : ISta2001CoReportService
                                 _headerL1.Add(wrkYm + "度");
                                 //改ページ条件
                                 List<string> wrkHeaders = new List<string>();
-                                if (pbKaId) wrkHeaders.Add(curDatas?.FirstOrDefault()?.KaSname ?? string.Empty);
-                                if (pbTantoId) wrkHeaders.Add(curDatas?.FirstOrDefault()?.TantoSname ?? string.Empty);
+                                if (pbKaId) wrkHeaders.Add(curDatas?.First().KaSname ?? string.Empty);
+                                if (pbTantoId) wrkHeaders.Add(curDatas?.First().TantoSname ?? string.Empty);
 
                                 if (wrkHeaders.Count >= 1) _headerL2.Add(string.Join("／", wrkHeaders));
                             }
@@ -567,7 +564,7 @@ public class Sta2001CoReportService : ISta2001CoReportService
 
             foreach (var column in putCurColumns)
             {
-                var value = typeof(CoSta2001PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                var value = typeof(CoSta2001PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
                 if (csvData.RowType == RowType.Total && !column.IsTotal)
                 {
                     value = string.Empty;
