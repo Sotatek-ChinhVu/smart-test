@@ -230,7 +230,6 @@ public class PdfCreatorController : ControllerBase
         return RenderCsv(data);
     }
 
-
     [HttpPost(ApiPath.MemoMsgPrint)]
     public async Task<IActionResult> MemoMsgPrint([FromForm] StringObjectRequest requestString)
     {
