@@ -1710,5 +1710,46 @@ namespace Infrastructure.Repositories
             }
             return raiinInf.Status;
         }
+
+        public ReceptionModel GetRaiinInfBySinDate(int hpId, long ptId, int sinDate)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                             && item.SinDate == sinDate
+                                                                             && item.PtId == ptId
+                                                                             && item.IsDeleted == DeleteTypes.None)
+                                                              .OrderBy(item => item.Status)
+                                                              .ThenBy(item => item.RaiinNo)
+                                                              .FirstOrDefault();
+            if (raiinInf == null)
+            {
+                return new();
+            }
+
+            return new ReceptionModel(raiinInf.HpId,
+                                      raiinInf.PtId,
+                                      raiinInf.SinDate,
+                                      raiinInf.RaiinNo,
+                                      raiinInf.OyaRaiinNo,
+                                      raiinInf.HokenPid,
+                                      raiinInf.SanteiKbn,
+                                      raiinInf.Status,
+                                      raiinInf.IsYoyaku,
+                                      raiinInf.YoyakuTime ?? string.Empty,
+                                      raiinInf.YoyakuId,
+                                      raiinInf.UketukeSbt,
+                                      raiinInf.UketukeTime ?? string.Empty,
+                                      raiinInf.UketukeId,
+                                      raiinInf.UketukeNo,
+                                      raiinInf.SinStartTime ?? string.Empty,
+                                      raiinInf.SinEndTime ?? string.Empty,
+                                      raiinInf.KaikeiTime ?? string.Empty,
+                                      raiinInf.KaikeiId,
+                                      raiinInf.KaId,
+                                      raiinInf.TantoId,
+                                      raiinInf.SyosaisinKbn,
+                                      raiinInf.JikanKbn,
+                                      string.Empty
+                               );
+        }
     }
 }
