@@ -4,7 +4,6 @@ using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Reporting.Calculate.Extensions;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.Models;
@@ -160,9 +159,9 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 new { firstRaiin.HpId, firstRaiin.PtId }
             join kaikeiFutan in kaikeiFutans on
                 new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
-                new { kaikeiFutan.HpId, kaikeiFutan.RaiinNo } 
-            //    into kaikeiFutanJoin
-            //from kaikeiFutanj in kaikeiFutanJoin.DefaultIfEmpty()
+                new { kaikeiFutan.HpId, kaikeiFutan.RaiinNo }
+                //    into kaikeiFutanJoin
+                //from kaikeiFutanj in kaikeiFutanJoin.DefaultIfEmpty()
             join ptInf in ptInfs on
                 new { syunoNyukin.HpId, syunoNyukin.PtId } equals
                 new { ptInf.HpId, ptInf.PtId }
