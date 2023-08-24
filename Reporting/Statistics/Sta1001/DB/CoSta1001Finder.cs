@@ -7,6 +7,7 @@ using Infrastructure.Interfaces;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.Models;
+using System.Text.Json;
 
 namespace Reporting.Statistics.Sta1001.DB;
 
@@ -217,10 +218,10 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 NewSeikyuTensu = syunoSeikyu.NewSeikyuTensu,
                 SeikyuGaku = syunoSeikyu.SeikyuGaku,
                 NewSeikyuGaku = syunoSeikyu.NewSeikyuGaku,
-                PtFutan = kaikeiFutanj != null ? kaikeiFutanj.PtFutan : 0,
-                JihiFutan = kaikeiFutanj != null ? kaikeiFutanj.JihiFutan : 0,
-                JihiTax = kaikeiFutanj != null ? kaikeiFutanj.JihiTax : 0,
-                KaikeiAdjustFutan = kaikeiFutanj != null ? -kaikeiFutanj.AdjustFutan : 0,
+                PtFutan = (int?) kaikeiFutanj.PtFutan ?? 0,
+                JihiFutan = (int?)kaikeiFutanj.JihiFutan ?? 0,
+                JihiTax = (int?)kaikeiFutanj.JihiTax ?? 0,
+                KaikeiAdjustFutan = (int?)-kaikeiFutanj.AdjustFutan ?? 0,
                 //HokenKbn = kaikeiHokenj.HokenKbn,
                 //HokenSbtCd = kaikeiHokenj.HokenSbtCd,
                 //ReceSbt = kaikeiHokenj.ReceSbt,
@@ -278,7 +279,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                     KaikeiAdjustFutan = data.KaikeiAdjustFutan,
                     HokenKbn = kaikeiHokenList.Exists(k => k.RaiinNo == data.RaiinNo) ? kaikeiHokenList.First(k => k.RaiinNo == data.RaiinNo).HokenKbn : 0,
                     HokenSbtCd = kaikeiHokenList.Exists(k => k.RaiinNo == data.RaiinNo) ? kaikeiHokenList.First(k => k.RaiinNo == data.RaiinNo).HokenSbtCd : 0,
-                    ReceSbt = kaikeiHokenList.Exists(k => k.RaiinNo == data.RaiinNo) ? (kaikeiHokenList.First(k => k.RaiinNo == data.RaiinNo).ReceSbt ?? string.Empty) : string.Empty,
+                    ReceSbt = kaikeiHokenList.Exists(k => k.RaiinNo == data.RaiinNo) ? (kaikeiHokenList.First(k => k.RaiinNo == data.RaiinNo).ReceSbt ?? "0000") : "0000",
                     FirstRaiinDate = data.FirstRaiinDate,
                     RaiinNo = data.RaiinNo,
                     OyaRaiinNo = data.OyaRaiinNo,
@@ -491,7 +492,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                         KaikeiAdjustFutan = seikyu.KaikeiAdjustFutan,
                         HokenKbn = kaikeiHokenList.Exists(k => k.RaiinNo == seikyu.RaiinNo) ? kaikeiHokenList.First(k => k.RaiinNo == seikyu.RaiinNo).HokenKbn : 0,
                         HokenSbtCd = kaikeiHokenList.Exists(k => k.RaiinNo == seikyu.RaiinNo) ? kaikeiHokenList.First(k => k.RaiinNo == seikyu.RaiinNo).HokenSbtCd : 0,
-                        ReceSbt = kaikeiHokenList.Exists(k => k.RaiinNo == seikyu.RaiinNo) ? (kaikeiHokenList.First(k => k.RaiinNo == seikyu.RaiinNo).ReceSbt ?? string.Empty) : string.Empty,
+                        ReceSbt = kaikeiHokenList.Exists(k => k.RaiinNo == seikyu.RaiinNo) ? (kaikeiHokenList.First(k => k.RaiinNo == seikyu.RaiinNo).ReceSbt ?? "0000") : "0000",
                         FirstRaiinDate = seikyu.FirstRaiinDate,
                         RaiinNo = seikyu.RaiinNo,
                         OyaRaiinNo = seikyu.OyaRaiinNo,
@@ -534,7 +535,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             });
         }
         #endregion
-
         return result;
     }
 
