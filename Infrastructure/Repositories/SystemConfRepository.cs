@@ -504,7 +504,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         }
     }
 
-    public List<SystemConfListXmlPathModel> GetSystemConfXmlPath(int hpId, int grpCd, string machine)
+    public List<SystemConfListXmlPathModel> GetSystemConfListXmlPath(int hpId, int grpCd, string machine)
     {
         List<PathConf> pathConf;
 
@@ -516,7 +516,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         {
             pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId
                                                                            && item.GrpCd == grpCd
-                                                                           && item.Machine == string.Empty)
+                                                                           && (item.Machine == string.Empty || item.Machine == null))
                                                                            .ToList();
         }
 
@@ -525,6 +525,6 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
     private SystemConfListXmlPathModel ToModel(PathConf pathConf)
     {
-        return new SystemConfListXmlPathModel(pathConf.HpId, pathConf.GrpCd, pathConf.Machine, pathConf.Path);
+        return new SystemConfListXmlPathModel(pathConf.HpId, pathConf.GrpCd, pathConf.GrpEdaNo, pathConf.SeqNo, pathConf.Machine, pathConf.Path, pathConf.Param, pathConf.Biko, pathConf.CharCd, pathConf.IsInvalid);
     }
 }

@@ -36,5 +36,5 @@ public interface ISystemConfRepository : IRepositoryBase
 
     bool SaveSystemSetting(int hpId, int userId, List<SystemConfMenuModel> SystemConfMenuModels);
 
-    List<SystemConfListXmlPathModel> GetSystemConfXmlPath(int hpId, int grpCd, string machine);
+    List<SystemConfListXmlPathModel> GetSystemConfListXmlPath(int hpId, int grpCd, string machine);
 }

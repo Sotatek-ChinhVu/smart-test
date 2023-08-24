@@ -14,5 +14,11 @@ namespace UseCase.SystemConf.GetXmlPath
             SystemConfListXmlPath = systemConfListXmlPath;
             Status = status;
         }
+
+        public GetSystemConfListXmlPathOutputData(GetSystemConfListXmlPathStatus status)
+        {
+            SystemConfListXmlPath = new List<SystemConfListXmlPathModel>();
+            Status = status;
+        }
     }
 }

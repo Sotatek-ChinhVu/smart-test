@@ -16,7 +16,10 @@ namespace Interactor.SystemConf
         {
             try
             {
-                var result = _systemConfRepository.GetSystemConfXmlPath(inputData.HpId, inputData.GrpCd, inputData.Machine);
+                var result = _systemConfRepository.GetSystemConfListXmlPath(inputData.HpId, inputData.GrpCd, inputData.Machine);
+
+                if (result == null || !result.Any())
+                    return new GetSystemConfListXmlPathOutputData(GetSystemConfListXmlPathStatus.NoData);
                 return new GetSystemConfListXmlPathOutputData(result, GetSystemConfListXmlPathStatus.Successed);
             }
             finally

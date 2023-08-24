@@ -22,12 +22,18 @@
 
         public int IsInvalid { get; private set; }
 
-        public SystemConfListXmlPathModel(int hpId, int grpCd, string machine, string path)
+        public SystemConfListXmlPathModel(int hpId, int grpCd, int grpEdaNo, int seq, string machine, string path, string param, string biko, int charCd, int isInvalid)
         {
             HpId = hpId;
             GrpCd = grpCd;
+            GrpEdaNo = grpEdaNo;
+            SeqNo = seq;
             Machine = machine;
             Path = path;
+            Param = param;
+            Biko = biko;
+            CharCd = charCd;
+            IsInvalid = isInvalid;
         }
     }
 }
