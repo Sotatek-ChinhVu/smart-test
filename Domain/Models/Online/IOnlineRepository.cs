@@ -15,4 +15,6 @@ public interface IOnlineRepository : IRepositoryBase
     bool CheckExistIdList(List<long> idList);
 
     bool UpdateOQConfirmation(int hpId, int userId, long onlineHistoryId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict);
+
+    bool SaveAllOQConfirmation(int hpId, int userId, long ptId, Dictionary<DateTime, string> onlQuaResFileDict, Dictionary<DateTime, (int confirmationType, string infConsFlg)> OnlQuaConfirmationTypeDict);
 }
