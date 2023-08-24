@@ -6,11 +6,14 @@ using Reporting.Accounting.Constants;
 using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
+using Reporting.Calculate.Interface;
+using Reporting.Calculate.Receipt.Constants;
+using Reporting.Calculate.Receipt.ViewModels;
 using Reporting.CommonMasters.Config;
 using Reporting.Mappers.Common;
-using System.Text;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
+using System.Text;
 using Reporting.Calculate.Receipt.ViewModels;
 using Domain.Models.CalculateModel;
 using Reporting.Calculate.Interface;
@@ -485,6 +488,54 @@ public class AccountingCoReportService : IAccountingCoReportService
                   accountingDicResult);
     }
 
+    public AccountingResponse GetAccountingReportingData(int hpId, List<CoAccountingParamListModel> coAccountingParamListModels,
+            int sort, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn,
+            int hakkoDay, string memo, string formFileName)
+    {
+        this.hpId = hpId;
+        mode = PrintMode.ListPrint;
+        this.sort = sort;
+        this.miseisanKbn = miseisanKbn;
+        this.saiKbn = saiKbn;
+        this.misyuKbn = misyuKbn;
+        this.seikyuKbn = seikyuKbn;
+        this.hokenKbn = hokenKbn;
+        this.hakkoDay = hakkoDay;
+        this.memo = memo;
+        printType = 0;
+        this.formFileName = formFileName;
+        int index = 1;
+        foreach (var item in coAccountingParamListModels)
+        {
+            accountingOutputModelList = new();
+            SingleFieldDataResult = new();
+            ListTextModelResult = new();
+            SystemConfigList = new();
+
+            startDate = item.StartDate;
+            endDate = item.EndDate;
+            ptConditions = item.PtConditions;
+            grpConditions = item.GrpConditions;
+            if (grpConditions.Any())
+            {
+                ptConditions.AddRange(_finder.FindPtInf(hpId, grpConditions));
+            }
+            PrintOut();
+            if (accountingOutputModelList.Any())
+            {
+                accountingDicResult.Add(index, accountingOutputModelList);
+                index++;
+            }
+        }
+        fileNamePageMap.Add(1, this.formFileName);
+        return new AccountingResponse(
+                  fileNamePageMap,
+                  jobName,
+                  mode,
+                  SystemConfigList,
+                  accountingDicResult);
+    }
+
     public AccountingResponse GetAccountingReportingData(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
     {
         this.hpId = hpId;
@@ -522,6 +573,22 @@ public class AccountingCoReportService : IAccountingCoReportService
             coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeInput, raiinInfModelList, raiinInfModelPayList));
         }
         return CheckOpenReportingForm(hpId, coAccountingParamModels);
+    }
+
+    public bool CheckExistTemplate(string templateName, int printType)
+    {
+        formFileName = templateName;
+        this.printType = printType;
+        bool isExist = true;
+        try
+        {
+            GetParamFromRseFile();
+        }
+        catch
+        {
+            isExist = false;
+        }
+        return isExist;
     }
 
     public bool CheckOpenReportingForm(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
@@ -626,8 +693,10 @@ public class AccountingCoReportService : IAccountingCoReportService
     #endregion
     private void SetFormFilePath()
     {
+        jobName = "月間領収証";
         if (string.IsNullOrEmpty(formFileName))
         {
+            formFileName = @params.FirstOrDefault()?.FormFileName ?? string.Empty;
             if (printType == 0)
             {
                 // 領収証
@@ -763,6 +832,10 @@ public class AccountingCoReportService : IAccountingCoReportService
         totalJihiSbtKingakus = new();
 
         _printoutDateTime = CIUtil.GetJapanDateTimeNow();
+        if (coModelList == null || !coModelList.KaikeiInfListModels.Any())
+        {
+            return;
+        }
         UpdateDrawForm();
     }
 
@@ -984,6 +1057,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 hakkoDay = param.HakkoDate;
                 memo = param.Memo;
                 printType = param.PrintType;
+                formFileName = param.FormFileName;
                 try
                 {
                     coModel = GetData(hpId, ptId, startDate, endDate);
@@ -1065,14 +1139,15 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
         else
         {
-            foreach (var item in @params)
-            {
-                while (hasNextPage)
-                {
-                    UpdateDrawFormSingle();
-                    currentPage++;
-                }
-            }
+            //foreach (var item in @params)
+            //{
+            //    while (hasNextPage)
+            //    {
+            //        UpdateDrawFormSingle();
+            //        currentPage++;
+            //    }
+            //}
+            UpdateDrawFormList();
         }
     }
 
@@ -3985,6 +4060,11 @@ public class AccountingCoReportService : IAccountingCoReportService
                 }
             }
         }
+
+        accountingOutputModelList.Add(new AccountingOutputModel(
+                                          SingleFieldDataResult,
+                                          ListTextModelResult,
+                                          sinmeiPrintDataModels));
         #endregion
     }
 

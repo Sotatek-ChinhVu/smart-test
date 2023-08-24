@@ -118,6 +118,7 @@
         public const string WelfareDisk = "WelfareDisk";
         public const string ReceListCsv = "ReceListCsv";
         public const string ExportPeriodReceipt = "ExportPeriodReceipt";
+        public const string CheckExistTemplateAccounting = "CheckExistTemplateAccounting";
         public const string ExportStatics = "ExportStatics";
 
         //PatientInfor
@@ -134,10 +135,13 @@
         public const string CheckAllowDeletePatientInfo = "CheckAllowDeletePatientInfo";
         public const string SearchPatientInfoByPtIdList = "SearchPatientInfoByPtIdList";
         public const string SavePtKyusei = "SavePtKyusei";
+        public const string GetPtInfByRefNo = "GetPtInfByRefNo";
+        public const string GetPtInfModelsByName = "GetPtInfModelsByName";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
         public const string GetHokenMasterReadOnly = "GetHokenMasterReadOnly";
+        public const string FindHokenInfByPtId = "FindHokenInfByPtId";
 
         //Validate Main Insurance
         public const string ValidateMainInsurance = "ValidateMainInsurance";
@@ -176,6 +180,7 @@
         public const string GetLastKarute = "GetLastKarute";
         public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
         public const string GetOutDrugOrderList = "GetOutDrugOrderList";
+        public const string GetYoyakuRaiinInf = "GetYoyakuRaiinInf";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
@@ -401,6 +406,13 @@
 
         // Online
         public const string InsertOnlineConfirmHistory = "InsertOnlineConfirmHistory";
+        public const string GetRegisterdPatientsFromOnline = "GetRegisterdPatientsFromOnline";
+        public const string UpdateOnlineConfirmationHistory = "UpdateOnlineConfirmationHistory";
+        public const string UpdateOnlineHistoryById = "UpdateOnlineHistoryById";
+
+        //AccountingFormMst
+        public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
+        public const string UpdateAccountingFormMst = "UpdateAccountingFormMst";
 
         public const string Test = "Test";
 

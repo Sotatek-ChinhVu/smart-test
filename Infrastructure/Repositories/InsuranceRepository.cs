@@ -9,6 +9,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
+using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
@@ -1606,7 +1607,6 @@ namespace Infrastructure.Repositories
                                         false,
                                         false
                                         );
-                ;
             }
 
             return hokenInfModel ?? new();
@@ -1645,6 +1645,104 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
+        }
+
+        public List<HokenInfModel> FindHokenInfByPtId(int hpId, long ptId)
+        {
+            List<HokenInfModel> result = new();
+            var hokenInfList = NoTrackingDataContext.PtHokenInfs.Where(item => item.HpId == hpId && item.PtId == ptId)
+                                                                .OrderByDescending(entity => entity.HokenId)
+                                                                .ToList();
+
+            var hokenIdList = hokenInfList.Where(item => item.IsDeleted != 1 && item.HokenId > 0)
+                                          .Select(item => item.HokenId)
+                                          .Distinct()
+                                          .ToList();
+
+            var rousaiTenkiList = NoTrackingDataContext.PtRousaiTenkis.Where(item => item.HpId == hpId
+                                                                                     && item.PtId == ptId
+                                                                                     && hokenIdList.Contains(item.HokenId)
+                                                                                     && item.IsDeleted != 1)
+                                                                      .ToList();
+
+            //Add list rousaitenki by rousaiId and hokenKbn
+            foreach (var hokenInf in hokenInfList)
+            {
+                List<RousaiTenkiModel> ptRousaiTenkis = new();
+                if (hokenInf.IsDeleted != 1 && hokenInf.HokenId > 0)
+                {
+                    ptRousaiTenkis = rousaiTenkiList.Where(item => item.HpId == hpId
+                                                                      && item.PtId == ptId
+                                                                      && item.HokenId == hokenInf.HokenId
+                                                                      && item.IsDeleted != 1)
+                                                       .Select(item => new RousaiTenkiModel(item.Sinkei, item.Tenki, item.EndDate, item.IsDeleted, item.SeqNo))
+                                                       .OrderBy(item => item.RousaiTenkiEndDate)
+                                                       .ToList();
+                }
+                var hokenInfModel = new HokenInfModel(
+                                        hpId,
+                                        ptId,
+                                        hokenInf.HokenId,
+                                        hokenInf.SeqNo,
+                                        hokenInf.HokenNo,
+                                        hokenInf.HokenEdaNo,
+                                        hokenInf.HokenKbn,
+                                        hokenInf.HokensyaNo ?? string.Empty,
+                                        hokenInf.Kigo ?? string.Empty,
+                                        hokenInf.Bango ?? string.Empty,
+                                        hokenInf.EdaNo ?? string.Empty,
+                                        hokenInf.HonkeKbn,
+                                        hokenInf.StartDate,
+                                        hokenInf.EndDate,
+                                        hokenInf.SikakuDate,
+                                        hokenInf.KofuDate,
+                                        0,
+                                        hokenInf.KogakuKbn,
+                                        hokenInf.TasukaiYm,
+                                        hokenInf.TokureiYm1,
+                                        hokenInf.TokureiYm2,
+                                        hokenInf.GenmenKbn,
+                                        hokenInf.GenmenRate,
+                                        hokenInf.GenmenGaku,
+                                        hokenInf.SyokumuKbn,
+                                        hokenInf.KeizokuKbn,
+                                        hokenInf.Tokki1 ?? string.Empty,
+                                        hokenInf.Tokki2 ?? string.Empty,
+                                        hokenInf.Tokki3 ?? string.Empty,
+                                        hokenInf.Tokki4 ?? string.Empty,
+                                        hokenInf.Tokki5 ?? string.Empty,
+                                        hokenInf.RousaiKofuNo ?? string.Empty,
+                                        hokenInf.RousaiRoudouCd ?? string.Empty,
+                                        hokenInf.RousaiSaigaiKbn,
+                                        hokenInf.RousaiKantokuCd ?? string.Empty,
+                                        hokenInf.RousaiSyobyoDate,
+                                        hokenInf.RyoyoStartDate,
+                                        hokenInf.RyoyoEndDate,
+                                        hokenInf.RousaiSyobyoCd ?? string.Empty,
+                                        hokenInf.RousaiJigyosyoName ?? string.Empty,
+                                        hokenInf.RousaiPrefName ?? string.Empty,
+                                        hokenInf.RousaiCityName ?? string.Empty,
+                                        hokenInf.RousaiReceCount,
+                                        hokenInf.HokensyaName ?? string.Empty,
+                                        hokenInf.HokensyaAddress ?? string.Empty,
+                                        hokenInf.HokensyaTel ?? string.Empty,
+                                        0,
+                                        hokenInf.JibaiHokenName ?? string.Empty,
+                                        hokenInf.JibaiHokenTanto ?? string.Empty,
+                                        hokenInf.JibaiHokenTel ?? string.Empty,
+                                        hokenInf.JibaiJyusyouDate,
+                                        string.Empty,
+                                        new(),
+                                        ptRousaiTenkis,
+                                        true,
+                                        0,
+                                        new(),
+                                        new(),
+                                        false,
+                                        false);
+                result.Add(hokenInfModel);
+            }
+            return result;
         }
     }
 }

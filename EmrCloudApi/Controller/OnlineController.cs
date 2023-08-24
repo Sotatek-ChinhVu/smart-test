@@ -1,22 +1,18 @@
 ﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Messages;
-using EmrCloudApi.Presenters.AccountDue;
 using EmrCloudApi.Presenters.Online;
 using EmrCloudApi.Realtime;
-using EmrCloudApi.Requests.AccountDue;
 using EmrCloudApi.Requests.Online;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.AccountDue;
 using EmrCloudApi.Responses.Online;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
-using UseCase.AccountDue.GetAccountDueList;
-using UseCase.AccountDue.IsNyukinExisted;
-using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Core.Sync;
 using UseCase.Online;
+using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.Online.InsertOnlineConfirmHistory;
+using UseCase.Online.UpdateOnlineConfirmationHistory;
+using UseCase.Online.UpdateOnlineHistoryById;
 
 namespace EmrCloudApi.Controller;
 
@@ -53,4 +49,39 @@ public class OnlineController : AuthorizeControllerBase
         return new ActionResult<Response<InsertOnlineConfirmHistoryResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetRegisterdPatientsFromOnline)]
+    public ActionResult<Response<GetRegisterdPatientsFromOnlineResponse>> GetRegisterdPatientsFromOnline([FromQuery] GetRegisterdPatientsFromOnlineRequest request)
+    {
+        var input = new GetRegisterdPatientsFromOnlineInputData(request.SinDate, request.ConfirmType, request.Id);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetRegisterdPatientsFromOnlinePresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetRegisterdPatientsFromOnlineResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateOnlineConfirmationHistory)]
+    public ActionResult<Response<UpdateOnlineConfirmationHistoryResponse>> UpdateOnlineConfirmationHistory([FromBody] UpdateOnlineConfirmationHistoryRequest request)
+    {
+        var input = new UpdateOnlineConfirmationHistoryInputData(request.Id, UserId, request.IsDeleted);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOnlineConfirmationHistoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOnlineConfirmationHistoryResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateOnlineHistoryById)]
+    public ActionResult<Response<UpdateOnlineHistoryByIdResponse>> UpdateOnlineHistoryById([FromBody] UpdateOnlineHistoryByIdRequest request)
+    {
+        var input = new UpdateOnlineHistoryByIdInputData(UserId, request.Id, request.PtId, request.UketukeStatus, request.ConfirmationType);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOnlineHistoryByIdPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOnlineHistoryByIdResponse>>(presenter.Result);
+    }
 }
