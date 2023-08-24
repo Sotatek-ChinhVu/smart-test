@@ -1,4 +1,5 @@
 ﻿using Helper.Common;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -24,7 +25,6 @@ public class Sta1010CoReportService : ISta1010CoReportService
     private List<CoSyunoInfModel>? _syunoInfs;
     private CoHpInfModel _hpInf;
     private List<PutColumn> putCurColumns = new List<PutColumn>();
-    private List<CoSta1010PrintData> printDatas;
 
     private List<PutColumn> csvTotalColumns = new List<PutColumn>
         {
@@ -266,7 +266,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
         UpdateFormHeader();
         UpdateFormBody();
     }
-
+     
     private bool GetData(int hpId)
     {
         void MakePrintData()
@@ -373,8 +373,6 @@ public class Sta1010CoReportService : ISta1010CoReportService
                     }
                 }
 
-                // todo anh.vu3
-                //if (syunoInf.PtNum != prePrintData.PtNumKey || outputFileType == CoFileType.Csv)
                 if (syunoInf.PtNum != prePrintData.PtNumKey)
                 {
                     printData.PtNum = syunoInf.PtNum;
@@ -392,7 +390,16 @@ public class Sta1010CoReportService : ISta1010CoReportService
                     printData.LastVisitDate = syunoInf.LastVisitDate;
                 }
 
-                printData.PtNumKey = syunoInf.PtNum;
+                printData.PtNumKey = syunoInf.PtNum; ;
+                printData.PtNum = syunoInf.PtNum;
+                printData.PtKanaName = syunoInf.PtKanaName;
+                printData.PtName = syunoInf.PtName;
+                printData.SexCd = syunoInf.SexCd;
+                printData.Sex = syunoInf.Sex;
+                printData.BirthDay = syunoInf.BirthDay;
+                printData.Age = syunoInf.Age.ToString();
+                printData.HomePost = syunoInf.HomePost;
+                printData.HomeAddress = syunoInf.HomeAddress;
                 printData.SinDate = syunoInf.SinDate;
                 printData.KaId = syunoInf.KaId;
                 printData.KaSname = syunoInf.KaSname;
@@ -546,7 +553,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
         }
 
         putCurColumns.AddRange(putColumns);
-        var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+        var csvDatas = _printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
 
         if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
