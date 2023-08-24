@@ -3684,11 +3684,12 @@ namespace Infrastructure.Repositories
                 {
                     if (!x.CheckDefaultValue() && x.ModelModified)
                     {
-                        if (model.Id == 0 && model.IsDeleted == 0)
+                        if (x.Id == 0 && x.IsDeleted == 0)
                         {
                             TrackingDataContext.DrugDayLimits.Add(Mapper.Map(x, new DrugDayLimit(), (src, dest) =>
                             {
                                 dest.CreateId = userId;
+                                dest.ItemCd = itemCd;
                                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                                 dest.UpdateId = userId;
                                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
