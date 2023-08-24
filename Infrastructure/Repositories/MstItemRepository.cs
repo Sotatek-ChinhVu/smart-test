@@ -3612,7 +3612,7 @@ namespace Infrastructure.Repositories
                                 HpId = hpId,
                                 StartDate = ipnModel.StartDate,
                                 SeqNo = 1,
-                                EndDate = ipnModel.EndDate,
+                                EndDate = 99999999,
                                 IpnName = ipnModel.IpnName,
                                 CreateId = userId,
                                 CreateDate = CIUtil.GetJapanDateTimeNow(),
