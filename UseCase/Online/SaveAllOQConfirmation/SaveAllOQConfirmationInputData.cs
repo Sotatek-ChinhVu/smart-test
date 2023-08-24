@@ -1,14 +1,14 @@
-﻿using UseCase.Core.Async.Core;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.Online.SaveAllOQConfirmation;
 
 public class SaveAllOQConfirmationInputData : IInputData<SaveAllOQConfirmationOutputData>
 {
-    public SaveAllOQConfirmationInputData(int hpId, int userId, long onlineHistoryId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
+    public SaveAllOQConfirmationInputData(int hpId, int userId, long ptId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
     {
         HpId = hpId;
         UserId = userId;
-        OnlineHistoryId = onlineHistoryId;
+        PtId = ptId;
         OnlQuaResFileDict = onlQuaResFileDict;
         OnlQuaConfirmationTypeDict = onlQuaConfirmationTypeDict;
     }
@@ -17,7 +17,7 @@ public class SaveAllOQConfirmationInputData : IInputData<SaveAllOQConfirmationOu
 
     public int UserId { get; private set; }
 
-    public long OnlineHistoryId { get; private set; }
+    public long PtId { get; private set; }
 
     public Dictionary<string, string> OnlQuaResFileDict { get; private set; }
 

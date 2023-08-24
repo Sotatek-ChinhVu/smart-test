@@ -1,8 +1,8 @@
 ﻿namespace EmrCloudApi.Requests.Online;
 
-public class UpdateOQConfirmationRequest
+public class SaveAllOQConfirmationRequest
 {
-    public long OnlineHistoryId { get; set; }
+    public long PtId { get; set; }
 
     public Dictionary<string, string> OnlQuaResFileDict { get; set; } = new();
 

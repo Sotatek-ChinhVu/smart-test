@@ -7,6 +7,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Text;
 
 namespace Infrastructure.Repositories;
@@ -143,7 +144,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return success;
     }
 
-    public bool SaveAllOQConfirmation(int hpId, int userId, long ptId, Dictionary<DateTime, string> onlQuaResFileDict, Dictionary<DateTime, (int confirmationType, string infConsFlg)> OnlQuaConfirmationTypeDict)
+    public bool SaveAllOQConfirmation(int hpId, int userId, long ptId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> OnlQuaConfirmationTypeDict)
     {
         bool success = false;
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
@@ -159,12 +160,14 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                         historyList.Add(new OnlineConfirmationHistory()
                         {
                             PtId = ptId,
-                            OnlineConfirmationDate = item.Key,
+                            OnlineConfirmationDate = TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(item.Key, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)),
                             ConfirmationType = OnlQuaConfirmationTypeDict.ContainsKey(item.Key) ? OnlQuaConfirmationTypeDict[item.Key].confirmationType : 1,
                             InfoConsFlg = OnlQuaConfirmationTypeDict.ContainsKey(item.Key) ? OnlQuaConfirmationTypeDict[item.Key].infConsFlg : "    ",
                             ConfirmationResult = item.Value,
                             CreateDate = CIUtil.GetJapanDateTimeNow(),
                             CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId,
                         });
                     }
                     TrackingDataContext.OnlineConfirmationHistories.AddRange(historyList);
