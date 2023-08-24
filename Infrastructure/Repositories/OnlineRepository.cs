@@ -126,7 +126,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     TrackingDataContext.SaveChanges();
 
                     int sindate = CIUtil.DateTimeToInt(history.OnlineConfirmationDate);
-                    var raiinInfsInSameday = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sindate && x.PtId == history.PtId).ToList();
+                    var raiinInfsInSameday = TrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sindate && x.PtId == history.PtId).ToList();
 
                     UpdateConfirmationTypeInRaiinInf(userId, raiinInfsInSameday, history.ConfirmationType);
                     if (!string.IsNullOrEmpty(history.InfoConsFlg))
@@ -175,7 +175,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
 
                     var ptIdList = historyList.Select(item => item.PtId).Distinct().ToList();
                     var sinDateList = historyList.Select(item => CIUtil.DateTimeToInt(item.OnlineConfirmationDate)).Distinct().ToList();
-                    var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId && sinDateList.Contains(item.SinDate) && ptIdList.Contains(item.PtId)).ToList();
+                    var raiinInfList = TrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId && sinDateList.Contains(item.SinDate) && ptIdList.Contains(item.PtId)).ToList();
                     foreach (var historyItem in historyList)
                     {
                         int sindate = CIUtil.DateTimeToInt(historyItem.OnlineConfirmationDate);
