@@ -1713,16 +1713,25 @@ namespace Infrastructure.Repositories
 
         public ReceptionModel GetRaiinInfBySinDate(int hpId, long ptId, int sinDate)
         {
-            var raiinInf = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
                                                                              && item.SinDate == sinDate
                                                                              && item.PtId == ptId
                                                                              && item.IsDeleted == DeleteTypes.None)
-                                                              .OrderBy(item => item.Status)
-                                                              .ThenBy(item => item.RaiinNo)
-                                                              .FirstOrDefault();
-            if (raiinInf == null)
+                                                              .ToList();
+            if (!raiinInfList.Any())
             {
                 return new();
+            }
+
+            RaiinInf raiinInf;
+
+            if (raiinInfList.Any(item => item.Status == RaiinState.Reservation))
+            {
+                raiinInf = raiinInfList.OrderBy(item => item.YoyakuTime).ThenBy(item => item.RaiinNo).First();
+            }
+            else
+            {
+                raiinInf = raiinInfList.OrderBy(item => item.UketukeTime).ThenBy(item => item.RaiinNo).First();
             }
 
             return new ReceptionModel(raiinInf.HpId,
