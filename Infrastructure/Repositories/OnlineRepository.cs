@@ -123,7 +123,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     TrackingDataContext.SaveChanges();
 
                     int sindate = CIUtil.DateTimeToInt(history.OnlineConfirmationDate);
-                    var raiinInfsInSameday = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sindate && x.PtId == history.PtId).ToList();
+                    var raiinInfsInSameday = TrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sindate && x.PtId == history.PtId).ToList();
 
                     UpdateConfirmationTypeInRaiinInf(userId, raiinInfsInSameday, history.ConfirmationType);
                     if (!string.IsNullOrEmpty(history.InfoConsFlg))
