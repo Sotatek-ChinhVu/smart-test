@@ -1013,6 +1013,8 @@
 
         // Online
         public static readonly string InvalidConfirmationResult = "Invalid ConfirmationResult.";
+        public static readonly string InvalidOnlineId = "Invalid OnlineId.";
+        public static readonly string InvalidUketukeStatus = "Invalid UketukeStatus.";
 
     }
 }

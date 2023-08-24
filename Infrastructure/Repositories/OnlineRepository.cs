@@ -1,8 +1,14 @@
 ﻿using Domain.Models.Online;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Text;
 
 namespace Infrastructure.Repositories;
 
@@ -51,6 +57,145 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return result;
     }
 
+    public bool UpdateOnlineConfirmationHistory(int uketukeStatus, int id, int userId)
+    {
+        string updateDate = CIUtil.GetJapanDateTimeNow().ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+        string updateQuery = $"UPDATE \"ONLINE_CONFIRMATION_HISTORY\" SET \"UKETUKE_STATUS\" = {uketukeStatus}, \"UPDATE_DATE\" = '{updateDate}'"
+                             + $", \"UPDATE_ID\" = {userId}"
+                             + $" WHERE \"ID\" = {id} AND \"UKETUKE_STATUS\" = 0";
+
+        return TrackingDataContext.Database.ExecuteSqlRaw(updateQuery) > 0;
+    }
+
+    public bool UpdateOnlineHistoryById(int userId, long id, long ptId, int uketukeStatus, int confirmationType)
+    {
+        var onlineHistory = TrackingDataContext.OnlineConfirmationHistories.FirstOrDefault(item => item.ID == id);
+        if (onlineHistory == null)
+        {
+            return false;
+        }
+        onlineHistory.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        onlineHistory.UpdateId = userId;
+        if (uketukeStatus != -1)
+        {
+            onlineHistory.UketukeStatus = uketukeStatus;
+        }
+        if (ptId != -1)
+        {
+            onlineHistory.PtId = ptId;
+        }
+        if (confirmationType != -1)
+        {
+            onlineHistory.ConfirmationType = confirmationType;
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public bool CheckExistIdList(List<long> idList)
+    {
+        idList = idList.Distinct().ToList();
+        var countId = NoTrackingDataContext.OnlineConfirmationHistories.Count(x => idList.Contains(x.ID));
+        return idList.Count == countId;
+    }
+
+    public bool UpdateOQConfirmation(int hpId, int userId, long onlineHistoryId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
+    {
+        if (!onlQuaResFileDict.Any())
+        {
+            return false;
+        }
+        var history = TrackingDataContext.OnlineConfirmationHistories.FirstOrDefault(x => x.ID == onlineHistoryId);
+        if (history == null)
+        {
+            return false;
+        }
+        bool success = false;
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
+            {
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
+                {
+                    var item = onlQuaResFileDict.First();
+                    history.ConfirmationType = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].confirmationType : 1;
+                    history.InfoConsFlg = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].infConsFlg : "    ";
+                    history.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    history.UpdateId = userId;
+                    TrackingDataContext.SaveChanges();
+
+                    int sindate = CIUtil.DateTimeToInt(history.OnlineConfirmationDate);
+                    var raiinInfsInSameday = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sindate && x.PtId == history.PtId).ToList();
+
+                    UpdateConfirmationTypeInRaiinInf(userId, raiinInfsInSameday, history.ConfirmationType);
+                    if (!string.IsNullOrEmpty(history.InfoConsFlg))
+                    {
+                        UpdateInfConsFlgInRaiinInf(userId, raiinInfsInSameday, history.InfoConsFlg);
+                    }
+                    transaction.Commit();
+                    success = true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+            });
+        return success;
+    }
+
+    public bool SaveAllOQConfirmation(int hpId, int userId, long ptId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> OnlQuaConfirmationTypeDict)
+    {
+        bool success = false;
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
+            {
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
+                {
+                    List<OnlineConfirmationHistory> historyList = new();
+                    foreach (var item in onlQuaResFileDict)
+                    {
+                        historyList.Add(new OnlineConfirmationHistory()
+                        {
+                            PtId = ptId,
+                            OnlineConfirmationDate = TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(item.Key, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)),
+                            ConfirmationType = OnlQuaConfirmationTypeDict.ContainsKey(item.Key) ? OnlQuaConfirmationTypeDict[item.Key].confirmationType : 1,
+                            InfoConsFlg = OnlQuaConfirmationTypeDict.ContainsKey(item.Key) ? OnlQuaConfirmationTypeDict[item.Key].infConsFlg : "    ",
+                            ConfirmationResult = item.Value,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId,
+                        });
+                    }
+                    TrackingDataContext.OnlineConfirmationHistories.AddRange(historyList);
+                    TrackingDataContext.SaveChanges();
+
+                    var ptIdList = historyList.Select(item => item.PtId).Distinct().ToList();
+                    var sinDateList = historyList.Select(item => CIUtil.DateTimeToInt(item.OnlineConfirmationDate)).Distinct().ToList();
+                    var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId && sinDateList.Contains(item.SinDate) && ptIdList.Contains(item.PtId)).ToList();
+                    foreach (var historyItem in historyList)
+                    {
+                        int sindate = CIUtil.DateTimeToInt(historyItem.OnlineConfirmationDate);
+                        var raiinInfsInSameday = raiinInfList.Where(item => item.SinDate == sindate && item.PtId == historyItem.PtId).ToList();
+                        UpdateConfirmationTypeInRaiinInf(userId, raiinInfsInSameday, historyItem.ConfirmationType);
+                        if (!string.IsNullOrEmpty(historyItem.InfoConsFlg))
+                        {
+                            UpdateInfConsFlgInRaiinInf(userId, raiinInfsInSameday, historyItem.InfoConsFlg);
+                        }
+                    }
+                    transaction.Commit();
+                    success = true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+            });
+        return success;
+    }
     #region private function
     private OnlineConfirmationHistoryModel ConvertToModel(OnlineConfirmationHistory entity)
     {
@@ -66,6 +211,130 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                );
     }
 
+    public bool UpdateConfirmationTypeInRaiinInf(int userId, List<RaiinInf> raiinInfsInSameday, int confirmationType)
+    {
+        var unConfirmedRaiinInfs = raiinInfsInSameday.Where(x => x.ConfirmationType == 0);
+        var confirmedRaiininfs = raiinInfsInSameday.Where(x => x.ConfirmationType > 0);
+        if (!confirmedRaiininfs.Any())
+        {
+            foreach (var raiinInf in unConfirmedRaiinInfs)
+            {
+                raiinInf.ConfirmationType = confirmationType;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+            }
+        }
+        else
+        {
+            int minConfirmationType = confirmedRaiininfs.Min(x => x.ConfirmationType);
+            int newConfirmationType = minConfirmationType > confirmationType ? confirmationType : minConfirmationType;
+            foreach (var raiinInf in confirmedRaiininfs)
+            {
+                raiinInf.ConfirmationType = newConfirmationType;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+            }
+            foreach (var raiinInf in unConfirmedRaiinInfs)
+            {
+                raiinInf.ConfirmationType = newConfirmationType;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+            }
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public void UpdateInfConsFlgInRaiinInf(int userId, List<RaiinInf> raiinInfsInSameday, string infConsFlg)
+    {
+        var unConfirmedRaiinInfs = raiinInfsInSameday.Where(x => string.IsNullOrEmpty(x.InfoConsFlg));
+        var confirmedRaiininfs = raiinInfsInSameday.Except(unConfirmedRaiinInfs).ToList();
+        if (!confirmedRaiininfs.Any())
+        {
+            foreach (var raiinInf in unConfirmedRaiinInfs)
+            {
+                raiinInf.InfoConsFlg = infConsFlg;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+            }
+        }
+        else
+        {
+            void UpdateFlgValue(int flgIdx)
+            {
+                char flgToChar(int flg)
+                {
+                    if (flg == 1)
+                    {
+                        return '1';
+                    }
+                    else if (flg == 2)
+                    {
+                        return '2';
+                    }
+                    return ' ';
+                }
+                var unCofirmedFlgRaiinInfs = confirmedRaiininfs.Where(x => x.InfoConsFlg?.Length > flgIdx && x.InfoConsFlg[flgIdx] == ' ');
+                var confirmedFlgRaiinInfs = confirmedRaiininfs.Where(x => x.InfoConsFlg?.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
+                if (!confirmedFlgRaiinInfs.Any())
+                {
+                    foreach (var raiinInf in unCofirmedFlgRaiinInfs)
+                    {
+                        raiinInf.InfoConsFlg = ReplaceAt(raiinInf.InfoConsFlg ?? string.Empty, flgIdx, infConsFlg[flgIdx]);
+                        raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        raiinInf.UpdateId = userId;
+                    }
+                }
+                else
+                {
+                    int minFlg = confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg![flgIdx].AsInteger());
+                    int respondedFlg = infConsFlg[flgIdx] == ' ' ? 0 : infConsFlg![flgIdx].AsInteger();
+                    int newFlg = respondedFlg == 0 ? minFlg : (minFlg > respondedFlg ? respondedFlg : minFlg);
+                    foreach (var raiinInf in confirmedFlgRaiinInfs)
+                    {
+                        raiinInf.InfoConsFlg = ReplaceAt(raiinInf.InfoConsFlg ?? string.Empty, flgIdx, flgToChar(newFlg));
+                        raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        raiinInf.UpdateId = userId;
+                    }
+                    foreach (var raiinInf in unCofirmedFlgRaiinInfs)
+                    {
+                        raiinInf.InfoConsFlg = ReplaceAt(raiinInf.InfoConsFlg ?? string.Empty, flgIdx, flgToChar(newFlg));
+                        raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        raiinInf.UpdateId = userId;
+                    }
+                }
+            }
+            //Update PharmacistsInfoConsFlg
+            UpdateFlgValue(0);
+            //Update SpecificHealthCheckupsInfoConsFlg
+            UpdateFlgValue(1);
+            //Update DiagnosisInfoConsFlg
+            UpdateFlgValue(2);
+            //Update OperationInfoConsFlg
+            UpdateFlgValue(3);
+
+            //Apply computed infoconsflg for the new raiininf which has nullable infoconsFlg value
+            string newInfoConsFlg = confirmedRaiininfs.FirstOrDefault()?.InfoConsFlg ?? string.Empty;
+            foreach (var raiinInf in unConfirmedRaiinInfs)
+            {
+                raiinInf.InfoConsFlg = newInfoConsFlg;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+
+            }
+        }
+        NoTrackingDataContext.SaveChanges();
+    }
+
+    public string ReplaceAt(string input, int index, char newChar)
+    {
+        if (input == null)
+        {
+            throw new ArgumentNullException("input");
+        }
+        StringBuilder builder = new StringBuilder(input);
+        builder[index] = newChar;
+        return builder.ToString();
+    }
     #endregion
 
     public void ReleaseResource()

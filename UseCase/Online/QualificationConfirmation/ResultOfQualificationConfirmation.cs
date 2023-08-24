@@ -76,7 +76,7 @@ public class ResultOfQualificationConfirmation
     public string InsurerName { get; set; } = string.Empty;
 
     [XmlElement(ElementName = "ElderlyRecipientCertificateInfo")]
-    public ElderlyRecipientCertificateInfo ElderlyRecipientCertificateInfo { get; set; }
+    public ElderlyRecipientCertificateInfo ElderlyRecipientCertificateInfo { get; set; } = new();
 
     [XmlElement(ElementName = "LimitApplicationCertificateRelatedConsFlg")]
     public string LimitApplicationCertificateRelatedConsFlg { get; set; } = string.Empty;
@@ -85,7 +85,7 @@ public class ResultOfQualificationConfirmation
     public string LimitApplicationCertificateRelatedConsTime { get; set; } = string.Empty;
 
     [XmlElement(ElementName = "LimitApplicationCertificateRelatedInfo")]
-    public LimitApplicationCertificateRelatedInfo LimitApplicationCertificateRelatedInfo { get; set; }
+    public LimitApplicationCertificateRelatedInfo LimitApplicationCertificateRelatedInfo { get; set; } = new();
 
     [XmlElement(ElementName = "SpecificDiseasesCertificateRelatedConsFlg")]
     public string SpecificDiseasesCertificateRelatedConsFlg { get; set; } = string.Empty;

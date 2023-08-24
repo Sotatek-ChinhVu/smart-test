@@ -521,8 +521,8 @@ namespace Infrastructure.Repositories
         /// <returns></returns>
         public bool SaveListUserMst(int hpId, List<UserMstModel> users, int currentUser)
         {
-            IEnumerable<long> userIdList = users.Select(x => x.Id);
-            var usersUpdate = TrackingDataContext.UserMsts.Where(x => userIdList.Contains(x.UserId)).ToList();
+            IEnumerable<long> idList = users.Select(x => x.Id);
+            var usersUpdate = TrackingDataContext.UserMsts.Where(x => idList.Contains(x.Id)).ToList();
             foreach (var item in users)
             {
                 var update = usersUpdate.FirstOrDefault(x => x.Id == item.Id);

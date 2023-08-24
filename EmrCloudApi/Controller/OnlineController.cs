@@ -1,23 +1,20 @@
 ﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Messages;
-using EmrCloudApi.Presenters.AccountDue;
 using EmrCloudApi.Presenters.Online;
 using EmrCloudApi.Realtime;
-using EmrCloudApi.Requests.AccountDue;
 using EmrCloudApi.Requests.Online;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.AccountDue;
 using EmrCloudApi.Responses.Online;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
-using UseCase.AccountDue.GetAccountDueList;
-using UseCase.AccountDue.IsNyukinExisted;
-using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Core.Sync;
 using UseCase.Online;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.Online.InsertOnlineConfirmHistory;
+using UseCase.Online.SaveAllOQConfirmation;
+using UseCase.Online.UpdateOnlineConfirmationHistory;
+using UseCase.Online.UpdateOnlineHistoryById;
+using UseCase.Online.UpdateOQConfirmation;
 
 namespace EmrCloudApi.Controller;
 
@@ -64,5 +61,63 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetRegisterdPatientsFromOnlineResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateOnlineConfirmationHistory)]
+    public ActionResult<Response<UpdateOnlineConfirmationHistoryResponse>> UpdateOnlineConfirmationHistory([FromBody] UpdateOnlineConfirmationHistoryRequest request)
+    {
+        var input = new UpdateOnlineConfirmationHistoryInputData(request.Id, UserId, request.IsDeleted);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOnlineConfirmationHistoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOnlineConfirmationHistoryResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateOnlineHistoryById)]
+    public ActionResult<Response<UpdateOnlineHistoryByIdResponse>> UpdateOnlineHistoryById([FromBody] UpdateOnlineHistoryByIdRequest request)
+    {
+        var input = new UpdateOnlineHistoryByIdInputData(UserId, request.Id, request.PtId, request.UketukeStatus, request.ConfirmationType);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOnlineHistoryByIdPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOnlineHistoryByIdResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateOQConfirmation)]
+    public ActionResult<Response<UpdateOQConfirmationResponse>> UpdateOQConfirmation([FromBody] UpdateOQConfirmationRequest request)
+    {
+        Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict = new();
+        foreach (var item in request.OnlQuaConfirmationTypeDict)
+        {
+            onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg));
+        }
+        var input = new UpdateOQConfirmationInputData(HpId, UserId, request.OnlineHistoryId, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOQConfirmationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOQConfirmationResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveAllOQConfirmation)]
+    public ActionResult<Response<SaveAllOQConfirmationResponse>> SaveAllOQConfirmation([FromBody] SaveAllOQConfirmationRequest request)
+    {
+        Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict = new();
+        foreach (var item in request.OnlQuaConfirmationTypeDict)
+        {
+            onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg));
+        }
+        var input = new SaveAllOQConfirmationInputData(HpId, UserId, request.PtId, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveAllOQConfirmationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveAllOQConfirmationResponse>>(presenter.Result);
     }
 }

@@ -117,6 +117,7 @@
         public const string AccountingCardList = "AccountingCardList";
         public const string WelfareDisk = "WelfareDisk";
         public const string ReceListCsv = "ReceListCsv";
+        public const string ExportPeriodReceipt = "ExportPeriodReceipt";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -138,6 +139,7 @@
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
         public const string GetHokenMasterReadOnly = "GetHokenMasterReadOnly";
+        public const string FindHokenInfByPtId = "FindHokenInfByPtId";
 
         //Validate Main Insurance
         public const string ValidateMainInsurance = "ValidateMainInsurance";
@@ -176,6 +178,7 @@
         public const string GetLastKarute = "GetLastKarute";
         public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
         public const string GetOutDrugOrderList = "GetOutDrugOrderList";
+        public const string GetYoyakuRaiinInf = "GetYoyakuRaiinInf";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
@@ -402,6 +405,14 @@
         // Online
         public const string InsertOnlineConfirmHistory = "InsertOnlineConfirmHistory";
         public const string GetRegisterdPatientsFromOnline = "GetRegisterdPatientsFromOnline";
+        public const string UpdateOnlineConfirmationHistory = "UpdateOnlineConfirmationHistory";
+        public const string UpdateOnlineHistoryById = "UpdateOnlineHistoryById";
+        public const string UpdateOQConfirmation = "UpdateOQConfirmation";
+        public const string SaveAllOQConfirmation = "SaveAllOQConfirmation";
+
+        //AccountingFormMst
+        public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
+        public const string UpdateAccountingFormMst = "UpdateAccountingFormMst";
 
         public const string Test = "Test";
 
