@@ -525,6 +525,6 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
     private SystemConfListXmlPathModel ToModel(PathConf pathConf)
     {
-        return new SystemConfListXmlPathModel(pathConf.HpId, pathConf.GrpCd, pathConf.GrpEdaNo, pathConf.SeqNo, pathConf.Machine, pathConf.Path, pathConf.Param, pathConf.Biko, pathConf.CharCd, pathConf.IsInvalid);
+        return new SystemConfListXmlPathModel(pathConf.HpId, pathConf.GrpCd, pathConf.GrpEdaNo, pathConf.SeqNo, pathConf.Machine ?? string.Empty, pathConf.Path ?? string.Empty, pathConf.Param ?? string.Empty, pathConf.Biko ?? string.Empty, pathConf.CharCd, pathConf.IsInvalid);
     }
 }
