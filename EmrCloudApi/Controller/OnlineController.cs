@@ -16,6 +16,7 @@ using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineHistoryById;
 using UseCase.Online.UpdateOQConfirmation;
+using UseCase.Online.UpdateRefNo;
 
 namespace EmrCloudApi.Controller;
 
@@ -98,6 +99,18 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveOQConfirmationResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateRefNo)]
+    public ActionResult<Response<UpdateRefNoResponse>> UpdateRefNo([FromBody] UpdateRefNoRequest request)
+    {
+        var input = new UpdateRefNoInputData(HpId, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateRefNoPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateRefNoResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.UpdateOQConfirmation)]

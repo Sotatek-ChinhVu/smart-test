@@ -70,16 +70,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
 
     public long UpdateRefNo(int hpId, long ptId)
     {
-        using (var postgreSQLConnection = new PostgreSQLConnection())
-        {
-            long nextRefNo = postgreSQLConnection.ExecuteScalar<long>("SELECT NEXTVAL(' \"PT_INF_REFERENCE_NO_seq\"')");
-            string updateQuery = "UPDATE \"PT_INF\" SET \"REFERENCE_NO\" = @nextRefNo WHERE \"HP_ID\" = @hpId AND \"PT_ID\" = @ptId";
-            postgreSQLConnection.ExecuteNonQuery(updateQuery,
-                new NpgsqlParameter("@hpId", Session.HospitalID),
-                new NpgsqlParameter("@nextRefNo", nextRefNo),
-                new NpgsqlParameter("@ptId", ptId));
-            return nextRefNo;
-        }
+        var nextRefNo = TrackingDataContext.Database.SqlQueryRaw<long>("SELECT NEXTVAL(' \"PT_INF_REFERENCE_NO_seq\"')").ToList().FirstOrDefault();
+        string updateQuery = $"UPDATE \"PT_INF\" SET \"REFERENCE_NO\" = nextRefNo WHERE \"HP_ID\" = {hpId} AND \"PT_ID\" = {ptId}";
+        TrackingDataContext.Database.ExecuteSqlRaw(updateQuery);
+        return nextRefNo;
     }
 
     public bool UpdateOnlineHistoryById(int userId, long id, long ptId, int uketukeStatus, int confirmationType)
