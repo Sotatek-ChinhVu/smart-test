@@ -71,7 +71,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     public long UpdateRefNo(int hpId, long ptId)
     {
         var nextRefNo = TrackingDataContext.Database.SqlQueryRaw<long>("SELECT NEXTVAL(' \"PT_INF_REFERENCE_NO_seq\"')").ToList().FirstOrDefault();
-        string updateQuery = $"UPDATE \"PT_INF\" SET \"REFERENCE_NO\" = nextRefNo WHERE \"HP_ID\" = {hpId} AND \"PT_ID\" = {ptId}";
+        string updateQuery = $"UPDATE \"PT_INF\" SET \"REFERENCE_NO\" = {nextRefNo} WHERE \"HP_ID\" = {hpId} AND \"PT_ID\" = {ptId}";
         TrackingDataContext.Database.ExecuteSqlRaw(updateQuery);
         return nextRefNo;
     }
