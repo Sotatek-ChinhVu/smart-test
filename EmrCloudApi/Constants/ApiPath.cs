@@ -181,6 +181,7 @@
         public const string GetOutDrugOrderList = "GetOutDrugOrderList";
         public const string GetYoyakuRaiinInf = "GetYoyakuRaiinInf";
         public const string GetRaiinInfBySinDate = "GetRaiinInfBySinDate";
+        public const string GetHpInf = "GetHpInf";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
@@ -342,6 +343,7 @@
         public const string SaveDrugCheckSetting = "SaveDrugCheckSetting";
         public const string GetSystemSetting = "GetSystemSetting";
         public const string SaveSystemSetting = "SaveSystemSetting";
+        public const string GetSystemConfListXmlPath = "GetSystemConfListXmlPath";
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";

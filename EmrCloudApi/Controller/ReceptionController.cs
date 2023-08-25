@@ -31,6 +31,7 @@ using UseCase.RaiinKbn.GetPatientRaiinKubunList;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
+using UseCase.Reception.GetHpInf;
 using UseCase.Reception.GetLastKarute;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetListRaiinInf;
@@ -330,6 +331,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetRaiinInfBySinDatePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetRaiinInfBySinDateResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetHpInf)]
+        public ActionResult<Response<GetHpInfResponse>> GetHpInf([FromQuery] GetHpInfRequest request)
+        {
+            var input = new GetHpInfInputData(HpId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetHpInfPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetHpInfResponse>>(presenter.Result);
         }
 
         [HttpPut(ApiPath.RevertDeleteNoRecept)]
