@@ -1,8 +1,10 @@
 ﻿using Domain.Constant;
+using Entity.Tenant;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta2020.Models;
@@ -385,19 +387,19 @@ namespace Reporting.Statistics.Sta2020.DB
 
         private List<CoSinKouiModel> GetOdrInfs(int hpId, CoSta2020PrintConf printConf)
         {
-            var odrInfs = NoTrackingDataContext.OdrInfs.Where(s => s.HpId == hpId && s.IsDeleted == DeleteStatus.None);
+            var odrInfs = NoTrackingDataContext.OdrInfs.Where(s => s.IsDeleted == DeleteStatus.None);
             odrInfs = printConf.StartSinYm >= 0 ?
                 odrInfs.Where(s => s.SinDate >= printConf.StartSinYm * 100 + 1 && s.SinDate <= printConf.EndSinYm * 100 + 31) :
                 odrInfs.Where(s => s.SinDate >= printConf.StartSinDate && s.SinDate <= printConf.EndSinDate);
 
-            var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(x => x.HpId == hpId).AsEnumerable();
-            var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId).AsEnumerable();
-            var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
+            var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(o => o.HpId == hpId);
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(o => o.HpId == hpId);
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
             if (!printConf.IsTester)
             {
                 ptInfs = ptInfs.Where(p => p.IsTester == 0);
             }
-            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.Status > 3);
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.Status > 3);
             #region 条件指定
             //診療科
             if (printConf.KaIds?.Count >= 1)
@@ -411,8 +413,8 @@ namespace Reporting.Statistics.Sta2020.DB
             }
             #endregion
 
-            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId);
-            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId);
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(o => o.HpId == hpId);
+            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(o => o.HpId == hpId);
             #region 条件指定(保険種別)
             if (printConf.HokenSbts?.Count >= 1)
             {
@@ -450,21 +452,14 @@ namespace Reporting.Statistics.Sta2020.DB
             }
             #endregion
 
-            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId);
-            var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted == DeleteStatus.None);
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(o => o.HpId == hpId);
+            var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None);
 
             var joinOdrs = (
-                from odrInf in odrInfs.AsEnumerable()
+                from odrInf in odrInfs
                 join odrDetail in odrDetails on
                     new { odrInf.HpId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                     new { odrDetail.HpId, odrDetail.RaiinNo, odrDetail.RpNo, odrDetail.RpEdaNo }
-                join tenMst in tenMsts on
-                    new { odrDetail.HpId, odrDetail.ItemCd } equals
-                    new { tenMst.HpId, tenMst.ItemCd } into tenMstj
-                from tenMsti in tenMstj.Where(t =>
-                        t.StartDate <= odrDetail.SinDate &&
-                        (t.EndDate == 12341234 ? 99999999 : t.EndDate) >= odrDetail.SinDate
-                    ).DefaultIfEmpty()
                 select new
                 {
                     odrInf.HpId,
@@ -480,24 +475,7 @@ namespace Reporting.Statistics.Sta2020.DB
                     odrDetail.TermVal,
                     odrDetail.ItemCd,
                     ItemName = odrDetail.ItemName,
-                    TenId = tenMsti == null ? 0 : tenMsti.TenId,
-                    Ten = tenMsti == null ? 0.0 : tenMsti.Ten,
-                    KanaName1 = tenMsti == null ? string.Empty : tenMsti.KanaName1,
-                    KanaName2 = tenMsti == null ? string.Empty : tenMsti.KanaName2,
-                    KanaName3 = tenMsti == null ? string.Empty : tenMsti.KanaName3,
-                    KanaName4 = tenMsti == null ? string.Empty : tenMsti.KanaName4,
-                    KanaName5 = tenMsti == null ? string.Empty : tenMsti.KanaName5,
-                    KanaName6 = tenMsti == null ? string.Empty : tenMsti.KanaName6,
-                    KanaName7 = tenMsti == null ? string.Empty : tenMsti.KanaName7,
-                    MasterSbt = tenMsti == null ? string.Empty : tenMsti.MasterSbt,
-                    SinKouiKbn = tenMsti == null ? 99 : tenMsti.SinKouiKbn,
-                    DrugKbn = tenMsti == null ? 0 : tenMsti.DrugKbn,
-                    MadokuKbn = tenMsti == null ? 0 : tenMsti.MadokuKbn,
-                    KouseisinKbn = tenMsti == null ? 0 : tenMsti.KouseisinKbn,
-                    KazeiKbn = tenMsti == null ? 0 : tenMsti.KazeiKbn,
                     odrInf.InoutKbn,
-                    KohatuKbn = tenMsti == null ? 0 : tenMsti.KohatuKbn,
-                    IsAdopted = tenMsti == null ? 0 : tenMsti.IsAdopted
                 }
             );
 
@@ -548,45 +526,16 @@ namespace Reporting.Statistics.Sta2020.DB
                             ),
                     Count = new int[] { 21, 22, 23 }.Contains(joinOdr.OdrKouiKbn) ? joinOdr.DaysCnt : 1,
                     ItemCd = joinOdr.ItemCd == string.Empty || joinOdr.ItemCd == null ? ItemCdConst.CommentFree : joinOdr.ItemCd,
-                    ItemCdCmt =
-                        joinOdr.ItemCd == string.Empty || joinOdr.ItemCd == null || joinOdr.MasterSbt == "C" ? joinOdr.ItemName :
-                        joinOdr.ItemCd,
+                    //ItemCdCmt =
+                    //    joinOdr.ItemCd == string.Empty || joinOdr.ItemCd == null || joinOdr.MasterSbt == "C" ? joinOdr.ItemName :
+                    //    joinOdr.ItemCd,
                     SrcItemCd = joinOdr.ItemCd == string.Empty || joinOdr.ItemCd == null ? joinOdr.ItemName : joinOdr.ItemCd,
                     ItemName = joinOdr.ItemName,
-                    ItemKanaName1 = joinOdr.KanaName1,
-                    ItemKanaName2 = joinOdr.KanaName2,
-                    ItemKanaName3 = joinOdr.KanaName3,
-                    ItemKanaName4 = joinOdr.KanaName4,
-                    ItemKanaName5 = joinOdr.KanaName5,
-                    ItemKanaName6 = joinOdr.KanaName6,
-                    ItemKanaName7 = joinOdr.KanaName7,
                     KaId = raiinInf.KaId,
                     KaSname = kaMstj.KaSname,
                     TantoId = raiinInf.TantoId,
                     TantoSname = tantoMst.Sname,
-                    SinKouiKbn =
-                            joinOdr.MasterSbt == "T" && joinOdr.SinKouiKbn != 77 ? "T" :
-                            joinOdr.MasterSbt == "C" ? "99" :
-                            new int[] { 20, 21, 22, 23 }.Contains(joinOdr.SinKouiKbn) && joinOdr.DrugKbn == 1 ? "21" :
-                            new int[] { 20, 21, 22, 23 }.Contains(joinOdr.SinKouiKbn) && joinOdr.DrugKbn == 6 ? "23" :
-                            new int[] { 20, 21, 22, 23 }.Contains(joinOdr.SinKouiKbn) && (joinOdr.DrugKbn == 3 || joinOdr.DrugKbn == 8) ? "2x" :
-                            new int[] { 20, 21, 22, 23 }.Contains(joinOdr.SinKouiKbn) && joinOdr.DrugKbn == 4 ? "30" :
-                            new int[] { 20, 21, 22, 23 }.Contains(joinOdr.SinKouiKbn) ? "20" :
-                            joinOdr.SinKouiKbn.ToString(),
-                    MadokuKbn = joinOdr.MadokuKbn,
-                    KouseisinKbn = joinOdr.KouseisinKbn,
-                    KazeiKbn = joinOdr.KazeiKbn,
-                    EntenKbn = new int[] { 1, 2, 4, 10, 11, 99 }.Contains(joinOdr.TenId) ? 1 : 0,
-                    Ten =
-                            new int[] { 5, 6, 7, 9 }.Contains(joinOdr.TenId) ? 0 :
-                            joinOdr.TenId == 8 ? -joinOdr.Ten :
-                            joinOdr.TenId == 10 ? joinOdr.Ten / 10 :
-                            joinOdr.TenId == 11 ? joinOdr.Ten * 10 :
-                            joinOdr.Ten,
                     InoutKbn = joinOdr.InoutKbn,
-                    KohatuKbn = joinOdr.KohatuKbn,
-                    IsAdopted = joinOdr.IsAdopted,
-                    DrugKbn = joinOdr.DrugKbn
                 }
             );
 
@@ -596,36 +545,13 @@ namespace Reporting.Statistics.Sta2020.DB
             {
                 joinQuery = joinQuery.Where(s => printConf.SinIds.Contains(s.SinId));
             }
-            //診療行為区分
-            if (printConf.SinKouiKbns?.Count >= 1)
-            {
-                joinQuery = joinQuery.Where(s => printConf.SinKouiKbns.Contains(s.SinKouiKbn));
-            }
-            //麻毒区分
-            if (printConf.MadokuKbns?.Count >= 1)
-            {
-                joinQuery = joinQuery.Where(s => s.DrugKbn == 0 || printConf.MadokuKbns.Contains(s.MadokuKbn));
-            }
-            //向精神薬区分
-            if (printConf.KouseisinKbns?.Count >= 1)
-            {
-                joinQuery = joinQuery.Where(s => s.DrugKbn == 0 || printConf.KouseisinKbns.Contains(s.KouseisinKbn));
-            }
+
             //院内院外区分
             if (printConf.InoutKbns?.Count >= 1)
             {
                 joinQuery = joinQuery.Where(s => printConf.InoutKbns.Contains(s.InoutKbn));
             }
-            //後発医薬品区分
-            if (printConf.KohatuKbns?.Count >= 1)
-            {
-                joinQuery = joinQuery.Where(s => s.DrugKbn == 0 || printConf.KohatuKbns.Contains(s.KohatuKbn));
-            }
-            //採用区分
-            if (printConf.IsAdopteds?.Count >= 1)
-            {
-                joinQuery = joinQuery.Where(s => printConf.IsAdopteds.Contains(s.IsAdopted));
-            }
+            
             #region コメントマスター(CO)の名称取得
             var itemCmts = new List<string>();
             foreach (var itemCd in printConf.ItemCds.Where(i => i.StartsWith("CO")))
@@ -693,6 +619,97 @@ namespace Reporting.Statistics.Sta2020.DB
             }
             #endregion
 
+            var dataOnRam = joinQuery.ToList();
+
+            var itemCdList = dataOnRam.Select(o => o.ItemCd).Distinct().ToList();
+            var tenMstList = tenMsts.Where(o => itemCdList.Contains(o.ItemCd)).ToList();
+
+            var dataOnRamWithTenMst =
+                dataOnRam
+                .Select(o => new
+                {
+                    Data = o,
+                    TenMst = tenMstList!.Find(t => t.ItemCd == o.ItemCd && t.StartDate <= o.SinDate && (t.EndDate == 12341234 ? 99999999 : t.EndDate) >= o.SinDate) ?? new TenMst()
+                })
+                .Select(o => new
+                {
+                    PtId = o.Data.PtId,
+                    RaiinNo = o.Data.RaiinNo,
+                    SinYm = o.Data.SinDate / 100,
+                    SinDate = o.Data.SinDate,
+                    SinId = o.Data.SinId,
+                    Suryo = o.Data.Suryo,
+                    Count = o.Data.Count,
+                    ItemCd = o.Data.ItemCd,
+                    ItemCdCmt =
+                        o.Data.ItemCd == string.Empty || o.Data.ItemCd == null || o.TenMst.MasterSbt == "C" ? o.Data.ItemName :
+                        o.Data.ItemCd,
+                    SrcItemCd = o.Data.ItemCd == string.Empty || o.Data.ItemCd == null ? o.Data.ItemName : o.Data.ItemCd,
+                    ItemName = o.Data.ItemName,
+                    ItemKanaName1 = o.TenMst.KanaName1,
+                    ItemKanaName2 = o.TenMst.KanaName2,
+                    ItemKanaName3 = o.TenMst.KanaName3,
+                    ItemKanaName4 = o.TenMst.KanaName4,
+                    ItemKanaName5 = o.TenMst.KanaName5,
+                    ItemKanaName6 = o.TenMst.KanaName6,
+                    ItemKanaName7 = o.TenMst.KanaName7,
+                    KaId = o.Data.KaId,
+                    KaSname = o.Data.KaSname,
+                    TantoId = o.Data.TantoId,
+                    TantoSname = o.Data.TantoSname,
+                    SinKouiKbn =
+                            o.TenMst.MasterSbt == "T" && o.TenMst.SinKouiKbn != 77 ? "T" :
+                            o.TenMst.MasterSbt == "C" ? "99" :
+                            new int[] { 20, 21, 22, 23 }.Contains(o.TenMst.SinKouiKbn) && o.TenMst.DrugKbn == 1 ? "21" :
+                            new int[] { 20, 21, 22, 23 }.Contains(o.TenMst.SinKouiKbn) && o.TenMst.DrugKbn == 6 ? "23" :
+                            new int[] { 20, 21, 22, 23 }.Contains(o.TenMst.SinKouiKbn) && (o.TenMst.DrugKbn == 3 || o.TenMst.DrugKbn == 8) ? "2x" :
+                            new int[] { 20, 21, 22, 23 }.Contains(o.TenMst.SinKouiKbn) && o.TenMst.DrugKbn == 4 ? "30" :
+                            new int[] { 20, 21, 22, 23 }.Contains(o.TenMst.SinKouiKbn) ? "20" :
+                            o.TenMst.SinKouiKbn.ToString(),
+                    MadokuKbn = o.TenMst.MadokuKbn,
+                    KouseisinKbn = o.TenMst.KouseisinKbn,
+                    KazeiKbn = o.TenMst.KazeiKbn,
+                    EntenKbn = new int[] { 1, 2, 4, 10, 11, 99 }.Contains(o.TenMst.TenId) ? 1 : 0,
+                    Ten =
+                            new int[] { 5, 6, 7, 9 }.Contains(o.TenMst.TenId) ? 0 :
+                            o.TenMst.TenId == 8 ? -o.TenMst.Ten :
+                            o.TenMst.TenId == 10 ? o.TenMst.Ten / 10 :
+                            o.TenMst.TenId == 11 ? o.TenMst.Ten * 10 :
+                            o.TenMst.Ten,
+                    InoutKbn = o.Data.InoutKbn,
+                    KohatuKbn = o.TenMst.KohatuKbn,
+                    IsAdopted = o.TenMst.IsAdopted,
+                    DrugKbn = o.TenMst.DrugKbn
+                });
+
+            //診療行為区分
+            if (printConf.SinKouiKbns?.Count >= 1)
+            {
+                dataOnRamWithTenMst = dataOnRamWithTenMst.Where(s => printConf.SinKouiKbns.Contains(s.SinKouiKbn));
+            }
+            //麻毒区分
+            if (printConf.MadokuKbns?.Count >= 1)
+            {
+                dataOnRamWithTenMst = dataOnRamWithTenMst.Where(s => s.DrugKbn == 0 || printConf.MadokuKbns.Contains(s.MadokuKbn));
+            }
+            //向精神薬区分
+            if (printConf.KouseisinKbns?.Count >= 1)
+            {
+                dataOnRamWithTenMst = dataOnRamWithTenMst.Where(s => s.DrugKbn == 0 || printConf.KouseisinKbns.Contains(s.KouseisinKbn));
+            }
+
+            //後発医薬品区分
+            if (printConf.KohatuKbns?.Count >= 1)
+            {
+                dataOnRamWithTenMst = dataOnRamWithTenMst.Where(s => s.DrugKbn == 0 || printConf.KohatuKbns.Contains(s.KohatuKbn));
+            }
+            //採用区分
+            if (printConf.IsAdopteds?.Count >= 1)
+            {
+                dataOnRamWithTenMst = dataOnRamWithTenMst.Where(s => printConf.IsAdopteds.Contains(s.IsAdopted));
+            }
+
+
             List<string> zaiSuryos = new List<string>
             {
                 ItemCdConst.ZaiOusin, ItemCdConst.ZaiOusinTokubetu,
@@ -700,9 +717,8 @@ namespace Reporting.Statistics.Sta2020.DB
                 ItemCdConst.ZaiHoumon1_2Dou, ItemCdConst.ZaiHoumon1_2DouIgai,
                 ItemCdConst.ZaiHoumon2i, ItemCdConst.ZaiHoumon2ro
             };
-            var retData = new List<CoSinKouiModel>();
 
-            retData = joinQuery.Select(
+            var retData = dataOnRamWithTenMst.Select(
             data =>
                 new CoSinKouiModel()
                 {
@@ -736,8 +752,8 @@ namespace Reporting.Statistics.Sta2020.DB
                     EntenKbn = data.EntenKbn,
                     Ten = data.Ten
                 }
-        )
-        .ToList();
+            )
+            .ToList();
 
             return retData;
         }
