@@ -69,7 +69,8 @@ public class GetSinMeiInMonthListInteractor : IGetSinMeiInMonthListInputPort
                                   item.Day31 },
         item.SinRpNo,
         item.SinSeqNo,
-        item.ItemCd
+        item.ItemCd,
+        item.DrugKbn
         )).ToList();
         return EditSinMei(sinMei);
     }
@@ -114,7 +115,8 @@ public class GetSinMeiInMonthListInteractor : IGetSinMeiInMonthListInputPort
                 sinMei.Days,
                 sinMei.SinRpNo,
                 sinMei.SinSeqNo,
-                sinMei.ItemCd
+                sinMei.ItemCd,
+                sinMei.DrugKbn
                 ));
             }
         }

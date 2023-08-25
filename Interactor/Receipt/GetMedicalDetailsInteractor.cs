@@ -70,7 +70,8 @@ namespace Interactor.Receipt
                                   item.Day31 },
             item.SinRpNo,
             item.SinSeqNo,
-            item.ItemCd
+            item.ItemCd,
+            item.DrugKbn
             )).ToList();
             return EditSinMei(sinMei);
         }
@@ -114,7 +115,8 @@ namespace Interactor.Receipt
                     sinMei.Days,
                     sinMei.SinRpNo,
                     sinMei.SinSeqNo,
-                    sinMei.ItemCd
+                    sinMei.ItemCd,
+                    sinMei.DrugKbn
                     ));
                 }
             }
