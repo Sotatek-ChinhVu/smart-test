@@ -521,19 +521,23 @@ namespace Infrastructure.Repositories
                     tooltip = string.Format("{0} {1}", CIUtil.IntToDate(date).ToString("MM/dd"), holiday?.HolidayName ?? string.Empty);
                 }
 
-                var dateSyosaiItems = raiinInfs.Where(item => item.SinDate == date);
-                var datetateItem = raiinInfs.FirstOrDefault(item => item.SinDate == date);
-                foreach (var dateSyosaiItem in dateSyosaiItems)
+                if (!isAll)
                 {
-                    if (!dateSyosaiItem.Equals(default(KeyValuePair<int, int>)))
+                    var dateSyosaiItems = raiinInfs.Where(item => item.SinDate == date);
+                    var datetateItem = raiinInfs.FirstOrDefault(item => item.SinDate == date);
+                    foreach (var dateSyosaiItem in dateSyosaiItems)
                     {
-                        if (!(!datetateItem?.Equals(default(KeyValuePair<int, int>)) == true && date == sinDate && datetateItem?.Status < RaiinState.TempSave))
+                        if (!dateSyosaiItem.Equals(default(KeyValuePair<int, int>)))
                         {
-                            tooltip = (string.IsNullOrEmpty(tooltip) ? "" : tooltip + Environment.NewLine) + (SyosaiConst.FlowSheetCalendarDict.ContainsKey(dateSyosaiItem.SyosaisinKbn) ? SyosaiConst.FlowSheetCalendarDict[dateSyosaiItem.SyosaisinKbn] : string.Empty);
-                        }
+                            if (!(!datetateItem?.Equals(default(KeyValuePair<int, int>)) == true && date == sinDate && datetateItem?.Status < RaiinState.TempSave))
+                            {
+                                tooltip = (string.IsNullOrEmpty(tooltip) ? "" : tooltip + Environment.NewLine) + (SyosaiConst.FlowSheetCalendarDict.ContainsKey(dateSyosaiItem.SyosaisinKbn) ? SyosaiConst.FlowSheetCalendarDict[dateSyosaiItem.SyosaisinKbn] : string.Empty);
+                            }
 
+                        }
                     }
                 }
+         
                 if (!string.IsNullOrEmpty(tooltip))
                 {
                     lock (obj)
