@@ -1858,6 +1858,8 @@ namespace Infrastructure.Repositories
             accountingFormMst.CreateDate = (accountingFormMstModel.FormNo > 0) ? TimeZoneInfo.ConvertTimeToUtc(accountingFormMstModel.CreateDate) : accountingFormMstModel.CreateDate;
             accountingFormMst.UpdateId = accountingFormMstModel.UpdateId;
             accountingFormMst.UpdateDate = accountingFormMstModel.UpdateDate;
+            accountingFormMst.MisyuKbn = accountingFormMstModel.MisyuKbn;
+            accountingFormMst.SeikyuKbn = accountingFormMstModel.SeikyuKbn;
 
             return accountingFormMst;
         }

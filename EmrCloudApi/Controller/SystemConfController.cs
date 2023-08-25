@@ -4,6 +4,7 @@ using EmrCloudApi.Requests.SystemConf;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.SystemConf;
 using EmrCloudApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SystemConf;
@@ -11,6 +12,7 @@ using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetDrugCheckSetting;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
+using UseCase.SystemConf.GetXmlPath;
 using UseCase.SystemConf.SaveDrugCheckSetting;
 using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
@@ -132,6 +134,19 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<SaveSystemSettingResponse>>(presenter.Result);
+        }
+
+        [AllowAnonymous]
+        [HttpGet(ApiPath.GetSystemConfListXmlPath)]
+        public ActionResult<Response<GetSystemConfListXmlPathResponse>> GetSystemConfListXmlPath([FromQuery] GetSystemConfListXmlPathRequest request)
+        {
+            var input = new GetSystemConfListXmlPathInputData(1, request.GrpCd, request.Machine);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetSystemConfListXmlPathPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetSystemConfListXmlPathResponse>>(presenter.Result);
         }
     }
 }

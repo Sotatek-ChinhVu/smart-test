@@ -94,7 +94,7 @@ namespace Interactor.Receipt
             {
                 if (errorResult != string.Empty)
                 {
-                    errorResult += Environment.NewLine;
+                    errorResult += "\r\n";
                 }
 
                 errorResult += errorSyobyo.Insert(0, "■傷病開始年月日が設定されていません。" + "\r\n");
@@ -104,7 +104,7 @@ namespace Interactor.Receipt
             {
                 if (errorResult != string.Empty)
                 {
-                    errorResult += Environment.NewLine;
+                    errorResult += "\r\n";
                 }
 
                 errorResult += errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。" + "\r\n");
