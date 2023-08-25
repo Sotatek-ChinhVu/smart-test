@@ -692,7 +692,12 @@ using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineHistoryById;
 using UseCase.Reception.GetYoyakuRaiinInf;
 using UseCase.Insurance.FindHokenInfByPtId;
+using UseCase.Online.UpdateOQConfirmation;
+using UseCase.Online.SaveAllOQConfirmation;
+using UseCase.Online.SaveOQConfirmation;
+using UseCase.Reception.GetRaiinInfBySinDate;
 using UseCase.SystemConf.GetXmlPath;
+using UseCase.Reception.GetHpInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1133,6 +1138,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<RevertDeleteNoReceptInputData, RevertDeleteNoReceptInteractor>();
             busBuilder.RegisterUseCase<GetOutDrugOrderListInputData, GetOutDrugOrderListInteractor>();
             busBuilder.RegisterUseCase<GetYoyakuRaiinInfInputData, GetYoyakuRaiinInfInteractor>();
+            busBuilder.RegisterUseCase<GetRaiinInfBySinDateInputData, GetRaiinInfBySinDateInteractor>();
+            busBuilder.RegisterUseCase<GetHpInfInputData, GetHpInfInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -1595,6 +1602,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFilingcategoryInputData, GetFilingcategoryInteractor>();
             busBuilder.RegisterUseCase<GetRaiiinListSettingInputData, GetRaiiinListSettingInteractor>();
             busBuilder.RegisterUseCase<SaveRaiinListSettingInputData, SaveRaiinListSettingInteractor>();
+
             //SinKoui
             busBuilder.RegisterUseCase<GetListSinKouiInputData, GetListSinKouiInteractor>();
 
@@ -1603,6 +1611,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetRegisterdPatientsFromOnlineInputData, GetRegisterdPatientsFromOnlineInteractor>();
             busBuilder.RegisterUseCase<UpdateOnlineConfirmationHistoryInputData, UpdateOnlineConfirmationHistoryInteractor>();
             busBuilder.RegisterUseCase<UpdateOnlineHistoryByIdInputData, UpdateOnlineHistoryByIdInteractor>();
+            busBuilder.RegisterUseCase<UpdateOQConfirmationInputData, UpdateOQConfirmationInteractor>();
+            busBuilder.RegisterUseCase<SaveAllOQConfirmationInputData, SaveAllOQConfirmationInteractor>();
+            busBuilder.RegisterUseCase<SaveOQConfirmationInputData, SaveOQConfirmationInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();

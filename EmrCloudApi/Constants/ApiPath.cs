@@ -180,6 +180,8 @@
         public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
         public const string GetOutDrugOrderList = "GetOutDrugOrderList";
         public const string GetYoyakuRaiinInf = "GetYoyakuRaiinInf";
+        public const string GetRaiinInfBySinDate = "GetRaiinInfBySinDate";
+        public const string GetHpInf = "GetHpInf";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
@@ -409,6 +411,9 @@
         public const string GetRegisterdPatientsFromOnline = "GetRegisterdPatientsFromOnline";
         public const string UpdateOnlineConfirmationHistory = "UpdateOnlineConfirmationHistory";
         public const string UpdateOnlineHistoryById = "UpdateOnlineHistoryById";
+        public const string UpdateOQConfirmation = "UpdateOQConfirmation";
+        public const string SaveAllOQConfirmation = "SaveAllOQConfirmation";
+        public const string SaveOQConfirmation = "SaveOQConfirmation";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";

@@ -31,10 +31,12 @@ using UseCase.RaiinKbn.GetPatientRaiinKubunList;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
+using UseCase.Reception.GetHpInf;
 using UseCase.Reception.GetLastKarute;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetOutDrugOrderList;
+using UseCase.Reception.GetRaiinInfBySinDate;
 using UseCase.Reception.GetRaiinListWithKanInf;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.GetYoyakuRaiinInf;
@@ -319,6 +321,26 @@ namespace EmrCloudApi.Controller
             var presenter = new GetYoyakuRaiinInfPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetYoyakuRaiinInfResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetRaiinInfBySinDate)]
+        public ActionResult<Response<GetRaiinInfBySinDateResponse>> GetRaiinInfBySinDate([FromQuery] GetRaiinInfBySinDateRequest request)
+        {
+            var input = new GetRaiinInfBySinDateInputData(HpId, request.SinDate, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetRaiinInfBySinDatePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetRaiinInfBySinDateResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetHpInf)]
+        public ActionResult<Response<GetHpInfResponse>> GetHpInf([FromQuery] GetHpInfRequest request)
+        {
+            var input = new GetHpInfInputData(HpId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetHpInfPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetHpInfResponse>>(presenter.Result);
         }
 
         [HttpPut(ApiPath.RevertDeleteNoRecept)]
