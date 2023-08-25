@@ -57,6 +57,11 @@ namespace Interactor.Lock
                     }
                     return new RemoveLockOutputData(RemoveLockStatus.Successed, responseLockList);
                 }
+                // if remove lock when logout and don't exist raiinNoList, return true
+                if (inputData.IsRemoveLockWhenLogOut)
+                {
+                    return new RemoveLockOutputData(RemoveLockStatus.Successed, new());
+                }
                 return new RemoveLockOutputData(RemoveLockStatus.Failed, new());
             }
             finally
