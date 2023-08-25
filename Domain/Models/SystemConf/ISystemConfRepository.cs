@@ -35,4 +35,6 @@ public interface ISystemConfRepository : IRepositoryBase
     bool SaveSystemGenerationConf(int userId, List<SystemConfMenuModel> systemConfMenuModels);
 
     bool SaveSystemSetting(int hpId, int userId, List<SystemConfMenuModel> SystemConfMenuModels);
+
+    List<SystemConfListXmlPathModel> GetSystemConfListXmlPath(int hpId, int grpCd, string machine);
 }
