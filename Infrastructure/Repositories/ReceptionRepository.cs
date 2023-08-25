@@ -508,6 +508,47 @@ namespace Infrastructure.Repositories
 
         }
 
+        public ReceptionModel GetYoyakuRaiinInf(int hpId, long ptId, int sinDate)
+        {
+            var entity = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                       && item.SinDate == sinDate
+                                                                       && item.PtId == ptId
+                                                                       && item.IsDeleted == DeleteTypes.None
+                                                                       && item.Status == RaiinState.Reservation)
+                                                        .OrderByDescending(p => p.RaiinNo)
+                                                        .FirstOrDefault();
+            if (entity == null)
+            {
+                return new();
+            }
+            return new ReceptionModel(
+                        entity.HpId,
+                        entity.PtId,
+                        entity.SinDate,
+                        entity.RaiinNo,
+                        entity.OyaRaiinNo,
+                        entity.HokenPid,
+                        entity.SanteiKbn,
+                        entity.Status,
+                        entity.IsYoyaku,
+                        entity.YoyakuTime ?? string.Empty,
+                        entity.YoyakuId,
+                        entity.UketukeSbt,
+                        entity.UketukeTime ?? string.Empty,
+                        entity.UketukeId,
+                        entity.UketukeNo,
+                        entity.SinStartTime ?? string.Empty,
+                        entity.SinEndTime ?? string.Empty,
+                        entity.KaikeiTime ?? string.Empty,
+                        entity.KaikeiId,
+                        entity.KaId,
+                        entity.TantoId,
+                        entity.SyosaisinKbn,
+                        entity.JikanKbn,
+                        string.Empty
+                   );
+        }
+
         public List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate)
         {
             var result = NoTrackingDataContext.RaiinInfs.Where(p =>
@@ -1630,6 +1671,7 @@ namespace Infrastructure.Repositories
                                                                    data.User.Name ?? string.Empty,
                                                                    0,
                                                                    data.Raiin.KaId,
+                                                                   data.Pt.PtId,
                                                                    data.Pt.PtNum,
                                                                    data.PtHokenPatternItem.HokenHobetu ?? string.Empty,
                                                                    data.PtHokenPatternItem?.PtHokenPattern.HokenKbn ?? 0,
@@ -1650,10 +1692,23 @@ namespace Infrastructure.Repositories
                                                                    -1,
                                                                    string.Empty,
                                                                    string.Empty,
-                                                                   0, 0, 0, 0, 0, 0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty))
+                                                                   0, 0, 0, 0, 0, 0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty,
+                                                                   data.Raiin.Status))
                           .ToList();
 
             return result;
+        }
+
+        public int GetStatusRaiinInf(int hpId, long raiinNo, long ptId)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                  && item.PtId == ptId
+                                                                                  && item.RaiinNo == raiinNo);
+            if (raiinInf == null)
+            {
+                return 0;
+            }
+            return raiinInf.Status;
         }
     }
 }

@@ -34,16 +34,21 @@ public class P24WelfareDiskService : IP24WelfareDiskService
         this.seikyuYm = seikyuYm;
         GetData();
         List<string> retDatas = new();
-        foreach (var receInf in receInfs)
+
+        if (GetData())
         {
-            retDatas.Add(RecordData(receInf));
+            foreach (var receInf in receInfs)
+            {
+                retDatas.Add(RecordData(receInf));
+            }
         }
+
         string sheetName = string.Format("FKS_241{0}", hpInf.HpCd.PadLeft(7, '0'));
-        return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, retDatas);
+        return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
     }
 
     #region Private function
-    private void GetData()
+    private bool GetData()
     {
         hpInf = _welfareFinder.GetHpInf(hpId, seikyuYm);
         var wrkReces = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, kohiHokenNos, FutanCheck.None, 0);
@@ -60,6 +65,8 @@ public class P24WelfareDiskService : IP24WelfareDiskService
         {
             receInf.IsOutDrug = _welfareFinder.IsOutDrugOrder(hpId, receInf.PtId, receInf.SinYm);
         }
+
+        return (receInfs?.Count ?? 0) > 0;
     }
 
     private string RecordData(CoP24WelfareReceInfModel receInf)

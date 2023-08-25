@@ -19,6 +19,7 @@ using Helper.Messaging;
 using Helper.Messaging.Data;
 using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
+using System.Linq;
 using System.Text;
 using UseCase.ReceSeikyu.Save;
 
@@ -83,17 +84,16 @@ namespace Interactor.ReceSeikyu
                 foreach (var modifiedReceSeikyu in inputData.ReceSeiKyus)
                 {
                     if (modifiedReceSeikyu.IsAddNew && modifiedReceSeikyu.IsDeleted == 1) continue;
-
                     if (modifiedReceSeikyu.IsAddNew)
                     {
-                        receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SeikyuYm));
+                        receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SinYm));
 
                         if (modifiedReceSeikyu.IsChecked)
                         {
                             receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SeikyuYm));
                         }
                     }
-                    else if (modifiedReceSeikyu.IsDeleted == DeleteTypes.None)
+                    else if (modifiedReceSeikyu.IsDeleted == DeleteTypes.Deleted)
                     {
                         _receSeikyuRepository.EntryDeleteHenJiyuu(modifiedReceSeikyu.PtId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.HokenId, inputData.UserAct);
 
@@ -123,7 +123,7 @@ namespace Interactor.ReceSeikyu
 
                 #region not complete seikyu
                 bool isSuccessSeikyuProcess = true;
-                var listSourceSeikyu = inputData.ReceSeiKyus.Where(item => item.IsNotCompletedSeikyu).ToList();
+                var listSourceSeikyu = inputData.ReceSeiKyus.Where(item => item.IsNotCompletedSeikyu && item.IsModified).ToList();
                 if (listSourceSeikyu != null && listSourceSeikyu.Count > 0)
                 {
                     foreach (ReceSeikyuModel model in listSourceSeikyu)
@@ -140,7 +140,7 @@ namespace Interactor.ReceSeikyu
 
                 #region complete seikyu
                 bool isSuccessCompletedSeikyu = true;
-                var deletedSourceList = inputData.ReceSeiKyus.Where(item => item.IsCompletedSeikyu).ToList();
+                var deletedSourceList = inputData.ReceSeiKyus.Where(item => item.IsCompletedSeikyu && item.IsModified).ToList();
                 if (deletedSourceList != null && deletedSourceList.Count > 0)
                 {
                     var insertDefaultList = new List<ReceSeikyuModel>();
@@ -2141,7 +2141,7 @@ namespace Interactor.ReceSeikyu
                             var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
                                                                                              item?.PtId ?? 0,
                                                                                              item?.ItemCd ?? string.Empty,
-                                                                                             santeiEndDateList[item?.PtId ?? 0]))
+                                                                                             santeiEndDateList.ContainsKey(item?.PtId ?? 0) ? santeiEndDateList[item?.PtId ?? 0] : 0))
                                                                          .ToList();
 
                             var allHasErrorWithSanteiByStartDateList = _receiptRepository.GetHasErrorWithSanteiByStartDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
@@ -2182,7 +2182,7 @@ namespace Interactor.ReceSeikyu
                             var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
                                                                                               item?.PtId ?? 0,
                                                                                               item?.ItemCd ?? string.Empty,
-                                                                                              santeiEndDateList[item?.PtId ?? 0]))
+                                                                                              santeiEndDateList.ContainsKey(item?.PtId ?? 0) ? santeiEndDateList[item?.PtId ?? 0] : 0))
                                                                           .ToList();
 
                             var allHasErrorWithSanteiByEndDateList = _receiptRepository.GetHasErrorWithSanteiByEndDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
@@ -2191,7 +2191,7 @@ namespace Interactor.ReceSeikyu
                             {
                                 if (kouiDetails.Count(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key.ItemCd) >= 4)
                                 {
-                                    int santeiEndDate = santeiEndDateList[key?.PtId ?? 0];
+                                    int santeiEndDate = santeiEndDateList.ContainsKey(key?.PtId ?? 0) ? santeiEndDateList[key?.PtId ?? 0] : 0;
                                     if (allHasErrorWithSanteiByEndDateList.FirstOrDefault(item => item.PtId == key?.PtId && item.Sindate == santeiEndDate && item.ItemCd == key?.ItemCd)?.IsHasError ?? false)
                                     {
                                         var sinKouiDetail = kouiDetails.FirstOrDefault(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key?.ItemCd);

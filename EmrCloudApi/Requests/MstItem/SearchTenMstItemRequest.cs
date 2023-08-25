@@ -31,5 +31,6 @@ namespace EmrCloudApi.Requests.MstItem
         public bool IsSearch831SuffixOnly { get; set; } = false;
         public bool IsSearchSuggestion { get; set; } = false;
         public bool IsSearchGazoDensibaitaiHozon { get; set; } = true;
+        public FilterTenMstEnum SortMode { get; set; } = 0;
     }
 }

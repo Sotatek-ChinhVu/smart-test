@@ -28,7 +28,9 @@ namespace Interactor.ReceSeikyu
                                                                        inputData.NoFilter, 
                                                                        inputData.IsFilterMonthlyDelay,
                                                                        inputData.IsFilterReturn, 
-                                                                       inputData.IsFilterOnlineReturn);
+                                                                       inputData.IsFilterOnlineReturn,
+                                                                       inputData.IsGetDataPending
+                                                                       );
 
                 data = data.OrderByDescending(u => u.SeikyuYm).ThenBy(u => u.SinYm).ThenBy(u => u.PtNum).ToList();
 

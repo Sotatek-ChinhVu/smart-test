@@ -30,8 +30,10 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         return ConvertToStatisticList(staMenuList, staConfigList);
     }
 
-    public bool SaveStatisticMenu(int hpId, int userId, List<StatisticMenuModel> statisticMenuModelList)
+    public (int menuIdTemp, bool success) SaveStatisticMenu(int hpId, int userId, List<StatisticMenuModel> statisticMenuModelList)
     {
+        int menuIdTemp = 0;
+        bool success = false;
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(
             () =>
@@ -40,9 +42,10 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                 {
                     try
                     {
-                        SaveDailyStatisticMenuAction(hpId, userId, statisticMenuModelList);
+                        menuIdTemp = SaveDailyStatisticMenuAction(hpId, userId, statisticMenuModelList);
                         TrackingDataContext.SaveChanges();
                         transaction.Commit();
+                        success = true;
                     }
                     catch
                     {
@@ -50,7 +53,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                     }
                 }
             });
-        return true;
+        return (menuIdTemp, success);
     }
 
     public List<StaGrpModel> GetStaGrp(int hpId, int grpId)
@@ -98,8 +101,9 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         return result;
     }
 
-    private void SaveDailyStatisticMenuAction(int hpId, int userId, List<StatisticMenuModel> statisticMenuModelList)
+    private int SaveDailyStatisticMenuAction(int hpId, int userId, List<StatisticMenuModel> statisticMenuModelList)
     {
+        int menuIdTemp = 0;
         var menuIdList = statisticMenuModelList.Select(item => item.MenuId).Distinct().ToList();
         var staMenuDBList = TrackingDataContext.StaMenus.Where(item => item.HpId == hpId
                                                                        && menuIdList.Contains(item.MenuId)
@@ -110,20 +114,50 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                                                                              && menuIdList.Contains(item.MenuId))
                                                               .ToList();
 
+        StaMenu? staMenuTempDb = null;
+        if (statisticMenuModelList.Any(item => item.IsSaveTemp))
+        {
+            staMenuTempDb = TrackingDataContext.StaMenus.FirstOrDefault(item => item.HpId == hpId
+                                                                                && item.CreateId == userId
+                                                                                && item.IsDeleted == 2);
+            if (staMenuTempDb != null)
+            {
+                staMenuConfigDBList.AddRange(TrackingDataContext.StaConfs.Where(item => item.HpId == hpId
+                                                                                        && staMenuTempDb.MenuId == item.MenuId)
+                                                                         .ToList());
+            }
+        }
+
         foreach (var model in statisticMenuModelList)
         {
-            bool isAddNew = false;
             var staMenu = staMenuDBList.FirstOrDefault(item => item.MenuId == model.MenuId);
-            if (staMenu == null)
+            if (staMenu == null && !model.IsSaveTemp)
             {
-                isAddNew = true;
                 staMenu = new StaMenu();
                 staMenu.HpId = hpId;
                 staMenu.MenuId = 0;
                 staMenu.CreateDate = CIUtil.GetJapanDateTimeNow();
                 staMenu.CreateId = userId;
             }
-            staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+
+            if (model.IsSaveTemp)
+            {
+                if (staMenuTempDb == null)
+                {
+                    staMenu = new StaMenu();
+                    staMenu.HpId = hpId;
+                    staMenu.MenuId = 0;
+                    staMenu.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    staMenu.CreateId = userId;
+                }
+                else
+                {
+                    staMenu = staMenuTempDb;
+                }
+                // if save temp, isDeleted = 2
+                staMenu.IsDeleted = 2;
+            }
+            staMenu!.UpdateDate = CIUtil.GetJapanDateTimeNow();
             staMenu.UpdateId = userId;
             if (model.IsDeleted)
             {
@@ -135,14 +169,19 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
             staMenu.MenuName = model.MenuName;
             staMenu.IsPrint = model.IsPrint;
             staMenu.SortNo = model.SortNo;
-            if (isAddNew)
+            if (staMenu.MenuId == 0)
             {
                 TrackingDataContext.StaMenus.Add(staMenu);
                 TrackingDataContext.SaveChanges();
             }
             int menuId = staMenu.MenuId;
+            if (model.IsSaveTemp)
+            {
+                menuIdTemp = menuId;
+            }
             SaveStaConfig(hpId, userId, menuId, model.StaConfigList, ref staMenuConfigDBList);
         }
+        return menuIdTemp;
     }
 
     private void SaveStaConfig(int hpId, int userId, int menuId, List<StaConfModel> staConfModelList, ref List<StaConf> staConfDBList)

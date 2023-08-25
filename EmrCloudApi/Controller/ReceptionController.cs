@@ -37,6 +37,7 @@ using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetOutDrugOrderList;
 using UseCase.Reception.GetRaiinListWithKanInf;
 using UseCase.Reception.GetReceptionDefault;
+using UseCase.Reception.GetYoyakuRaiinInf;
 using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
@@ -96,7 +97,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetOutDrugOrderList)]
         public ActionResult<Response<GetOutDrugOrderListResponse>> GetOutDrugOrderList([FromQuery] GetOutDrugOrderListRequest request)
         {
-            var input = new GetOutDrugOrderListInputData(HpId, request.FromDate, request.ToDate);
+            var input = new GetOutDrugOrderListInputData(HpId, request.IsPrintPrescription, request.IsPrintAccountingCard, request.FromDate, request.ToDate, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetOutDrugOrderListPresenter();
@@ -308,6 +309,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetLastKarutePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetLastKaruteResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetYoyakuRaiinInf)]
+        public ActionResult<Response<GetYoyakuRaiinInfResponse>> GetYoyakuRaiinInf([FromQuery] GetYoyakuRaiinInfRequest request)
+        {
+            var input = new GetYoyakuRaiinInfInputData(HpId, request.SinDate, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetYoyakuRaiinInfPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetYoyakuRaiinInfResponse>>(presenter.Result);
         }
 
         [HttpPut(ApiPath.RevertDeleteNoRecept)]

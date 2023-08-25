@@ -15,6 +15,8 @@ namespace Domain.Models.Reception
 
         IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
 
+        ReceptionModel GetYoyakuRaiinInf(int hpId, long ptId, int sinDate);
+
         ReceptionModel GetReceptionComments(int hpId, long raiinNo);
 
         ReceptionModel GetReceptionVisiting(int hpId, long raiinNo);
@@ -66,5 +68,7 @@ namespace Domain.Models.Reception
         bool UpdateIsDeleted(int hpId, long raiinNo);
 
         List<RaiinInfToPrintModel> GetOutDrugOrderList(int hpId, int fromDate, int toDate);
+
+        int GetStatusRaiinInf(int hpId, long raiinNo, long ptId);
     }
 }
