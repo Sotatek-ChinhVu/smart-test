@@ -208,7 +208,7 @@ namespace Reporting.Statistics.Sta3020.DB
                         byomeiSetMst.SetName,
                         byomeiSetMst.IsTitle,
                         byomeiSetMst.SelectType,
-                        byomeiMstJoin.DelDate
+                        DelDate = byomeiMstJoin != null ? byomeiMstJoin.DelDate : 0
                     }
                 );
 
