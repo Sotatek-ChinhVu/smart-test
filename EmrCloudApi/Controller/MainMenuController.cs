@@ -103,7 +103,8 @@ public class MainMenuController : AuthorizeControllerBase
                                                                                           conf.ConfId,
                                                                                           conf.Val
                                                                            )).ToList(),
-                                                                  menu.IsDeleted
+                                                                  menu.IsDeleted,
+                                                                  menu.IsSaveTemp
                                               )).ToList();
         return result;
     }
