@@ -92,7 +92,7 @@ namespace Reporting.Statistics.Sta2002.Service
             // get data to print
             GetFieldNameList();
             GetRowCount();
-            if (GetData())
+            if (GetData(hpId))
             {
                 _hasNextPage = true;
 
@@ -251,7 +251,7 @@ namespace Reporting.Statistics.Sta2002.Service
         }
         #endregion
         #region GetData
-        private bool GetData()
+        private bool GetData(int hpId)
         {
             void MakePrintData()
             {
@@ -646,7 +646,7 @@ namespace Reporting.Statistics.Sta2002.Service
             string fileName = menuName + "_" + monthFrom + "_" + monthTo;
             List<string> retDatas = new List<string>();
 
-            if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+            if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
             if (isPutTotalRow)
             {
