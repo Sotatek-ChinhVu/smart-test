@@ -1,9 +1,10 @@
-﻿using Reporting.Statistics.Model;
+﻿using Domain.Common;
+using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta9000.Models;
 
 namespace Reporting.Statistics.Sta9000.DB;
 
-public interface ICoSta9000Finder
+public interface ICoSta9000Finder : IRepositoryBase
 {
     /// <summary>
     /// 患者情報
