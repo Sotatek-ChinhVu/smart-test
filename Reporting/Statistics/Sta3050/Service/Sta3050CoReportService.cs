@@ -92,6 +92,7 @@ public class Sta3050CoReportService : ISta3050CoReportService
     private string rowCountFieldName;
     private CoSta3050PrintConf printConf;
     private CoFileType outputFileType;
+    private CoFileType? coFileType;
 
     public Sta3050CoReportService(ICoSta3050Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -351,7 +352,7 @@ public class Sta3050CoReportService : ISta3050CoReportService
                             printData.Kohi4Houbetu = curData.Kohi4Houbetu;
 
                             #region 印刷の場合、前の行と同じ値のカラムは省略
-                            if (outputFileType != CoFileType.Csv && printDatas.Count % maxRow != 0)
+                            if ((outputFileType != CoFileType.Csv || coFileType != CoFileType.Csv) && printDatas.Count % maxRow != 0)
                             {
                                 int[] sortOrders = { printConf.SortOrder1, printConf.SortOrder2, printConf.SortOrder3 };
                                 bool preBlank = true;
@@ -489,7 +490,6 @@ public class Sta3050CoReportService : ISta3050CoReportService
             printDatas.Add(totalData);
         }
 
-
         //データ取得
         sinKouis = _finder.GetSinKouis(hpId, printConf);
         if ((sinKouis?.Count ?? 0) == 0) return false;
@@ -538,11 +538,12 @@ public class Sta3050CoReportService : ISta3050CoReportService
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
-    public CommonExcelReportingModel ExportCsv(CoSta3050PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+    public CommonExcelReportingModel ExportCsv(CoSta3050PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
     {
         this.printConf = printConf;
         string fileName = menuName + "_" + monthFrom + "_" + monthTo;
         List<string> retDatas = new List<string>();
+        this.coFileType = coFileType;
 
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
