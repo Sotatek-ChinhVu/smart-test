@@ -20,13 +20,14 @@ public class SaveStatisticMenuInteractor : ISaveStatisticMenuInputPort
             var validateResult = ValidateInput(inputData);
             if (validateResult != SaveStatisticMenuStatus.ValidateSuccess)
             {
-                return new SaveStatisticMenuOutputData(validateResult);
+                return new SaveStatisticMenuOutputData(0, validateResult);
             }
-            if (_statisticRepository.SaveStatisticMenu(inputData.HpId, inputData.UserId, ConvertToModelList(inputData.GrpId, inputData.StaticMenuList)))
+            var resultSave = _statisticRepository.SaveStatisticMenu(inputData.HpId, inputData.UserId, ConvertToModelList(inputData.GrpId, inputData.StaticMenuList));
+            if (resultSave.success)
             {
-                return new SaveStatisticMenuOutputData(SaveStatisticMenuStatus.Successed);
+                return new SaveStatisticMenuOutputData(resultSave.menuIdTemp, SaveStatisticMenuStatus.Successed);
             }
-            return new SaveStatisticMenuOutputData(SaveStatisticMenuStatus.Failed);
+            return new SaveStatisticMenuOutputData(0, SaveStatisticMenuStatus.Failed);
         }
         finally
         {
@@ -38,17 +39,17 @@ public class SaveStatisticMenuInteractor : ISaveStatisticMenuInputPort
     {
         var staMenuDBList = _statisticRepository.GetStatisticMenu(input.HpId, input.GrpId);
         var staGrpDBList = _statisticRepository.GetStaGrp(input.HpId, input.GrpId);
-        if (input.GrpId != 0 && !staMenuDBList.Exists(item => item.GrpId == input.GrpId))
+        if (input.GrpId != 0 && staMenuDBList.Any() && !staMenuDBList.Exists(item => item.GrpId == input.GrpId))
         {
             return SaveStatisticMenuStatus.InvalidGrpId;
         }
         foreach (var menu in input.StaticMenuList)
         {
-            if (menu.MenuId != 0 && !staMenuDBList.Exists(item => item.MenuId == menu.MenuId))
+            if (menu.MenuId != 0 && staMenuDBList.Any() && !staMenuDBList.Exists(item => item.MenuId == menu.MenuId))
             {
                 return SaveStatisticMenuStatus.InvalidMenuId;
             }
-            else if (!staGrpDBList.Exists(item => item.ReportId == menu.ReportId))
+            else if (staGrpDBList.Any() && !staGrpDBList.Exists(item => item.ReportId == menu.ReportId))
             {
                 return SaveStatisticMenuStatus.InvalidReportId;
             }
@@ -75,7 +76,8 @@ public class SaveStatisticMenuInteractor : ISaveStatisticMenuInputPort
                                                                                       conf.ConfId,
                                                                                       conf.Val
                                                                   )).ToList(),
-                                                              menu.IsDeleted
+                                                              menu.IsDeleted,
+                                                              menu.IsSaveTemp
                                           )).ToList();
         return result;
     }

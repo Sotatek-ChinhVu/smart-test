@@ -12,6 +12,7 @@
             SeqNo = seqNo;
             IsDeleted = isDeleted;
             ModelModified = modelModified;
+            IpnNameCdOrigin = string.Empty;
         }
 
         public IpnNameMstModel(int hpId)
@@ -19,12 +20,27 @@
             HpId = hpId;
             IpnNameCd = string.Empty;
             IpnName = string.Empty;
+            IpnNameCdOrigin = string.Empty;
         }
 
         public IpnNameMstModel()
         {
             IpnNameCd = string.Empty;
             IpnName = string.Empty;
+            IpnNameCdOrigin = string.Empty;
+        }
+
+        public IpnNameMstModel(int hpId, string ipnNameCd, int startDate, int endDate, string ipnName, int seqNo, int isDeleted, bool modelModified, string ipnNameCdOrigin)
+        {
+            HpId = hpId;
+            IpnNameCd = ipnNameCd;
+            StartDate = startDate;
+            EndDate = endDate;
+            IpnName = ipnName;
+            SeqNo = seqNo;
+            IsDeleted = isDeleted;
+            ModelModified = modelModified;
+            IpnNameCdOrigin = ipnNameCdOrigin;
         }
 
         /// <summary>
@@ -38,6 +54,8 @@
         /// 
         /// </summary>
         public string IpnNameCd { get; private set; }
+
+        public string IpnNameCdOrigin { get; private set; }
 
         /// <summary>
         /// 開始日

@@ -1,4 +1,7 @@
-﻿using Reporting.Accounting.DB;
+﻿using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Domain.Models.SpecialNote.PatientInfo;
+using Helper.Common;
+using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.Accounting.Service;
@@ -35,10 +38,9 @@ using Reporting.ReceiptList.Service;
 using Reporting.ReceiptPrint.Service;
 using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
-using Reporting.Sokatu.WelfareDisk.Service;
-using Reporting.Structs;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Reporting.ReportServices;
 
@@ -462,9 +464,16 @@ public class ReportService : IReportService
     }
 
     //Receipt Preview
-    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId)
+    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, int seikyuYm, int hokenKbn, bool isIncludeOutDrug, bool isModePrint, bool isOpenedFromAccounting)
     {
-        return _receiptCoReportService.GetReceiptData(hpId, ptId, sinYm, hokenId);
+        if (isOpenedFromAccounting)
+        {
+            return _receiptCoReportService.GetReceiptDataFromAccounting(hpId, ptId, sinYm, hokenId, isIncludeOutDrug, isModePrint);
+        }
+        else
+        {
+            return _receiptCoReportService.GetReceiptDataFromReceCheck(hpId, ptId, sinYm, seikyuYm, hokenId, hokenKbn, isIncludeOutDrug, isModePrint);
+        }
     }
 
     public CommonReportingRequestModel GetKensalraiData(int hpId, int systemDate, int fromDate, int toDate, string centerCd)
@@ -472,9 +481,14 @@ public class ReportService : IReportService
         return _kensaIraiCoReportService.GetKensalraiData(hpId, systemDate, fromDate, toDate, centerCd);
     }
 
-    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos)
+    //public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, List<long> printPtIds)
+    //{
+    //    return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos, printPtIds);
+    //}
+
+    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, long ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, int hokenKbn, ReseputoShubetsuModel selectedReseputoShubeusu, int departmentId, int doctorId, int printNoFrom, int printNoTo, bool includeTester, bool includeOutDrug, int sort, List<long> listPtId)
     {
-        return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos);
+        return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos, hokenKbn, selectedReseputoShubeusu, departmentId, doctorId, printNoFrom, printNoTo, includeTester, includeOutDrug, sort, listPtId);
     }
 
     public CommonReportingRequestModel GetMemoMsgReportingData(string reportName, string title, List<string> listMessage)
@@ -518,15 +532,176 @@ public class ReportService : IReportService
         return _growthCurveA5CoReportService.GetGrowthCurveA5PrintData(hpId, growthCurveConfig);
     }
 
-    // P24WelfareDisk
-
     public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
     {
         return _receiptPrintExcelService.GetReceiptPrintExcel(hpId, prefNo, reportId, reportEdaNo, dataKbn, seikyuYm);
     }
 
-    public CommonExcelReportingModel GetReceiptListExcel(List<ReceiptInputCsvModel> receiptListModel)
+    public CommonExcelReportingModel GetReceiptListExcel(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput receiptListModel, bool isIsExportTitle)
     {
-        return _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(receiptListModel);
+        return _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(hpId, seikyuYm, receiptListModel, isIsExportTitle);
     }
+
+    public List<string> OutputExcelForPeriodReceipt(int hpId, int startDate, int endDate, List<Tuple<long, int>> ptConditions, List<Tuple<int, string>> grpConditions, int sort, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn)
+    {
+        return _accountingCoReportService.ExportCsv(hpId, startDate, endDate, ptConditions, grpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
+    }
+
+    #region Period Report
+    public AccountingResponse GetPeriodPrintData(int hpId, int startDate, int endDate, List<PtInfInputItem> sourcePt, int printSort, bool isPrintList, bool printByMonth, bool printByGroup, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn, int hakkoDay, string memo, string formFileName, bool nyukinBase)
+    {
+        DateTime startDateOrigin = CIUtil.IntToDate(startDate);
+        DateTime endDateOrigin = CIUtil.IntToDate(endDate);
+        List<CoAccountingParamListModel> requestModelList = new();
+        List<CoAccountingParamModel> coAccountingParamModels = new();
+
+        List<(int startDate, int endDate)> dates = GetDates(startDateOrigin, endDateOrigin, startDate, endDate, printByMonth);
+        if (isPrintList)
+        {
+            List<(int grpId, string grpCd)> grpConditions = GetGrpCondition(hpId);
+            List<(long ptId, int hokenId)> ptCoditions = GetPtCondition(sourcePt, printSort);
+
+            if (printByGroup)
+            {
+                foreach (var group in grpConditions)
+                {
+                    foreach (var date in dates)
+                    {
+                        requestModelList.Add(new(date.startDate,
+                                                 date.endDate,
+                                                 ptCoditions,
+                                                 new List<(int grpId, string grpCd)>() { group }));
+                    }
+                }
+                return _accountingCoReportService.GetAccountingReportingData(hpId, requestModelList, printSort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn, hakkoDay, memo, formFileName);
+            }
+            else
+            {
+                foreach (var date in dates)
+                {
+                    requestModelList.Add(new(date.startDate,
+                                             date.endDate,
+                                             ptCoditions,
+                                             grpConditions));
+                }
+                return _accountingCoReportService.GetAccountingReportingData(hpId, requestModelList, printSort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn, hakkoDay, memo, formFileName);
+            }
+        }
+        else
+        {
+            foreach (var date in dates)
+            {
+                foreach (var ptInf in sourcePt)
+                {
+                    coAccountingParamModels.Add(new CoAccountingParamModel(
+                                                    ptInf.PtId,
+                                                    date.startDate,
+                                                    date.endDate,
+                                                    raiinNos: new List<long>(),
+                                                    hokenId: ptInf.HokenId,
+                                                    miseisanKbn,
+                                                    saiKbn,
+                                                    misyuKbn,
+                                                    seikyuKbn,
+                                                    hokenKbn,
+                                                    nyukinBase: nyukinBase,
+                                                    hakkoDay: hakkoDay,
+                                                    memo: memo,
+                                                    formFileName: formFileName));
+                }
+            }
+        }
+        return _accountingCoReportService.GetAccountingReportingData(hpId, coAccountingParamModels);
+    }
+
+    #region private function
+    private List<(int startDate, int endDate)> GetDates(DateTime startDateOrigin, DateTime endDateOrigin, int startDate, int endDate, bool printByMonth)
+    {
+        List<(int startDate, int endDate)> dates = new();
+        if (printByMonth)
+        {
+            int differenceMonth = CountMonth(startDateOrigin, endDateOrigin);
+            int lastDayOfMonth = DateTime.DaysInMonth(startDateOrigin.Year, startDateOrigin.Month);
+            int lastDateInMonth = startDateOrigin.Year * 10000 + startDateOrigin.Month * 100 + lastDayOfMonth;
+            dates.Add((startDate, lastDateInMonth));
+            for (int i = 1; i <= differenceMonth; i++)
+            {
+                if (i == differenceMonth)
+                {
+                    int firstDateInMonth = endDateOrigin.Year * 10000 + endDateOrigin.Month * 100 + 1;
+                    dates.Add((firstDateInMonth, endDate));
+                }
+                else
+                {
+                    DateTime nexttimeInMonth = startDateOrigin.AddMonths(i);
+                    int nextStartDateInMonth = nexttimeInMonth.Year * 10000 + nexttimeInMonth.Month * 100 + 1;
+                    int nextEndDateInMonth = nexttimeInMonth.Year * 10000 + nexttimeInMonth.Month * 100 + DateTime.DaysInMonth(nexttimeInMonth.Year, nexttimeInMonth.Month);
+                    dates.Add((nextStartDateInMonth, nextEndDateInMonth));
+                }
+            }
+        }
+        else
+        {
+            dates.Add((startDate, endDate));
+        }
+        return dates;
+    }
+
+    private int CountMonth(DateTime startD, DateTime endD)
+    {
+        return 12 * (endD.Year - startD.Year) + endD.Month - startD.Month;
+    }
+
+    private List<(int grpId, string grpCd)> GetGrpCondition(int hpId)
+    {
+        List<(int grpId, string grpCd)> grpConditions = new();
+        var ptGrpNameMstModels = _coAccountingFinder.GetPtGrpNameMstModels(hpId);
+        foreach (var item in ptGrpNameMstModels)
+        {
+            if (!string.IsNullOrEmpty(item.GrpItemSelected) && !item.IsSelecteAllGrpItem)
+            {
+                var model = item.PtGrpItemModels.FirstOrDefault(x => x.GrpCode == item.GrpItemSelected);
+                if (model != null)
+                {
+                    grpConditions.Add((model.GrpId, model.GrpCode));
+                }
+            }
+            else if (item.IsSelecteAllGrpItem)
+            {
+                foreach (var grpItem in item.PtGrpItemModels)
+                {
+                    if (grpItem.GrpCode == "al" || string.IsNullOrEmpty(grpItem.GrpCode)) continue;
+                    grpConditions.Add((grpItem.GrpId, grpItem.GrpCode));
+                }
+            }
+        }
+        return grpConditions;
+    }
+
+    private List<(long ptId, int hokenId)> GetPtCondition(List<PtInfInputItem> sourcePt, int printSort, bool exportCSV = false)
+    {
+        List<(long ptId, int hokenId)> ptCoditions = new();
+        var listPt = GetPtListBySort(sourcePt, printSort, exportCSV);
+        foreach (var item in listPt)
+        {
+            ptCoditions.Add((item.PtId, 0));
+        }
+        return ptCoditions;
+    }
+
+    private List<PtInfInputItem> GetPtListBySort(List<PtInfInputItem> sourcePt, int printSort, bool exportCSV = false)
+    {
+        if (printSort == 0)
+        {
+            sourcePt = sourcePt.OrderBy(item => item.PtNum).ToList();
+        }
+        else if (printSort == 1)
+        {
+            sourcePt = sourcePt.OrderBy(item => item.KanaName).ToList();
+        }
+        if (exportCSV) return sourcePt;
+        return sourcePt.GroupBy(p => new { p.PtNum, p.HokenId }).Select(g => g.First()).ToList();
+    }
+    #endregion
+    #endregion
 }

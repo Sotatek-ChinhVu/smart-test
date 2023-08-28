@@ -98,6 +98,11 @@ using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Calculation;
 using UseCase.SwapHoken.Save;
 using UseCase.SwapHoken.Validate;
+using UseCase.PatientInfor.SavePtKyusei;
+using UseCase.PatientInfor;
+using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
+using UseCase.PatientInfor.GetPtInfByRefNo;
+using UseCase.PatientInfor.GetPtInfModelsByName;
 
 namespace EmrCloudApi.Controller
 {
@@ -127,7 +132,7 @@ namespace EmrCloudApi.Controller
         [HttpGet("GetPatientById")]
         public ActionResult<Response<GetPatientInforByIdResponse>> GetPatientById([FromQuery] GetByIdRequest request)
         {
-            var input = new GetPatientInforByIdInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var input = new GetPatientInforByIdInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.IsShowKyuSeiName);
             var output = _bus.Handle(input);
 
             var present = new GetPatientInforByIdPresenter();
@@ -621,7 +626,7 @@ namespace EmrCloudApi.Controller
             }
 
             var input = new SavePatientInfoInputData(patient,
-                 patientInfo.PtKyuseis,
+                 patientInfo.PtKyuseis.Select(item => new PtKyuseiModel(HpId, item.PtId, item.SeqNo, item.KanaName, item.Name, item.EndDate)).ToList(),
                  patientInfo.PtSanteis,
                  insurances,
                  hokenInfs,
@@ -746,7 +751,6 @@ namespace EmrCloudApi.Controller
                     request.IsOrderOr
                 );
         }
-
 
         [HttpPost(ApiPath.ValidHokenInfAllType)]
         public ActionResult<Response<ValidHokenInfAllTypeResponse>> ValidHokenInfAllType([FromBody] ValidHokenInfAllTypeRequest request)
@@ -895,7 +899,17 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetGroupNameMst)]
         public ActionResult<Response<GetGroupNameMstResponse>> GetGroupNameMst()
         {
-            var input = new GetGroupNameMstInputData(HpId);
+            var input = new GetGroupNameMstInputData(HpId, true);
+            var output = _bus.Handle(input);
+            var presenter = new GetGroupNameMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetGroupNameMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListGroupInfo)]
+        public ActionResult<Response<GetGroupNameMstResponse>> GetListGroupInfo()
+        {
+            var input = new GetGroupNameMstInputData(HpId, false);
             var output = _bus.Handle(input);
             var presenter = new GetGroupNameMstPresenter();
             presenter.Complete(output);
@@ -925,7 +939,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.SearchPatientInfoByPtNum)]
         public ActionResult<Response<SearchPatientInfoByPtNumResponse>> SearchPatientInfoByPtNum([FromQuery] SearchPatientInfoByPtNumRequest request)
         {
-            var input = new SearchPatientInfoByPtNumInputData(HpId, request.PtNum);
+            var input = new SearchPatientInfoByPtNumInputData(HpId, request.PtNum, request.SinDate);
             var output = _bus.Handle(input);
             var presenter = new SearchPatientInfoByPtNumPresenter();
             presenter.Complete(output);
@@ -940,6 +954,26 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTokkiMstListPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTokkiMstListResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPtInfByRefNo)]
+        public ActionResult<Response<GetPtInfByRefNoResponse>> GetPtInfByRefNo([FromQuery] GetPtInfByRefNoRequest request)
+        {
+            var input = new GetPtInfByRefNoInputData(HpId, request.RefNo);
+            var output = _bus.Handle(input);
+            var presenter = new GetPtInfByRefNoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPtInfByRefNoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPtInfModelsByName)]
+        public ActionResult<Response<GetPtInfModelsByNameResponse>> GetPtInfModelsByName([FromQuery] GetPtInfModelsByNameRequest request)
+        {
+            var input = new GetPtInfModelsByNameInputData(HpId, request.KanaName, request.Name, request.BirthDate, request.Sex1, request.Sex2);
+            var output = _bus.Handle(input);
+            var presenter = new GetPtInfModelsByNamePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPtInfModelsByNameResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.CalculationSwapHoken)]
@@ -982,6 +1016,26 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<CheckValidSamePatientResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.SavePtKyusei)]
+        public ActionResult<Response<SavePtKyuseiResponse>> SavePtKyuseiPatient([FromBody] SavePtKyuseiRequest request)
+        {
+            var input = new SavePtKyuseiInputData(HpId,
+                                                  UserId,
+                                                  request.PtId,
+                                                  request.PtKyuseiList.Select(item => new PtKyuseiItem(
+                                                           HpId,
+                                                           request.PtId,
+                                                           item.SeqNo,
+                                                           item.KanaName,
+                                                           item.Name,
+                                                           item.EndDate,
+                                                           item.IsDeleted)).ToList());
+            var output = _bus.Handle(input);
+            var presenter = new SavePtKyuseiPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SavePtKyuseiResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.CheckAllowDeletePatientInfo)]
         public ActionResult<Response<CheckAllowDeletePatientInfoResponse>> CheckAllowDeletePatientInfo([FromBody] CheckAllowDeletePatientInfoRequest request)
         {
@@ -990,6 +1044,16 @@ namespace EmrCloudApi.Controller
             var presenter = new CheckAllowDeletePatientInfoPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CheckAllowDeletePatientInfoResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SearchPatientInfoByPtIdList)]
+        public ActionResult<Response<SearchPatientInfoByPtIdListResponse>> SearchPatientInfoByPtIdList([FromBody] SearchPatientInfoByPtIdListRequest request)
+        {
+            var input = new SearchPatientInfoByPtIdListInputData(HpId, request.PtIdList);
+            var output = _bus.Handle(input);
+            var presenter = new SearchPatientInfoByPtIdListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SearchPatientInfoByPtIdListResponse>>(presenter.Result);
         }
 
         private void StopCalculationCaculaleSwapHoken(CalculationSwapHokenMessageStop stopCalcStatus)

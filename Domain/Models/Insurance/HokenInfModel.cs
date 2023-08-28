@@ -120,6 +120,22 @@ namespace Domain.Models.Insurance
             EndDate = endDate;
             RousaiSaigaiKbn = rousaiSaigaiKbn;
             RousaiSyobyoDate = rousaiSyobyoDate;
+            HokenMst = new();
+            HokensyaMst = new();
+        }
+
+        public HokenInfModel(long ptId, int hokenId, int hokenKbn, string hokensyaNo, int honkeKbn, int startDate, int endDate, string houbetu)
+        {
+            PtId = ptId;
+            HokenId = hokenId;
+            HokenKbn = hokenKbn;
+            HokensyaNo = hokensyaNo;
+            HonkeKbn = honkeKbn;
+            StartDate = startDate;
+            EndDate = endDate;
+            Houbetu = houbetu;
+            HokenMst = new();
+            HokensyaMst = new();
         }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();

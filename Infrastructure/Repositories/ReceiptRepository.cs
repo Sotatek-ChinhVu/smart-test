@@ -15,7 +15,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -942,7 +941,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         IsSyoukiInfExist = syoukiInf != null ? 1 : 0,
                         IsReceCmtExist = receCmt != null ? 1 : 0,
                         IsSyobyoKeikaExist = syobyokeika != null ? 1 : 0,
-                        SeikyuCmt = receSeikyu != null ? receSeikyu.Cmt : string.Empty,
+                        SeikyuCmt = receSeikyu != null ? receSeikyu.Cmt ?? string.Empty : string.Empty,
                         LastVisitDate = ptLastVisitDate != null ? ptLastVisitDate.SinDate : 0,
                         KaName = kaMst != null ? kaMst.KaName : string.Empty,
                         UserName = userMst?.Name ?? string.Empty,
@@ -978,7 +977,14 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         receInf.Kohi3ReceKisai,
                         receInf.Kohi4ReceKisai,
                         receInf.Tokki,
-                        LastSinDateByHokenId = kaikeiInf?.SinDate ?? 0
+                        LastSinDateByHokenId = kaikeiInf?.SinDate ?? 0,
+                        JibaiHokenName = ptHokenInf?.JibaiHokenName ?? string.Empty,
+                        JibaiHokenTanto = ptHokenInf?.JibaiHokenTanto ?? string.Empty,
+                        JibaiHokenTel = ptHokenInf?.JibaiHokenTel ?? string.Empty,
+                        RousaiCityName = ptHokenInf?.RousaiCityName ?? string.Empty,
+                        RousaiJigyosyoName = ptHokenInf?.RousaiJigyosyoName ?? string.Empty,
+                        RousaiKofuNo = ptHokenInf?.RousaiKofuNo ?? string.Empty,
+                        RousaiPrefName = ptHokenInf?.RousaiPrefName ?? string.Empty
                     };
         #endregion
 
@@ -1137,7 +1143,14 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                 data.Kohi4ReceKisai,
                                 data.Tokki,
                                 data.HokenNissu ?? 0,
-                                data.ReceCheckCmt
+                                data.ReceCheckCmt,
+                                data.JibaiHokenName,
+                                data.JibaiHokenTanto,
+                                data.JibaiHokenTel,
+                                data.RousaiCityName,
+                                data.RousaiJigyosyoName,
+                                data.RousaiKofuNo,
+                                data.RousaiPrefName
                             ))
                     .OrderBy(item => item.SinYm)
                     .ThenBy(item => item.PtNum)
@@ -1256,22 +1269,80 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         {
             return true;
         }
-        var receCmtUpdateList = receCmtList.Where(item => item.Id > 0).ToList();
+        bool success = false;
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
+            {
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
+                {
+                    var ptId = receCmtList.First().PtId;
+                    var sinYm = receCmtList.First().SinYm;
+                    var hokenId = receCmtList.First().HokenId;
+                    SaveReceCmtListAction(hpId, userId, ptId, sinYm, hokenId, receCmtList);
+
+                    // resort data list
+                    int seqNo = 1;
+                    var receCmtUpdateDBList = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                                                         && item.IsDeleted == DeleteTypes.None
+                                                                                         && item.PtId == ptId
+                                                                                         && item.SinYm == sinYm
+                                                                                         && item.HokenId == hokenId)
+                                                                          .OrderBy(item => item.SeqNo)
+                                                                          .ToList();
+
+                    foreach (var item in receCmtUpdateDBList)
+                    {
+                        item.SeqNo = seqNo;
+                        seqNo++;
+                    }
+
+                    TrackingDataContext.SaveChanges();
+                    transaction.Commit();
+                    success = true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+            });
+        return success;
+    }
+
+    private void SaveReceCmtListAction(int hpId, int userId, long ptId, int sinYm, int hokenId, List<ReceCmtModel> receCmtList)
+    {
         var receCmtUpdateDBList = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
                                                                              && item.IsDeleted == DeleteTypes.None
-                                                                             && receCmtUpdateList.Select(item => item.Id).Contains(item.Id))
+                                                                             && item.PtId == ptId
+                                                                             && item.SinYm == sinYm
+                                                                             && item.HokenId == hokenId)
                                                               .ToList();
 
-        var receCmtAddNewList = receCmtList.Where(item => item.Id == 0 && !item.IsDeleted)
-                                           .Select(item => ConvertToNewReceCmt(hpId, userId, item))
-                                           .ToList();
-        TrackingDataContext.ReceCmts.AddRange(receCmtAddNewList);
-        foreach (var model in receCmtUpdateList)
+        int seqNo = receCmtUpdateDBList.Any() ? receCmtUpdateDBList.Max(item => item.SeqNo) + 1 : 1;
+        foreach (var model in receCmtList.OrderBy(item => item.SeqNo))
         {
             var entity = receCmtUpdateDBList.FirstOrDefault(item => item.Id == model.Id);
             if (entity == null)
             {
-                continue;
+                if (model.Id > 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    entity = new();
+                    entity.HpId = hpId;
+                    entity.PtId = model.PtId;
+                    entity.SinYm = model.SinYm;
+                    entity.HokenId = model.HokenId;
+                    entity.CmtKbn = model.CmtKbn;
+                    entity.CmtSbt = model.CmtSbt;
+                    entity.Id = 0;
+                    entity.IsDeleted = 0;
+                    entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    entity.CreateId = userId;
+                }
             }
             entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             entity.UpdateId = userId;
@@ -1280,11 +1351,17 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 entity.IsDeleted = 1;
                 continue;
             }
-            entity.SeqNo = model.SeqNo;
+            entity.ItemCd = model.ItemCd;
+            entity.SeqNo = seqNo;
             entity.CmtData = model.CmtData;
             entity.Cmt = model.Cmt;
+            if (entity.Id == 0)
+            {
+                TrackingDataContext.ReceCmts.Add(entity);
+            }
+            seqNo++;
         }
-        return TrackingDataContext.SaveChanges() > 0;
+        TrackingDataContext.SaveChanges();
     }
 
     public List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId)
@@ -1396,22 +1473,40 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public bool SaveSyobyoKeikaList(int hpId, int userId, List<SyobyoKeikaModel> syoukiInfList)
     {
-        var syobyoKeikaUpdateList = syoukiInfList.Where(item => item.SeqNo > 0).ToList();
+        if (!syoukiInfList.Any())
+        {
+            return false;
+        }
+
+        var ptId = syoukiInfList.First().PtId;
+        var sinYm = syoukiInfList.First().SinYm;
+        var hokenId = syoukiInfList.First().HokenId;
         var syobyoKeikaUpdateDBList = TrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
-                                                                                   && item.IsDeleted == DeleteTypes.None
-                                                                                   && syobyoKeikaUpdateList.Select(item => item.SeqNo).Contains(item.SeqNo))
+                                                                                     && item.IsDeleted == DeleteTypes.None
+                                                                                     && item.PtId == ptId
+                                                                                     && item.SinYm == sinYm
+                                                                                     && item.HokenId == hokenId)
                                                                       .ToList();
 
-        var syobyoKeikaAddNewList = syoukiInfList.Where(item => item.SeqNo == 0 && !item.IsDeleted)
-                                                 .Select(item => ConvertToNewSyobyoKeika(hpId, userId, item))
-                                                 .ToList();
-        TrackingDataContext.SyobyoKeikas.AddRange(syobyoKeikaAddNewList);
-        foreach (var model in syobyoKeikaUpdateList)
+        foreach (var model in syoukiInfList)
         {
-            var entity = syobyoKeikaUpdateDBList.FirstOrDefault(item => item.SeqNo == model.SeqNo);
+            var entity = syobyoKeikaUpdateDBList.FirstOrDefault(item => model.SeqNo > 0 && item.SeqNo == model.SeqNo);
             if (entity == null)
             {
-                continue;
+                if (model.SeqNo > 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    entity = syobyoKeikaUpdateDBList.FirstOrDefault(item => item.SinDay == model.SinDay && !model.IsDeleted);
+                    if (entity == null)
+                    {
+                        entity = ConvertToNewSyobyoKeika(hpId, userId, model);
+                        TrackingDataContext.Add(entity);
+                        continue;
+                    }
+                }
             }
             entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             entity.UpdateId = userId;
@@ -1583,14 +1678,23 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var ptKohi3 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi3Id);
         var ptKohi4 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi4Id);
 
-        var hokenPInf = NoTrackingDataContext.PtHokenPatterns.FirstOrDefault(item => item.HpId == hpId
-                                                                                     && item.HokenId == hokenId
-                                                                                     && hokenInf != null
-                                                                                     && item.HokenKbn == hokenInf.HokenKbn
-                                                                                     && item.IsDeleted == 0
-                                                                                     && item.StartDate / 100 <= sinYm
-                                                                                     && item.EndDate / 100 >= sinYm);
-        return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new(), hokenPInf ?? new());
+        int hokenPid = 0;
+
+
+        var querySinKoui = (from sinKouiCount in NoTrackingDataContext.SinKouiCounts.Where(item => item.SinYm == sinYm
+                                                                                                   && item.PtId == ptId
+                                                                                                   && item.HpId == hpId)
+                            join sinKoui in NoTrackingDataContext.SinKouis.Where(item => item.SinYm == sinYm
+                                                                                         && item.PtId == ptId
+                                                                                         && item.HpId == hpId
+                                                                                         && item.HokenId == hokenId)
+                            on sinKouiCount.RpNo equals sinKoui.RpNo
+                            select new { sinKoui, sinKouiCount }).Distinct().ToList();
+
+        var sinKouiList = querySinKoui.OrderByDescending(item => item.sinKouiCount.SinDay).ToList();
+        hokenPid = sinKouiList.FirstOrDefault()?.sinKoui?.HokenPid ?? 0;
+
+        return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new(), hokenPid);
     }
 
     public bool SaveReceCheckOpt(int hpId, int userId, List<ReceCheckOptModel> receCheckOptList)
@@ -1788,11 +1892,11 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                     && item.HokenId == hokenId
                                                                                     && item.IsDeleted == 0
                                                                                     && item.SeqNo == model.SeqNo);
-        if (receiptEditDB == null)
+        if (receiptEditDB == null && model.SeqNo == 0 && !model.IsDeleted)
         {
             TrackingDataContext.ReceInfEdits.Add(ConvertToNewReceInfEdit(hpId, userId, seikyuYm, ptId, sinYm, hokenId, model));
         }
-        else
+        else if (receiptEditDB != null)
         {
             if (model.IsDeleted)
             {
@@ -1900,6 +2004,11 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                        && item.SeikyuYm == sinYm
                                                                        && (ptIdList.Count <= 0 || ptIdList.Contains(item.PtId)))
                                                         .ToList();
+
+        if (!receInfList.Any())
+        {
+            return new();
+        }
 
         ptIdList = receInfList.Select(item => item.PtId).ToList();
 
@@ -2800,28 +2909,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             );
     }
 
-    private ReceCmt ConvertToNewReceCmt(int hpId, int userId, ReceCmtModel model)
-    {
-        ReceCmt entity = new();
-        entity.HpId = hpId;
-        entity.PtId = model.PtId;
-        entity.SinYm = model.SinYm;
-        entity.HokenId = model.HokenId;
-        entity.CmtKbn = model.CmtKbn;
-        entity.CmtSbt = model.CmtSbt;
-        entity.Id = 0;
-        entity.SeqNo = model.SeqNo;
-        entity.ItemCd = model.ItemCd;
-        entity.Cmt = model.Cmt;
-        entity.CmtData = model.CmtData;
-        entity.IsDeleted = 0;
-        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
-        entity.CreateId = userId;
-        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
-        entity.UpdateId = userId;
-        return entity;
-    }
-
     private SyoukiInfModel ConvertToSyoukiInfModel(SyoukiInf syoukiInf)
     {
         return new SyoukiInfModel(
@@ -2953,7 +3040,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return receCheckCmtList.Any() ? receCheckCmtList.Max(item => item.SeqNo) : 0;
     }
 
-    private InsuranceReceInfModel ConvertToInsuranceReceInfModel(ReceInf receInf, PtHokenInf hokenInf, PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4, PtHokenPattern hokenPInf)
+    private InsuranceReceInfModel ConvertToInsuranceReceInfModel(ReceInf receInf, PtHokenInf hokenInf, PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4, int hokenPid)
     {
         return new InsuranceReceInfModel(
                 receInf.SeikyuYm,
@@ -3021,7 +3108,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 hokenInf?.Kigo ?? string.Empty,
                 hokenInf?.Bango ?? string.Empty,
                 hokenInf?.EdaNo ?? string.Empty,
-                hokenPInf?.HokenPid ?? 0
+                hokenPid
             );
     }
 
@@ -3612,10 +3699,27 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                .ToList();
     }
 
+    public bool CheckExistsReceInf(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId)
+    {
+        var existReceInf = NoTrackingDataContext.ReceInfs.Any(item => item.HpId == hpId
+                                                                      && item.SeikyuYm == seikyuYm
+                                                                      && item.PtId == ptId
+                                                                      && item.SinYm == sinYm
+                                                                      && item.HokenId == hokenId);
+        return existReceInf;
+    }
+    public bool CheckExistSyobyoKeikaSinDay(int hpId, int sinYm, long ptId, int hokenId, int sinDay)
+    {
+        return NoTrackingDataContext.SyobyoKeikas.Any(item => item.HpId == hpId
+                                                              && item.SinYm == sinYm
+                                                              && item.PtId == ptId
+                                                              && item.HokenId == hokenId
+                                                              && item.SinDay == sinDay
+                                                              && item.IsDeleted == 0);
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
     }
-
-
 }

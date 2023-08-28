@@ -8,20 +8,22 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Receipt;
 using EmrCloudApi.Responses.SinKoui;
 using EmrCloudApi.Services;
-using Helper.Common;
 using Helper.Extension;
 using Microsoft.AspNetCore.Mvc;
-using System.IO.Compression;
 using System.Net.Mime;
 using UseCase.Core.Sync;
 using UseCase.Receipt;
 using UseCase.Receipt.CheckExisReceInfEdit;
+using UseCase.Receipt.CheckExistsReceInf;
+using UseCase.Receipt.CheckExistSyobyoKeika;
 using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
 using UseCase.Receipt.GetListKaikeiInf;
+using UseCase.Receipt.GetListRaiinInf;
 using UseCase.Receipt.GetListReceInf;
+using UseCase.Receipt.GetListSokatuMst;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceByomeiChecking;
@@ -48,8 +50,6 @@ using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ValidateCreateUKEFile;
 using UseCase.SinKoui.GetSinKoui;
-using UseCase.Receipt.GetListSokatuMst;
-using UseCase.Receipt.GetListRaiinInf;
 
 namespace EmrCloudApi.Controller;
 
@@ -440,23 +440,14 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
         if (output.Status == CreateUKEFileStatus.Successful)
         {
-            using (MemoryStream ms = new MemoryStream())
+            var result = new List<FileContentResult>();
+            foreach (var file in output.UKEFiles)
             {
-                using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
-                {
-                    foreach (var file in output.UKEFiles)
-                    {
-                        var entry = archive.CreateEntry(file.FileName, CompressionLevel.Fastest);
-                        using (var zipStream = entry.Open())
-                        {
-                            var buffer = file.OutputStream.ToArray();
-                            zipStream.Write(buffer, 0, buffer.Length);
-                        }
-                    }
-                }
-                presenter.Result.Data.File = File(ms.ToArray(), MediaTypeNames.Application.Zip, GetFileUKECreateName(request.FileName ?? string.Empty));
-                return Ok(presenter.Result);
+                result.Add(File(file.OutputStream.ToArray(), MediaTypeNames.Application.Octet, file.FileName));
             }
+            presenter.Result.Data.File = result;
+
+            return Ok(presenter.Result);
         }
         return Ok(presenter.Result);
     }
@@ -530,6 +521,32 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListSokatuMstResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.CheckExistsReceInf)]
+    public ActionResult<Response<CheckExistsReceInfResponse>> CheckExistsReceInf([FromQuery] CheckExistsReceInfRequest request)
+    {
+        var input = new CheckExistsReceInfInputData(HpId, request.SeikyuYm, request.PtId, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new CheckExistsReceInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<CheckExistsReceInfResponse>>(presenter.Result);
+    }
+
+
+
+    [HttpGet(ApiPath.CheckExistSyobyoKeika)]
+    public ActionResult<Response<CheckExistSyobyoKeikaResponse>> CheckExistSyobyoKeika([FromQuery] CheckExistSyobyoKeikaRequest request)
+    {
+        var input = new CheckExistSyobyoKeikaInputData(HpId, request.PtId, request.SinYm, request.HokenId, request.SinDay);
+        var output = _bus.Handle(input);
+
+        var presenter = new CheckExistSyobyoKeikaPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<CheckExistSyobyoKeikaResponse>>(presenter.Result);
     }
 
     #region Private function
@@ -680,12 +697,6 @@ public class ReceiptController : AuthorizeControllerBase
                    request.Tokki4Id,
                    request.Tokki5Id
             );
-    }
-
-    private string GetFileUKECreateName(string inputName)
-    {
-        if (!string.IsNullOrEmpty(inputName)) return $"{inputName}.zip";
-        return $"ReceiptCreation{CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow())}.zip";
     }
 
     private ReceCheckErrorItem ConvertToReceCheckErrorItem(SaveReceCheckErrorListRequestItem item)

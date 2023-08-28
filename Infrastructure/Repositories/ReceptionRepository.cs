@@ -4,10 +4,14 @@ using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Enum;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Globalization;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Runtime.InteropServices;
 
 namespace Infrastructure.Repositories
@@ -502,6 +506,47 @@ namespace Infrastructure.Repositories
                         string.Empty
                    ));
 
+        }
+
+        public ReceptionModel GetYoyakuRaiinInf(int hpId, long ptId, int sinDate)
+        {
+            var entity = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                       && item.SinDate == sinDate
+                                                                       && item.PtId == ptId
+                                                                       && item.IsDeleted == DeleteTypes.None
+                                                                       && item.Status == RaiinState.Reservation)
+                                                        .OrderByDescending(p => p.RaiinNo)
+                                                        .FirstOrDefault();
+            if (entity == null)
+            {
+                return new();
+            }
+            return new ReceptionModel(
+                        entity.HpId,
+                        entity.PtId,
+                        entity.SinDate,
+                        entity.RaiinNo,
+                        entity.OyaRaiinNo,
+                        entity.HokenPid,
+                        entity.SanteiKbn,
+                        entity.Status,
+                        entity.IsYoyaku,
+                        entity.YoyakuTime ?? string.Empty,
+                        entity.YoyakuId,
+                        entity.UketukeSbt,
+                        entity.UketukeTime ?? string.Empty,
+                        entity.UketukeId,
+                        entity.UketukeNo,
+                        entity.SinStartTime ?? string.Empty,
+                        entity.SinEndTime ?? string.Empty,
+                        entity.KaikeiTime ?? string.Empty,
+                        entity.KaikeiId,
+                        entity.KaId,
+                        entity.TantoId,
+                        entity.SyosaisinKbn,
+                        entity.JikanKbn,
+                        string.Empty
+                   );
         }
 
         public List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate)
@@ -1276,8 +1321,8 @@ namespace Infrastructure.Repositories
 
             // Delete Monshin
             var listMonshinInf = TrackingDataContext.MonshinInfo.Where(m => m.HpId == hpId
-                                                                            && m.PtId == ptId 
-                                                                            && m.RaiinNo == raiinNo 
+                                                                            && m.PtId == ptId
+                                                                            && m.RaiinNo == raiinNo
                                                                             && m.SinDate == sinDate)
                                                                 .ToList();
             listMonshinInf.ForEach((m) =>
@@ -1500,6 +1545,168 @@ namespace Infrastructure.Repositories
                     break;
             }
             return result;
+        }
+
+        public List<RaiinInfToPrintModel> GetOutDrugOrderList(int hpId, int fromDate, int toDate)
+        {
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                             && item.IsDeleted == DeleteTypes.None
+                                                                             && item.SinDate >= fromDate
+                                                                             && item.SinDate <= toDate
+                                                                             && item.Status >= RaiinState.TempSave)
+                                                              .ToList();
+
+            var raiinNoList = raiinInfList.Select(item => item.RaiinNo).Distinct().ToList();
+            var ptIdList = raiinInfList.Select(item => item.PtId).Distinct().ToList();
+            var kaIdList = raiinInfList.Select(item => item.KaId).Distinct().ToList();
+            var tantoIdList = raiinInfList.Select(item => item.TantoId).Distinct().ToList();
+            var uketukeSbtList = raiinInfList.Select(item => item.UketukeSbt).Distinct().ToList();
+            var hokenPidList = raiinInfList.Select(item => item.HokenPid).Distinct().ToList();
+
+            var ordInfList = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
+                                                                         && item.SinDate >= fromDate
+                                                                         && item.SinDate <= toDate
+                                                                         && item.IsDeleted == 0
+                                                                         && raiinNoList.Contains(item.RaiinNo)
+                                                                         && item.InoutKbn == 1// コメント（処方箋備考）
+                                                                         && ((item.OdrKouiKbn >= 20 && item.OdrKouiKbn <= 29) // 処方
+                                                                              || item.OdrKouiKbn == 100 // コメント（処方箋）
+                                                                              || item.OdrKouiKbn == 101))
+                                                          .GroupBy(item => new { item.RaiinNo })
+                                                          .Select(item => item.FirstOrDefault())
+                                                          .ToList();
+
+            var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                       && item.IsDelete == 0
+                                                                       && ptIdList.Contains(item.PtId))
+                                                        .ToList();
+
+            var kaMstList = NoTrackingDataContext.KaMsts.Where(item => item.HpId == hpId
+                                                                       && item.IsDeleted == 0
+                                                                       && kaIdList.Contains(item.KaId))
+                                                        .ToList();
+
+            var userMstList = NoTrackingDataContext.UserMsts.Where(item => item.HpId == hpId
+                                                                           && item.IsDeleted == 0
+                                                                           && item.StartDate <= fromDate
+                                                                           && toDate <= item.EndDate
+                                                                           && tantoIdList.Contains(item.UserId))
+                                                            .ToList();
+
+            var uketsukeSbtMstList = NoTrackingDataContext.UketukeSbtMsts.Where(item => item.HpId == hpId
+                                                                                        && item.IsDeleted == 0
+                                                                                        && uketukeSbtList.Contains(item.KbnId));
+
+            #region Get HokenPatternName
+            var ptHokenPatternList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
+                                                                                         && item.IsDeleted == 0
+                                                                                         && hokenPidList.Contains(item.HokenPid)
+                                                                                         && ptIdList.Contains(item.PtId))
+                                                                          .ToList();
+
+            var hokenIdList = ptHokenPatternList.Select(item => item.HokenId).Distinct().ToList();
+
+            var ptHokenInfList = NoTrackingDataContext.PtHokenInfs.Where(item => item.HpId == hpId
+                                                                                 && item.IsDeleted == 0
+                                                                                 && ptIdList.Contains(item.PtId)
+                                                                                 && hokenIdList.Contains(item.HokenId))
+                                                                  .ToList();
+
+            var ptHokenPatternResult = (from ptHokenPattern in ptHokenPatternList
+                                        join ptHokenInf in ptHokenInfList on
+                                            new { ptHokenPattern.PtId, ptHokenPattern.HokenId } equals
+                                            new { ptHokenInf.PtId, ptHokenInf.HokenId } into ptHokenInf1List
+                                        from ptHokenInfItem in ptHokenInf1List.DefaultIfEmpty()
+                                        select new
+                                        {
+                                            ptHokenPattern.HokenPid,
+                                            ptHokenPattern.PtId,
+                                            HokenHobetu = ptHokenInfItem == null ? "" : ptHokenInfItem.Houbetu,
+                                            HokensyaNo = ptHokenInfItem == null ? "" : ptHokenInfItem.HokensyaNo,
+                                            PtHokenPattern = ptHokenPattern,
+                                            HokenInfHokenId = ptHokenInfItem == null ? 0 : ptHokenInfItem.HokenId,
+                                            HokenInfStartDate = ptHokenInfItem == null ? 0 : ptHokenInfItem.StartDate,
+                                            HokenInfEndDate = ptHokenInfItem == null ? 0 : ptHokenInfItem.EndDate,
+                                        }).ToList();
+
+            #endregion
+
+            var query = from odr in ordInfList
+                        join raiin in raiinInfList
+                            on new { odr.HpId, odr.PtId, odr.SinDate, odr.RaiinNo }
+                            equals new { raiin.HpId, raiin.PtId, raiin.SinDate, raiin.RaiinNo }
+                        join pt in ptInfList
+                            on new { raiin.PtId }
+                            equals new { pt.PtId } into ptLeft
+                        from pt in ptLeft
+                        join ka in kaMstList
+                            on new { raiin.KaId }
+                            equals new { ka.KaId } into kaLeft
+                        from ka in kaLeft
+                        join user in userMstList
+                             on new { raiin.TantoId }
+                             equals new { TantoId = user.UserId } into userLeft
+                        from user in userLeft.DefaultIfEmpty()
+                        join uketsuke in uketsukeSbtMstList
+                            on new { raiin.UketukeSbt }
+                            equals new { UketukeSbt = uketsuke.KbnId } into uketsukeLeft
+                        from uketsuke in uketsukeLeft.DefaultIfEmpty()
+                        join hokenPattern in ptHokenPatternResult
+                            on new { raiin.PtId, raiin.HokenPid, }
+                            equals new { hokenPattern.PtId, hokenPattern.HokenPid } into PtHokenPatternLeft
+                        from hokenPattern in PtHokenPatternLeft.DefaultIfEmpty()
+                        select new
+                        {
+                            Raiin = raiin,
+                            Pt = pt,
+                            Ka = ka,
+                            User = user,
+                            Uketsuke = uketsuke,
+                            PtHokenPatternItem = hokenPattern
+                        };
+            var result = query.Select(data => new RaiinInfToPrintModel(PrintMode.PrintPrescription,
+                                                                       data.Pt?.Name ?? string.Empty,
+                                                                       data.User?.Name ?? string.Empty,
+                                                                       0,
+                                                                       data.Raiin?.KaId ?? 0,
+                                                                       data.Pt?.PtId ?? 0,
+                                                                       data.Pt?.PtNum ?? 0,
+                                                                       data.PtHokenPatternItem?.HokenHobetu ?? string.Empty,
+                                                                       data.PtHokenPatternItem?.PtHokenPattern.HokenKbn ?? 0,
+                                                                       string.Empty,
+                                                                       data.PtHokenPatternItem?.HokensyaNo ?? string.Empty,
+                                                                       data.Raiin?.UketukeNo ?? 0,
+                                                                       0,
+                                                                        data.Raiin?.SinDate ?? 0,
+                                                                       0,
+                                                                       data.Raiin?.TantoId ?? 0,
+                                                                       data.Ka?.KaName ?? string.Empty,
+                                                                       data.Raiin?.UketukeSbt ?? 0,
+                                                                       data.Uketsuke?.KbnName ?? string.Empty,
+                                                                       0,
+                                                                       data.Raiin?.HokenPid ?? 0,
+                                                                       0,
+                                                                       -1,
+                                                                       -1,
+                                                                       string.Empty,
+                                                                       string.Empty,
+                                                                       0, 0, 0, 0, 0, 0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty,
+                                                                       data.Raiin?.Status ?? 0))
+                          .ToList();
+
+            return result;
+        }
+
+        public int GetStatusRaiinInf(int hpId, long raiinNo, long ptId)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                  && item.PtId == ptId
+                                                                                  && item.RaiinNo == raiinNo);
+            if (raiinInf == null)
+            {
+                return 0;
+            }
+            return raiinInf.Status;
         }
     }
 }

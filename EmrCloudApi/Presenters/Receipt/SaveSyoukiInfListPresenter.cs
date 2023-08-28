@@ -11,7 +11,7 @@ public class SaveSyoukiInfListPresenter : ISaveSyoukiInfListOutputPort
 
     public void Complete(SaveSyoukiInfListOutputData outputData)
     {
-        Result.Data = new SaveSyoukiInfListResponse(outputData.Status == SaveSyoukiInfListStatus.Successed);
+        Result.Data = new SaveSyoukiInfListResponse(outputData.Status == SaveSyoukiInfListStatus.Successed, outputData.SyoukiInfInvalidList);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

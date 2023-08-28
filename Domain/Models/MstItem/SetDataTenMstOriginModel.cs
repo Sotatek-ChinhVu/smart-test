@@ -1,5 +1,6 @@
 ﻿using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.MstItem
 {
@@ -52,6 +53,7 @@ namespace Domain.Models.MstItem
 
     public class IjiSettingTabModel
     {
+        [JsonConstructor]
         public IjiSettingTabModel(string searchItemName, string agekasanCd1Note, string agekasanCd2Note, string agekasanCd3Note, string agekasanCd4Note)
         {
             SearchItemName = searchItemName;
@@ -59,6 +61,15 @@ namespace Domain.Models.MstItem
             AgekasanCd2Note = agekasanCd2Note;
             AgekasanCd3Note = agekasanCd3Note;
             AgekasanCd4Note = agekasanCd4Note;
+        }
+
+        public IjiSettingTabModel()
+        {
+            SearchItemName = string.Empty;
+            AgekasanCd1Note = string.Empty;
+            AgekasanCd2Note = string.Empty;
+            AgekasanCd3Note = string.Empty;
+            AgekasanCd4Note = string.Empty;
         }
 
         public string SearchItemName { get; private set; }
@@ -98,9 +109,15 @@ namespace Domain.Models.MstItem
 
     public class UsageSettingTabModel
     {
+        [JsonConstructor]
         public UsageSettingTabModel(string yohoInfMstPrefix)
         {
             YohoInfMstPrefix = yohoInfMstPrefix;
+        }
+
+        public UsageSettingTabModel()
+        {
+            YohoInfMstPrefix = string.Empty;
         }
 
         public string YohoInfMstPrefix { get; private set; }

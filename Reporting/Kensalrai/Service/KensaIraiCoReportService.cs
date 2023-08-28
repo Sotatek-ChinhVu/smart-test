@@ -20,7 +20,7 @@ namespace Reporting.Kensalrai.Service
         private int HpId;
         private List<string> _objectRseList;
         private List<CoKensaIraiPrintDataModel> printOutData;
-        List<KensaIraiModel> KensaIrais;
+        List<KensaIraiModel> KensaIrais = new List<KensaIraiModel>();
         string centerCd;
         string centerName;
         int IraiDate;
@@ -64,6 +64,12 @@ namespace Reporting.Kensalrai.Service
             GetFieldNameList();
             GetRowCount();
             GetKensaIrais();
+
+            if (!KensaIrais.Any())
+            {
+                return new();
+            }
+
             GetData();
 
             _hasNextPage = true;
