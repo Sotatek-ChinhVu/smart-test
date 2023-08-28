@@ -35,5 +35,7 @@ namespace EmrCloudApi.Requests.ExportCsv
         public string MenuName { get; set; } = string.Empty;
 
         public bool? IsPutColName { get; set; } = false;
+
+        public CoFileType? CoFileType { get; set; } = null;
     }
 }

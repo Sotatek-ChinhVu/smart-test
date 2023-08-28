@@ -42,7 +42,7 @@ public class ExportCSVController : AuthorizeControllerBase
     public IActionResult GenerateExportStatics([FromQuery] ExportCsvStaticsRequest request)
     {
         var data = _reportService.ExportCsv(HpId, request.MenuName, request.MenuId, request.TimeFrom, request.TimeTo, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, 
-                                            request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo, request.IsPutColName);
+                                            request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo, request.IsPutColName, request.CoFileType);
         if (!data.Data.Any())
         {
             return Ok("EndNoData");
