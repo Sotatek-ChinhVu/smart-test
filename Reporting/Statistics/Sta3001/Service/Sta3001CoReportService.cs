@@ -1,4 +1,5 @@
 ﻿using Helper.Common;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -65,6 +66,7 @@ namespace Reporting.Statistics.Sta3001.Service
         private List<CoSta3001PrintData> printDatas;
         private List<CoAdpDrugsModel> adpDrugs;
         private CoSta3001PrintConf _printConf;
+        private CoFileType? coFileType;
         //private BackgroundWorker _backgroundWorker = null;
 
         private int HpId;
@@ -256,46 +258,46 @@ namespace Reporting.Statistics.Sta3001.Service
                 foreach (var adpDrug in adpDrugs)
                 {
                     //明細
-                    //if (outputMode == CoOutputMode.File && outputFileType == CoFileType.Csv)
-                    //{
-                    //    //CSV
-                    //    AddAllCols(adpDrug);
-                    //}
-                    //else
-                    //{
-
-                    //改ページ条件
-                    pgBreak = false;
-                    if (pbDrugKbn && adpDrug.DrugKbn != preDrugKbn)
+                    if (coFileType == CoFileType.Csv)
                     {
-                        pgBreak = rowCount > 0;
-                        preDrugKbn = adpDrug.DrugKbn;
+                        //CSV
+                        AddAllCols(adpDrug);
                     }
-
-                    //改ページ
-                    if (rowCount == maxRow || pgBreak)
+                    else
                     {
-                        for (int i = rowCount; i < maxRow; i++)
+
+                        //改ページ条件
+                        pgBreak = false;
+                        if (pbDrugKbn && adpDrug.DrugKbn != preDrugKbn)
                         {
-                            //空行を追加
-                            printDatas.Add(new CoSta3001PrintData(RowType.Brank));
+                            pgBreak = rowCount > 0;
+                            preDrugKbn = adpDrug.DrugKbn;
                         }
-                        rowCount = 0;
-                        isFirstItem = true;
+
+                        //改ページ
+                        if (rowCount == maxRow || pgBreak)
+                        {
+                            for (int i = rowCount; i < maxRow; i++)
+                            {
+                                //空行を追加
+                                printDatas.Add(new CoSta3001PrintData(RowType.Brank));
+                            }
+                            rowCount = 0;
+                            isFirstItem = true;
+                        }
+
+                        AddLine1(adpDrug, out curDrgKbnName);
+                        AddLine2(adpDrug);
+                        AddLine3(adpDrug);
+
+                        //ヘッダー
+                        if (isFirstItem && pbDrugKbn)
+                        {
+                            headerL.Add(curDrgKbnName);
+                        }
+
+                        isFirstItem = false;
                     }
-
-                    AddLine1(adpDrug, out curDrgKbnName);
-                    AddLine2(adpDrug);
-                    AddLine3(adpDrug);
-
-                    //ヘッダー
-                    if (isFirstItem && pbDrugKbn)
-                    {
-                        headerL.Add(curDrgKbnName);
-                    }
-
-                    isFirstItem = false;
-                    // }
                 }
 
             }
@@ -478,9 +480,11 @@ namespace Reporting.Statistics.Sta3001.Service
             maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
         }
 
-        public CommonExcelReportingModel ExportCsv(CoSta3001PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+        public CommonExcelReportingModel ExportCsv(CoSta3001PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
         {
             _printConf = printConf;
+            HpId = hpId;
+            this.coFileType = coFileType;
             string fileName = menuName + "_" + monthFrom + "_" + monthTo;
             List<string> retDatas = new List<string>();
             if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);

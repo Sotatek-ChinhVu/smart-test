@@ -156,7 +156,7 @@ namespace Reporting.DailyStatic.Service
                     result = PrintSta3010(hpId, configDaily, dateFrom ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3001:
-                    result = PrintSta3001(hpId, configDaily, dateFrom ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3001(hpId, configDaily, dateFrom ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow, coFileType);
                     break;
                 case StatisticReportType.Sta3030:
                     result = PrintSta3030(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, tenkiDateFrom ?? -1, tenkiDateTo ?? -1, enableRangeFrom ?? -1, enableRangeTo ?? -1, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
@@ -266,10 +266,10 @@ namespace Reporting.DailyStatic.Service
             return _sta3010CoReportService.ExportCsv(CreateCoSta3010PrintConf(configDaily.ConfigStatistic3010, dateFrom), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
         }
 
-        private CommonExcelReportingModel PrintSta3001(int hpId, ConfigStatisticModel configDaily, int dateFrom, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
+        private CommonExcelReportingModel PrintSta3001(int hpId, ConfigStatisticModel configDaily, int dateFrom, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow, CoFileType? coFileType)
         {
             var printConf = CreateCoSta3001PrintConf(configDaily.ConfigStatistic3001, dateFrom);
-            return _sta3001CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
+            return _sta3001CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false, coFileType ?? null);
         }
 
         private CommonExcelReportingModel PrintSta3030(int hpId, ConfigStatisticModel configDaily, int startDateFrom, int startDateTo, int tenkiDateFrom, int tenkiDateTo, int enableRangeFrom, int enableRangeTo, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
