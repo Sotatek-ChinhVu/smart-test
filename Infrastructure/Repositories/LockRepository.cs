@@ -5,6 +5,7 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Repositories
 {
@@ -14,7 +15,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string tabKey, string loginKey)
+        public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token, string tabKey)
         {
             long oyaRaiinNo = 0;
             if (raiinNo > 0)
@@ -36,8 +37,8 @@ namespace Infrastructure.Repositories
             string lockDate = CIUtil.GetJapanDateTimeNow().ToString("yyyy-MM-dd HH:mm:ss.fff");
 
             string rawSql =
-            "INSERT INTO \"LOCK_INF\" (\"FUNCTION_CD\", \"HP_ID\", \"OYA_RAIIN_NO\", \"PT_ID\", \"RAIIN_NO\", \"SIN_DATE\", \"LOCK_DATE\", \"MACHINE\", \"USER_ID\", \"LOGINKEY\")\r\n      " +
-            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{tabKey}', {userId}, '{loginKey}') ON CONFLICT DO NOTHING;";
+            "INSERT INTO \"LOCK_INF\" (\"FUNCTION_CD\", \"HP_ID\", \"OYA_RAIIN_NO\", \"PT_ID\", \"RAIIN_NO\", \"SIN_DATE\", \"LOCK_DATE\", \"MACHINE\", \"USER_ID\")\r\n      " +
+            $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{tabKey}', {userId}) ON CONFLICT DO NOTHING;";
 
             return TrackingDataContext.Database.ExecuteSqlRaw(rawSql) > 0;
         }
@@ -214,22 +215,6 @@ namespace Infrastructure.Repositories
             return raiinNoList;
         }
 
-        public List<long> RemoveAllLock(int hpId, int userId, string loginKey)
-        {
-            var lockInfList = TrackingDataContext.LockInfs.Where(item => item.HpId == hpId
-                                                                         && item.UserId == userId
-                                                                         && item.LoginKey == loginKey)
-                                                          .ToList();
-            if (!lockInfList.Any())
-            {
-                return new();
-            }
-            var raiinNoList = lockInfList.Select(item => item.RaiinNo).Distinct().ToList();
-            TrackingDataContext.LockInfs.RemoveRange(lockInfList);
-            TrackingDataContext.SaveChanges();
-            return raiinNoList;
-        }
-
         public bool ExtendTtl(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId)
         {
             long oyaRaiinNo = 0;
@@ -393,49 +378,6 @@ namespace Infrastructure.Repositories
                                ptId,
                                raiinNo,
                                RaiinState.Examining
-                           ));
-            }
-            return result;
-        }
-
-        public List<ResponseLockModel> GetResponseLockModel(int hpId, List<long> raiinNoList)
-        {
-            List<ResponseLockModel> result = new();
-            List<RaiinInf> raiinInfList;
-
-            // Raiin
-            if (raiinNoList.Any())
-            {
-                raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
-                                                                             && item.IsDeleted == DeleteTypes.None
-                                                                             && raiinNoList.Contains(item.RaiinNo))
-                                                              .ToList();
-
-                raiinNoList = raiinInfList.Select(item => item.RaiinNo).Distinct().ToList();
-            }
-            else
-            {
-                return result;
-            }
-
-            // Lock 
-            var lockInfList = NoTrackingDataContext.LockInfs.Where(item => raiinNoList.Contains(item.RaiinNo)
-                                                                           && (item.FunctionCd == FunctionCode.MedicalExaminationCode
-                                                                               || item.FunctionCd == FunctionCode.TeamKarte
-                                                                               || item.FunctionCd == FunctionCode.SwitchOrderCode))
-                                                            .ToList();
-            foreach (var raiinItem in raiinInfList)
-            {
-                int status = raiinItem.Status;
-                if (lockInfList.Any(item => item.RaiinNo == raiinItem.RaiinNo))
-                {
-                    status = RaiinState.Examining;
-                }
-                result.Add(new ResponseLockModel(
-                               raiinItem.SinDate,
-                               raiinItem.PtId,
-                               raiinItem.RaiinNo,
-                               status
                            ));
             }
             return result;
