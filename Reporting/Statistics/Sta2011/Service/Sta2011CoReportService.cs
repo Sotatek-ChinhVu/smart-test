@@ -1,5 +1,6 @@
 ﻿using Helper.Common;
 using Helper.Constants;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -72,7 +73,8 @@ namespace Reporting.Statistics.Sta2011.Service
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
-        private bool isPutColName;
+        private CoFileType? coFileType;
+        private bool isPutTotalRow;
 
 
         #endregion
@@ -642,22 +644,22 @@ namespace Reporting.Statistics.Sta2011.Service
                     }
                 }
 
-                //if (outputFileType == CoFileType.Csv)
-                //{
-                //    //CSV出力の場合は空白を埋める
-                //    printDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
-                //    for (int i = 1; i < printDatas.Count; i++)
-                //    {
-                //        if (printDatas[i].HokenSbt1 == null)
-                //        {
-                //            printDatas[i].HokenSbt1 = printDatas[i - 1].HokenSbt1;
-                //        }
-                //        if (printDatas[i].HokenSbt2 == null && printDatas[i].HokenSbt1 == printDatas[i - 1].HokenSbt1)
-                //        {
-                //            printDatas[i].HokenSbt2 = printDatas[i - 1].HokenSbt2;
-                //        }
-                //    }
-                //}
+                if (coFileType == CoFileType.Csv)
+                {
+                    //CSV出力の場合は空白を埋める
+                    printDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+                    for (int i = 1; i < printDatas.Count; i++)
+                    {
+                        if (printDatas[i].HokenSbt1 == null)
+                        {
+                            printDatas[i].HokenSbt1 = printDatas[i - 1].HokenSbt1;
+                        }
+                        if (printDatas[i].HokenSbt2 == null && printDatas[i].HokenSbt1 == printDatas[i - 1].HokenSbt1)
+                        {
+                            printDatas[i].HokenSbt2 = printDatas[i - 1].HokenSbt2;
+                        }
+                    }
+                }
             }
 
             hpInf = _staFinder.GetHpInf(HpId, _printConf.SeikyuYm * 100 + 1);
@@ -844,9 +846,11 @@ namespace Reporting.Statistics.Sta2011.Service
             _maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? _maxRow;
         }
 
-        public CommonExcelReportingModel ExportCsv(CoSta2011PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+        public CommonExcelReportingModel ExportCsv(CoSta2011PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
         {
             _printConf = printConf;
+            HpId = hpId;
+            this.isPutTotalRow = isPutTotalRow;
             string fileName = menuName + "_" + monthFrom + "_" + monthTo;
             List<string> retDatas = new List<string>();
             if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);

@@ -1,4 +1,5 @@
-﻿using Reporting.Mappers.Common;
+﻿using Reporting.CommonMasters.Enums;
+using Reporting.Mappers.Common;
 using Reporting.Statistics.Sta2011.Models;
 
 namespace Reporting.Statistics.Sta2011.Service
@@ -7,6 +8,6 @@ namespace Reporting.Statistics.Sta2011.Service
     {
         CommonReportingRequestModel GetSta2011ReportingData(CoSta2011PrintConf printConf, int hpId);
 
-        CommonExcelReportingModel ExportCsv(CoSta2011PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow);
+        CommonExcelReportingModel ExportCsv(CoSta2011PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType);
     }
 }
