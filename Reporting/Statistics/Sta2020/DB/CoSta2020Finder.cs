@@ -8,6 +8,7 @@ using Infrastructure.Services;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta2020.Models;
+using System.Linq.Expressions;
 
 namespace Reporting.Statistics.Sta2020.DB
 {
@@ -501,7 +502,7 @@ namespace Reporting.Statistics.Sta2020.DB
                     new { raiinInf.HpId, raiinInf.TantoId } equals
                     new { userMst.HpId, TantoId = userMst.UserId } into userMstJoin
                 from tantoMst in userMstJoin.DefaultIfEmpty()
-                select new
+                select new OdrDetailModel()
                 {
                     PtId = joinOdr.PtId,
                     RaiinNo = joinOdr.RaiinNo,
@@ -582,16 +583,33 @@ namespace Reporting.Statistics.Sta2020.DB
                 List<string> searchWords = new List<string>();
                 searchWords.AddRange(values);
 
-                if (printConf.SearchOpt == 0)
+                var finalPredicate = PredicateBuilder.Create<OdrDetailModel>(r => printConf.ItemCds.Contains(r.SrcItemCd));
+                Expression<Func<OdrDetailModel, bool>>? subPredicate = null;
+
+                foreach (var term in searchWords)
                 {
-                    //or条件
-                    joinQuery = joinQuery.Where(r => printConf.ItemCds.Contains(r.SrcItemCd) || searchWords.Any(key => r.ItemName.Contains(key)));
+                    if (subPredicate == null)
+                    {
+                        subPredicate = PredicateBuilder.Create<OdrDetailModel>(r => r.ItemName.Contains(term));
+                        continue;
+                    }
+                    if (printConf.SearchOpt == 0)
+                    {
+                        //or条件
+                        subPredicate = subPredicate.Or(r => r.ItemName.Contains(term));
+                    }
+                    else
+                    {
+                        //and条件
+                        subPredicate = subPredicate.And(r => r.ItemName.Contains(term));
+                    }
                 }
-                else
+                if (subPredicate != null)
                 {
-                    //and条件
-                    joinQuery = joinQuery.Where(r => printConf.ItemCds.Contains(r.SrcItemCd) || searchWords.All(key => r.ItemName.Contains(key)));
+                    finalPredicate = finalPredicate.Or(subPredicate);
                 }
+
+                joinQuery = joinQuery.Where(finalPredicate);
             }
             //検索項目
             else if (printConf.ItemCds?.Count >= 1)
@@ -606,15 +624,29 @@ namespace Reporting.Statistics.Sta2020.DB
                 List<string> searchWords = new List<string>();
                 searchWords.AddRange(values);
 
-                if (printConf.SearchOpt == 0)
+                Expression<Func<OdrDetailModel, bool>>? finalPredicate = null;
+
+                foreach (var term in searchWords)
                 {
-                    //or条件
-                    joinQuery = joinQuery.Where(r => searchWords.Any(key => r.ItemName.Contains(key)));
+                    if (finalPredicate == null)
+                    {
+                        finalPredicate = PredicateBuilder.Create<OdrDetailModel>(r => r.ItemName.Contains(term));
+                        continue;
+                    }
+                    if (printConf.SearchOpt == 0)
+                    {
+                        //or条件
+                        finalPredicate = finalPredicate.Or(r => r.ItemName.Contains(term));
+                    }
+                    else
+                    {
+                        //and条件
+                        finalPredicate = finalPredicate.And(r => r.ItemName.Contains(term));
+                    }
                 }
-                else
+                if (finalPredicate != null)
                 {
-                    //and条件
-                    joinQuery = joinQuery.Where(r => searchWords.All(key => r.ItemName.Contains(key)));
+                    joinQuery = joinQuery.Where(finalPredicate);
                 }
             }
             #endregion
