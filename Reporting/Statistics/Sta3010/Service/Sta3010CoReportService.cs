@@ -70,6 +70,7 @@ public class Sta3010CoReportService : ISta3010CoReportService
     private string rowCountFieldName;
     private CoSta3010PrintConf printConf;
     private CoFileType outputFileType;
+    private CoFileType? coFileType;
 
     public Sta3010CoReportService(ICoSta3010Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -325,13 +326,13 @@ public class Sta3010CoReportService : ISta3010CoReportService
                 #endregion
 
                 printData.SetKbn = odrSet.SetKbn;
-                printData.SetKbnEdaNo = outputFileType == CoFileType.Csv ? odrSet.SetKbnEdaNoPlus1.ToString() : setKbnEdaNoFmt;
-                printData.SetKbnName = outputFileType == CoFileType.Csv ? odrSet.SetKbnName.ToString() : setKbnNameFmt;
-                printData.Level1 = outputFileType == CoFileType.Csv ? odrSet.Level1.ToString() : level1Fmt;
-                printData.Level2 = outputFileType == CoFileType.Csv ? odrSet.Level2.ToString() : level2Fmt;
-                printData.Level3 = outputFileType == CoFileType.Csv ? odrSet.Level3.ToString() : level3Fmt;
+                printData.SetKbnEdaNo = (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv) ? odrSet.SetKbnEdaNoPlus1.ToString() : setKbnEdaNoFmt;
+                printData.SetKbnName = (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv) ? odrSet.SetKbnName.ToString() : setKbnNameFmt;
+                printData.Level1 = (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv) ? odrSet.Level1.ToString() : level1Fmt;
+                printData.Level2 = (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv) ? odrSet.Level2.ToString() : level2Fmt;
+                printData.Level3 = (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv) ? odrSet.Level3.ToString() : level3Fmt;
                 printData.SetCd = odrSet.SetCd;
-                printData.SetName = outputFileType == CoFileType.Csv ? odrSet.SetName : setNameFmt;
+                printData.SetName = (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv) ? odrSet.SetName : setNameFmt;
                 printData.WeightKbn = odrSet.WeightKbn;
                 printData.RenNo = printDatas.Count + 1;
                 if (odrSet.ItemName != string.Empty)
@@ -424,10 +425,11 @@ public class Sta3010CoReportService : ISta3010CoReportService
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
-    public CommonExcelReportingModel ExportCsv(CoSta3010PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+    public CommonExcelReportingModel ExportCsv(CoSta3010PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
     {
         this.printConf = printConf;
         string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+        this.coFileType = coFileType;
         List<string> retDatas = new List<string>();
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
