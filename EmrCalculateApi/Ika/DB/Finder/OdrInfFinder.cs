@@ -610,8 +610,16 @@ namespace EmrCalculateApi.Ika.DB.Finder
                             t.StartDate <= sinDate &&
                             t.ItemCd == entity.ItemCd);
 
+                        var ipnMinYakkaMstList = (
+                            from ipnMinS1 in ipnMinYakkaMstsSub1
+                            join ipnMinS2 in ipnMinYakkaMstsSub2 on
+                                new { ipnMinS1.HpId, ipnMinS1.IpnNameCd, ipnMinS1.StartDate } equals
+                                new { ipnMinS2.HpId, ipnMinS2.IpnNameCd, ipnMinS2.StartDate }
+                            select ipnMinS1
+                        );
+
                         var tenEntities = (
-                                from tenMst in tenMstBases.AsEnumerable()
+                                from tenMst in tenMstBases
                                 join tenStart in tenMstStartDates on
                                     new { tenMst.HpId, tenMst.ItemCd, tenMst.StartDate } equals
                                     new { tenStart.HpId, tenStart.ItemCd, tenStart.StartDate }
@@ -619,16 +627,15 @@ namespace EmrCalculateApi.Ika.DB.Finder
                                     new { tenMst.HpId, tenMst.IpnNameCd } equals
                                     new { ipnKasanMst.HpId, ipnKasanMst.IpnNameCd } into oJoin3
                                 from oj3 in oJoin3.DefaultIfEmpty()
-                                join ipnMinYakkaMst in ipnMinYakkaMsts on
+                                join ipnMinYakkaMst in ipnMinYakkaMstList on
                                     new { tenMst.HpId, tenMst.IpnNameCd } equals
                                     new { ipnMinYakkaMst.HpId, ipnMinYakkaMst.IpnNameCd } into oJoin4
                                 from oj4 in oJoin4.DefaultIfEmpty()
-                                select new
+                                select new TenDataModel()
                                 {
-                                    tenMst = (tenMst != null ? tenMst : new()),
-                                    kasan1 = (oj3 != null ? oj3.Kasan1 : 0),
-                                    kasan2 = (oj3 != null ? oj3.Kasan2 : 0),
-                                    minYakka = (oj4 != null ? oj4.Yakka : 0)
+                                    tenMst = tenMst,
+                                    kasanMst = oj3,
+                                    minYakkaMst = oj4
                                 }
                             ).OrderBy(p => p.tenMst.HpId)
                         .ThenBy(p => p.tenMst.ItemCd)
