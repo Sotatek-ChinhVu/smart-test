@@ -3359,7 +3359,6 @@ namespace Infrastructure.Repositories
         public List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd)
         {
             var kinkiQuery = NoTrackingDataContext.KinkiMsts.Where(item => item.ACd == itemCd);
-            var temp = kinkiQuery.ToList();
             var itemMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate && item.IsDeleted == DeleteTypes.None);
 
             var query = from kinki in kinkiQuery
@@ -3378,7 +3377,7 @@ namespace Infrastructure.Repositories
                                                              data.Kinki.ACd,
                                                              data.Kinki.BCd ?? string.Empty,
                                                              data.Kinki.SeqNo,
-                                                             false,
+                                                             data.Kinki.IsDeleted,
                                                              data.TenMst?.Name ?? string.Empty,
                                                              false,
                                                              false,
