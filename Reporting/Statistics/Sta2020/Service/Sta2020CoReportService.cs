@@ -529,6 +529,7 @@ namespace Reporting.Statistics.Sta2020.Service
         public CommonExcelReportingModel ExportCsv(CoSta2020PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
         {
             _printConf = printConf;
+            HpId = hpId;
             string fileName = menuName + "_" + monthFrom + "_" + monthTo;
             List<string> retDatas = new List<string>();
             if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
