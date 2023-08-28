@@ -31,7 +31,7 @@ namespace Reporting.Statistics.Sta2010.Service
             GetFieldNameList();
             GetRowCount();
 
-            if (GetData(hpId))
+            if (GetData())
             {
                 _hasNextPage = true;
                 _currentPage = 1;
@@ -167,7 +167,7 @@ namespace Reporting.Statistics.Sta2010.Service
             return retNums;
         }
 
-        private bool GetData(int hpId)
+        private bool GetData()
         {
             void MakePrintData()
             {
@@ -1243,16 +1243,16 @@ namespace Reporting.Statistics.Sta2010.Service
             }
             #endregion
 
-            hpInf = _staFinder.GetHpInf(hpId, _printConf.SeikyuYm * 100 + 1);
+            hpInf = _staFinder.GetHpInf(HpId, _printConf.SeikyuYm * 100 + 1);
 
             //データ取得
-            receInfs = _staFinder.GetReceInfs(hpId, _printConf, hpInf.PrefNo);
+            receInfs = _staFinder.GetReceInfs(HpId, _printConf, hpInf.PrefNo);
             if ((receInfs?.Count ?? 0) == 0) return false;
 
             //公費法別番号リストを取得
-            kohiHoubetuMsts = _staFinder.GetKohiHoubetuMst(hpId, _printConf.SeikyuYm);
+            kohiHoubetuMsts = _staFinder.GetKohiHoubetuMst(HpId, _printConf.SeikyuYm);
             //保険者名を取得
-            hokensyaNames = _staFinder.GetHokensyaName(hpId,
+            hokensyaNames = _staFinder.GetHokensyaName(HpId,
                 receInfs.Where(r => r.HokenKbn == HokenKbn.Kokho).GroupBy(r => r.HokensyaNo).Select(r => r.Key).ToList()
             );
 
@@ -1411,7 +1411,7 @@ namespace Reporting.Statistics.Sta2010.Service
             string fileName = menuName + "_" + monthFrom + "_" + monthTo;
             List<string> retDatas = new List<string>();
 
-            if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+            if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
             if (isPutTotalRow)
             {
@@ -1419,10 +1419,10 @@ namespace Reporting.Statistics.Sta2010.Service
             }
             putCurColumns.AddRange(putColumns);
 
-            var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
-
+            var csvDatas = printDatas.Where(p => (p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)) && p.Count != null).ToList();
             if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
+            //出力フィールド
             List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
             List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
 
