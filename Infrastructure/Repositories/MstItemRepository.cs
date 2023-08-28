@@ -4680,6 +4680,7 @@ namespace Infrastructure.Repositories
                             update.UpdateId = userId;
                             update.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             update.BCd = model.BCd;
+                            update.IsDeleted = model.IsDeleted ? 1 : 0;
                         }
                     }
                 }
