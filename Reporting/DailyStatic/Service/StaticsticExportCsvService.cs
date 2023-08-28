@@ -159,7 +159,7 @@ namespace Reporting.DailyStatic.Service
                     result = PrintSta3001(hpId, configDaily, dateFrom ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow, coFileType);
                     break;
                 case StatisticReportType.Sta3030:
-                    result = PrintSta3030(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, tenkiDateFrom ?? -1, tenkiDateTo ?? -1, enableRangeFrom ?? -1, enableRangeTo ?? -1, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3030(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, tenkiDateFrom ?? -1, tenkiDateTo ?? -1, enableRangeFrom ?? -1, enableRangeTo ?? -1, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow, coFileType);
                     break;
                 case StatisticReportType.Sta3040:
                     result = PrintSta3040(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
@@ -272,9 +272,9 @@ namespace Reporting.DailyStatic.Service
             return _sta3001CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false, coFileType ?? null);
         }
 
-        private CommonExcelReportingModel PrintSta3030(int hpId, ConfigStatisticModel configDaily, int startDateFrom, int startDateTo, int tenkiDateFrom, int tenkiDateTo, int enableRangeFrom, int enableRangeTo, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
+        private CommonExcelReportingModel PrintSta3030(int hpId, ConfigStatisticModel configDaily, int startDateFrom, int startDateTo, int tenkiDateFrom, int tenkiDateTo, int enableRangeFrom, int enableRangeTo, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow, CoFileType? coFileType)
         {
-            return _sta3030CoReportService.ExportCsv(CreateCoSta3030PrintConf(configDaily.ConfigStatistic3030, startDateFrom, startDateTo, tenkiDateFrom, tenkiDateTo, enableRangeFrom, enableRangeTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
+            return _sta3030CoReportService.ExportCsv(CreateCoSta3030PrintConf(configDaily.ConfigStatistic3030, monthFrom, monthTo, tenkiDateFrom, tenkiDateTo, enableRangeFrom, enableRangeTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false, coFileType ?? null);
         }
 
         private CommonExcelReportingModel PrintSta3040(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
@@ -1319,32 +1319,32 @@ namespace Reporting.DailyStatic.Service
             printConf.IsTester = configStatistic.IsIncludeTestPt;
             if (startDateFrom > 0)
             {
-                printConf.StartDateFrom = startDateFrom;
+                printConf.StartDateFrom = configStatistic.StartDateFrom;
             }
 
             if (startDateTo > 0)
             {
-                printConf.StartDateTo = startDateTo;
+                printConf.StartDateTo = configStatistic.StartDateTo;
             }
 
             if (tenkiDateFrom > 0)
             {
-                printConf.TenkiDateFrom = tenkiDateFrom;
+                printConf.TenkiDateFrom = configStatistic.TenkiDateFrom;
             }
 
             if (tenkiDateTo > 0)
             {
-                printConf.TenkiDateTo = tenkiDateTo;
+                printConf.TenkiDateTo = configStatistic.TenkiDateTo;
             }
 
             if (enableRangeFrom > 0)
             {
-                printConf.EnableRangeFrom = enableRangeFrom;
+                printConf.EnableRangeFrom = configStatistic.EnableRangeFrom;
             }
 
             if (enableRangeTo > 0)
             {
-                printConf.EnableRangeTo = enableRangeTo;
+                printConf.EnableRangeTo = configStatistic.EnableRangeTo;
             }
 
             printConf.TenkiKbns = configStatistic.ListTenkiKbn;
