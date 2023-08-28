@@ -1,4 +1,5 @@
 ﻿using Helper.Common;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -27,6 +28,7 @@ namespace Reporting.Statistics.Sta2021.Service
         int colIndex = 0;
         private List<string> _objectRseList;
         private CoSta2021PrintConf _printConf;
+        private CoFileType? coFileType;
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, bool> _visibleFieldData = new Dictionary<string, bool>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
@@ -211,7 +213,7 @@ namespace Reporting.Statistics.Sta2021.Service
 
                             if (grpDatas.Count == 0) continue;
 
-                            bool groupSinId = sortOrder1 == 2; //|| outputFileType == CoFileType.Csv;
+                            bool groupSinId = sortOrder1 == 2 || coFileType == CoFileType.Csv;
 
                             //項目単位のリスト
                             var itemDatas =
@@ -386,7 +388,6 @@ namespace Reporting.Statistics.Sta2021.Service
                     }
                 }
             }
-
 
             //データ取得
             sinKouis = _staFinder.GetSinKouis(HpId, _printConf);
@@ -647,10 +648,11 @@ namespace Reporting.Statistics.Sta2021.Service
             _colCountSinYM = javaOutputData.responses?.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListColCount)?.result ?? 0;
         }
 
-        public CommonExcelReportingModel ExportCsv(CoSta2021PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+        public CommonExcelReportingModel ExportCsv(CoSta2021PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
         {
             _printConf = printConf;
             HpId = hpId;
+            this.coFileType = coFileType;
             string fileName = menuName + "_" + monthFrom + "_" + monthTo;
             List<string> retDatas = new List<string>();
             if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
