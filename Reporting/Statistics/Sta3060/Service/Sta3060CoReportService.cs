@@ -180,6 +180,7 @@ public class Sta3060CoReportService : ISta3060CoReportService
     private string rowCountFieldName;
     private CoSta3060PrintConf printConf;
     private CoFileType outputFileType;
+    private CoFileType? coFileType;
     private List<PutColumn> putCurColumns = new List<PutColumn>();
 
     public Sta3060CoReportService(ICoSta3060Finder finder, IReadRseReportFileService readRseReportFileService)
@@ -358,8 +359,8 @@ public class Sta3060CoReportService : ISta3060CoReportService
                 CoSta3060PrintData printData = new CoSta3060PrintData();
 
                 printData.ReportKbn =
-                    printConf.ReportKbn == 0 ? outputFileType == CoFileType.Csv ? coKouiTensus.First().SinDate.ToString() : CIUtil.SDateToShowSDate(coKouiTensus.First().SinDate) :
-                    printConf.ReportKbn == 1 ? outputFileType == CoFileType.Csv ? coKouiTensus.First().SinYm.ToString() : CIUtil.SMonthToShowSMonth(coKouiTensus.First().SinYm) :
+                    printConf.ReportKbn == 0 ? outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv ? coKouiTensus.First().SinDate.ToString() : CIUtil.SDateToShowSDate(coKouiTensus.First().SinDate) :
+                    printConf.ReportKbn == 1 ? outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv ? coKouiTensus.First().SinYm.ToString() : CIUtil.SMonthToShowSMonth(coKouiTensus.First().SinYm) :
                     printConf.ReportKbn == 2 ? coKouiTensus.First().KaSname :
                     printConf.ReportKbn == 3 ? coKouiTensus.First().TantoSname :
                     printConf.ReportKbn == 4 ? hokenTitles[rowNo].TitleName :
@@ -665,10 +666,11 @@ public class Sta3060CoReportService : ISta3060CoReportService
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
-    public CommonExcelReportingModel ExportCsv(CoSta3060PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+    public CommonExcelReportingModel ExportCsv(CoSta3060PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
     {
         this.printConf = printConf;
-        string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+        this.coFileType = coFileType;
+        string fileName = printConf.ReportName + "_" + monthFrom + "_" + monthTo;
         List<string> retDatas = new List<string>();
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
