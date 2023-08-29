@@ -162,7 +162,7 @@ namespace Reporting.DailyStatic.Service
                     result = PrintSta3030(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, tenkiDateFrom ?? -1, tenkiDateTo ?? -1, enableRangeFrom ?? -1, enableRangeTo ?? -1, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow, coFileType);
                     break;
                 case StatisticReportType.Sta3040:
-                    result = PrintSta3040(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3040(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow, coFileType);
                     break;
                 case StatisticReportType.Sta3041:
                     result = PrintSta3041(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
@@ -277,9 +277,9 @@ namespace Reporting.DailyStatic.Service
             return _sta3030CoReportService.ExportCsv(CreateCoSta3030PrintConf(configDaily.ConfigStatistic3030, monthFrom, monthTo, tenkiDateFrom, tenkiDateTo, enableRangeFrom, enableRangeTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false, coFileType ?? null);
         }
 
-        private CommonExcelReportingModel PrintSta3040(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
+        private CommonExcelReportingModel PrintSta3040(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow, CoFileType? coFileType)
         {
-            return _sta3040CoReportService.ExportCsv(CreateCoSta3040PrintConf(configDaily.ConfigStatistic3040, monthFrom, monthTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
+            return _sta3040CoReportService.ExportCsv(CreateCoSta3040PrintConf(configDaily.ConfigStatistic3040, monthFrom, monthTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false, coFileType ?? null);
         }
 
         private CommonExcelReportingModel PrintSta3041(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)

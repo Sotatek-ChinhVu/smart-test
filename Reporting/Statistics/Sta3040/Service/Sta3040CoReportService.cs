@@ -61,6 +61,7 @@ public class Sta3040CoReportService : ISta3040CoReportService
     private string rowCountFieldName;
     private CoSta3040PrintConf printConf;
     private CoFileType outputFileType;
+    private CoFileType? coFileType;
 
     public Sta3040CoReportService(ICoSta3040Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -280,7 +281,7 @@ public class Sta3040CoReportService : ISta3040CoReportService
             {
                 CoSta3040PrintData printData = new CoSta3040PrintData
                 {
-                    SinYm = outputFileType == CoFileType.Csv ? tgtData.SinYm.ToString() : tgtData.FmtSinYm,
+                    SinYm = outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv ? tgtData.SinYm.ToString() : tgtData.FmtSinYm,
                     ItemCd = tgtData.ItemCd,
                     ReceName = tgtData.ReceName,
                     Suryo = tgtData.Suryo.ToString("#,0.000"),
@@ -507,9 +508,10 @@ public class Sta3040CoReportService : ISta3040CoReportService
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
-    public CommonExcelReportingModel ExportCsv(CoSta3040PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+    public CommonExcelReportingModel ExportCsv(CoSta3040PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
     {
         this.printConf = printConf;
+        this.coFileType = coFileType;
         string fileName = menuName + "_" + monthFrom + "_" + monthTo;
         List<string> retDatas = new List<string>();
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
