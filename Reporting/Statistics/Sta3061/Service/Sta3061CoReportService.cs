@@ -1,6 +1,7 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -9,6 +10,7 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3061.DB;
 using Reporting.Statistics.Sta3061.Mapper;
 using Reporting.Statistics.Sta3061.Models;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace Reporting.Statistics.Sta3061.Service;
@@ -776,26 +778,27 @@ public class Sta3061CoReportService : ISta3061CoReportService
     {
         this.printConf = printConf;
         string fileName = menuName + "_" + monthFrom + "_" + monthTo;
-        List<PutColumn> wrkRows = new List<PutColumn>();
-        List<string> retDatas = wrkRows.Select(p => "\"" + p.JpName + "\"").ToList();
-        if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+        if (!GetData(hpId)) return new();
 
         var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || p.RowType == RowType.Total).ToList();
-        if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+        if (csvDatas.Count == 0) return new();
 
         bool pbKaId = new int[] { printConf.PageBreak1, printConf.PageBreak2, printConf.PageBreak3 }.Contains(2);
         bool pbTantoId = new int[] { printConf.PageBreak1, printConf.PageBreak2, printConf.PageBreak3 }.Contains(3);
 
         //自費明細
+        List<PutColumn> wrkRows = new List<PutColumn>();
         wrkRows = putRows.ToList();
+
         int jihiIndex = wrkRows.FindIndex(r => r.CsvColName == "JihiMeisai");
         wrkRows.RemoveAt(jihiIndex);
-
         for (int i = jihiSbtMsts.Count - 1; i >= 0; i--)
         {
             wrkRows.Insert(jihiIndex, new PutColumn() { ColName = "JihiMeisai" + jihiSbtMsts[i].JihiSbt.ToString(), JpName = jihiSbtMsts[i].Name });
         }
 
+        //集計(縦)
+        List<string> retDatas = wrkRows.Select(p => "\"" + p.JpName + "\"").ToList();
         //集計区分
         retDatas.Insert(0, "\"\"");
         //改ページ条件

@@ -304,7 +304,7 @@ namespace Reporting.DailyStatic.Service
 
         private CommonExcelReportingModel PrintSta3061(int hpId, ConfigStatisticModel configDaily, int startDateFrom, int startDateTo, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
         {
-            return _sta3061CoReportService.ExportCsv(CreateCoSta3061PrintConf(configDaily.ConfigStatistic3061, startDateFrom, startDateTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
+            return _sta3061CoReportService.ExportCsv(CreateCoSta3061PrintConf(configDaily.ConfigStatistic3061, monthFrom, monthTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
         }
         #endregion
 
