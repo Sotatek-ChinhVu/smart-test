@@ -144,7 +144,7 @@ namespace Reporting.DailyStatic.Service
                     result = PrintSta3020(hpId, configDaily, dateFrom ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow, coFileType);
                     break;
                 case StatisticReportType.Sta3080:
-                    result = PrintSta3080(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3080(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow, coFileType);
                     break;
                 case StatisticReportType.Sta3071:
                     result = PrintSta3071(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, isPutTotalRow, isPutColName, monthFrom ?? 0, monthTo ?? 0, menuName, coFileType);
@@ -245,9 +245,9 @@ namespace Reporting.DailyStatic.Service
             return _sta3020CoReportService.ExportCsv(printConf, monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false, coFileType ?? null);
         }
 
-        private CommonExcelReportingModel PrintSta3080(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
+        private CommonExcelReportingModel PrintSta3080(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow, CoFileType? coFileType)
         {
-            return _sta3080CoReportService.ExportCsv(CreateCoSta3080PrintConf(configDaily.ConfigStatistic3080, monthFrom, monthTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
+            return _sta3080CoReportService.ExportCsv(CreateCoSta3080PrintConf(configDaily.ConfigStatistic3080, monthFrom, monthTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false, coFileType ?? null);
         }
 
         private CommonExcelReportingModel PrintSta3071(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, bool? isPutTotalRow, bool? isPutColName, int monthFrom, int monthTo, string menuName, CoFileType? coFileType)
