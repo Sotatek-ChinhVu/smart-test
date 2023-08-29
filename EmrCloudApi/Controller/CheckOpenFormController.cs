@@ -1,13 +1,9 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportPDF;
-using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.AccountDue;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
-using Reporting.CommonMasters.Enums;
 using Reporting.ReportServices;
 using System.Text.Json;
-using UseCase.AccountDue.GetAccountDueList;
 
 namespace EmrCloudApi.Controller;
 
@@ -37,6 +33,13 @@ public class CheckOpenFormController : ControllerBase
     public IActionResult GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
     {
         var data = _checkOpenReportingService.CheckOpenAccountingForm(request.HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
+        return Ok(data);
+    }
+
+    [HttpPost(ApiPath.CheckExistTemplateAccounting)]
+    public IActionResult CheckExistTemplateAccounting([FromBody] CheckExistTemplateAccountingRequest request)
+    {
+        var data = _checkOpenReportingService.CheckExistTemplate(request.TemplateName, request.PrintType);
         return Ok(data);
     }
 

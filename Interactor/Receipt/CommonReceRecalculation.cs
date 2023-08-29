@@ -1133,7 +1133,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         bool isCheckComment = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.CommentCheckErrCd);
         bool isCheckAdditionItem = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.AdditionItemErrCd);
 
-        var odrInfModels = _ordInfRepository.GetList(hpId, recalculationModel.PtId, recalculationModel.SinYm, recalculationModel.HokenId);
+        var odrInfModels = _calculationInfRepository.GetOdrInfModels(hpId, recalculationModel.PtId, recalculationModel.SinYm, recalculationModel.HokenId);
         List<OrdInfDetailModel> odrInfDetailModels = new();
 
         //OrderInf

@@ -118,6 +118,7 @@
         public const string WelfareDisk = "WelfareDisk";
         public const string ReceListCsv = "ReceListCsv";
         public const string ExportPeriodReceipt = "ExportPeriodReceipt";
+        public const string CheckExistTemplateAccounting = "CheckExistTemplateAccounting";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -179,6 +180,7 @@
         public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
         public const string GetOutDrugOrderList = "GetOutDrugOrderList";
         public const string GetYoyakuRaiinInf = "GetYoyakuRaiinInf";
+        public const string GetHpInf = "GetHpInf";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
@@ -340,6 +342,7 @@
         public const string SaveDrugCheckSetting = "SaveDrugCheckSetting";
         public const string GetSystemSetting = "GetSystemSetting";
         public const string SaveSystemSetting = "SaveSystemSetting";
+        public const string GetSystemConfListXmlPath = "GetSystemConfListXmlPath";
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
@@ -376,6 +379,7 @@
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
         public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
+        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";

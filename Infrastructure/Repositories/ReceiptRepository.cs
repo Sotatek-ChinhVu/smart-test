@@ -1679,13 +1679,20 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var ptKohi4 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi4Id);
 
         int hokenPid = 0;
-        var raiinNo = NoTrackingDataContext.SinKouiCounts.FirstOrDefault(item => item.SinYm == sinYm
-                                                                                 && item.PtId == ptId
-                                                                                 && item.HpId == hpId)?.RaiinNo ?? 0;
-        if (raiinNo != 0)
-        {
-            hokenPid = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId && item.RaiinNo == raiinNo)?.HokenPid ?? 0;
-        }
+
+
+        var querySinKoui = (from sinKouiCount in NoTrackingDataContext.SinKouiCounts.Where(item => item.SinYm == sinYm
+                                                                                                   && item.PtId == ptId
+                                                                                                   && item.HpId == hpId)
+                            join sinKoui in NoTrackingDataContext.SinKouis.Where(item => item.SinYm == sinYm
+                                                                                         && item.PtId == ptId
+                                                                                         && item.HpId == hpId
+                                                                                         && item.HokenId == hokenId)
+                            on sinKouiCount.RpNo equals sinKoui.RpNo
+                            select new { sinKoui, sinKouiCount }).Distinct().ToList();
+
+        var sinKouiList = querySinKoui.OrderByDescending(item => item.sinKouiCount.SinDay).ToList();
+        hokenPid = sinKouiList.FirstOrDefault()?.sinKoui?.HokenPid ?? 0;
 
         return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new(), hokenPid);
     }

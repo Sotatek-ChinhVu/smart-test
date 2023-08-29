@@ -693,6 +693,8 @@ using UseCase.Online.UpdateOnlineHistoryById;
 using UseCase.Reception.GetYoyakuRaiinInf;
 using UseCase.Insurance.FindHokenInfByPtId;
 using UseCase.Online.UpdateOQConfirmation;
+using UseCase.SystemConf.GetXmlPath;
+using UseCase.Reception.GetHpInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1133,6 +1135,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<RevertDeleteNoReceptInputData, RevertDeleteNoReceptInteractor>();
             busBuilder.RegisterUseCase<GetOutDrugOrderListInputData, GetOutDrugOrderListInteractor>();
             busBuilder.RegisterUseCase<GetYoyakuRaiinInfInputData, GetYoyakuRaiinInfInteractor>();
+            busBuilder.RegisterUseCase<GetHpInfInputData, GetHpInfInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -1390,6 +1393,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveDrugCheckSettingInputData, SaveDrugCheckSettingInteractor>();
             busBuilder.RegisterUseCase<GetSystemSettingInputData, GetSystemSettingInteractor>();
             busBuilder.RegisterUseCase<SaveSystemSettingInputData, SaveSystemSettingInteractor>();
+            busBuilder.RegisterUseCase<GetSystemConfListXmlPathInputData, GetSystemConfListXmlPathInteractor>();
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();

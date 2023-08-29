@@ -14,7 +14,7 @@ public class StatisticMenuModel
         StaConfigList = staConfigList;
     }
 
-    public StatisticMenuModel(int menuId, int grpId, int reportId, int sortNo, string menuName, int isPrint, List<StaConfModel> staConfigList, bool isDeleted)
+    public StatisticMenuModel(int menuId, int grpId, int reportId, int sortNo, string menuName, int isPrint, List<StaConfModel> staConfigList, bool isDeleted, bool isSaveTemp)
     {
         MenuId = menuId;
         GrpId = grpId;
@@ -24,6 +24,7 @@ public class StatisticMenuModel
         IsPrint = isPrint;
         StaConfigList = staConfigList;
         IsDeleted = isDeleted;
+        IsSaveTemp = isSaveTemp;
     }
 
     public int MenuId { get; private set; }
@@ -41,4 +42,6 @@ public class StatisticMenuModel
     public List<StaConfModel> StaConfigList { get; private set; }
 
     public bool IsDeleted { get; private set; }
+
+    public bool IsSaveTemp { get; private set; }
 }
