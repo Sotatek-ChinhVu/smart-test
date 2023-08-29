@@ -1,4 +1,5 @@
-﻿using Entity.Tenant;
+﻿using Domain.Models.Accounting;
+using Entity.Tenant;
 using Reporting.Calculate.Ika.Models;
 using Reporting.Calculate.Receipt.Models;
 using Reporting.Receipt.Models;
@@ -68,5 +69,7 @@ namespace Reporting.Receipt.DB
         List<CoHokenMstModel> FindHokenMst(int hpId, int sinDate, int hokenNo, int hokenEdaNo, int prefNo);
 
         ReceSeikyu? GetReceSeikyu(int hpId, long ptId, int hokenId, int sinYm);
+
+        List<RecePreviewModel> GetReceInf(int hpId, long ptId);
     }
 }

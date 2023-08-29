@@ -508,6 +508,47 @@ namespace Infrastructure.Repositories
 
         }
 
+        public ReceptionModel GetYoyakuRaiinInf(int hpId, long ptId, int sinDate)
+        {
+            var entity = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                       && item.SinDate == sinDate
+                                                                       && item.PtId == ptId
+                                                                       && item.IsDeleted == DeleteTypes.None
+                                                                       && item.Status == RaiinState.Reservation)
+                                                        .OrderByDescending(p => p.RaiinNo)
+                                                        .FirstOrDefault();
+            if (entity == null)
+            {
+                return new();
+            }
+            return new ReceptionModel(
+                        entity.HpId,
+                        entity.PtId,
+                        entity.SinDate,
+                        entity.RaiinNo,
+                        entity.OyaRaiinNo,
+                        entity.HokenPid,
+                        entity.SanteiKbn,
+                        entity.Status,
+                        entity.IsYoyaku,
+                        entity.YoyakuTime ?? string.Empty,
+                        entity.YoyakuId,
+                        entity.UketukeSbt,
+                        entity.UketukeTime ?? string.Empty,
+                        entity.UketukeId,
+                        entity.UketukeNo,
+                        entity.SinStartTime ?? string.Empty,
+                        entity.SinEndTime ?? string.Empty,
+                        entity.KaikeiTime ?? string.Empty,
+                        entity.KaikeiId,
+                        entity.KaId,
+                        entity.TantoId,
+                        entity.SyosaisinKbn,
+                        entity.JikanKbn,
+                        string.Empty
+                   );
+        }
+
         public List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate)
         {
             var result = NoTrackingDataContext.RaiinInfs.Where(p =>
@@ -1508,8 +1549,6 @@ namespace Infrastructure.Repositories
 
         public List<RaiinInfToPrintModel> GetOutDrugOrderList(int hpId, int fromDate, int toDate)
         {
-            List<RaiinInfToPrintModel> result = new();
-
             var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
                                                                              && item.IsDeleted == DeleteTypes.None
                                                                              && item.SinDate >= fromDate
@@ -1625,32 +1664,34 @@ namespace Infrastructure.Repositories
                             Uketsuke = uketsuke,
                             PtHokenPatternItem = hokenPattern
                         };
-            result = query.Select(data => new RaiinInfToPrintModel(PrintMode.PrintPrescription,
-                                                                   data.Pt.Name ?? string.Empty,
-                                                                   data.User.Name ?? string.Empty,
-                                                                   0,
-                                                                   data.Raiin.KaId,
-                                                                   data.Pt.PtNum,
-                                                                   data.PtHokenPatternItem.HokenHobetu ?? string.Empty,
-                                                                   data.PtHokenPatternItem?.PtHokenPattern.HokenKbn ?? 0,
-                                                                   string.Empty,
-                                                                   data.PtHokenPatternItem?.HokensyaNo ?? string.Empty,
-                                                                   data.Raiin.UketukeNo,
-                                                                   0,
-                                                                    data.Raiin.SinDate,
-                                                                   0,
-                                                                   data.Raiin.TantoId,
-                                                                   data.Ka?.KaName ?? string.Empty,
-                                                                   data.Raiin.UketukeSbt,
-                                                                   data.Uketsuke?.KbnName ?? string.Empty,
-                                                                   0,
-                                                                   data.Raiin.HokenPid,
-                                                                   0,
-                                                                   -1,
-                                                                   -1,
-                                                                   string.Empty,
-                                                                   string.Empty,
-                                                                   0, 0, 0, 0, 0, 0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty))
+            var result = query.Select(data => new RaiinInfToPrintModel(PrintMode.PrintPrescription,
+                                                                       data.Pt?.Name ?? string.Empty,
+                                                                       data.User?.Name ?? string.Empty,
+                                                                       0,
+                                                                       data.Raiin?.KaId ?? 0,
+                                                                       data.Pt?.PtId ?? 0,
+                                                                       data.Pt?.PtNum ?? 0,
+                                                                       data.PtHokenPatternItem?.HokenHobetu ?? string.Empty,
+                                                                       data.PtHokenPatternItem?.PtHokenPattern.HokenKbn ?? 0,
+                                                                       string.Empty,
+                                                                       data.PtHokenPatternItem?.HokensyaNo ?? string.Empty,
+                                                                       data.Raiin?.UketukeNo ?? 0,
+                                                                       0,
+                                                                        data.Raiin?.SinDate ?? 0,
+                                                                       0,
+                                                                       data.Raiin?.TantoId ?? 0,
+                                                                       data.Ka?.KaName ?? string.Empty,
+                                                                       data.Raiin?.UketukeSbt ?? 0,
+                                                                       data.Uketsuke?.KbnName ?? string.Empty,
+                                                                       0,
+                                                                       data.Raiin?.HokenPid ?? 0,
+                                                                       0,
+                                                                       -1,
+                                                                       -1,
+                                                                       string.Empty,
+                                                                       string.Empty,
+                                                                       0, 0, 0, 0, 0, 0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty,
+                                                                       data.Raiin?.Status ?? 0))
                           .ToList();
 
             return result;

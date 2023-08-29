@@ -8,6 +8,7 @@ namespace UseCase.User.GetListUserByCurrentUser
         {
             HpId = hpId;
             UserId = userId;
+            ManagerKbn = managerKbn;
         }
 
         public int HpId { get; private set; }

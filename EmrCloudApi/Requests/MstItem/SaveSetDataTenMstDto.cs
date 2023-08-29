@@ -109,6 +109,8 @@
 
         public string IpnNameCd { get; set; } = string.Empty;
 
+        public string IpnNameCdOrigin { get; set; } = string.Empty;
+
         public int StartDate { get; set; }
 
         public int EndDate { get; set; }

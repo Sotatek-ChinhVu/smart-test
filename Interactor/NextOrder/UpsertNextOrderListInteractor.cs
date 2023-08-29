@@ -4,13 +4,7 @@ using Domain.Models.MstItem;
 using Domain.Models.NextOrder;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
-using Helper.Constants;
-using Infrastructure.Interfaces;
 using UseCase.NextOrder.Upsert;
-using static Helper.Constants.KarteConst;
-using static Helper.Constants.NextOrderConst;
-using static Helper.Constants.OrderInfConst;
-using static Helper.Constants.RsvkrtByomeiConst;
 
 namespace Interactor.NextOrder
 {

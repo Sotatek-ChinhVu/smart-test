@@ -10,6 +10,7 @@ public class RaiinInfToPrintDto
         NameBinding = model.NameBinding;
         TantoIdDisplay = model.TantoIdDisplay;
         PtNum = model.PtNum;
+        PtId = model.PtId;
         HoubetuForPrintPrescription = model.HoubetuForPrintPrescription;
         HokenKbnForPrintPrescription = model.HokenKbnForPrintPrescription;
         HokensyaNo = model.HokensyaNo;
@@ -27,9 +28,13 @@ public class RaiinInfToPrintDto
         KaId = model.KaId;
         UketsukeSbt = model.UketsukeSbt;
         HokenName = model.HokenName;
+        HokenKbn = model.HokenKbn;
+        RaiinInfStatus = model.RaiinInfStatus;
     }
 
     public string SinDateBinding { get; private set; }
+
+    public long PtId { get; private set; }
 
     public long PtNum { get; private set; }
 
@@ -68,4 +73,8 @@ public class RaiinInfToPrintDto
     public int UketsukeSbt { get; private set; }
 
     public string HokenName { get; private set; }
+
+    public int HokenKbn { get; private set; }
+
+    public int RaiinInfStatus { get; private set; }
 }
