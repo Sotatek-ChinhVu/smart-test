@@ -416,6 +416,7 @@
         public const string SaveAllOQConfirmation = "SaveAllOQConfirmation";
         public const string SaveOQConfirmation = "SaveOQConfirmation";
         public const string UpdateRefNo = "UpdateRefNo";
+        public const string UpdateOnlineInRaiinInf = "UpdateOnlineInRaiinInf";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";

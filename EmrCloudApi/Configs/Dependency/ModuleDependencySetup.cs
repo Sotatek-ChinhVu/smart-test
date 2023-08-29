@@ -699,6 +699,7 @@ using UseCase.Reception.GetRaiinInfBySinDate;
 using UseCase.SystemConf.GetXmlPath;
 using UseCase.Reception.GetHpInf;
 using UseCase.Online.UpdateRefNo;
+using UseCase.Online.UpdateOnlineInRaiinInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1616,6 +1617,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveAllOQConfirmationInputData, SaveAllOQConfirmationInteractor>();
             busBuilder.RegisterUseCase<SaveOQConfirmationInputData, SaveOQConfirmationInteractor>();
             busBuilder.RegisterUseCase<UpdateRefNoInputData, UpdateRefNoInteractor>();
+            busBuilder.RegisterUseCase<UpdateOnlineInRaiinInfInputData, UpdateOnlineInRaiinInfInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
