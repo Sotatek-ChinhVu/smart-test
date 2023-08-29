@@ -1,4 +1,5 @@
 ﻿using Amazon.Runtime.Internal.Transform;
+using Amazon.S3.Transfer;
 using Domain.Constant;
 using Domain.Enum;
 using Domain.Models.FlowSheet;
@@ -3377,7 +3378,7 @@ namespace Infrastructure.Repositories
                                                              data.Kinki.ACd,
                                                              data.Kinki.BCd ?? string.Empty,
                                                              data.Kinki.SeqNo,
-                                                             data.Kinki.IsDeleted,
+                                                             data.Kinki.IsDeleted == 1 ? true : false,
                                                              data.TenMst?.Name ?? string.Empty,
                                                              false,
                                                              false,
