@@ -631,7 +631,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.SaveKensaIrai)]
         public ActionResult<Response<SaveKensaIraiResponse>> SaveKensaIrai([FromBody] SaveKensaIraiRequest request)
         {
-            var input = new SaveKensaIraiInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var input = new SaveKensaIraiInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
             var presenter = new SaveKensaIraiPresenter();
             presenter.Complete(output);

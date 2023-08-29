@@ -53,4 +53,10 @@ public class KensaInfDetailModel
         IsDeleted = isDeleted;
         return this;
     }
+
+    public KensaInfDetailModel ChangeIraiCd(long iraiCd)
+    {
+        IraiCd = iraiCd;
+        return this;
+    }
 }

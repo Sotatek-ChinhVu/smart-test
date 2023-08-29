@@ -62,4 +62,10 @@ public class KensaInfModel
         SikyuKbn = sikyuKbn;
         return this;
     }
+
+    public KensaInfModel ChangeIraiCd(long iraiCd)
+    {
+        IraiCd = iraiCd;
+        return this;
+    }
 }

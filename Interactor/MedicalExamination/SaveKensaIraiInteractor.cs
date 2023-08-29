@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Domain.Models.KensaIrai;
+﻿using Domain.Models.KensaIrai;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
@@ -187,7 +186,7 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
                 }
                 else
                 {
-                    if (odrInfModels.Any(p => p.TosekiKbn == toseki))
+                    if (odrInfModels != null && odrInfModels.Any(p => p.TosekiKbn == toseki))
                     {
                         int firstOdrId = odrInfModels.Find(p => p.TosekiKbn == toseki).CreateId;
 

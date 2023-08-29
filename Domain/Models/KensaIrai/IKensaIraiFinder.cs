@@ -10,5 +10,5 @@ public interface IKensaIraiRepository : IRepositoryBase
 
     List<KensaInfDetailModel> GetKensaInfDetail(int hpId, long ptId, long raiinNo, string centerCd);
 
-    bool SaveKensaInf(int hpId, int userId, List<KensaInfModel> KensaInfModels, List<KensaInfDetailModel> KensaInfDetailModels);
+    bool SaveKensaInf(int hpId, int userId, List<KensaInfModel> kensaInfModels, List<KensaInfDetailModel> kensaInfDetailModels);
 }

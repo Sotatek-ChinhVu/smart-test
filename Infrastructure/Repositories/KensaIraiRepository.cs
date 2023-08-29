@@ -6,6 +6,7 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
@@ -114,80 +115,27 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         return result;
     }
 
-    public bool SaveKensaInf(int hpId, int userId, List<KensaInfModel> KensaInfModels, List<KensaInfDetailModel> KensaInfDetailModels)
+    public bool SaveKensaInf(int hpId, int userId, List<KensaInfModel> kensaInfModels, List<KensaInfDetailModel> kensaInfDetailModels)
     {
-        DateTime dt = CIUtil.GetJapanDateTimeNow();
-
-        // 削除
-        if (KensaInfDetailModels != null && KensaInfDetailModels.Any(p => p.IsDeleted == 1))
-        {
-            List<KensaInfDetailModel> delKensaDtls = KensaInfDetailModels.FindAll(p => p.IsDeleted == 1);
-            var ptIdList = delKensaDtls.Select(item =>item.PtId).Distinct().ToList();
-            var seqNoList = delKensaDtls.Select(item =>item.SeqNo).Distinct().ToList();
-            var iraiCdList = delKensaDtls.Select(item =>item.IraiCd).Distinct().ToList();
-            var kensaInfDetailDeleteList = TrackingDataContext.KensaInfDetails.Where(item => item.HpId==hpId
-            && ptIdList.Contains(item.PtId)
-            )
-            dbService.KensaInfDetailRepository.RemoveRange(delKensaDtls.Select(p => p.KensaInfDetail));
-        }
-
-        // 追加
-        if (KensaInfModels.Any(p => p.IsAddNew))
-        {
-            List<KensaInfModel> addKensaInfs = KensaInfModels.FindAll(p => p.IsAddNew);
-            foreach (KensaInfModel addKensaInf in addKensaInfs)
+        bool successed = false;
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
             {
-                addKensaInf.CreateDate = dt;
-                if (addKensaInf.CreateId == 0)
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
                 {
-                    addKensaInf.CreateId = userId;
+                    SaveKensaInfAction(hpId, userId, kensaInfModels, kensaInfDetailModels);
+                    TrackingDataContext.SaveChanges();
+                    transaction.Commit();
+                    successed = true;
                 }
-                addKensaInf.CreateMachine = machine;
-                addKensaInf.UpdateDate = dt;
-                addKensaInf.UpdateId = userId;
-                addKensaInf.UpdateMachine = machine;
-            }
-
-            dbService.KensaInfRepository.AddRange(addKensaInfs.Select(p => p.KensaInf));
-            dbService.SaveChanged();
-
-            // detailにiraicdを反映
-            foreach (KensaInfModel addKensaInf in addKensaInfs)
-            {
-                foreach (KensaInfDetailModel updKensaDtl in KensaInfDetailModels.FindAll(p => p.KeyNo == addKensaInf.KeyNo))
+                catch
                 {
-                    updKensaDtl.IraiCd = addKensaInf.IraiCd;
+                    transaction.Rollback();
                 }
-            }
-        }
-
-        if (KensaInfDetailModels.Any(p => p.IsAddNew))
-        {
-            List<KensaInfDetailModel> addKensaDtls = KensaInfDetailModels.FindAll(p => p.IsAddNew);
-            foreach (KensaInfDetailModel addKensaDtl in addKensaDtls)
-            {
-                addKensaDtl.CreateDate = dt;
-                addKensaDtl.CreateId = userId;
-                addKensaDtl.CreateMachine = machine;
-                addKensaDtl.UpdateDate = dt;
-                addKensaDtl.UpdateId = userId;
-                addKensaDtl.UpdateMachine = machine;
-            }
-
-            dbService.KensaInfDetailRepository.AddRange(addKensaDtls.Select(p => p.KensaInfDetail));
-        }
-
-        if (KensaInfModels.Any(p => p.IsUpdate))
-        {
-            List<KensaInfModel> updKensaInfs = KensaInfModels.FindAll(p => p.IsUpdate);
-            foreach (KensaInfModel updKensaInf in updKensaInfs)
-            {
-                updKensaInf.UpdateDate = dt;
-                updKensaInf.UpdateId = userId;
-                updKensaInf.UpdateMachine = machine;
-            }
-        }
-        dbService.SaveChanged();
+            });
+        return successed;
     }
 
     public void ReleaseResource()
@@ -197,9 +145,156 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
 
 
     #region private function
-        private KensaInfDetail ConvertToKensaInfDetail(int hpId, int userId,KensaInfDetailModel model)
+
+    private KensaInf ConvertToNewKensaInf(int hpId, int userId, KensaInfModel model)
     {
-        return new KensaInfDetail
+        KensaInf kensaInf = new();
+        kensaInf.HpId = hpId;
+        kensaInf.PtId = model.PtId;
+        kensaInf.IraiDate = model.IraiDate;
+        kensaInf.RaiinNo = model.RaiinNo;
+        kensaInf.IraiCd = model.IraiCd;
+        kensaInf.InoutKbn = model.InoutKbn;
+        kensaInf.Status = model.Status;
+        kensaInf.TosekiKbn = model.TosekiKbn;
+        kensaInf.SikyuKbn = model.SikyuKbn;
+        kensaInf.ResultCheck = model.ResultCheck;
+        kensaInf.CenterCd = model.CenterCd;
+        kensaInf.Nyubi = model.Nyubi;
+        kensaInf.Yoketu = model.Yoketu;
+        kensaInf.Bilirubin = model.Bilirubin;
+        kensaInf.IsDeleted = model.IsDeleted ? 1 : 0;
+        kensaInf.CreateDate = CIUtil.GetJapanDateTimeNow();
+        kensaInf.CreateId = userId;
+        kensaInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        kensaInf.UpdateId = userId;
+        return kensaInf;
+    }
+
+    private KensaInfDetail ConvertToNewKensaInfDetail(int hpId, int userId, KensaInfDetailModel model)
+    {
+        KensaInfDetail kensaInfDetail = new();
+        kensaInfDetail.HpId = hpId;
+        kensaInfDetail.PtId = model.PtId;
+        kensaInfDetail.IraiCd = model.IraiCd;
+        kensaInfDetail.RaiinNo = model.RaiinNo;
+        kensaInfDetail.IraiDate = model.IraiDate;
+        kensaInfDetail.SeqNo = model.SeqNo;
+        kensaInfDetail.KensaItemCd = model.KensaItemCd;
+        kensaInfDetail.ResultVal = model.ResultVal;
+        kensaInfDetail.ResultType = model.ResultType;
+        kensaInfDetail.AbnormalKbn = model.AbnormalKbn;
+        kensaInfDetail.IsDeleted = model.IsDeleted;
+        kensaInfDetail.CmtCd1 = model.CmtCd1;
+        kensaInfDetail.CmtCd2 = model.CmtCd2;
+        kensaInfDetail.CreateDate = CIUtil.GetJapanDateTimeNow();
+        kensaInfDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        kensaInfDetail.CreateId = userId;
+        kensaInfDetail.UpdateId = userId;
+        return kensaInfDetail;
+    }
+
+    private void SaveKensaInfAction(int hpId, int userId, List<KensaInfModel> kensaInfModels, List<KensaInfDetailModel> kensaInfDetailModels)
+    {
+        DateTime dt = CIUtil.GetJapanDateTimeNow();
+
+        // 削除
+        if (kensaInfDetailModels != null && kensaInfDetailModels.Any(p => p.IsDeleted == 1))
+        {
+            List<KensaInfDetailModel> delKensaDtls = kensaInfDetailModels.FindAll(p => p.IsDeleted == 1);
+            var ptIdList = delKensaDtls.Select(item => item.PtId).Distinct().ToList();
+            var seqNoList = delKensaDtls.Select(item => item.SeqNo).Distinct().ToList();
+            var iraiCdList = delKensaDtls.Select(item => item.IraiCd).Distinct().ToList();
+            var kensaInfDetailDeleteList = TrackingDataContext.KensaInfDetails.Where(item => item.HpId == hpId
+                                                                                             && ptIdList.Contains(item.PtId)
+                                                                                             && seqNoList.Contains(item.SeqNo)
+                                                                                             && iraiCdList.Contains(item.IraiCd))
+                                                                              .ToList();
+            foreach (var item in kensaInfDetailDeleteList)
+            {
+                item.IsDeleted = 1;
+                item.UpdateDate = dt;
+                item.UpdateId = userId;
+            }
+            TrackingDataContext.KensaInfDetails.RemoveRange(kensaInfDetailDeleteList);
+        }
+
+        // 追加
+        if (kensaInfModels.Any(p => p.IsAddNew))
+        {
+            List<KensaInfModel> addKensaInfs = kensaInfModels.FindAll(p => p.IsAddNew);
+            foreach (KensaInfModel addKensaInf in addKensaInfs)
+            {
+                KensaInf newKensaInf = ConvertToNewKensaInf(hpId, userId, addKensaInf);
+                newKensaInf.CreateDate = dt;
+                newKensaInf.CreateId = addKensaInf.CreateId;
+                newKensaInf.UpdateDate = dt;
+                newKensaInf.UpdateId = userId;
+                TrackingDataContext.KensaInfs.Add(newKensaInf);
+                TrackingDataContext.SaveChanges();
+                addKensaInf.ChangeIraiCd(newKensaInf.IraiCd);
+            }
+
+            // detailにiraicdを反映
+            if (kensaInfDetailModels != null && kensaInfDetailModels.Any())
+            {
+                foreach (KensaInfModel addKensaInf in addKensaInfs)
+                {
+                    foreach (KensaInfDetailModel updKensaDtl in kensaInfDetailModels.FindAll(p => p.KeyNo == addKensaInf.KeyNo))
+                    {
+                        updKensaDtl.ChangeIraiCd(addKensaInf.IraiCd);
+                    }
+                }
+            }
+        }
+
+        if (kensaInfDetailModels != null && kensaInfDetailModels.Any(p => p.IsAddNew))
+        {
+            List<KensaInfDetailModel> addKensaDtls = kensaInfDetailModels.FindAll(p => p.IsAddNew);
+            foreach (KensaInfDetailModel addKensaDtl in addKensaDtls)
+            {
+                KensaInfDetail newKensaInfDetail = ConvertToNewKensaInfDetail(hpId, userId, addKensaDtl);
+                newKensaInfDetail.CreateDate = dt;
+                newKensaInfDetail.UpdateDate = dt;
+                TrackingDataContext.KensaInfDetails.Add(newKensaInfDetail);
+            }
+        }
+
+        if (kensaInfModels.Any(p => p.IsUpdate))
+        {
+            List<KensaInfModel> updKensaInfs = kensaInfModels.FindAll(p => p.IsUpdate);
+            var ptIdList = updKensaInfs.Select(item => item.PtId).Distinct().ToList();
+            var iraiCdList = updKensaInfs.Select(item => item.IraiCd).Distinct().ToList();
+
+            var updKensaInfDB = TrackingDataContext.KensaInfs.Where(item => item.HpId == hpId
+                                                                            && ptIdList.Contains(item.PtId)
+                                                                            && iraiCdList.Contains(item.IraiCd))
+                                                             .ToList();
+
+            foreach (KensaInfModel model in updKensaInfs)
+            {
+                var kensaInf = updKensaInfDB.FirstOrDefault(item => item.IraiCd == model.IraiCd && item.PtId == model.PtId);
+                if (kensaInf != null)
+                {
+                    kensaInf.IraiDate = model.IraiDate;
+                    kensaInf.RaiinNo = model.RaiinNo;
+                    kensaInf.IraiCd = model.IraiCd;
+                    kensaInf.InoutKbn = model.InoutKbn;
+                    kensaInf.Status = model.Status;
+                    kensaInf.TosekiKbn = model.TosekiKbn;
+                    kensaInf.SikyuKbn = model.SikyuKbn;
+                    kensaInf.ResultCheck = model.ResultCheck;
+                    kensaInf.CenterCd = model.CenterCd;
+                    kensaInf.Nyubi = model.Nyubi;
+                    kensaInf.Yoketu = model.Yoketu;
+                    kensaInf.Bilirubin = model.Bilirubin;
+                    kensaInf.IsDeleted = model.IsDeleted ? 1 : 0;
+                    kensaInf.UpdateDate = dt;
+                    kensaInf.UpdateId = userId;
+                }
+            }
+        }
+        TrackingDataContext.SaveChanges();
     }
 
 
