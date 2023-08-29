@@ -127,7 +127,7 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
         // センターコード
         string odrKensaIraiCenterCd = _systemConfRepository.GetByGrpCd(hpId, 100019, 2).Param;
         kensaCenterMst = _kensaIraiRepository.GetKensaCenterMst(hpId, odrKensaIraiCenterCd);
-        if (kensaCenterMst == null)
+        if (kensaCenterMst.CenterCd != odrKensaIraiCenterCd)
         {
             // センターコード未登録
             messageResult = $"センターコードが不正です centercd:{odrKensaIraiCenterCd}";
