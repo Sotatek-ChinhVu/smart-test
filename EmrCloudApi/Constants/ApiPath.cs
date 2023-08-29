@@ -237,6 +237,7 @@
         public const string GetContainerMst = "GetContainerMst";
         public const string GetSinkouCountInMonth = "GetSinkouCountInMonth";
         public const string GetHeaderVistitDate = "GetHeaderVistitDate";
+        public const string SaveKensaIrai = "SaveKensaIrai";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
