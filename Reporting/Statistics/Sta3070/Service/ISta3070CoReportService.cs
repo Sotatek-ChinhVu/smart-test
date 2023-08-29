@@ -8,5 +8,5 @@ public interface ISta3070CoReportService
 {
     CommonReportingRequestModel GetSta3070ReportingData(CoSta3070PrintConf printConf, int hpId, CoFileType outputFileType);
 
-    CommonExcelReportingModel ExportCsv(CoSta3070PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow);
+    CommonExcelReportingModel ExportCsv(CoSta3070PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType);
 }

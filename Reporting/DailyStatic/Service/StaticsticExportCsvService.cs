@@ -174,7 +174,7 @@ namespace Reporting.DailyStatic.Service
                     result = PrintSta3060(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow, coFileType);
                     break;
                 case StatisticReportType.Sta3070:
-                    result = PrintSta3070(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta3070(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow, coFileType);
                     break;
                 case StatisticReportType.Sta3061:
                     result = PrintSta3061(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
@@ -297,9 +297,9 @@ namespace Reporting.DailyStatic.Service
             return _sta3060CoReportService.ExportCsv(CreateCoSta3060PrintConf(configDaily.ConfigStatistic3060, monthFrom, monthTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false, coFileType ?? null);
         }
 
-        private CommonExcelReportingModel PrintSta3070(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
+        private CommonExcelReportingModel PrintSta3070(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow, CoFileType? coFileType)
         {
-            return _sta3070CoReportService.ExportCsv(CreateCoSta3070PrintConf(configDaily.ConfigStatistic3070, monthFrom, monthTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
+            return _sta3070CoReportService.ExportCsv(CreateCoSta3070PrintConf(configDaily.ConfigStatistic3070, monthFrom, monthTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false, coFileType ?? null);
         }
 
         private CommonExcelReportingModel PrintSta3061(int hpId, ConfigStatisticModel configDaily, int startDateFrom, int startDateTo, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)

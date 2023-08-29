@@ -169,6 +169,7 @@ public class Sta3070CoReportService : ISta3070CoReportService
     private List<string> objectRseList;
     private CoSta3070PrintConf printConf;
     private CoFileType outputFileType;
+    private CoFileType? coFileType;
 
     public Sta3070CoReportService(ICoSta3070Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -317,30 +318,30 @@ public class Sta3070CoReportService : ISta3070CoReportService
             #endregion
 
             #region 集計
-            int[] syosinKbns = { 1, 6 };
-            int[] saisinKbns = { 3, 4, 7, 8 };
-            int[] jikangaiKbns = { 1, 2, 3, 6, 7 };
-            int[] yasouKbns = { 4, 5 };
-            int[] kyujituKbns = { 2, 6 };
-            int[] sinyaKbns = { 3, 7 };
+            int[] SyosinKbns = { 1, 6 };
+            int[] SaisinKbns = { 3, 4, 7, 8 };
+            int[] JikangaiKbns = { 1, 2, 3, 6, 7 };
+            int[] YasouKbns = { 4, 5 };
+            int[] KyujituKbns = { 2, 6 };
+            int[] SinyaKbns = { 3, 7 };
 
             //来院回数
-            printData.SyosinRaiinCnt = syukeiData.Where(s => syosinKbns.Contains(s.SyosaisinKbn))
+            printData.SyosinRaiinCnt = syukeiData.Where(s => SyosinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.RaiinNo).Count().ToString("#,0");
-            printData.SaisinRaiinCnt = syukeiData.Where(s => saisinKbns.Contains(s.SyosaisinKbn))
+            printData.SaisinRaiinCnt = syukeiData.Where(s => SaisinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.RaiinNo).Count().ToString("#,0");
-            printData.SonotaRaiinCnt = syukeiData.Where(s => !syosinKbns.Contains(s.SyosaisinKbn) && !saisinKbns.Contains(s.SyosaisinKbn))
+            printData.SonotaRaiinCnt = syukeiData.Where(s => !SyosinKbns.Contains(s.SyosaisinKbn) && !SaisinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.RaiinNo).Count().ToString("#,0");
 
             int raiinCnt = syukeiData.GroupBy(s => s.RaiinNo).Count();
             printData.RaiinCnt = raiinCnt.ToString("#,0");
 
             //実人数
-            printData.PtSyosinCnt = syukeiData.Where(s => syosinKbns.Contains(s.SyosaisinKbn))
+            printData.PtSyosinCnt = syukeiData.Where(s => SyosinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.PtId).Count().ToString("#,0");
-            printData.PtSaisinCnt = syukeiData.Where(s => saisinKbns.Contains(s.SyosaisinKbn))
+            printData.PtSaisinCnt = syukeiData.Where(s => SaisinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.PtId).Count().ToString("#,0");
-            printData.PtSonotaCnt = syukeiData.Where(s => !syosinKbns.Contains(s.SyosaisinKbn) && !saisinKbns.Contains(s.SyosaisinKbn))
+            printData.PtSonotaCnt = syukeiData.Where(s => !SyosinKbns.Contains(s.SyosaisinKbn) && !SaisinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.PtId).Count().ToString("#,0");
 
             int ptCnt = syukeiData.GroupBy(s => s.PtId).Count();
@@ -354,12 +355,12 @@ public class Sta3070CoReportService : ISta3070CoReportService
             printData.SinDateCnt = sinDateCnt.ToString("#,0");
 
             //１日平均
-            printData.SyosinAvg = (StrToFloatDef(printData.SyosinRaiinCnt, 0) / (sinDateCnt == 0 ? 1 : sinDateCnt)).ToString("#,0.00");
-            printData.PtAvg = (StrToFloatDef(printData.RaiinCnt, 0) / (sinDateCnt == 0 ? 1 : sinDateCnt)).ToString("#,0.00");
-            printData.SinkanAvg = (StrToFloatDef(printData.SinkanCnt, 0) / (sinDateCnt == 0 ? 1 : sinDateCnt)).ToString("#,0.00");
+            printData.SyosinAvg = (printData.SyosinRaiinCnt.StrToFloatDef(0) / (sinDateCnt == 0 ? 1 : sinDateCnt)).ToString("#,0.00");
+            printData.PtAvg = (printData.RaiinCnt.StrToFloatDef(0) / (sinDateCnt == 0 ? 1 : sinDateCnt)).ToString("#,0.00");
+            printData.SinkanAvg = (printData.SinkanCnt.StrToFloatDef(0) / (sinDateCnt == 0 ? 1 : sinDateCnt)).ToString("#,0.00");
 
             //患者平均来院回数
-            printData.RaiinCntAvg = (StrToFloatDef(printData.RaiinCnt, 0) / (ptCnt == 0 ? 1 : ptCnt)).ToString("#,0.00");
+            printData.RaiinCntAvg = (printData.RaiinCnt.StrToFloatDef(0) / (ptCnt == 0 ? 1 : ptCnt)).ToString("#,0.00");
 
             //構成比
             if (isTotal)
@@ -373,9 +374,9 @@ public class Sta3070CoReportService : ISta3070CoReportService
                 int totalRaiinCnt = totalCnt.RaiinCnt;
                 int totalPtCnt = totalCnt.PtCnt;
                 int totalSinkanCnt = totalCnt.SinkanCnt;
-                printData.RaiinRatio = (100 * StrToFloatDef(printData.RaiinCnt, 0) / (totalRaiinCnt == 0 ? 1 : totalRaiinCnt)).ToString("#,0.00");
-                printData.PtRatio = (100 * StrToFloatDef(printData.PtCnt, 0) / (totalPtCnt == 0 ? 1 : totalPtCnt)).ToString("#,0.00");
-                printData.SinkanRatio = (100 * StrToFloatDef(printData.SinkanCnt, 0) / (totalSinkanCnt == 0 ? 1 : totalSinkanCnt)).ToString("#,0.00");
+                printData.RaiinRatio = (100 * printData.RaiinCnt.StrToFloatDef(0) / (totalRaiinCnt == 0 ? 1 : totalRaiinCnt)).ToString("#,0.00");
+                printData.PtRatio = (100 * printData.PtCnt.StrToFloatDef(0) / (totalPtCnt == 0 ? 1 : totalPtCnt)).ToString("#,0.00");
+                printData.SinkanRatio = (100 * printData.SinkanCnt.StrToFloatDef(0) / (totalSinkanCnt == 0 ? 1 : totalSinkanCnt)).ToString("#,0.00");
             }
 
             #region 来院回数/実人数内訳
@@ -389,11 +390,11 @@ public class Sta3070CoReportService : ISta3070CoReportService
                     switch (i)
                     {
                         case 0:
-                            wrksyukeiData = wrksyukeiData.Where(s => syosinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => SyosinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
                         case 1:
-                            wrksyukeiData = wrksyukeiData.Where(s => saisinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => SaisinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
                         case 2:
-                            wrksyukeiData = wrksyukeiData.Where(s => !syosinKbns.Contains(s.SyosaisinKbn) && !saisinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => !SyosinKbns.Contains(s.SyosaisinKbn) && !SaisinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
                         default:
                             break;
                     }
@@ -408,16 +409,17 @@ public class Sta3070CoReportService : ISta3070CoReportService
                         case 3:
                             wrksyukeiData = wrksyukeiData.Where(s => s.JikanKbn == 1).ToList(); break;
                         case 4:
-                            wrksyukeiData = wrksyukeiData.Where(s => kyujituKbns.Contains(s.JikanKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => KyujituKbns.Contains(s.JikanKbn)).ToList(); break;
                         case 5:
-                            wrksyukeiData = wrksyukeiData.Where(s => sinyaKbns.Contains(s.JikanKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => SinyaKbns.Contains(s.JikanKbn)).ToList(); break;
                         case 6:
-                            wrksyukeiData = wrksyukeiData.Where(s => jikangaiKbns.Contains(s.JikanKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => JikangaiKbns.Contains(s.JikanKbn)).ToList(); break;
                         case 7:
-                            wrksyukeiData = wrksyukeiData.Where(s => yasouKbns.Contains(s.JikanKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => YasouKbns.Contains(s.JikanKbn)).ToList(); break;
                         default:
                             break;
                     }
+                    ;
 
                     string newVal = wrksyukeiData.GroupBy(s => raiinTypes[i] == "Pt" ? s.PtId : s.RaiinNo).Count().ToString("#,0");
                     printData.SetMemberValue(raiinTypes[i] + raiinSubTypes[j] + "Cnt", newVal);
@@ -439,9 +441,9 @@ public class Sta3070CoReportService : ISta3070CoReportService
             headerL1 = new List<string>();
 
             //改ページ条件
-            bool pbSinYm = outputFileType != CoFileType.Csv && new int[] { printConf.PgBreak1, printConf.PgBreak2, printConf.PgBreak3 }.Contains(1);
-            bool pbKaId = outputFileType != CoFileType.Csv && new int[] { printConf.PgBreak1, printConf.PgBreak2, printConf.PgBreak3 }.Contains(2);
-            bool pbTantoId = outputFileType != CoFileType.Csv && new int[] { printConf.PgBreak1, printConf.PgBreak2, printConf.PgBreak3 }.Contains(3);
+            bool pbSinYm = outputFileType != CoFileType.Csv && coFileType != CoFileType.Csv && new int[] { printConf.PgBreak1, printConf.PgBreak2, printConf.PgBreak3 }.Contains(1);
+            bool pbKaId = outputFileType != CoFileType.Csv && coFileType != CoFileType.Csv && new int[] { printConf.PgBreak1, printConf.PgBreak2, printConf.PgBreak3 }.Contains(2);
+            bool pbTantoId = outputFileType != CoFileType.Csv && coFileType != CoFileType.Csv && new int[] { printConf.PgBreak1, printConf.PgBreak2, printConf.PgBreak3 }.Contains(3);
 
             //ソート順
             raiinInfs = raiinInfs.OrderBy(r => pbSinYm ? r.SinYm : 0)
@@ -574,7 +576,7 @@ public class Sta3070CoReportService : ISta3070CoReportService
                         }
 
                         //ページごとの合計
-                        printDatas.Add(SetPrintData(curDatas, pgtotal, "合計", string.Empty, "合計", true));
+                        printDatas.Add(SetPrintData(curDatas, pgtotal, "合計", "", "合計", true));
 
                         //ヘッダー情報を追加されたページ数分追加
                         int pageCount = colNo % maxCol == 0 ? colNo / maxCol : (colNo / maxCol) + 1;
@@ -695,10 +697,11 @@ public class Sta3070CoReportService : ISta3070CoReportService
         objectRseList = javaOutputData.objectNames;
     }
 
-    public CommonExcelReportingModel ExportCsv(CoSta3070PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+    public CommonExcelReportingModel ExportCsv(CoSta3070PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
     {
         this.printConf = printConf;
         string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+        this.coFileType = coFileType;
         List<string> retDatas = new List<string>();
 
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
