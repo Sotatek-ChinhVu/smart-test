@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.AuditLog
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.AuditLog
 {
     public class AuditTrailLogDetailModel
     {
@@ -7,7 +9,7 @@
         {
             Hosoku = string.Empty;
         }
-
+        [JsonConstructor]
         public AuditTrailLogDetailModel(long logId, string hosoku)
         {
             LogId = logId;
