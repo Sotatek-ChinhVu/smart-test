@@ -2,7 +2,7 @@
 
 public class KensaInfDetailModel
 {
-    public KensaInfDetailModel(long ptId, int iraiDate, long raiinNo, long iraiCd, long seqNo, string kensaItemCd, string resultVal, string resultType, string abnormalKbn, int isDeleted, string cmtCd1, string cmtCd2)
+    public KensaInfDetailModel(long ptId, int iraiDate, long raiinNo, long iraiCd, long seqNo, string kensaItemCd, string resultVal, string resultType, string abnormalKbn, int isDeleted, string cmtCd1, string cmtCd2, KensaMstModel kensaMstModel)
     {
         PtId = ptId;
         IraiDate = iraiDate;
@@ -16,6 +16,7 @@ public class KensaInfDetailModel
         IsDeleted = isDeleted;
         CmtCd1 = cmtCd1;
         CmtCd2 = cmtCd2;
+        KensaMstModel = kensaMstModel;
     }
 
     public long PtId { get; private set; }
@@ -41,4 +42,15 @@ public class KensaInfDetailModel
     public string CmtCd1 { get; private set; }
 
     public string CmtCd2 { get; private set; }
+
+    public KensaMstModel KensaMstModel { get; private set; }
+
+    public long KeyNo { get; set; } = 0;
+    public bool IsAddNew { get; set; } = false;
+
+    public KensaInfDetailModel ChangeIsDeleted(int isDeleted)
+    {
+        IsDeleted = isDeleted;
+        return this;
+    }
 }

@@ -1,7 +1,11 @@
 ﻿using Domain.Constant;
 using Domain.Models.KensaIrai;
+using Entity.Tenant;
+using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
@@ -65,7 +69,8 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     entity.Nyubi ?? string.Empty,
                     entity.Yoketu ?? string.Empty,
                     entity.Bilirubin ?? string.Empty,
-                    false));
+                    false,
+                    entity.CreateId));
             }
         });
         return results;
@@ -103,13 +108,100 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                                kensaInfDtl.AbnormalKbn ?? string.Empty,
                                                kensaInfDtl.IsDeleted,
                                                kensaInfDtl.CmtCd1 ?? string.Empty,
-                                               kensaInfDtl.CmtCd2 ?? string.Empty)
+                                               kensaInfDtl.CmtCd2 ?? string.Empty,
+                                               new())
                     ).ToList();
         return result;
+    }
+
+    public bool SaveKensaInf(int hpId, int userId, List<KensaInfModel> KensaInfModels, List<KensaInfDetailModel> KensaInfDetailModels)
+    {
+        DateTime dt = CIUtil.GetJapanDateTimeNow();
+
+        // 削除
+        if (KensaInfDetailModels != null && KensaInfDetailModels.Any(p => p.IsDeleted == 1))
+        {
+            List<KensaInfDetailModel> delKensaDtls = KensaInfDetailModels.FindAll(p => p.IsDeleted == 1);
+            var ptIdList = delKensaDtls.Select(item =>item.PtId).Distinct().ToList();
+            var seqNoList = delKensaDtls.Select(item =>item.SeqNo).Distinct().ToList();
+            var iraiCdList = delKensaDtls.Select(item =>item.IraiCd).Distinct().ToList();
+            var kensaInfDetailDeleteList = TrackingDataContext.KensaInfDetails.Where(item => item.HpId==hpId
+            && ptIdList.Contains(item.PtId)
+            )
+            dbService.KensaInfDetailRepository.RemoveRange(delKensaDtls.Select(p => p.KensaInfDetail));
+        }
+
+        // 追加
+        if (KensaInfModels.Any(p => p.IsAddNew))
+        {
+            List<KensaInfModel> addKensaInfs = KensaInfModels.FindAll(p => p.IsAddNew);
+            foreach (KensaInfModel addKensaInf in addKensaInfs)
+            {
+                addKensaInf.CreateDate = dt;
+                if (addKensaInf.CreateId == 0)
+                {
+                    addKensaInf.CreateId = userId;
+                }
+                addKensaInf.CreateMachine = machine;
+                addKensaInf.UpdateDate = dt;
+                addKensaInf.UpdateId = userId;
+                addKensaInf.UpdateMachine = machine;
+            }
+
+            dbService.KensaInfRepository.AddRange(addKensaInfs.Select(p => p.KensaInf));
+            dbService.SaveChanged();
+
+            // detailにiraicdを反映
+            foreach (KensaInfModel addKensaInf in addKensaInfs)
+            {
+                foreach (KensaInfDetailModel updKensaDtl in KensaInfDetailModels.FindAll(p => p.KeyNo == addKensaInf.KeyNo))
+                {
+                    updKensaDtl.IraiCd = addKensaInf.IraiCd;
+                }
+            }
+        }
+
+        if (KensaInfDetailModels.Any(p => p.IsAddNew))
+        {
+            List<KensaInfDetailModel> addKensaDtls = KensaInfDetailModels.FindAll(p => p.IsAddNew);
+            foreach (KensaInfDetailModel addKensaDtl in addKensaDtls)
+            {
+                addKensaDtl.CreateDate = dt;
+                addKensaDtl.CreateId = userId;
+                addKensaDtl.CreateMachine = machine;
+                addKensaDtl.UpdateDate = dt;
+                addKensaDtl.UpdateId = userId;
+                addKensaDtl.UpdateMachine = machine;
+            }
+
+            dbService.KensaInfDetailRepository.AddRange(addKensaDtls.Select(p => p.KensaInfDetail));
+        }
+
+        if (KensaInfModels.Any(p => p.IsUpdate))
+        {
+            List<KensaInfModel> updKensaInfs = KensaInfModels.FindAll(p => p.IsUpdate);
+            foreach (KensaInfModel updKensaInf in updKensaInfs)
+            {
+                updKensaInf.UpdateDate = dt;
+                updKensaInf.UpdateId = userId;
+                updKensaInf.UpdateMachine = machine;
+            }
+        }
+        dbService.SaveChanged();
     }
 
     public void ReleaseResource()
     {
         DisposeDataContext();
     }
+
+
+    #region private function
+        private KensaInfDetail ConvertToKensaInfDetail(int hpId, int userId,KensaInfDetailModel model)
+    {
+        return new KensaInfDetail
+    }
+
+
+    #endregion
 }

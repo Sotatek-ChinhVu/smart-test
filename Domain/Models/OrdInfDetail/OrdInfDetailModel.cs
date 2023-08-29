@@ -918,5 +918,13 @@ namespace Domain.Models.OrdInfDetails
             ItemCd = itemCd;
             return this;
         }
+
+        /// <summary>
+        /// 検査コード
+        /// </summary>
+        public string KensaItemCd
+        {
+            get { return KensaMstModel != null ? KensaMstModel.KensaItemCd : string.Empty; }
+        }
     }
 }
