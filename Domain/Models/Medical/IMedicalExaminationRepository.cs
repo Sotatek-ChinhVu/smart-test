@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.AuditLog;
 using Domain.Models.Diseases;
 using Domain.Models.Medical;
 using Domain.Models.OrdInfDetails;
