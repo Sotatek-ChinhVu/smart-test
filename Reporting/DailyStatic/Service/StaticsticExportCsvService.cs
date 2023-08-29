@@ -147,7 +147,7 @@ namespace Reporting.DailyStatic.Service
                     result = PrintSta3080(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta3071:
-                    result = PrintSta3071(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, isPutTotalRow, isPutColName, monthFrom ?? 0, monthTo ?? 0, menuName);
+                    result = PrintSta3071(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, isPutTotalRow, isPutColName, monthFrom ?? 0, monthTo ?? 0, menuName, coFileType);
                     break;
                 case StatisticReportType.Sta2020:
                     result = PrintSta2020(hpId, configDaily, timeFrom, timeTo, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
@@ -250,9 +250,9 @@ namespace Reporting.DailyStatic.Service
             return _sta3080CoReportService.ExportCsv(CreateCoSta3080PrintConf(configDaily.ConfigStatistic3080, monthFrom, monthTo), monthFrom, monthTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
         }
 
-        private CommonExcelReportingModel PrintSta3071(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, bool? isPutTotalRow, bool? isPutColName, int monthFrom, int monthTo, string menuName)
+        private CommonExcelReportingModel PrintSta3071(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, bool? isPutTotalRow, bool? isPutColName, int monthFrom, int monthTo, string menuName, CoFileType? coFileType)
         {
-            return _sta3071CoReportService.ExportCsv(CreateCoSta3071PrintConf(configDaily.ConfigStatistic3071, dateFrom, dateTo), hpId, isPutTotalRow ?? false, isPutColName ?? false, monthFrom, monthTo, menuName);
+            return _sta3071CoReportService.ExportCsv(CreateCoSta3071PrintConf(configDaily.ConfigStatistic3071, monthFrom, monthTo), hpId, isPutTotalRow ?? false, isPutColName ?? false, monthFrom, monthTo, menuName, coFileType ?? null);
         }
 
         private CommonExcelReportingModel PrintSta2020(int hpId, ConfigStatisticModel configDaily, int timeFrom, int timeTo, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
