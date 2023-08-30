@@ -1,4 +1,5 @@
 ﻿using Amazon.Runtime.Internal.Transform;
+using Amazon.S3.Transfer;
 using Domain.Constant;
 using Domain.Enum;
 using Domain.Models.FlowSheet;
@@ -3359,7 +3360,6 @@ namespace Infrastructure.Repositories
         public List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd)
         {
             var kinkiQuery = NoTrackingDataContext.KinkiMsts.Where(item => item.ACd == itemCd);
-            var temp = kinkiQuery.ToList();
             var itemMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate && item.IsDeleted == DeleteTypes.None);
 
             var query = from kinki in kinkiQuery
@@ -3378,7 +3378,7 @@ namespace Infrastructure.Repositories
                                                              data.Kinki.ACd,
                                                              data.Kinki.BCd ?? string.Empty,
                                                              data.Kinki.SeqNo,
-                                                             false,
+                                                             data.Kinki.IsDeleted == 1 ? true : false,
                                                              data.TenMst?.Name ?? string.Empty,
                                                              false,
                                                              false,
@@ -4680,6 +4680,7 @@ namespace Infrastructure.Repositories
                             update.UpdateId = userId;
                             update.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             update.BCd = model.BCd;
+                            update.IsDeleted = model.IsDeleted ? 1 : 0;
                         }
                     }
                 }
