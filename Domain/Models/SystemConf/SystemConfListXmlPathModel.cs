@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.SystemConf
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.SystemConf
 {
     public class SystemConfListXmlPathModel
     {
@@ -22,7 +24,12 @@
 
         public int IsInvalid { get; private set; }
 
-        public SystemConfListXmlPathModel(int hpId, int grpCd, int grpEdaNo, int seq, string machine, string path, string param, string biko, int charCd, int isInvalid)
+        public int CreateId { get; private set; }
+
+        public DateTime CreateDate { get; private set; }
+
+        [JsonConstructor]
+        public SystemConfListXmlPathModel(int hpId, int grpCd, int grpEdaNo, int seq, string machine, string path, string param, string biko, int charCd, int isInvalid, int createId, DateTime createDate)
         {
             HpId = hpId;
             GrpCd = grpCd;
@@ -34,6 +41,16 @@
             Biko = biko;
             CharCd = charCd;
             IsInvalid = isInvalid;
+            CreateId = createId;
+            CreateDate = createDate;
+        }
+
+        public SystemConfListXmlPathModel()
+        {
+            Machine = string.Empty;
+            Path = string.Empty;
+            Param = string.Empty;
+            Biko = string.Empty;
         }
     }
 }

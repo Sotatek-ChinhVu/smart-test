@@ -343,6 +343,8 @@
         public const string GetSystemSetting = "GetSystemSetting";
         public const string SaveSystemSetting = "SaveSystemSetting";
         public const string GetSystemConfListXmlPath = "GetSystemConfListXmlPath";
+        public const string GetAllPath = "GetAllPath";
+        public const string SavePath = "SavePath";
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
