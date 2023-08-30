@@ -70,7 +70,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private List<ReceInfModel> _receInfModels = new List<ReceInfModel>();
     public List<BuiErrorModel> errorOdrInfDetails = new List<BuiErrorModel>();
 
-    public bool CheckErrorInMonth(int hpId, List<long> ptIds, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount, bool receCheckCalculate = false)
+    public bool CheckErrorInMonth(int hpId, List<long> ptIds, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount, bool receCheckCalculate = false, bool isReceiptAggregationCheckBox = true)
     {
         List<ReceCheckErrModel> newReceCheckErrList = new();
         StringBuilder errorText = new();
@@ -113,7 +113,11 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             newReceCheckErrList = CheckOrderError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
             newReceCheckErrList = CheckRosaiError(sinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
             newReceCheckErrList = CheckAftercare(sinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
-            errorTextSinKouiCount = GetErrorTextSinKouiCount(sinYm, errorTextSinKouiCount, recalculationItem, sinKouiCountList);
+
+            if (isReceiptAggregationCheckBox)
+            {
+                errorTextSinKouiCount = GetErrorTextSinKouiCount(sinYm, errorTextSinKouiCount, recalculationItem, sinKouiCountList);
+            }
 
             if (allCheckCount == successCount)
             {
@@ -128,7 +132,12 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         errorText.Append(errorTextSinKouiCount);
         ptIdList = ptIds.Distinct().ToList();
         _receiptRepository.ClearReceCmtErr(hpId, receRecalculationList);
-        errorText = GetErrorTextAfterCheck(hpId, sinYm, errorText, ptIdList, systemConfigList, receRecalculationList);
+
+        if (isReceiptAggregationCheckBox)
+        {
+            errorText = GetErrorTextAfterCheck(hpId, sinYm, errorText, ptIdList, systemConfigList, receRecalculationList);
+        }
+        
         if (isStopCalc || !_receiptRepository.SaveNewReceCheckErrList(hpId, userId, newReceCheckErrList))
         {
             if (!receCheckCalculate)

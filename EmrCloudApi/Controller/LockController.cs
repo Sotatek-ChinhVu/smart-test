@@ -34,7 +34,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.AddLock)]
         public async Task<ActionResult<Response<LockResponse>>> AddLock([FromBody] LockRequest request, CancellationToken cancellationToken)
         {
-            var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, Token, request.TabKey);
+            var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, request.TabKey, request.LoginKey);
             var output = _bus.Handle(input);
             var presenter = new AddLockPresenter();
 
@@ -123,6 +123,23 @@ namespace EmrCloudApi.Controller
         public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> RemoveAllLockPtId([FromQuery] RemoveAllLockPtIdRequest request)
         {
             var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCd, request.SinDate, 0, UserId, false, true, request.TabKey);
+            var output = _bus.Handle(input);
+
+            if (output.Status == RemoveLockStatus.Successed)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockList);
+            }
+
+            var presenter = new RemoveLockPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpdateVisitingLockResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.RemoveLockWhenLogOut)]
+        public async Task<ActionResult<Response<UpdateVisitingLockResponse>>> RemoveLockWhenLogOut([FromBody] RemoveLockWhenLogOutRequest request)
+        {
+            var input = new RemoveLockInputData(HpId, UserId, true, request.LoginKey);
             var output = _bus.Handle(input);
 
             if (output.Status == RemoveLockStatus.Successed)

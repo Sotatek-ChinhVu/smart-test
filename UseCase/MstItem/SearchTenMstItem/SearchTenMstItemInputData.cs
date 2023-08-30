@@ -5,7 +5,7 @@ namespace UseCase.MstItem.SearchTenMstItem
 {
     public class SearchTenMstItemInputData : IInputData<SearchTenMstItemOutputData>
     {
-        public SearchTenMstItemInputData(int hpId, int pageIndex, int pageCount, string keyword, double? pointFrom, double? pointTo, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem, bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly, bool isSearchSuggestion, bool isSearchGazoDensibaitaiHozon, FilterTenMstEnum sortMode)
+        public SearchTenMstItemInputData(int hpId, int pageIndex, int pageCount, string keyword, double? pointFrom, double? pointTo, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem, bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly, bool isSearchSuggestion, bool isSearchGazoDensibaitaiHozon, FilterTenMstEnum sortCol, SortType sortType)
         {
             HpId = hpId;
             PageIndex = pageIndex;
@@ -35,7 +35,8 @@ namespace UseCase.MstItem.SearchTenMstItem
             IsSearch831SuffixOnly = isSearch831SuffixOnly;
             IsSearchSuggestion = isSearchSuggestion;
             IsSearchGazoDensibaitaiHozon = isSearchGazoDensibaitaiHozon;
-            SortMode = sortMode;
+            SortCol = sortCol;
+            SortType = sortType;
         }
 
         public int HpId { get; private set; }
@@ -66,6 +67,7 @@ namespace UseCase.MstItem.SearchTenMstItem
         public bool IsSearch831SuffixOnly { get; private set; }
         public bool IsSearchSuggestion { get; private set; }
         public bool IsSearchGazoDensibaitaiHozon { get; private set; }
-        public FilterTenMstEnum SortMode { get; private set; }
+        public FilterTenMstEnum SortCol { get; private set; }
+        public SortType SortType { get; private set; }
     }
 }

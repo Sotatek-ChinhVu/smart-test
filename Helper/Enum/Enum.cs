@@ -1,5 +1,11 @@
 ﻿namespace Helper.Enum
 {
+    public enum SortType
+    {
+        Asc = 0,
+        Desc = 1,
+    }
+
     public enum CheckSpecialType
     {
         /// <summary>
