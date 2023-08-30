@@ -136,7 +136,7 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
                 result.Add(
                     new TimeZoneConfGroupModel(
                         day,
-                        new List<TimeZoneConfModel>() { new() }
+                        new List<TimeZoneConfModel>() {}
                 ));
             }
         }
