@@ -374,7 +374,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
                     }
                 }
 
-                if (syunoInf.PtNum != prePrintData.PtNumKey || CoFileType = CoFileType.Csv)
+                if (syunoInf.PtNum != prePrintData.PtNumKey || coFileType == CoFileType.Csv)
                 {
                     printData.PtNum = syunoInf.PtNum;
                     printData.PtKanaName = syunoInf.PtKanaName;
