@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.HpInf;
 
 namespace Domain.Models.Online;
 
@@ -23,4 +24,6 @@ public interface IOnlineRepository : IRepositoryBase
     bool UpdateOnlineInRaiinInf(int hpId, int userId, long ptId, DateTime onlineConfirmationDate, int confirmationType, string infConsFlg);
 
     long UpdateRefNo(int hpId, long ptId);
+
+    bool UpdatePtInfOnlineQualify(int hpId, int userId, long ptId, List<PtInfConfirmationModel> resultList);
 }

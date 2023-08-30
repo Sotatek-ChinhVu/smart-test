@@ -17,6 +17,7 @@ using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineHistoryById;
 using UseCase.Online.UpdateOnlineInRaiinInf;
 using UseCase.Online.UpdateOQConfirmation;
+using UseCase.Online.UpdatePtInfOnlineQualify;
 using UseCase.Online.UpdateRefNo;
 
 namespace EmrCloudApi.Controller;
@@ -158,5 +159,18 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveAllOQConfirmationResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdatePtInfOnlineQualify)]
+    public ActionResult<Response<UpdatePtInfOnlineQualifyResponse>> UpdatePtInfOnlineQualify([FromBody] UpdatePtInfOnlineQualifyRequest request)
+    {
+        var resultList = request.ResultList.Select(item => new PtInfConfirmationItem(item.AttributeName, item.CurrentValue, item.XmlValue)).ToList();
+        var input = new UpdatePtInfOnlineQualifyInputData(HpId, UserId, request.PtId, resultList);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdatePtInfOnlineQualifyPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdatePtInfOnlineQualifyResponse>>(presenter.Result);
     }
 }

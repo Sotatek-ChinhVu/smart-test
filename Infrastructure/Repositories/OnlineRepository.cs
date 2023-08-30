@@ -6,7 +6,6 @@ using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using System.Globalization;
 using System.Text;
 
@@ -293,19 +292,88 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return success;
     }
 
-    #region private function
-    private OnlineConfirmationHistoryModel ConvertToModel(OnlineConfirmationHistory entity)
+    public bool UpdatePtInfOnlineQualify(int hpId, int userId, long ptId, List<PtInfConfirmationModel> resultList)
     {
-        return new OnlineConfirmationHistoryModel(
-                   entity.ID,
-                   entity.PtId,
-                   entity.OnlineConfirmationDate,
-                   entity.ConfirmationType,
-                   entity.InfoConsFlg ?? string.Empty,
-                   entity.ConfirmationResult ?? string.Empty,
-                   entity.PrescriptionIssueType,
-                   entity.UketukeStatus
-               );
+        if (resultList == null || resultList.Count == 0)
+        {
+            return false;
+        }
+        if (!resultList.Any(item => !item.IsReflect))
+        {
+            return false;
+        }
+
+        var ptInf = TrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId);
+        if (ptInf == null)
+        {
+            return false;
+        }
+
+        foreach (var model in resultList)
+        {
+            if (model.IsReflect)
+            {
+                continue;
+            }
+            switch (model.AttributeName)
+            {
+                case PtInfOQConst.KANJI_NAME:
+                    if (!string.IsNullOrEmpty(model.XmlValue))
+                    {
+                        ptInf.Name = model.XmlValue;
+                    }
+                    break;
+                case PtInfOQConst.KANA_NAME:
+                    if (!string.IsNullOrEmpty(model.XmlValue))
+                    {
+                        ptInf.KanaName = model.XmlValue;
+                    }
+                    break;
+                case PtInfOQConst.SEX:
+                    if (!string.IsNullOrEmpty(model.XmlValue))
+                    {
+                        ptInf.Sex = model.XmlValue.AsInteger();
+                    }
+                    break;
+                case PtInfOQConst.BIRTHDAY:
+                    if (!string.IsNullOrEmpty(model.XmlValue))
+                    {
+                        ptInf.Birthday = model.XmlValue.AsInteger();
+                    }
+                    break;
+                case PtInfOQConst.HOME_ADDRESS:
+                    if (!string.IsNullOrEmpty(model.XmlValue))
+                    {
+                        ptInf.HomeAddress1 = model.XmlValue;
+                    }
+                    break;
+                case PtInfOQConst.HOME_POST:
+                    if (!string.IsNullOrEmpty(model.XmlValue))
+                    {
+                        string value = model.XmlValue;
+                        if (!string.IsNullOrEmpty(value) && value.Contains("-"))
+                        {
+                            value = value.Replace("-", string.Empty);
+                        }
+                        ptInf.HomePost = value;
+                    }
+                    break;
+                case PtInfOQConst.SETANUSI:
+                    if (!string.IsNullOrEmpty(model.XmlValue))
+                    {
+                        ptInf.Setanusi = model.XmlValue;
+                    }
+                    break;
+            }
+        }
+        var isUpdated = resultList.Any(item => !item.IsReflect && !string.IsNullOrEmpty(item.XmlValue));
+        if (isUpdated)
+        {
+            ptInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            ptInf.UpdateId = userId;
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+        return true;
     }
 
     public bool UpdateConfirmationTypeInRaiinInf(int userId, List<RaiinInf> raiinInfsInSameday, int confirmationType)
@@ -341,7 +409,22 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
-    public void UpdateInfConsFlgInRaiinInf(int userId, List<RaiinInf> raiinInfsInSameday, string infConsFlg)
+    #region private function
+    private OnlineConfirmationHistoryModel ConvertToModel(OnlineConfirmationHistory entity)
+    {
+        return new OnlineConfirmationHistoryModel(
+                   entity.ID,
+                   entity.PtId,
+                   entity.OnlineConfirmationDate,
+                   entity.ConfirmationType,
+                   entity.InfoConsFlg ?? string.Empty,
+                   entity.ConfirmationResult ?? string.Empty,
+                   entity.PrescriptionIssueType,
+                   entity.UketukeStatus
+               );
+    }
+
+    private void UpdateInfConsFlgInRaiinInf(int userId, List<RaiinInf> raiinInfsInSameday, string infConsFlg)
     {
         var unConfirmedRaiinInfs = raiinInfsInSameday.Where(x => string.IsNullOrEmpty(x.InfoConsFlg));
         var confirmedRaiininfs = raiinInfsInSameday.Except(unConfirmedRaiinInfs).ToList();
@@ -422,7 +505,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         NoTrackingDataContext.SaveChanges();
     }
 
-    public string ReplaceAt(string input, int index, char newChar)
+    private string ReplaceAt(string input, int index, char newChar)
     {
         if (input == null)
         {

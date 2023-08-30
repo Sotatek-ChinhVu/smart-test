@@ -700,6 +700,7 @@ using UseCase.SystemConf.GetXmlPath;
 using UseCase.Reception.GetHpInf;
 using UseCase.Online.UpdateRefNo;
 using UseCase.Online.UpdateOnlineInRaiinInf;
+using UseCase.Online.UpdatePtInfOnlineQualify;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1618,6 +1619,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveOQConfirmationInputData, SaveOQConfirmationInteractor>();
             busBuilder.RegisterUseCase<UpdateRefNoInputData, UpdateRefNoInteractor>();
             busBuilder.RegisterUseCase<UpdateOnlineInRaiinInfInputData, UpdateOnlineInRaiinInfInteractor>();
+            busBuilder.RegisterUseCase<UpdatePtInfOnlineQualifyInputData, UpdatePtInfOnlineQualifyInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
