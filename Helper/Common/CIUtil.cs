@@ -3742,5 +3742,19 @@ namespace Helper.Common
         {
             return sex == 1 ? "男" : sex == 2 ? "女" : "未設定";
         }
+
+        public static bool IsNumberic(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return false;
+            foreach (char c in str)
+            {
+                if (!char.IsDigit(c) && c != '.')
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

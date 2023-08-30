@@ -1,4 +1,5 @@
-﻿using Domain.Models.Online;
+﻿using Domain.Models.Insurance;
+using Domain.Models.Online;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -439,6 +440,143 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                                                   .ToList();
         return result;
     }
+
+    public bool UpdateHokenInfOnlineQualify(int hpId, long ptId, int hokenId, long seqNo, List<HokenConfirmationModel> resultList, bool IsAddNewPatient = false)
+    {
+        bool result = false;
+        if (resultList == null || resultList.Count == 0)
+        {
+            return result;
+        }
+        if (!resultList.Any(item => !item.IsReflect))
+        {
+            return result;
+        }
+        var hokenInf = TrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                              && item.PtId == ptId
+                                                                              && item.HokenId == hokenId
+                                                                              && item.SeqNo == seqNo);
+        if (hokenInf == null)
+        {
+            return false;
+        }
+
+        foreach (var model in resultList)
+        {
+            if (model.IsReflect)
+            {
+                continue;
+            }
+            switch (model.AttributeName)
+            {
+                case HokenConfOnlQuaConst.HOKENSYA_NO:
+                    if (!string.IsNullOrEmpty(model.XmlValue))
+                    {
+                        string oldKigo = hokenInf?.Kigo ?? string.Empty;
+                        string oldBango = hokenInf?.Bango ?? string.Empty;
+                        hokenInf!.HokensyaNo = model.XmlValue;
+                        hokenInf.Kigo = oldKigo;
+                        hokenInf.Bango = oldBango;
+                    }
+                    break;
+                case HokenConfOnlQuaConst.KIGO:
+                    hokenInf.Kigo = model.XmlValue;
+                    break;
+                case HokenConfOnlQuaConst.BANGO:
+                    if (!string.IsNullOrEmpty(model.XmlValue))
+                    {
+                        hokenInf.Bango = model.XmlValue;
+                    }
+                    break;
+                case HokenConfOnlQuaConst.EDANO:
+                    if (!string.IsNullOrEmpty(model.XmlValue))
+                    {
+                        hokenInf.EdaNo = model.XmlValue;
+                    }
+                    break;
+                case HokenConfOnlQuaConst.HONKE:
+                    hokenInf.HonkeKbn = model.XmlValue.AsInteger();
+                    break;
+                case HokenConfOnlQuaConst.KOFU_DATE:
+                    if (CIUtil.CheckSDate(model.XmlValue))
+                    {
+                        hokenInf.KofuDate = model.XmlValue.AsInteger();
+                    }
+                    break;
+                case HokenConfOnlQuaConst.START_DATE:
+                    if (CIUtil.CheckSDate(model.XmlValue))
+                    {
+                        hokenInf.StartDate = model.XmlValue.AsInteger();
+                    }
+                    break;
+                case HokenConfOnlQuaConst.END_DATE:
+                    if (CIUtil.CheckSDate(model.XmlValue))
+                    {
+                        hokenInf.EndDate = model.XmlValue.AsInteger();
+                    }
+                    break;
+                case HokenConfOnlQuaConst.KOGAKU_KBN:
+                    if (!string.IsNullOrEmpty(model.XmlValue))
+                    {
+                        hokenInf.KogakuKbn = KogakuKbnToLimitConsFlgConverter.ClassificationFlagToKogakuKbn(model.XmlValue);
+                    }
+                    break;
+                case HokenConfOnlQuaConst.CREDENTIAL:
+                    break;
+            }
+        }
+
+        // Update hoken 38 logic
+        string xmlHokensyaNo = resultList.FirstOrDefault(item => item.AttributeName == HokenConfOnlQuaConst.HOKENSYA_NO)?.XmlValue ?? string.Empty;
+        if ((!string.IsNullOrEmpty(xmlHokensyaNo)
+            && xmlHokensyaNo.StartsWith("39")
+            && xmlHokensyaNo.Length == 8)
+            || IsAddNewPatient)
+        {
+            if (hokenInf.HonkeKbn == 0)
+            {
+                hokenInf.HonkeKbn = 1;
+            }
+            if (string.IsNullOrEmpty(hokenInf.Kigo))
+            {
+                hokenInf.Kigo = "　";
+            }
+        }
+
+        // 資格証明
+        var creadentialModel = resultList.FirstOrDefault(item => item.AttributeName == HokenConfOnlQuaConst.CREDENTIAL);
+        string xmlCreadential = creadentialModel?.XmlValue ?? string.Empty;
+        string currentCreadential = creadentialModel?.CurrentValue ?? string.Empty;
+        bool isReflect = creadentialModel?.IsReflect ?? false;
+        // Set hoken = 068
+        if ((!isReflect && !string.IsNullOrEmpty(xmlCreadential))
+            || (isReflect && !string.IsNullOrEmpty(currentCreadential)))
+        {
+            hokenInf.HokenNo = 68;
+            hokenInf.HokenEdaNo = 0;
+            hokenInf.HokenMasterModel = hokenInf.HokenMstFiltered?.Find(item => item.HokenNumber == hokenInf.HokenNo
+                                                                                && item.HokenEdaNo == hokenInf.HokenEdaNo);
+        }
+        else
+        {
+            // Set Hoken Master = first hoken
+            if (!isReflect && string.IsNullOrEmpty(xmlCreadential) && !string.IsNullOrEmpty(currentCreadential))
+            {
+                hokenInf.HokenMasterModel = hokenInf.HokenMstFiltered?.FirstOrDefault();
+            }
+        }
+
+        // Update info
+        var isUpdated = resultList.Where(item => !item.IsReflect && !string.IsNullOrEmpty(item.XmlValue)).Any();
+        if (isUpdated)
+        {
+            hokenInf.UpdateDate = DateTime.Now;
+            hokenInf.UpdateId = Session.UserID;
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
 
     #region private function
     private OnlineConfirmationHistoryModel ConvertToModel(OnlineConfirmationHistory entity)
