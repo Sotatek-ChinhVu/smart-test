@@ -1,11 +1,9 @@
-﻿using Amazon.Auth.AccessControlPolicy;
-using Domain.Models.TimeZone;
+﻿using Domain.Models.TimeZone;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
@@ -138,7 +136,7 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
                 result.Add(
                     new TimeZoneConfGroupModel(
                         day,
-                        new List<TimeZoneConfModel>() { new TimeZoneConfModel(hpId, 0, day, 0, 0, 0, 0, 0, false) }
+                        new List<TimeZoneConfModel>() { new() }
                 ));
             }
         }
@@ -173,7 +171,7 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
                 else
                 {
                     var update = TrackingDataContext.TimeZoneConfs.FirstOrDefault(x => x.HpId == hpId && x.YoubiKbn == model.YoubiKbn && x.SeqNo == model.SeqNo);
-                    if(update != null)
+                    if (update != null)
                     {
                         update.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         update.UpdateId = userId;
