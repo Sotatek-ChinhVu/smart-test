@@ -51,7 +51,6 @@ namespace Reporting.Statistics.Sta3020.Service
         private int hpId;
         private int _currentPage;
         private bool _hasNextPage;
-        private int HpId;
         private string _rowCountFieldName = string.Empty;
         private CoHpInfModel _hpInf;
 
@@ -235,9 +234,9 @@ namespace Reporting.Statistics.Sta3020.Service
 
             }
 
-            _hpInf = _sta3020Finder.GetHpInf(HpId, CIUtil.DateTimeToInt(DateTime.Today));
+            _hpInf = _sta3020Finder.GetHpInf(hpId, CIUtil.DateTimeToInt(DateTime.Today));
 
-            listSets = _sta3020Finder.GetListSet(HpId, _printConf);
+            listSets = _sta3020Finder.GetListSet(hpId, _printConf);
             if ((listSets?.Count ?? 0) == 0) return false;
 
             //印刷用データの作成
@@ -394,7 +393,7 @@ namespace Reporting.Statistics.Sta3020.Service
         {
             _printConf = printConf;
             this.coFileType = coFileType;
-            HpId = hpId;
+            this.hpId = hpId;
             string fileName = menuName + "_" + monthFrom + "_" + monthTo;
             List<string> retDatas = new List<string>();
 

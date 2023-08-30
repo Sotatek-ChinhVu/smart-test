@@ -409,13 +409,6 @@ public class Sta1002CoReportService : ISta1002CoReportService
                                 }
                                 printData.SeikyuGaku = wrkSeikyu.ToString("#,0");
                                 printData.NewSeikyuGaku = wrkNewSeikyu.ToString("#,0");
-
-                                //printData.SeikyuGaku = wrkDatas.GroupBy(s => s.RaiinNo)
-                                //    .Select(s => new { RaiinNo = s.Key, SeikyuGaku = s.Min(x => x.SeikyuGaku) })
-                                //    .Sum(s => s.SeikyuGaku).ToString("#,0");
-                                //printData.NewSeikyuGaku = wrkDatas.GroupBy(s => s.RaiinNo)
-                                //    .Select(s => new { RaiinNo = s.Key, NewSeikyuGaku = s.Min(x => x.NewSeikyuGaku) })
-                                //    .Sum(s => s.NewSeikyuGaku).ToString("#,0");
                                 printData.MenjyoGaku = wrkDatas.Where(s => s.IsSinDate)
                                     .GroupBy(s => s.RaiinNo)
                                     .Select(s => new { RaiinNo = s.Key, MenjyoGaku = s.Max(x => x.MenjyoGaku) })

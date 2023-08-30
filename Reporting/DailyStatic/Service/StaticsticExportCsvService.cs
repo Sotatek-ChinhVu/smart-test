@@ -120,7 +120,7 @@ namespace Reporting.DailyStatic.Service
                     result = PrintSta1002(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, timeFrom, timeTo, menuName, isPutColName, isPutTotalRow);
                     break;
                 case StatisticReportType.Sta1010:
-                    result = PrintSta1010(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, timeFrom, timeTo, menuName, isPutColName, isPutTotalRow);
+                    result = PrintSta1010(hpId, configDaily, dateFrom ?? 0, dateTo ?? 0, timeFrom, timeTo, menuName, isPutColName, isPutTotalRow, coFileType);
                     break;
                 case StatisticReportType.Sta2001:
                     result = PrintSta2001(hpId, configDaily, monthFrom ?? 0, monthTo ?? 0, menuName, isPutColName, isPutTotalRow);
@@ -197,10 +197,10 @@ namespace Reporting.DailyStatic.Service
             return _sta1002CoReportService.ExportCsv(printConf, dateFrom, dateTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
         }
 
-        private CommonExcelReportingModel PrintSta1010(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo, string menuName, bool? isPutColName, bool? isPutTotalRow)
+        private CommonExcelReportingModel PrintSta1010(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo, string menuName, bool? isPutColName, bool? isPutTotalRow, CoFileType? coFileType)
         {
             var printConf = CreateCoSta1010PrintConf(configDaily, dateFrom, dateTo, timeFrom, timeTo);
-            return _sta1010CoReportService.ExportCsv(printConf, dateFrom, dateTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false);
+            return _sta1010CoReportService.ExportCsv(printConf, dateFrom, dateTo, menuName, hpId, isPutColName ?? false, isPutTotalRow ?? false, coFileType ?? null);
         }
 
         private CommonExcelReportingModel PrintSta2001(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, string menuName, bool? isPutColName, bool? isPutTotalRow)

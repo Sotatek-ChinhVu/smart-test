@@ -24,6 +24,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
     private List<string> _headerL1;
     private List<CoSyunoInfModel>? _syunoInfs;
     private CoHpInfModel _hpInf;
+    private CoFileType? coFileType;
     private List<PutColumn> putCurColumns = new List<PutColumn>();
 
     private List<PutColumn> csvTotalColumns = new List<PutColumn>
@@ -373,7 +374,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
                     }
                 }
 
-                if (syunoInf.PtNum != prePrintData.PtNumKey)
+                if (syunoInf.PtNum != prePrintData.PtNumKey || CoFileType = CoFileType.Csv)
                 {
                     printData.PtNum = syunoInf.PtNum;
                     printData.PtKanaName = syunoInf.PtKanaName;
@@ -390,10 +391,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
                     printData.LastVisitDate = syunoInf.LastVisitDate;
                 }
 
-                printData.PtNumKey = syunoInf.PtNum; ;
-                printData.PtNum = syunoInf.PtNum;
-                printData.PtKanaName = syunoInf.PtKanaName;
-                printData.PtName = syunoInf.PtName;
+                printData.PtNumKey = syunoInf.PtNum;
                 printData.SexCd = syunoInf.SexCd;
                 printData.Sex = syunoInf.Sex;
                 printData.BirthDay = syunoInf.BirthDay;
@@ -540,9 +538,10 @@ public class Sta1010CoReportService : ISta1010CoReportService
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
-    public CommonExcelReportingModel ExportCsv(CoSta1010PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+    public CommonExcelReportingModel ExportCsv(CoSta1010PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
     {
         _printConf = printConf;
+        this.coFileType = coFileType;
         string fileName = menuName + "_" + dateFrom + "_" + dateTo;
         List<string> retDatas = new List<string>();
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
