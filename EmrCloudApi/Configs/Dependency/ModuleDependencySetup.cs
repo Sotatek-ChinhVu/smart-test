@@ -962,6 +962,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP43Amakusa41DiskService, P43Amakusa41DiskService>();
             services.AddTransient<IP46WelfareDiskService, P46WelfareDiskService>();
             services.AddTransient<IP33KokhoSeikyuCoReportService, P33KokhoSeikyuCoReportService>();
+            services.AddTransient<IP26KoukiSokatuInCoReportService, P26KoukiSokatuInCoReportService>();
 
             services.AddTransient<IP35WelfareSokatuCoReportService, P35WelfareSokatuCoReportService>();
             services.AddTransient<IP25WelfareSeikyuCoReportService, P25WelfareSeikyuCoReportService>();
