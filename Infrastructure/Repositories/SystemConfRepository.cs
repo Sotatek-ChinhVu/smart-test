@@ -532,16 +532,6 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
     public bool SavePathConfOnline(int hpId, int userId, List<SystemConfListXmlPathModel> systemConfListXmlPathModels)
     {
-        var first = systemConfListXmlPathModels.FirstOrDefault();
-        if (first != null)
-        {
-            var grpCd = first.GrpCd;
-            var grpEdaNo = first.GrpEdaNo;
-            var hpIdFE = first.HpId;
-            var pathConfToDelete = TrackingDataContext.PathConfs.Where(p => p.HpId == hpIdFE && p.GrpCd == grpCd && p.GrpEdaNo == grpEdaNo).ToList();
-            TrackingDataContext.PathConfs.RemoveRange(pathConfToDelete);
-        }
-
         foreach (var systemConfListXmlPathModel in systemConfListXmlPathModels)
         {
             var entity = TrackingDataContext.PathConfs.FirstOrDefault(p => p.HpId == systemConfListXmlPathModel.HpId && p.SeqNo == systemConfListXmlPathModel.SeqNo && p.GrpCd == systemConfListXmlPathModel.GrpCd && p.GrpCd == systemConfListXmlPathModel.GrpEdaNo);
@@ -566,6 +556,16 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                 newEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
                 newEntity.CreateId = userId;
             }
+        }
+
+        var first = systemConfListXmlPathModels.FirstOrDefault();
+        if (first != null)
+        {
+            var grpCd = first.GrpCd;
+            var grpEdaNo = first.GrpEdaNo;
+            var hpIdFE = first.HpId;
+            var pathConfToDelete = TrackingDataContext.PathConfs.Where(p => p.HpId == hpIdFE && p.GrpCd == grpCd && p.GrpEdaNo == grpEdaNo).ToList();
+            TrackingDataContext.PathConfs.RemoveRange(pathConfToDelete);
         }
 
         return TrackingDataContext.SaveChanges() > 0;
