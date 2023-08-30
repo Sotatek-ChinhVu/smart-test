@@ -3,7 +3,6 @@ using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
-using EmrCloudApi.Requests.Diseases;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
@@ -14,7 +13,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Document.UploadTemplateToCategory;
 using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
@@ -385,7 +383,7 @@ namespace EmrCloudApi.Controller
                 request.SinDate, request.ItemCodeStartWith, request.IsIncludeUsage, request.OnlyUsage, request.YJCode, request.IsMasterSearch,
                 request.IsExpiredSearchIfNoData, request.IsAllowSearchDeletedItem, request.IsExpired, request.IsDeleted, request.DrugKbns,
                 request.IsSearchSanteiItem, request.IsSearchKenSaItem, request.ItemFilter, request.IsSearch831SuffixOnly, request.IsSearchSuggestion,
-                request.IsSearchGazoDensibaitaiHozon, request.SortMode);
+                request.IsSearchGazoDensibaitaiHozon, request.SortCol, request.SortType);
             var output = _bus.Handle(input);
             var presenter = new SearchTenMstItemPresenter();
             presenter.Complete(output);
