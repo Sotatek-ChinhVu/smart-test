@@ -26,4 +26,8 @@ public interface IOnlineRepository : IRepositoryBase
     long UpdateRefNo(int hpId, long ptId);
 
     bool UpdatePtInfOnlineQualify(int hpId, int userId, long ptId, List<PtInfConfirmationModel> resultList);
+
+    List<OnlineConfirmationHistoryModel> GetListOnlineConfirmationHistoryModel(long ptId);
+
+    List<OnlineConfirmationHistoryModel> GetListOnlineConfirmationHistoryModel(Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict);
 }

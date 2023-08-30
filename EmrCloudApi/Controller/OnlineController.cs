@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using UseCase.Core.Sync;
 using UseCase.Online;
+using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.Online.InsertOnlineConfirmHistory;
 using UseCase.Online.SaveAllOQConfirmation;
@@ -172,5 +173,34 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpdatePtInfOnlineQualifyResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListOnlineConfirmationHistoryByPtId)]
+    public ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>> GetListOnlineConfirmationHistoryModel([FromQuery] GetListOnlineConfirmationHistoryByPtIdRequest request)
+    {
+        var input = new GetListOnlineConfirmationHistoryModelInputData(request.PtId, new(), new());
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListOnlineConfirmationHistoryModelPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.GetListOnlineConfirmationHistoryModel)]
+    public ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>> GetListOnlineConfirmationHistoryModel([FromBody] GetListOnlineConfirmationHistoryModelRequest request)
+    {
+        Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict = new();
+        foreach (var item in request.OnlQuaConfirmationTypeDict)
+        {
+            onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg));
+        }
+        var input = new GetListOnlineConfirmationHistoryModelInputData(0, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListOnlineConfirmationHistoryModelPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>>(presenter.Result);
     }
 }

@@ -701,6 +701,7 @@ using UseCase.Reception.GetHpInf;
 using UseCase.Online.UpdateRefNo;
 using UseCase.Online.UpdateOnlineInRaiinInf;
 using UseCase.Online.UpdatePtInfOnlineQualify;
+using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1620,6 +1621,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateRefNoInputData, UpdateRefNoInteractor>();
             busBuilder.RegisterUseCase<UpdateOnlineInRaiinInfInputData, UpdateOnlineInRaiinInfInteractor>();
             busBuilder.RegisterUseCase<UpdatePtInfOnlineQualifyInputData, UpdatePtInfOnlineQualifyInteractor>();
+            busBuilder.RegisterUseCase<GetListOnlineConfirmationHistoryModelInputData, GetListOnlineConfirmationHistoryModelInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
