@@ -1,4 +1,5 @@
 ﻿using Helper.Common;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -23,6 +24,15 @@ public class Sta1010CoReportService : ISta1010CoReportService
     private List<string> _headerL1;
     private List<CoSyunoInfModel>? _syunoInfs;
     private CoHpInfModel _hpInf;
+    private CoFileType? coFileType;
+    private List<PutColumn> putCurColumns = new List<PutColumn>();
+
+    private List<PutColumn> csvTotalColumns = new List<PutColumn>
+        {
+            new PutColumn("RowType", "明細区分"),
+            new PutColumn("TotalCaption", "合計行"),
+            new PutColumn("TotalCount", "合計件数"),
+        };
 
     public Sta1010CoReportService(ICoSta1010Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -154,7 +164,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
                 _currentPage++;
             }
         }
-        
+
         return new Sta1010Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, formFileName).GetData();
     }
 
@@ -257,7 +267,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
         UpdateFormHeader();
         UpdateFormBody();
     }
-
+     
     private bool GetData(int hpId)
     {
         void MakePrintData()
@@ -364,9 +374,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
                     }
                 }
 
-                // todo anh.vu3
-                //if (syunoInf.PtNum != prePrintData.PtNumKey || outputFileType == CoFileType.Csv)
-                if (syunoInf.PtNum != prePrintData.PtNumKey)
+                if (syunoInf.PtNum != prePrintData.PtNumKey || coFileType == CoFileType.Csv)
                 {
                     printData.PtNum = syunoInf.PtNum;
                     printData.PtKanaName = syunoInf.PtKanaName;
@@ -384,6 +392,12 @@ public class Sta1010CoReportService : ISta1010CoReportService
                 }
 
                 printData.PtNumKey = syunoInf.PtNum;
+                printData.SexCd = syunoInf.SexCd;
+                printData.Sex = syunoInf.Sex;
+                printData.BirthDay = syunoInf.BirthDay;
+                printData.Age = syunoInf.Age.ToString();
+                printData.HomePost = syunoInf.HomePost;
+                printData.HomeAddress = syunoInf.HomeAddress;
                 printData.SinDate = syunoInf.SinDate;
                 printData.KaId = syunoInf.KaId;
                 printData.KaSname = syunoInf.KaSname;
@@ -522,5 +536,67 @@ public class Sta1010CoReportService : ISta1010CoReportService
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1010, fileName, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
+    }
+
+    public CommonExcelReportingModel ExportCsv(CoSta1010PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
+    {
+        _printConf = printConf;
+        this.coFileType = coFileType;
+        string fileName = menuName + "_" + dateFrom + "_" + dateTo;
+        List<string> retDatas = new List<string>();
+        if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        if (isPutTotalRow)
+        {
+            putCurColumns.AddRange(csvTotalColumns);
+        }
+
+        putCurColumns.AddRange(putColumns);
+        var csvDatas = _printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+
+        if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        //出力フィールド
+        List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
+        List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
+
+        //タイトル行
+        retDatas.Add("\"" + string.Join("\",\"", wrkTitles) + "\"");
+        if (isPutColName)
+        {
+            retDatas.Add("\"" + string.Join("\",\"", wrkColumns) + "\"");
+        }
+
+        //データ
+        int totalRow = csvDatas.Count;
+        int rowOutputed = 0;
+        foreach (var csvData in csvDatas)
+        {
+            retDatas.Add(RecordData(csvData));
+            rowOutputed++;
+        }
+
+        string RecordData(CoSta1010PrintData csvData)
+        {
+            List<string> colDatas = new List<string>();
+
+            foreach (var column in putCurColumns)
+            {
+                var value = typeof(CoSta1010PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                if (csvData.RowType == RowType.Total && !column.IsTotal)
+                {
+                    value = string.Empty;
+                }
+                else if (value is RowType)
+                {
+                    value = (int)value;
+                }
+                colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+            }
+
+            return string.Join(",", colDatas);
+        }
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
 }
