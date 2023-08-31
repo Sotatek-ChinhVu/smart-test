@@ -39,7 +39,7 @@ public class OnlineController : AuthorizeControllerBase
     {
         var onlineList = request.OnlineConfirmList.Select(item => new OnlineConfirmationHistoryItem(
                                                                       item.PtId,
-                                                                      TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(item.OnlineConfirmationDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)),
+                                                                      DateTime.MinValue,
                                                                       item.ConfirmationType,
                                                                       string.Empty,
                                                                       item.ConfirmationResult,
@@ -176,7 +176,7 @@ public class OnlineController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetListOnlineConfirmationHistoryByPtId)]
-    public ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>> GetListOnlineConfirmationHistoryModel([FromQuery] GetListOnlineConfirmationHistoryByPtIdRequest request)
+    public ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>> GetListOnlineConfirmationHistoryByPtId([FromQuery] GetListOnlineConfirmationHistoryByPtIdRequest request)
     {
         var input = new GetListOnlineConfirmationHistoryModelInputData(request.PtId, new(), new());
         var output = _bus.Handle(input);
