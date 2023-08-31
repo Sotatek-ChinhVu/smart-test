@@ -65,12 +65,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private const string _leftRight = "左右";
     private const string _rightLeft = "右左";
 
-    public string ErrorText { get; set; } = string.Empty;
-
-    private List<ReceInfModel> _receInfModels = new List<ReceInfModel>();
-    public List<BuiErrorModel> errorOdrInfDetails = new List<BuiErrorModel>();
-
-    public bool CheckErrorInMonth(int hpId, List<long> ptIds, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount, bool receCheckCalculate = false)
+    public bool CheckErrorInMonth(int hpId, List<long> ptIds, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount, bool receCheckCalculate = false, bool isReceiptAggregationCheckBox = true, bool isCheckErrorCheckBox = true)
     {
         List<ReceCheckErrModel> newReceCheckErrList = new();
         StringBuilder errorText = new();
@@ -86,39 +81,52 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         var allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(hpId, sinYmList, ptIdList, hokenIdList);
         var allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(hpId, kantokuCdValidList);
 
-        if (!receCheckCalculate)
+        if (!receCheckCalculate && isCheckErrorCheckBox)
         {
             SendMessager(new RecalculationStatus(false, 3, allCheckCount, 0, string.Empty, string.Empty));
         }
         int successCount = 1;
         foreach (var recalculationItem in receRecalculationList)
         {
-            var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-            isStopCalc = statusCallBack.Result.Result;
-            if (isStopCalc)
+            if (isCheckErrorCheckBox)
             {
-                break;
+                var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                isStopCalc = statusCallBack.Result.Result;
+                if (isStopCalc)
+                {
+                    break;
+                }
             }
-            List<BuiErrorModel> errorOdrInfDetails = new();
-            var oldReceCheckErrList = allReceCheckErrList.Where(item => item.SinYm == recalculationItem.SinYm && item.PtId == recalculationItem.PtId && item.HokenId == recalculationItem.HokenId).ToList();
+
             var sinKouiCountList = _receiptRepository.GetSinKouiCountList(hpId, recalculationItem.SinYm, recalculationItem.PtId, recalculationItem.HokenId);
-            List<string> itemCdList = new();
-            foreach (var sinKouiCount in sinKouiCountList)
+
+            if (isCheckErrorCheckBox)
             {
-                itemCdList.AddRange(sinKouiCount.SinKouiDetailModels.Select(item => item.ItemCd).Distinct().ToList());
+                List<BuiErrorModel> errorOdrInfDetails = new();
+                var oldReceCheckErrList = allReceCheckErrList.Where(item => item.SinYm == recalculationItem.SinYm && item.PtId == recalculationItem.PtId && item.HokenId == recalculationItem.HokenId).ToList();
+                List<string> itemCdList = new();
+                foreach (var sinKouiCount in sinKouiCountList)
+                {
+                    itemCdList.AddRange(sinKouiCount.SinKouiDetailModels.Select(item => item.ItemCd).Distinct().ToList());
+                }
+                var tenMstByItemCdList = _mstItemRepository.GetTenMstList(hpId, itemCdList);
+                newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
+                newReceCheckErrList = CheckByomeiError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails, systemConfigList);
+                newReceCheckErrList = CheckOrderError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
+                newReceCheckErrList = CheckRosaiError(sinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
+                newReceCheckErrList = CheckAftercare(sinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
             }
-            var tenMstByItemCdList = _mstItemRepository.GetTenMstList(hpId, itemCdList);
-            newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
-            newReceCheckErrList = CheckByomeiError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails, systemConfigList);
-            newReceCheckErrList = CheckOrderError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
-            newReceCheckErrList = CheckRosaiError(sinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
-            newReceCheckErrList = CheckAftercare(sinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
-            errorTextSinKouiCount = GetErrorTextSinKouiCount(sinYm, errorTextSinKouiCount, recalculationItem, sinKouiCountList);
+
+            if (isReceiptAggregationCheckBox)
+            {
+                errorTextSinKouiCount = GetErrorTextSinKouiCount(sinYm, errorTextSinKouiCount, recalculationItem, sinKouiCountList);
+            }
 
             if (allCheckCount == successCount)
             {
                 break;
             }
+
             if (!receCheckCalculate)
             {
                 SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty, string.Empty));
@@ -128,8 +136,13 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         errorText.Append(errorTextSinKouiCount);
         ptIdList = ptIds.Distinct().ToList();
         _receiptRepository.ClearReceCmtErr(hpId, receRecalculationList);
-        errorText = GetErrorTextAfterCheck(hpId, sinYm, errorText, ptIdList, systemConfigList, receRecalculationList);
-        if (isStopCalc || !_receiptRepository.SaveNewReceCheckErrList(hpId, userId, newReceCheckErrList))
+
+        if (isReceiptAggregationCheckBox)
+        {
+            errorText = GetErrorTextAfterCheck(hpId, sinYm, errorText, ptIdList, systemConfigList, receRecalculationList);
+        }
+
+        if (isCheckErrorCheckBox && (isStopCalc || !_receiptRepository.SaveNewReceCheckErrList(hpId, userId, newReceCheckErrList)))
         {
             if (!receCheckCalculate)
             {

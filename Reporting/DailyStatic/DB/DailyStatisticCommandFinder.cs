@@ -1,9 +1,7 @@
-﻿using Helper.Extension;
-using Infrastructure.Base;
+﻿using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.DailyStatic.Enum;
 using Reporting.DailyStatic.Model;
-using Reporting.Statistics.Sta1001.Models;
 
 namespace Reporting.DailyStatic.DB;
 
