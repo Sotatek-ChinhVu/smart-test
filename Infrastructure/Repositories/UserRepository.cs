@@ -571,49 +571,59 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    update.DrName = item.DrName;
-                    update.EndDate = item.EndDate;
-                    update.HpId = hpId;
-                    update.JobCd = item.JobCd;
-                    update.KaId = item.KaId;
-                    update.KanaName = item.KanaName;
-                    update.LoginId = item.LoginId;
-                    update.LoginPass = item.LoginPass;
-                    update.ManagerKbn = item.ManagerKbn;
-                    update.Name = item.Name;
-                    update.RenkeiCd1 = item.RenkeiCd1;
-                    update.MayakuLicenseNo = item.MayakuLicenseNo;
-                    update.Sname = item.Sname;
-                    update.SortNo = item.SortNo;
-                    update.StartDate = item.StartDate;
-                    update.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    update.UpdateId = currentUser;
-
-                    var permissionByUsers = TrackingDataContext.UserPermissions.Where(x => x.HpId == hpId && x.UserId == update.UserId);
-                    foreach (var permission in item.Permissions)
+                    if (item.IsDeleted != 1)
                     {
-                        var updateP = permissionByUsers.FirstOrDefault(x => x.FunctionCd == permission.FunctionCd);
-                        if (updateP is null)
+                        update.DrName = item.DrName;
+                        update.EndDate = item.EndDate;
+                        update.HpId = hpId;
+                        update.JobCd = item.JobCd;
+                        update.KaId = item.KaId;
+                        update.KanaName = item.KanaName;
+                        update.LoginId = item.LoginId;
+                        update.LoginPass = item.LoginPass;
+                        update.ManagerKbn = item.ManagerKbn;
+                        update.Name = item.Name;
+                        update.RenkeiCd1 = item.RenkeiCd1;
+                        update.MayakuLicenseNo = item.MayakuLicenseNo;
+                        update.Sname = item.Sname;
+                        update.SortNo = item.SortNo;
+                        update.StartDate = item.StartDate;
+                        update.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        update.UpdateId = currentUser;
+
+                        var permissionByUsers = TrackingDataContext.UserPermissions.Where(x => x.HpId == hpId && x.UserId == update.UserId);
+                        foreach (var permission in item.Permissions)
                         {
-                            TrackingDataContext.UserPermissions.Add(new UserPermission()
+                            var updateP = permissionByUsers.FirstOrDefault(x => x.FunctionCd == permission.FunctionCd);
+                            if (updateP is null)
                             {
-                                HpId = hpId,
-                                CreateDate = CIUtil.GetJapanDateTimeNow(),
-                                CreateId = currentUser,
-                                FunctionCd = permission.FunctionCd,
-                                Permission = permission.Permission,
-                                UpdateId = currentUser,
-                                UserId = update.UserId,
-                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                            });
-                        }
-                        else
-                        {
-                            updateP.Permission = permission.Permission;
-                            updateP.UpdateId = currentUser;
-                            updateP.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                TrackingDataContext.UserPermissions.Add(new UserPermission()
+                                {
+                                    HpId = hpId,
+                                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                    CreateId = currentUser,
+                                    FunctionCd = permission.FunctionCd,
+                                    Permission = permission.Permission,
+                                    UpdateId = currentUser,
+                                    UserId = update.UserId,
+                                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                });
+                            }
+                            else
+                            {
+                                updateP.Permission = permission.Permission;
+                                updateP.UpdateId = currentUser;
+                                updateP.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            }
                         }
                     }
+                    else
+                    {
+                        update.IsDeleted = item.IsDeleted;
+                        update.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        update.UpdateId = currentUser;
+                    }
+                    
                 }
             }
             return TrackingDataContext.SaveChanges() > 0;

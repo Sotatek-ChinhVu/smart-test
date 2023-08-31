@@ -1,4 +1,5 @@
 ﻿using Helper.Common;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -59,6 +60,7 @@ namespace Reporting.Statistics.Sta3020.Service
 
         private List<string> _objectRseList;
         private CoSta3020PrintConf _printConf;
+        private CoFileType? coFileType;
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, bool> _visibleFieldData = new Dictionary<string, bool>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
@@ -202,20 +204,12 @@ namespace Reporting.Statistics.Sta3020.Service
                     #endregion
 
                     printData.SetKbn = listSet.SetKbn;
-                    //printData.SetKbnName = outputFileType == CoFileType.Csv ? listSet.SetKbnName : setKbnName;
-                    //printData.Level1 = outputFileType == CoFileType.Csv ? listSet.Level1.ToString() : level1Fmt;
-                    //printData.Level2 = outputFileType == CoFileType.Csv ? listSet.Level2.ToString() : level2Fmt;
-                    //printData.Level3 = outputFileType == CoFileType.Csv ? listSet.Level3.ToString() : level3Fmt;
-                    //printData.Level4 = outputFileType == CoFileType.Csv ? listSet.Level4.ToString() : level4Fmt;
-                    //printData.Level5 = outputFileType == CoFileType.Csv ? listSet.Level5.ToString() : level5Fmt;
-
-                    printData.SetKbnName = setKbnName;
-                    printData.Level1 = level1Fmt;
-                    printData.Level2 = level2Fmt;
-                    printData.Level3 = level3Fmt;
-                    printData.Level4 = level4Fmt;
-                    printData.Level5 = level5Fmt;
-
+                    printData.SetKbnName = coFileType == CoFileType.Csv ? listSet.SetKbnName : setKbnName;
+                    printData.Level1 = coFileType == CoFileType.Csv ? listSet.Level1.ToString() : level1Fmt;
+                    printData.Level2 = coFileType == CoFileType.Csv ? listSet.Level2.ToString() : level2Fmt;
+                    printData.Level3 = coFileType == CoFileType.Csv ? listSet.Level3.ToString() : level3Fmt;
+                    printData.Level4 = coFileType == CoFileType.Csv ? listSet.Level4.ToString() : level4Fmt;
+                    printData.Level5 = coFileType == CoFileType.Csv ? listSet.Level5.ToString() : level5Fmt;
                     printData.SetCd = listSet.SetCd;
                     printData.ItemCd = listSet.ItemCd;
                     printData.SetName = listSet.SetName;
@@ -394,5 +388,54 @@ namespace Reporting.Statistics.Sta3020.Service
             maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
         }
         #endregion
+
+        public CommonExcelReportingModel ExportCsv(CoSta3020PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
+        {
+            _printConf = printConf;
+            this.coFileType = coFileType;
+            this.hpId = hpId;
+            string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+            List<string> retDatas = new List<string>();
+
+            if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            var csvDatas = printDatas.Where(p => p.RowType == RowType.Data).ToList();
+            if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            //出力フィールド
+            List<string> wrkTitles = putColumns.Select(p => p.JpName).ToList();
+            List<string> wrkColumns = putColumns.Select(p => p.ColName).ToList();
+
+            //タイトル行
+            retDatas.Add("\"" + string.Join("\",\"", wrkTitles) + "\"");
+            if (isPutColName)
+            {
+                retDatas.Add("\"" + string.Join("\",\"", wrkColumns) + "\"");
+            }
+
+            //データ
+            int totalRow = csvDatas.Count;
+            int rowOutputed = 0;
+            foreach (var csvData in csvDatas)
+            {
+                retDatas.Add(RecordData(csvData));
+                rowOutputed++;
+            }
+
+            string RecordData(CoSta3020PrintData csvData)
+            {
+                List<string> colDatas = new List<string>();
+
+                foreach (var column in putColumns)
+                {
+                    var value = typeof(CoSta3020PrintData).GetProperty(column.ColName).GetValue(csvData);
+                    colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+                }
+
+                return string.Join(",", colDatas);
+            }
+
+            return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+        }
     }
 }
