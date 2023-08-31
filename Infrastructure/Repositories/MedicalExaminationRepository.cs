@@ -1,4 +1,5 @@
 ﻿using Domain.Constant;
+using Domain.Models.AuditLog;
 using Domain.Models.Diseases;
 using Domain.Models.Ka;
 using Domain.Models.Medical;

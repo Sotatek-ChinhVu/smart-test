@@ -52,7 +52,7 @@ namespace Interactor.MstItem
                     inputData.IsExpired, inputData.IsDeleted, inputData.DrugKbns,
                     inputData.IsSearchSanteiItem, inputData.IsSearchKenSaItem,
                     inputData.ItemFilter, inputData.IsSearch831SuffixOnly, inputData.IsSearchGazoDensibaitaiHozon,
-                    inputData.SortMode);
+                    inputData.SortType, inputData.SortCol);
                 }
                 else
                 {

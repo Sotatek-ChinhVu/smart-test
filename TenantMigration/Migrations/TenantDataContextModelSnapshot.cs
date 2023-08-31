@@ -13746,6 +13746,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("CONFIRMATION_STATE");
 
+                    b.Property<int>("ConfirmationType")
+                        .HasColumnType("integer")
+                        .HasColumnName("CONFIRMATION_TYPE");
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -13762,6 +13766,11 @@ namespace TenantMigration.Migrations
                     b.Property<int>("HokenPid")
                         .HasColumnType("integer")
                         .HasColumnName("HOKEN_PID");
+
+                    b.Property<string>("InfoConsFlg")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("INFO_CONS_FLG");
 
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
@@ -13791,6 +13800,10 @@ namespace TenantMigration.Migrations
                     b.Property<long>("OyaRaiinNo")
                         .HasColumnType("bigint")
                         .HasColumnName("OYA_RAIIN_NO");
+
+                    b.Property<int>("PrescriptionIssueType")
+                        .HasColumnType("integer")
+                        .HasColumnName("PRESCRIPTION_ISSUE_TYPE");
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")
@@ -30392,6 +30405,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("CONFIRMATION_STATE");
 
+                    b.Property<int>("ConfirmationType")
+                        .HasColumnType("integer")
+                        .HasColumnName("CONFIRMATION_TYPE");
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -30412,6 +30429,11 @@ namespace TenantMigration.Migrations
                     b.Property<int>("HpId")
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID");
+
+                    b.Property<string>("InfoConsFlg")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("INFO_CONS_FLG");
 
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
@@ -30460,6 +30482,10 @@ namespace TenantMigration.Migrations
                     b.Property<long>("OyaRaiinNo")
                         .HasColumnType("bigint")
                         .HasColumnName("OYA_RAIIN_NO");
+
+                    b.Property<int>("PrescriptionIssueType")
+                        .HasColumnType("integer")
+                        .HasColumnName("PRESCRIPTION_ISSUE_TYPE");
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")

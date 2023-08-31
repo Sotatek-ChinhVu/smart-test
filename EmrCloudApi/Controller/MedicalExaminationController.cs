@@ -29,6 +29,7 @@ using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
 using UseCase.MedicalExamination.GetOrderSheetGroup;
 using UseCase.MedicalExamination.GetSinkouCountInMonth;
 using UseCase.MedicalExamination.InitKbnSetting;
+using UseCase.MedicalExamination.SaveKensaIrai;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.SummaryInf;
 using UseCase.MedicalExamination.TrailAccounting;
@@ -625,6 +626,16 @@ namespace EmrCloudApi.Controllers
             var presenter = new GetHeaderVistitDatePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetHeaderVistitDateResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveKensaIrai)]
+        public ActionResult<Response<SaveKensaIraiResponse>> SaveKensaIrai([FromBody] SaveKensaIraiRequest request)
+        {
+            var input = new SaveKensaIraiInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+            var presenter = new SaveKensaIraiPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveKensaIraiResponse>>(presenter.Result);
         }
     }
 }
