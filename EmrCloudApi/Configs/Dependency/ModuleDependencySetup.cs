@@ -698,8 +698,16 @@ using UseCase.Online.SaveOQConfirmation;
 using UseCase.Reception.GetRaiinInfBySinDate;
 using UseCase.SystemConf.GetXmlPath;
 using UseCase.Reception.GetHpInf;
+using Domain.Models.KensaIrai;
+using UseCase.MedicalExamination.SaveKensaIrai;
 using UseCase.Online.UpdateRefNo;
 using UseCase.Online.UpdateOnlineInRaiinInf;
+using Domain.Models.AuditLog;
+using UseCase.SaveAuditLog;
+using Interactor.AuditTrailLog;
+using UseCase.SystemConf.GetPathAll;
+using UseCase.SystemConf.SavePath;
+using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdatePtInfOnlineQualify;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -968,9 +976,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP43AmakusaSeikyu42CoReportService, P43AmakusaSeikyu42CoReportService>();
             services.AddTransient<IP43Amakusa41DiskService, P43Amakusa41DiskService>();
             services.AddTransient<IP46WelfareDiskService, P46WelfareDiskService>();
-
             services.AddTransient<IP35WelfareSokatuCoReportService, P35WelfareSokatuCoReportService>();
             services.AddTransient<IP25WelfareSeikyuCoReportService, P25WelfareSeikyuCoReportService>();
+            services.AddTransient<IKensaIraiRepository, KensaIraiRepository>();
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
@@ -1080,6 +1088,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IGetCommonDrugInf, GetCommonDrugInf>();
             services.AddTransient<ICommonReceRecalculation, CommonReceRecalculation>();
             services.AddTransient<IOnlineRepository, OnlineRepository>();
+            services.AddTransient<IStaticsticExportCsvService, StaticsticExportCsvService>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1247,6 +1257,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckNextOrdHaveOdrInputData, CheckNextOrdHaveInteractor>();
             busBuilder.RegisterUseCase<GetHeaderVistitDateInputData, GetHeaderVistitDateInteractor>();
             busBuilder.RegisterUseCase<CheckUpsertNextOrderInputData, CheckUpsertNextOrderInteractor>();
+            busBuilder.RegisterUseCase<SaveKensaIraiInputData, SaveKensaIraiInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
@@ -1401,6 +1412,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSystemSettingInputData, GetSystemSettingInteractor>();
             busBuilder.RegisterUseCase<SaveSystemSettingInputData, SaveSystemSettingInteractor>();
             busBuilder.RegisterUseCase<GetSystemConfListXmlPathInputData, GetSystemConfListXmlPathInteractor>();
+            busBuilder.RegisterUseCase<GetPathAllInputData, GetAllPathInteractor>();
+            busBuilder.RegisterUseCase<SavePathInputData, SavePathInteractor>();
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();
@@ -1624,6 +1637,9 @@ namespace EmrCloudApi.Configs.Dependency
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
             busBuilder.RegisterUseCase<UpdateAccountingFormMstInputData, UpdateAccountingFormMstInteractor>();
+
+            //Audit Log
+            busBuilder.RegisterUseCase<SaveAuditTrailLogInputData, SaveAuditTrailLogInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

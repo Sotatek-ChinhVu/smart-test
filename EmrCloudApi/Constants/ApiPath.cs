@@ -119,6 +119,7 @@
         public const string ReceListCsv = "ReceListCsv";
         public const string ExportPeriodReceipt = "ExportPeriodReceipt";
         public const string CheckExistTemplateAccounting = "CheckExistTemplateAccounting";
+        public const string ExportStatics = "ExportStatics";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -238,6 +239,7 @@
         public const string GetContainerMst = "GetContainerMst";
         public const string GetSinkouCountInMonth = "GetSinkouCountInMonth";
         public const string GetHeaderVistitDate = "GetHeaderVistitDate";
+        public const string SaveKensaIrai = "SaveKensaIrai";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -344,6 +346,8 @@
         public const string GetSystemSetting = "GetSystemSetting";
         public const string SaveSystemSetting = "SaveSystemSetting";
         public const string GetSystemConfListXmlPath = "GetSystemConfListXmlPath";
+        public const string GetAllPath = "GetAllPath";
+        public const string SavePath = "SavePath";
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
