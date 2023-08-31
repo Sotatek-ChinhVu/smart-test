@@ -27,9 +27,10 @@ namespace Domain.Models.Accounting
             InOutKbn = inOutKbn;
             IsRowColorGray = isRowColorGray;
             Days = new();
+            ItemCd = string.Empty;
         }
 
-        public SinMeiModel(int sinId, string sinIdBinding, string itemName, double suryo, string unitName, string tenKai, double totalTen, double totalKingaku, double kingaku, int futanS, int futanK1, int futanK2, int futanK3, int futanK4, string cdKbn, int jihiSbt, int enTenKbn, int santeiKbn, int inOutKbn, bool isRowColorGray, List<int> days, int sinRpNo, int sinSeqNo)
+        public SinMeiModel(int sinId, string sinIdBinding, string itemName, double suryo, string unitName, string tenKai, double totalTen, double totalKingaku, double kingaku, int futanS, int futanK1, int futanK2, int futanK3, int futanK4, string cdKbn, int jihiSbt, int enTenKbn, int santeiKbn, int inOutKbn, bool isRowColorGray, List<int> days, int sinRpNo, int sinSeqNo, string itemCd, int drugKbn)
         {
             SinId = sinId;
             SinIdBinding = sinIdBinding;
@@ -54,6 +55,8 @@ namespace Domain.Models.Accounting
             Days = days;
             SinRpNo = sinRpNo;
             SinSeqNo = sinSeqNo;
+            ItemCd = itemCd;
+            DrugKbn = drugKbn;
         }
 
         public int SinId { get; private set; }
@@ -90,5 +93,8 @@ namespace Domain.Models.Accounting
         public bool IsRowColorGray { get; private set; } = false;
         public bool IsForegroundRed { get => EnTenKbn == 1; }
         public List<int> Days { get; private set; }
+        public string ItemCd { get; private set; }
+        public int DrugKbn { get; private set; }
+        public bool IsDrug => DrugKbn == 1 || DrugKbn == 4 || DrugKbn == 6;
     }
 }

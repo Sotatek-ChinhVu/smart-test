@@ -48,9 +48,9 @@ namespace Reporting.Statistics.Sta2021.DB
             var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(s => s.HpId == hpId);
             sinKouiCounts = sinKouiCounts.Where(s => s.SinYm >= printConf.StartSinYm && s.SinYm <= printConf.EndSinYm);
 
-            var sinKouis = NoTrackingDataContext.SinKouis.Where(x => x.HpId == hpId);
-            var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(x => x.HpId == hpId);
-            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR");
+            var sinKouis = NoTrackingDataContext.SinKouis.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None);
+            var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None);
+            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR" && s.IsDeleted == DeleteStatus.None);
             var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId);
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
             ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
