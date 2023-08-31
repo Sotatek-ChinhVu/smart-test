@@ -7,6 +7,7 @@ using EmrCloudApi.Responses.Online;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
+using System.Xml;
 using System.Xml.Serialization;
 using UseCase.Core.Sync;
 using UseCase.Online;
@@ -210,9 +211,20 @@ public class OnlineController : AuthorizeControllerBase
     public ActionResult<Response<ConvertXmlToQCXmlMsgResponse>> ConvertXmlToQCXmlMsgResponse([FromBody] ConvertXmlToQCXmlMsgRequest request)
     {
         Response<ConvertXmlToQCXmlMsgResponse> response = new();
-        response.Data = new ConvertXmlToQCXmlMsgResponse(request.XmlString);
-        response.Message = ResponseMessage.Success;
-        response.Status = 1;
+        try
+        {
+            XmlDocument xmlDoc = new();
+            xmlDoc.LoadXml(request.XmlString);
+
+            response.Data = new ConvertXmlToQCXmlMsgResponse(request.XmlString);
+            response.Message = ResponseMessage.Success;
+            response.Status = 1;
+        }
+        catch
+        {
+            response.Message = ResponseMessage.InvalidConfirmationResult;
+            response.Status = 2;
+        }
         return new ActionResult<Response<ConvertXmlToQCXmlMsgResponse>>(response);
     }
 }
