@@ -415,6 +415,7 @@
         public const string UpdateOnlineConfirmationHistory = "UpdateOnlineConfirmationHistory";
         public const string UpdateOnlineHistoryById = "UpdateOnlineHistoryById";
         public const string UpdateOQConfirmation = "UpdateOQConfirmation";
+        public const string SaveAllOQConfirmation = "SaveAllOQConfirmation";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
