@@ -698,6 +698,8 @@ using UseCase.Online.SaveOQConfirmation;
 using UseCase.Reception.GetRaiinInfBySinDate;
 using UseCase.SystemConf.GetXmlPath;
 using UseCase.Reception.GetHpInf;
+using Domain.Models.KensaIrai;
+using UseCase.MedicalExamination.SaveKensaIrai;
 using UseCase.Online.UpdateRefNo;
 using UseCase.Online.UpdateOnlineInRaiinInf;
 using Domain.Models.AuditLog;
@@ -973,9 +975,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP43AmakusaSeikyu42CoReportService, P43AmakusaSeikyu42CoReportService>();
             services.AddTransient<IP43Amakusa41DiskService, P43Amakusa41DiskService>();
             services.AddTransient<IP46WelfareDiskService, P46WelfareDiskService>();
-
             services.AddTransient<IP35WelfareSokatuCoReportService, P35WelfareSokatuCoReportService>();
             services.AddTransient<IP25WelfareSeikyuCoReportService, P25WelfareSeikyuCoReportService>();
+            services.AddTransient<IKensaIraiRepository, KensaIraiRepository>();
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
@@ -1254,6 +1256,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckNextOrdHaveOdrInputData, CheckNextOrdHaveInteractor>();
             busBuilder.RegisterUseCase<GetHeaderVistitDateInputData, GetHeaderVistitDateInteractor>();
             busBuilder.RegisterUseCase<CheckUpsertNextOrderInputData, CheckUpsertNextOrderInteractor>();
+            busBuilder.RegisterUseCase<SaveKensaIraiInputData, SaveKensaIraiInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
