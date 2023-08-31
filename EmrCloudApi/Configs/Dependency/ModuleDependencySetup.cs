@@ -692,10 +692,22 @@ using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineHistoryById;
 using UseCase.Reception.GetYoyakuRaiinInf;
 using UseCase.Insurance.FindHokenInfByPtId;
+using UseCase.Online.UpdateOQConfirmation;
+using UseCase.Online.SaveAllOQConfirmation;
+using UseCase.Online.SaveOQConfirmation;
+using UseCase.Reception.GetRaiinInfBySinDate;
 using UseCase.SystemConf.GetXmlPath;
 using UseCase.Reception.GetHpInf;
 using Domain.Models.KensaIrai;
 using UseCase.MedicalExamination.SaveKensaIrai;
+using UseCase.Online.UpdateRefNo;
+using UseCase.Online.UpdateOnlineInRaiinInf;
+using Domain.Models.AuditLog;
+using UseCase.SaveAuditLog;
+using Interactor.AuditTrailLog;
+using UseCase.SystemConf.GetPathAll;
+using UseCase.SystemConf.SavePath;
+using UseCase.Online.SaveOQConfirmation;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1075,6 +1087,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IGetCommonDrugInf, GetCommonDrugInf>();
             services.AddTransient<ICommonReceRecalculation, CommonReceRecalculation>();
             services.AddTransient<IOnlineRepository, OnlineRepository>();
+            services.AddTransient<IStaticsticExportCsvService, StaticsticExportCsvService>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1136,6 +1150,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<RevertDeleteNoReceptInputData, RevertDeleteNoReceptInteractor>();
             busBuilder.RegisterUseCase<GetOutDrugOrderListInputData, GetOutDrugOrderListInteractor>();
             busBuilder.RegisterUseCase<GetYoyakuRaiinInfInputData, GetYoyakuRaiinInfInteractor>();
+            busBuilder.RegisterUseCase<GetRaiinInfBySinDateInputData, GetRaiinInfBySinDateInteractor>();
             busBuilder.RegisterUseCase<GetHpInfInputData, GetHpInfInteractor>();
 
             // Visiting
@@ -1396,6 +1411,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSystemSettingInputData, GetSystemSettingInteractor>();
             busBuilder.RegisterUseCase<SaveSystemSettingInputData, SaveSystemSettingInteractor>();
             busBuilder.RegisterUseCase<GetSystemConfListXmlPathInputData, GetSystemConfListXmlPathInteractor>();
+            busBuilder.RegisterUseCase<GetPathAllInputData, GetAllPathInteractor>();
+            busBuilder.RegisterUseCase<SavePathInputData, SavePathInteractor>();
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();
@@ -1600,18 +1617,27 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFilingcategoryInputData, GetFilingcategoryInteractor>();
             busBuilder.RegisterUseCase<GetRaiiinListSettingInputData, GetRaiiinListSettingInteractor>();
             busBuilder.RegisterUseCase<SaveRaiinListSettingInputData, SaveRaiinListSettingInteractor>();
+
             //SinKoui
             busBuilder.RegisterUseCase<GetListSinKouiInputData, GetListSinKouiInteractor>();
 
-            //Online
+            // Online
             busBuilder.RegisterUseCase<InsertOnlineConfirmHistoryInputData, InsertOnlineConfirmHistoryInteractor>();
             busBuilder.RegisterUseCase<GetRegisterdPatientsFromOnlineInputData, GetRegisterdPatientsFromOnlineInteractor>();
             busBuilder.RegisterUseCase<UpdateOnlineConfirmationHistoryInputData, UpdateOnlineConfirmationHistoryInteractor>();
             busBuilder.RegisterUseCase<UpdateOnlineHistoryByIdInputData, UpdateOnlineHistoryByIdInteractor>();
+            busBuilder.RegisterUseCase<UpdateOQConfirmationInputData, UpdateOQConfirmationInteractor>();
+            busBuilder.RegisterUseCase<SaveAllOQConfirmationInputData, SaveAllOQConfirmationInteractor>();
+            busBuilder.RegisterUseCase<SaveOQConfirmationInputData, SaveOQConfirmationInteractor>();
+            busBuilder.RegisterUseCase<UpdateRefNoInputData, UpdateRefNoInteractor>();
+            busBuilder.RegisterUseCase<UpdateOnlineInRaiinInfInputData, UpdateOnlineInRaiinInfInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
             busBuilder.RegisterUseCase<UpdateAccountingFormMstInputData, UpdateAccountingFormMstInteractor>();
+
+            //Audit Log
+            busBuilder.RegisterUseCase<SaveAuditTrailLogInputData, SaveAuditTrailLogInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

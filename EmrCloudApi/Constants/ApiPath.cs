@@ -119,6 +119,7 @@
         public const string ReceListCsv = "ReceListCsv";
         public const string ExportPeriodReceipt = "ExportPeriodReceipt";
         public const string CheckExistTemplateAccounting = "CheckExistTemplateAccounting";
+        public const string ExportStatics = "ExportStatics";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -180,6 +181,7 @@
         public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
         public const string GetOutDrugOrderList = "GetOutDrugOrderList";
         public const string GetYoyakuRaiinInf = "GetYoyakuRaiinInf";
+        public const string GetRaiinInfBySinDate = "GetRaiinInfBySinDate";
         public const string GetHpInf = "GetHpInf";
 
         // Validate list pattern
@@ -344,6 +346,8 @@
         public const string GetSystemSetting = "GetSystemSetting";
         public const string SaveSystemSetting = "SaveSystemSetting";
         public const string GetSystemConfListXmlPath = "GetSystemConfListXmlPath";
+        public const string GetAllPath = "GetAllPath";
+        public const string SavePath = "SavePath";
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
@@ -412,6 +416,11 @@
         public const string GetRegisterdPatientsFromOnline = "GetRegisterdPatientsFromOnline";
         public const string UpdateOnlineConfirmationHistory = "UpdateOnlineConfirmationHistory";
         public const string UpdateOnlineHistoryById = "UpdateOnlineHistoryById";
+        public const string UpdateOQConfirmation = "UpdateOQConfirmation";
+        public const string SaveAllOQConfirmation = "SaveAllOQConfirmation";
+        public const string SaveOQConfirmation = "SaveOQConfirmation";
+        public const string UpdateRefNo = "UpdateRefNo";
+        public const string UpdateOnlineInRaiinInf = "UpdateOnlineInRaiinInf";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
