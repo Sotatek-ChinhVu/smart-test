@@ -701,6 +701,7 @@ using UseCase.SaveAuditLog;
 using Interactor.AuditTrailLog;
 using UseCase.SystemConf.GetPathAll;
 using UseCase.SystemConf.SavePath;
+using UseCase.Online.SaveOQConfirmation;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1619,6 +1620,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateOnlineHistoryByIdInputData, UpdateOnlineHistoryByIdInteractor>();
             busBuilder.RegisterUseCase<UpdateOQConfirmationInputData, UpdateOQConfirmationInteractor>();
             busBuilder.RegisterUseCase<SaveAllOQConfirmationInputData, SaveAllOQConfirmationInteractor>();
+            busBuilder.RegisterUseCase<SaveOQConfirmationInputData, SaveOQConfirmationInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
