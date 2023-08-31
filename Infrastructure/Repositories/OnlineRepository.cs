@@ -540,7 +540,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     {
         if (input == null)
         {
-            throw new ArgumentNullException("input");
+            return string.Empty;
         }
         StringBuilder builder = new StringBuilder(input);
         builder[index] = newChar;
