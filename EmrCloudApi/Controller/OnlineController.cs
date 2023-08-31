@@ -15,6 +15,7 @@ using UseCase.Online.SaveAllOQConfirmation;
 using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineHistoryById;
+using UseCase.Online.UpdateOnlineInRaiinInf;
 using UseCase.Online.UpdateOQConfirmation;
 using UseCase.Online.UpdateRefNo;
 
@@ -111,6 +112,18 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpdateRefNoResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateOnlineInRaiinInf)]
+    public ActionResult<Response<UpdateOnlineInRaiinInfResponse>> UpdateOnlineInRaiinInf([FromBody] UpdateOnlineInRaiinInfRequest request)
+    {
+        var input = new UpdateOnlineInRaiinInfInputData(HpId, UserId, request.PtId, request.OnlineConfirmationDate, request.ConfirmationType, request.InfConsFlg);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOnlineInRaiinInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOnlineInRaiinInfResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.UpdateOQConfirmation)]
