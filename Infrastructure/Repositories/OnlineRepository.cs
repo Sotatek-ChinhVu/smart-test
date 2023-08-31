@@ -151,7 +151,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return success;
     }
 
-    public bool SaveAllOQConfirmation(int hpId, int userId, long ptId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> OnlQuaConfirmationTypeDict)
+    public bool SaveAllOQConfirmation(int hpId, int userId, long ptId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
     {
         bool success = false;
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
@@ -168,8 +168,8 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                         {
                             PtId = ptId,
                             OnlineConfirmationDate = TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(item.Key, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)),
-                            ConfirmationType = OnlQuaConfirmationTypeDict.ContainsKey(item.Key) ? OnlQuaConfirmationTypeDict[item.Key].confirmationType : 1,
-                            InfoConsFlg = OnlQuaConfirmationTypeDict.ContainsKey(item.Key) ? OnlQuaConfirmationTypeDict[item.Key].infConsFlg : "    ",
+                            ConfirmationType = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].confirmationType : 1,
+                            InfoConsFlg = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].infConsFlg : "    ",
                             ConfirmationResult = item.Value,
                             CreateDate = CIUtil.GetJapanDateTimeNow(),
                             CreateId = userId,
@@ -407,6 +407,37 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
             }
         }
         return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public List<OnlineConfirmationHistoryModel> GetListOnlineConfirmationHistoryModel(long ptId)
+    {
+        var listOnlineConfirmationHistory = NoTrackingDataContext.OnlineConfirmationHistories.Where(item => item.PtId == ptId).ToList();
+        var result = listOnlineConfirmationHistory.Select(item => ConvertToModel(item))
+                                                  .OrderByDescending(item => item.OnlineConfirmationDate)
+                                                  .ToList();
+        return result;
+    }
+
+    public List<OnlineConfirmationHistoryModel> GetListOnlineConfirmationHistoryModel(Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
+    {
+        var listOnlineConfirmationHistory = new List<OnlineConfirmationHistory>();
+        foreach (var item in onlQuaResFileDict)
+        {
+            listOnlineConfirmationHistory.Add(new OnlineConfirmationHistory()
+            {
+                PtId = 0,
+                OnlineConfirmationDate = TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(item.Key, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)),
+                ConfirmationType = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].confirmationType : 1,
+                InfoConsFlg = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].infConsFlg : "    ",
+                ConfirmationResult = item.Value,
+                CreateDate = DateTime.Now,
+                CreateId = Session.UserID,
+            });
+        }
+        var result = listOnlineConfirmationHistory.Select(item => ConvertToModel(item))
+                                                  .OrderByDescending(item => item.OnlineConfirmationDate)
+                                                  .ToList();
+        return result;
     }
 
     #region private function

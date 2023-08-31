@@ -50,4 +50,6 @@ public class ReceiptPrintRequest : ReportRequestBase
     public int Sort { get; set; }
 
     public List<long> PrintPtIds { get; set; } = new();
+
+    public int PrintType { get; set; }
 }

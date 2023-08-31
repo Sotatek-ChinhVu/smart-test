@@ -422,6 +422,9 @@
         public const string UpdateRefNo = "UpdateRefNo";
         public const string UpdateOnlineInRaiinInf = "UpdateOnlineInRaiinInf";
         public const string UpdatePtInfOnlineQualify = "UpdatePtInfOnlineQualify";
+        public const string GetListOnlineConfirmationHistoryByPtId = "GetListOnlineConfirmationHistoryByPtId";
+        public const string GetListOnlineConfirmationHistoryModel = "GetListOnlineConfirmationHistoryModel";
+        public const string ConvertXmlToQCXmlMsg = "ConvertXmlToQCXmlMsg";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";

@@ -711,6 +711,7 @@ using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdatePtInfOnlineQualify;
 using UseCase.Ka.GetKacodeMstYossi;
 using UseCase.Ka.GetKacodeYousikiMst;
+using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -980,7 +981,19 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP46WelfareDiskService, P46WelfareDiskService>();
             services.AddTransient<IP35WelfareSokatuCoReportService, P35WelfareSokatuCoReportService>();
             services.AddTransient<IP25WelfareSeikyuCoReportService, P25WelfareSeikyuCoReportService>();
+            services.AddTransient<IP34KokhoSeikyuCoReportService, P34KokhoSeikyuCoReportService>();
+            services.AddTransient<IP35KokhoSeikyuCoReportService, P35KokhoSeikyuCoReportService>();
+            services.AddTransient<IP37KokhoSeikyuCoReportService, P37KokhoSeikyuCoReportService>();
+            services.AddTransient<IP40KokhoSeikyuCityCoReportService, P40KokhoSeikyuCityCoReportService>();
+            services.AddTransient<IP40KokhoSeikyuKumiaiCoReportService, P40KokhoSeikyuKumiaiCoReportService>();
+            services.AddTransient<IP41KokhoSeikyuCoReportService, P41KokhoSeikyuCoReportService>();
+            services.AddTransient<IP44KokhoSeikyuCoReportService, P44KokhoSeikyuCoReportService>();
+            services.AddTransient<IP45KokhoSeikyuCoReportService, P45KokhoSeikyuCoReportService>();
+            services.AddTransient<IP46KokhoSokatuCoReportService, P46KokhoSokatuCoReportService>();
             services.AddTransient<IKensaIraiRepository, KensaIraiRepository>();
+            services.AddTransient<IP33KokhoSeikyuCoReportService, P33KokhoSeikyuCoReportService>();
+            services.AddTransient<IP26KoukiSokatuInCoReportService, P26KoukiSokatuInCoReportService>();
+            services.AddTransient<IP25KokhoSeikyuCoReportService, P25KokhoSeikyuCoReportService>();
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
@@ -1635,6 +1648,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateRefNoInputData, UpdateRefNoInteractor>();
             busBuilder.RegisterUseCase<UpdateOnlineInRaiinInfInputData, UpdateOnlineInRaiinInfInteractor>();
             busBuilder.RegisterUseCase<UpdatePtInfOnlineQualifyInputData, UpdatePtInfOnlineQualifyInteractor>();
+            busBuilder.RegisterUseCase<GetListOnlineConfirmationHistoryModelInputData, GetListOnlineConfirmationHistoryModelInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
