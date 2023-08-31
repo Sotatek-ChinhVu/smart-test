@@ -494,6 +494,7 @@ namespace Infrastructure.Repositories
                        receInf?.Kohi3ReceFutan ?? -1,
                        receInf?.Kohi4ReceTensu ?? -1,
                        receInf?.Kohi4ReceFutan ?? -1,
+                       receInf?.IsTester ?? 0,
                        ConvertPtInfModel(ptInf),
                        ConvertHokenInfModel(ptHokenInf),
                        ConvertKohiInfModel(kohi1),

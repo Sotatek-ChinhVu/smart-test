@@ -378,7 +378,7 @@ namespace Domain.Models.ReceSeikyu
         {
             { 1,"月遅れ" },
             { 2,"返戻" },
-            { 3,"電算返戻" }
+            { 3,"オンライン返戻" } //電算返戻
         };
 
         public void SetSeikyuYm(int value)

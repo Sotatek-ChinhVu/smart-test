@@ -13,14 +13,21 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Options;
+using System.Text;
 
 namespace Infrastructure.Repositories
 {
     public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
-        public MstItemRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+
+        private readonly AmazonS3Options _options;
+
+        public MstItemRepository(ITenantProvider tenantProvider, IOptions<AmazonS3Options> optionsAccessor) : base(tenantProvider)
         {
+            _options = optionsAccessor.Value;
         }
 
         private readonly List<int> _HoukatuTermExclude = new List<int> { 0, 5, 6 };
@@ -704,7 +711,7 @@ namespace Infrastructure.Repositories
             List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage,
             bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem,
             bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter,
-            bool isSearch831SuffixOnly, bool isSearchGazoDensibaitaiHozon, FilterTenMstEnum sortMode)
+            bool isSearch831SuffixOnly, bool isSearchGazoDensibaitaiHozon, SortType sortType, FilterTenMstEnum sortCol)
         {
             string kanaKeyword = keyword;
             if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
@@ -1242,39 +1249,39 @@ namespace Infrastructure.Repositories
                                                            item.IsGetYakkaPrice
                                                             )).ToList();
 
-            var orderedQuery = sortMode switch
+            var orderedQuery = (sortCol, sortType) switch
             {
-                FilterTenMstEnum.RousaiKbnAsc => tenMstModels.OrderBy(item => item.RousaiKbnDisplay),
-                FilterTenMstEnum.RousaiKbnDec => tenMstModels.OrderByDescending(item => item.RousaiKbnDisplay),
-                FilterTenMstEnum.KanaName1Asc => tenMstModels.OrderBy(item => item.KanaName1),
-                FilterTenMstEnum.KanaName1Dec => tenMstModels.OrderByDescending(item => item.KanaName1),
-                FilterTenMstEnum.KouiNameAsc => tenMstModels.OrderBy(item => item.KouiName),
-                FilterTenMstEnum.KouiNameDec => tenMstModels.OrderByDescending(item => item.KouiName),
-                FilterTenMstEnum.NameAsc => tenMstModels.OrderBy(item => item.Name),
-                FilterTenMstEnum.NameDec => tenMstModels.OrderByDescending(item => item.Name),
-                FilterTenMstEnum.KohatuKbnAsc => tenMstModels.OrderBy(item => item.KohatuKbnDisplay),
-                FilterTenMstEnum.KohatuKbnDec => tenMstModels.OrderByDescending(item => item.KohatuKbnDisplay),
-                FilterTenMstEnum.KubunToAsc => tenMstModels.OrderBy(item => item.KubunToDisplay),
-                FilterTenMstEnum.KubunToDec => tenMstModels.OrderByDescending(item => item.KouseisinKbnDisplay),
-                FilterTenMstEnum.KouseisinKbnAsc => tenMstModels.OrderBy(item => item.KouseisinKbnDisplay),
-                FilterTenMstEnum.KouseisinKbnDec => tenMstModels.OrderByDescending(item => item.KubunToDisplay),
-                FilterTenMstEnum.TenAsc => tenMstModels.OrderBy(item => item.Ten),
-                FilterTenMstEnum.TenDec => tenMstModels.OrderByDescending(item => item.Ten),
-                FilterTenMstEnum.OdrUnitNameAsc => tenMstModels.OrderBy(item => item.OdrUnitName),
-                FilterTenMstEnum.OdrUnitNameDec => tenMstModels.OrderByDescending(item => item.OdrUnitName),
-                FilterTenMstEnum.ItemCdAsc => tenMstModels.OrderBy(item => item.ItemCd),
-                FilterTenMstEnum.ItemCdDec => tenMstModels.OrderByDescending(item => item.ItemCd),
-                FilterTenMstEnum.KensaCenterItemCDAsc => tenMstModels.OrderBy(item => item.KensaCenterItemCDDisplay),
-                FilterTenMstEnum.KensaCenterItemCDDec => tenMstModels.OrderByDescending(item => item.KensaCenterItemCDDisplay),
-                FilterTenMstEnum.EndDateAsc => tenMstModels.OrderBy(item => item.EndDate),
-                FilterTenMstEnum.EndDateDec => tenMstModels.OrderByDescending(item => item.EndDate),
-                FilterTenMstEnum.IsDeletedAsc => tenMstModels.OrderBy(item => item.IsDeleted),
-                FilterTenMstEnum.IsDeletedDec => tenMstModels.OrderByDescending(item => item.IsDeleted),
+                (FilterTenMstEnum.RousaiKbn, SortType.Asc) => tenMstModels.OrderBy(item => item.RousaiKbnDisplay),
+                (FilterTenMstEnum.RousaiKbn, SortType.Desc) => tenMstModels.OrderByDescending(item => item.RousaiKbnDisplay),
+                (FilterTenMstEnum.KanaName1, SortType.Asc) => tenMstModels.OrderBy(item => item.KanaName1),
+                (FilterTenMstEnum.KanaName1, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KanaName1),
+                (FilterTenMstEnum.KouiName, SortType.Asc) => tenMstModels.OrderBy(item => item.KouiName),
+                (FilterTenMstEnum.KouiName, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KouiName),
+                (FilterTenMstEnum.Name, SortType.Asc) => tenMstModels.OrderBy(item => item.Name),
+                (FilterTenMstEnum.Name, SortType.Desc) => tenMstModels.OrderByDescending(item => item.Name),
+                (FilterTenMstEnum.KohatuKbn, SortType.Asc) => tenMstModels.OrderBy(item => item.KohatuKbnDisplay),
+                (FilterTenMstEnum.KohatuKbn, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KohatuKbnDisplay),
+                (FilterTenMstEnum.KubunTo, SortType.Asc) => tenMstModels.OrderBy(item => item.KubunToDisplay),
+                (FilterTenMstEnum.KubunTo, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KouseisinKbnDisplay),
+                (FilterTenMstEnum.KouseisinKbn, SortType.Asc) => tenMstModels.OrderBy(item => item.KouseisinKbnDisplay),
+                (FilterTenMstEnum.KouseisinKbn, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KubunToDisplay),
+                (FilterTenMstEnum.Ten, SortType.Asc) => tenMstModels.OrderBy(item => item.Ten),
+                (FilterTenMstEnum.Ten, SortType.Desc) => tenMstModels.OrderByDescending(item => item.Ten),
+                (FilterTenMstEnum.OdrUnitName, SortType.Asc) => tenMstModels.OrderBy(item => item.OdrUnitName),
+                (FilterTenMstEnum.OdrUnitName, SortType.Desc) => tenMstModels.OrderByDescending(item => item.OdrUnitName),
+                (FilterTenMstEnum.ItemCd, SortType.Asc) => tenMstModels.OrderBy(item => item.ItemCd),
+                (FilterTenMstEnum.ItemCd, SortType.Desc) => tenMstModels.OrderByDescending(item => item.ItemCd),
+                (FilterTenMstEnum.KensaCenterItemCD, SortType.Asc) => tenMstModels.OrderBy(item => item.KensaCenterItemCDDisplay),
+                (FilterTenMstEnum.KensaCenterItemCD, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KensaCenterItemCDDisplay),
+                (FilterTenMstEnum.EndDate, SortType.Asc) => tenMstModels.OrderBy(item => item.EndDate),
+                (FilterTenMstEnum.EndDate, SortType.Desc) => tenMstModels.OrderByDescending(item => item.EndDate),
+                (FilterTenMstEnum.IsDeleted, SortType.Asc) => tenMstModels.OrderBy(item => item.IsDeleted),
+                (FilterTenMstEnum.IsDeleted, SortType.Desc) => tenMstModels.OrderByDescending(item => item.IsDeleted),
                 _ => tenMstModels.OrderBy(item => item.KanaName1).ThenBy(item => item.Name)
             };
 
             tenMstModels = orderedQuery.Skip((pageIndex - 1) * pageCount)
-                                       .Take(pageCount).ToList();
+                                           .Take(pageCount).ToList();
 
             if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
             {
@@ -2882,10 +2889,26 @@ namespace Infrastructure.Repositories
 
         public PiImageModel GetImagePiByItemCd(int hpId, string itemCd, int imageType)
         {
+            List<string> folderPaths = new List<string>() { CommonConstants.Image, CommonConstants.Reference, CommonConstants.DrugPhoto };
+            if (imageType == (int)ImageTypeDrug.HouImage)
+            {
+                folderPaths.Add(CommonConstants.HouSou);
+            }
+            else if (imageType == (int)ImageTypeDrug.ZaiImage)
+            {
+                folderPaths.Add(CommonConstants.ZaiKei);
+            }
+            string path = BuildPathAws(folderPaths);
+
+            var pathFull = new StringBuilder();
+            pathFull.Append(_options.BaseAccessUrl);
+            pathFull.Append("/");
+            pathFull.Append(path);
+
             var piImage = NoTrackingDataContext.PiImages.FirstOrDefault(u => u.HpId == hpId && u.ItemCd == itemCd && u.ImageType == imageType);
             if (piImage != null)
             {
-                return new PiImageModel(piImage.HpId, piImage.ImageType, piImage.ItemCd, piImage.FileName ?? string.Empty, false, false);
+                return new PiImageModel(piImage.HpId, piImage.ImageType, piImage.ItemCd, piImage.FileName ?? string.Empty, false, false, pathFull + piImage.FileName ?? string.Empty);
             }
             else
             {
@@ -3354,7 +3377,7 @@ namespace Infrastructure.Repositories
                                                              data.Kinki.ACd,
                                                              data.Kinki.BCd ?? string.Empty,
                                                              data.Kinki.SeqNo,
-                                                             false,
+                                                             data.Kinki.IsDeleted == 1 ? true : false,
                                                              data.TenMst?.Name ?? string.Empty,
                                                              false,
                                                              false,
@@ -3572,31 +3595,34 @@ namespace Infrastructure.Repositories
                 IpnNameMstModel ipnModel = setDataTen.PrecriptionSettingTab.IpnNameMst;
                 if (ipnModel.ModelModified)
                 {
-                    if (string.IsNullOrEmpty(ipnModel.IpnNameCd))
+                    var ipnDb = TrackingDataContext.IpnNameMsts.FirstOrDefault(x =>
+                          x.HpId == hpId &&
+                          x.IpnNameCd == ipnModel.IpnNameCd &&
+                          x.StartDate == ipnModel.StartDate &&
+                          x.EndDate == ipnModel.EndDate);
+
+                    if (string.IsNullOrEmpty(ipnModel.IpnNameCd) && ipnDb == null)
                     {
-                        TrackingDataContext.IpnNameMsts.Add(new IpnNameMst()
+                        if (!string.IsNullOrEmpty(ipnModel.IpnNameCdOrigin))
                         {
-                            IpnNameCd = ipnModel.IpnNameCd,
-                            HpId = hpId,
-                            StartDate = ipnModel.StartDate,
-                            SeqNo = 1,
-                            EndDate = ipnModel.EndDate,
-                            IpnName = ipnModel.IpnName,
-                            CreateId = userId,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = userId,
-                            IsDeleted = DeleteTypes.None,
-                            UpdateDate = CIUtil.GetJapanDateTimeNow()
-                        });
+                            TrackingDataContext.IpnNameMsts.Add(new IpnNameMst()
+                            {
+                                IpnNameCd = ipnModel.IpnNameCdOrigin,
+                                HpId = hpId,
+                                StartDate = ipnModel.StartDate,
+                                SeqNo = 1,
+                                EndDate = 99999999,
+                                IpnName = ipnModel.IpnName,
+                                CreateId = userId,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = userId,
+                                IsDeleted = DeleteTypes.None,
+                                UpdateDate = CIUtil.GetJapanDateTimeNow()
+                            });
+                        }
                     }
                     else
                     {
-                        var ipnDb = TrackingDataContext.IpnNameMsts.FirstOrDefault(x =>
-                                    x.HpId == hpId &&
-                                    x.IpnNameCd == ipnModel.IpnNameCd &&
-                                    x.StartDate == ipnModel.StartDate &&
-                                    x.EndDate == ipnModel.EndDate);
-
                         if (ipnDb != null)
                         {
                             Mapper.Map(ipnModel, ipnDb, (src, dest) =>
@@ -3644,6 +3670,7 @@ namespace Infrastructure.Repositories
                                 updateIpnYk.StartDate = x.StartDate;
                                 updateIpnYk.EndDate = x.EndDate;
                                 updateIpnYk.Yakka = x.Yakka;
+                                updateIpnYk.IsDeleted = x.IsDeleted;
                             }
                         }
                     }
@@ -3656,11 +3683,12 @@ namespace Infrastructure.Repositories
                 {
                     if (!x.CheckDefaultValue() && x.ModelModified)
                     {
-                        if (model.Id == 0 && model.IsDeleted == 0)
+                        if (x.Id == 0 && x.IsDeleted == 0)
                         {
                             TrackingDataContext.DrugDayLimits.Add(Mapper.Map(x, new DrugDayLimit(), (src, dest) =>
                             {
                                 dest.CreateId = userId;
+                                dest.ItemCd = itemCd;
                                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                                 dest.UpdateId = userId;
                                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -3677,6 +3705,7 @@ namespace Infrastructure.Repositories
                                 updateDrudDay.LimitDay = x.LimitDay;
                                 updateDrudDay.StartDate = x.StartDate;
                                 updateDrudDay.EndDate = x.EndDate;
+                                updateDrudDay.IsDeleted = x.IsDeleted;
                             }
                         }
                     }
@@ -3684,7 +3713,7 @@ namespace Infrastructure.Repositories
                 #endregion
 
                 #region TeikyoByomeiTabModel
-                
+
 
                 #endregion
             }
@@ -3860,7 +3889,7 @@ namespace Infrastructure.Repositories
                 {
                     TrackingDataContext.Add(new TekiouByomeiMstExcluded { HpId = hpId, CreateDate = CIUtil.GetJapanDateTimeNow(), CreateId = userId, UpdateDate = CIUtil.GetJapanDateTimeNow(), UpdateId = userId, ItemCd = tekiouByomeiMstExcluded.ItemCd });
                 }
-            
+
             }
 
             void SanteiKaishuUpdate()
@@ -4650,6 +4679,7 @@ namespace Infrastructure.Repositories
                             update.UpdateId = userId;
                             update.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             update.BCd = model.BCd;
+                            update.IsDeleted = model.IsDeleted ? 1 : 0;
                         }
                     }
                 }
@@ -5258,6 +5288,17 @@ namespace Infrastructure.Repositories
             result?.TrimEnd(Environment.NewLine.ToCharArray());
 
             return result ?? string.Empty;
+        }
+
+        private string BuildPathAws(List<string> folders)
+        {
+            StringBuilder result = new();
+            foreach (var item in folders)
+            {
+                result.Append(item);
+                result.Append("/");
+            }
+            return result.ToString();
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Domain.Models.Lock
     {
         bool ExistLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo);
 
-        bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string token, string tabKey);
+        bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string tabKey, string loginKey);
 
         LockModel CheckOpenSpecialNote(int hpId, string functionCd, long ptId);
 
@@ -18,6 +18,8 @@ namespace Domain.Models.Lock
 
         List<long> RemoveAllLock(int hpId, int userId, long ptId, int sinDate, string functionCd, string tabKey);
 
+        List<long> RemoveAllLock(int hpId, int userId, string loginKey);
+
         bool ExtendTtl(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
 
         List<LockModel> GetLockInfo(int hpId, long ptId, List<string> lisFunctionCd_B, int sinDate_B, long raiinNo);
@@ -27,6 +29,8 @@ namespace Domain.Models.Lock
         string GetFunctionNameLock(string functionCode);
 
         List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate, long raiinNo);
+
+        List<ResponseLockModel> GetResponseLockModel(int hpId, List<long> raiinNoList);
 
         List<LockModel> CheckLockOpenAccounting(int hpId, long ptId, long raiinNo, int userId);
     }

@@ -3,7 +3,6 @@ using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
-using EmrCloudApi.Requests.Diseases;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
@@ -14,7 +13,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Document.UploadTemplateToCategory;
 using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
@@ -282,6 +280,10 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<SaveSetDataTenMstResponse>> SaveSetDataTenMst([FromBody] SaveSetDataTenMstRequest request)
         {
             List<TenMstOriginModel> tenOrigins = Mapper.Map<TenMstOriginModelDto, TenMstOriginModel>(request.TenOrigins);
+            foreach (var tenOrigin in tenOrigins)
+            {
+                tenOrigin.ChangeHpId(HpId);
+            }
 
             BasicSettingTabModel basicSettingTab = new BasicSettingTabModel(Mapper.Map<CmtKbnMstModelDto, CmtKbnMstModel>(request.CmtKbnMstModels));
 
@@ -314,7 +316,7 @@ namespace EmrCloudApi.Controller
 
             CombinedContraindicationTabModel combinedContraindicationTab = new CombinedContraindicationTabModel(Mapper.Map<CombinedContraindicationModelDto, CombinedContraindicationModel>(request.CombinedContraindications));
 
-            SetDataTenMstOriginModel setData = new SetDataTenMstOriginModel(basicSettingTab, ijiSettingTab, precriptionSettingTab, usageSettingTab, drugInfomationTab, teikyoByomeiTab, santeiKaishuTab, haihanTab, houkatsuTab, combinedContraindicationTab);
+            SetDataTenMstOriginModel setData = new SetDataTenMstOriginModel(basicSettingTab, request.IjiSettingTabModel, precriptionSettingTab, request.UsageSettingTabModel, drugInfomationTab, teikyoByomeiTab, santeiKaishuTab, haihanTab, houkatsuTab, combinedContraindicationTab);
 
             var input = new SaveSetDataTenMstInputData(HpId, UserId, request.ItemCd, tenOrigins, setData);
             var output = _bus.Handle(input);
@@ -381,7 +383,7 @@ namespace EmrCloudApi.Controller
                 request.SinDate, request.ItemCodeStartWith, request.IsIncludeUsage, request.OnlyUsage, request.YJCode, request.IsMasterSearch,
                 request.IsExpiredSearchIfNoData, request.IsAllowSearchDeletedItem, request.IsExpired, request.IsDeleted, request.DrugKbns,
                 request.IsSearchSanteiItem, request.IsSearchKenSaItem, request.ItemFilter, request.IsSearch831SuffixOnly, request.IsSearchSuggestion,
-                request.IsSearchGazoDensibaitaiHozon, request.SortMode);
+                request.IsSearchGazoDensibaitaiHozon, request.SortCol, request.SortType);
             var output = _bus.Handle(input);
             var presenter = new SearchTenMstItemPresenter();
             presenter.Complete(output);

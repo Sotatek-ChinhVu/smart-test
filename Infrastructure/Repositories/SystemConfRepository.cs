@@ -503,4 +503,77 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             item.UpdateId = userId;
         }
     }
+
+    public List<SystemConfListXmlPathModel> GetSystemConfListXmlPath(int hpId, int grpCd, string machine)
+    {
+        List<PathConf> pathConf;
+
+        pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId
+                                                                           && item.GrpCd == grpCd
+                                                                           && item.Machine == machine)
+                                                                           .ToList();
+        if (pathConf == null || !pathConf.Any())
+        {
+            pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId
+                                                                           && item.GrpCd == grpCd
+                                                                           && (item.Machine == string.Empty || item.Machine == null))
+                                                                           .ToList();
+        }
+
+        return pathConf.Select(item => ToModel(item)).ToList();
+    }
+
+    public List<SystemConfListXmlPathModel> GetAllPathConf(int hpId)
+    {
+        var pathConfs = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId).ToList();
+
+        return pathConfs.Select(item => ToModel(item)).ToList();
+    }
+
+    public bool SavePathConfOnline(int hpId, int userId, List<SystemConfListXmlPathModel> systemConfListXmlPathModels)
+    {
+        foreach (var systemConfListXmlPathModel in systemConfListXmlPathModels)
+        {
+            var entity = TrackingDataContext.PathConfs.FirstOrDefault(p => p.HpId == systemConfListXmlPathModel.HpId && p.SeqNo == systemConfListXmlPathModel.SeqNo && p.GrpCd == systemConfListXmlPathModel.GrpCd && p.GrpCd == systemConfListXmlPathModel.GrpEdaNo);
+
+            var newEntity = new PathConf();
+            newEntity.HpId = hpId;
+            newEntity.Machine = systemConfListXmlPathModel.Machine;
+            newEntity.Path = systemConfListXmlPathModel.Path;
+            newEntity.Param = systemConfListXmlPathModel.Param;
+            newEntity.Biko = systemConfListXmlPathModel.Biko;
+            newEntity.CharCd = systemConfListXmlPathModel.CharCd;
+            newEntity.IsInvalid = systemConfListXmlPathModel.IsInvalid;
+            newEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            newEntity.UpdateId = userId;
+            if (entity != null)
+            {
+                newEntity.CreateDate = TimeZoneInfo.ConvertTimeToUtc(systemConfListXmlPathModel.CreateDate);
+                newEntity.CreateId = systemConfListXmlPathModel.CreateId;
+            }
+            else
+            {
+                newEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                newEntity.CreateId = userId;
+            }
+        }
+
+        var first = systemConfListXmlPathModels.FirstOrDefault();
+        if (first != null)
+        {
+            var grpCd = first.GrpCd;
+            var grpEdaNo = first.GrpEdaNo;
+            var hpIdFE = first.HpId;
+            var pathConfToDelete = TrackingDataContext.PathConfs.Where(p => p.HpId == hpIdFE && p.GrpCd == grpCd && p.GrpEdaNo == grpEdaNo).ToList();
+            TrackingDataContext.PathConfs.RemoveRange(pathConfToDelete);
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+
+    private SystemConfListXmlPathModel ToModel(PathConf pathConf)
+    {
+        return new SystemConfListXmlPathModel(pathConf.HpId, pathConf.GrpCd, pathConf.GrpEdaNo, pathConf.SeqNo, pathConf.Machine ?? string.Empty, pathConf.Path ?? string.Empty, pathConf.Param ?? string.Empty, pathConf.Biko ?? string.Empty, pathConf.CharCd, pathConf.IsInvalid, pathConf.CreateId, pathConf.CreateDate);
+    }
 }
