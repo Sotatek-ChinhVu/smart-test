@@ -708,6 +708,7 @@ using Interactor.AuditTrailLog;
 using UseCase.SystemConf.GetPathAll;
 using UseCase.SystemConf.SavePath;
 using UseCase.Online.SaveOQConfirmation;
+using UseCase.Online.UpdatePtInfOnlineQualify;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1631,6 +1632,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveOQConfirmationInputData, SaveOQConfirmationInteractor>();
             busBuilder.RegisterUseCase<UpdateRefNoInputData, UpdateRefNoInteractor>();
             busBuilder.RegisterUseCase<UpdateOnlineInRaiinInfInputData, UpdateOnlineInRaiinInfInteractor>();
+            busBuilder.RegisterUseCase<UpdatePtInfOnlineQualifyInputData, UpdatePtInfOnlineQualifyInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
