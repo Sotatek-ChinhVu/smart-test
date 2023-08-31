@@ -13,6 +13,7 @@ using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.Online.InsertOnlineConfirmHistory;
 using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineHistoryById;
+using UseCase.Online.UpdateOQConfirmation;
 
 namespace EmrCloudApi.Controller;
 
@@ -83,5 +84,22 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpdateOnlineHistoryByIdResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateOQConfirmation)]
+    public ActionResult<Response<UpdateOQConfirmationResponse>> UpdateOQConfirmation([FromBody] UpdateOQConfirmationRequest request)
+    {
+        Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict = new();
+        foreach (var item in request.OnlQuaConfirmationTypeDict)
+        {
+            onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg));
+        }
+        var input = new UpdateOQConfirmationInputData(HpId, UserId, request.OnlineHistoryId, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOQConfirmationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOQConfirmationResponse>>(presenter.Result);
     }
 }
