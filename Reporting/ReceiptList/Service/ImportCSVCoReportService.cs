@@ -58,7 +58,7 @@ namespace Reporting.ReceiptList.Service
 
             if (result.Count == 0)
             {
-                return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, output);
+                return new CommonExcelReportingModel(sheetName + ".csv", sheetName, output);
             }
             else
             {

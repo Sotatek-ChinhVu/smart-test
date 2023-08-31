@@ -1,5 +1,5 @@
-﻿using Domain.Models.Receipt;
-using Domain.Models.Receipt.ReceiptCreation;
+﻿using Domain.CalculationInf;
+using Domain.Models.Receipt;
 using Helper.Common;
 using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.ValidateCreateUKEFile;
@@ -9,10 +9,12 @@ namespace Interactor.Receipt
     public class ValidateCreateUKEFileInteractor : IValidateCreateUKEFileInputPort
     {
         private readonly IReceiptRepository _receiptRepository;
+        private readonly ICalculationInfRepository _calculationInfRepository;
 
-        public ValidateCreateUKEFileInteractor(IReceiptRepository receiptRepository)
+        public ValidateCreateUKEFileInteractor(IReceiptRepository receiptRepository, ICalculationInfRepository calculationInfRepository)
         {
             _receiptRepository = receiptRepository;
+            _calculationInfRepository = calculationInfRepository;
         }
 
         public ValidateCreateUKEFileOutputData Handle(ValidateCreateUKEFileInputData inputData)
@@ -48,6 +50,7 @@ namespace Interactor.Receipt
             finally
             {
                 _receiptRepository.ReleaseResource();
+                _calculationInfRepository.ReleaseResource();
             }
         }
 
@@ -58,7 +61,7 @@ namespace Interactor.Receipt
             string errorRousaiSaigai = string.Empty;
             string errorResult = string.Empty;
 
-            List<ReceInfValidateModel> receInfModels = _receiptRepository.GetReceValidateReceiptCreation(hpId, new List<long>(), seikyuYm);
+            var receInfModels = _calculationInfRepository.GetReceInfModels(hpId, new List<long>(), seikyuYm);
             foreach (var receInfItem in receInfModels)
             {
                 if (receInfItem.IsTester == 1) continue;
@@ -67,13 +70,13 @@ namespace Interactor.Receipt
                     receInfItem.IsPaperRece == 0)
                 {
                     // check error Rousai Saigai
-                    if (receInfItem.RousaiSaigaiKbn != 1 &&
-                        receInfItem.RousaiSaigaiKbn != 2)
+                    if (receInfItem.PtHokenInf.RousaiSaigaiKbn != 1 &&
+                        receInfItem.PtHokenInf.RousaiSaigaiKbn != 2)
                     {
                         errorRousaiSaigai += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + "\r\n";
                     }
                     // check error Syobyo
-                    if (receInfItem.RousaiSyobyoDate <= 0)
+                    if (receInfItem.PtHokenInf.RousaiSyobyoDate <= 0)
                     {
                         errorSyobyo += string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId) + "\r\n";
                     }
@@ -94,7 +97,7 @@ namespace Interactor.Receipt
             {
                 if (errorResult != string.Empty)
                 {
-                    errorResult += Environment.NewLine;
+                    errorResult += "\r\n";
                 }
 
                 errorResult += errorSyobyo.Insert(0, "■傷病開始年月日が設定されていません。" + "\r\n");
@@ -104,7 +107,7 @@ namespace Interactor.Receipt
             {
                 if (errorResult != string.Empty)
                 {
-                    errorResult += Environment.NewLine;
+                    errorResult += "\r\n";
                 }
 
                 errorResult += errorSyobyoKeika.Insert(0, "■傷病の経過が設定されていません。" + "\r\n");
@@ -115,7 +118,7 @@ namespace Interactor.Receipt
         private string ValidateAftercare(int hpId, int seikyuYm)
         {
             string errorSyobyoKeika = string.Empty;
-            List<ReceInfValidateModel> receInfModels = _receiptRepository.GetReceValidateReceiptCreation(hpId, new List<long>(), seikyuYm).Where(item => item.HokenKbn == 13).ToList();
+            var receInfModels = _calculationInfRepository.GetReceInfModels(hpId, new List<long>(), seikyuYm).Where(item => item.HokenKbn == 13).ToList();
             foreach (var receInfItem in receInfModels)
             {
                 if (receInfItem.IsTester == 1) continue;
