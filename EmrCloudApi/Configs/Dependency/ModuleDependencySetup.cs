@@ -694,6 +694,8 @@ using UseCase.Reception.GetYoyakuRaiinInf;
 using UseCase.Insurance.FindHokenInfByPtId;
 using UseCase.SystemConf.GetXmlPath;
 using UseCase.Reception.GetHpInf;
+using UseCase.Ka.GetKacodeMstYossi;
+using UseCase.Ka.GetKacodeYousikiMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1609,6 +1611,10 @@ namespace EmrCloudApi.Configs.Dependency
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
             busBuilder.RegisterUseCase<UpdateAccountingFormMstInputData, UpdateAccountingFormMstInteractor>();
+
+            //Ka
+            busBuilder.RegisterUseCase<GetKacodeMstYossiInputData, GetKaCodeMstYossiInteractor>();
+            busBuilder.RegisterUseCase<GetKaCodeYousikiMstInputData, GetKaCodeYousikiMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

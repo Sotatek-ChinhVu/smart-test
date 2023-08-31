@@ -55,7 +55,8 @@ public class KaRepository : RepositoryBase, IKaRepository
                                             .Select(ka => new KaCodeMstModel(
                                                         ka.ReceKaCd,
                                                         ka.SortNo,
-                                                        ka.KaName ?? string.Empty
+                                                        ka.KaName ?? string.Empty,
+                                                        string.Empty
                                              )).ToList();
     }
 
@@ -113,11 +114,11 @@ public class KaRepository : RepositoryBase, IKaRepository
             k.KaName ?? string.Empty);
     }
 
-    public List<KaCodeMstModel> GetKacodeMsts(int hpId)
+    public List<KaCodeMstModel> GetKacodeMstYossi()
     {
         var kacodeMsts = NoTrackingDataContext.KacodeMsts.AsQueryable();
 
-        var kacodeReceYousikis = NoTrackingDataContext..FindListQueryableNoTrack();
+        var kacodeReceYousikis = NoTrackingDataContext.KacodeReceYousikis.AsQueryable();
 
         var query = from kacodeMst in kacodeMsts
                     join kacodeReceYousiki in kacodeReceYousikis
@@ -128,8 +129,13 @@ public class KaRepository : RepositoryBase, IKaRepository
                         KacodeMst = kacodeMst,
                         KacodeReceYousiki = tempKacodeReceYousiki
                     };
-        return query.AsEnumerable().Select(p => new KacodeMstModel(p.KacodeMst)
-        { ReceYousikiKaCd = p.KacodeReceYousiki != null ? p.KacodeReceYousiki.YousikiKaCd : string.Empty }).OrderBy(p => p.ReceKaCd).ToList();
+        return query.AsEnumerable().Select(p => new KaCodeMstModel(p.KacodeMst?.ReceKaCd ?? string.Empty, p.KacodeMst?.SortNo ?? 0, p.KacodeMst?.KaName ?? string.Empty, p.KacodeReceYousiki?.YousikiKaCd ?? string.Empty)).OrderBy(p => p.ReceKaCd).ToList();
+    }
+
+    public List<KacodeYousikiMstModel> GetKacodeYousikiMst()
+    {
+        var kacodeMsts = NoTrackingDataContext.KacodeYousikiMsts.ToList().OrderBy(u => u.YousikiKaCd);
+        return kacodeMsts.Select(p => new KacodeYousikiMstModel(p.YousikiKaCd, p.SortNo, p.KaName)).ToList();
     }
 
     public void ReleaseResource()

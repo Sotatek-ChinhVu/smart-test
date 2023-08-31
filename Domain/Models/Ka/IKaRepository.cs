@@ -18,4 +18,7 @@ public interface IKaRepository : IRepositoryBase
 
     bool CheckKaId(List<int> kaIds);
 
+    List<KaCodeMstModel> GetKacodeMstYossi();
+
+    List<KacodeYousikiMstModel> GetKacodeYousikiMst();
 }

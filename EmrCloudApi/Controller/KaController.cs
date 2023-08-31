@@ -7,6 +7,8 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Ka.GetKaCodeList;
+using UseCase.Ka.GetKacodeMstYossi;
+using UseCase.Ka.GetKacodeYousikiMst;
 using UseCase.Ka.GetList;
 using UseCase.Ka.SaveList;
 
@@ -50,5 +52,25 @@ public class KaController : AuthorizeControllerBase
         var presenter = new SaveListKaMstPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<SaveListKaMstResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKaCodeMstYossi)]
+    public ActionResult<Response<GetKaCodeMstListResponse>> GetKaCodeMstYossi()
+    {
+        var input = new GetKacodeMstYossiInputData();
+        var output = _bus.Handle(input);
+        var presenter = new GetKaCodeMstYossiPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKaCodeYousikiMst)]
+    public ActionResult<Response<GetKaCodeYousikiMstResponse>> GetKaCodeYousikiMst()
+    {
+        var input = new GetKaCodeYousikiMstInputData();
+        var output = _bus.Handle(input);
+        var presenter = new GetKaCodeYousikiMstPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
     }
 }
