@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Receipt;
+using Domain.Models.Receipt.Recalculation;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Interactor.CalculateService;
@@ -40,12 +41,26 @@ public class RecalculationInteractor : IRecalculationInputPort
             }
 
             // check error in month
-            if (success && !isStopCalc && inputData.IsCheckErrorCheckBox)
+            List<ReceRecalculationModel> receRecalculationList = new();
+            if (success && !isStopCalc && (inputData.IsCheckErrorCheckBox || inputData.IsReceiptAggregationCheckBox))
             {
-                var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
+                receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
                 int allCheckCount = receRecalculationList.Count;
 
-                success = _commonReceRecalculation.CheckErrorInMonth(inputData.HpId, inputData.PtIdList, inputData.SinYm, inputData.UserId, receRecalculationList, allCheckCount, receCheckCalculate: false, isReceiptAggregationCheckBox: inputData.IsReceiptAggregationCheckBox);
+                success = _commonReceRecalculation.CheckErrorInMonth(inputData.HpId, inputData.PtIdList, inputData.SinYm, inputData.UserId, receRecalculationList, allCheckCount, receCheckCalculate: false, isReceiptAggregationCheckBox: inputData.IsReceiptAggregationCheckBox, inputData.IsCheckErrorCheckBox);
+            }
+
+            // resetStatus
+            if (success)
+            {
+                if (inputData.IsCheckErrorCheckBox)
+                {
+                    _receiptRepository.ResetStatusAfterCheckErr(inputData.HpId, inputData.UserId, inputData.SinYm, receRecalculationList);
+                }
+                else if (inputData.IsRecalculationCheckBox)
+                {
+                    _receiptRepository.ResetStatusAfterReCalc(inputData.HpId, inputData.PtIdList, inputData.SinYm);
+                }
             }
 
             if (!inputData.IsCheckErrorCheckBox && !inputData.IsReceiptAggregationCheckBox && !inputData.IsRecalculationCheckBox)
