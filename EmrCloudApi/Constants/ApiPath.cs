@@ -181,6 +181,7 @@
         public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
         public const string GetOutDrugOrderList = "GetOutDrugOrderList";
         public const string GetYoyakuRaiinInf = "GetYoyakuRaiinInf";
+        public const string GetRaiinInfBySinDate = "GetRaiinInfBySinDate";
         public const string GetHpInf = "GetHpInf";
 
         // Validate list pattern

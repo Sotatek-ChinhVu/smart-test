@@ -1708,5 +1708,55 @@ namespace Infrastructure.Repositories
             }
             return raiinInf.Status;
         }
+
+        public ReceptionModel GetRaiinInfBySinDate(int hpId, long ptId, int sinDate)
+        {
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                             && item.SinDate == sinDate
+                                                                             && item.PtId == ptId
+                                                                             && item.IsDeleted == DeleteTypes.None)
+                                                              .ToList();
+            if (!raiinInfList.Any())
+            {
+                return new();
+            }
+
+            RaiinInf raiinInf;
+
+            if (raiinInfList.Any(item => item.Status == RaiinState.Reservation))
+            {
+                raiinInf = raiinInfList.OrderBy(item => item.YoyakuTime).ThenBy(item => item.RaiinNo).First();
+            }
+            else
+            {
+                raiinInf = raiinInfList.OrderBy(item => item.UketukeTime).ThenBy(item => item.RaiinNo).First();
+            }
+
+            return new ReceptionModel(raiinInf.HpId,
+                                      raiinInf.PtId,
+                                      raiinInf.SinDate,
+                                      raiinInf.RaiinNo,
+                                      raiinInf.OyaRaiinNo,
+                                      raiinInf.HokenPid,
+                                      raiinInf.SanteiKbn,
+                                      raiinInf.Status,
+                                      raiinInf.IsYoyaku,
+                                      raiinInf.YoyakuTime ?? string.Empty,
+                                      raiinInf.YoyakuId,
+                                      raiinInf.UketukeSbt,
+                                      raiinInf.UketukeTime ?? string.Empty,
+                                      raiinInf.UketukeId,
+                                      raiinInf.UketukeNo,
+                                      raiinInf.SinStartTime ?? string.Empty,
+                                      raiinInf.SinEndTime ?? string.Empty,
+                                      raiinInf.KaikeiTime ?? string.Empty,
+                                      raiinInf.KaikeiId,
+                                      raiinInf.KaId,
+                                      raiinInf.TantoId,
+                                      raiinInf.SyosaisinKbn,
+                                      raiinInf.JikanKbn,
+                                      string.Empty
+                               );
+        }
     }
 }

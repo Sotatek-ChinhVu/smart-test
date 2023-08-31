@@ -694,6 +694,8 @@ using UseCase.Reception.GetYoyakuRaiinInf;
 using UseCase.Insurance.FindHokenInfByPtId;
 using UseCase.Online.UpdateOQConfirmation;
 using UseCase.Online.SaveAllOQConfirmation;
+using UseCase.Online.SaveOQConfirmation;
+using UseCase.Reception.GetRaiinInfBySinDate;
 using UseCase.SystemConf.GetXmlPath;
 using UseCase.Reception.GetHpInf;
 using Domain.Models.AuditLog;
@@ -1144,6 +1146,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<RevertDeleteNoReceptInputData, RevertDeleteNoReceptInteractor>();
             busBuilder.RegisterUseCase<GetOutDrugOrderListInputData, GetOutDrugOrderListInteractor>();
             busBuilder.RegisterUseCase<GetYoyakuRaiinInfInputData, GetYoyakuRaiinInfInteractor>();
+            busBuilder.RegisterUseCase<GetRaiinInfBySinDateInputData, GetRaiinInfBySinDateInteractor>();
             busBuilder.RegisterUseCase<GetHpInfInputData, GetHpInfInteractor>();
 
             // Visiting
