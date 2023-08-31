@@ -23,9 +23,9 @@ public class KaController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
-    public ActionResult<Response<GetKaMstListResponse>> GetListMst()
+    public ActionResult<Response<GetKaMstListResponse>> GetListMst(int isDeleted)
     {
-        var input = new GetKaMstListInputData();
+        var input = new GetKaMstListInputData(isDeleted);
         var output = _bus.Handle(input);
         var presenter = new GetKaMstListPresenter();
         presenter.Complete(output);

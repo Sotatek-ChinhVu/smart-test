@@ -1,8 +1,10 @@
-﻿using Domain.Models.CalculateModel;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using Domain.Models.CalculateModel;
 using Domain.Models.Ka;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Domain.Models.User;
+using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Interactor.CalculateService;
@@ -54,7 +56,7 @@ public class GetOutDrugOrderListInteractor : IGetOutDrugOrderListInputPort
 
     private List<RaiinInfToPrintModel> FormatRaiinInfWithReceInfParam(GetOutDrugOrderListInputData inputData)
     {
-        var kaMstList = _kaMstRepository.GetList();
+        var kaMstList = _kaMstRepository.GetList(DeleteTypes.None);
         var userMstList = _userRepository.GetAll(inputData.SinDate, true, false);
         List<RaiinInfToPrintModel> listSource = new();
         int intStartDate = inputData.FromDate;

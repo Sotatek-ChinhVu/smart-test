@@ -4,6 +4,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
@@ -39,10 +40,10 @@ public class KaRepository : RepositoryBase, IKaRepository
         return entities is null ? new List<KaMstModel>() : entities.Select(e => ConvertToKaMstModel(e)).ToList();
     }
 
-    public List<KaMstModel> GetList()
+    public List<KaMstModel> GetList(int isDeleted)
     {
         return NoTrackingDataContext.KaMsts
-            .Where(k => k.IsDeleted == DeleteTypes.None)
+            .Where(k => (isDeleted == 2 || k.IsDeleted == isDeleted))
             .OrderBy(k => k.SortNo).AsEnumerable()
             .Select(k => ConvertToKaMstModel(k)).ToList();
     }
@@ -110,6 +111,25 @@ public class KaRepository : RepositoryBase, IKaRepository
             k.ReceKaCd ?? string.Empty,
             k.KaSname ?? string.Empty,
             k.KaName ?? string.Empty);
+    }
+
+    public List<KaCodeMstModel> GetKacodeMsts(int hpId)
+    {
+        var kacodeMsts = NoTrackingDataContext.KacodeMsts.AsQueryable();
+
+        var kacodeReceYousikis = NoTrackingDataContext..FindListQueryableNoTrack();
+
+        var query = from kacodeMst in kacodeMsts
+                    join kacodeReceYousiki in kacodeReceYousikis
+                    on kacodeMst.ReceKaCd equals kacodeReceYousiki.ReceKaCd into TempKacodeReceYousikis
+                    from tempKacodeReceYousiki in TempKacodeReceYousikis.DefaultIfEmpty()
+                    select new
+                    {
+                        KacodeMst = kacodeMst,
+                        KacodeReceYousiki = tempKacodeReceYousiki
+                    };
+        return query.AsEnumerable().Select(p => new KacodeMstModel(p.KacodeMst)
+        { ReceYousikiKaCd = p.KacodeReceYousiki != null ? p.KacodeReceYousiki.YousikiKaCd : string.Empty }).OrderBy(p => p.ReceKaCd).ToList();
     }
 
     public void ReleaseResource()
