@@ -698,6 +698,7 @@ using UseCase.Online.SaveOQConfirmation;
 using UseCase.Reception.GetRaiinInfBySinDate;
 using UseCase.SystemConf.GetXmlPath;
 using UseCase.Reception.GetHpInf;
+using UseCase.Online.UpdateRefNo;
 using Domain.Models.AuditLog;
 using UseCase.SaveAuditLog;
 using Interactor.AuditTrailLog;
@@ -1616,7 +1617,7 @@ namespace EmrCloudApi.Configs.Dependency
             //SinKoui
             busBuilder.RegisterUseCase<GetListSinKouiInputData, GetListSinKouiInteractor>();
 
-            //Online
+            // Online
             busBuilder.RegisterUseCase<InsertOnlineConfirmHistoryInputData, InsertOnlineConfirmHistoryInteractor>();
             busBuilder.RegisterUseCase<GetRegisterdPatientsFromOnlineInputData, GetRegisterdPatientsFromOnlineInteractor>();
             busBuilder.RegisterUseCase<UpdateOnlineConfirmationHistoryInputData, UpdateOnlineConfirmationHistoryInteractor>();
@@ -1624,6 +1625,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateOQConfirmationInputData, UpdateOQConfirmationInteractor>();
             busBuilder.RegisterUseCase<SaveAllOQConfirmationInputData, SaveAllOQConfirmationInteractor>();
             busBuilder.RegisterUseCase<SaveOQConfirmationInputData, SaveOQConfirmationInteractor>();
+            busBuilder.RegisterUseCase<UpdateRefNoInputData, UpdateRefNoInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();

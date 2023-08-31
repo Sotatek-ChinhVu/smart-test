@@ -5,11 +5,10 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using System.Globalization;
 using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories;
 
@@ -67,6 +66,14 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                              + $" WHERE \"ID\" = {id} AND \"UKETUKE_STATUS\" = 0";
 
         return TrackingDataContext.Database.ExecuteSqlRaw(updateQuery) > 0;
+    }
+
+    public long UpdateRefNo(int hpId, long ptId)
+    {
+        var nextRefNo = TrackingDataContext.Database.SqlQueryRaw<long>("SELECT NEXTVAL(' \"PT_INF_REFERENCE_NO_seq\"')").ToList().FirstOrDefault();
+        string updateQuery = $"UPDATE \"PT_INF\" SET \"REFERENCE_NO\" = {nextRefNo} WHERE \"HP_ID\" = {hpId} AND \"PT_ID\" = {ptId}";
+        TrackingDataContext.Database.ExecuteSqlRaw(updateQuery);
+        return nextRefNo;
     }
 
     public bool UpdateOnlineHistoryById(int userId, long id, long ptId, int uketukeStatus, int confirmationType)
