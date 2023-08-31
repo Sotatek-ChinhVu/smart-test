@@ -70,5 +70,7 @@ namespace Domain.Models.Reception
         List<RaiinInfToPrintModel> GetOutDrugOrderList(int hpId, int fromDate, int toDate);
 
         int GetStatusRaiinInf(int hpId, long raiinNo, long ptId);
+
+        ReceptionModel GetRaiinInfBySinDate(int hpId, long ptId, int sinDate);
     }
 }

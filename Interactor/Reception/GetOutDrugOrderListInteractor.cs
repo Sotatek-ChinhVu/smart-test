@@ -73,20 +73,33 @@ public class GetOutDrugOrderListInteractor : IGetOutDrugOrderListInputPort
         /// get list model by KaikeiTotalCalculate 
         /// KaikeiTotalCalculate is get for 1 month only
         /// So have to get data per month and group it
+
+        List<int> dateList = new();
         while (intStartDate <= intEndDate)
         {
-            var receInfs = _calculateService.GetListReceInf(new GetInsuranceInfInputData(inputData.HpId, 0, intStartDate.AsInteger())).ReceInfModels;
+            dateList.Add(intStartDate);
+            intStartDate++;
+        }
+
+        object obj = new object();
+        Parallel.ForEach(dateList, date =>
+        {
+            var receInfs = _calculateService.GetListReceInf(new GetInsuranceInfInputData(inputData.HpId, 0, date.AsInteger())).ReceInfModels;
             if (receInfs != null && receInfs.Any())
             {
-                listKaikeFrm.AddRange(receInfs);
+                lock (obj)
+                {
+                    listKaikeFrm.AddRange(receInfs);
+                }
             }
-            intStartDate += 1;
-        }
+        });
 
         listSource.AddRange(listKaikeFrm.Select(u => new RaiinInfToPrintModel(inputData.IsPrintAccountingCard ? PrintMode.PrintAccountingCard : PrintMode.PrintAccountingCardList, u)).ToList());
 
         var ptIdList = listSource.Select(item => item.PtId).Distinct().ToList();
         var ptInfList = _patientInforRepository.SearchPatient(inputData.HpId, ptIdList);
+
+        listSource = listSource.OrderBy(item => item.SinDate).ToList();
         foreach (var model in listSource)
         {
             // Formart for RaiinInfToPrintModel with param ReceInfModel

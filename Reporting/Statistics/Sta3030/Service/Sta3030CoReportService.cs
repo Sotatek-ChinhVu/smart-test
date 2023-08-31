@@ -1,13 +1,13 @@
-﻿using Reporting.CommonMasters.Enums;
+﻿using Helper.Common;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
+using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
+using Reporting.Statistics.Enums;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3030.DB;
-using Reporting.Statistics.Sta3030.Models;
-using Reporting.ReadRseReportFile.Model;
-using Helper.Common;
-using Reporting.Statistics.Enums;
 using Reporting.Statistics.Sta3030.Mapper;
+using Reporting.Statistics.Sta3030.Models;
 
 namespace Reporting.Statistics.Sta3030.Service;
 
@@ -74,6 +74,7 @@ public class Sta3030CoReportService : ISta3030CoReportService
     private string rowCountFieldName;
     private CoSta3030PrintConf printConf;
     private CoFileType outputFileType;
+    private CoFileType? coFileType;
 
     public Sta3030CoReportService(ICoSta3030Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -273,7 +274,7 @@ public class Sta3030CoReportService : ISta3030CoReportService
             printDatas.Add(printData);
         }
 
-        void MakePrintData()
+        /*void MakePrintData()
         {
             printDatas = new List<CoSta3030PrintData>();
 
@@ -365,7 +366,7 @@ public class Sta3030CoReportService : ISta3030CoReportService
 
                 //前の行と同じ情報を省略
                 int omit = 0;
-                if ((outputFileType != CoFileType.Csv) && (rowCount > 0))
+                if ((outputFileType != CoFileType.Csv || coFileType != CoFileType.Csv) && (rowCount > 0))
                 {
                     omit = (ptNumPgBreak || new int[] { 1, 4 }.Contains(printConf.SortOrder1)) && (ptByomeiInf.PtNum == prePtNum) ? 1
                         : (!ptNumPgBreak && printConf.SortOrder1 == 2) && (ptByomeiInf.Byomei == preByomei) ? 2
@@ -378,6 +379,114 @@ public class Sta3030CoReportService : ISta3030CoReportService
                 prePtNum = ptByomeiInf.PtNum;
                 preByomei = ptByomeiInf.Byomei;
             }
+        }*/
+
+        void MakePrintData()
+        {
+            printDatas = new List<CoSta3030PrintData>();
+
+            int rowCount = 0;
+            int pgCount = 1;
+            long prePtNum = -1;
+            string preByomei = "";
+            bool pgBreak = false;
+
+            //改ページ条件
+            bool ptNumPgBreak = new int[] { printConf.PageBreak1, printConf.PageBreak2, printConf.PageBreak3 }.Contains(1);
+
+            #region ソート順
+            ptByomeiInfs = ptByomeiInfs
+                .OrderBy(s =>
+                   ptNumPgBreak ? s.PtNum.ToString().PadLeft(10, '0') : "0")
+                .ThenBy(s =>
+                   printConf.SortOpt1 == 1 ? "0" :
+                   printConf.SortOrder1 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
+                   printConf.SortOrder1 == 2 ? s.Byomei :
+                   printConf.SortOrder1 == 3 ? s.StartDate.ToString() :
+                   printConf.SortOrder1 == 4 ? s.PtKanaName :
+                   printConf.SortOrder1 == 5 ? s.TenkiKbn.ToString() :
+                   printConf.SortOrder1 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
+                .ThenByDescending(s =>
+                   printConf.SortOpt1 == 0 ? "0" :
+                   printConf.SortOrder1 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
+                   printConf.SortOrder1 == 2 ? s.Byomei :
+                   printConf.SortOrder1 == 3 ? s.StartDate.ToString() :
+                   printConf.SortOrder1 == 4 ? s.PtKanaName :
+                   printConf.SortOrder1 == 5 ? s.TenkiKbn.ToString() :
+                   printConf.SortOrder1 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
+                .ThenBy(s =>
+                   printConf.SortOpt2 == 1 ? "0" :
+                   printConf.SortOrder2 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
+                   printConf.SortOrder2 == 2 ? s.Byomei :
+                   printConf.SortOrder2 == 3 ? s.StartDate.ToString() :
+                   printConf.SortOrder2 == 4 ? s.PtKanaName :
+                   printConf.SortOrder2 == 5 ? s.TenkiKbn.ToString() :
+                   printConf.SortOrder2 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
+                .ThenByDescending(s =>
+                   printConf.SortOpt2 == 0 ? "0" :
+                   printConf.SortOrder2 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
+                   printConf.SortOrder2 == 2 ? s.Byomei :
+                   printConf.SortOrder2 == 3 ? s.StartDate.ToString() :
+                   printConf.SortOrder2 == 4 ? s.PtKanaName :
+                   printConf.SortOrder2 == 5 ? s.TenkiKbn.ToString() :
+                   printConf.SortOrder2 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
+                .ThenBy(s =>
+                   printConf.SortOpt3 == 1 ? "0" :
+                   printConf.SortOrder3 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
+                   printConf.SortOrder3 == 2 ? s.Byomei :
+                   printConf.SortOrder3 == 3 ? s.StartDate.ToString() :
+                   printConf.SortOrder3 == 4 ? s.PtKanaName :
+                   printConf.SortOrder3 == 5 ? s.TenkiKbn.ToString() :
+                   printConf.SortOrder3 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
+                .ThenByDescending(s =>
+                   printConf.SortOpt3 == 0 ? "0" :
+                   printConf.SortOrder3 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
+                   printConf.SortOrder3 == 2 ? s.Byomei :
+                   printConf.SortOrder3 == 3 ? s.StartDate.ToString() :
+                   printConf.SortOrder3 == 4 ? s.PtKanaName :
+                   printConf.SortOrder3 == 5 ? s.TenkiKbn.ToString() :
+                   printConf.SortOrder3 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
+                .ToList();
+            #endregion
+
+            foreach (var ptByomeiInf in ptByomeiInfs)
+            {
+
+                //改ページ条件
+                pgBreak = false;
+                if (ptNumPgBreak && ptByomeiInf.PtNum != prePtNum)
+                {
+                    pgBreak = rowCount > 0;
+                }
+
+                //改ページ
+                if (rowCount == maxRow || pgBreak)
+                {
+                    for (int i = printDatas.Count; i < maxRow * pgCount; i++)
+                    {
+                        //空行を追加
+                        printDatas.Add(new CoSta3030PrintData(RowType.Brank));
+                    }
+                    pgCount++;
+                    rowCount = 0;
+                }
+
+                //前の行と同じ情報を省略
+                int omit = 0;
+                if ((outputFileType != CoFileType.Csv && coFileType != CoFileType.Csv) && (rowCount > 0))
+                {
+                    omit = (ptNumPgBreak || new int[] { 1, 4 }.Contains(printConf.SortOrder1)) && (ptByomeiInf.PtNum == prePtNum) ? 1
+                        : (!ptNumPgBreak && printConf.SortOrder1 == 2) && (ptByomeiInf.Byomei == preByomei) ? 2
+                        : 0;
+                }
+
+                AddMeisaiRecord(ptByomeiInf, omit);
+                rowCount++;
+
+                prePtNum = ptByomeiInf.PtNum;
+                preByomei = ptByomeiInf.Byomei;
+            }
+
         }
 
         hpInf = _finder.GetHpInf(hpId, CIUtil.DateTimeToInt(DateTime.Today));
@@ -428,5 +537,53 @@ public class Sta3030CoReportService : ISta3030CoReportService
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3030, fileName, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
+    }
+
+    public CommonExcelReportingModel ExportCsv(CoSta3030PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
+    {
+        this.printConf = printConf;
+        this.coFileType = coFileType;
+        string fileName = printConf.ReportName + "_" + printConf.EnableRangeTo;
+        List<string> retDatas = new List<string>();
+
+        if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        var csvDatas = printDatas.Where(p => p.RowType == RowType.Data).ToList();
+        if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        //出力フィールド
+        List<string> wrkTitles = putColumns.Select(p => p.JpName).ToList();
+        List<string> wrkColumns = putColumns.Select(p => p.CsvColName).ToList();
+
+        //タイトル行
+        retDatas.Add("\"" + string.Join("\",\"", wrkTitles) + "\"");
+        if (isPutColName)
+        {
+            retDatas.Add("\"" + string.Join("\",\"", wrkColumns) + "\"");
+        }
+
+        //データ
+        int totalRow = csvDatas.Count;
+        int rowOutputed = 0;
+        foreach (var csvData in csvDatas)
+        {
+            retDatas.Add(RecordData(csvData));
+            rowOutputed++;
+        }
+
+        string RecordData(CoSta3030PrintData csvData)
+        {
+            List<string> colDatas = new List<string>();
+
+            foreach (var column in putColumns)
+            {
+                var value = typeof(CoSta3030PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+            }
+
+            return string.Join(",", colDatas);
+        }
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
 }

@@ -210,6 +210,26 @@ namespace Entity.Tenant
         public int ConfirmationState { get; set; }
 
         /// <summary>
+        /// 資格確認タイプ
+        ///		1: マイナンバーカードで確認
+        ///     2: 保険証で確認
+        /// </summary>
+        [Column("CONFIRMATION_TYPE")]
+        [CustomAttribute.DefaultValue(0)]
+        public int ConfirmationType { get; set; }
+
+        [Column("INFO_CONS_FLG")]
+        [MaxLength(10)]
+        public string? InfoConsFlg { get; set; } = string.Empty;
+
+        /// <summary>
+        /// PRESCRIPTION_ISSUE_TYPE
+        /// </summary>
+        [Column("PRESCRIPTION_ISSUE_TYPE")]
+        [CustomAttribute.DefaultValue(0)]
+        public int PrescriptionIssueType { get; set; }
+
+        /// <summary>
         /// 削除区分
         ///		1: 削除
         /// </summary>

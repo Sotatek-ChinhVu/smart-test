@@ -39,7 +39,7 @@ public class UpdateOnlineHistoryByIdInteractor : IUpdateOnlineHistoryByIdInputPo
 
     private UpdateOnlineHistoryByIdStatus ValidateData(UpdateOnlineHistoryByIdInputData inputData)
     {
-        if (inputData.PtId != 0 && !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        if (inputData.PtId != 0 && inputData.PtId != -1 && !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
         {
             return UpdateOnlineHistoryByIdStatus.InvalidPtId;
         }
@@ -47,7 +47,7 @@ public class UpdateOnlineHistoryByIdInteractor : IUpdateOnlineHistoryByIdInputPo
         {
             return UpdateOnlineHistoryByIdStatus.InvalidId;
         }
-        else if (!new List<int> { 0, 1, 2, 9 }.Contains(inputData.UketukeStatus))
+        else if (!new List<int> { -1, 0, 1, 2, 9 }.Contains(inputData.UketukeStatus))
         {
             return UpdateOnlineHistoryByIdStatus.InvalidUketukeStatus;
         }
