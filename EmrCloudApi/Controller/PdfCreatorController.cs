@@ -484,8 +484,8 @@ public class PdfCreatorController : ControllerBase
 
     private async Task<IActionResult> ActionReturnPDF(bool returnNoData, object data, ReportType reportType, string fileName)
     {
-        var json = JsonSerializer.Serialize(data);
-        Console.WriteLine("DataJsonTestPdfString: " + json);
+        //var json = JsonSerializer.Serialize(data);
+        //Console.WriteLine("DataJsonTestPdfString: " + json);
         if (returnNoData)
         {
             return Content(@"
