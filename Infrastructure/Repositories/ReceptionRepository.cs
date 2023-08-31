@@ -1691,7 +1691,7 @@ namespace Infrastructure.Repositories
                                                                        string.Empty,
                                                                        string.Empty,
                                                                        0, 0, 0, 0, 0, 0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty,
-                                                                       data.Raiin?.Status ?? 0))
+                                                                       data.Raiin?.Status ?? 0, data.Raiin?.RaiinNo ?? 0))
                           .ToList();
 
             return result;
