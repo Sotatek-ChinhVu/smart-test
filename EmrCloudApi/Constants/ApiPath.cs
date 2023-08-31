@@ -424,6 +424,7 @@
         public const string UpdatePtInfOnlineQualify = "UpdatePtInfOnlineQualify";
         public const string GetListOnlineConfirmationHistoryByPtId = "GetListOnlineConfirmationHistoryByPtId";
         public const string GetListOnlineConfirmationHistoryModel = "GetListOnlineConfirmationHistoryModel";
+        public const string ConvertXmlToQCXmlMsg = "ConvertXmlToQCXmlMsg";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
