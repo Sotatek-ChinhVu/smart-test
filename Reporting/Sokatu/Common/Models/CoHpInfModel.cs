@@ -26,7 +26,7 @@ namespace Reporting.Sokatu.Common.Models
         {
             get
             {
-                string wrkCd = HpInf == null ? "" : HpInf.HpCd ?? string.Empty.PadLeft(7, '0');
+                string wrkCd = HpInf == null ? "" : HpInf.HpCd.PadLeft(7, '0');
 
                 if (new int[] { 2, 12, 13, 17, 18, 25, 32, 35, 41, 43, 44, 46 }.Contains(HpInf.PrefNo))
                 {
