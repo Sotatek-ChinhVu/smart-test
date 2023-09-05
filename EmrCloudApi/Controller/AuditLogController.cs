@@ -1,4 +1,5 @@
-﻿using Domain.Models.ColumnSetting;
+﻿using Domain.Models.AuditLog;
+using Domain.Models.ColumnSetting;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.AuditLog;
 using EmrCloudApi.Presenters.ColumnSetting;
@@ -29,10 +30,15 @@ public class AuditLogController : AuthorizeControllerBase
     [HttpPost(ApiPath.Save)]
     public ActionResult<Response<SaveAuditLogResponse>> Save([FromBody] SaveAuditLogRequest req)
     {
-        var input = new SaveAuditTrailLogInputData(HpId, UserId, req.AuditTrailLogModel);
+        var input = new SaveAuditTrailLogInputData(HpId, UserId, ConvertRequestToModel(req.AuditTrailLogModel));
         var output = _bus.Handle(input);
         var presenter = new SaveAuditLogPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
+    }
+
+    private AuditTrailLogModel ConvertRequestToModel(SaveAuditLogItem item)
+    {
+        return new AuditTrailLogModel(item.LogId, DateTime.MinValue, HpId, UserId, item.EventCd, item.PtId, item.SinDate, item.RaiinNo, item.Machine, item.Hosuke);
     }
 }
