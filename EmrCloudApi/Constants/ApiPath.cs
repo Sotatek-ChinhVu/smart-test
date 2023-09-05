@@ -181,6 +181,7 @@
         public const string RevertDeleteNoRecept = "RevertDeleteNoRecept";
         public const string GetOutDrugOrderList = "GetOutDrugOrderList";
         public const string GetYoyakuRaiinInf = "GetYoyakuRaiinInf";
+        public const string GetRaiinInfBySinDate = "GetRaiinInfBySinDate";
         public const string GetHpInf = "GetHpInf";
 
         // Validate list pattern
@@ -238,6 +239,7 @@
         public const string GetContainerMst = "GetContainerMst";
         public const string GetSinkouCountInMonth = "GetSinkouCountInMonth";
         public const string GetHeaderVistitDate = "GetHeaderVistitDate";
+        public const string SaveKensaIrai = "SaveKensaIrai";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -414,6 +416,15 @@
         public const string GetRegisterdPatientsFromOnline = "GetRegisterdPatientsFromOnline";
         public const string UpdateOnlineConfirmationHistory = "UpdateOnlineConfirmationHistory";
         public const string UpdateOnlineHistoryById = "UpdateOnlineHistoryById";
+        public const string UpdateOQConfirmation = "UpdateOQConfirmation";
+        public const string SaveAllOQConfirmation = "SaveAllOQConfirmation";
+        public const string SaveOQConfirmation = "SaveOQConfirmation";
+        public const string UpdateRefNo = "UpdateRefNo";
+        public const string UpdateOnlineInRaiinInf = "UpdateOnlineInRaiinInf";
+        public const string UpdatePtInfOnlineQualify = "UpdatePtInfOnlineQualify";
+        public const string GetListOnlineConfirmationHistoryByPtId = "GetListOnlineConfirmationHistoryByPtId";
+        public const string GetListOnlineConfirmationHistoryModel = "GetListOnlineConfirmationHistoryModel";
+        public const string ConvertXmlToQCXmlMsg = "ConvertXmlToQCXmlMsg";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";

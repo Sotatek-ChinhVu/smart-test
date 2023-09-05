@@ -1016,5 +1016,7 @@
         public static readonly string InvalidOnlineId = "Invalid OnlineId.";
         public static readonly string InvalidUketukeStatus = "Invalid UketukeStatus.";
 
+        // KensaIrai
+        public static readonly string IsDeleteFile = "IsDeleteFile.";
     }
 }
