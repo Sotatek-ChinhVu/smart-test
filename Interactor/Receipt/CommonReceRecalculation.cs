@@ -36,8 +36,20 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private readonly IReceSeikyuRepository _receSeikyuRepository;
     private readonly IDrugDetailRepository _drugDetailRepository;
     private readonly ICalculationInfRepository _calculationInfRepository;
+    private IMessenger? _messenger;
 
-    public CommonReceRecalculation(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IInsuranceMstRepository insuranceMstRepository, IMstItemRepository mstItemRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, ICommonMedicalCheck commonMedicalCheck, ITodayOdrRepository todayOdrRepository, IReceSeikyuRepository receSeikyuRepository, IDrugDetailRepository drugDetailRepository, ICalculationInfRepository calculationInfRepository)
+    public CommonReceRecalculation(
+        IReceiptRepository receiptRepository, 
+        ISystemConfRepository systemConfRepository, 
+        IInsuranceMstRepository insuranceMstRepository, 
+        IMstItemRepository mstItemRepository, 
+        IPtDiseaseRepository ptDiseaseRepository, 
+        IOrdInfRepository ordInfRepository, 
+        ICommonMedicalCheck commonMedicalCheck, 
+        ITodayOdrRepository todayOdrRepository, 
+        IReceSeikyuRepository receSeikyuRepository, 
+        IDrugDetailRepository drugDetailRepository, 
+        ICalculationInfRepository calculationInfRepository)
     {
         _receiptRepository = receiptRepository;
         _systemConfRepository = systemConfRepository;
@@ -65,8 +77,9 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private const string _leftRight = "左右";
     private const string _rightLeft = "右左";
 
-    public bool CheckErrorInMonth(int hpId, List<long> ptIds, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount, bool receCheckCalculate = false, bool isReceiptAggregationCheckBox = true, bool isCheckErrorCheckBox = true)
+    public bool CheckErrorInMonth(int hpId, List<long> ptIds, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount, IMessenger messenger, bool receCheckCalculate = false, bool isReceiptAggregationCheckBox = true, bool isCheckErrorCheckBox = true)
     {
+        _messenger = messenger;
         List<ReceCheckErrModel> newReceCheckErrList = new();
         StringBuilder errorText = new();
         StringBuilder errorTextSinKouiCount = new();
@@ -90,7 +103,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         {
             if (isCheckErrorCheckBox)
             {
-                var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
                 isStopCalc = statusCallBack.Result.Result;
                 if (isStopCalc)
                 {
@@ -693,7 +706,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
 
     private void SendMessager(RecalculationStatus status)
     {
-        Messenger.Instance.Send(status);
+        _messenger!.Send(status);
     }
     #endregion
 

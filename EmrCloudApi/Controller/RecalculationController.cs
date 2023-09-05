@@ -29,15 +29,17 @@ public class RecalculationController : AuthorizeControllerBase
     private CancellationToken? _cancellationToken;
     private readonly ITenantProvider _tenantProvider;
     private readonly IConfiguration _configuration;
+    private readonly IMessenger _messenger;
     private HubConnection connection;
     private string uniqueKey;
 
-    public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider) : base(userService)
+    public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider, IMessenger messenger) : base(userService)
     {
         _bus = bus;
         _tenantProvider = tenantProvider;
         _configuration = configuration;
         uniqueKey = string.Empty;
+        _messenger = messenger;
     }
 
     [HttpPost]
@@ -46,8 +48,8 @@ public class RecalculationController : AuthorizeControllerBase
         _cancellationToken = cancellationToken;
         try
         {
-            Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
-            Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
+            _messenger.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
+            _messenger.Register<StopCalcStatus>(this, StopCalculation);
 
             HttpContext.Response.ContentType = "application/json";
             //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
@@ -55,7 +57,7 @@ public class RecalculationController : AuthorizeControllerBase
             //response.StatusCode = 202;
 
             uniqueKey = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, uniqueKey, cancellationToken);
+            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, uniqueKey, cancellationToken, _messenger);
             _bus.Handle(input);
         }
         catch (Exception ex)
@@ -65,8 +67,8 @@ public class RecalculationController : AuthorizeControllerBase
         }
         finally
         {
-            Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
-            Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
+            _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+            _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
             HttpContext.Response.Body.Close();
         }
     }
@@ -115,7 +117,7 @@ public class RecalculationController : AuthorizeControllerBase
                             }
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         Console.WriteLine("Exception Calculate:" + data);
                         SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
@@ -143,25 +145,25 @@ public class RecalculationController : AuthorizeControllerBase
     {
         try
         {
-            Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
-            Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
+            _messenger.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
+            _messenger.Register<StopCalcStatus>(this, StopCalculation);
 
             HttpContext.Response.ContentType = "application/json";
             //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
             HttpResponse response = HttpContext.Response;
             //response.StatusCode = 202;
 
-            var input = new ReceiptCheckRecalculationInputData(HpId, UserId, request.PtIds, request.SeikyuYm, request.ReceStatus);
+            var input = new ReceiptCheckRecalculationInputData(HpId, UserId, request.PtIds, request.SeikyuYm, request.ReceStatus, _messenger);
             _bus.Handle(input);
         }
-        catch
+        catch (Exception ex)
         {
             SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
         }
         finally
         {
-            Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
-            Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
+            _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+            _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
             HttpContext.Response.Body.Close();
         }
     }
