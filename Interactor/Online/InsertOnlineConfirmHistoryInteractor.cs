@@ -1,6 +1,10 @@
 ﻿using Domain.Models.Online;
+using System.Globalization;
 using System.Xml;
+using System.Xml.Serialization;
+using UseCase.Online;
 using UseCase.Online.InsertOnlineConfirmHistory;
+using UseCase.Online.QualificationConfirmation;
 
 namespace Interactor.Online;
 
@@ -22,16 +26,24 @@ public class InsertOnlineConfirmHistoryInteractor : IInsertOnlineConfirmHistoryI
             {
                 return new InsertOnlineConfirmHistoryOutputData(validateResult);
             }
-            var onlineModelList = inputData.OnlineList.Select(item => new OnlineConfirmationHistoryModel(
-                                                                          0,
-                                                                          item.PtId,
-                                                                          item.OnlineConfirmationDate,
-                                                                          item.ConfirmationType,
-                                                                          item.InfoConsFlg,
-                                                                          item.ConfirmationResult,
-                                                                          item.PrescriptionIssueType,
-                                                                          item.UketukeStatus))
-                                                      .ToList();
+
+            List<OnlineConfirmationHistoryModel> onlineModelList = new();
+            foreach (var item in inputData.OnlineList)
+            {
+                var xmlObject = new XmlSerializer(typeof(QCXmlMsgResponse)).Deserialize(new StringReader(item.ConfirmationResult)) as QCXmlMsgResponse;
+                if (xmlObject != null)
+                {
+                    var onlineConfirmationDate = xmlObject.MessageHeader.ProcessExecutionTime;
+                    onlineModelList.Add(new OnlineConfirmationHistoryModel(0,
+                                                                           item.PtId,
+                                                                           TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(onlineConfirmationDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)),
+                                                                           item.ConfirmationType,
+                                                                           item.InfoConsFlg,
+                                                                           item.ConfirmationResult,
+                                                                           item.PrescriptionIssueType,
+                                                                           item.UketukeStatus));
+                }
+            }
             if (_onlineRepository.InsertOnlineConfirmHistory(inputData.UserId, onlineModelList))
             {
                 return new InsertOnlineConfirmHistoryOutputData(InsertOnlineConfirmHistoryStatus.Successed);
