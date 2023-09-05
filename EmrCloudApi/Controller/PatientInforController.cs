@@ -103,6 +103,7 @@ using UseCase.PatientInfor;
 using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.PatientInfor.GetPtInfByRefNo;
 using UseCase.PatientInfor.GetPtInfModelsByName;
+using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 
 namespace EmrCloudApi.Controller
 {
@@ -974,6 +975,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetPtInfModelsByNamePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetPtInfModelsByNameResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPtInfModelsByRefNo)]
+        public ActionResult<Response<GetPtInfModelsByRefNoResponse>> GetPtInfModelsByRefNo([FromQuery] GetPtInfModelsByRefNoRequest request)
+        {
+            var input = new GetPtInfModelsByRefNoInputData(HpId, request.RefNo);
+            var output = _bus.Handle(input);
+            var presenter = new GetPtInfModelsByRefNoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPtInfModelsByRefNoResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.CalculationSwapHoken)]
