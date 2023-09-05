@@ -23,6 +23,7 @@ public class AuditLogRepository : RepositoryBase, IAuditLogRepository
         auditTrailLog.EventCd = auditTrailLogModel.EventCd;
         auditTrailLog.LogDate = CIUtil.GetJapanDateTimeNow();
         TrackingDataContext.AuditTrailLogs.Add(auditTrailLog);
+        TrackingDataContext.SaveChanges();
         string hosoku = auditTrailLogModel.AuditTrailLogDetailModel.Hosoku;
 
         if (string.IsNullOrEmpty(hosoku) == false)
