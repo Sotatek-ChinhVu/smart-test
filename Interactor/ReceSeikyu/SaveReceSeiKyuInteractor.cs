@@ -38,6 +38,7 @@ namespace Interactor.ReceSeikyu
         private readonly ICommonMedicalCheck _commonMedicalCheck;
         private readonly ITodayOdrRepository _todayOdrRepository;
         private readonly IDrugDetailRepository _drugDetailRepository;
+        private IMessenger? _messenger;
 
         private const string _hokenChar = "0";
         private const string _kohi1Char = "1";
@@ -71,6 +72,7 @@ namespace Interactor.ReceSeikyu
 
         public SaveReceSeiKyuOutputData Handle(SaveReceSeiKyuInputData inputData)
         {
+            _messenger = inputData.Messenger;
             try
             {
                 List<ReceInfo> receInfos = new List<ReceInfo>();
@@ -233,7 +235,7 @@ namespace Interactor.ReceSeikyu
                     {
                         for (int i = 0; i < receInfos.Count; i++)
                         {
-                            var statusCallBack = Messenger.Instance.SendAsync(new RecalculateInSeikyuPendingStop());
+                            var statusCallBack = _messenger.SendAsync(new RecalculateInSeikyuPendingStop());
                             isStopCalc = statusCallBack.Result.Result;
                             if (isStopCalc)
                             {
@@ -245,7 +247,7 @@ namespace Interactor.ReceSeikyu
                                 SeikyuYm = receInfos[i].SeikyuYm,
                                 PtIds = new List<long> { receInfos[i].PtId }
                             }).Wait();
-                            Messenger.Instance.Send(new RecalculateInSeikyuPendingStatus($"計算処理中.. 残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
+                            _messenger.Send(new RecalculateInSeikyuPendingStatus($"計算処理中.. 残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
                         }
                     }
 
@@ -254,7 +256,7 @@ namespace Interactor.ReceSeikyu
                     {
                         for (int i = 0; i < receInfos.Count; i++)
                         {
-                            var statusCallBack = Messenger.Instance.SendAsync(new RecalculateInSeikyuPendingStop());
+                            var statusCallBack = _messenger.SendAsync(new RecalculateInSeikyuPendingStop());
                             isStopCalc = statusCallBack.Result.Result;
                             if (isStopCalc)
                             {
@@ -265,7 +267,7 @@ namespace Interactor.ReceSeikyu
                                 SeikyuYm = receInfos[i].SeikyuYm,
                                 PtIds = new List<long> { receInfos[i].PtId }
                             }).Wait();
-                            Messenger.Instance.Send(new RecalculateInSeikyuPendingStatus($"レセ集計中.. 残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
+                            _messenger.Send(new RecalculateInSeikyuPendingStatus($"レセ集計中.. 残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
                         }
                     }
 
@@ -274,7 +276,7 @@ namespace Interactor.ReceSeikyu
                     {
                         for (int i = 0; i < receInfos.Count; i++)
                         {
-                            var statusCallBack = Messenger.Instance.SendAsync(new RecalculateInSeikyuPendingStop());
+                            var statusCallBack = _messenger.SendAsync(new RecalculateInSeikyuPendingStop());
                             isStopCalc = statusCallBack.Result.Result;
                             if (isStopCalc)
                             {
@@ -283,7 +285,7 @@ namespace Interactor.ReceSeikyu
                             var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, receInfos[i].SeikyuYm, new List<long> { receInfos[i].PtId });
                             int allCheckCount = _receiptRepository.GetCountReceInfs(inputData.HpId, new List<long> { receInfos[i].PtId }, receInfos[i].SeikyuYm);
                             CheckErrorInMonth(inputData, receRecalculationList, allCheckCount);
-                            Messenger.Instance.Send(new RecalculateInSeikyuPendingStatus($"レセチェック処理中..残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
+                            _messenger.Send(new RecalculateInSeikyuPendingStatus($"レセチェック処理中..残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
                         }
                     }
 
@@ -330,7 +332,7 @@ namespace Interactor.ReceSeikyu
             int successCount = 1;
             foreach (var recalculationItem in receRecalculationList)
             {
-                var statusCallBack = Messenger.Instance.SendAsync(new RecalculateInSeikyuPendingStop());
+                var statusCallBack = _messenger.SendAsync(new RecalculateInSeikyuPendingStop());
                 isStopCalc = statusCallBack.Result.Result;
                 if (isStopCalc)
                 {
