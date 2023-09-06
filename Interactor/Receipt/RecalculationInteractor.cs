@@ -13,6 +13,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     private readonly IReceiptRepository _receiptRepository;
     private readonly ICalculateService _calculateRepository;
     private readonly ICommonReceRecalculation _commonReceRecalculation;
+    private IMessenger? _messenger;
 
     bool isStopCalc = false;
 
@@ -25,6 +26,7 @@ public class RecalculationInteractor : IRecalculationInputPort
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
     {
+        _messenger = inputData.Messenger;
         try
         {
             bool success = true;
@@ -47,7 +49,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
                 int allCheckCount = receRecalculationList.Count;
 
-                success = _commonReceRecalculation.CheckErrorInMonth(inputData.HpId, inputData.PtIdList, inputData.SinYm, inputData.UserId, receRecalculationList, allCheckCount, receCheckCalculate: false, isReceiptAggregationCheckBox: inputData.IsReceiptAggregationCheckBox, inputData.IsCheckErrorCheckBox);
+                success = _commonReceRecalculation.CheckErrorInMonth(inputData.HpId, inputData.PtIdList, inputData.SinYm, inputData.UserId, receRecalculationList, allCheckCount, _messenger, receCheckCalculate: false, isReceiptAggregationCheckBox: inputData.IsReceiptAggregationCheckBox, inputData.IsCheckErrorCheckBox);
             }
 
             // resetStatus
@@ -79,7 +81,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
     {
         SendMessager(new RecalculationStatus(false, 1, 0, 0, "StartCalculateMonth", string.Empty));
-        var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+        var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
         isStopCalc = statusCallBack.Result.Result;
         if (isStopCalc)
         {
@@ -98,7 +100,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     private bool ReceFutanCalculateMain(int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
     {
         SendMessager(new RecalculationStatus(false, 2, 0, 0, "StartFutanCalculateMain", string.Empty));
-        var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+        var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
         isStopCalc = statusCallBack.Result.Result;
         if (isStopCalc)
         {
@@ -110,6 +112,6 @@ public class RecalculationInteractor : IRecalculationInputPort
 
     private void SendMessager(RecalculationStatus status)
     {
-        Messenger.Instance.Send(status);
+        _messenger!.Send(status);
     }
 }

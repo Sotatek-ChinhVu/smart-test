@@ -18,12 +18,14 @@ namespace EmrCalculateApi.Controllers
     {
         private readonly IIkaCalculateViewModel _ikaCalculate;
         private readonly IWebSocketService _webSocketService;
+        private readonly IMessenger _messenger;
         private CancellationToken? _cancellationToken;
 
-        public CalculateController(IIkaCalculateViewModel ikaCalculate, IWebSocketService webSocketService)
+        public CalculateController(IIkaCalculateViewModel ikaCalculate, IWebSocketService webSocketService, IMessenger messenger)
         {
             _ikaCalculate = ikaCalculate;
             _webSocketService = webSocketService;
+            _messenger = messenger;
         }
 
         [HttpPost("RunCalculateOne")]
@@ -67,8 +69,8 @@ namespace EmrCalculateApi.Controllers
             _cancellationToken = cancellationToken;
             try
             {
-                Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
-                Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
+                _messenger.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
+                _messenger.Register<StopCalcStatus>(this, StopCalculation);
 
                 _ikaCalculate.RunCalculateMonth(
                               monthRequest.HpId,
@@ -84,8 +86,8 @@ namespace EmrCalculateApi.Controllers
             }
             finally
             {
-                Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
-                Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
+                _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+                _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
                 HttpContext.Response.Body.Close();
             }
             return Ok();

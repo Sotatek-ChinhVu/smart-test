@@ -60,8 +60,9 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
         private readonly TenantDataContext _tenantDataContext;
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
+        private readonly IMessenger _messenger;
 
-        public ReceFutanViewModel(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
+        public ReceFutanViewModel(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger)
         {
             _systemConfigProvider = systemConfigProvider;
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
@@ -79,6 +80,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                 receKyufuKisai2: _systemConfigProvider.GetReceKyufuKisai2(),
                 jibaiRousaiRate: _systemConfigProvider.GetJibaiRousaiRate()
             );
+            _messenger = messenger;
         }
 
         /// <summary>
@@ -145,7 +147,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
 
         private void SendMessager(RecalculationStatus status)
         {
-            Messenger.Instance.Send(status);
+            _messenger.Send(status);
         }
 
         /// <summary>
