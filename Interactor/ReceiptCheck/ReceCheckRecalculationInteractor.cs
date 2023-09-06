@@ -14,6 +14,7 @@ namespace Interactor.ReceiptCheck
         private readonly ICalculateService _calculateService;
         private readonly IReceiptRepository _receiptRepository;
         private readonly ICommonReceRecalculation _commonReceRecalculation;
+        private IMessenger? _messenger;
 
         public ReceCheckRecalculationInteractor(ICalculateService calculateService, IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation)
         {
@@ -24,6 +25,7 @@ namespace Interactor.ReceiptCheck
 
         public ReceiptCheckRecalculationOutputData Handle(ReceiptCheckRecalculationInputData inputData)
         {
+            _messenger = inputData.Messenger;
             try
             {
                 SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・", "NotConnectSocket"));
@@ -44,7 +46,7 @@ namespace Interactor.ReceiptCheck
                 var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SeikyuYm, inputData.PtIds);
                 int allCheckCount = receRecalculationList.Count;
 
-                var success = _commonReceRecalculation.CheckErrorInMonth(inputData.HpId, inputData.PtIds, inputData.SeikyuYm, inputData.UserId, receRecalculationList, allCheckCount, true);
+                var success = _commonReceRecalculation.CheckErrorInMonth(inputData.HpId, inputData.PtIds, inputData.SeikyuYm, inputData.UserId, receRecalculationList, allCheckCount, _messenger, true);
 
                 _receiptRepository.UpdateReceStatus(inputData.ReceStatus, inputData.HpId, inputData.UserId);
 
@@ -61,7 +63,7 @@ namespace Interactor.ReceiptCheck
 
         private void SendMessenger(RecalculationStatus status)
         {
-            Messenger.Instance.Send(status);
+            _messenger!.Send(status);
         }
     }
 }
