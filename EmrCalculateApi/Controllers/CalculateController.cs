@@ -81,7 +81,9 @@ namespace EmrCalculateApi.Controllers
             }
             catch (Exception ex)
             {
-                var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, ex.Message);
+                RecalculationStatus status = new RecalculationStatus(false, -1, 0, 0, ex.Message, monthRequest.UniqueKey);
+                var objectJson = JsonSerializer.Serialize(status);
+                var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, objectJson);
                 sendMessager.Wait();
             }
             finally

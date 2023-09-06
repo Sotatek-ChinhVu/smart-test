@@ -1,4 +1,5 @@
-﻿using Reporting.Mappers.Common;
+﻿using Reporting.CommonMasters.Enums;
+using Reporting.Mappers.Common;
 
 namespace Reporting.Sijisen.Mapper;
 
@@ -8,18 +9,27 @@ public class SijisenMapper : CommonReportingRequest
     private readonly List<Dictionary<string, CellModel>> _tableFieldData;
     private readonly string _rowCountFieldName;
     private readonly string _jobName;
+    private CoSijisenFormType _formType;
 
-    public SijisenMapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, string rowCountFieldName, string jobName)
+    public SijisenMapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, string rowCountFieldName, string jobName, CoSijisenFormType formType)
     {
         _singleFieldData = singleFieldData;
         _tableFieldData = tableFieldData;
         _rowCountFieldName = rowCountFieldName;
         _jobName = jobName;
+        _formType = formType;
     }
 
     public override int GetReportType()
     {
-        return (int)CoReportType.Sijisen;
+        if (_formType == 0)
+        {
+            return (int)CoReportType.Sijisen;
+        }
+        else
+        {
+            return (int)CoReportType.JyusinHyo;
+        }
     }
 
     public override string GetRowCountFieldName()

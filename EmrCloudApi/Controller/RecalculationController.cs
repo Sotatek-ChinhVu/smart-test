@@ -8,7 +8,6 @@ using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using System.Text;
 using System.Text.Json;
 using UseCase.Core.Sync;
@@ -32,6 +31,7 @@ public class RecalculationController : AuthorizeControllerBase
     private readonly IMessenger _messenger;
     private HubConnection connection;
     private string uniqueKey;
+    private bool stopCalculate = false;
 
     public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider, IMessenger messenger) : base(userService)
     {
@@ -75,7 +75,11 @@ public class RecalculationController : AuthorizeControllerBase
 
     private void StopCalculation(StopCalcStatus stopCalcStatus)
     {
-        if (!_cancellationToken.HasValue)
+        if (stopCalculate)
+        {
+            stopCalcStatus.CallFailCallback(stopCalculate);
+        }
+        else if (!_cancellationToken.HasValue)
         {
             stopCalcStatus.CallFailCallback(false);
         }
@@ -110,6 +114,10 @@ public class RecalculationController : AuthorizeControllerBase
                         var objectStatus = JsonSerializer.Deserialize<RecalculationStatus>(data);
                         if (objectStatus != null && objectStatus.UniqueKey.Equals(uniqueKey))
                         {
+                            if (objectStatus.Type == -1)
+                            {
+                                stopCalculate = true;
+                            }
                             SendMessage(objectStatus);
                             if (objectStatus.Done)
                             {

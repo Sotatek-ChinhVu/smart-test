@@ -8,7 +8,9 @@ public class PeriodReceiptListRequest : ReportRequestBase
 
     public int EndDate { get; set; }
 
-    public List<PtInfInputItem> SourcePt { get; set; }
+    public List<PtInfInputItem> SourcePt { get; set; } = new();
+
+    public List<GrpInputItem> GrpConditions { get; set; } = new();
 
     public int PrintSort { get; set; }
 
@@ -30,9 +32,9 @@ public class PeriodReceiptListRequest : ReportRequestBase
 
     public int HakkoDay { get; set; }
 
-    public string Memo { get; set; }
+    public string Memo { get; set; } = string.Empty;
 
-    public string FormFileName { get; set; }
+    public string FormFileName { get; set; } = string.Empty;
 
     public bool NyukinBase { get; set; }
 }

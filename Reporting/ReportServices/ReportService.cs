@@ -550,7 +550,7 @@ public class ReportService : IReportService
     }
 
     #region Period Report
-    public AccountingResponse GetPeriodPrintData(int hpId, int startDate, int endDate, List<PtInfInputItem> sourcePt, int printSort, bool isPrintList, bool printByMonth, bool printByGroup, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn, int hakkoDay, string memo, string formFileName, bool nyukinBase)
+    public AccountingResponse GetPeriodPrintData(int hpId, int startDate, int endDate, List<PtInfInputItem> sourcePt, List<(int grpId, string grpCd)> grpConditions, int printSort, bool isPrintList, bool printByMonth, bool printByGroup, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn, int hakkoDay, string memo, string formFileName, bool nyukinBase)
     {
         DateTime startDateOrigin = CIUtil.IntToDate(startDate);
         DateTime endDateOrigin = CIUtil.IntToDate(endDate);
@@ -560,7 +560,6 @@ public class ReportService : IReportService
         List<(int startDate, int endDate)> dates = GetDates(startDateOrigin, endDateOrigin, startDate, endDate, printByMonth);
         if (isPrintList)
         {
-            List<(int grpId, string grpCd)> grpConditions = GetGrpCondition(hpId);
             List<(long ptId, int hokenId)> ptCoditions = GetPtCondition(sourcePt, printSort);
 
             if (printByGroup)
@@ -652,32 +651,6 @@ public class ReportService : IReportService
     private int CountMonth(DateTime startD, DateTime endD)
     {
         return 12 * (endD.Year - startD.Year) + endD.Month - startD.Month;
-    }
-
-    private List<(int grpId, string grpCd)> GetGrpCondition(int hpId)
-    {
-        List<(int grpId, string grpCd)> grpConditions = new();
-        var ptGrpNameMstModels = _coAccountingFinder.GetPtGrpNameMstModels(hpId);
-        foreach (var item in ptGrpNameMstModels)
-        {
-            if (!string.IsNullOrEmpty(item.GrpItemSelected) && !item.IsSelecteAllGrpItem)
-            {
-                var model = item.PtGrpItemModels.FirstOrDefault(x => x.GrpCode == item.GrpItemSelected);
-                if (model != null)
-                {
-                    grpConditions.Add((model.GrpId, model.GrpCode));
-                }
-            }
-            else if (item.IsSelecteAllGrpItem)
-            {
-                foreach (var grpItem in item.PtGrpItemModels)
-                {
-                    if (grpItem.GrpCode == "al" || string.IsNullOrEmpty(grpItem.GrpCode)) continue;
-                    grpConditions.Add((grpItem.GrpId, grpItem.GrpCode));
-                }
-            }
-        }
-        return grpConditions;
     }
 
     private List<(long ptId, int hokenId)> GetPtCondition(List<PtInfInputItem> sourcePt, int printSort, bool exportCSV = false)

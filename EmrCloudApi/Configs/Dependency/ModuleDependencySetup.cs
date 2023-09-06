@@ -710,6 +710,7 @@ using UseCase.SystemConf.SavePath;
 using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdatePtInfOnlineQualify;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
+using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using Helper.Messaging;
 using UseCase.MstItem.DiseaseNameMstSearch;
 
@@ -1215,6 +1216,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SavePtKyuseiInputData, SavePtKyuseiInteractor>();
             busBuilder.RegisterUseCase<GetPtInfByRefNoInputData, GetPtInfByRefNoInteractor>();
             busBuilder.RegisterUseCase<GetPtInfModelsByNameInputData, GetPtInfModelsByNameInteractor>();
+            busBuilder.RegisterUseCase<GetPtInfModelsByRefNoInputData, GetPtInfModelsByRefNoInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
