@@ -711,6 +711,7 @@ using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdatePtInfOnlineQualify;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using Helper.Messaging;
+using UseCase.MstItem.DiseaseNameMstSearch;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1657,6 +1658,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Audit Log
             busBuilder.RegisterUseCase<SaveAuditTrailLogInputData, SaveAuditTrailLogInteractor>();
+
+            // Disease Name Mst Seach
+            busBuilder.RegisterUseCase<DiseaseNameMstSearchInputData, DiseaseNameMstSearchInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

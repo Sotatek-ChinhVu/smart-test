@@ -136,5 +136,7 @@ namespace Domain.Models.MstItem
         string GetDrugAction(string yjCd);
 
         string GetPrecautions(string yjCd);
+
+        List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize);
     }
 }
