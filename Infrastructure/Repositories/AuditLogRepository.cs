@@ -23,18 +23,19 @@ public class AuditLogRepository : RepositoryBase, IAuditLogRepository
         auditTrailLog.EventCd = auditTrailLogModel.EventCd;
         auditTrailLog.LogDate = CIUtil.GetJapanDateTimeNow();
         TrackingDataContext.AuditTrailLogs.Add(auditTrailLog);
+        var saveAuditLog = TrackingDataContext.SaveChanges();
         string hosoku = auditTrailLogModel.AuditTrailLogDetailModel.Hosoku;
 
         if (string.IsNullOrEmpty(hosoku) == false)
         {
             // 補足が必要な場合は、AUDIT_TRAIL_LOG_DETAILに保存
             AuditTrailLogDetail auditTrailLogDetailMode = new AuditTrailLogDetail();
-            auditTrailLogDetailMode.LogId = auditTrailLogModel.LogId;
+            auditTrailLogDetailMode.LogId = auditTrailLog.LogId;
             auditTrailLogDetailMode.Hosoku = hosoku;
             TrackingDataContext.AuditTrailLogDetails.Add(auditTrailLogDetailMode);
         }
 
-        return TrackingDataContext.SaveChanges() > 0;
+        return saveAuditLog > 0 || TrackingDataContext.SaveChanges() > 0;
     }
 
     public void ReleaseResource()

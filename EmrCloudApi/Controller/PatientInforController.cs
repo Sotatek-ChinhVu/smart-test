@@ -103,6 +103,7 @@ using UseCase.PatientInfor;
 using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.PatientInfor.GetPtInfByRefNo;
 using UseCase.PatientInfor.GetPtInfModelsByName;
+using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 
 namespace EmrCloudApi.Controller
 {
@@ -111,12 +112,14 @@ namespace EmrCloudApi.Controller
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
+        private readonly IMessenger _messenger;
         private CancellationToken? _cancellationToken;
 
-        public PatientInforController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
+        public PatientInforController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService, IMessenger messenger) : base(userService)
         {
             _bus = bus;
             _webSocketService = webSocketService;
+            _messenger = messenger;
         }
 
         [HttpGet(ApiPath.Get + "PatientComment")]
@@ -977,18 +980,28 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetPtInfModelsByNameResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.GetPtInfModelsByRefNo)]
+        public ActionResult<Response<GetPtInfModelsByRefNoResponse>> GetPtInfModelsByRefNo([FromQuery] GetPtInfModelsByRefNoRequest request)
+        {
+            var input = new GetPtInfModelsByRefNoInputData(HpId, request.RefNo);
+            var output = _bus.Handle(input);
+            var presenter = new GetPtInfModelsByRefNoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPtInfModelsByRefNoResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.CalculationSwapHoken)]
         public void CalculationSwapHoken([FromBody] CalculationSwapHokenRequest request, CancellationToken cancellationToken)
         {
             _cancellationToken = cancellationToken;
             try
             {
-                Messenger.Instance.Register<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
-                Messenger.Instance.Register<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
+                _messenger.Register<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
+                _messenger.Register<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
                 HttpContext.Response.ContentType = "application/json";
                 HttpResponse response = HttpContext.Response;
 
-                var input = new CalculationSwapHokenInputData(HpId, UserId, request.SeikyuYms, request.PtId, request.IsReCalculation, request.IsReceCalculation, request.IsReceCheckError);
+                var input = new CalculationSwapHokenInputData(HpId, UserId, request.SeikyuYms, request.PtId, request.IsReCalculation, request.IsReceCalculation, request.IsReceCheckError, _messenger);
                 var output = _bus.Handle(input);
                 if (output.Status == CalculationSwapHokenStatus.Successful)
                     UpdateCalculationSwapHokenStatus(new CalculationSwapHokenMessageStatus(string.Empty, 100, true, true));
@@ -998,8 +1011,8 @@ namespace EmrCloudApi.Controller
             }
             finally
             {
-                Messenger.Instance.Deregister<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
-                Messenger.Instance.Deregister<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
+                _messenger.Deregister<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
+                _messenger.Deregister<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
             }
         }
 

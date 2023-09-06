@@ -22,6 +22,7 @@ namespace EmrCalculateApi.Ika.ViewModels
     public class IkaCalculateViewModel : IIkaCalculateViewModel
     {
         private readonly IFutancalcViewModel _iFutancalcViewModel;
+        private readonly IMessenger _messenger;
 
         private const string ModuleName = ModuleNameConst.EmrCalculateIka;
         private IkaCalculateFinder _ikaCalculateFinder;
@@ -96,7 +97,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
 
-        public IkaCalculateViewModel(IFutancalcViewModel iFutancalcViewModel, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
+        public IkaCalculateViewModel(IFutancalcViewModel iFutancalcViewModel, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger)
         {
             _iFutancalcViewModel = iFutancalcViewModel;
             // 変数初期化
@@ -115,6 +116,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             // 点数マスタのキャッシュ
             //_cacheTenMst = new List<TenMstModel>();
             _cacheTenMst = GetDefaultTenMst();
+            _messenger = messenger;
             // 電子算定回数マスタのキャッシュ
             //_cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu();
             //FutanCalcVM = new FutancalcViewModel();
@@ -550,7 +552,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
         private void SendMessager(RecalculationStatus status)
         {
-            Messenger.Instance.Send(status);
+            _messenger.Send(status);
         }
 
         /// <summary>
