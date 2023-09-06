@@ -115,6 +115,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "YOUSIKI_KA_CD")]
         [MaxLength(3)]
-        public string YousikiKaCd { get; set; } = string.Empty;
+        public string? YousikiKaCd { get; set; } = string.Empty;
     }
 }
