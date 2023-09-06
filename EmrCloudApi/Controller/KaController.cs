@@ -47,7 +47,7 @@ public class KaController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveListKaMst)]
     public ActionResult<Response<SaveListKaMstResponse>> Save([FromBody] SaveListKaMstRequest request)
     {
-        var input = new SaveKaMstInputData(HpId, UserId, request.KaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName)).ToList());
+        var input = new SaveKaMstInputData(HpId, UserId, request.KaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName, input.YousikiKaCd)).ToList());
         var output = _bus.Handle(input);
         var presenter = new SaveListKaMstPresenter();
         presenter.Complete(output);

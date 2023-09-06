@@ -111,7 +111,9 @@ public class KaRepository : RepositoryBase, IKaRepository
             k.SortNo,
             k.ReceKaCd ?? string.Empty,
             k.KaSname ?? string.Empty,
-            k.KaName ?? string.Empty);
+            k.KaName ?? string.Empty,
+            k.YousikiKaCd ?? string.Empty
+            );
     }
 
     public List<KaCodeMstModel> GetKacodeMstYossi()
