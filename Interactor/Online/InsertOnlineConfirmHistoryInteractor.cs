@@ -24,7 +24,7 @@ public class InsertOnlineConfirmHistoryInteractor : IInsertOnlineConfirmHistoryI
             var validateResult = ValidateData(inputData);
             if (validateResult != InsertOnlineConfirmHistoryStatus.ValidateSuccess)
             {
-                return new InsertOnlineConfirmHistoryOutputData(validateResult);
+                return new InsertOnlineConfirmHistoryOutputData(new(), validateResult);
             }
 
             List<OnlineConfirmationHistoryModel> onlineModelList = new();
@@ -44,11 +44,12 @@ public class InsertOnlineConfirmHistoryInteractor : IInsertOnlineConfirmHistoryI
                                                                            item.UketukeStatus));
                 }
             }
-            if (_onlineRepository.InsertOnlineConfirmHistory(inputData.UserId, onlineModelList))
+            var idList = _onlineRepository.InsertOnlineConfirmHistory(inputData.UserId, onlineModelList);
+            if (idList.Any())
             {
-                return new InsertOnlineConfirmHistoryOutputData(InsertOnlineConfirmHistoryStatus.Successed);
+                return new InsertOnlineConfirmHistoryOutputData(idList, InsertOnlineConfirmHistoryStatus.Successed);
             }
-            return new InsertOnlineConfirmHistoryOutputData(InsertOnlineConfirmHistoryStatus.Failed);
+            return new InsertOnlineConfirmHistoryOutputData(idList, InsertOnlineConfirmHistoryStatus.Failed);
         }
         finally
         {
