@@ -1,11 +1,11 @@
-﻿using DocumentFormat.OpenXml.Drawing;
-using EmrCloudApi.Constants;
+﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportCsv;
+using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Services;
+using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Reporting.CommonMasters.Enums;
+using Reporting.Mappers.Common;
 using Reporting.ReportServices;
-using Serilog;
 using System.Text;
 using UseCase.Core.Sync;
 
@@ -17,7 +17,7 @@ public class ExportCSVController : AuthorizeControllerBase
     private readonly IReportService _reportService;
 
     private readonly UseCaseBus _bus;
-    public ExportCSVController(UseCaseBus bus, IUserService userService, IReportService reportService) : base(userService)
+    public ExportCSVController(UseCaseBus bus, IUserService userService, IReportService reportService, ITenantProvider tenantProvider) : base(userService)
     {
         _bus = bus;
         _reportService = reportService;
@@ -38,6 +38,18 @@ public class ExportCSVController : AuthorizeControllerBase
         return RenderCsv(data, "期間指定請求書リスト.csv");
     }
 
+    [HttpGet(ApiPath.ExportStatics)]
+    public IActionResult GenerateExportStatics([FromQuery] ExportCsvStaticsRequest request)
+    {
+        var data = _reportService.ExportCsv(HpId, request.MenuName, request.MenuId, request.TimeFrom, request.TimeTo, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, 
+                                            request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo, request.IsPutColName, request.CoFileType);
+        if (!data.Data.Any())
+        {
+            return Ok("EndNoData");
+        }
+        return RenderCsvStatics(data);
+    }
+
     private IActionResult RenderCsv(List<string> dataList, string fileName)
     {
         if (!dataList.Any())
@@ -55,5 +67,29 @@ public class ExportCSVController : AuthorizeControllerBase
         var content = Encoding.UTF8.GetBytes(csv.ToString());
         var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray();
         return File(result, contentType, fileName);
+    }
+
+    private IActionResult RenderCsvStatics(CommonExcelReportingModel dataModel)
+    {
+        var dataList = dataModel.Data;
+        if (!dataList.Any())
+        {
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
+        }
+        var csv = new StringBuilder();
+
+        string contentType = "text/csv";
+
+        foreach (var row in dataList)
+        {
+            csv.AppendLine(row);
+        }
+        var content = Encoding.UTF8.GetBytes(csv.ToString());
+        var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray();
+        return File(result, contentType, dataModel.FileName);
     }
 }

@@ -233,6 +233,7 @@ namespace EmrCloudApi.Services
             try
             {
                 var task = CallCalculate(CalculateApiPath.ReceFutanCalculateMain, inputData);
+                task.Wait();
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                 {
                     return false;
@@ -251,6 +252,7 @@ namespace EmrCloudApi.Services
             try
             {
                 var task = CallCalculate(CalculateApiPath.RunCalculateMonth, inputData);
+                task.Wait();
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                 {
                     return false;

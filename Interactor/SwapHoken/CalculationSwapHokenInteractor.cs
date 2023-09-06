@@ -42,6 +42,7 @@ namespace Interactor.SwapHoken
         private readonly IPtDiseaseRepository _ptDiseaseRepository;
         private readonly IDrugDetailRepository _drugDetailRepository;
         private readonly IReceSeikyuRepository _receSeikyuRepository;
+        private IMessenger? _messenger;
 
         private const string _hokenChar = "0";
         private const string _kohi1Char = "1";
@@ -57,7 +58,20 @@ namespace Interactor.SwapHoken
         bool isStopCalc = false;
         StringBuilder ErrorText = new StringBuilder();
 
-        public CalculationSwapHokenInteractor(ISwapHokenRepository swapHokenRepository, IEventProcessorService eventProcessorService, ICalcultateCustomerService calcultateCustomerService, IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IInsuranceMstRepository insuranceMstRepository, IMstItemRepository mstItemRepository, IOrdInfRepository ordInfRepository, ITodayOdrRepository todayOdrRepository, ICommonMedicalCheck commonMedicalCheck, IPtDiseaseRepository ptDiseaseRepository, IDrugDetailRepository drugDetailRepository, IReceSeikyuRepository receSeikyuRepository)
+        public CalculationSwapHokenInteractor(
+            ISwapHokenRepository swapHokenRepository, 
+            IEventProcessorService eventProcessorService, 
+            ICalcultateCustomerService calcultateCustomerService, 
+            IReceiptRepository receiptRepository, 
+            ISystemConfRepository systemConfRepository, 
+            IInsuranceMstRepository insuranceMstRepository, 
+            IMstItemRepository mstItemRepository, 
+            IOrdInfRepository ordInfRepository, 
+            ITodayOdrRepository todayOdrRepository, 
+            ICommonMedicalCheck commonMedicalCheck, 
+            IPtDiseaseRepository ptDiseaseRepository, 
+            IDrugDetailRepository drugDetailRepository, 
+            IReceSeikyuRepository receSeikyuRepository)
         {
             _swapHokenRepository = swapHokenRepository;
             _eventProcessorService = eventProcessorService;
@@ -76,6 +90,7 @@ namespace Interactor.SwapHoken
 
         public CalculationSwapHokenOutputData Handle(CalculationSwapHokenInputData inputData)
         {
+            _messenger = inputData.Messenger;
             try
             {
                 List<int> seikyuYms = inputData.SeikyuYms;
@@ -101,7 +116,7 @@ namespace Interactor.SwapHoken
                             SeikyuYm = seikyuYms[i],
                             PtIds = new List<long>() { inputData.PtId }
                         }).Wait();
-                        Messenger.Instance.Send(new CalculationSwapHokenMessageStatus($"計算処理中.. 残り[{(seikyuYms.Count - i)}件]です", percentCompleteCalculate, false, false));
+                        _messenger!.Send(new CalculationSwapHokenMessageStatus($"計算処理中.. 残り[{(seikyuYms.Count - i)}件]です", percentCompleteCalculate, false, false));
                     }
 
                     if (inputData.IsReceCalculation)
@@ -119,7 +134,7 @@ namespace Interactor.SwapHoken
                             PtIds = new List<long>() { inputData.PtId },
                             SeikyuYm = seikyuYms[i]
                         }).Wait();
-                        Messenger.Instance.Send(new CalculationSwapHokenMessageStatus($"レセ集計中.. 残り[{(seikyuYms.Count - i)}件]です", percentCompleteCalculate, false, false));
+                        _messenger!.Send(new CalculationSwapHokenMessageStatus($"レセ集計中.. 残り[{(seikyuYms.Count - i)}件]です", percentCompleteCalculate, false, false));
                     }
 
                     if (inputData.IsReceCheckError)
@@ -135,7 +150,7 @@ namespace Interactor.SwapHoken
                         var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, seikyuYms[i], new List<long> { inputData.PtId });
                         int allCheckCount = _receiptRepository.GetCountReceInfs(inputData.HpId, new List<long> { inputData.PtId }, seikyuYms[i]);
                         CheckErrorInMonth(inputData.HpId, seikyuYms[i], inputData.UserId, receRecalculationList, allCheckCount);
-                        Messenger.Instance.Send(new CalculationSwapHokenMessageStatus($"レセチェック処理中..残り[{(seikyuYms.Count - i)}件]です", percentCompleteCalculate, false, false));
+                        _messenger!.Send(new CalculationSwapHokenMessageStatus($"レセチェック処理中..残り[{(seikyuYms.Count - i)}件]です", percentCompleteCalculate, false, false));
                     }
                 }
 
@@ -181,7 +196,7 @@ namespace Interactor.SwapHoken
             }
         }
 
-        private bool IsStopCalculate() => Messenger.Instance.SendAsync(new CalculationSwapHokenMessageStop()).Result.Result;
+        private bool IsStopCalculate() => _messenger!.SendAsync(new CalculationSwapHokenMessageStop()).Result.Result;
 
         private bool CheckErrorInMonth(int hpId, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
         {

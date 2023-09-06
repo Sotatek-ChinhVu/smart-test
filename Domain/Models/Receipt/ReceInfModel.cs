@@ -73,7 +73,7 @@ public class ReceInfModel
         Kohi4ReceFutan = kohi4ReceFutan;
     }
 
-    public ReceInfModel(int hpId, int seikyuKbn, int seikyuYm, long ptId, long ptNum, int sinYm, int hokenId, int hokenId2, int kaId, int tantoId, string receSbt, int hokenKbn, int hokenSbtCd, string houbetu, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int honkeKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int hokenNissu, int kohi1Nissu, int kohi2Nissu, int kohi3Nissu, int kohi4Nissu, int kohi1ReceKyufu, int kohi2ReceKyufu, int kohi3ReceKyufu, int kohi4ReceKyufu, int hokenReceTensu, int hokenReceFutan, int kohi1ReceTensu, int kohi1ReceFutan, int kohi2ReceTensu, int kohi2ReceFutan, int kohi3ReceTensu, int kohi3ReceFutan, int kohi4ReceTensu, int kohi4ReceFutan, PatientInforModel ptInf, HokenInfModel ptHokenInf, KohiInfModel ptKohi1, KohiInfModel ptKohi2, KohiInfModel ptKohi3, KohiInfModel ptKohi4, List<ConfirmDateModel> hokenChecks, List<ConfirmDateModel> kohi1Checks, List<ConfirmDateModel> kohi2Checks, List<ConfirmDateModel> kohi3Checks, List<ConfirmDateModel> kohi4Checks, ReceStatusModel receStatus)
+    public ReceInfModel(int hpId, int seikyuKbn, int seikyuYm, long ptId, long ptNum, int sinYm, int hokenId, int hokenId2, int kaId, int tantoId, string receSbt, int hokenKbn, int hokenSbtCd, string houbetu, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int honkeKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int hokenNissu, int kohi1Nissu, int kohi2Nissu, int kohi3Nissu, int kohi4Nissu, int kohi1ReceKyufu, int kohi2ReceKyufu, int kohi3ReceKyufu, int kohi4ReceKyufu, int hokenReceTensu, int hokenReceFutan, int kohi1ReceTensu, int kohi1ReceFutan, int kohi2ReceTensu, int kohi2ReceFutan, int kohi3ReceTensu, int kohi3ReceFutan, int kohi4ReceTensu, int kohi4ReceFutan,int isTester, PatientInforModel ptInf, HokenInfModel ptHokenInf, KohiInfModel ptKohi1, KohiInfModel ptKohi2, KohiInfModel ptKohi3, KohiInfModel ptKohi4, List<ConfirmDateModel> hokenChecks, List<ConfirmDateModel> kohi1Checks, List<ConfirmDateModel> kohi2Checks, List<ConfirmDateModel> kohi3Checks, List<ConfirmDateModel> kohi4Checks, ReceStatusModel receStatus)
     {
         HpId = hpId;
         SeikyuKbn = seikyuKbn;
@@ -122,6 +122,7 @@ public class ReceInfModel
         Kohi3ReceFutan = kohi3ReceFutan;
         Kohi4ReceTensu = kohi4ReceTensu;
         Kohi4ReceFutan = kohi4ReceFutan;
+        IsTester = isTester;
         PtInf = ptInf;
         PtHokenInf = ptHokenInf;
         PtKohi1 = ptKohi1;
@@ -191,6 +192,8 @@ public class ReceInfModel
     public string Tokki4 { get; private set; }
 
     public string Tokki5 { get; private set; }
+
+    public int IsTester { get; private set; }
 
     public int HokenNissu { get; private set; }
 
