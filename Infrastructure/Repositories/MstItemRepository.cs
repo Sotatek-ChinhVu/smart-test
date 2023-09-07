@@ -5298,7 +5298,7 @@ namespace Infrastructure.Repositories
             try
             {
                 var listSingleDoseMst = TrackingDataContext.SingleDoseMsts.Where(x => x.HpId == hpId).ToList();
-                result = listSingleDoseMst.Select(i => new SingleDoseMstModel(ModelStatus.None, false, i.Id, i.HpId, i.UnitName, i.CreateDate, i.CreateId, i.CreateMachine, i.UpdateDate, i.UpdateId, i.UpdateMachine)).ToList();
+                result = listSingleDoseMst.Select(i => new SingleDoseMstModel(ModelStatus.None, false, i.Id, i.HpId, i.UnitName)).ToList();
             }
             catch (Exception e)
             {
