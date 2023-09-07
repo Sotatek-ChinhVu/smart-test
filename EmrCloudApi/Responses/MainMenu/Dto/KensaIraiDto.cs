@@ -1,4 +1,5 @@
 ﻿using Domain.Models.KensaIrai;
+using Helper.Common;
 
 namespace EmrCloudApi.Responses.MainMenu.Dto;
 
@@ -43,4 +44,44 @@ public class KensaIraiDto
     public int SikyuKbn { get; private set; }
 
     public List<KensaIraiDetailDto> KensaIraiDetails { get; private set; }
+
+    public int Age
+    {
+        get { return CIUtil.SDateToAge(Birthday, SinDate); }
+    }
+
+    public string TosekiStr
+    {
+        get
+        {
+            string ret = "";
+
+            switch (TosekiKbn)
+            {
+                case 1:
+                    ret = "前";
+                    break;
+                case 2:
+                    ret = "後";
+                    break;
+            }
+
+            return ret;
+        }
+    }
+
+    public string SikyuStr
+    {
+        get
+        {
+            string ret = "";
+
+            if (SikyuKbn == 1)
+            {
+                ret = "●";
+            }
+
+            return ret;
+        }
+    }
 }
