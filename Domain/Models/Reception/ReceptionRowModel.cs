@@ -7,7 +7,7 @@ namespace Domain.Models.Reception;
 public class ReceptionRowModel
 {
     public ReceptionRowModel(long raiinNo, long ptId, long parentRaiinNo, int uketukeNo, bool hasLockInf, int raiinStatus, int isDeleted,
-        long ptNum, string kanaName, string name, int sex, int birthday, string yoyakuTime,
+        long ptNum, string kanaName, string name, int sex, int birthday, string yoyakuTime, int confirmationType,
         string rsvFrameName, int uketukeSbtId, string uketukeTime, string sinStartTime,
         string sinEndTime, string kaikeiTime, string raiinCmt, string ptComment,
         int tantoId, int kaId, int lastVisitDate, int firstVisitDate, string sname, string raiinRemark,
@@ -58,6 +58,7 @@ public class ReceptionRowModel
             grpId => grpId,
             grpId => dynamicCells.FirstOrDefault(c => c.GrpId == grpId, new DynamicCell(grpId)));
         HokenPid = hokenPid;
+        ConfirmationType = confirmationType;
     }
 
     public ReceptionRowModel(long raiinNo, long ptId, int sinDate, int isDeleted)
@@ -159,6 +160,8 @@ public class ReceptionRowModel
     public string ConfirmationState { get; private set; }
     // 資格確認結果
     public string ConfirmationResult { get; private set; }
+
+    public int ConfirmationType { get; private set; }
     // Dynamic cells
     public Dictionary<int, DynamicCell> GrpIdToDynamicCell { get; private set; }
 

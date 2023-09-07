@@ -828,6 +828,7 @@ namespace Infrastructure.Repositories
                 r.ptInf.Sex,
                 r.ptInf.Birthday,
                 r.raiinInf.YoyakuTime ?? string.Empty,
+                r.raiinInf.ConfirmationType,
                 r.relatedRsvFrameMst?.RsvFrameName ?? string.Empty,
                 r.relatedUketukeSbtMst?.KbnId ?? CommonConstants.InvalidId,
                 r.raiinInf.UketukeTime ?? string.Empty,
