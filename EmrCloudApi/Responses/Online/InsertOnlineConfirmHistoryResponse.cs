@@ -2,10 +2,10 @@
 
 public class InsertOnlineConfirmHistoryResponse
 {
-    public InsertOnlineConfirmHistoryResponse(bool successed)
+    public InsertOnlineConfirmHistoryResponse(List<long> idList)
     {
-        Successed = successed;
+        IdList = idList;
     }
 
-    public bool Successed { get; private set; }
+    public List<long> IdList { get; private set; }
 }

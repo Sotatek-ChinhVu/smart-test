@@ -12,7 +12,7 @@ public class InsertOnlineConfirmHistoryPresenter : IInsertOnlineConfirmHistoryOu
 
     public void Complete(InsertOnlineConfirmHistoryOutputData output)
     {
-        Result.Data = new InsertOnlineConfirmHistoryResponse(output.Status ==  InsertOnlineConfirmHistoryStatus.Successed);
+        Result.Data = new InsertOnlineConfirmHistoryResponse(output.IdList);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

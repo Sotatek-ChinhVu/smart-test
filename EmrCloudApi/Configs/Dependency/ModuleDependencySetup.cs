@@ -710,6 +710,7 @@ using UseCase.SystemConf.SavePath;
 using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdatePtInfOnlineQualify;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
+using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using Helper.Messaging;
 using UseCase.MstItem.GetSingleDoseMstAndMedicineUnitList;
 
@@ -996,6 +997,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP33KokhoSeikyuCoReportService, P33KokhoSeikyuCoReportService>();
             services.AddTransient<IP26KoukiSokatuInCoReportService, P26KoukiSokatuInCoReportService>();
             services.AddTransient<IP25KokhoSeikyuCoReportService, P25KokhoSeikyuCoReportService>();
+            services.AddTransient<IP46KokhoSeikyuCoReportService, P46KokhoSeikyuCoReportService>();
+            services.AddTransient<IP46KoukiSeikyuCoReportService, P46KoukiSeikyuCoReportService>();
+            services.AddTransient<IP46WelfareSofu99CoReportService, P46WelfareSofu99CoReportService>();
+            services.AddTransient<IP46WelfareSeikyu99CoReportService, P46WelfareSeikyu99CoReportService>();
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
@@ -1215,6 +1220,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SavePtKyuseiInputData, SavePtKyuseiInteractor>();
             busBuilder.RegisterUseCase<GetPtInfByRefNoInputData, GetPtInfByRefNoInteractor>();
             busBuilder.RegisterUseCase<GetPtInfModelsByNameInputData, GetPtInfModelsByNameInteractor>();
+            busBuilder.RegisterUseCase<GetPtInfModelsByRefNoInputData, GetPtInfModelsByRefNoInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
