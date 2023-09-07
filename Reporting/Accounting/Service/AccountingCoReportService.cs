@@ -597,15 +597,24 @@ public class AccountingCoReportService : IAccountingCoReportService
         mode = PrintMode.MultiPrint;
         @params = coAccountingParamModels;
         var allType = coAccountingParamModels.Select(item => item.PrintType).Distinct().ToList();
-        try
+        var existTemplate = false;
+
+        foreach (var type in allType)
         {
-            foreach (var type in allType)
+            try
             {
-                this.printType = type;
+                printType = type;
                 GetParamFromRseFile();
+                existTemplate = true;
+            }
+            catch { }
+            finally
+            {
+                formFileName = string.Empty;
             }
         }
-        catch
+
+        if (!existTemplate)
         {
             return false;
         }
@@ -1058,6 +1067,16 @@ public class AccountingCoReportService : IAccountingCoReportService
                 memo = param.Memo;
                 printType = param.PrintType;
                 formFileName = param.FormFileName;
+
+                try
+                {
+                    GetParamFromRseFile();
+                }
+                catch
+                {
+                    continue;
+                }
+
                 try
                 {
                     coModel = GetData(hpId, ptId, startDate, endDate);
@@ -1074,7 +1093,6 @@ public class AccountingCoReportService : IAccountingCoReportService
                     continue;
                 }
 
-                GetParamFromRseFile();
                 _sinmeiListPropertysPage1 = new List<(string field, int charCount, int rowCount)>();
                 _sinmeiListPropertysPage2 = new List<(string field, int charCount, int rowCount)>();
 
