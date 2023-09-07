@@ -579,16 +579,7 @@ public class AccountingCoReportService : IAccountingCoReportService
     {
         formFileName = templateName;
         this.printType = printType;
-        bool isExist = true;
-        try
-        {
-            GetParamFromRseFile();
-        }
-        catch
-        {
-            isExist = false;
-        }
-        return isExist;
+        return GetParamFromRseFile();
     }
 
     public bool CheckOpenReportingForm(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
@@ -601,17 +592,13 @@ public class AccountingCoReportService : IAccountingCoReportService
 
         foreach (var type in allType)
         {
-            try
+            printType = type;
+            if (GetParamFromRseFile())
             {
-                printType = type;
-                GetParamFromRseFile();
                 existTemplate = true;
+                break;
             }
-            catch { }
-            finally
-            {
-                formFileName = string.Empty;
-            }
+            formFileName = string.Empty;
         }
 
         if (!existTemplate)
@@ -674,7 +661,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
     }
 
-    private void GetParamFromRseFile()
+    private bool GetParamFromRseFile()
     {
         SetFormFilePath();
         List<ObjectCalculate> fieldInputList = new();
@@ -691,7 +678,15 @@ public class AccountingCoReportService : IAccountingCoReportService
         fieldInputList.Add(new ObjectCalculate("MessageListF", (int)CalculateTypeEnum.GetListFormatLendB));
 
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Accounting, formFileName, fieldInputList);
-        JavaOutputData = _readRseReportFileService.ReadFileRse(data);
+        try
+        {
+            JavaOutputData = _readRseReportFileService.ReadFileRse(data);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     #region Accounting Form
@@ -802,7 +797,10 @@ public class AccountingCoReportService : IAccountingCoReportService
     private void PrintOutList()
     {
         coModelList = GetDataList(hpId, startDate, endDate, ptConditions, grpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
-        GetParamFromRseFile();
+        if (!GetParamFromRseFile())
+        {
+            return;
+        }
         var objectList = JavaOutputData.objectNames;
         if (objectList.Contains("lsPtNum_1"))
         {
@@ -1068,11 +1066,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 printType = param.PrintType;
                 formFileName = param.FormFileName;
 
-                try
-                {
-                    GetParamFromRseFile();
-                }
-                catch
+                if (!GetParamFromRseFile())
                 {
                     continue;
                 }
