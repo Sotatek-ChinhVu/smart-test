@@ -1141,28 +1141,29 @@ namespace Infrastructure.Repositories
                                 where tenKN.ItemCd.StartsWith("KN")
                                 select new { tenKN.ItemCd, ten.Ten }).ToList();
 
-            var tenJoinYakkaSyusai = (from ten in queryResult
-                                      join yakkaSyusaiMstItem in yakkaSyusaiMstList
-                                      on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
-                                      from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
-                                      select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem }).ToList();
+            //tenJoinYakkaSyusai thấy đang ko dùng đến nên comment tạm lại
+            //var tenJoinYakkaSyusai = (from ten in queryResult
+            //                          join yakkaSyusaiMstItem in yakkaSyusaiMstList
+            //                          on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
+            //                          from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
+            //                          select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem }).ToList();
 
             var sinKouiCollection = new SinkouiCollection();
 
-            var queryFinal = (from ten in tenJoinYakkaSyusai
+            var queryFinal = (from ten in queryResult.AsEnumerable()
                               join tenLastDate in tenMstGetLastDateQuery
-                              on ten.TenMst.ItemCd equals tenLastDate.ItemCd
+                              on ten.ItemCd equals tenLastDate.ItemCd
                               join kouiKbnItem in sinKouiCollection
-                              on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
+                              on ten.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
                               from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
                               join tenKN in queryKNTensu
-                              on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
+                              on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
                               from tenKN in tenKNLeft.DefaultIfEmpty()
                               select new
                               {
-                                  ten.TenMst,
+                                  TenMst = ten,
                                   KouiName = tenKouiKbn.SinkouiName,
-                                  ten.YakkaSyusaiItem,
+                                  //ten.YakkaSyusaiItem,
                                   tenKN,
                                   LastEndDate = tenLastDate.EndDate
                               }).ToList();
@@ -1173,7 +1174,15 @@ namespace Infrastructure.Repositories
                                      join k in kensaMstQuery
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
-                                     select new { q.TenMst, q.KouiName, q.YakkaSyusaiItem, q.tenKN, KensaMst = kensaMst, LastEndDate = q.LastEndDate };
+                                     select new
+                                     {
+                                         q.TenMst,
+                                         q.KouiName,
+                                         //q.YakkaSyusaiItem, 
+                                         q.tenKN,
+                                         KensaMst = kensaMst,
+                                         LastEndDate = q.LastEndDate
+                                     };
 
             var ipnCdList = queryJoinWithKensa.Select(q => q.TenMst.IpnNameCd).ToList();
             var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
@@ -1205,7 +1214,7 @@ namespace Infrastructure.Repositories
                               {
                                   q.TenMst,
                                   q.KouiName,
-                                  q.YakkaSyusaiItem,
+                                  //q.YakkaSyusaiItem,
                                   q.tenKN,
                                   q.KensaMst,
                                   IpnName = ipnNameMst?.IpnName ?? string.Empty,
