@@ -49,6 +49,7 @@ namespace Interactor.ReceiptCheck
         private readonly IRealtimeOrderErrorFinder _realtimeOrderErrorFinder;
         private readonly ITenantProvider _tenantProvider;
         private readonly IReceiptRepository _receiptRepository;
+        private IMessenger? _messenger;
 
         private int seikyuYm;
         private List<ReceInfModel> _receInfModels = new List<ReceInfModel>();
@@ -59,7 +60,14 @@ namespace Interactor.ReceiptCheck
         public List<BuiErrorModel> errorOdrInfDetails = new List<BuiErrorModel>();
         public string ErrorText { get; set; } = string.Empty;
 
-        public ReceiptCheckRecalculationInteractor(ICalculateService calculateService, ICalculationInfRepository calculationInfRepository, ISystemConfRepository systemConfRepository, ICommonMedicalCheck commonMedicalCheck, IRealtimeOrderErrorFinder realtimeOrderErrorFinder, ITenantProvider tenantProvider, IReceiptRepository receiptRepository)
+        public ReceiptCheckRecalculationInteractor(
+            ICalculateService calculateService, 
+            ICalculationInfRepository calculationInfRepository, 
+            ISystemConfRepository systemConfRepository, 
+            ICommonMedicalCheck commonMedicalCheck, 
+            IRealtimeOrderErrorFinder realtimeOrderErrorFinder, 
+            ITenantProvider tenantProvider, 
+            IReceiptRepository receiptRepository)
         {
             _calculateService = calculateService;
             _calculationInfRepository = calculationInfRepository;
@@ -72,6 +80,8 @@ namespace Interactor.ReceiptCheck
 
         public ReceiptCheckRecalculationOutputData Handle(ReceiptCheckRecalculationInputData inputData)
         {
+            _messenger = inputData.Messenger;
+
             string errorText = string.Empty;
             try
             {
@@ -2036,7 +2046,7 @@ namespace Interactor.ReceiptCheck
 
         private void SendMessenger(RecalculationStatus status)
         {
-            Messenger.Instance.Send(status);
+            _messenger!.Send(status);
         }
     }
 }

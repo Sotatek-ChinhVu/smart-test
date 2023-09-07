@@ -51,14 +51,14 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             sinKouiCounts.Where(s => s.SinYm >= printConf.StartSinYm && s.SinYm <= printConf.EndSinYm) :
             sinKouiCounts.Where(s => s.SinDate >= printConf.StartSinDate && s.SinDate <= printConf.EndSinDate);
 
-        IQueryable<SinKoui> sinKouis = NoTrackingDataContext.SinKouis;
+        var sinKouis = NoTrackingDataContext.SinKouis.Where(s => s.IsDeleted == DeleteStatus.None);
         #region 条件指定（院内院外区分）
         if (printConf.InoutKbns?.Count >= 1)
         {
             sinKouis = sinKouis.Where(s => printConf.InoutKbns.Contains(s.InoutKbn));
         }
         #endregion
-        IQueryable<SinRpInf> sinKouiRpInfs = NoTrackingDataContext.SinRpInfs;
+        var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(s => s.IsDeleted == DeleteStatus.None);
         #region 条件指定（診療識別）
         if (printConf.SinIds?.Count >= 1)
         {
@@ -133,7 +133,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         printConf.ItemCds.RemoveAll(i => i.StartsWith("CO"));
         #endregion
 
-        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR");
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => s.IsDeleted == DeleteStatus.None && !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR");
         #region 速度向上のため sinKouiDetails を先に絞り込む
         if (printConf.ItemCds?.Count >= 1 && printConf.ItemSearchOpt == 0)
         {

@@ -114,6 +114,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                 joinQuery = joinQuery.Where(r => r.IsPaperRece == 0 && Codes.Contains(r.receInf.SeikyuKbn));
             }
 
+            var count0 = joinQuery.ToList();
+
             //公費負担チェック窓口
             int lowKohiFutan10en = futanCheck == FutanCheck.KohiFutan10en ? 1 : 0;
             //公費負担チェック

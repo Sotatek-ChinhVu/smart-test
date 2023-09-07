@@ -7,12 +7,22 @@ using EmrCloudApi.Responses.Online;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
+using System.Xml;
+using System.Xml.Serialization;
 using UseCase.Core.Sync;
 using UseCase.Online;
+using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.Online.InsertOnlineConfirmHistory;
+using UseCase.Online.QualificationConfirmation;
+using UseCase.Online.SaveAllOQConfirmation;
+using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineHistoryById;
+using UseCase.Online.UpdateOnlineInRaiinInf;
+using UseCase.Online.UpdateOQConfirmation;
+using UseCase.Online.UpdatePtInfOnlineQualify;
+using UseCase.Online.UpdateRefNo;
 
 namespace EmrCloudApi.Controller;
 
@@ -32,7 +42,7 @@ public class OnlineController : AuthorizeControllerBase
     {
         var onlineList = request.OnlineConfirmList.Select(item => new OnlineConfirmationHistoryItem(
                                                                       item.PtId,
-                                                                      TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(item.OnlineConfirmationDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)),
+                                                                      DateTime.MinValue,
                                                                       item.ConfirmationType,
                                                                       string.Empty,
                                                                       item.ConfirmationResult,
@@ -83,5 +93,138 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpdateOnlineHistoryByIdResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveOQConfirmation)]
+    public ActionResult<Response<SaveOQConfirmationResponse>> SaveOQConfirmation([FromBody] SaveOQConfirmationRequest request)
+    {
+        var input = new SaveOQConfirmationInputData(HpId, UserId, request.OnlineHistoryId, request.PtId, request.ConfirmationResult, request.OnlineConfirmationDate, request.ConfirmationType, request.InfConsFlg, request.UketukeStatus, request.IsUpdateRaiinInf);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveOQConfirmationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveOQConfirmationResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateRefNo)]
+    public ActionResult<Response<UpdateRefNoResponse>> UpdateRefNo([FromBody] UpdateRefNoRequest request)
+    {
+        var input = new UpdateRefNoInputData(HpId, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateRefNoPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateRefNoResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateOnlineInRaiinInf)]
+    public ActionResult<Response<UpdateOnlineInRaiinInfResponse>> UpdateOnlineInRaiinInf([FromBody] UpdateOnlineInRaiinInfRequest request)
+    {
+        var input = new UpdateOnlineInRaiinInfInputData(HpId, UserId, request.PtId, request.OnlineConfirmationDate, request.ConfirmationType, request.InfConsFlg);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOnlineInRaiinInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOnlineInRaiinInfResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateOQConfirmation)]
+    public ActionResult<Response<UpdateOQConfirmationResponse>> UpdateOQConfirmation([FromBody] UpdateOQConfirmationRequest request)
+    {
+        Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict = new();
+        foreach (var item in request.OnlQuaConfirmationTypeDict)
+        {
+            onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg));
+        }
+        var input = new UpdateOQConfirmationInputData(HpId, UserId, request.OnlineHistoryId, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOQConfirmationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOQConfirmationResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveAllOQConfirmation)]
+    public ActionResult<Response<SaveAllOQConfirmationResponse>> SaveAllOQConfirmation([FromBody] SaveAllOQConfirmationRequest request)
+    {
+        Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict = new();
+        foreach (var item in request.OnlQuaConfirmationTypeDict)
+        {
+            onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg));
+        }
+        var input = new SaveAllOQConfirmationInputData(HpId, UserId, request.PtId, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveAllOQConfirmationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveAllOQConfirmationResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdatePtInfOnlineQualify)]
+    public ActionResult<Response<UpdatePtInfOnlineQualifyResponse>> UpdatePtInfOnlineQualify([FromBody] UpdatePtInfOnlineQualifyRequest request)
+    {
+        var resultList = request.ResultList.Select(item => new PtInfConfirmationItem(item.AttributeName, item.CurrentValue, item.XmlValue)).ToList();
+        var input = new UpdatePtInfOnlineQualifyInputData(HpId, UserId, request.PtId, resultList);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdatePtInfOnlineQualifyPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdatePtInfOnlineQualifyResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListOnlineConfirmationHistoryByPtId)]
+    public ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>> GetListOnlineConfirmationHistoryByPtId([FromQuery] GetListOnlineConfirmationHistoryByPtIdRequest request)
+    {
+        var input = new GetListOnlineConfirmationHistoryModelInputData(request.PtId, new(), new());
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListOnlineConfirmationHistoryModelPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.GetListOnlineConfirmationHistoryModel)]
+    public ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>> GetListOnlineConfirmationHistoryModel([FromBody] GetListOnlineConfirmationHistoryModelRequest request)
+    {
+        Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict = new();
+        foreach (var item in request.OnlQuaConfirmationTypeDict)
+        {
+            onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg));
+        }
+        var input = new GetListOnlineConfirmationHistoryModelInputData(0, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListOnlineConfirmationHistoryModelPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.ConvertXmlToQCXmlMsg)]
+    public ActionResult<Response<ConvertXmlToQCXmlMsgResponse>> ConvertXmlToQCXmlMsgResponse([FromBody] ConvertXmlToQCXmlMsgRequest request)
+    {
+        Response<ConvertXmlToQCXmlMsgResponse> response = new();
+        try
+        {
+            XmlDocument xmlDoc = new();
+            xmlDoc.LoadXml(request.XmlString);
+
+            response.Data = new ConvertXmlToQCXmlMsgResponse(request.XmlString);
+            response.Message = ResponseMessage.Success;
+            response.Status = 1;
+        }
+        catch
+        {
+            response.Message = ResponseMessage.InvalidConfirmationResult;
+            response.Status = 2;
+        }
+        return new ActionResult<Response<ConvertXmlToQCXmlMsgResponse>>(response);
     }
 }

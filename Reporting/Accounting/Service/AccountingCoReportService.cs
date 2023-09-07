@@ -1066,6 +1066,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 {
                     Console.WriteLine("Exception GetData RaiiNoList: " + raiinNos);
                     Console.WriteLine("Exception GetData: " + ex);
+                    coModel = new();
                 }
 
                 if (coModel.HpId == 0)
