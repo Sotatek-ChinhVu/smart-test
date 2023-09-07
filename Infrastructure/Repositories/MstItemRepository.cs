@@ -5300,5 +5300,25 @@ namespace Infrastructure.Repositories
             }
             return result.ToString();
         }
+
+        public bool UpdateByomeiMst(int userId, int hpId, List<UpdateByomeiMstModel> listData)
+        {
+            // Update IsAdopted Item TenMst
+            foreach (var item in listData)
+            {
+                var itemUpdate = TrackingDataContext.ByomeiMsts.FirstOrDefault(t => t.HpId == hpId && t.ByomeiCd == item.ByomeiCd);
+                if (itemUpdate != null)
+                {
+                    itemUpdate.KanaName2 = item.KanaName2;
+                    itemUpdate.SikkanCd = item.SikkanCd;
+                    itemUpdate.NanbyoCd = item.NanbyoCd;
+                    itemUpdate.IsAdopted = item.IsAdopted ? 1 : 0;
+                    itemUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    itemUpdate.UpdateId = userId;
+                    TrackingDataContext.SaveChanges();
+                }
+            }  
+            return true;
+        }
     }
 }

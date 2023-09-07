@@ -44,6 +44,7 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
+using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.MstItem.UploadImageDrugInf;
 
 namespace EmrCloudApi.Controller
@@ -456,6 +457,16 @@ namespace EmrCloudApi.Controller
             var presenter = new UploadImageDrugInfPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UploadImageDrugInfResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateByomeiMst)]
+        public ActionResult<Response<UpdateByomeiMstResponse>> UpdateByomeiMst([FromBody] UpdateByomeiMstRequest request)
+        {
+            var input = new UpdateByomeiMstInputData(UserId, HpId, request.ListData);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateByomeiMstPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
     }
 }
