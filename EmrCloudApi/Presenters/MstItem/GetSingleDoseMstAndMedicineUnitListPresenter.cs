@@ -15,7 +15,17 @@ namespace EmrCloudApi.Presenters.MstItem
             Result = new Response<GetSingleDoseMstAndMedicineUnitResponse>
             {
                 Data = new GetSingleDoseMstAndMedicineUnitResponse(outputData.SingleDoseMsts, outputData.MedicineUnits),
+                Status = outputData.Status == true ? 1 : 0,
             };
+            switch (outputData.Status)
+            {
+                case true:
+                    Result.Message = ResponseMessage.Success;
+                    break;
+                case false:
+                    Result.Message = ResponseMessage.Failed;
+                    break;
+            }
         }
     }
 }

@@ -8,25 +8,16 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.MstItem
 {
-    public class SingleDoseMstModel //: ObservableObject //, IEmrDataGridModel
+    public class SingleDoseMstModel
     {
-        public SingleDoseMstModel(ModelStatus status, bool isDeleted, long id, int hpId, string unitName,
-        DateTime createDate, int createId, string createMachine, DateTime updateDate,
-        int updateId, string updateMachine)
+        public SingleDoseMstModel(ModelStatus status, bool isDeleted, long id, int hpId, string unitName)
         {
             Status = status;
             IsDeleted = isDeleted;
             Id = id;
             HpId = hpId;
             UnitName = unitName;
-            CreateDate = createDate;
-            CreateId = createId;
-            CreateMachine = createMachine;
-            UpdateDate = updateDate;
-            UpdateId = updateId;
-            UpdateMachine = updateMachine;
         }
-
         public ModelStatus Status { get; private set; }
 
         public bool IsDeleted { get; private set; }
@@ -57,41 +48,6 @@ namespace Domain.Models.MstItem
         /// </summary>
         public string UnitName { get; private set; }
 
-        /// <summary>
-        /// 作成日時
-        /// 
-        /// </summary>
-        public DateTime CreateDate { get; private set; }
-
-        /// <summary>
-        /// 作成者ID
-        /// 
-        /// </summary>
-        public int CreateId { get; private set; }
-
-        /// <summary>
-        /// 作成端末
-        /// 
-        /// </summary>
-        public string CreateMachine { get; private set; }
-
-        /// <summary>
-        /// 更新日時
-        /// 
-        /// </summary>
-        public DateTime UpdateDate { get; private set; }
-
-        /// <summary>
-        /// 更新者ID
-        /// 
-        /// </summary>
-        public int UpdateId { get; private set; }
-
-        /// <summary>
-        /// 更新端末
-        /// 
-        /// </summary>
-        public string UpdateMachine { get; private set; }
 
         public bool CheckDefaultValue()
         {

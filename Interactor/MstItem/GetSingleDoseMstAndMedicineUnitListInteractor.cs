@@ -19,12 +19,16 @@ namespace Interactor.MstItem
             {
                 if (inputData.HpId < 1)
                 {
-                    return new GetSingleDoseMstAndMedicineUnitListOutputData(new List<SingleDoseMstModel>(), new List<MedicineUnitModel>());
+                    return new GetSingleDoseMstAndMedicineUnitListOutputData(true, new List<SingleDoseMstModel>(), new List<MedicineUnitModel>());
                 }
-                int today = CIUtil.DateTimeToInt(DateTime.Now);
+                int today = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
                 var listDataSingleDose = _inputItemRepository.GetListSingleDoseModel(inputData.HpId);
                 var listDataMedicineUnitModel = _inputItemRepository.GetListMedicineUnitModel(inputData.HpId, today);
-                return new GetSingleDoseMstAndMedicineUnitListOutputData(listDataSingleDose, listDataMedicineUnitModel);
+                return new GetSingleDoseMstAndMedicineUnitListOutputData(true, listDataSingleDose, listDataMedicineUnitModel);
+            }
+            catch
+            {
+                return new GetSingleDoseMstAndMedicineUnitListOutputData(false, new List<SingleDoseMstModel>(), new List<MedicineUnitModel>());
             }
             finally
             {
