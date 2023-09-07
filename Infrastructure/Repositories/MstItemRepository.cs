@@ -14,6 +14,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using System.Text;
@@ -5298,7 +5299,7 @@ namespace Infrastructure.Repositories
             try
             {
                 var listSingleDoseMst = TrackingDataContext.SingleDoseMsts.Where(x => x.HpId == hpId).ToList();
-                result = listSingleDoseMst.Select(i => new SingleDoseMstModel(ModelStatus.None, false, i.Id, i.HpId, i.UnitName, i.CreateDate, i.CreateId, i.CreateMachine, i.UpdateDate, i.UpdateId, i.UpdateMachine)).ToList();
+                result = listSingleDoseMst.Select(i => new SingleDoseMstModel(ModelStatus.None, false, i.Id, i.HpId, i.UnitName)).ToList();
             }
             catch (Exception e)
             {
@@ -5330,6 +5331,77 @@ namespace Infrastructure.Repositories
                 }
             }
             return result;
+        }
+        public bool UpdateSingleDoseMst(List<SingleDoseMstModel> listToSave)
+        {
+            try
+            {
+                string functName = string.Empty;
+                functName = nameof(UpdateSingleDoseMst);
+                List<SingleDoseMst> singleDoseAdded = new List<SingleDoseMst>();
+                List<SingleDoseMst> singleDoseEdit = new List<SingleDoseMst>();
+                List<SingleDoseMst> singleDoseDelete = new List<SingleDoseMst>();
+                foreach (var item in listToSave)
+                {
+                    if (item != null && !item.CheckDefaultValue())
+                    {
+                        if (item.Status == ModelStatus.Modified)
+                        {
+                            var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
+                            if (data != null)
+                            {
+                                data.UnitName = item.UnitName;
+                                _UpdateSingleDose(data);
+                                singleDoseEdit.Add(data);
+                            }
+                        }
+                        if (item.Status == ModelStatus.Added && !item.IsDeleted && item.Id == 0)
+                        {
+                            var singleDoseMst = new SingleDoseMst();
+                            singleDoseMst.UnitName = item.UnitName;
+                            singleDoseMst.HpId = item.HpId;
+                            _CreateSingleDose(singleDoseMst);
+                            singleDoseAdded.Add(singleDoseMst);
+                        }
+                        if (item.Status == ModelStatus.Deleted)
+                        {
+                            var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
+                            if (data != null)
+                            {
+                                singleDoseDelete.Add(data);
+                            }
+                        }
+                    }
+                }
+                TrackingDataContext.SingleDoseMsts.AddRange(singleDoseAdded);
+                TrackingDataContext.SingleDoseMsts.UpdateRange(singleDoseEdit);
+                TrackingDataContext.SingleDoseMsts.RemoveRange(singleDoseDelete);
+                TrackingDataContext.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+        private void _UpdateSingleDose(SingleDoseMst singleDoseMst)
+        {
+
+            singleDoseMst.CreateDate = TimeZoneInfo.ConvertTimeToUtc(singleDoseMst.CreateDate);
+            singleDoseMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            singleDoseMst.UpdateId = Session.UserID;
+            singleDoseMst.UpdateMachine = CIUtil.GetComputerName();
+        }
+
+        private void _CreateSingleDose(SingleDoseMst singleDoseMst)
+        {
+            singleDoseMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+            singleDoseMst.CreateId = Session.UserID;
+            singleDoseMst.CreateMachine = CIUtil.GetComputerName();
+            singleDoseMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            singleDoseMst.UpdateId = Session.UserID;
+            singleDoseMst.UpdateMachine = CIUtil.GetComputerName();
         }
 
         private string BuildPathAws(List<string> folders)

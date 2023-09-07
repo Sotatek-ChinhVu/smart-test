@@ -138,5 +138,6 @@ namespace Domain.Models.MstItem
         string GetPrecautions(string yjCd);
         List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
         List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today);
+        bool UpdateSingleDoseMst(List<SingleDoseMstModel> listToSave);
     }
 }

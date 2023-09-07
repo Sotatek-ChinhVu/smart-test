@@ -45,6 +45,7 @@
         public const string UploadImageDrugInf = "UploadImageDrugInf";
         public const string GetDiseaseList = "GetDiseaseList";
         public const string GetSingleDoseMstAndMedicineUnitList = "GetSingleDoseMstAndMedicineUnitList";
+        public const string UpdateSingleDoseMst = "UpdateSingleDoseMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

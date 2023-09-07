@@ -45,6 +45,7 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
+using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
 
 namespace EmrCloudApi.Controller
@@ -466,6 +467,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetSingleDoseMstAndMedicineUnitListPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateSingleDoseMst)]
+        public ActionResult<Response<UpdateSingleDoseMstResponse>> UpdateSingleDoseMst(UpdateSingleDoseMstRequest request)
+        {
+            var input = new UpdateSingleDoseMstInputData(request.SingleDoseMsts);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateSingleDoseMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateSingleDoseMstResponse>>(presenter.Result);
         }
     }
 }
