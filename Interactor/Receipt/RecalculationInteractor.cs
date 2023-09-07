@@ -11,7 +11,7 @@ namespace Interactor.Receipt;
 public class RecalculationInteractor : IRecalculationInputPort
 {
     private readonly IReceiptRepository _receiptRepository;
-    private readonly ICalculateService _calculateRepository;
+    private readonly ICalculateService _calculateService;
     private readonly ICommonReceRecalculation _commonReceRecalculation;
     private IMessenger? _messenger;
 
@@ -21,7 +21,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     {
         _receiptRepository = receiptRepository;
         _commonReceRecalculation = commonReceRecalculation;
-        _calculateRepository = calculateRepository;
+        _calculateService = calculateRepository;
     }
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
@@ -87,7 +87,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         {
             return false;
         }
-        _calculateRepository.RunCalculateMonth(new CalculateMonthRequest()
+        _calculateService.RunCalculateMonth(new CalculateMonthRequest()
         {
             HpId = hpId,
             PtIds = ptInfList,
@@ -106,7 +106,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         {
             return false;
         }
-        _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(ptInfList, seikyuYm, uniqueKey), cancellationToken);
+        _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(ptInfList, seikyuYm, uniqueKey), cancellationToken);
         return true;
     }
 
