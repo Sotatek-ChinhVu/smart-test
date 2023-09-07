@@ -400,6 +400,7 @@
         public const string SaveStatisticMenuList = "SaveStatisticMenuList";
         public const string GetListStaticReport = "GetListStaticReport";
         public const string FindPtHokenList = "FindPtHokenList";
+        public const string GetKensaIrai = "GetKensaIrai";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
