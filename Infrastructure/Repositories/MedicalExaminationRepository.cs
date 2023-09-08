@@ -1,5 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.AuditLog;
+using Domain.Models.ContainerMaster;
 using Domain.Models.Diseases;
 using Domain.Models.Ka;
 using Domain.Models.Medical;
@@ -8,6 +9,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.SystemConf;
 using Domain.Models.TodayOdr;
+using Domain.Models.User;
 using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
@@ -1790,6 +1792,52 @@ namespace Infrastructure.Repositories
                 kensaItems[i].ChangeInoutKbnOdrKouiKbn(odrInf.Item1, odrInf.Item2);
             }
             return kensaItems;
+        }
+
+        public void ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters)
+        {
+            foreach(var item in containerMasters) 
+            {
+                if(item.ContainerModelStatus == ModelStatus.Deleted)
+                {
+                    var containerMaster = TrackingDataContext.ContainerMsts.Where(x => x.ContainerCd == item.ContainerCd);
+                    if(containerMaster != null)
+                    {
+                        TrackingDataContext.ContainerMsts.RemoveRange(containerMaster);
+                    }
+                }
+                else
+                {
+                    var containerMaster = TrackingDataContext.ContainerMsts.FirstOrDefault(x => x.ContainerCd == item.ContainerCd);
+                    if(containerMaster != null)
+                    {
+                        containerMaster.ContainerCd = item.ContainerCd;
+                        containerMaster.ContainerName = item.ContainerName;
+                        containerMaster.UpdateId = userId;
+                        containerMaster.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        ContainerMst itemtest = ConvertContainerMasterList(item, userId, hpId);
+                        TrackingDataContext.ContainerMsts.Add(itemtest);
+                    }
+                }
+            }
+            TrackingDataContext.SaveChanges();
+        }
+
+        private ContainerMst ConvertContainerMasterList(ContainerMasterModel u, int userId, int hpId)
+        {
+            return new ContainerMst
+            {
+                HpId = hpId,
+                ContainerCd = u.ContainerCd,
+                ContainerName = u.ContainerName,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
         }
     }
 }
