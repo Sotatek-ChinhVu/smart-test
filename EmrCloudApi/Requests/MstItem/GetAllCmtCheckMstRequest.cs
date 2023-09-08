@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.MstItem
 {
-    public class GetAllCmtCheckMstResponseRequest
+    public class GetAllCmtCheckMstRequest
     {
         public int SinDay { get; set; }
     }

@@ -460,7 +460,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetAllCmtCheckMst)]
-        public ActionResult<Response<GetAllCmtCheckMstResponse>> GetAllCmtCheckMst([FromQuery] GetAllCmtCheckMstResponseRequest request)
+        public ActionResult<Response<GetAllCmtCheckMstResponse>> GetAllCmtCheckMst([FromQuery] GetAllCmtCheckMstRequest request)
         {
             var input = new GetAllCmtCheckMstInputData(HpId, request.SinDay);
             var output = _bus.Handle(input);
