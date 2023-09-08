@@ -17,6 +17,7 @@ using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Presenters.Insurance;
 using UseCase.Insurance.FindHokenInfByPtId;
 using UseCase.MainMenu.GetKensaIrai;
+using UseCase.MainMenu.GetKensaCenterMstList;
 
 namespace EmrCloudApi.Controller;
 
@@ -97,6 +98,16 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new GetKensaIraiPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetKensaIraiResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKensaCenterMstList)]
+    public ActionResult<Response<GetKensaCenterMstListResponse>> GetKensaCenterMstList()
+    {
+        var input = new GetKensaCenterMstListInputData(HpId);
+        var output = _bus.Handle(input);
+        var presenter = new GetKensaCenterMstListPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKensaCenterMstListResponse>>(presenter.Result);
     }
 
     private List<StatisticMenuItem> ConvertToMenuItem(SaveStatisticMenuRequest request)
