@@ -42,7 +42,7 @@ namespace Interactor.MstItem
 
                 bool result = _mstItemRepository.SaveAddressMaster(inputData.PostCodeMsts, inputData.HpId, inputData.UserId);
 
-                return new SaveAddressMstOutputData(-1, string.Empty, string.Empty, result ? SaveAddressMstStatus.Success : SaveAddressMstStatus.Error);
+                return new SaveAddressMstOutputData(-1, string.Empty, string.Empty, result ? SaveAddressMstStatus.Success : SaveAddressMstStatus.Failed);
             }
             finally
             {

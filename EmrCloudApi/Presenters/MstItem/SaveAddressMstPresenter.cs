@@ -13,6 +13,7 @@ namespace EmrCloudApi.Presenters.MstItem
         {
             SaveAddressMstStatus.Success => ResponseMessage.Success,
             SaveAddressMstStatus.Error => ResponseMessage.Error,
+            SaveAddressMstStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
 
