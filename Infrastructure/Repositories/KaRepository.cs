@@ -80,7 +80,8 @@ public class KaRepository : RepositoryBase, IKaRepository
             entity.SortNo = sortNo;
             entity.ReceKaCd = model.ReceKaCd;
             entity.KaSname = model.KaSname;
-            entity.KaName = model.KaSname;
+            entity.KaName = model.KaName;
+            entity.YousikiKaCd = model.YousikiKaCd;
             entity.IsDeleted = 0;
             entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             entity.UpdateId = userId;
