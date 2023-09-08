@@ -712,6 +712,8 @@ using UseCase.Online.UpdatePtInfOnlineQualify;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using Helper.Messaging;
+using UseCase.MainMenu.GetKensaIrai;
+using UseCase.MainMenu.GetKensaCenterMstList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1624,6 +1626,8 @@ namespace EmrCloudApi.Configs.Dependency
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
             busBuilder.RegisterUseCase<SaveStatisticMenuInputData, SaveStatisticMenuInteractor>();
+            busBuilder.RegisterUseCase<GetKensaIraiInputData, GetKensaIraiInteractor>();
+            busBuilder.RegisterUseCase<GetKensaCenterMstListInputData, GetKensaCenterMstListInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();

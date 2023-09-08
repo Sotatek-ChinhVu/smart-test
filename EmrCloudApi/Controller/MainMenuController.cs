@@ -16,6 +16,8 @@ using UseCase.Insurance.FindPtHokenList;
 using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Presenters.Insurance;
 using UseCase.Insurance.FindHokenInfByPtId;
+using UseCase.MainMenu.GetKensaIrai;
+using UseCase.MainMenu.GetKensaCenterMstList;
 
 namespace EmrCloudApi.Controller;
 
@@ -86,6 +88,26 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new FindPtHokenListPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<FindPtHokenListResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKensaIrai)]
+    public ActionResult<Response<GetKensaIraiResponse>> GetKensaIrai([FromQuery] GetKensaIraiRequest request)
+    {
+        var input = new GetKensaIraiInputData(HpId, request.PtId, request.StartDate, request.EndDate, request.KensaCenterMstCenterCd, request.KensaCenterMstPrimaryKbn);
+        var output = _bus.Handle(input);
+        var presenter = new GetKensaIraiPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKensaIraiResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKensaCenterMstList)]
+    public ActionResult<Response<GetKensaCenterMstListResponse>> GetKensaCenterMstList()
+    {
+        var input = new GetKensaCenterMstListInputData(HpId);
+        var output = _bus.Handle(input);
+        var presenter = new GetKensaCenterMstListPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKensaCenterMstListResponse>>(presenter.Result);
     }
 
     private List<StatisticMenuItem> ConvertToMenuItem(SaveStatisticMenuRequest request)
