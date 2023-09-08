@@ -712,6 +712,7 @@ using UseCase.Online.UpdatePtInfOnlineQualify;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using Helper.Messaging;
+using UseCase.MstItem.GetAllCmtCheckMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1369,6 +1370,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetAdoptedItemListInputData, GetAdoptedItemListInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedItemListInputData, UpdateAdoptedItemListInteractor>();
             busBuilder.RegisterUseCase<GetCmtCheckMstListInputData, GetCmtCheckMstListInteractor>();
+            busBuilder.RegisterUseCase<GetAllCmtCheckMstInputData, GetAllCmtCheckMstInteractor>();
             busBuilder.RegisterUseCase<SearchTenMstItemInputData, SearchTenMstItemInteractor>();
             busBuilder.RegisterUseCase<ConvertStringChkJISKjInputData, ConvertStringChkJISKjInteractor>();
             busBuilder.RegisterUseCase<GetTeikyoByomeiInputData, GetTeikyoByomeiInteractor>();

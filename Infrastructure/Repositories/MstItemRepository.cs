@@ -16,6 +16,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
+using System.Linq;
 using System.Text;
 
 namespace Infrastructure.Repositories
@@ -1777,6 +1778,65 @@ namespace Infrastructure.Repositories
                     result.Add(new ItemCmtModel(itemCd, entity.Cmt ?? string.Empty, entity.SortNo));
                 }
             }
+            return result;
+        }
+        
+        public List<CommentCheckMstModel> GetAllCmtCheckMst(int hpId, int sinDay)
+        {
+            var cmtCheckMsts = NoTrackingDataContext.CmtCheckMsts.Where(
+                    (x) => x.HpId == hpId && x.IsDeleted == 0);
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(
+                    (x) => x.HpId == Session.HospitalID && x.StartDate <= sinDay && x.EndDate >= sinDay);
+
+            var sinKouiCollection = new SinkouiCollection();
+
+            var tenJoinYakkaSyusai = from cmtCheckMst in cmtCheckMsts
+                                     join tenMst in tenMsts on
+                                         new { cmtCheckMst.HpId, cmtCheckMst.ItemCd } equals
+                                         new { tenMst.HpId, tenMst.ItemCd }
+                                     select new
+                                     {
+                                         CmtCheckMst = cmtCheckMst,
+                                         TenMstName = tenMst.Name,
+                                         KanaName1 = tenMst.KanaName1,
+                                         KanaName2 = tenMst.KanaName2,
+                                         KanaName3 = tenMst.KanaName3,
+                                         KohatuKbn = tenMst.KohatuKbn,
+                                         ItemCd = tenMst.ItemCd,
+                                         Ten = tenMst.Ten,
+                                         TenId = tenMst.TenId,
+                                         BuiKbn = tenMst.BuiKbn,
+                                         SinKouiKbn = tenMst.SinKouiKbn,
+                                         DrugKbn = tenMst.DrugKbn,
+                                         MasterSbt = tenMst.MasterSbt
+                                     };
+
+            var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
+                             join kouiKbnItem in sinKouiCollection.AsEnumerable()
+                             on ten.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
+                             from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
+                             select new
+                             {
+                                 CmtCheckMst = ten.CmtCheckMst,
+                                 TenMstName = ten.TenMstName,
+                                 KanaName1 = ten.KanaName1,
+                                 KanaName2 = ten.KanaName2,
+                                 KanaName3 = ten.KanaName3,
+                                 KohatuKbn = ten.KohatuKbn,
+                                 ItemCd = ten.ItemCd,
+                                 Ten = ten.Ten,
+                                 TenId = ten.TenId,
+                                 BuiKbn = ten.BuiKbn,
+                                 SinKouiKbn = ten.SinKouiKbn,
+                                 KouiName = tenKouiKbn.SinkouiName,
+                                 DrugKbn = ten.DrugKbn,
+                                 MasterSbt = ten.MasterSbt
+                             };
+
+            var result = queryFinal.AsEnumerable()
+                              .Select((x) => new CommentCheckMstModel(x.ItemCd, x.TenMstName, x.KanaName1, x.KanaName2, x.KanaName3,
+                              x.KouiName, x.KohatuKbn, x.Ten, x.TenId)).DistinctBy(x=> x.ItemCd)
+                              .ToList();
             return result;
         }
 

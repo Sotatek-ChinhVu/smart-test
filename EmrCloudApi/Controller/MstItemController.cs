@@ -19,6 +19,7 @@ using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
+using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDiseaseList;
@@ -456,6 +457,16 @@ namespace EmrCloudApi.Controller
             var presenter = new UploadImageDrugInfPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UploadImageDrugInfResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetAllCmtCheckMst)]
+        public ActionResult<Response<GetAllCmtCheckMstResponse>> GetAllCmtCheckMst([FromQuery] GetAllCmtCheckMstResponseRequest request)
+        {
+            var input = new GetAllCmtCheckMstInputData(HpId, request.SinDay);
+            var output = _bus.Handle(input);
+            var presenter = new GetAllCmtCheckMstPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
     }
 }
