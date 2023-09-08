@@ -5323,5 +5323,68 @@ namespace Infrastructure.Repositories
             }
             return result.ToString();
         }
+
+        public bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId)
+        {
+            var addedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Added);
+            var updatedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Modified);
+            var deletedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Deleted);
+
+            if (deletedModels.Any())
+            {
+                foreach (var model in deletedModels)
+                {
+                    var postCodeUpdate = TrackingDataContext.PostCodeMsts.FirstOrDefault(x => x.HpId == model.HpId && x.Id == model.Id);
+
+                    if (postCodeUpdate != null)
+                    {
+                        postCodeUpdate.IsDeleted = 1;
+                        postCodeUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        postCodeUpdate.UpdateId = userId;
+                    }
+                }
+            }
+
+            if (updatedModels.Any())
+            {
+                foreach (var model in updatedModels)
+                {
+                    var postCodeUpdate = TrackingDataContext.PostCodeMsts.FirstOrDefault(x => x.HpId == model.HpId && x.Id == model.Id);
+
+                    if (postCodeUpdate != null)
+                    {
+                        postCodeUpdate.PostCd = model.PostCd;
+                        postCodeUpdate.PrefName = model.PrefName;
+                        postCodeUpdate.CityName = model.CityName;
+                        postCodeUpdate.Banti = model.Banti;
+                        postCodeUpdate.IsDeleted = model.IsDeleted;
+                        postCodeUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        postCodeUpdate.UpdateId = userId;
+                    }
+                }
+            }
+
+            if (addedModels.Any())
+            {
+                foreach (var model in addedModels)
+                {
+                    TrackingDataContext.PostCodeMsts.Add(new PostCodeMst()
+                    {
+                        HpId = hpId,
+                        PostCd = model.PostCd,
+                        PrefName = model.PrefName,
+                        CityName = model.CityName,
+                        Banti = model.Banti,
+                        IsDeleted = 0,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                    });
+                }
+            }
+
+            return TrackingDataContext.SaveChanges() > 0;
+        }
     }
 }
