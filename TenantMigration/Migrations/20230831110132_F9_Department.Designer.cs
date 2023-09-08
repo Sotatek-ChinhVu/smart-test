@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20230831110132_F9_Department")]
+    partial class F9Department
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4984,6 +4987,7 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.Property<string>("YousikiKaCd")
+                        .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
                         .HasColumnName("YOUSIKI_KA_CD");
@@ -13745,10 +13749,6 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("CONFIRMATION_STATE");
 
-                    b.Property<int>("ConfirmationType")
-                        .HasColumnType("integer")
-                        .HasColumnName("CONFIRMATION_TYPE");
-
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -13765,11 +13765,6 @@ namespace TenantMigration.Migrations
                     b.Property<int>("HokenPid")
                         .HasColumnType("integer")
                         .HasColumnName("HOKEN_PID");
-
-                    b.Property<string>("InfoConsFlg")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("INFO_CONS_FLG");
 
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
@@ -13799,10 +13794,6 @@ namespace TenantMigration.Migrations
                     b.Property<long>("OyaRaiinNo")
                         .HasColumnType("bigint")
                         .HasColumnName("OYA_RAIIN_NO");
-
-                    b.Property<int>("PrescriptionIssueType")
-                        .HasColumnType("integer")
-                        .HasColumnName("PRESCRIPTION_ISSUE_TYPE");
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")
@@ -30404,10 +30395,6 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("CONFIRMATION_STATE");
 
-                    b.Property<int>("ConfirmationType")
-                        .HasColumnType("integer")
-                        .HasColumnName("CONFIRMATION_TYPE");
-
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -30428,11 +30415,6 @@ namespace TenantMigration.Migrations
                     b.Property<int>("HpId")
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID");
-
-                    b.Property<string>("InfoConsFlg")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("INFO_CONS_FLG");
 
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
@@ -30481,10 +30463,6 @@ namespace TenantMigration.Migrations
                     b.Property<long>("OyaRaiinNo")
                         .HasColumnType("bigint")
                         .HasColumnName("OYA_RAIIN_NO");
-
-                    b.Property<int>("PrescriptionIssueType")
-                        .HasColumnType("integer")
-                        .HasColumnName("PRESCRIPTION_ISSUE_TYPE");
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")

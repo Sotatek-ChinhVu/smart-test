@@ -709,6 +709,8 @@ using UseCase.SystemConf.GetPathAll;
 using UseCase.SystemConf.SavePath;
 using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdatePtInfOnlineQualify;
+using UseCase.Ka.GetKacodeMstYossi;
+using UseCase.Ka.GetKacodeYousikiMst;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using Helper.Messaging;
@@ -1660,6 +1662,10 @@ namespace EmrCloudApi.Configs.Dependency
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
             busBuilder.RegisterUseCase<UpdateAccountingFormMstInputData, UpdateAccountingFormMstInteractor>();
+
+            //Ka
+            busBuilder.RegisterUseCase<GetKacodeMstYossiInputData, GetKaCodeMstYossiInteractor>();
+            busBuilder.RegisterUseCase<GetKaCodeYousikiMstInputData, GetKaCodeYousikiMstInteractor>();
 
             //Audit Log
             busBuilder.RegisterUseCase<SaveAuditTrailLogInputData, SaveAuditTrailLogInteractor>();
