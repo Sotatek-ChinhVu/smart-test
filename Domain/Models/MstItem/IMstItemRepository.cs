@@ -137,5 +137,7 @@ namespace Domain.Models.MstItem
         string GetPrecautions(string yjCd);
 
         bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId);
+
+        bool CheckPostCodeExist(int hpId, string zipCD);
     }
 }

@@ -52,5 +52,10 @@ namespace Domain.Models.MstItem
         }
 
         public ModelStatus PostCodeStatus { get; private set; }
+
+        public bool CheckDefaultValue()
+        {
+            return string.IsNullOrEmpty(PostCd) && string.IsNullOrEmpty(CityName) && string.IsNullOrEmpty(PrefName) && string.IsNullOrEmpty(Banti);
+        }
     }
 }

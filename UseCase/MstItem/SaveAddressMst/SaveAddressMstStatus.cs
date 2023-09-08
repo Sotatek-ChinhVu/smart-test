@@ -3,6 +3,6 @@
     public enum SaveAddressMstStatus
     {
         Success = 1,
-        Failed = 2,
+        Error = 2,
     }
 }

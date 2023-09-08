@@ -5386,5 +5386,12 @@ namespace Infrastructure.Repositories
 
             return TrackingDataContext.SaveChanges() > 0;
         }
+
+        public bool CheckPostCodeExist(int hpId, string zipCD)
+        {
+            return NoTrackingDataContext.PostCodeMsts.Any(x => x.HpId == hpId &&
+                                                               x.IsDeleted == 0 &&
+                                                               x.PostCd == zipCD);
+        }
     }
 }

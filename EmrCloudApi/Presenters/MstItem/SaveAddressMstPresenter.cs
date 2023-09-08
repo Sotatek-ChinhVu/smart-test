@@ -12,14 +12,13 @@ namespace EmrCloudApi.Presenters.MstItem
         private string GetMessage(SaveAddressMstStatus status) => status switch
         {
             SaveAddressMstStatus.Success => ResponseMessage.Success,
-            SaveAddressMstStatus.Failed => ResponseMessage.Failed,
+            SaveAddressMstStatus.Error => ResponseMessage.Error,
             _ => string.Empty
         };
 
-
         public void Complete(SaveAddressMstOutputData outputData)
         {
-            Result.Data = new SaveAddressMstResponse(outputData.Status);
+            Result.Data = new SaveAddressMstResponse(outputData.Id, outputData.PostCd, outputData.ErrorMessage, outputData.Status);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }
