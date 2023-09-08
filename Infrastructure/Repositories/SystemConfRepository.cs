@@ -559,6 +559,12 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
             TrackingDataContext.Add(newEntity);
         }
+        var first = systemConfListXmlPathModels.FirstOrDefault();
+        var grpCd = first?.GrpCd ?? 0;
+        var grpCdEdaNo = first?.GrpEdaNo ?? 0;
+
+        var itemDeleted = NoTrackingDataContext.PathConfs.AsEnumerable().Where(p => p.HpId == hpId && p.GrpCd == grpCd && p.GrpEdaNo == grpCdEdaNo && !systemConfListXmlPathModels.Any(p1 => p.HpId == p1.HpId && p.GrpCd == p1.GrpCd && p.GrpEdaNo == p1.GrpEdaNo && p.SeqNo == p1.SeqNo));
+        TrackingDataContext.RemoveRange(itemDeleted);
 
         return TrackingDataContext.SaveChanges() > 0;
     }
