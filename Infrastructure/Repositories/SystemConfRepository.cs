@@ -534,20 +534,20 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
     {
         foreach (var systemConfListXmlPathModel in systemConfListXmlPathModels)
         {
-            var entity = TrackingDataContext.PathConfs.FirstOrDefault(p => p.HpId == systemConfListXmlPathModel.HpId && p.SeqNo == systemConfListXmlPathModel.SeqNo && p.GrpCd == systemConfListXmlPathModel.GrpCd && p.GrpCd == systemConfListXmlPathModel.GrpEdaNo);
+            var entity = TrackingDataContext.PathConfs.FirstOrDefault(p => p.HpId == systemConfListXmlPathModel.HpId && p.SeqNo == systemConfListXmlPathModel.SeqNo && p.GrpCd == systemConfListXmlPathModel.GrpCd && p.GrpEdaNo == systemConfListXmlPathModel.GrpEdaNo);
 
             var newEntity = new PathConf();
             newEntity.HpId = hpId;
             newEntity.Machine = systemConfListXmlPathModel.Machine;
             newEntity.Path = systemConfListXmlPathModel.Path;
-            newEntity.Param = systemConfListXmlPathModel.Param;
-            newEntity.Biko = systemConfListXmlPathModel.Biko;
-            newEntity.CharCd = systemConfListXmlPathModel.CharCd;
-            newEntity.IsInvalid = systemConfListXmlPathModel.IsInvalid;
+            newEntity.IsInvalid = 1;
             newEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             newEntity.UpdateId = userId;
+            newEntity.GrpCd = systemConfListXmlPathModel.GrpCd;
             if (entity != null)
             {
+                newEntity.SeqNo = systemConfListXmlPathModel.SeqNo;
+                TrackingDataContext.PathConfs.Remove(entity);
                 newEntity.CreateDate = TimeZoneInfo.ConvertTimeToUtc(systemConfListXmlPathModel.CreateDate);
                 newEntity.CreateId = systemConfListXmlPathModel.CreateId;
             }
@@ -556,16 +556,8 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                 newEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
                 newEntity.CreateId = userId;
             }
-        }
 
-        var first = systemConfListXmlPathModels.FirstOrDefault();
-        if (first != null)
-        {
-            var grpCd = first.GrpCd;
-            var grpEdaNo = first.GrpEdaNo;
-            var hpIdFE = first.HpId;
-            var pathConfToDelete = TrackingDataContext.PathConfs.Where(p => p.HpId == hpIdFE && p.GrpCd == grpCd && p.GrpEdaNo == grpEdaNo).ToList();
-            TrackingDataContext.PathConfs.RemoveRange(pathConfToDelete);
+            TrackingDataContext.Add(newEntity);
         }
 
         return TrackingDataContext.SaveChanges() > 0;
