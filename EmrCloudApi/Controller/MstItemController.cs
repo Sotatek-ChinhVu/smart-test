@@ -181,7 +181,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.ContainerMasterUpdate)]
         public ActionResult<Response<ContainerMasterUpdateResponse>> ContainerMasterUpdate([FromBody] ContainerMasterUpdateRequest request)
         {
-            var upsertUserList = request.ContainerMasterList.Select(u => UserInfoRequestToModel(u)).ToList();
+            var upsertUserList = request.ContainerMasterList.Select(u => ContainerMasterRequestToModel(u)).ToList();
             var input = new ContainerMasterUpdateInputData(HpId, UserId, upsertUserList);
             var output = _bus.Handle(input);
 
@@ -191,7 +191,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<ContainerMasterUpdateResponse>>(presenter.Result);
         }
 
-        private static ContainerMasterModel UserInfoRequestToModel(ContainerMasterRequest containerMaster)
+        private static ContainerMasterModel ContainerMasterRequestToModel(ContainerMasterRequest containerMaster)
         {
             return
                 new ContainerMasterModel
