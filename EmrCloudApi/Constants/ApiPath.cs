@@ -434,7 +434,10 @@
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
         public const string UpdateAccountingFormMst = "UpdateAccountingFormMst";
 
-        public const string Test = "Test";
+        //Ka
+        public const string GetKaCodeMstYossi = "GetKaCodeMstYossi";
+        public const string GetKaCodeYousikiMst = "GetKaCodeYousikiMst";
 
+        public const string Test = "Test";
     }
 }
