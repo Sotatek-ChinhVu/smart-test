@@ -33,10 +33,6 @@ namespace Interactor.MstItem
                 var data = _mstItemRepository.UpdateCmtCheckMst(inputData.UserId, inputData.HpId, inputData.ListItemCmt);
                 return new UpdateCmtCheckMstOutputData(data, UpdateCmtCheckMstStatus.Successed);
             }
-            catch (Exception)
-            {
-                return new UpdateCmtCheckMstOutputData(false, UpdateCmtCheckMstStatus.Failed);
-            }
             finally
             {
                 _mstItemRepository.ReleaseResource();
