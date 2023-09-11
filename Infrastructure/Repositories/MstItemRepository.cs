@@ -1763,7 +1763,10 @@ namespace Infrastructure.Repositories
 
             var totalCount = query.Count();
 
-            var result = query.OrderBy(x => x.PostCd)
+            var result = new List<PostCodeMstModel>();
+            if (pageIndex == -1 && pageSize == -1)
+            {
+                result = query.OrderBy(x => x.PostCd)
                                   .ThenBy(x => x.PrefName)
                                   .ThenBy(x => x.CityName)
                                   .ThenBy(x => x.Banti)
@@ -1777,9 +1780,28 @@ namespace Infrastructure.Repositories
                                       x.PrefName ?? string.Empty,
                                       x.CityName ?? string.Empty,
                                       x.Banti ?? string.Empty,
-                                      x.IsDeleted))
-                                  .Skip(pageIndex - 1).Take(pageSize)
-                                  .ToList();
+                                      x.IsDeleted)).ToList();
+            }
+            else
+            {
+                result = query.OrderBy(x => x.PostCd)
+                                 .ThenBy(x => x.PrefName)
+                                 .ThenBy(x => x.CityName)
+                                 .ThenBy(x => x.Banti)
+                                 .Select(x => new PostCodeMstModel(
+                                     x.Id,
+                                     x.HpId,
+                                     x.PostCd ?? string.Empty,
+                                     x.PrefKana ?? string.Empty,
+                                     x.CityKana ?? string.Empty,
+                                     x.PostalTermKana ?? string.Empty,
+                                     x.PrefName ?? string.Empty,
+                                     x.CityName ?? string.Empty,
+                                     x.Banti ?? string.Empty,
+                                     x.IsDeleted))
+                                 .Skip(pageIndex - 1).Take(pageSize)
+                                 .ToList();
+            }
 
             return (totalCount, result);
         }
