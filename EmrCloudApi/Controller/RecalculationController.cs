@@ -56,7 +56,7 @@ public class RecalculationController : AuthorizeControllerBase
             HttpResponse response = HttpContext.Response;
             //response.StatusCode = 202;
 
-            uniqueKey = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            uniqueKey = Guid.NewGuid().ToString();
             var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, uniqueKey, cancellationToken, _messenger);
             _bus.Handle(input);
         }
