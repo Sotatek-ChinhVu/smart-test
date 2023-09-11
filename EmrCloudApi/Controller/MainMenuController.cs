@@ -113,7 +113,7 @@ public class MainMenuController : AuthorizeControllerBase
         return new ActionResult<Response<GetKensaCenterMstListResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.CreateDataKensaIraiRenkei)]
+    [HttpPost(ApiPath.CreateDataKensaIraiRenkei)]
     public ActionResult<Response<CreateDataKensaIraiRenkeiResponse>> CreateDataKensaIraiRenkei([FromBody] CreateDataKensaIraiRenkeiRequest request)
     {
         var input = new CreateDataKensaIraiRenkeiInputData(HpId, UserId, request.KensaIraiList.Select(item => ConvertToKensaIraiModel(item)).ToList(), request.CenterCd, request.SystemDate);

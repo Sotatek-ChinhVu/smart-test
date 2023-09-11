@@ -430,6 +430,11 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         return successed;
     }
 
+    public bool CheckExistCenterCd(int hpId, string centerCd)
+    {
+        return NoTrackingDataContext.KensaCenterMsts.Any(item => item.HpId == hpId && item.CenterCd == centerCd);
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
