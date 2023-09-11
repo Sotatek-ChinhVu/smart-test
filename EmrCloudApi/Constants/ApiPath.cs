@@ -44,6 +44,7 @@
         public const string GetDefaultPrecautions = "GetDefaultPrecautions";
         public const string UploadImageDrugInf = "UploadImageDrugInf";
         public const string GetDiseaseList = "GetDiseaseList";
+        public const string SaveAddressMst = "SaveAddressMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
