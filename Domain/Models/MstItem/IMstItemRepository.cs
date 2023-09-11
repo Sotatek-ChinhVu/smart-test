@@ -137,5 +137,7 @@ namespace Domain.Models.MstItem
         string GetDrugAction(string yjCd);
 
         string GetPrecautions(string yjCd);
+
+        bool UpdateCmtCheckMst(int userId, int hpId, List<ItemCmtModel> listData);
     }
 }

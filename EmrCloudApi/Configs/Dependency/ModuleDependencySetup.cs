@@ -713,6 +713,7 @@ using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using Helper.Messaging;
 using UseCase.MstItem.GetAllCmtCheckMst;
+using UseCase.MstItem.UpdateCmtCheckMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1379,6 +1380,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UploadImageDrugInfInputData, UploadImageDrugInfInteractor>();
             busBuilder.RegisterUseCase<GetTenMstListInputData, GetTenMstListInteractor>();
             busBuilder.RegisterUseCase<GetDiseaseListInputData, GetDiseaseListInteractor>();
+            busBuilder.RegisterUseCase<UpdateCmtCheckMstInputData, UpdateCmtCheckMstInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();

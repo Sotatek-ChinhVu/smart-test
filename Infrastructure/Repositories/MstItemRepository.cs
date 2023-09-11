@@ -16,7 +16,6 @@ using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
-using System.Linq;
 using System.Text;
 
 namespace Infrastructure.Repositories
@@ -1775,12 +1774,12 @@ namespace Infrastructure.Repositories
                 if (entities == null) continue;
                 foreach (var entity in entities)
                 {
-                    result.Add(new ItemCmtModel(itemCd, entity.Cmt ?? string.Empty, entity.SortNo));
+                    result.Add(new ItemCmtModel(itemCd, entity.HpId, entity.SeqNo, entity.Cmt ?? string.Empty, entity.SortNo));
                 }
             }
             return result;
         }
-        
+
         public List<CommentCheckMstModel> GetAllCmtCheckMst(int hpId, int sinDay)
         {
             var cmtCheckMsts = NoTrackingDataContext.CmtCheckMsts.Where(
@@ -1835,7 +1834,7 @@ namespace Infrastructure.Repositories
 
             var result = queryFinal.AsEnumerable()
                               .Select((x) => new CommentCheckMstModel(x.ItemCd, x.TenMstName, x.KanaName1, x.KanaName2, x.KanaName3,
-                              x.KouiName, x.KohatuKbn, x.Ten, x.TenId)).DistinctBy(x=> x.ItemCd)
+                              x.KouiName, x.KohatuKbn, x.Ten, x.TenId)).DistinctBy(x => x.ItemCd)
                               .ToList();
             return result;
         }
@@ -5359,6 +5358,22 @@ namespace Infrastructure.Repositories
                 result.Append("/");
             }
             return result.ToString();
+        }
+
+        public bool UpdateCmtCheckMst(int userId, int hpId, List<ItemCmtModel> listData)
+        {
+            foreach (var item in listData)
+            {
+                var itemUpdate = TrackingDataContext.CmtCheckMsts.FirstOrDefault(t => t.HpId == item.HpId && t.ItemCd == item.ItemCd && t.SeqNo == item.SeqNo);
+                if (itemUpdate != null)
+                {
+                    itemUpdate.Cmt = item.Comment;
+                    itemUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    itemUpdate.UpdateId = userId;
+                    TrackingDataContext.SaveChanges();
+                }
+            }
+            return true;
         }
     }
 }
