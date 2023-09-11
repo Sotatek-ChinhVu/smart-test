@@ -1,5 +1,4 @@
 ﻿using Domain.Models.MstItem;
-using System.Collections.ObjectModel;
 
 namespace Domain.Models.KensaIrai;
 
@@ -49,7 +48,7 @@ public class KensaMstModel
         CenterItemCd2 = string.Empty;
     }
 
-    public KensaMstModel(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, List<TenMstModel> tenMsts)
+    public KensaMstModel(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, List<TenMstModel> tenMsts, List<KensaMstModel> kensaMstModels)
     {
         KensaItemCd = kensaItemCd;
         KensaItemSeqNo = kensaItemSeqNo;
@@ -73,6 +72,7 @@ public class KensaMstModel
         CenterItemCd1 = centerItemCd1;
         CenterItemCd2 = centerItemCd2;
         TenMsts = tenMsts;
+        KensaMstModels = kensaMstModels;
     }
 
     public string KensaItemCd { get; private set; }
@@ -119,4 +119,5 @@ public class KensaMstModel
 
     public List<TenMstModel> TenMsts { get; private set; }
 
+    public List<KensaMstModel> KensaMstModels { get; private set; }
 }

@@ -111,7 +111,28 @@ namespace Infrastructure.Repositories
                         select new
                         {
                             ParrentKensaMst = kensaMst.ParrentKensaMst,
-                            ChildKensaMsts = kensaMst.ChildKensaMsts,
+                            ChildKensaMsts = kensaMst.ChildKensaMsts.Select(x => new KensaMstModel(
+                                                                            x.KensaItemCd,
+                                                                            x.KensaItemSeqNo,
+                                                                            x.CenterCd ?? string.Empty,
+                                                                            x.KensaName ?? string.Empty,
+                                                                            x.KensaKana ?? string.Empty,
+                                                                            x.Unit ?? string.Empty,
+                                                                            x.MaterialCd,
+                                                                            x.ContainerCd,
+                                                                            x.MaleStd ?? string.Empty,
+                                                                            x.MaleStdLow ?? string.Empty,
+                                                                            x.MaleStdHigh ?? string.Empty,
+                                                                            x.FemaleStd ?? string.Empty,
+                                                                            x.FemaleStdLow ?? string.Empty,
+                                                                            x.FemaleStdHigh ?? string.Empty,
+                                                                            x.Formula ?? string.Empty,
+                                                                            x.Digit,
+                                                                            x.OyaItemCd ?? string.Empty,
+                                                                            x.OyaItemSeqNo,
+                                                                            x.SortNo,
+                                                                            x.CenterItemCd1 ?? string.Empty,
+                                                                            x.CenterItemCd2 ?? string.Empty)).ToList(),
                             TenMsts = tempTenMsts.Select(x => new TenMstModel(x.SinKouiKbn,
                                                                               x.MasterSbt ?? string.Empty,
                                                                               x.ItemCd,
@@ -138,6 +159,7 @@ namespace Infrastructure.Repositories
              
             foreach (var entity in query)
             {
+                var ChildKensaMsts = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == entity.ParrentKensaMst.KensaItemCd);
                 result.Add(new KensaMstModel(
                     entity.ParrentKensaMst.KensaItemCd,
                     entity.ParrentKensaMst.KensaItemSeqNo,
@@ -160,7 +182,8 @@ namespace Infrastructure.Repositories
                     entity.ParrentKensaMst.SortNo,
                     entity.ParrentKensaMst.CenterItemCd1 ?? string.Empty,
                     entity.ParrentKensaMst.CenterItemCd2 ?? string.Empty,
-                    entity.TenMsts
+                    entity.TenMsts,
+                    entity.ChildKensaMsts
                     ));
             }
 
