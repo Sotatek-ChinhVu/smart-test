@@ -49,7 +49,7 @@ public class KensaMstModel
         CenterItemCd2 = string.Empty;
     }
 
-    public KensaMstModel(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, TenMstModel tenMsts)
+    public KensaMstModel(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, List<TenMstModel> tenMsts)
     {
         KensaItemCd = kensaItemCd;
         KensaItemSeqNo = kensaItemSeqNo;
@@ -117,6 +117,6 @@ public class KensaMstModel
 
     public string CenterItemCd2 { get; private set; }
 
-    public TenMstModel TenMsts { get; private set; }
+    public List<TenMstModel> TenMsts { get; private set; }
 
 }
