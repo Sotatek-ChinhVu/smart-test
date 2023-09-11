@@ -46,6 +46,7 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
+using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.UploadImageDrugInf;
 
 namespace EmrCloudApi.Controller
@@ -466,6 +467,16 @@ namespace EmrCloudApi.Controller
             var input = new GetAllCmtCheckMstInputData(HpId, request.SinDay);
             var output = _bus.Handle(input);
             var presenter = new GetAllCmtCheckMstPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateCmtCheckMst)]
+        public ActionResult<Response<UpdateCmtCheckMstResponse>> UpdateCmtCheckMst([FromBody] UpdateCmtCheckMstRequest request)
+        {
+            var input = new UpdateCmtCheckMstInputData(UserId, HpId, request.ListItemCmt);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateCmtCheckMstPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
