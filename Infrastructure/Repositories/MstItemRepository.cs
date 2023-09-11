@@ -5326,7 +5326,7 @@ namespace Infrastructure.Repositories
 
         public bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId)
         {
-            var addedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Added);
+            var addedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Added && k.Id == 0);
             var updatedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Modified);
             var deletedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Deleted);
 
