@@ -36,6 +36,7 @@ using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
@@ -467,6 +468,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetAllCmtCheckMstPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
+        }
+        
+        [HttpPost(ApiPath.SaveAddressMst)]
+        public ActionResult<Response<SaveAddressMstResponse>> SaveAddressMst([FromBody] SaveAddressMstRequest request)
+        {
+            var input = new SaveAddressMstInputData(HpId, UserId, request.PostCodeMsts);
+            var output = _bus.Handle(input);
+            var presenter = new SaveAddressMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveAddressMstResponse>>(presenter.Result);
         }
     }
 }
