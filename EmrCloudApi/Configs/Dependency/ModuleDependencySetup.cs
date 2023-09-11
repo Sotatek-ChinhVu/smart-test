@@ -714,6 +714,7 @@ using UseCase.Ka.GetKacodeYousikiMst;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using Helper.Messaging;
+using UseCase.UpdateKensaMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1633,6 +1634,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //MstItem
             busBuilder.RegisterUseCase<GetJihiSbtMstListInputData, GetJihiMstsInteractor>();
+            busBuilder.RegisterUseCase<UpdateKensaMstInputData, UpdateKensaMstInteractor>();
 
             //HolidayMst
             busBuilder.RegisterUseCase<SaveHolidayMstInputData, SaveHolidayMstInteractor>();

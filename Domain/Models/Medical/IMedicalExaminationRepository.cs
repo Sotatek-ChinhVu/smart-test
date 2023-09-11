@@ -1,14 +1,17 @@
 ﻿using Domain.Common;
 using Domain.Models.AuditLog;
 using Domain.Models.Diseases;
+using Domain.Models.KensaIrai;
 using Domain.Models.Medical;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
+using Domain.Models.TenMst;
 
 namespace Domain.Models.MedicalExamination
 {
     public interface IMedicalExaminationRepository : IRepositoryBase
     {
+        void UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenMstModel> tenMsts);
         List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou);
 
         List<CheckedOrderModel> IgakuTokusituIsChecked(int hpId, int sinDate, int syosaisinKbn, List<CheckedOrderModel> checkedOrders, List<OrdInfDetailModel> allOdrInfDetail);
