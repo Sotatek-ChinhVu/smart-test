@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.SystemConf;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.SytemConf;
 using EmrCloudApi.Requests.SystemConf;
 using EmrCloudApi.Responses;
@@ -166,7 +167,20 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SavePath)]
         public ActionResult<Response<SavePathResponse>> SavePath([FromBody] SavePathRequest request)
         {
-            var input = new SavePathInputData(HpId, UserId, request.SystemConfListXmlPathModels);
+            var input = new SavePathInputData(HpId, UserId, request.SystemConfListXmlPathModels.Select(p => new SystemConfListXmlPathModel(
+                                HpId,
+                                p.GrpCd,
+                                0,
+                                p.SeqNo,
+                                p.Machine,
+                                p.Path,
+                                string.Empty,
+                                string.Empty,
+                                0,
+                                1,
+                                UserId,
+                                DateTime.MinValue
+                            )).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new SavePathPresenter();

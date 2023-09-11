@@ -75,6 +75,8 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> GetPtInfModelsByName(int hpId, string kanaName, string name, int birthDate, int sex1, int sex2);
 
+        List<PatientInforModel> GetPtInfModels(int hpId, long refNo);
+
         bool SavePtKyusei(int hpId, int userId, List<PtKyuseiModel> ptKyuseiList);
     }
 }
