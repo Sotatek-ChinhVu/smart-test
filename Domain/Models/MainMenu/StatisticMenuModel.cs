@@ -44,4 +44,6 @@ public class StatisticMenuModel
     public bool IsDeleted { get; private set; }
 
     public bool IsSaveTemp { get; private set; }
+
+    public bool IsModified { get; private set; }
 }
