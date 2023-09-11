@@ -17,4 +17,6 @@ public interface IKensaIraiRepository : IRepositoryBase
     bool CreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, string centerCd, int systemDate);
 
     bool CheckExistCenterCd(int hpId, string centerCd);
+
+    bool ReCreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, int systemDate);
 }

@@ -116,7 +116,17 @@ public class MainMenuController : AuthorizeControllerBase
     [HttpPost(ApiPath.CreateDataKensaIraiRenkei)]
     public ActionResult<Response<CreateDataKensaIraiRenkeiResponse>> CreateDataKensaIraiRenkei([FromBody] CreateDataKensaIraiRenkeiRequest request)
     {
-        var input = new CreateDataKensaIraiRenkeiInputData(HpId, UserId, request.KensaIraiList.Select(item => ConvertToKensaIraiModel(item)).ToList(), request.CenterCd, request.SystemDate);
+        var input = new CreateDataKensaIraiRenkeiInputData(HpId, UserId, request.KensaIraiList.Select(item => ConvertToKensaIraiModel(item)).ToList(), request.CenterCd, request.SystemDate, false);
+        var output = _bus.Handle(input);
+        var presenter = new CreateDataKensaIraiRenkeiPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<CreateDataKensaIraiRenkeiResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.ReCreateDataKensaIraiRenkei)]
+    public ActionResult<Response<CreateDataKensaIraiRenkeiResponse>> ReCreateDataKensaIraiRenkei([FromBody] ReCreateDataKensaIraiRenkeiRequest request)
+    {
+        var input = new CreateDataKensaIraiRenkeiInputData(HpId, UserId, request.KensaIraiList.Select(item => ConvertToKensaIraiModel(item)).ToList(), string.Empty, request.SystemDate, true);
         var output = _bus.Handle(input);
         var presenter = new CreateDataKensaIraiRenkeiPresenter();
         presenter.Complete(output);

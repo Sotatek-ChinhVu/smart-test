@@ -403,6 +403,7 @@
         public const string GetKensaIrai = "GetKensaIrai";
         public const string GetKensaCenterMstList = "GetKensaCenterMstList";
         public const string CreateDataKensaIraiRenkei = "CreateDataKensaIraiRenkei";
+        public const string ReCreateDataKensaIraiRenkei = "ReCreateDataKensaIraiRenkei";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";

@@ -27,7 +27,11 @@ public class CreateDataKensaIraiRenkeiInteractor : ICreateDataKensaIraiRenkeiInp
             {
                 return new CreateDataKensaIraiRenkeiOutputData(validateResult);
             }
-            if (_kensaIraiRepository.CreateDataKensaIraiRenkei(inputData.HpId, inputData.UserId, inputData.KensaIraiList, inputData.CenterCd, inputData.SystemDate))
+            if (!inputData.ReCreateDataKensaIraiRenkei && _kensaIraiRepository.CreateDataKensaIraiRenkei(inputData.HpId, inputData.UserId, inputData.KensaIraiList, inputData.CenterCd, inputData.SystemDate))
+            {
+                return new CreateDataKensaIraiRenkeiOutputData(CreateDataKensaIraiRenkeiStatus.Successed);
+            }
+            else if (inputData.ReCreateDataKensaIraiRenkei && _kensaIraiRepository.ReCreateDataKensaIraiRenkei(inputData.HpId, inputData.UserId, inputData.KensaIraiList, inputData.SystemDate))
             {
                 return new CreateDataKensaIraiRenkeiOutputData(CreateDataKensaIraiRenkeiStatus.Successed);
             }
@@ -47,11 +51,11 @@ public class CreateDataKensaIraiRenkeiInteractor : ICreateDataKensaIraiRenkeiInp
         {
             return CreateDataKensaIraiRenkeiStatus.InvalidPtId;
         }
-        else if (!_kensaIraiRepository.CheckExistCenterCd(inputData.HpId, inputData.CenterCd))
+        else if (!inputData.ReCreateDataKensaIraiRenkei && !_kensaIraiRepository.CheckExistCenterCd(inputData.HpId, inputData.CenterCd))
         {
             return CreateDataKensaIraiRenkeiStatus.InvalidCenterCd;
         }
-        foreach (var kensaIrai in inputData.KensaIraiList) 
+        foreach (var kensaIrai in inputData.KensaIraiList)
         {
             if (!_receptionRepository.CheckExistRaiinNo(inputData.HpId, kensaIrai.PtId, kensaIrai.RaiinNo))
             {
