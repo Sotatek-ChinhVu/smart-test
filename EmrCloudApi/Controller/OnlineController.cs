@@ -1,4 +1,5 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.Online;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Online;
@@ -120,10 +121,15 @@ public class OnlineController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.UpdateOnlineInRaiinInf)]
-    public ActionResult<Response<UpdateOnlineInRaiinInfResponse>> UpdateOnlineInRaiinInf([FromBody] UpdateOnlineInRaiinInfRequest request)
+    public async Task<ActionResult<Response<UpdateOnlineInRaiinInfResponse>>> UpdateOnlineInRaiinInf([FromBody] UpdateOnlineInRaiinInfRequest request)
     {
         var input = new UpdateOnlineInRaiinInfInputData(HpId, UserId, request.PtId, request.OnlineConfirmationDate, request.ConfirmationType, request.InfConsFlg);
         var output = _bus.Handle(input);
+
+        if (output.Status == UpdateOnlineInRaiinInfStatus.Successed)
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, new()));
+        }
 
         var presenter = new UpdateOnlineInRaiinInfPresenter();
         presenter.Complete(output);

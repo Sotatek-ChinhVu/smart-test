@@ -4,7 +4,6 @@ using Domain.Models.FlowSheet;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using Helper.Enum;
-using System.ComponentModel;
 
 namespace Domain.Models.MstItem
 {
@@ -41,6 +40,7 @@ namespace Domain.Models.MstItem
         List<TenItemModel> GetTenMstList(int hpId, List<string> itemCds);
 
         List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds);
+        List<CommentCheckMstModel> GetAllCmtCheckMst(int hpId, int sinDay);
 
         List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds);
 
@@ -136,6 +136,12 @@ namespace Domain.Models.MstItem
         string GetDrugAction(string yjCd);
 
         string GetPrecautions(string yjCd);
+
+        bool UpdateCmtCheckMst(int userId, int hpId, List<ItemCmtModel> listData);
+        
+        bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId);
+
+        bool CheckPostCodeExist(int hpId, string zipCD);
         List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
         List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today);
     }

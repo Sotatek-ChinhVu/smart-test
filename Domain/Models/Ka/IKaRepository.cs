@@ -8,7 +8,7 @@ public interface IKaRepository : IRepositoryBase
 
     List<KaMstModel> GetByKaIds(List<int> kaIds);
 
-    List<KaMstModel> GetList();
+    List<KaMstModel> GetList(int isDeleted);
 
     List<KaCodeMstModel> GetListKacode();
 
@@ -18,4 +18,7 @@ public interface IKaRepository : IRepositoryBase
 
     bool CheckKaId(List<int> kaIds);
 
+    List<KaCodeMstModel> GetKacodeMstYossi();
+
+    List<KacodeYousikiMstModel> GetKacodeYousikiMst();
 }
