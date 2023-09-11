@@ -682,6 +682,75 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.Receipt.CheckExistsReceInf;
+using UseCase.MstItem.GetTenMstList;
+using UseCase.MstItem.GetDiseaseList;
+using Domain.Models.Online;
+using UseCase.Online.InsertOnlineConfirmHistory;
+using Interactor.Online;
+using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
+using UseCase.Receipt.ValidateCreateUKEFile;
+using Interactor.PatientInfor.SortPatientCommon;
+using Reporting.DrugNoteSeal.Service;
+using Reporting.DrugNoteSeal.DB;
+using Reporting.Sokatu.HikariDisk.DB;
+using Reporting.Sokatu.HikariDisk.Service;
+using Reporting.Sokatu.KoukiSeikyu.DB;
+using UseCase.RaiinListSetting.GetDocCategory;
+using Interactor.RaiinListSetting;
+using Domain.Models.RaiinListSetting;
+using UseCase.RaiinListSetting.GetFilingcategory;
+using Reporting.Sokatu.AfterCareSeikyu.Service;
+using Reporting.Sokatu.AfterCareSeikyu.DB;
+using Reporting.Sijisen.DB;
+using Reporting.Sokatu.Syaho.Service;
+using Reporting.Sokatu.Syaho.DB;
+using Interactor.SetMst.CommonSuperSet;
+using Reporting.Sokatu.WelfareSeikyu.DB;
+using Reporting.Byomei.DB;
+using UseCase.User.GetListUserByCurrentUser;
+using UseCase.MedicalExamination.GetHeaderVistitDate;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.MstItem.UploadImageDrugInf;
+using UseCase.Reception.GetOutDrugOrderList;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using Reporting.Sokatu.KokhoSeikyu.Service;
+using UseCase.Accounting.GetAccountingFormMst;
+using UseCase.Accounting.UpdateAccountingFormMst;
+using UseCase.Insurance.FindPtHokenList;
+using UseCase.Online.GetRegisterdPatientsFromOnline;
+using UseCase.PatientInfor.GetPtInfByRefNo;
+using UseCase.PatientInfor.GetPtInfModelsByName;
+using UseCase.Online.UpdateOnlineConfirmationHistory;
+using UseCase.Online.UpdateOnlineHistoryById;
+using UseCase.Reception.GetYoyakuRaiinInf;
+using UseCase.Insurance.FindHokenInfByPtId;
+using UseCase.Online.UpdateOQConfirmation;
+using UseCase.Online.SaveAllOQConfirmation;
+using UseCase.Online.SaveOQConfirmation;
+using UseCase.Reception.GetRaiinInfBySinDate;
+using UseCase.SystemConf.GetXmlPath;
+using UseCase.Reception.GetHpInf;
+using Domain.Models.KensaIrai;
+using UseCase.MedicalExamination.SaveKensaIrai;
+using UseCase.Online.UpdateRefNo;
+using UseCase.Online.UpdateOnlineInRaiinInf;
+using Domain.Models.AuditLog;
+using UseCase.SaveAuditLog;
+using Interactor.AuditTrailLog;
+using UseCase.SystemConf.GetPathAll;
+using UseCase.SystemConf.SavePath;
+using UseCase.Online.SaveOQConfirmation;
+using UseCase.Online.UpdatePtInfOnlineQualify;
+using UseCase.Ka.GetKacodeMstYossi;
+using UseCase.Ka.GetKacodeYousikiMst;
+using UseCase.Online.GetListOnlineConfirmationHistoryModel;
+using UseCase.PatientInfor.GetPtInfModelsByRefNo;
+using Helper.Messaging;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1631,6 +1700,10 @@ namespace EmrCloudApi.Configs.Dependency
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
             busBuilder.RegisterUseCase<UpdateAccountingFormMstInputData, UpdateAccountingFormMstInteractor>();
+
+            //Ka
+            busBuilder.RegisterUseCase<GetKacodeMstYossiInputData, GetKaCodeMstYossiInteractor>();
+            busBuilder.RegisterUseCase<GetKaCodeYousikiMstInputData, GetKaCodeYousikiMstInteractor>();
 
             //Audit Log
             busBuilder.RegisterUseCase<SaveAuditTrailLogInputData, SaveAuditTrailLogInteractor>();
