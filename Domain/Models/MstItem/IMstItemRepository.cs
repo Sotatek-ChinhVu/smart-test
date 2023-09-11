@@ -40,6 +40,7 @@ namespace Domain.Models.MstItem
         List<TenItemModel> GetTenMstList(int hpId, List<string> itemCds);
 
         List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds);
+        List<CommentCheckMstModel> GetAllCmtCheckMst(int hpId, int sinDay);
 
         List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds);
 
