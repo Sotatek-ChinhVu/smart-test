@@ -18,81 +18,37 @@ namespace Domain.Models.MstItem
         )
         {
             ItemCd = itemCd;
+            KanaName3 = kanaName3;
             TenMstName = tenMstName;
             KanaName1 = kanaName1;
             KanaName2 = kanaName2;
-            KanaName3 = kanaName3;
             KouiName = kouiName;
             KohatuKbn = kohatuKbn;
             Ten = ten;
             TenId = tenId;
         }
 
-        private string _tenMstName;
-        public string TenMstName
-        {
-            get => _tenMstName;
-            set
-            {
-                if (_tenMstName == value) return;
-                _tenMstName = value;
-            }
-        }
+        public string TenMstName { get; private set; }
 
-        private string _kanaName1;
-        public string KanaName1
-        {
-            get => _kanaName1;
-            set
-            {
-                if (_kanaName1 == value) return;
-                _kanaName1 = value;
-            }
-        }
+        public string KanaName1 { get; private set; }
 
-        private string _kanaName2;
-        public string KanaName2
-        {
-            get => _kanaName2;
-            set
-            {
-                if (_kanaName2 == value) return;
-                _kanaName2 = value;
-            }
-        }
+        public string KanaName2 { get; private set; }
 
-        private string _kanaName3;
-        public string KanaName3
-        {
-            get => _kanaName3;
-            set
-            {
-                if (_kanaName3 == value) return;
-                _kanaName3 = value;
-            }
-        }
+        public string KanaName3 { get; private set; }
 
-        private string _kouiName;
-        public string KouiName
-        {
-            get => _kouiName;
-            set
-            {
-                if (_kouiName == value) return;
-                _kouiName = value;
-            }
-        }
+        public string KouiName { get; private set; }
 
-        private int _kohatuKbn;
-        public int KohatuKbn
-        {
-            get => _kohatuKbn;
-            set
-            {
-                if (_kohatuKbn == value) return;
-                _kohatuKbn = value;
-            }
-        }
+        public int KohatuKbn { get; private set; }
+
+        public double Ten { get; private set; }
+
+        public int TenId { get; private set; }
+
+        public int HpId { get; private set; }
+
+        public string ItemCd { get; private set; }
+
+        public int IsDeleted { get; private set; }
 
         public string KohatuKbnDisplay
         {
@@ -107,28 +63,6 @@ namespace Domain.Models.MstItem
                     return "〇";
                 }
                 return string.Empty;
-            }
-        }
-
-        private double _ten;
-        public double Ten
-        {
-            get => _ten;
-            set
-            {
-                if (_ten == value) return;
-                _ten = value;
-            }
-        }
-
-        private int _tenId;
-        public int TenId
-        {
-            get => _tenId;
-            set
-            {
-                if (_tenId == value) return;
-                _tenId = value;
             }
         }
 
@@ -149,10 +83,5 @@ namespace Domain.Models.MstItem
                 return Ten.AsString();
             }
         }
-
-        public int HpId { get; private set; }
-
-        public string ItemCd { get; private set; }
-        public int IsDeleted { get; private set; }
     }
 }
