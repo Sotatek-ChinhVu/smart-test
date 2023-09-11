@@ -29,7 +29,6 @@ namespace Domain.Models.MstItem
                 if (Id == 0) return string.Empty;
                 return Id.ToString().PadLeft(4, '0');
             }
-            private set { }
         }
 
         /// <summary>
