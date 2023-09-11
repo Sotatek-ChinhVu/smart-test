@@ -5438,55 +5438,48 @@ namespace Infrastructure.Repositories
         }
         public bool UpdateSingleDoseMst(List<SingleDoseMstModel> listToSave)
         {
-            try
+            string functName = string.Empty;
+            functName = nameof(UpdateSingleDoseMst);
+            List<SingleDoseMst> singleDoseAdded = new List<SingleDoseMst>();
+            List<SingleDoseMst> singleDoseEdit = new List<SingleDoseMst>();
+            List<SingleDoseMst> singleDoseDelete = new List<SingleDoseMst>();
+            foreach (var item in listToSave)
             {
-                string functName = string.Empty;
-                functName = nameof(UpdateSingleDoseMst);
-                List<SingleDoseMst> singleDoseAdded = new List<SingleDoseMst>();
-                List<SingleDoseMst> singleDoseEdit = new List<SingleDoseMst>();
-                List<SingleDoseMst> singleDoseDelete = new List<SingleDoseMst>();
-                foreach (var item in listToSave)
+                if (item != null && !item.CheckDefaultValue())
                 {
-                    if (item != null && !item.CheckDefaultValue())
+                    if (item.Status == ModelStatus.Modified)
                     {
-                        if (item.Status == ModelStatus.Modified)
+                        var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
+                        if (data != null)
                         {
-                            var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
-                            if (data != null)
-                            {
-                                data.UnitName = item.UnitName;
-                                _UpdateSingleDose(data);
-                                singleDoseEdit.Add(data);
-                            }
+                            data.UnitName = item.UnitName;
+                            _UpdateSingleDose(data);
+                            singleDoseEdit.Add(data);
                         }
-                        if (item.Status == ModelStatus.Added && !item.IsDeleted && item.Id == 0)
+                    }
+                    if (item.Status == ModelStatus.Added && !item.IsDeleted && item.Id == 0)
+                    {
+                        var singleDoseMst = new SingleDoseMst();
+                        singleDoseMst.UnitName = item.UnitName;
+                        singleDoseMst.HpId = item.HpId;
+                        _CreateSingleDose(singleDoseMst);
+                        singleDoseAdded.Add(singleDoseMst);
+                    }
+                    if (item.Status == ModelStatus.Deleted)
+                    {
+                        var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
+                        if (data != null)
                         {
-                            var singleDoseMst = new SingleDoseMst();
-                            singleDoseMst.UnitName = item.UnitName;
-                            singleDoseMst.HpId = item.HpId;
-                            _CreateSingleDose(singleDoseMst);
-                            singleDoseAdded.Add(singleDoseMst);
-                        }
-                        if (item.Status == ModelStatus.Deleted)
-                        {
-                            var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
-                            if (data != null)
-                            {
-                                singleDoseDelete.Add(data);
-                            }
+                            singleDoseDelete.Add(data);
                         }
                     }
                 }
-                TrackingDataContext.SingleDoseMsts.AddRange(singleDoseAdded);
-                TrackingDataContext.SingleDoseMsts.UpdateRange(singleDoseEdit);
-                TrackingDataContext.SingleDoseMsts.RemoveRange(singleDoseDelete);
-                TrackingDataContext.SaveChanges();
-                return true;
             }
-            catch
-            {
-                return false;
-            }
+            TrackingDataContext.SingleDoseMsts.AddRange(singleDoseAdded);
+            TrackingDataContext.SingleDoseMsts.UpdateRange(singleDoseEdit);
+            TrackingDataContext.SingleDoseMsts.RemoveRange(singleDoseDelete);
+            TrackingDataContext.SaveChanges();
+            return TrackingDataContext.SaveChanges() > 0;
 
         }
         private void _UpdateSingleDose(SingleDoseMst singleDoseMst)
@@ -5534,7 +5527,7 @@ namespace Infrastructure.Repositories
             }
             return true;
         }
-        
+
         public bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId)
         {
             var addedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Added && k.Id == 0);

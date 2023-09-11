@@ -15,7 +15,11 @@ namespace Interactor.MstItem
             try
             {
                 var updateSingleDoseMst = _mstItemRepository.UpdateSingleDoseMst(input.SingleDoseMsts);
-                return new UpdateSingleDoseMstOutputData(updateSingleDoseMst);
+                return new UpdateSingleDoseMstOutputData(true);
+            }
+            catch
+            {
+                return new UpdateSingleDoseMstOutputData(false);
             }
             finally
             {
