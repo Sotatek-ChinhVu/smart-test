@@ -402,6 +402,7 @@
         public const string FindPtHokenList = "FindPtHokenList";
         public const string GetKensaIrai = "GetKensaIrai";
         public const string GetKensaCenterMstList = "GetKensaCenterMstList";
+        public const string CreateDataKensaIraiRenkei = "CreateDataKensaIraiRenkei";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";

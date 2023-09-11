@@ -1,6 +1,4 @@
-﻿using Helper.Common;
-
-namespace Domain.Models.KensaIrai;
+﻿namespace Domain.Models.KensaIrai;
 
 public class KensaIraiModel
 {
@@ -43,5 +41,4 @@ public class KensaIraiModel
     public int SikyuKbn { get; private set; }
 
     public List<KensaIraiDetailModel> KensaIraiDetails { get; private set; }
-
 }

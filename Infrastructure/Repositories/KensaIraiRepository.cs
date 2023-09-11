@@ -3,9 +3,9 @@ using Domain.Models.KensaIrai;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
@@ -291,6 +291,143 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
             ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
         return result;
+    }
+
+    public bool CreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, string centerCd, int systemDate)
+    {
+        List<KensaInf> kensaInfs = new();
+        List<(KensaInf kensaInf, List<KensaInfDetail> kensaInfDetailList, List<OdrInfDetail> odrInfDetailList)> modelRelationList = new();
+        bool successed = false;
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
+            {
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
+                {
+                    foreach (var kensaIrai in kensaIraiList)
+                    {
+                        KensaInf kensaInf = new()
+                        {
+                            HpId = hpId,
+                            PtId = kensaIrai.PtId,
+                            RaiinNo = kensaIrai.RaiinNo,
+                            IraiDate = systemDate,
+                            InoutKbn = 1,
+                            Status = 0,
+                            TosekiKbn = kensaIrai.TosekiKbn,
+                            SikyuKbn = kensaIrai.SikyuKbn <= 1 ? 1 : kensaIrai.SikyuKbn,
+                            ResultCheck = 0,
+                            CenterCd = centerCd,
+                            Nyubi = string.Empty,
+                            Yoketu = string.Empty,
+                            Bilirubin = string.Empty,
+                            IsDeleted = 0,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId,
+                        };
+                        kensaInfs.Add(kensaInf);
+
+                        var ptIdList = kensaIraiList.Select(item => item.PtId).Distinct().ToList();
+                        var raiinNoList = kensaIraiList.Select(item => item.RaiinNo).Distinct().ToList();
+                        List<long> rpNoList = new();
+                        List<long> rpEdaNoList = new();
+                        List<int> rowNoList = new();
+
+                        foreach (var detailList in from KensaIraiModel item in kensaIraiList
+                                                   let detailList = item.KensaIraiDetails
+                                                   select detailList)
+                        {
+                            rpNoList.AddRange(detailList.Select(detail => detail.RpNo).Distinct().ToList());
+                            rpEdaNoList.AddRange(detailList.Select(detail => detail.RpEdaNo).Distinct().ToList());
+                            rowNoList.AddRange(detailList.Select(detail => detail.RowNo).Distinct().ToList());
+                        }
+                        rpNoList = rpNoList.Distinct().ToList();
+                        rpEdaNoList = rpEdaNoList.Distinct().ToList();
+                        rowNoList = rowNoList.Distinct().ToList();
+
+                        var odrInfDetailDBList = TrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
+                                                                                                 && ptIdList.Contains(item.PtId)
+                                                                                                 && raiinNoList.Contains(item.RaiinNo)
+                                                                                                 && rpNoList.Contains(item.RpNo)
+                                                                                                 && rpEdaNoList.Contains(item.RpEdaNo)
+                                                                                                 && rowNoList.Contains(item.RowNo))
+                                                                                   .ToList();
+
+                        List<KensaInfDetail> kensaInfDetailList = new();
+                        List<OdrInfDetail> odrInfDetailList = new();
+                        foreach (var kensaIraiDetail in kensaIrai.KensaIraiDetails)
+                        {
+                            kensaInfDetailList.Add(new KensaInfDetail()
+                            {
+                                HpId = hpId,
+                                PtId = kensaIrai.PtId,
+                                RaiinNo = kensaIrai.RaiinNo,
+                                IraiDate = systemDate,
+                                KensaItemCd = kensaIraiDetail.KensaItemCd,
+                                ResultVal = string.Empty,
+                                ResultType = string.Empty,
+                                AbnormalKbn = string.Empty,
+                                IsDeleted = 0,
+                                CmtCd1 = string.Empty,
+                                CmtCd2 = string.Empty,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                CreateId = userId,
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = userId,
+                            });
+
+                            if (!string.IsNullOrEmpty(kensaIraiDetail.KensaItemCd))
+                            {
+                                var odrInfDetail = odrInfDetailDBList.FirstOrDefault(item => item.HpId == hpId
+                                                                                             && item.PtId == kensaIrai.PtId
+                                                                                             && item.RaiinNo == kensaIrai.RaiinNo
+                                                                                             && item.RpNo == kensaIraiDetail.RpNo
+                                                                                             && item.RpEdaNo == kensaIraiDetail.RpEdaNo
+                                                                                             && item.RowNo == kensaIraiDetail.RowNo);
+                                if (odrInfDetail != null)
+                                {
+                                    odrInfDetailList.Add(odrInfDetail);
+                                }
+                            }
+                        }
+                        modelRelationList.Add((kensaInf, kensaInfDetailList, odrInfDetailList));
+                    }
+
+                    TrackingDataContext.KensaInfs.AddRange(kensaInfs);
+                    TrackingDataContext.SaveChanges();
+                    List<KensaInfDetail> kensaDetails = new();
+
+                    foreach (var modelRelation in modelRelationList)
+                    {
+                        foreach (var detail in modelRelation.kensaInfDetailList)
+                        {
+                            detail.IraiCd = modelRelation.kensaInf.IraiCd;
+                        }
+
+                        kensaDetails.AddRange(modelRelation.kensaInfDetailList);
+
+                        foreach (var odrDetail in modelRelation.odrInfDetailList)
+                        {
+                            odrDetail.JissiKbn = 1;
+                            odrDetail.JissiDate = CIUtil.GetJapanDateTimeNow();
+                            odrDetail.JissiId = userId;
+                            odrDetail.ReqCd = modelRelation.kensaInf.IraiCd.AsString();
+                        }
+                    }
+                    TrackingDataContext.KensaInfDetails.AddRange(kensaDetails);
+                    TrackingDataContext.SaveChanges();
+                    transaction.Commit();
+                    successed = true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+            });
+        return successed;
     }
 
     public void ReleaseResource()
