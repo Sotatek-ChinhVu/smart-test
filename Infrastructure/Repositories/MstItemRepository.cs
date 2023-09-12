@@ -17,7 +17,6 @@ using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
-using System.Drawing.Printing;
 using System.Text;
 
 namespace Infrastructure.Repositories
@@ -1492,7 +1491,7 @@ namespace Infrastructure.Repositories
             }
             return listByomeies;
         }
-        
+
         public List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes)
         {
             var listDatas = NoTrackingDataContext.ByomeiMsts.Where(item => keyCodes.Contains(item.ByomeiCd)).ToList();
@@ -1736,11 +1735,11 @@ namespace Infrastructure.Repositories
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
             }
-            else if (!string.IsNullOrEmpty(postCode1))
+            if (!string.IsNullOrEmpty(postCode1))
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
             }
-            else if (!string.IsNullOrEmpty(postCode2))
+            if (!string.IsNullOrEmpty(postCode2))
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.EndsWith(postCode2));
             }
@@ -5429,8 +5428,8 @@ namespace Infrastructure.Repositories
                 .Replace("ｯ", "ﾂ");
 
             var query = NoTrackingDataContext.ByomeiMsts.Where(item => item.HpId == hpId &&
-                                    (!String.IsNullOrEmpty(keyword) 
-                                    && 
+                                    (!String.IsNullOrEmpty(keyword)
+                                    &&
                                     (item.KanaName1 != null &&
                                      item.KanaName1.ToUpper()
                                         .Replace("ｧ", "ｱ")
@@ -5536,18 +5535,18 @@ namespace Infrastructure.Repositories
                                     &&
                                     (item.ByomeiCd.Length != 4 || item.ByomeiCd.Length == 4 && string.Compare(item.ByomeiCd, "9000") < 0))
                                     .OrderBy(item => item.KanaName1).ThenByDescending(item => item.IsAdopted).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-           
+
             List<ByomeiMstModel> listByomeies = new();
             if (query != null)
             {
                 foreach (var item in query)
                 {
                     var itemCheck = checkIsMatch(item, chkByoKbn0, chkByoKbn1, chkSaiKbn, chkMiSaiKbn, chkSidoKbn, chkToku, chkHiToku1, chkHiToku2, chkTenkan, chkTokuTenkan, chkNanbyo);
-                    if(itemCheck)
+                    if (itemCheck)
                     {
                         var itemAdd = ConvertToByomeiMstModel(item);
                         listByomeies.Add(itemAdd);
-                    }    
+                    }
                 }
             }
             return listByomeies;
@@ -5634,7 +5633,7 @@ namespace Infrastructure.Repositories
             }
             return true;
         }
-        
+
         public bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId)
         {
             var addedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Added && k.Id == 0);
