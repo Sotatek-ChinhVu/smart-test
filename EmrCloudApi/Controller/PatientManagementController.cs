@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.MainMenu;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.PatientManagement;
 using EmrCloudApi.Requests.PatientManagement;
 using EmrCloudApi.Responses;
@@ -6,7 +7,8 @@ using EmrCloudApi.Responses.PatientManagement;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.PatientManagement;
+using UseCase.PatientManagement.SaveStaConf;
+using UseCase.PatientManagement.SearchPtInfs;
 
 namespace EmrCloudApi.Controller
 {
@@ -21,7 +23,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.SearchPtInfs)]
-        public ActionResult<Response<SearchPtInfsResponse>> GetList([FromBody] SearchPtInfsRequest request)
+        public ActionResult<Response<SearchPtInfsResponse>> SearchPtInfs([FromBody] SearchPtInfsRequest request)
         {
             var input = new SearchPtInfsInputData(HpId, request.OutputOrder, request.PageIndex, request.PageCount, request.CoSta9000PtConf, request.CoSta9000HokenConf,
                                                    request.CoSta9000ByomeiConf, request.CoSta9000RaiinConf, request.CoSta9000SinConf, request.CoSta9000KarteConf, request.CoSta9000KensaConf);
@@ -31,6 +33,31 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<SearchPtInfsResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveStaConfMenu)]
+        public ActionResult<Response<SaveStaConfMenuResponse>> SaveStaConfMenu([FromBody] SaveStaConfMenuRequest request)
+        {
+            var input = new SaveStaConfMenuInputData(HpId, UserId, ConvertStatisticMenuModel(request.StaConfMenu));
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveStaConfMenuPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveStaConfMenuResponse>>(presenter.Result);
+        }
+
+        private StatisticMenuModel ConvertStatisticMenuModel(SaveStaConfMenuRequestItem staConf)
+        {
+            return new StatisticMenuModel(
+                                          staConf.StaConfMenu.MenuId,
+                                          staConf.StaConfMenu.GrpId,
+                                          staConf.StaConfMenu.ReportId,
+                                          staConf.StaConfMenu.SortNo,
+                                          staConf.StaConfMenu.IsDeleted,
+                                          staConf.StaConfMenu.IsModified,
+                                          staConf.StaConfMenu.PatientManagement
+                                          );
         }
     }
 }

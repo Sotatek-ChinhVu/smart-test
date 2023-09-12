@@ -14,7 +14,17 @@ namespace Interactor.PatientManagement
 
         public SaveStaConfMenuOutputData Handle(SaveStaConfMenuInputData inputData)
         {
-            _statisticRepository.
+            try
+            {
+                var result = _statisticRepository.SaveStaConfMenu(inputData.HpId, inputData.UserId, inputData.StatisticMenu);
+
+                return new SaveStaConfMenuOutputData(result ? SaveStaConfMenuStatus.Successed : SaveStaConfMenuStatus.Failed);
+            }
+            finally
+            {
+                _statisticRepository.ReleaseResource();
+            }
+
         }
     }
 }

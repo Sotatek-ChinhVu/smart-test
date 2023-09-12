@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.MainMenu;
+﻿using Domain.Models.PatientInfor;
+
+namespace Domain.Models.MainMenu;
 
 public class StatisticMenuModel
 {
@@ -27,6 +29,24 @@ public class StatisticMenuModel
         IsSaveTemp = isSaveTemp;
     }
 
+    public StatisticMenuModel(int menuId, int grpId, int reportId, int sortNo, bool isDeleted, bool isModified, PatientManagementItem patientManagement)
+    {
+        MenuId = menuId;
+        GrpId = grpId;
+        ReportId = reportId;
+        SortNo = sortNo;
+        IsDeleted = isDeleted;
+        IsModified = isModified;
+        PatientManagement = patientManagement;
+    }
+
+    public StatisticMenuModel()
+    {
+        MenuName = string.Empty;
+        StaConfigList = new();
+        PatientManagement = new();
+    }
+
     public int MenuId { get; private set; }
 
     public int GrpId { get; private set; }
@@ -46,4 +66,6 @@ public class StatisticMenuModel
     public bool IsSaveTemp { get; private set; }
 
     public bool IsModified { get; private set; }
+
+    public PatientManagementItem PatientManagement { get; private set; }
 }

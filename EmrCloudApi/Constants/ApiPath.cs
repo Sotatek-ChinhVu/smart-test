@@ -419,5 +419,6 @@
 
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
+        public const string SaveStaConfMenu = "SaveStaConfMenu";
     }
 }

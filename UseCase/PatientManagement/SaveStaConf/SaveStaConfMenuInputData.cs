@@ -5,11 +5,15 @@ namespace UseCase.PatientManagement.SaveStaConf
 {
     public class SaveStaConfMenuInputData : IInputData<SaveStaConfMenuOutputData>
     {
-        public SaveStaConfMenuInputData(StaConfModel staConf)
+        public SaveStaConfMenuInputData(int hpId, int userId, StatisticMenuModel statisticMenu)
         {
-            StaConf = staConf;
+            HpId = hpId;
+            UserId = userId;
+            StatisticMenu = statisticMenu;
         }
 
-        public StaConfModel StaConf { get; set; }
+        public int HpId { get; private set; }
+        public int UserId { get; private set; }
+        public StatisticMenuModel StatisticMenu { get; private set; }
     }
 }

@@ -9,4 +9,6 @@ public interface IStatisticRepository : IRepositoryBase
     List<StaGrpModel> GetStaGrp(int hpId, int grpId);
 
     (int menuIdTemp, bool success) SaveStatisticMenu(int hpId, int userId, List<StatisticMenuModel> statisticMenuModelList);
+
+    bool SaveStaConfMenu(int hpId, int userId, StatisticMenuModel statisticMenu);
 }
