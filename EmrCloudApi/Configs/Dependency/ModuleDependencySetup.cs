@@ -757,6 +757,7 @@ using UseCase.MainMenu.GetKensaCenterMstList;
 using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
+using Domain.Models.ListSetMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1156,6 +1157,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IOnlineRepository, OnlineRepository>();
             services.AddTransient<IStaticsticExportCsvService, StaticsticExportCsvService>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
