@@ -523,10 +523,15 @@ namespace Domain.Models.MstItem
         {
             get
             {
-                if (!String.IsNullOrEmpty(KensaMstCenterItemCd1) && !String.IsNullOrEmpty(KensaMstCenterItemCd2))
+                if (string.IsNullOrEmpty(KensaMstCenterItemCd1)) return KensaMstCenterItemCd2;
+
+                if (string.IsNullOrEmpty(KensaMstCenterItemCd2)) return KensaMstCenterItemCd1;
+
+                if (!string.IsNullOrEmpty(KensaMstCenterItemCd1) && !string.IsNullOrEmpty(KensaMstCenterItemCd2))
                 {
                     return string.Format("{0}/{1}", KensaMstCenterItemCd1, KensaMstCenterItemCd1);
                 }
+
                 return string.Empty;
             }
         }

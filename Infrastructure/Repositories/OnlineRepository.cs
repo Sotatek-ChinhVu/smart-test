@@ -17,23 +17,43 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     {
     }
 
-    public bool InsertOnlineConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> onlineList)
+    public List<long> InsertOnlineConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> onlineList)
     {
-        var onlineInsertList = onlineList.Select(item => new OnlineConfirmationHistory()
-        {
-            ID = 0,
-            PtId = item.PtId,
-            OnlineConfirmationDate = item.OnlineConfirmationDate,
-            ConfirmationType = item.ConfirmationType,
-            ConfirmationResult = item.ConfirmationResult,
-            UketukeStatus = item.UketukeStatus,
-            CreateDate = CIUtil.GetJapanDateTimeNow(),
-            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-            CreateId = userId,
-            UpdateId = userId,
-        }).ToList();
-        TrackingDataContext.AddRange(onlineInsertList);
-        return TrackingDataContext.SaveChanges() > 0;
+        List<long> idList = new();
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
+            {
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
+                {
+                    var onlineInsertList = onlineList.Select(item => new OnlineConfirmationHistory()
+                    {
+                        ID = 0,
+                        PtId = item.PtId,
+                        OnlineConfirmationDate = item.OnlineConfirmationDate,
+                        ConfirmationType = item.ConfirmationType,
+                        ConfirmationResult = item.ConfirmationResult,
+                        UketukeStatus = item.UketukeStatus,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateId = userId,
+                    }).ToList();
+                    foreach (var online in onlineInsertList)
+                    {
+                        TrackingDataContext.AddRange(online);
+                        TrackingDataContext.SaveChanges();
+                        idList.Add(online.ID);
+                    }
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+            });
+        return idList;
     }
 
     public List<OnlineConfirmationHistoryModel> GetRegisterdPatientsFromOnline(int confirmDate, int id = 0, int confirmType = 1)
@@ -533,7 +553,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
 
             }
         }
-        NoTrackingDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
     }
 
     private string ReplaceAt(string input, int index, char newChar)

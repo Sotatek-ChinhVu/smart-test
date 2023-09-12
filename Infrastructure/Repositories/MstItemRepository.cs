@@ -15,6 +15,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using System.Text;
@@ -1114,7 +1115,7 @@ namespace Infrastructure.Repositories
                 tenMstQuery = tenMstQuery.Where(t => t.IsDeleted == DeleteTypes.None);
             }
 
-            var tenMstQueryForGetlastDate = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId);
+            var tenMstQueryForGetlastDate = queryResult.AsNoTracking();
             if (isAllowSearchDeletedItem)
             {
                 if (isDeleted)
@@ -1130,6 +1131,10 @@ namespace Infrastructure.Repositories
             {
                 tenMstQueryForGetlastDate = tenMstQueryForGetlastDate.Where(t => t.IsDeleted == DeleteTypes.None);
             }
+            var tenMstGetLastDateQuery = tenMstQueryForGetlastDate.Select(x => new { ItemCd = x.ItemCd, EndDate = x.EndDate })
+                                                                  .GroupBy(x => x.ItemCd)
+                                                                  .Select(x => new { ItemCd = x.Key, EndDate = x.Max(y => y.EndDate) })
+                                                                  .ToList();
 
             var totalCount = queryResult.Count();
 
@@ -1138,30 +1143,50 @@ namespace Infrastructure.Repositories
                                 where tenKN.ItemCd.StartsWith("KN")
                                 select new { tenKN.ItemCd, ten.Ten }).ToList();
 
-            var tenJoinYakkaSyusai = (from ten in queryResult
-                                      join yakkaSyusaiMstItem in yakkaSyusaiMstList
-                                      on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
-                                      from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
-                                      select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem }).ToList();
+            //tenJoinYakkaSyusai thấy đang ko dùng đến nên comment tạm lại
+            //var tenJoinYakkaSyusai = (from ten in queryResult
+            //                          join yakkaSyusaiMstItem in yakkaSyusaiMstList
+            //                          on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
+            //                          from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
+            //                          select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem }).ToList();
 
             var sinKouiCollection = new SinkouiCollection();
 
-            var queryFinal = (from ten in tenJoinYakkaSyusai
+            var queryFinal = (from ten in queryResult.AsEnumerable()
+                              join tenLastDate in tenMstGetLastDateQuery
+                              on ten.ItemCd equals tenLastDate.ItemCd
                               join kouiKbnItem in sinKouiCollection
-                              on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
+                              on ten.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
                               from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
                               join tenKN in queryKNTensu
-                              on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
+                              on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
                               from tenKN in tenKNLeft.DefaultIfEmpty()
                               select new
                               {
-                                  ten.TenMst,
+                                  TenMst = ten,
                                   KouiName = tenKouiKbn.SinkouiName,
-                                  ten.YakkaSyusaiItem,
-                                  tenKN
+                                  //ten.YakkaSyusaiItem,
+                                  tenKN,
+                                  LastEndDate = tenLastDate.EndDate
                               }).ToList();
 
-            var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
+            var kensaMstQuery = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId);
+
+            var queryJoinWithKensa = from q in queryFinal
+                                     join k in kensaMstQuery
+                                     on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
+                                     from kensaMst in kensaMsts.DefaultIfEmpty()
+                                     select new
+                                     {
+                                         q.TenMst,
+                                         q.KouiName,
+                                         //q.YakkaSyusaiItem, 
+                                         q.tenKN,
+                                         KensaMst = kensaMst,
+                                         LastEndDate = q.LastEndDate
+                                     };
+
+            var ipnCdList = queryJoinWithKensa.Select(q => q.TenMst.IpnNameCd).ToList();
             var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
 
             var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u =>
@@ -1178,9 +1203,7 @@ namespace Infrastructure.Repositories
                                                                            p.StartDate <= sTDDate &&
                                                                            p.EndDate >= sTDDate).ToList();
 
-            var joinedQuery = from q in queryFinal
-                              join k in NoTrackingDataContext.KensaMsts on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
-                              from kensaMst in kensaMsts.DefaultIfEmpty()
+            var joinedQuery = from q in queryJoinWithKensa
                               join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
                               from ipnExclude in ipnExcludes.DefaultIfEmpty()
                               join ipnItem in ipnKasanExcludeItem on q.TenMst.ItemCd equals ipnItem.ItemCd into ipnExcludesItems
@@ -1193,9 +1216,9 @@ namespace Infrastructure.Repositories
                               {
                                   q.TenMst,
                                   q.KouiName,
-                                  q.YakkaSyusaiItem,
+                                  //q.YakkaSyusaiItem,
                                   q.tenKN,
-                                  KensaMst = kensaMst,
+                                  q.KensaMst,
                                   IpnName = ipnNameMst?.IpnName ?? string.Empty,
                                   IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
                                   Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
@@ -1251,6 +1274,18 @@ namespace Infrastructure.Repositories
                                                            item.IsGetYakkaPrice
                                                             )).ToList();
 
+            if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
+            {
+                tenMstModels = tenMstModels.Where(t => (t.ItemCd.Length >= 2 && t.ItemCd.StartsWith("K") && Char.IsDigit(t.ItemCd, 1)) || t.ItemCd.StartsWith("KN") || !t.ItemCd.StartsWith("K")).ToList();
+                totalCount = tenMstModels.Count();
+            }
+            // Get Master search result
+            if (isMasterSearch || isExpiredSearchIfNoData)
+            {
+                tenMstModels = tenMstModels.GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate)?.FirstOrDefault() ?? new()).ToList();
+                totalCount = tenMstModels.Count();
+            }
+
             var orderedQuery = (sortCol, sortType) switch
             {
                 (FilterTenMstEnum.RousaiKbn, SortType.Asc) => tenMstModels.OrderBy(item => item.RousaiKbnDisplay),
@@ -1284,18 +1319,6 @@ namespace Infrastructure.Repositories
 
             tenMstModels = orderedQuery.Skip((pageIndex - 1) * pageCount)
                                            .Take(pageCount).ToList();
-
-            if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
-            {
-                tenMstModels = tenMstModels.Where(t => (t.ItemCd.Length >= 2 && t.ItemCd.StartsWith("K") && Char.IsDigit(t.ItemCd, 1)) || t.ItemCd.StartsWith("KN") || !t.ItemCd.StartsWith("K")).ToList();
-                totalCount = tenMstModels.Count();
-            }
-            // Get Master search result
-            if (isMasterSearch || isExpiredSearchIfNoData)
-            {
-                tenMstModels = tenMstModels.GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate)?.FirstOrDefault() ?? new()).ToList();
-                totalCount = tenMstModels.Count();
-            }
 
             return (tenMstModels, totalCount);
         }
@@ -1714,11 +1737,11 @@ namespace Infrastructure.Repositories
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
             }
-            else if (!string.IsNullOrEmpty(postCode1))
+            if (!string.IsNullOrEmpty(postCode1))
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
             }
-            else if (!string.IsNullOrEmpty(postCode2))
+            if (!string.IsNullOrEmpty(postCode2))
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.EndsWith(postCode2));
             }
@@ -1742,7 +1765,10 @@ namespace Infrastructure.Repositories
 
             var totalCount = query.Count();
 
-            var result = query.OrderBy(x => x.PostCd)
+            var result = new List<PostCodeMstModel>();
+            if (pageIndex == -1 && pageSize == -1)
+            {
+                result = query.OrderBy(x => x.PostCd)
                                   .ThenBy(x => x.PrefName)
                                   .ThenBy(x => x.CityName)
                                   .ThenBy(x => x.Banti)
@@ -1756,9 +1782,28 @@ namespace Infrastructure.Repositories
                                       x.PrefName ?? string.Empty,
                                       x.CityName ?? string.Empty,
                                       x.Banti ?? string.Empty,
-                                      x.IsDeleted))
-                                  .Skip(pageIndex - 1).Take(pageSize)
-                                  .ToList();
+                                      x.IsDeleted)).ToList();
+            }
+            else
+            {
+                result = query.OrderBy(x => x.PostCd)
+                                 .ThenBy(x => x.PrefName)
+                                 .ThenBy(x => x.CityName)
+                                 .ThenBy(x => x.Banti)
+                                 .Select(x => new PostCodeMstModel(
+                                     x.Id,
+                                     x.HpId,
+                                     x.PostCd ?? string.Empty,
+                                     x.PrefKana ?? string.Empty,
+                                     x.CityKana ?? string.Empty,
+                                     x.PostalTermKana ?? string.Empty,
+                                     x.PrefName ?? string.Empty,
+                                     x.CityName ?? string.Empty,
+                                     x.Banti ?? string.Empty,
+                                     x.IsDeleted))
+                                 .Skip(pageIndex - 1).Take(pageSize)
+                                 .ToList();
+            }
 
             return (totalCount, result);
         }
@@ -1776,9 +1821,68 @@ namespace Infrastructure.Repositories
                 if (entities == null) continue;
                 foreach (var entity in entities)
                 {
-                    result.Add(new ItemCmtModel(itemCd, entity.Cmt ?? string.Empty, entity.SortNo));
+                    result.Add(new ItemCmtModel(itemCd, entity.HpId, entity.SeqNo, entity.Cmt ?? string.Empty, entity.SortNo));
                 }
             }
+            return result;
+        }
+
+        public List<CommentCheckMstModel> GetAllCmtCheckMst(int hpId, int sinDay)
+        {
+            var cmtCheckMsts = NoTrackingDataContext.CmtCheckMsts.Where(
+                    (x) => x.HpId == hpId && x.IsDeleted == 0);
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(
+                    (x) => x.HpId == Session.HospitalID && x.StartDate <= sinDay && x.EndDate >= sinDay);
+
+            var sinKouiCollection = new SinkouiCollection();
+
+            var tenJoinYakkaSyusai = from cmtCheckMst in cmtCheckMsts
+                                     join tenMst in tenMsts on
+                                         new { cmtCheckMst.HpId, cmtCheckMst.ItemCd } equals
+                                         new { tenMst.HpId, tenMst.ItemCd }
+                                     select new
+                                     {
+                                         CmtCheckMst = cmtCheckMst,
+                                         TenMstName = tenMst.Name,
+                                         KanaName1 = tenMst.KanaName1,
+                                         KanaName2 = tenMst.KanaName2,
+                                         KanaName3 = tenMst.KanaName3,
+                                         KohatuKbn = tenMst.KohatuKbn,
+                                         ItemCd = tenMst.ItemCd,
+                                         Ten = tenMst.Ten,
+                                         TenId = tenMst.TenId,
+                                         BuiKbn = tenMst.BuiKbn,
+                                         SinKouiKbn = tenMst.SinKouiKbn,
+                                         DrugKbn = tenMst.DrugKbn,
+                                         MasterSbt = tenMst.MasterSbt
+                                     };
+
+            var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
+                             join kouiKbnItem in sinKouiCollection.AsEnumerable()
+                             on ten.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
+                             from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
+                             select new
+                             {
+                                 CmtCheckMst = ten.CmtCheckMst,
+                                 TenMstName = ten.TenMstName,
+                                 KanaName1 = ten.KanaName1,
+                                 KanaName2 = ten.KanaName2,
+                                 KanaName3 = ten.KanaName3,
+                                 KohatuKbn = ten.KohatuKbn,
+                                 ItemCd = ten.ItemCd,
+                                 Ten = ten.Ten,
+                                 TenId = ten.TenId,
+                                 BuiKbn = ten.BuiKbn,
+                                 SinKouiKbn = ten.SinKouiKbn,
+                                 KouiName = tenKouiKbn.SinkouiName,
+                                 DrugKbn = ten.DrugKbn,
+                                 MasterSbt = ten.MasterSbt
+                             };
+
+            var result = queryFinal.AsEnumerable()
+                              .Select((x) => new CommentCheckMstModel(x.ItemCd, x.TenMstName, x.KanaName1, x.KanaName2, x.KanaName3,
+                              x.KouiName, x.KohatuKbn, x.Ten, x.TenId)).DistinctBy(x => x.ItemCd)
+                              .ToList();
             return result;
         }
 
@@ -5301,6 +5405,305 @@ namespace Infrastructure.Repositories
                 result.Append("/");
             }
             return result.ToString();
+        }
+
+        public List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize)
+        {
+            string kanaKeyword = keyword != string.Empty ? keyword : "";
+            if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
+            {
+                var inputKeyword = keyword;
+                kanaKeyword = CIUtil.ToHalfsize(keyword);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
+            }
+
+            string sBigKeyword = kanaKeyword.ToUpper()
+                .Replace("ｧ", "ｱ")
+                .Replace("ｨ", "ｲ")
+                .Replace("ｩ", "ｳ")
+                .Replace("ｪ", "ｴ")
+                .Replace("ｫ", "ｵ")
+                .Replace("ｬ", "ﾔ")
+                .Replace("ｭ", "ﾕ")
+                .Replace("ｮ", "ﾖ")
+                .Replace("ｯ", "ﾂ");
+
+            var query = NoTrackingDataContext.ByomeiMsts.Where(item => item.HpId == hpId &&
+                                    (!String.IsNullOrEmpty(keyword)
+                                    &&
+                                    (item.KanaName1 != null &&
+                                     item.KanaName1.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName2 != null &&
+                                     item.KanaName2.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName3 != null &&
+                                     item.KanaName3.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName4 != null &&
+                                     item.KanaName4.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName5 != null &&
+                                     item.KanaName5.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName6 != null &&
+                                     item.KanaName6.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName7 != null &&
+                                     item.KanaName7.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.Icd101 != null &&
+                                    item.Icd101.StartsWith(keyword))
+                                    ||
+                                    (item.Icd1012013 != null &&
+                                    item.Icd1012013.StartsWith(keyword))
+                                    ||
+                                    (item.Icd102 != null &&
+                                    item.Icd102.StartsWith(keyword))
+                                    ||
+                                    (item.Icd1022013 != null &&
+                                    item.Icd1022013.StartsWith(keyword)))
+                                    &&
+                                    (item.ByomeiCd.Length != 4 || item.ByomeiCd.Length == 4 && string.Compare(item.ByomeiCd, "9000") < 0))
+                                    .OrderBy(item => item.KanaName1).ThenByDescending(item => item.IsAdopted).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+            List<ByomeiMstModel> listByomeies = new();
+            if (query != null)
+            {
+                foreach (var item in query)
+                {
+                    var itemCheck = checkIsMatch(item, chkByoKbn0, chkByoKbn1, chkSaiKbn, chkMiSaiKbn, chkSidoKbn, chkToku, chkHiToku1, chkHiToku2, chkTenkan, chkTokuTenkan, chkNanbyo);
+                    if (itemCheck)
+                    {
+                        var itemAdd = ConvertToByomeiMstModel(item);
+                        listByomeies.Add(itemAdd);
+                    }
+                }
+            }
+            return listByomeies;
+        }
+
+        private bool checkIsMatch(ByomeiMst? pt, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo)
+        {
+            if (pt == null)
+                return false;
+            bool isMatch = false;
+            if (chkByoKbn0)
+            {
+                isMatch = pt.ByomeiCd.Length != 4;
+            }
+            if (chkByoKbn1)
+            {
+                isMatch = isMatch ? isMatch : pt.ByomeiCd.Length == 4;
+            }
+
+            if (!isMatch)
+            {
+                return isMatch;
+            }
+
+            isMatch = false;
+            if (chkSaiKbn)
+            {
+                isMatch = pt.IsAdopted == 1;
+            }
+            if (chkMiSaiKbn)
+            {
+                isMatch = isMatch ? isMatch : pt.IsAdopted == 0;
+            }
+
+            if (!isMatch)
+            {
+                return isMatch;
+            }
+
+            isMatch = false;
+            if (chkSidoKbn)
+            {
+                isMatch = pt.SikkanCd != 3 && pt.SikkanCd != 5 && pt.SikkanCd != 4 && pt.SikkanCd != 7 && pt.SikkanCd != 8;
+            }
+            if (chkToku)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 5;
+            }
+            if (chkHiToku1)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 3;
+            }
+            if (chkHiToku2)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 4;
+            }
+            if (chkTenkan)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 7;
+            }
+            if (chkTokuTenkan)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 8;
+            }
+            if (chkNanbyo)
+            {
+                isMatch = isMatch ? isMatch : pt.NanbyoCd == 9;
+            }
+            return isMatch;
+        }
+
+        public bool UpdateCmtCheckMst(int userId, int hpId, List<ItemCmtModel> listData)
+        {
+            foreach (var item in listData)
+            {
+                var itemUpdate = TrackingDataContext.CmtCheckMsts.FirstOrDefault(t => t.HpId == item.HpId && t.ItemCd == item.ItemCd && t.SeqNo == item.SeqNo);
+                if (itemUpdate != null)
+                {
+                    itemUpdate.Cmt = item.Comment;
+                    itemUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    itemUpdate.UpdateId = userId;
+                    TrackingDataContext.SaveChanges();
+                }
+            }
+            return true;
+        }
+
+        public bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId)
+        {
+            var addedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Added && k.Id == 0);
+            var updatedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Modified);
+            var deletedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Deleted);
+
+            if (deletedModels.Any())
+            {
+                foreach (var model in deletedModels)
+                {
+                    var postCodeUpdate = TrackingDataContext.PostCodeMsts.FirstOrDefault(x => x.HpId == model.HpId && x.Id == model.Id);
+
+                    if (postCodeUpdate != null)
+                    {
+                        postCodeUpdate.IsDeleted = 1;
+                        postCodeUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        postCodeUpdate.UpdateId = userId;
+                    }
+                }
+            }
+
+            if (updatedModels.Any())
+            {
+                foreach (var model in updatedModels)
+                {
+                    var postCodeUpdate = TrackingDataContext.PostCodeMsts.FirstOrDefault(x => x.HpId == model.HpId && x.Id == model.Id);
+
+                    if (postCodeUpdate != null)
+                    {
+                        postCodeUpdate.PostCd = model.PostCd;
+                        postCodeUpdate.PrefName = model.PrefName;
+                        postCodeUpdate.CityName = model.CityName;
+                        postCodeUpdate.Banti = model.Banti;
+                        postCodeUpdate.IsDeleted = model.IsDeleted;
+                        postCodeUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        postCodeUpdate.UpdateId = userId;
+                    }
+                }
+            }
+
+            if (addedModels.Any())
+            {
+                foreach (var model in addedModels)
+                {
+                    TrackingDataContext.PostCodeMsts.Add(new PostCodeMst()
+                    {
+                        HpId = hpId,
+                        PostCd = model.PostCd,
+                        PrefName = model.PrefName,
+                        CityName = model.CityName,
+                        Banti = model.Banti,
+                        IsDeleted = 0,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                    });
+                }
+            }
+
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool CheckPostCodeExist(int hpId, string zipCD)
+        {
+            return NoTrackingDataContext.PostCodeMsts.Any(x => x.HpId == hpId &&
+                                                               x.IsDeleted == 0 &&
+                                                               x.PostCd == zipCD);
         }
 
         public List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord)

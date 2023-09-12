@@ -17,7 +17,7 @@ namespace EmrCloudApi.Services
 {
     public class CalculateService : ICalculateService
     {
-        private static HttpClient _httpClient = new HttpClient();
+        private readonly HttpClient _httpClient = new HttpClient();
         private readonly IConfiguration _configuration;
         private readonly ITenantProvider _tenantProvider;
 
@@ -62,8 +62,11 @@ namespace EmrCloudApi.Services
 
             try
             {
-                var httpMessage = new HttpRequestMessage();
                 content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
+
+                //Set timeout to wait response data
+                _httpClient.Timeout = new TimeSpan(7, 0, 0, 0);
+
                 var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
                 if (response.IsSuccessStatusCode)
                 {
@@ -233,6 +236,7 @@ namespace EmrCloudApi.Services
             try
             {
                 var task = CallCalculate(CalculateApiPath.ReceFutanCalculateMain, inputData);
+                task.Wait();
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                 {
                     return false;
@@ -251,6 +255,7 @@ namespace EmrCloudApi.Services
             try
             {
                 var task = CallCalculate(CalculateApiPath.RunCalculateMonth, inputData);
+                task.Wait();
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                 {
                     return false;
