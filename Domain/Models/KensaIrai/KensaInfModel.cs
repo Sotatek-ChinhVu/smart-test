@@ -21,6 +21,19 @@ public class KensaInfModel
         CreateId = createId;
     }
 
+
+    public KensaInfModel(long ptId, long raiinNo, string centerCd, int primaryKbn, long iraiCd)
+    {
+        PtId = ptId;
+        RaiinNo = raiinNo;
+        CenterCd = centerCd;
+        PrimaryKbn = primaryKbn;
+        IraiCd = iraiCd;
+        Nyubi = string.Empty;
+        Yoketu = string.Empty;
+        Bilirubin = string.Empty;
+    }
+
     public long PtId { get; private set; }
 
     public int IraiDate { get; private set; }
@@ -50,6 +63,8 @@ public class KensaInfModel
     public bool IsDeleted { get; private set; }
 
     public int CreateId { get; private set; }
+
+    public int PrimaryKbn { get; private set; }
 
     public long KeyNo { get; set; } = 0;
     public bool IsAddNew { get; set; } = false;

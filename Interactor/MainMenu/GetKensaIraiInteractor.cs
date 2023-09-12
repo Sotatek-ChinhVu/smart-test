@@ -16,7 +16,15 @@ public class GetKensaIraiInteractor : IGetKensaIraiInputPort
     {
         try
         {
-            var result = _kensaIraiRepository.GetKensaIraiModels(inputData.HpId, inputData.PtId, inputData.StartDate, inputData.EndDate, inputData.KensaCenterMstCenterCd, inputData.KensaCenterMstPrimaryKbn);
+            List<KensaIraiModel> result;
+            if (inputData.SearchByList)
+            {
+                result = _kensaIraiRepository.GetKensaIraiModels(inputData.HpId, inputData.KensaInfModelList);
+            }
+            else
+            {
+                result = _kensaIraiRepository.GetKensaIraiModels(inputData.HpId, inputData.PtId, inputData.StartDate, inputData.EndDate, inputData.KensaCenterMstCenterCd, inputData.KensaCenterMstPrimaryKbn);
+            }
             return new GetKensaIraiOutputData(GetKensaIraiStatus.Successed, result);
         }
         finally
