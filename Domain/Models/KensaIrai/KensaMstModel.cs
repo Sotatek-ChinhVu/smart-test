@@ -1,4 +1,5 @@
 ﻿using Domain.Models.MstItem;
+using Helper.Extension;
 
 namespace Domain.Models.KensaIrai;
 
@@ -117,7 +118,29 @@ public class KensaMstModel
 
     public string CenterItemCd2 { get; private set; }
 
+    public string CenterItemCd
+    {
+        get { return CenterItemCd1; }
+    }
+
     public List<TenItemModel> TenMsts { get; private set; }
 
     public List<KensaMstModel> ChildKensaMsts { get; private set; }
+
+    public int SeqNo
+    {
+        get { return KensaItemSeqNo; }
+    }
+
+    public string ItemCd
+    {
+        get { return KensaItemCd; }
+    }
+
+    public string DisplaySeqNo => string.IsNullOrEmpty(ItemCd) ? string.Empty : SeqNo.AsString();
+
+    public string ItemName
+    {
+        get { return KensaName; }
+    }
 }
