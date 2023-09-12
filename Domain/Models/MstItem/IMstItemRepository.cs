@@ -2,6 +2,7 @@
 using Domain.Enum;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
+using Domain.Models.KensaIrai;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using Helper.Enum;
@@ -10,6 +11,8 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord);
+
         bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters);
         List<DosageDrugModel> GetDosages(List<string> yjCds);
 
