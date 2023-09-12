@@ -72,7 +72,7 @@ public class KensaMstModel
         CenterItemCd1 = centerItemCd1;
         CenterItemCd2 = centerItemCd2;
         TenMsts = tenMsts;
-        KensaMstModels = kensaMstModels;
+        ChildKensaMsts = kensaMstModels;
     }
 
     public string KensaItemCd { get; private set; }
@@ -119,5 +119,5 @@ public class KensaMstModel
 
     public List<TenMstModel> TenMsts { get; private set; }
 
-    public List<KensaMstModel> KensaMstModels { get; private set; }
+    public List<KensaMstModel> ChildKensaMsts { get; private set; }
 }
