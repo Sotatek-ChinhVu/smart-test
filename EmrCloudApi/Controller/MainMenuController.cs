@@ -16,6 +16,11 @@ using UseCase.Insurance.FindPtHokenList;
 using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Presenters.Insurance;
 using UseCase.Insurance.FindHokenInfByPtId;
+using UseCase.MainMenu.GetKensaIrai;
+using UseCase.MainMenu.GetKensaCenterMstList;
+using UseCase.MainMenu.CreateDataKensaIraiRenkei;
+using Domain.Models.KensaIrai;
+using EmrCloudApi.Requests.MainMenu.RequestItem;
 
 namespace EmrCloudApi.Controller;
 
@@ -88,6 +93,80 @@ public class MainMenuController : AuthorizeControllerBase
         return new ActionResult<Response<FindPtHokenListResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetKensaIrai)]
+    public ActionResult<Response<GetKensaIraiResponse>> GetKensaIrai([FromQuery] GetKensaIraiRequest request)
+    {
+        var input = new GetKensaIraiInputData(HpId, request.PtId, request.StartDate, request.EndDate, request.KensaCenterMstCenterCd, request.KensaCenterMstPrimaryKbn);
+        var output = _bus.Handle(input);
+        var presenter = new GetKensaIraiPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKensaIraiResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKensaCenterMstList)]
+    public ActionResult<Response<GetKensaCenterMstListResponse>> GetKensaCenterMstList()
+    {
+        var input = new GetKensaCenterMstListInputData(HpId);
+        var output = _bus.Handle(input);
+        var presenter = new GetKensaCenterMstListPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKensaCenterMstListResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.CreateDataKensaIraiRenkei)]
+    public ActionResult<Response<CreateDataKensaIraiRenkeiResponse>> CreateDataKensaIraiRenkei([FromBody] CreateDataKensaIraiRenkeiRequest request)
+    {
+        var input = new CreateDataKensaIraiRenkeiInputData(HpId, UserId, request.KensaIraiList.Select(item => ConvertToKensaIraiModel(item)).ToList(), request.CenterCd, request.SystemDate, false);
+        var output = _bus.Handle(input);
+        var presenter = new CreateDataKensaIraiRenkeiPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<CreateDataKensaIraiRenkeiResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.ReCreateDataKensaIraiRenkei)]
+    public ActionResult<Response<CreateDataKensaIraiRenkeiResponse>> ReCreateDataKensaIraiRenkei([FromBody] ReCreateDataKensaIraiRenkeiRequest request)
+    {
+        var input = new CreateDataKensaIraiRenkeiInputData(HpId, UserId, request.KensaIraiList.Select(item => ConvertToKensaIraiModel(item)).ToList(), string.Empty, request.SystemDate, true);
+        var output = _bus.Handle(input);
+        var presenter = new CreateDataKensaIraiRenkeiPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<CreateDataKensaIraiRenkeiResponse>>(presenter.Result);
+    }
+
+    #region private function
+    private KensaIraiModel ConvertToKensaIraiModel(KensaIraiRequestItem request)
+    {
+        List<KensaIraiDetailModel> kensaIraiDetailList = request.KensaIraiDetails.Select(item => new KensaIraiDetailModel(
+                                                                                                     item.TenKensaItemCd,
+                                                                                                     item.ItemCd,
+                                                                                                     item.ItemName,
+                                                                                                     item.KanaName1,
+                                                                                                     item.CenterCd,
+                                                                                                     item.KensaItemCd,
+                                                                                                     item.CenterItemCd,
+                                                                                                     item.KensaKana,
+                                                                                                     item.KensaName,
+                                                                                                     item.ContainerCd,
+                                                                                                     item.RpNo,
+                                                                                                     item.RpEdaNo,
+                                                                                                     item.RowNo,
+                                                                                                     item.SeqNo))
+                                                                                  .ToList();
+        return new KensaIraiModel(
+                   request.SinDate,
+                   request.RaiinNo,
+                   request.IraiCd,
+                   request.PtId,
+                   request.PtNum,
+                   request.Name,
+                   request.KanaName,
+                   request.Sex,
+                   request.Birthday,
+                   request.TosekiKbn,
+                   request.SikyuKbn,
+                   kensaIraiDetailList);
+    }
+
     private List<StatisticMenuItem> ConvertToMenuItem(SaveStatisticMenuRequest request)
     {
         var result = request.StatisticMenuList.Select(menu => new StatisticMenuItem(
@@ -108,4 +187,6 @@ public class MainMenuController : AuthorizeControllerBase
                                               )).ToList();
         return result;
     }
+
+    #endregion
 }
