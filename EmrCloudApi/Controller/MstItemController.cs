@@ -509,7 +509,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.IsUsingKensa)]
         public ActionResult<Response<IsUsingKensaResponse>> IsUsingKensa([FromBody] IsUsingKensaRequest request)
         {
-            var input = new IsUsingKensaInputData(HpId, UserId, request.PostCodeMsts);
+            var input = new IsUsingKensaInputData(HpId, request.KensaItemCd, request.ItemCds);
             var output = _bus.Handle(input);
             var presenter = new IsUsingKensaPresenter();
             presenter.Complete(output);

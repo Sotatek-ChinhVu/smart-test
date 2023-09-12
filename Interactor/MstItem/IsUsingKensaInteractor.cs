@@ -1,12 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Models.MstItem;
+using UseCase.IsUsingKensa;
 
 namespace Interactor.MstItem
 {
-    internal class IsUsingKensaInteractor
+    public class IsUsingKensaInteractor : IIsUsingKensaInputPort
     {
+        private readonly IMstItemRepository _mstItemRepository;
+
+        public IsUsingKensaInteractor(IMstItemRepository mstItemRepository)
+        {
+            _mstItemRepository = mstItemRepository;
+        }
+        public IsUsingKensaOutputData Handle(IsUsingKensaInputData inputData)
+        {
+            try
+            {
+                var result = _mstItemRepository.IsUsingKensa(inputData.HpId, inputData.KensaItemCd, inputData.ItemCds);
+                if (result)
+                {
+                    return new IsUsingKensaOutputData(IsUsingKensaStatus.Success);
+                }
+                else
+                {
+                    return new IsUsingKensaOutputData(IsUsingKensaStatus.Failed);
+                }
+            }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+            }
+        }
     }
 }

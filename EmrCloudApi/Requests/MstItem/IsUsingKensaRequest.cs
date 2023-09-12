@@ -4,6 +4,6 @@
     {
         public string KensaItemCd { get; set; } = string.Empty;
 
-        public List<string> itemCds { get; set; } = new List<string>();
+        public List<string> ItemCds { get; set; } = new List<string>();
     }
 }

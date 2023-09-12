@@ -5,7 +5,7 @@ using UseCase.IsUsingKensa;
 
 namespace EmrCloudApi.Presenters.MstItem
 {
-    public class IsUsingKensaPresenter : IIsUsingKensaInputPort
+    public class IsUsingKensaPresenter : IIsUsingKensaOutputPort
     {
         public Response<IsUsingKensaResponse> Result { get; private set; } = default!;
 
