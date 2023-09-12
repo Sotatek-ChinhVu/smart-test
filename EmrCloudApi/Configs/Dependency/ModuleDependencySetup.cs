@@ -1005,7 +1005,6 @@ namespace EmrCloudApi.Configs.Dependency
         private void SetupRepositories(IServiceCollection services)
         {
             services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IKensaMstFinder, KensaMstRepository>();
             services.AddTransient<IApprovalInfRepository, ApprovalinfRepository>();
             services.AddTransient<IPtDiseaseRepository, DiseaseRepository>();
             services.AddTransient<IOrdInfRepository, OrdInfRepository>();
