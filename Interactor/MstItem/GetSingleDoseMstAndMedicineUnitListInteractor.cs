@@ -26,10 +26,6 @@ namespace Interactor.MstItem
                 var listDataMedicineUnitModel = _inputItemRepository.GetListMedicineUnitModel(inputData.HpId, today);
                 return new GetSingleDoseMstAndMedicineUnitListOutputData(true, listDataSingleDose, listDataMedicineUnitModel);
             }
-            catch
-            {
-                return new GetSingleDoseMstAndMedicineUnitListOutputData(false, new List<SingleDoseMstModel>(), new List<MedicineUnitModel>());
-            }
             finally
             {
                 _inputItemRepository.ReleaseResource();
