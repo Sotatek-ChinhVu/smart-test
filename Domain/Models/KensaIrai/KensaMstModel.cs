@@ -28,6 +28,8 @@ public class KensaMstModel
         SortNo = sortNo;
         CenterItemCd1 = centerItemCd1;
         CenterItemCd2 = centerItemCd2;
+        TenMsts = new();
+        ChildKensaMsts = new();
     }
 
     public KensaMstModel()
@@ -47,6 +49,8 @@ public class KensaMstModel
         OyaItemCd = string.Empty;
         CenterItemCd1 = string.Empty;
         CenterItemCd2 = string.Empty;
+        TenMsts = new();
+        ChildKensaMsts = new();
     }
 
     public KensaMstModel(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, List<TenItemModel> tenMsts, List<KensaMstModel> kensaMstModels)
