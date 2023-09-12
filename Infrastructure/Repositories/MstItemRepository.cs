@@ -18,6 +18,7 @@ using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
+using System.Drawing.Printing;
 using System.Text;
 
 namespace Infrastructure.Repositories
@@ -1492,7 +1493,7 @@ namespace Infrastructure.Repositories
             }
             return listByomeies;
         }
-
+        
         public List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes)
         {
             var listDatas = NoTrackingDataContext.ByomeiMsts.Where(item => keyCodes.Contains(item.ByomeiCd)).ToList();
@@ -5503,6 +5504,219 @@ namespace Infrastructure.Repositories
                 result.Append("/");
             }
             return result.ToString();
+        }
+
+        public List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize)
+        {
+            string kanaKeyword = keyword != string.Empty ? keyword : "";
+            if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
+            {
+                var inputKeyword = keyword;
+                kanaKeyword = CIUtil.ToHalfsize(keyword);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
+            }
+
+            string sBigKeyword = kanaKeyword.ToUpper()
+                .Replace("ｧ", "ｱ")
+                .Replace("ｨ", "ｲ")
+                .Replace("ｩ", "ｳ")
+                .Replace("ｪ", "ｴ")
+                .Replace("ｫ", "ｵ")
+                .Replace("ｬ", "ﾔ")
+                .Replace("ｭ", "ﾕ")
+                .Replace("ｮ", "ﾖ")
+                .Replace("ｯ", "ﾂ");
+
+            var query = NoTrackingDataContext.ByomeiMsts.Where(item => item.HpId == hpId &&
+                                    (!String.IsNullOrEmpty(keyword) 
+                                    && 
+                                    (item.KanaName1 != null &&
+                                     item.KanaName1.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName2 != null &&
+                                     item.KanaName2.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName3 != null &&
+                                     item.KanaName3.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName4 != null &&
+                                     item.KanaName4.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName5 != null &&
+                                     item.KanaName5.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName6 != null &&
+                                     item.KanaName6.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName7 != null &&
+                                     item.KanaName7.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.Icd101 != null &&
+                                    item.Icd101.StartsWith(keyword))
+                                    ||
+                                    (item.Icd1012013 != null &&
+                                    item.Icd1012013.StartsWith(keyword))
+                                    ||
+                                    (item.Icd102 != null &&
+                                    item.Icd102.StartsWith(keyword))
+                                    ||
+                                    (item.Icd1022013 != null &&
+                                    item.Icd1022013.StartsWith(keyword)))
+                                    &&
+                                    (item.ByomeiCd.Length != 4 || item.ByomeiCd.Length == 4 && string.Compare(item.ByomeiCd, "9000") < 0))
+                                    .OrderBy(item => item.KanaName1).ThenByDescending(item => item.IsAdopted).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+           
+            List<ByomeiMstModel> listByomeies = new();
+            if (query != null)
+            {
+                foreach (var item in query)
+                {
+                    var itemCheck = checkIsMatch(item, chkByoKbn0, chkByoKbn1, chkSaiKbn, chkMiSaiKbn, chkSidoKbn, chkToku, chkHiToku1, chkHiToku2, chkTenkan, chkTokuTenkan, chkNanbyo);
+                    if(itemCheck)
+                    {
+                        var itemAdd = ConvertToByomeiMstModel(item);
+                        listByomeies.Add(itemAdd);
+                    }    
+                }
+            }
+            return listByomeies;
+        }
+
+        private bool checkIsMatch(ByomeiMst? pt, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo)
+        {
+            if (pt == null)
+                return false;
+            bool isMatch = false;
+            if (chkByoKbn0)
+            {
+                isMatch = pt.ByomeiCd.Length != 4;
+            }
+            if (chkByoKbn1)
+            {
+                isMatch = isMatch ? isMatch : pt.ByomeiCd.Length == 4;
+            }
+
+            if (!isMatch)
+            {
+                return isMatch;
+            }
+
+            isMatch = false;
+            if (chkSaiKbn)
+            {
+                isMatch = pt.IsAdopted == 1;
+            }
+            if (chkMiSaiKbn)
+            {
+                isMatch = isMatch ? isMatch : pt.IsAdopted == 0;
+            }
+
+            if (!isMatch)
+            {
+                return isMatch;
+            }
+
+            isMatch = false;
+            if (chkSidoKbn)
+            {
+                isMatch = pt.SikkanCd != 3 && pt.SikkanCd != 5 && pt.SikkanCd != 4 && pt.SikkanCd != 7 && pt.SikkanCd != 8;
+            }
+            if (chkToku)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 5;
+            }
+            if (chkHiToku1)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 3;
+            }
+            if (chkHiToku2)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 4;
+            }
+            if (chkTenkan)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 7;
+            }
+            if (chkTokuTenkan)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 8;
+            }
+            if (chkNanbyo)
+            {
+                isMatch = isMatch ? isMatch : pt.NanbyoCd == 9;
+            }
+            return isMatch;
         }
 
         public bool UpdateCmtCheckMst(int userId, int hpId, List<ItemCmtModel> listData)

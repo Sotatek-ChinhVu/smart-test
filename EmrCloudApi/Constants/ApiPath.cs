@@ -20,6 +20,7 @@
         public const string Paste = "Paste";
         public const string GetSuperSetDetail = "GetSuperSetDetail";
         public const string DiseaseSearch = "DiseaseSearch";
+        public const string DiseaseNameMstSearch = "DiseaseNameMstSearch";
         public const string SaveSuperSetDetail = "SaveSuperSetDetail";
         public const string GetToolTip = "GetToolTip";
         public const string GetSuperSetDetailForTodayOrder = "GetSuperSetDetailForTodayOrder";
@@ -406,6 +407,7 @@
         public const string GetListStaticReport = "GetListStaticReport";
         public const string FindPtHokenList = "FindPtHokenList";
         public const string GetKensaIrai = "GetKensaIrai";
+        public const string GetKensaIraiByList = "GetKensaIraiByList";
         public const string GetKensaCenterMstList = "GetKensaCenterMstList";
         public const string CreateDataKensaIraiRenkei = "CreateDataKensaIraiRenkei";
         public const string ReCreateDataKensaIraiRenkei = "ReCreateDataKensaIraiRenkei";

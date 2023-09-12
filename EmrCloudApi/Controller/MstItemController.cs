@@ -7,6 +7,7 @@ using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Responses.MstItem;
+using EmrCloudApi.Responses.MstItem.DiseaseNameMstSearch;
 using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
 using Helper.Extension;
@@ -16,6 +17,7 @@ using UseCase.Core.Sync;
 using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
+using UseCase.MstItem.DiseaseNameMstSearch;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
@@ -461,6 +463,18 @@ namespace EmrCloudApi.Controller
             var presenter = new UploadImageDrugInfPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UploadImageDrugInfResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.DiseaseNameMstSearch)]
+        public ActionResult<Response<DiseaseNameMstSearchResponse>> DiseaseNameMstSearch([FromBody] DiseaseNameMstSearchRequest request)
+        {
+            var input = new DiseaseNameMstSearchInputData(HpId, request.Keyword, request.ChkByoKbn0, request.ChkByoKbn1, request.ChkSaiKbn, request.ChkMiSaiKbn, request.ChkSidoKbn, request.ChkToku, request.ChkHiToku1, request.ChkHiToku2, request.ChkTenkan, request.ChkTokuTenkan, request.ChkNanbyo, request.PageIndex, request.PageSize);
+            var output = _bus.Handle(input);
+
+            var presenter = new DiseaseNameMstSearchPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<DiseaseNameMstSearchResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetAllCmtCheckMst)]

@@ -1,9 +1,18 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.KensaIrai;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.MainMenu.GetKensaIrai;
 
 public class GetKensaIraiInputData : IInputData<GetKensaIraiOutputData>
 {
+    public GetKensaIraiInputData(int hpId, List<KensaInfModel> kensaInfModelList)
+    {
+        HpId = hpId;
+        KensaCenterMstCenterCd = string.Empty;
+        KensaInfModelList = kensaInfModelList;
+        SearchByList = true;
+    }
+
     public GetKensaIraiInputData(int hpId, long ptId, int startDate, int endDate, string kensaCenterMstCenterCd, int kensaCenterMstPrimaryKbn)
     {
         HpId = hpId;
@@ -12,6 +21,8 @@ public class GetKensaIraiInputData : IInputData<GetKensaIraiOutputData>
         EndDate = endDate;
         KensaCenterMstCenterCd = kensaCenterMstCenterCd;
         KensaCenterMstPrimaryKbn = kensaCenterMstPrimaryKbn;
+        KensaInfModelList = new();
+        SearchByList = false;
     }
 
     public int HpId { get; private set; }
@@ -25,4 +36,8 @@ public class GetKensaIraiInputData : IInputData<GetKensaIraiOutputData>
     public string KensaCenterMstCenterCd { get; private set; }
 
     public int KensaCenterMstPrimaryKbn { get; private set; }
+
+    public List<KensaInfModel> KensaInfModelList { get; private set; }
+
+    public bool SearchByList { get; private set; }
 }
