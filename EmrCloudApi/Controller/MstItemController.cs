@@ -1,24 +1,35 @@
-﻿using Domain.Models.MstItem;
+﻿using Domain.Models.ContainerMaster;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
+using Domain.Models.User;
 using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Presenters.MstItem;
+using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.MstItem;
+using EmrCloudApi.Requests.User;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
+using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Responses.MstItem;
+using EmrCloudApi.Responses.MstItem.DiseaseNameMstSearch;
 using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
+using Entity.Tenant;
 using Helper.Extension;
 using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
 using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
+using UseCase.MstItem.DiseaseNameMstSearch;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
+using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDiseaseList;
@@ -28,6 +39,7 @@ using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
@@ -35,6 +47,7 @@ using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
@@ -44,6 +57,7 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
+using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.UploadImageDrugInf;
 
 namespace EmrCloudApi.Controller
@@ -138,6 +152,18 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<DiseaseSearchResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.ParrentKensaMst)]
+        public ActionResult<Response<GetParrentKensaMstListResponse>> GetParrentKensaMst([FromQuery] GetParrentKensaMstRequest request)
+        {
+            var input = new GetParrentKensaMstInputData(HpId, request.KeyWord);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetParrentKensaMstListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetParrentKensaMstListResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.GetDiseaseList)]
         public ActionResult<Response<DiseaseSearchResponse>> GetDiseaseList([FromBody] GetDiseaseListRequest request)
         {
@@ -168,6 +194,30 @@ namespace EmrCloudApi.Controller
             var presenter = new SearchPostCodePresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ContainerMasterUpdate)]
+        public ActionResult<Response<ContainerMasterUpdateResponse>> ContainerMasterUpdate([FromBody] ContainerMasterUpdateRequest request)
+        {
+            var upsertUserList = request.ContainerMasterList.Select(u => ContainerMasterRequestToModel(u)).ToList();
+            var input = new ContainerMasterUpdateInputData(HpId, UserId, upsertUserList);
+            var output = _bus.Handle(input);
+
+            var presenter = new ContainerMasterUpdatePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ContainerMasterUpdateResponse>>(presenter.Result);
+        }
+
+        private static ContainerMasterModel ContainerMasterRequestToModel(ContainerMasterRequest containerMaster)
+        {
+            return
+                new ContainerMasterModel
+                (
+                    containerMaster.ContainerCd,
+                    containerMaster.ContainerName,
+                    containerMaster.ContainerModelStatus
+                );
         }
 
         [HttpGet(ApiPath.FindTenMst)]
@@ -456,6 +506,48 @@ namespace EmrCloudApi.Controller
             var presenter = new UploadImageDrugInfPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UploadImageDrugInfResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.DiseaseNameMstSearch)]
+        public ActionResult<Response<DiseaseNameMstSearchResponse>> DiseaseNameMstSearch([FromBody] DiseaseNameMstSearchRequest request)
+        {
+            var input = new DiseaseNameMstSearchInputData(HpId, request.Keyword, request.ChkByoKbn0, request.ChkByoKbn1, request.ChkSaiKbn, request.ChkMiSaiKbn, request.ChkSidoKbn, request.ChkToku, request.ChkHiToku1, request.ChkHiToku2, request.ChkTenkan, request.ChkTokuTenkan, request.ChkNanbyo, request.PageIndex, request.PageSize);
+            var output = _bus.Handle(input);
+
+            var presenter = new DiseaseNameMstSearchPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<DiseaseNameMstSearchResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetAllCmtCheckMst)]
+        public ActionResult<Response<GetAllCmtCheckMstResponse>> GetAllCmtCheckMst([FromQuery] GetAllCmtCheckMstRequest request)
+        {
+            var input = new GetAllCmtCheckMstInputData(HpId, request.SinDay);
+            var output = _bus.Handle(input);
+            var presenter = new GetAllCmtCheckMstPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateCmtCheckMst)]
+        public ActionResult<Response<UpdateCmtCheckMstResponse>> UpdateCmtCheckMst([FromBody] UpdateCmtCheckMstRequest request)
+        {
+            var input = new UpdateCmtCheckMstInputData(UserId, HpId, request.ListItemCmt);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateCmtCheckMstPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+        
+        [HttpPost(ApiPath.SaveAddressMst)]
+        public ActionResult<Response<SaveAddressMstResponse>> SaveAddressMst([FromBody] SaveAddressMstRequest request)
+        {
+            var input = new SaveAddressMstInputData(HpId, UserId, request.PostCodeMsts);
+            var output = _bus.Handle(input);
+            var presenter = new SaveAddressMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveAddressMstResponse>>(presenter.Result);
         }
     }
 }
