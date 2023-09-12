@@ -610,7 +610,7 @@ namespace Infrastructure.Repositories
 
             entities?.ForEach(entity =>
             {
-                results.Add(new KaMstModel(entity.Id, entity.KaId, entity.SortNo, entity.ReceKaCd ?? string.Empty, entity.KaSname ?? string.Empty, entity.KaName ?? string.Empty));
+                results.Add(new KaMstModel(entity.Id, entity.KaId, entity.SortNo, entity.ReceKaCd ?? string.Empty, entity.KaSname ?? string.Empty, entity.KaName ?? string.Empty, entity.YousikiKaCd ?? string.Empty));
             });
 
             return results;

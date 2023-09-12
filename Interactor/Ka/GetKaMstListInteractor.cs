@@ -16,7 +16,7 @@ public class GetKaMstListInteractor : IGetKaMstListInputPort
     {
         try
         {
-            var departments = _kaMstRepository.GetList();
+            var departments = _kaMstRepository.GetList(input.IsDeleted);
             var status = departments.Any() ? GetKaMstListStatus.Success : GetKaMstListStatus.NoData;
             return new GetKaMstListOutputData(status, departments);
         }
