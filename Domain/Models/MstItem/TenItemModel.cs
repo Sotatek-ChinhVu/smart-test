@@ -259,8 +259,58 @@ namespace Domain.Models.MstItem
             Kokuji2 = string.Empty;
             IpnName = string.Empty;
         }
+        
+        public TenItemModel(int sinKouiKbn, string masterSbt, string itemCd, string kensaItemCd, int kensaItemSeqNo, double ten, string name, string receName, string kanaName1
+                          , string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6
+                          , string kanaName7, int startDate, int endDate, double defaultValue, string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch)
+        {
+            SinKouiKbn = sinKouiKbn;
+            MasterSbt = masterSbt;
+            ItemCd = itemCd;
+            KensaItemCd = kensaItemCd;
+            KensaItemSeqNo = kensaItemSeqNo;
+            Ten = ten;
+            Name = name;
+            ReceName = receName;
+            KanaName1 = kanaName1;
+            KanaName2 = kanaName2;
+            KanaName3 = kanaName3;
+            KanaName4 = kanaName4;
+            KanaName5 = kanaName5;
+            KanaName6 = kanaName6;
+            KanaName7 = kanaName7;
+            StartDate = startDate;
+            EndDate = endDate;
+            DefaultValue = defaultValue;
+            OdrUnitName = odrUnitName;
+            SanteiItemCd = santeiItemCd;
+            SanteigaiKbn = santeigaiKbn;
+            IsNoSearch = isNoSearch;
+        }
 
         public int HpId { get; private set; }
+
+        public string ReceName { get; private set; }
+
+        public int IsNoSearch { get; private set; }
+
+        public int SanteigaiKbn { get; private set; }
+
+        public string KanaName2 { get; private set; }
+
+        public string KanaName3 { get; private set; }
+
+        public string KanaName4 { get; private set; }
+
+        public string KanaName5 { get; private set; }
+
+        public string KanaName6 { get; private set; }
+
+        public string KanaName7 { get; private set; }
+
+        public string KensaItemCd { get; private set; }
+
+        public int KensaItemSeqNo { get; private set; }
 
         public string ItemCd { get; private set; }
 

@@ -1,21 +1,22 @@
 ﻿using Domain.Models.KensaIrai;
+using Domain.Models.MstItem;
 using UseCase.MstItem.GetParrentKensaMst;
 
 namespace Interactor.MstItem
 {
     public class GetParrentKensaMstListInteractor : IGetParrentKensaMstInputPort
     {
-        private readonly IKensaMstFinder _kensaMstFinder;
+        private readonly IMstItemRepository _mstItemRepository;
 
-        public GetParrentKensaMstListInteractor(IKensaMstFinder kensaMstFinder)
+        public GetParrentKensaMstListInteractor(IMstItemRepository mstItemRepository)
         {
-            _kensaMstFinder = kensaMstFinder;
+            _mstItemRepository = mstItemRepository;
         }
         public GetParrentKensaMstOutputData Handle(GetParrentKensaMstInputData inputData)
         {
             try
             {
-                var data = _kensaMstFinder.GetParrentKensaMstModels(inputData.HpId, inputData.KeyWord);
+                var data = _mstItemRepository.GetParrentKensaMstModels(inputData.HpId, inputData.KeyWord);
                 if (data.Count == 0)
                 {
                     return new GetParrentKensaMstOutputData(new(), GetParrentKensaMstStatus.NoData);
@@ -27,7 +28,7 @@ namespace Interactor.MstItem
             }
             finally
             {
-                _kensaMstFinder.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
             }
         }
     }
