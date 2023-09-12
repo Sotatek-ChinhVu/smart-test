@@ -59,7 +59,8 @@ public class SaveKaMstInteractor : ISaveKaMstInputPort
                                                                     0,
                                                                     input.ReceKaCd,
                                                                     input.KaSname,
-                                                                    input.KaName
+                                                                    input.KaName,
+                                                                    input.YousikiKaCd
                                                     )).ToList();
             if (_kaMstRepository.SaveKaMst(inputData.HpId, inputData.UserId, kaMstModels))
             {
