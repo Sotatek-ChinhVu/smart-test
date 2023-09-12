@@ -275,7 +275,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<UpdateKensaMstResponse>>(presenter.Result);
         }
 
-        private static TenMstModel TenMstItemsRequestToModel(TenMstItemModel tenMstItemModel)
+        private static TenMstModel TenMstItemsRequestToModel(TenMstInputItem tenMstItemModel)
         {
             return
                 new TenMstModel
@@ -323,7 +323,7 @@ namespace EmrCloudApi.Controller
                 );
         }
 
-        private static KensaMstModel kensaMstItemsRequestToModel(KensaMstItem kensaMstItem)
+        private static KensaMstModel kensaMstItemsRequestToModel(KensaMstInputItem kensaMstItem)
         {
             return
                 new KensaMstModel

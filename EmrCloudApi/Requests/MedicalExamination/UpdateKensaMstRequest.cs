@@ -1,12 +1,12 @@
-﻿using Domain.Models.KensaIrai;
-using Domain.Models.TenMst;
+﻿using Domain.Models.TenMst;
+using UseCase.UpdateKensaMst;
 
 namespace EmrCloudApi.Requests.MedicalExamination
 {
     public class UpdateKensaMstRequest
     {
-        public List<KensaMstItem> KensaMstItems { get; set; } = new();
+        public List<KensaMstInputItem> KensaMstItems { get; set; } = new();
 
-        public List<TenMstItemModel> TenMstItems { get; set; } = new();
+        public List<TenMstInputItem> TenMstItems { get; set; } = new();
     }
 }
