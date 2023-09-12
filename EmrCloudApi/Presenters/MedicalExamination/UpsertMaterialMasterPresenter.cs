@@ -22,6 +22,7 @@ namespace EmrCloudApi.Presenters.MedicalExamination
         private static string GetMessage(UpsertMaterialMasterStatus status) => status switch
         {
             UpsertMaterialMasterStatus.Success => ResponseMessage.Success,
+            UpsertMaterialMasterStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
     }

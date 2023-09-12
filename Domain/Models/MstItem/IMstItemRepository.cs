@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Enum;
 using Domain.Models.FlowSheet;
+using Domain.Models.MaterialMaster;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using Helper.Enum;
@@ -10,6 +11,7 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        bool UpsertMaterialMaster(int hpId, int userId, List<MaterialMasterModel> materialMasters);
         List<DosageDrugModel> GetDosages(List<string> yjCds);
 
         List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData();

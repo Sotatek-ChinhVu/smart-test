@@ -1,7 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Models.AuditLog;
 using Domain.Models.Diseases;
-using Domain.Models.MaterialMaster;
 using Domain.Models.Medical;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
@@ -10,7 +9,6 @@ namespace Domain.Models.MedicalExamination
 {
     public interface IMedicalExaminationRepository : IRepositoryBase
     {
-        void UpsertMaterialMaster(int hpId, int userId, List<MaterialMasterModel> materialMasters);
         List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou);
 
         List<CheckedOrderModel> IgakuTokusituIsChecked(int hpId, int sinDate, int syosaisinKbn, List<CheckedOrderModel> checkedOrders, List<OrdInfDetailModel> allOdrInfDetail);
