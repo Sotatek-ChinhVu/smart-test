@@ -37,6 +37,7 @@
         public const string GetAdoptedItemList = "GetAdoptedItemList";
         public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
         public const string GetCmtCheckMstList = "GetCmtCheckMstList";
+        public const string GetAllCmtCheckMst = "GetAllCmtCheckMst";
         public const string GetJihiMstList = "GetJihiMstList";
         public const string SearchTenMstItem = "SearchTenMstItem";
         public const string ConvertStringChkJISKj = "ConvertStringChkJISKj";
@@ -45,6 +46,8 @@
         public const string GetDefaultPrecautions = "GetDefaultPrecautions";
         public const string UploadImageDrugInf = "UploadImageDrugInf";
         public const string GetDiseaseList = "GetDiseaseList";
+        public const string UpdateCmtCheckMst = "UpdateCmtCheckMst";
+        public const string SaveAddressMst = "SaveAddressMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -401,6 +404,10 @@
         public const string SaveStatisticMenuList = "SaveStatisticMenuList";
         public const string GetListStaticReport = "GetListStaticReport";
         public const string FindPtHokenList = "FindPtHokenList";
+        public const string GetKensaIrai = "GetKensaIrai";
+        public const string GetKensaCenterMstList = "GetKensaCenterMstList";
+        public const string CreateDataKensaIraiRenkei = "CreateDataKensaIraiRenkei";
+        public const string ReCreateDataKensaIraiRenkei = "ReCreateDataKensaIraiRenkei";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
@@ -432,7 +439,10 @@
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
         public const string UpdateAccountingFormMst = "UpdateAccountingFormMst";
 
-        public const string Test = "Test";
+        //Ka
+        public const string GetKaCodeMstYossi = "GetKaCodeMstYossi";
+        public const string GetKaCodeYousikiMst = "GetKaCodeYousikiMst";
 
+        public const string Test = "Test";
     }
 }
