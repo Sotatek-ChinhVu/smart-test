@@ -1426,6 +1426,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UploadImageDrugInfInputData, UploadImageDrugInfInteractor>();
             busBuilder.RegisterUseCase<GetTenMstListInputData, GetTenMstListInteractor>();
             busBuilder.RegisterUseCase<GetDiseaseListInputData, GetDiseaseListInteractor>();
+            busBuilder.RegisterUseCase<UpdateCmtCheckMstInputData, UpdateCmtCheckMstInteractor>();
+            busBuilder.RegisterUseCase<GetParrentKensaMstInputData, GetParrentKensaMstListInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
