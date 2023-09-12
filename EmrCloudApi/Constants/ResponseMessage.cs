@@ -52,6 +52,7 @@
         public static readonly string InvalidGrpKouiKbn = "Invalid GrpKouiKbn";
         public static readonly string InvalidDocCd = "Invalid DocCd";
         public static readonly string InvalidRenkeiId = "Invalid RenkeiId";
+        public static readonly string InvalidCenterCd = "Invalid CenterCd";
         public static readonly string ErrorBunkatuOdrDetail = "入力できる文字を超えました。\r\n 合計10文字以内に入力してください。";
 
         //Common
