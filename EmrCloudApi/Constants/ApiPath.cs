@@ -405,6 +405,7 @@
         public const string GetListStaticReport = "GetListStaticReport";
         public const string FindPtHokenList = "FindPtHokenList";
         public const string GetKensaIrai = "GetKensaIrai";
+        public const string GetKensaIraiByList = "GetKensaIraiByList";
         public const string GetKensaCenterMstList = "GetKensaCenterMstList";
         public const string CreateDataKensaIraiRenkei = "CreateDataKensaIraiRenkei";
         public const string ReCreateDataKensaIraiRenkei = "ReCreateDataKensaIraiRenkei";
