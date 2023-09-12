@@ -5400,15 +5400,8 @@ namespace Infrastructure.Repositories
             string functName = string.Empty;
             functName = nameof(GetListSingleDoseModel);
             List<SingleDoseMstModel> result = new List<SingleDoseMstModel>();
-            try
-            {
-                var listSingleDoseMst = TrackingDataContext.SingleDoseMsts.Where(x => x.HpId == hpId).ToList();
-                result = listSingleDoseMst.Select(i => new SingleDoseMstModel(ModelStatus.None, false, i.Id, i.HpId, i.UnitName)).ToList();
-            }
-            catch (Exception e)
-            {
-                // Log.WriteLogError(_moduleName, this, functName, e);
-            }
+            var listSingleDoseMst = TrackingDataContext.SingleDoseMsts.Where(x => x.HpId == hpId).ToList();
+            result = listSingleDoseMst.Select(i => new SingleDoseMstModel(ModelStatus.None, false, i.Id, i.HpId, i.UnitName)).ToList();
             return result;
         }
 
