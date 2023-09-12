@@ -19,6 +19,7 @@ using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
+using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDiseaseList;
@@ -35,6 +36,7 @@ using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
@@ -44,6 +46,7 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
+using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.UploadImageDrugInf;
 
 namespace EmrCloudApi.Controller
@@ -456,6 +459,36 @@ namespace EmrCloudApi.Controller
             var presenter = new UploadImageDrugInfPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UploadImageDrugInfResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetAllCmtCheckMst)]
+        public ActionResult<Response<GetAllCmtCheckMstResponse>> GetAllCmtCheckMst([FromQuery] GetAllCmtCheckMstRequest request)
+        {
+            var input = new GetAllCmtCheckMstInputData(HpId, request.SinDay);
+            var output = _bus.Handle(input);
+            var presenter = new GetAllCmtCheckMstPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateCmtCheckMst)]
+        public ActionResult<Response<UpdateCmtCheckMstResponse>> UpdateCmtCheckMst([FromBody] UpdateCmtCheckMstRequest request)
+        {
+            var input = new UpdateCmtCheckMstInputData(UserId, HpId, request.ListItemCmt);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateCmtCheckMstPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+        
+        [HttpPost(ApiPath.SaveAddressMst)]
+        public ActionResult<Response<SaveAddressMstResponse>> SaveAddressMst([FromBody] SaveAddressMstRequest request)
+        {
+            var input = new SaveAddressMstInputData(HpId, UserId, request.PostCodeMsts);
+            var output = _bus.Handle(input);
+            var presenter = new SaveAddressMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveAddressMstResponse>>(presenter.Result);
         }
     }
 }

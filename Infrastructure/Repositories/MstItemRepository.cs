@@ -1763,7 +1763,10 @@ namespace Infrastructure.Repositories
 
             var totalCount = query.Count();
 
-            var result = query.OrderBy(x => x.PostCd)
+            var result = new List<PostCodeMstModel>();
+            if (pageIndex == -1 && pageSize == -1)
+            {
+                result = query.OrderBy(x => x.PostCd)
                                   .ThenBy(x => x.PrefName)
                                   .ThenBy(x => x.CityName)
                                   .ThenBy(x => x.Banti)
@@ -1777,9 +1780,28 @@ namespace Infrastructure.Repositories
                                       x.PrefName ?? string.Empty,
                                       x.CityName ?? string.Empty,
                                       x.Banti ?? string.Empty,
-                                      x.IsDeleted))
-                                  .Skip(pageIndex - 1).Take(pageSize)
-                                  .ToList();
+                                      x.IsDeleted)).ToList();
+            }
+            else
+            {
+                result = query.OrderBy(x => x.PostCd)
+                                 .ThenBy(x => x.PrefName)
+                                 .ThenBy(x => x.CityName)
+                                 .ThenBy(x => x.Banti)
+                                 .Select(x => new PostCodeMstModel(
+                                     x.Id,
+                                     x.HpId,
+                                     x.PostCd ?? string.Empty,
+                                     x.PrefKana ?? string.Empty,
+                                     x.CityKana ?? string.Empty,
+                                     x.PostalTermKana ?? string.Empty,
+                                     x.PrefName ?? string.Empty,
+                                     x.CityName ?? string.Empty,
+                                     x.Banti ?? string.Empty,
+                                     x.IsDeleted))
+                                 .Skip(pageIndex - 1).Take(pageSize)
+                                 .ToList();
+            }
 
             return (totalCount, result);
         }
@@ -1797,9 +1819,68 @@ namespace Infrastructure.Repositories
                 if (entities == null) continue;
                 foreach (var entity in entities)
                 {
-                    result.Add(new ItemCmtModel(itemCd, entity.Cmt ?? string.Empty, entity.SortNo));
+                    result.Add(new ItemCmtModel(itemCd, entity.HpId, entity.SeqNo, entity.Cmt ?? string.Empty, entity.SortNo));
                 }
             }
+            return result;
+        }
+
+        public List<CommentCheckMstModel> GetAllCmtCheckMst(int hpId, int sinDay)
+        {
+            var cmtCheckMsts = NoTrackingDataContext.CmtCheckMsts.Where(
+                    (x) => x.HpId == hpId && x.IsDeleted == 0);
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(
+                    (x) => x.HpId == Session.HospitalID && x.StartDate <= sinDay && x.EndDate >= sinDay);
+
+            var sinKouiCollection = new SinkouiCollection();
+
+            var tenJoinYakkaSyusai = from cmtCheckMst in cmtCheckMsts
+                                     join tenMst in tenMsts on
+                                         new { cmtCheckMst.HpId, cmtCheckMst.ItemCd } equals
+                                         new { tenMst.HpId, tenMst.ItemCd }
+                                     select new
+                                     {
+                                         CmtCheckMst = cmtCheckMst,
+                                         TenMstName = tenMst.Name,
+                                         KanaName1 = tenMst.KanaName1,
+                                         KanaName2 = tenMst.KanaName2,
+                                         KanaName3 = tenMst.KanaName3,
+                                         KohatuKbn = tenMst.KohatuKbn,
+                                         ItemCd = tenMst.ItemCd,
+                                         Ten = tenMst.Ten,
+                                         TenId = tenMst.TenId,
+                                         BuiKbn = tenMst.BuiKbn,
+                                         SinKouiKbn = tenMst.SinKouiKbn,
+                                         DrugKbn = tenMst.DrugKbn,
+                                         MasterSbt = tenMst.MasterSbt
+                                     };
+
+            var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
+                             join kouiKbnItem in sinKouiCollection.AsEnumerable()
+                             on ten.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
+                             from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
+                             select new
+                             {
+                                 CmtCheckMst = ten.CmtCheckMst,
+                                 TenMstName = ten.TenMstName,
+                                 KanaName1 = ten.KanaName1,
+                                 KanaName2 = ten.KanaName2,
+                                 KanaName3 = ten.KanaName3,
+                                 KohatuKbn = ten.KohatuKbn,
+                                 ItemCd = ten.ItemCd,
+                                 Ten = ten.Ten,
+                                 TenId = ten.TenId,
+                                 BuiKbn = ten.BuiKbn,
+                                 SinKouiKbn = ten.SinKouiKbn,
+                                 KouiName = tenKouiKbn.SinkouiName,
+                                 DrugKbn = ten.DrugKbn,
+                                 MasterSbt = ten.MasterSbt
+                             };
+
+            var result = queryFinal.AsEnumerable()
+                              .Select((x) => new CommentCheckMstModel(x.ItemCd, x.TenMstName, x.KanaName1, x.KanaName2, x.KanaName3,
+                              x.KouiName, x.KohatuKbn, x.Ten, x.TenId)).DistinctBy(x => x.ItemCd)
+                              .ToList();
             return result;
         }
 
@@ -5322,6 +5403,92 @@ namespace Infrastructure.Repositories
                 result.Append("/");
             }
             return result.ToString();
+        }
+
+        public bool UpdateCmtCheckMst(int userId, int hpId, List<ItemCmtModel> listData)
+        {
+            foreach (var item in listData)
+            {
+                var itemUpdate = TrackingDataContext.CmtCheckMsts.FirstOrDefault(t => t.HpId == item.HpId && t.ItemCd == item.ItemCd && t.SeqNo == item.SeqNo);
+                if (itemUpdate != null)
+                {
+                    itemUpdate.Cmt = item.Comment;
+                    itemUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    itemUpdate.UpdateId = userId;
+                    TrackingDataContext.SaveChanges();
+                }
+            }
+            return true;
+        }
+        
+        public bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId)
+        {
+            var addedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Added && k.Id == 0);
+            var updatedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Modified);
+            var deletedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Deleted);
+
+            if (deletedModels.Any())
+            {
+                foreach (var model in deletedModels)
+                {
+                    var postCodeUpdate = TrackingDataContext.PostCodeMsts.FirstOrDefault(x => x.HpId == model.HpId && x.Id == model.Id);
+
+                    if (postCodeUpdate != null)
+                    {
+                        postCodeUpdate.IsDeleted = 1;
+                        postCodeUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        postCodeUpdate.UpdateId = userId;
+                    }
+                }
+            }
+
+            if (updatedModels.Any())
+            {
+                foreach (var model in updatedModels)
+                {
+                    var postCodeUpdate = TrackingDataContext.PostCodeMsts.FirstOrDefault(x => x.HpId == model.HpId && x.Id == model.Id);
+
+                    if (postCodeUpdate != null)
+                    {
+                        postCodeUpdate.PostCd = model.PostCd;
+                        postCodeUpdate.PrefName = model.PrefName;
+                        postCodeUpdate.CityName = model.CityName;
+                        postCodeUpdate.Banti = model.Banti;
+                        postCodeUpdate.IsDeleted = model.IsDeleted;
+                        postCodeUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        postCodeUpdate.UpdateId = userId;
+                    }
+                }
+            }
+
+            if (addedModels.Any())
+            {
+                foreach (var model in addedModels)
+                {
+                    TrackingDataContext.PostCodeMsts.Add(new PostCodeMst()
+                    {
+                        HpId = hpId,
+                        PostCd = model.PostCd,
+                        PrefName = model.PrefName,
+                        CityName = model.CityName,
+                        Banti = model.Banti,
+                        IsDeleted = 0,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                    });
+                }
+            }
+
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool CheckPostCodeExist(int hpId, string zipCD)
+        {
+            return NoTrackingDataContext.PostCodeMsts.Any(x => x.HpId == hpId &&
+                                                               x.IsDeleted == 0 &&
+                                                               x.PostCd == zipCD);
         }
     }
 }
