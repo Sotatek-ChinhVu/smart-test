@@ -48,6 +48,7 @@
         public const string GetDiseaseList = "GetDiseaseList";
         public const string UpdateCmtCheckMst = "UpdateCmtCheckMst";
         public const string SaveAddressMst = "SaveAddressMst";
+        public const string IsUsingKensa = "IsUsingKensa";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
