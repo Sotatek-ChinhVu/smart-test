@@ -5,7 +5,6 @@ using Domain.Models.MaterialMaster;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using Helper.Enum;
-using System.ComponentModel;
 
 namespace Domain.Models.MstItem
 {
@@ -43,6 +42,7 @@ namespace Domain.Models.MstItem
         List<TenItemModel> GetTenMstList(int hpId, List<string> itemCds);
 
         List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds);
+        List<CommentCheckMstModel> GetAllCmtCheckMst(int hpId, int sinDay);
 
         List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds);
 
@@ -129,7 +129,7 @@ namespace Domain.Models.MstItem
 
         List<TenMstMaintenanceModel> GetTenMstListByItemType(int hpId, ItemTypeEnums itemType, string startWithstr, int sinDate);
 
-        (List<TenItemModel> tenItemModels, int totalCount) SearchTenMasterItem(int hpId, int pageIndex, int pageCount, string keyword, double? pointFrom, double? pointTo, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem, bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly, bool isSearchGazoDensibaitaiHozon, SortType sortType , FilterTenMstEnum sortCol);
+        (List<TenItemModel> tenItemModels, int totalCount) SearchTenMasterItem(int hpId, int pageIndex, int pageCount, string keyword, double? pointFrom, double? pointTo, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeRosai, bool includeMisai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool onlyUsage, string yJCode, bool isMasterSearch, bool isExpiredSearchIfNoData, bool isAllowSearchDeletedItem, bool isExpired, bool isDeleted, List<int> drugKbns, bool isSearchSanteiItem, bool isSearchKenSaItem, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly, bool isSearchGazoDensibaitaiHozon, SortType sortType, FilterTenMstEnum sortCol);
 
         (List<TenItemModel> tenItemModels, int totalCount) SearchSuggestionTenMstItem(int hpId, int pageIndex, int pageCount, string keyword, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeMisai, bool includeRousai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool isDeleted, List<int> drugKbns, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly);
 
@@ -138,5 +138,13 @@ namespace Domain.Models.MstItem
         string GetDrugAction(string yjCd);
 
         string GetPrecautions(string yjCd);
+
+        bool UpdateCmtCheckMst(int userId, int hpId, List<ItemCmtModel> listData);
+        
+        bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId);
+
+        bool CheckPostCodeExist(int hpId, string zipCD);
+
+        List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize);
     }
 }
