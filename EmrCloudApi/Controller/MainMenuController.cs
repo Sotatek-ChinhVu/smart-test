@@ -103,6 +103,16 @@ public class MainMenuController : AuthorizeControllerBase
         return new ActionResult<Response<GetKensaIraiResponse>>(presenter.Result);
     }
 
+    [HttpPost(ApiPath.GetKensaIraiByList)]
+    public ActionResult<Response<GetKensaIraiResponse>> GetKensaIraiByList([FromBody] GetKensaIraiByListRequest request)
+    {
+        var input = new GetKensaIraiInputData(HpId, request.KensaIraiByListRequest.Select(item => ConvertToKensaInfModel(item)).ToList());
+        var output = _bus.Handle(input);
+        var presenter = new GetKensaIraiPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKensaIraiResponse>>(presenter.Result);
+    }
+
     [HttpGet(ApiPath.GetKensaCenterMstList)]
     public ActionResult<Response<GetKensaCenterMstListResponse>> GetKensaCenterMstList()
     {
@@ -134,6 +144,15 @@ public class MainMenuController : AuthorizeControllerBase
     }
 
     #region private function
+    private KensaInfModel ConvertToKensaInfModel(KensaIraiByListRequestItem requestItem)
+    {
+        return new KensaInfModel(requestItem.PtId,
+                                 requestItem.RaiinNo,
+                                 requestItem.CenterCd,
+                                 requestItem.PrimaryKbn,
+                                 requestItem.IraiCd);
+    }
+
     private KensaIraiModel ConvertToKensaIraiModel(KensaIraiRequestItem request)
     {
         List<KensaIraiDetailModel> kensaIraiDetailList = request.KensaIraiDetails.Select(item => new KensaIraiDetailModel(

@@ -142,6 +142,8 @@ namespace Domain.Models.MstItem
         bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId);
 
         bool CheckPostCodeExist(int hpId, string zipCD);
+
+        List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize);
         List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
         List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today);
     }
