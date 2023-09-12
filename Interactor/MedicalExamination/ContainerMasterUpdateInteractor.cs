@@ -1,25 +1,29 @@
 ﻿using Domain.Models.MedicalExamination;
+using Domain.Models.MstItem;
 using UseCase.ContainerMasterUpdate;
 
 namespace Interactor.MedicalExamination
 {
     public class ContainerMasterUpdateInteractor : IContainerMasterUpdateInputPort
     {
-        private readonly IMedicalExaminationRepository _medicalExaminationRepository;
-        public ContainerMasterUpdateInteractor(IMedicalExaminationRepository medicalExaminationRepository) 
+        private readonly IMstItemRepository _mstItemRepository;
+        public ContainerMasterUpdateInteractor(IMstItemRepository mstItemRepository) 
         {
-            _medicalExaminationRepository = medicalExaminationRepository;
+            _mstItemRepository = mstItemRepository;
         }
         public ContainerMasterUpdateOutPutData Handle(ContainerMasterUpdateInputData inputData)
         {
             try
             {
-                _medicalExaminationRepository.ContainerMasterUpdate(inputData.HpId, inputData.UserId, inputData.ContainerMasters);
-                return new ContainerMasterUpdateOutPutData(ContainerMasterUpdateStatus.Successful);
+                if(_mstItemRepository.ContainerMasterUpdate(inputData.HpId, inputData.UserId, inputData.ContainerMasters))
+                {
+                    return new ContainerMasterUpdateOutPutData(ContainerMasterUpdateStatus.Successful);
+                }
+                return new ContainerMasterUpdateOutPutData(ContainerMasterUpdateStatus.Failed);
             }
             finally 
             {
-                _medicalExaminationRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
             }
         }
     }

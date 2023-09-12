@@ -22,6 +22,7 @@ namespace EmrCloudApi.Presenters.MedicalExamination
         private static string GetMessage(ContainerMasterUpdateStatus status) => status switch
         {
             ContainerMasterUpdateStatus.Successful => ResponseMessage.Success,
+            ContainerMasterUpdateStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
     }

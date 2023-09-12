@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Enum;
+using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
@@ -10,6 +11,7 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters);
         List<DosageDrugModel> GetDosages(List<string> yjCds);
 
         List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData();

@@ -3,5 +3,6 @@
     public enum ContainerMasterUpdateStatus
     {
         Successful,
+        Failed
     }
 }

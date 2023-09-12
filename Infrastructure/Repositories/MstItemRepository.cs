@@ -1,6 +1,7 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Domain.Constant;
 using Domain.Enum;
+using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
@@ -5322,6 +5323,52 @@ namespace Infrastructure.Repositories
                 result.Append("/");
             }
             return result.ToString();
+        }
+
+        public bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters)
+        {
+            foreach (var item in containerMasters)
+            {
+                if (item.ContainerModelStatus == ModelStatus.Deleted)
+                {
+                    var containerMaster = TrackingDataContext.ContainerMsts.Where(x => x.ContainerCd == item.ContainerCd);
+                    if (containerMaster != null)
+                    {
+                        TrackingDataContext.ContainerMsts.RemoveRange(containerMaster);
+                    }
+                }
+                else
+                {
+                    var containerMaster = TrackingDataContext.ContainerMsts.FirstOrDefault(x => x.ContainerCd == item.ContainerCd);
+                    if (containerMaster != null)
+                    {
+                        containerMaster.ContainerCd = item.ContainerCd;
+                        containerMaster.ContainerName = item.ContainerName;
+                        containerMaster.UpdateId = userId;
+                        containerMaster.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        ContainerMst itemtest = ConvertContainerMasterList(item, userId, hpId);
+                        TrackingDataContext.ContainerMsts.Add(itemtest);
+                    }
+                }
+            }
+            return TrackingDataContext.SaveChanges() >=1;
+        }
+
+        private ContainerMst ConvertContainerMasterList(ContainerMasterModel u, int userId, int hpId)
+        {
+            return new ContainerMst
+            {
+                HpId = hpId,
+                ContainerCd = u.ContainerCd,
+                ContainerName = u.ContainerName,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
         }
     }
 }
