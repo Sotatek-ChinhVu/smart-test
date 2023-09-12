@@ -309,6 +309,7 @@ using UseCase.ChartApproval.SaveApprovalInfList;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
 using UseCase.CommonChecker;
+using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetAllByomeiByPtId;
 using UseCase.Diseases.GetDiseaseList;
@@ -1326,6 +1327,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetHeaderVistitDateInputData, GetHeaderVistitDateInteractor>();
             busBuilder.RegisterUseCase<CheckUpsertNextOrderInputData, CheckUpsertNextOrderInteractor>();
             busBuilder.RegisterUseCase<SaveKensaIraiInputData, SaveKensaIraiInteractor>();
+            busBuilder.RegisterUseCase<ContainerMasterUpdateInputData, ContainerMasterUpdateInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

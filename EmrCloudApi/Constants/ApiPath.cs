@@ -49,6 +49,7 @@
         public const string GetDiseaseList = "GetDiseaseList";
         public const string UpdateCmtCheckMst = "UpdateCmtCheckMst";
         public const string SaveAddressMst = "SaveAddressMst";
+        public const string ContainerMasterUpdate = "ContainerMasterUpdate";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

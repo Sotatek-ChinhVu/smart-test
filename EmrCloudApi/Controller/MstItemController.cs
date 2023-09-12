@@ -1,18 +1,26 @@
-﻿using Domain.Models.MstItem;
+﻿using Domain.Models.ContainerMaster;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
+using Domain.Models.User;
 using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Presenters.MstItem;
+using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.MstItem;
+using EmrCloudApi.Requests.User;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
+using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Responses.MstItem.DiseaseNameMstSearch;
 using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
+using Entity.Tenant;
 using Helper.Extension;
 using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
 using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.ConvertStringChkJISKj;
@@ -186,6 +194,30 @@ namespace EmrCloudApi.Controller
             var presenter = new SearchPostCodePresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ContainerMasterUpdate)]
+        public ActionResult<Response<ContainerMasterUpdateResponse>> ContainerMasterUpdate([FromBody] ContainerMasterUpdateRequest request)
+        {
+            var upsertUserList = request.ContainerMasterList.Select(u => ContainerMasterRequestToModel(u)).ToList();
+            var input = new ContainerMasterUpdateInputData(HpId, UserId, upsertUserList);
+            var output = _bus.Handle(input);
+
+            var presenter = new ContainerMasterUpdatePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ContainerMasterUpdateResponse>>(presenter.Result);
+        }
+
+        private static ContainerMasterModel ContainerMasterRequestToModel(ContainerMasterRequest containerMaster)
+        {
+            return
+                new ContainerMasterModel
+                (
+                    containerMaster.ContainerCd,
+                    containerMaster.ContainerName,
+                    containerMaster.ContainerModelStatus
+                );
         }
 
         [HttpGet(ApiPath.FindTenMst)]
