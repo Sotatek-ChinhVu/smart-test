@@ -80,4 +80,46 @@ public class ByomeiMstModel
     public bool IsAdopted { get; private set; }
 
     public int NanbyoCd { get; private set; }
+
+    public int DisplayedOrder {
+        get
+        {
+            if (ByomeiCdDisplay == "接尾語") return 2;
+            if (ByomeiCdDisplay == "接頭語") return 1;
+            return 0;
+        }
+    }
+
+    public string ByomeiCdDisplay
+    {
+        get
+        {
+            string byomeiCd = ByomeiCd;
+
+            string rs = "";
+
+            if (string.IsNullOrEmpty(byomeiCd)) return rs;
+
+            if (byomeiCd.Length != 4)
+            {
+                rs = "疾病名";
+            }
+            else
+            {
+                if (byomeiCd.StartsWith("8"))
+                {
+                    rs = "接尾語";
+                }
+                else if (byomeiCd.StartsWith("9"))
+                {
+                    rs = "その他";
+                }
+                else
+                {
+                    rs = "接頭語";
+                }
+            }
+            return rs;
+        }
+    }
 }

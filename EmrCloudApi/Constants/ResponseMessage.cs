@@ -52,6 +52,7 @@
         public static readonly string InvalidGrpKouiKbn = "Invalid GrpKouiKbn";
         public static readonly string InvalidDocCd = "Invalid DocCd";
         public static readonly string InvalidRenkeiId = "Invalid RenkeiId";
+        public static readonly string InvalidCenterCd = "Invalid CenterCd";
         public static readonly string ErrorBunkatuOdrDetail = "入力できる文字を超えました。\r\n 合計10文字以内に入力してください。";
 
         //Common
@@ -675,6 +676,14 @@
         public static readonly string HokenNotFound = "Invalid HokenPid, Hoken Not Found.";
         public static readonly string CanNotExportPdf = "Can not export file Pdf.";
         public static readonly string CanNotReturnPdfFile = "Can not return file Pdf.";
+
+        //TenMst
+        public static readonly string InvalidMasterSbt = "Invalid MasterSbt";
+        public static readonly string InvalidMinAge = "Invalid MinAge";
+        public static readonly string InvalidMaxAge = "Invalid MaxAge";
+        public static readonly string InvalidCdKbn = "Invalid CdKbn";
+        public static readonly string InvalidKokuji1 = "Invalid Kokuji1";
+        public static readonly string InvalidKokuji2 = "Invalid Kokuji2";
 
         //Valid Kohi
         public static readonly string InvalidKohiEmptyModel1 = "Invalid kohi1 empty model";

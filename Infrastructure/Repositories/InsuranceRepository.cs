@@ -956,6 +956,7 @@ namespace Infrastructure.Repositories
                                                 .OrderBy(p => p.IsExpirated)
                                                 .ThenBy(p => p.HokenPid)
                                                 .FirstOrDefault();
+
                         if (sameHokenPatternBuntenKohi == null)
                         {
                             // ② 初再診と同じ主保険を持つ有効な保険パターンの中で、分点公費（HOKEN_MST.HOKEN_SBT_KBN=6）を持つ保険パターンがない場合は、初再診の保険PID
@@ -1031,15 +1032,7 @@ namespace Infrastructure.Repositories
                                     {
                                         return foundPattern.HokenPid;
                                     }
-                                    //else
-                                    //{
-                                    //    return syosaisinHokenPattern?.HokenPid ?? 0;
-                                    //}
                                 }
-                                //else
-                                //{
-                                //    return syosaisinHokenPattern?.HokenPid ?? 0;
-                                //}
                             }
                         }
                     }
