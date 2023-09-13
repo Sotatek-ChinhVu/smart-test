@@ -1,14 +1,14 @@
 ﻿using Domain.Models.ContainerMaster;
+using Domain.Models.KensaIrai;
+using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
-using Domain.Models.User;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.MstItem;
-using EmrCloudApi.Requests.User;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Responses.MedicalExamination;
@@ -16,7 +16,6 @@ using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Responses.MstItem.DiseaseNameMstSearch;
 using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
-using Entity.Tenant;
 using Helper.Extension;
 using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
@@ -59,6 +58,8 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.UploadImageDrugInf;
+using UseCase.UpdateKensaMst;
+using UseCase.UpsertMaterialMaster;
 
 namespace EmrCloudApi.Controller
 {
@@ -220,6 +221,7 @@ namespace EmrCloudApi.Controller
                 );
         }
 
+
         [HttpGet(ApiPath.FindTenMst)]
         public ActionResult<Response<FindtenMstResponse>> FindTenMst([FromQuery] FindTenMstRequest request)
         {
@@ -228,6 +230,30 @@ namespace EmrCloudApi.Controller
             var presenter = new FindTenMstPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpsertMaterialMaster)]
+        public ActionResult<Response<UpsertMaterialMasterResponse>> UpsertMaterialMaster([FromBody] UpsertMaterialMasterRequest request)
+        {
+            var upsertUserList = request.MaterialMasterList.Select(u => MaterialMasterRequestToModel(u)).ToList();
+            var input = new UpsertMaterialMasterInputData(HpId, UserId, upsertUserList);
+            var output = _bus.Handle(input);
+
+            var presenter = new UpsertMaterialMasterPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpsertMaterialMasterResponse>>(presenter.Result);
+        }
+
+        private static MaterialMasterModel MaterialMasterRequestToModel(MaterialMasterRequest MaterialMaster)
+        {
+            return
+                new MaterialMasterModel
+                (
+                    MaterialMaster.MaterialCd,
+                    MaterialMaster.MaterialName,
+                    MaterialMaster.MaterialModelStatus
+                );
         }
 
         [HttpPost(ApiPath.GetAdoptedItemList)]
@@ -305,6 +331,95 @@ namespace EmrCloudApi.Controller
             var presenter = new DeleteOrRecoverTenMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<DeleteOrRecoverTenMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateKensaMst)]
+        public ActionResult<Response<UpdateKensaMstResponse>> UpdateKensaMst(UpdateKensaMstRequest request)
+        {
+            var input = new UpdateKensaMstInputData(HpId, UserId, request.KensaMstItems.Select(x => kensaMstItemsRequestToModel(x)).ToList(), request.TenMstItems.Select(x => TenMstItemsRequestToModel(x)).ToList());
+            var output = _bus.Handle(input);
+
+            var presenter = new UpdateKensaMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpdateKensaMstResponse>>(presenter.Result);
+        }
+
+        private static TenItemModel TenMstItemsRequestToModel(TenMstInputItem tenMstItemModel)
+        {
+            return
+                new TenItemModel
+                (
+                    tenMstItemModel.ItemCd,
+                    tenMstItemModel.SinKouiKbn,
+                    tenMstItemModel.Name,
+                    tenMstItemModel.OdrUnitName,
+                    tenMstItemModel.CnvUnitName,
+                    tenMstItemModel.IsNodspRece,
+                    tenMstItemModel.YohoKbn,
+                    tenMstItemModel.OdrTermVal,
+                    tenMstItemModel.CnvTermVal,
+                    tenMstItemModel.YjCd,
+                    tenMstItemModel.KensaItemCd,
+                    tenMstItemModel.KensaItemSeqNo,
+                    tenMstItemModel.KohatuKbn,
+                    tenMstItemModel.Ten,
+                    tenMstItemModel.HandanGrpKbn,
+                    tenMstItemModel.IpnNameCd,
+                    tenMstItemModel.CmtCol1,
+                    tenMstItemModel.CmtCol2,
+                    tenMstItemModel.CmtCol3,
+                    tenMstItemModel.CmtCol4,
+                    tenMstItemModel.CmtColKeta1,
+                    tenMstItemModel.CmtColKeta2,
+                    tenMstItemModel.CmtColKeta3,
+                    tenMstItemModel.CmtColKeta4,
+                    tenMstItemModel.MinAge,
+                    tenMstItemModel.MaxAge,
+                    tenMstItemModel.StartDate,
+                    tenMstItemModel.EndDate,
+                    tenMstItemModel.MasterSbt,
+                    tenMstItemModel.BuiKbn,
+                    tenMstItemModel.CdKbn,
+                    tenMstItemModel.CdKbnno,
+                    tenMstItemModel.CdEdano,
+                    tenMstItemModel.Kokuji1,
+                    tenMstItemModel.Kokuji2,
+                    tenMstItemModel.DrugKbn,
+                    tenMstItemModel.ReceName,
+                    tenMstItemModel.SanteiItemCd,
+                    tenMstItemModel.JihiSbt,
+                    tenMstItemModel.IsDeleted
+                );
+        }
+
+        private static KensaMstModel kensaMstItemsRequestToModel(KensaMstInputItem kensaMstItem)
+        {
+            return
+                new KensaMstModel
+                (
+                    kensaMstItem.KensaItemCd,
+                    kensaMstItem.KensaItemSeqNo,
+                    kensaMstItem.CenterCd,
+                    kensaMstItem.KensaName,
+                    kensaMstItem.KensaKana,
+                    kensaMstItem.Unit,
+                    kensaMstItem.MaterialCd,
+                    kensaMstItem.ContainerCd,
+                    kensaMstItem.MaleStd,
+                    kensaMstItem.MaleStdLow,
+                    kensaMstItem.MaleStdHigh,
+                    kensaMstItem.FemaleStd,
+                    kensaMstItem.FemaleStdLow,
+                    kensaMstItem.FemaleStdHigh,
+                    kensaMstItem.Formula,
+                    kensaMstItem.Digit,
+                    kensaMstItem.OyaItemCd,
+                    kensaMstItem.OyaItemSeqNo,
+                    kensaMstItem.SortNo,
+                    kensaMstItem.CenterItemCd1,
+                    kensaMstItem.CenterItemCd2
+                );
         }
 
         [HttpGet(ApiPath.GetSetDataTenMst)]
@@ -539,7 +654,7 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
-        
+
         [HttpPost(ApiPath.SaveAddressMst)]
         public ActionResult<Response<SaveAddressMstResponse>> SaveAddressMst([FromBody] SaveAddressMstRequest request)
         {

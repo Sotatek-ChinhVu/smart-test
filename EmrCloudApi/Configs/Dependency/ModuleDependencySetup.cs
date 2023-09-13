@@ -761,6 +761,8 @@ using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MainMenu.GetKensaInf;
 using UseCase.MainMenu.DeleteKensaInf;
+using UseCase.UpsertMaterialMaster;
+using UseCase.UpdateKensaMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1428,6 +1430,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UploadImageDrugInfInputData, UploadImageDrugInfInteractor>();
             busBuilder.RegisterUseCase<GetTenMstListInputData, GetTenMstListInteractor>();
             busBuilder.RegisterUseCase<GetDiseaseListInputData, GetDiseaseListInteractor>();
+            busBuilder.RegisterUseCase<UpdateCmtCheckMstInputData, UpdateCmtCheckMstInteractor>();
+            busBuilder.RegisterUseCase<GetParrentKensaMstInputData, GetParrentKensaMstListInteractor>();
+            busBuilder.RegisterUseCase<UpdateKensaMstInputData, UpdateKensaMstInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
