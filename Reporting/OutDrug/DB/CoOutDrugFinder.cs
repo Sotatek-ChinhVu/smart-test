@@ -1,7 +1,10 @@
 ﻿using Domain.Constant;
+using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Reporting.OutDrug.Model;
+using System.Text.Json;
 
 namespace Reporting.OutDrug.DB;
 
@@ -75,50 +78,46 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
     public List<CoOdrInfDetailModel> FindOdrInfDetailData(int hpId, long ptId, int sinDate, long raiinNo)
     {
         var odrInfs = NoTrackingDataContext.OdrInfs.Where(o =>
-            o.HpId == hpId &&
-            o.PtId == ptId &&
-            o.SinDate == sinDate &&
-            o.RaiinNo == raiinNo &&
-            o.IsDeleted == DeleteStatus.None)
+               o.HpId == hpId &&
+               o.PtId == ptId &&
+               o.SinDate == sinDate &&
+               o.RaiinNo == raiinNo &&
+               o.IsDeleted == DeleteStatus.None)
             .ToList();
-
         var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(o =>
             o.HpId == hpId &&
             o.PtId == ptId &&
             o.SinDate == sinDate &&
-            o.ItemCd != null &&
-            (!(o.ItemCd).StartsWith("8") || (o.ItemCd).Length != 9))
-            .ToList();
+            !(o.ItemCd.StartsWith("8") && o.ItemCd.Length == 9));
 
         var tenMsts = NoTrackingDataContext.TenMsts.Where(t =>
             t.HpId == hpId &&
             t.StartDate <= sinDate &&
             (t.EndDate >= sinDate || t.EndDate == 12341234));
-
         var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(o =>
             o.HpId == hpId);
 
         var joinQuery = (
-            from odrInf in odrInfs
-            join odrInfDetail in odrInfDetails on
-                new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
-                new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
-            join tenMst in tenMsts on
+           from odrInf in odrInfs
+           join odrInfDetail in odrInfDetails on
+               new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
+               new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
+           join tenMst in tenMsts on
                 new { odrInfDetail.HpId, ItemCd = (odrInfDetail.ItemCd ?? string.Empty).Trim() } equals
-                new { tenMst.HpId, ItemCd = tenMst.ItemCd } into oJoin
-            join PtHokenPattern in ptHokenPatterns on
-                new { odrInf.HpId, odrInf.PtId, HokenPid = odrInf.HokenPid } equals
-                new { PtHokenPattern.HpId, PtHokenPattern.PtId, PtHokenPattern.HokenPid }
-            from oj in oJoin.DefaultIfEmpty()
-            orderby
-                odrInf.RaiinNo, odrInf.OdrKouiKbn, odrInf.SortNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo, odrInfDetail.RowNo
-            select new
-            {
-                odrInfDetail,
-                odrInf,
-                tenMst = oj,
-                PtHokenPattern
-            }
+               new { tenMst.HpId, ItemCd = tenMst.ItemCd } into oJoin
+           join PtHokenPattern in ptHokenPatterns on
+               new { odrInf.HpId, odrInf.PtId, HokenPid = odrInf.HokenPid } equals
+               new { PtHokenPattern.HpId, PtHokenPattern.PtId, PtHokenPattern.HokenPid }
+           from oj in oJoin.DefaultIfEmpty()
+           orderby
+               odrInf.RaiinNo, odrInf.OdrKouiKbn, odrInf.SortNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo, odrInfDetail.RowNo
+           select new
+           {
+               odrInfDetail,
+               odrInf,
+               tenMst = oj,
+               PtHokenPattern
+           }
         );
 
         var entities = joinQuery.AsEnumerable().Select(
@@ -146,7 +145,6 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
 
         }
         );
-
         return results;
     }
 
