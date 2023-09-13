@@ -28,10 +28,13 @@ namespace Interactor.ListSetMst
                 int generationId = _treeListSetRepository.GetGenerationId(inputData.SinDate);
 
                 List<ListSetMstModel> result = new List<ListSetMstModel>();
-                result.AddRange(GetListTreeSet(inputData.SetKbn, generationId, inputData));
-                if (!result.Any())
+                List<ListSetMstModel> rootSubs = new List<ListSetMstModel>();
+                rootSubs.AddRange(GetListTreeSet(inputData.SetKbn, generationId, inputData));
+                if (!rootSubs.Any())
                     return new GetTreeListSetOutputData(new List<ListSetMstModel>(), GetTreeListSetStatus.DataNotFound);
-
+                ListSetMstModel rootLevel = new ListSetMstModel(0, "共通",0);
+                rootLevel.Childrens = rootSubs;
+                result.Add(rootLevel);
                 return new GetTreeListSetOutputData(result, GetTreeListSetStatus.Successed);
             }
             finally

@@ -758,6 +758,8 @@ using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
 using Domain.Models.ListSetMst;
+using UseCase.ListSetMst.GetTreeListSet;
+using Interactor.ListSetMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1725,6 +1727,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Disease Name Mst Seach
             busBuilder.RegisterUseCase<DiseaseNameMstSearchInputData, DiseaseNameMstSearchInteractor>();
+
+            //ListSetMst
+            busBuilder.RegisterUseCase<GetTreeListSetInputData, GetTreeListSetInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

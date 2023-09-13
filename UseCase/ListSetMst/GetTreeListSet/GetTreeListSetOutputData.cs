@@ -6,12 +6,12 @@ namespace UseCase.ListSetMst.GetTreeListSet
 {
     public sealed class GetTreeListSetOutputData : IOutputData
     {
-        public List<ListSetMstModel> ListTreeSet { get; private set; }
+        public List<ListSetMstModel> TreeListSet { get; private set; }
         public GetTreeListSetStatus Status { get; private set; }
 
-        public GetTreeListSetOutputData(List<ListSetMstModel> listTreeSet, GetTreeListSetStatus status)
+        public GetTreeListSetOutputData(List<ListSetMstModel> treeListSet, GetTreeListSetStatus status)
         {
-            ListTreeSet = listTreeSet;
+            TreeListSet = treeListSet;
             Status = status;
         }
     }
