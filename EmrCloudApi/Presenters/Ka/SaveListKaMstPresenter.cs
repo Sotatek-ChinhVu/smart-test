@@ -27,6 +27,7 @@ public class SaveListKaMstPresenter : ISaveKaMstOutputPort
         SaveKaMstStatus.KaNameMaxLength40 => ResponseMessage.KaNameMaxLength40,
         SaveKaMstStatus.ReceKaCdNotFound => ResponseMessage.ReceKaCdNotFound,
         SaveKaMstStatus.CanNotDuplicateKaId => ResponseMessage.CanNotDuplicateKaId,
+        SaveKaMstStatus.InputNotFound => ResponseMessage.InputDataNull,
         _ => string.Empty
     };
 }
