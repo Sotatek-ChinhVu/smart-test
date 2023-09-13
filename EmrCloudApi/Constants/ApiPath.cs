@@ -53,6 +53,7 @@
         public const string UpsertMaterialMaster = "UpsertMaterialMaster";
         public const string UpdateKensaMst = "UpdateKensaMst";
         public const string IsUsingKensa = "IsUsingKensa";
+        public const string UpdateKensaStdMst = "UpdateKensaStdMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

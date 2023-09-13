@@ -423,6 +423,18 @@ namespace EmrCloudApi.Controller
                 );
         }
 
+        [HttpPost(ApiPath.UpdateKensaStdMst)]
+        public ActionResult<Response<UpdateKensaMstResponse>> UpdateKensaStdMst(UpdateKensaMstRequest request)
+        {
+            var input = new UpdateKensaMstInputData(HpId, UserId, request.KensaMstItems.Select(x => kensaMstItemsRequestToModel(x)).ToList(), request.TenMstItems.Select(x => TenMstItemsRequestToModel(x)).ToList());
+            var output = _bus.Handle(input);
+
+            var presenter = new UpdateKensaMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpdateKensaMstResponse>>(presenter.Result);
+        }
+
         [HttpGet(ApiPath.GetSetDataTenMst)]
         public ActionResult<Response<GetSetDataTenMstResponse>> GetSetDataTenMstOrigin([FromQuery] GetSetDataTenMstRequest request)
         {
