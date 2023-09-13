@@ -758,6 +758,8 @@ using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
 using Domain.Models.ListSetMst;
+using UseCase.ListSetMst.UpdateListSetMst;
+using Interactor.ListSetMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1687,6 +1689,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetJihiSbtMstListInputData, GetJihiMstsInteractor>();
             busBuilder.RegisterUseCase<SaveAddressMstInputData, SaveAddressMstInteractor>();
 
+            //ListSetMst
+            busBuilder.RegisterUseCase<UpdateListSetMstInputData, UpdateListSetMstInteractor>();
+            
             //HolidayMst
             busBuilder.RegisterUseCase<SaveHolidayMstInputData, SaveHolidayMstInteractor>();
 

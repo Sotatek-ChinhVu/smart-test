@@ -3,6 +3,7 @@ using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
+using EmrCloudApi.Requests.ListSetMst;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
@@ -14,6 +15,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.ListSetMst.UpdateListSetMst;
 using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
@@ -494,7 +496,15 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
-        
+
+        [HttpPost(ApiPath.UpdateListSetMst)]
+        public ActionResult<Response<UpdateCmtCheckMstResponse>> UpdateListSetMst([FromBody] UpdateListSetMstRequest request)
+        {
+            var input = new UpdateListSetMstInputData(UserId, HpId, request.ListSetMsts);
+            var output = _bus.Handle(input);
+            return Ok();
+        }
+
         [HttpPost(ApiPath.SaveAddressMst)]
         public ActionResult<Response<SaveAddressMstResponse>> SaveAddressMst([FromBody] SaveAddressMstRequest request)
         {

@@ -3742,5 +3742,9 @@ namespace Helper.Common
         {
             return sex == 1 ? "男" : sex == 2 ? "女" : "未設定";
         }
+        public static String GetComputerName()
+        {
+            return Environment.MachineName;
+        }
     }
 }

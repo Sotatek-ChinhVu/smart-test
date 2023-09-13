@@ -445,5 +445,8 @@
         public const string GetKaCodeYousikiMst = "GetKaCodeYousikiMst";
 
         public const string Test = "Test";
+
+        //ListSetMst
+        public const string UpdateListSetMst = "UpdateListSetMst";
     }
 }
