@@ -39,16 +39,16 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private IMessenger? _messenger;
 
     public CommonReceRecalculation(
-        IReceiptRepository receiptRepository, 
-        ISystemConfRepository systemConfRepository, 
-        IInsuranceMstRepository insuranceMstRepository, 
-        IMstItemRepository mstItemRepository, 
-        IPtDiseaseRepository ptDiseaseRepository, 
-        IOrdInfRepository ordInfRepository, 
-        ICommonMedicalCheck commonMedicalCheck, 
-        ITodayOdrRepository todayOdrRepository, 
-        IReceSeikyuRepository receSeikyuRepository, 
-        IDrugDetailRepository drugDetailRepository, 
+        IReceiptRepository receiptRepository,
+        ISystemConfRepository systemConfRepository,
+        IInsuranceMstRepository insuranceMstRepository,
+        IMstItemRepository mstItemRepository,
+        IPtDiseaseRepository ptDiseaseRepository,
+        IOrdInfRepository ordInfRepository,
+        ICommonMedicalCheck commonMedicalCheck,
+        ITodayOdrRepository todayOdrRepository,
+        IReceSeikyuRepository receSeikyuRepository,
+        IDrugDetailRepository drugDetailRepository,
         ICalculationInfRepository calculationInfRepository)
     {
         _receiptRepository = receiptRepository;
@@ -163,7 +163,13 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             }
             return false;
         }
-        string resultError = errorText.ToString().Replace(Environment.NewLine, "\\r\\n");
+
+        string resultError = string.Empty;
+        if (isReceiptAggregationCheckBox)
+        {
+            resultError = errorText.ToString().Replace(Environment.NewLine, "\\r\\n");
+        }
+
         if (!receCheckCalculate)
         {
             SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, resultError, string.Empty));
