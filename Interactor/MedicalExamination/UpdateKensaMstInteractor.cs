@@ -1,4 +1,5 @@
 ﻿using Domain.Models.MedicalExamination;
+using Domain.Models.MstItem;
 using UseCase.UpdateKensaMst;
 using static Helper.Constants.TenMstConst;
 
@@ -6,11 +7,11 @@ namespace Interactor.MedicalExamination
 {
     public class UpdateKensaMstInteractor : IUpdateKensaMstInputPort
     {
-        private readonly IMedicalExaminationRepository _medicalExaminationRepository;
+        private readonly IMstItemRepository _mstItemRepository;
 
-        public UpdateKensaMstInteractor(IMedicalExaminationRepository medicalExaminationRepository)
+        public UpdateKensaMstInteractor(IMstItemRepository mstItemRepository)
         {
-            _medicalExaminationRepository = medicalExaminationRepository;
+            _mstItemRepository = mstItemRepository;
         }
 
         public UpdateKensaMstOutputData Handle(UpdateKensaMstInputData inputData)
@@ -25,12 +26,20 @@ namespace Interactor.MedicalExamination
                         return new UpdateKensaMstOutputData(ConvertStatusTenMst(status));
                     }
                 }
-                _medicalExaminationRepository.UpdateKensaMst(inputData.HpId, inputData.UserId, inputData.KensaMsts, inputData.TenMsts);
-                return new UpdateKensaMstOutputData(UpdateKensaMstStatus.Success);
+
+                if(_mstItemRepository.UpdateKensaMst(inputData.HpId, inputData.UserId, inputData.KensaMsts, inputData.TenMsts))
+                {
+                    return new UpdateKensaMstOutputData(UpdateKensaMstStatus.Success);
+                }
+                else
+                {
+                    return new UpdateKensaMstOutputData(UpdateKensaMstStatus.Failed);
+                }
+                
             }
             finally
             {
-                _medicalExaminationRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
             }
         }
         private static UpdateKensaMstStatus ConvertStatusTenMst(ValidationStatus status)

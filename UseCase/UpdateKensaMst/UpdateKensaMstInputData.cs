@@ -1,12 +1,12 @@
 ﻿using Domain.Models.KensaIrai;
-using Domain.Models.TenMst;
+using Domain.Models.MstItem;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.UpdateKensaMst
 {
     public class UpdateKensaMstInputData : IInputData<UpdateKensaMstOutputData>
     {
-        public UpdateKensaMstInputData(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenMstModel> tenMsts)
+        public UpdateKensaMstInputData(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts)
         {
             HpId = hpId;
             UserId = userId;
@@ -20,6 +20,6 @@ namespace UseCase.UpdateKensaMst
 
         public List<KensaMstModel> KensaMsts { get; private set; }
 
-        public List<TenMstModel> TenMsts { get; private set; }
+        public List<TenItemModel> TenMsts { get; private set; }
     }
 }

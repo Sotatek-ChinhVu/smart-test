@@ -1,5 +1,4 @@
-﻿using Domain.Models.TenMst;
-using UseCase.UpdateKensaMst;
+﻿using UseCase.UpdateKensaMst;
 
 namespace EmrCloudApi.Requests.MedicalExamination
 {

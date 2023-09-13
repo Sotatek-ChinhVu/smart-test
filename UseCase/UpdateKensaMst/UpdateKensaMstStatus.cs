@@ -9,6 +9,7 @@
         InvalidMaxAge,
         InvalidCdKbn,
         InvalidKokuji1, 
-        InvalidKokuji2
+        InvalidKokuji2,
+        Failed
     }
 }

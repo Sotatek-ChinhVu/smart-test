@@ -1,7 +1,10 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Domain.Constant;
 using Domain.Enum;
+using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
+using Domain.Models.KensaIrai;
+using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
@@ -18,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using System.Text;
+using KensaCenterMstModel = Domain.Models.MstItem.KensaCenterMstModel;
 
 namespace Infrastructure.Repositories
 {
@@ -5702,6 +5706,478 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.PostCodeMsts.Any(x => x.HpId == hpId &&
                                                                x.IsDeleted == 0 &&
                                                                x.PostCd == zipCD);
+        }
+
+        public bool UpsertMaterialMaster(int hpId, int userId, List<MaterialMasterModel> materialMasters)
+        {
+            foreach (var item in materialMasters)
+            {
+                if (item.MaterialModelStatus == ModelStatus.Deleted)
+                {
+                    var containerMaster = TrackingDataContext.MaterialMsts.Where(x => x.MaterialCd == item.MaterialCd);
+                    if (containerMaster != null)
+                    {
+                        TrackingDataContext.MaterialMsts.RemoveRange(containerMaster);
+                    }
+                }
+                else
+                {
+                    var materialMaster = TrackingDataContext.MaterialMsts.FirstOrDefault(x => x.MaterialCd == item.MaterialCd);
+                    if (materialMaster != null)
+                    {
+                        materialMaster.MaterialCd = item.MaterialCd;
+                        materialMaster.MaterialName = item.MaterialName;
+                        materialMaster.UpdateId = userId;
+                        materialMaster.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        MaterialMst itemtest = ConvertContainerMasterList(item, userId, hpId);
+                        TrackingDataContext.MaterialMsts.Add(itemtest);
+                    }
+                }
+            }
+            return TrackingDataContext.SaveChanges() >= 1;
+        }
+
+        private MaterialMst ConvertContainerMasterList(MaterialMasterModel u, int userId, int hpId)
+        {
+            return new MaterialMst
+            {
+                HpId = hpId,
+                MaterialCd = u.MaterialCd,
+                MaterialName = u.MaterialName,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+        }
+
+        public List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord)
+        {
+            var result = new List<KensaMstModel>();
+            string itemCd = "";
+            var kensaInKensaMst = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId);
+            var kensaInTenMst = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId);
+
+            if (string.IsNullOrEmpty(keyWord))
+            {
+                kensaInKensaMst = NoTrackingDataContext.KensaMsts.Where(p => p.HpId == hpId &&
+                                                                                      p.IsDelete == DeleteTypes.None &&
+                                                                                      (string.IsNullOrEmpty(p.OyaItemCd) || p.KensaItemCd == p.OyaItemCd));
+
+                kensaInTenMst = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId &&
+                                                                                  !string.IsNullOrEmpty(p.KensaItemCd) &&
+                                                                                  p.IsDeleted == DeleteTypes.None);
+            }
+            else
+            {
+                string bigKeyWord = keyWord.ToUpper()
+                                           .Replace("ｧ", "ｱ")
+                                           .Replace("ｨ", "ｲ")
+                                           .Replace("ｩ", "ｳ")
+                                           .Replace("ｪ", "ｴ")
+                                           .Replace("ｫ", "ｵ")
+                                           .Replace("ｬ", "ﾔ")
+                                           .Replace("ｭ", "ﾕ")
+                                           .Replace("ｮ", "ﾖ")
+                                           .Replace("ｯ", "ﾂ");
+
+                //get kensa in KensaMst
+                kensaInKensaMst = NoTrackingDataContext.KensaMsts.Where(p => p.HpId == hpId &&
+                                                                                          p.IsDelete == DeleteTypes.None &&
+                                                                                          (string.IsNullOrEmpty(p.OyaItemCd) || p.KensaItemCd == p.OyaItemCd) &&
+                                                                                          (keyWord == "ﾊﾞｲﾀﾙ" ? p.KensaItemCd.Contains("V") :
+                                                                                          (p.KensaName.ToUpper().Contains(bigKeyWord) ||
+                                                                                           p.KensaKana.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                                .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ")
+                                                                                                                .StartsWith(bigKeyWord))));
+
+                //get kensa in TenMst
+                kensaInTenMst = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId &&
+                                                                                  p.IsDeleted == DeleteTypes.None &&
+                                                                                      !string.IsNullOrEmpty(p.KensaItemCd) &&
+                                                                                      (keyWord == "IGE" ? p.ItemCd.StartsWith("IGE") :
+                                                                                      (p.Name.ToUpper().Contains(bigKeyWord)
+                                                                                    || p.KanaName1.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName2.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName3.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName4.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName5.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName6.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName7.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord))));
+            }
+            if (!string.IsNullOrEmpty(itemCd))
+            {
+                kensaInKensaMst = kensaInKensaMst.Where(u => u.KensaItemCd == itemCd);
+            }
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
+
+            var tenMstJoinKensaMstQuery = from kensaTenMst in kensaInTenMst
+                                          join kensaMst in kensaMsts.Where(p => string.IsNullOrEmpty(p.OyaItemCd) || p.KensaItemCd == p.OyaItemCd)
+                                          on new { kensaTenMst.KensaItemCd, kensaTenMst.KensaItemSeqNo } equals new { kensaMst.KensaItemCd, kensaMst.KensaItemSeqNo }
+                                          select new
+                                          {
+                                              KensaMst = kensaMst
+                                          };
+
+            var allParrentKensaMsts = tenMstJoinKensaMstQuery.Select(p => p.KensaMst).Union(kensaInKensaMst).OrderBy(p => p.KensaKana).Distinct().ToList();
+
+            //get all child kensaMst 
+            var allKensaMsts = from parrentKensaMst in allParrentKensaMsts
+                               join kensaMst in kensaMsts.Where(p => !string.IsNullOrEmpty(p.OyaItemCd) && p.KensaItemCd != p.OyaItemCd)
+                               on parrentKensaMst.KensaItemCd equals kensaMst.OyaItemCd into childKensaMsts
+                               select new
+                               {
+                                   ParrentKensaMst = parrentKensaMst,
+                                   ChildKensaMsts = childKensaMsts,
+                               };
+
+            var KensaItemCd = kensaMsts.Select(x => x.KensaItemCd).ToList();
+            var KensaItemSeqNo = kensaMsts.Select(x => x.KensaItemSeqNo).ToList();
+
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && KensaItemCd.Contains(p.KensaItemCd ?? string.Empty) && KensaItemSeqNo.Contains(p.KensaItemSeqNo));
+
+            var query = from kensaMst in allKensaMsts
+                        join tenMst in tenMsts
+                        on new { kensaMst.ParrentKensaMst.KensaItemCd, kensaMst.ParrentKensaMst.KensaItemSeqNo }
+                        equals new { tenMst.KensaItemCd, tenMst.KensaItemSeqNo } into tempTenMsts
+                        select new
+                        {
+                            ParrentKensaMst = kensaMst.ParrentKensaMst,
+                            ChildKensaMsts = kensaMst.ChildKensaMsts.Select(x => new KensaMstModel(
+                                                                            x.KensaItemCd,
+                                                                            x.KensaItemSeqNo,
+                                                                            x.CenterCd ?? string.Empty,
+                                                                            x.KensaName ?? string.Empty,
+                                                                            x.KensaKana ?? string.Empty,
+                                                                            x.Unit ?? string.Empty,
+                                                                            x.MaterialCd,
+                                                                            x.ContainerCd,
+                                                                            x.MaleStd ?? string.Empty,
+                                                                            x.MaleStdLow ?? string.Empty,
+                                                                            x.MaleStdHigh ?? string.Empty,
+                                                                            x.FemaleStd ?? string.Empty,
+                                                                            x.FemaleStdLow ?? string.Empty,
+                                                                            x.FemaleStdHigh ?? string.Empty,
+                                                                            x.Formula ?? string.Empty,
+                                                                            x.Digit,
+                                                                            x.OyaItemCd ?? string.Empty,
+                                                                            x.OyaItemSeqNo,
+                                                                            x.SortNo,
+                                                                            x.CenterItemCd1 ?? string.Empty,
+                                                                            x.CenterItemCd2 ?? string.Empty)).ToList(),
+                            TenMsts = tempTenMsts.Select(x => new TenItemModel(x.SinKouiKbn,
+                                                                              x.MasterSbt ?? string.Empty,
+                                                                              x.ItemCd,
+                                                                              x.KensaItemCd ?? string.Empty,
+                                                                              x.KensaItemSeqNo,
+                                                                              x.Ten,
+                                                                              x.Name ?? string.Empty,
+                                                                              x.ReceName ?? string.Empty,
+                                                                              x.KanaName1 ?? string.Empty,
+                                                                              x.KanaName2 ?? string.Empty,
+                                                                              x.KanaName3 ?? string.Empty,
+                                                                              x.KanaName4 ?? string.Empty,
+                                                                              x.KanaName5 ?? string.Empty,
+                                                                              x.KanaName6 ?? string.Empty,
+                                                                              x.KanaName7 ?? string.Empty,
+                                                                              x.StartDate,
+                                                                              x.EndDate,
+                                                                              x.DefaultVal,
+                                                                              x.OdrUnitName ?? string.Empty,
+                                                                              x.SanteiItemCd ?? string.Empty,
+                                                                              x.SanteigaiKbn,
+                                                                              x.IsNosearch)).ToList()
+                        };
+
+            foreach (var entity in query)
+            {
+                var ChildKensaMsts = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == entity.ParrentKensaMst.KensaItemCd);
+                result.Add(new KensaMstModel(
+                    entity.ParrentKensaMst.KensaItemCd,
+                    entity.ParrentKensaMst.KensaItemSeqNo,
+                    entity.ParrentKensaMst.CenterCd ?? string.Empty,
+                    entity.ParrentKensaMst.KensaName ?? string.Empty,
+                    entity.ParrentKensaMst.KensaKana ?? string.Empty,
+                    entity.ParrentKensaMst.Unit ?? string.Empty,
+                    entity.ParrentKensaMst.MaterialCd,
+                    entity.ParrentKensaMst.ContainerCd,
+                    entity.ParrentKensaMst.MaleStd ?? string.Empty,
+                    entity.ParrentKensaMst.MaleStdLow ?? string.Empty,
+                    entity.ParrentKensaMst.MaleStdHigh ?? string.Empty,
+                    entity.ParrentKensaMst.FemaleStd ?? string.Empty,
+                    entity.ParrentKensaMst.FemaleStdLow ?? string.Empty,
+                    entity.ParrentKensaMst.FemaleStdHigh ?? string.Empty,
+                    entity.ParrentKensaMst.Formula ?? string.Empty,
+                    entity.ParrentKensaMst.Digit,
+                    entity.ParrentKensaMst.OyaItemCd ?? string.Empty,
+                    entity.ParrentKensaMst.OyaItemSeqNo,
+                    entity.ParrentKensaMst.SortNo,
+                    entity.ParrentKensaMst.CenterItemCd1 ?? string.Empty,
+                    entity.ParrentKensaMst.CenterItemCd2 ?? string.Empty,
+                    entity.TenMsts,
+                    entity.ChildKensaMsts
+                    ));
+            }
+
+            return result;
+        }
+
+        public bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters)
+        {
+            foreach (var item in containerMasters)
+            {
+                if (item.ContainerModelStatus == ModelStatus.Deleted)
+                {
+                    var containerMaster = TrackingDataContext.ContainerMsts.Where(x => x.ContainerCd == item.ContainerCd);
+                    if (containerMaster != null)
+                    {
+                        TrackingDataContext.ContainerMsts.RemoveRange(containerMaster);
+                    }
+                }
+                else
+                {
+                    var containerMaster = TrackingDataContext.ContainerMsts.FirstOrDefault(x => x.ContainerCd == item.ContainerCd);
+                    if (containerMaster != null)
+                    {
+                        containerMaster.ContainerCd = item.ContainerCd;
+                        containerMaster.ContainerName = item.ContainerName;
+                        containerMaster.UpdateId = userId;
+                        containerMaster.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        ContainerMst itemtest = ConvertContainerMasterList(item, userId, hpId);
+                        TrackingDataContext.ContainerMsts.Add(itemtest);
+                    }
+                }
+            }
+            return TrackingDataContext.SaveChanges() >= 1;
+        }
+
+        private ContainerMst ConvertContainerMasterList(ContainerMasterModel u, int userId, int hpId)
+        {
+            return new ContainerMst
+            {
+                HpId = hpId,
+                ContainerCd = u.ContainerCd,
+                ContainerName = u.ContainerName,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+        }
+
+        public bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels)
+        {
+            List<KensaMst> newKensaMsts = new List<KensaMst>();
+            List<TenMst> newTenMsts = new List<TenMst>();
+
+            foreach (var item in kensaMstModels)
+            {
+                if (item.IsDeleted == 1)
+                {
+                    var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
+                    if (listKensaMst != null)
+                    {
+                        listKensaMst.IsDelete = 1;
+                    }
+                }
+                else
+                {
+                    var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
+                    if (listKensaMst != null)
+                    {
+                        listKensaMst.CenterCd = item.CenterCd;
+                        listKensaMst.KensaName = item.KensaName;
+                        listKensaMst.KensaKana = item.KensaKana;
+                        listKensaMst.Unit = item.Unit;
+                        listKensaMst.MaterialCd = item.MaterialCd;
+                        listKensaMst.MaleStd = item.MaleStd;
+                        listKensaMst.MaleStdLow = item.MaleStdLow;
+                        listKensaMst.MaleStdHigh = item.MaleStdHigh;
+                        listKensaMst.FemaleStd = item.FemaleStd;
+                        listKensaMst.FemaleStdLow = item.FemaleStdLow;
+                        listKensaMst.FemaleStdHigh = item.FemaleStdHigh;
+                        listKensaMst.Formula = item.Formula;
+                        listKensaMst.OyaItemCd = item.OyaItemCd;
+                        listKensaMst.OyaItemSeqNo = item.OyaItemSeqNo;
+                        listKensaMst.SortNo = item.SortNo;
+                        listKensaMst.CenterItemCd1 = item.CenterItemCd1;
+                        listKensaMst.CenterItemCd2 = item.CenterItemCd2;
+                        listKensaMst.Digit = item.Digit;
+                        listKensaMst.UpdateId = userId;
+                        listKensaMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        KensaMst itemtest = ConvertKensaMasterList(item, userId, hpId);
+                        TrackingDataContext.KensaMsts.AddRange(itemtest);
+                    }
+                }
+            }
+
+            foreach (var item in tenMstModels)
+            {
+                if (item.IsDeleted == 1)
+                {
+                    var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
+                    if (listTenMst != null)
+                    {
+                        listTenMst.IsDeleted = 1;
+                    }
+                }
+                else
+                {
+                    var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
+                    if (listTenMst != null)
+                    {
+                        listTenMst.ItemCd = item.ItemCd;
+                        listTenMst.SinKouiKbn = item.SinKouiKbn;
+                        listTenMst.Name = item.Name;
+                        listTenMst.OdrUnitName = item.OdrUnitName;
+                        listTenMst.IsNodspRece = item.IsNodspRece;
+                        listTenMst.YohoKbn = item.YohoKbn;
+                        listTenMst.OdrTermVal = item.OdrTermVal;
+                        listTenMst.CnvTermVal = item.CnvTermVal;
+                        listTenMst.YjCd = item.YjCd;
+                        listTenMst.KensaItemCd = item.KensaItemCd;
+                        listTenMst.KensaItemSeqNo = item.KensaItemSeqNo;
+                        listTenMst.KohatuKbn = item.KohatuKbn;
+                        listTenMst.Ten = item.Ten;
+                        listTenMst.HandanGrpKbn = item.HandanGrpKbn;
+                        listTenMst.IpnNameCd = item.IpnNameCd;
+                        listTenMst.CmtCol1 = item.CmtCol1;
+                        listTenMst.CmtCol2 = item.CmtCol2;
+                        listTenMst.CmtCol3 = item.CmtCol3;
+                        listTenMst.CmtCol4 = item.CmtCol4;
+                        listTenMst.CmtColKeta1 = item.CmtColKeta1;
+                        listTenMst.CmtColKeta2 = item.CmtColKeta2;
+                        listTenMst.CmtColKeta3 = item.CmtColKeta3;
+                        listTenMst.CmtColKeta4 = item.CmtColKeta4;
+                        listTenMst.MinAge = item.MaxAge;
+                        listTenMst.StartDate = item.StartDate;
+                        listTenMst.EndDate = item.EndDate;
+                        listTenMst.MasterSbt = item.MasterSbt;
+                        listTenMst.BuiKbn = item.BuiKbn;
+                        listTenMst.CdKbn = item.CdKbn;
+                        listTenMst.CdKbnno = item.CdKbnno;
+                        listTenMst.CdEdano = item.CdEdano;
+                        listTenMst.Kokuji1 = item.Kokuji1;
+                        listTenMst.Kokuji2 = item.Kokuji2;
+                        listTenMst.DrugKbn = item.DrugKbn;
+                        listTenMst.ReceName = item.ReceName;
+                        listTenMst.SanteiItemCd = item.SanteiItemCd;
+                        listTenMst.JihiSbt = item.JihiSbt;
+                        listTenMst.IsDeleted = item.IsDeleted;
+                        listTenMst.UpdateId = userId;
+                        listTenMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        TenMst itemtest = ConvertTenMasterList(item, userId, hpId);
+                        newTenMsts.Add(itemtest);
+                        TrackingDataContext.TenMsts.AddRange(newTenMsts);
+                    }
+                }
+            }
+
+            return TrackingDataContext.SaveChanges() >= 1;
+        }
+
+        private TenMst ConvertTenMasterList(TenItemModel u, int userId, int hpId)
+        {
+            return new TenMst
+            {
+                HpId = hpId,
+                ItemCd = u.ItemCd,
+                SinKouiKbn = u.SinKouiKbn,
+                Name = u.Name,
+                OdrUnitName = u.OdrUnitName,
+                CnvUnitName = u.CnvUnitName,
+                IsNodspRece = u.IsNodspRece,
+                YohoKbn = u.YohoKbn,
+                OdrTermVal = u.OdrTermVal,
+                CnvTermVal = u.CnvTermVal,
+                YjCd = u.YjCd,
+                KensaItemCd = u.KensaItemCd,
+                KensaItemSeqNo = u.KensaItemSeqNo,
+                KohatuKbn = u.KohatuKbn,
+                Ten = u.Ten,
+                HandanGrpKbn = u.HandanGrpKbn,
+                IpnNameCd = u.IpnNameCd,
+                CmtCol1 = u.CmtCol1,
+                CmtCol2 = u.CmtCol2,
+                CmtCol3 = u.CmtCol3,
+                CmtCol4 = u.CmtCol4,
+                CmtColKeta1 = u.CmtColKeta1,
+                CmtColKeta2 = u.CmtColKeta2,
+                CmtColKeta3 = u.CmtColKeta3,
+                CmtColKeta4 = u.CmtColKeta4,
+                MinAge = u.MinAge,
+                MaxAge = u.MaxAge,
+                StartDate = u.StartDate,
+                EndDate = u.EndDate,
+                MasterSbt = u.MasterSbt,
+                BuiKbn = u.BuiKbn,
+                CdKbn = u.CdKbn,
+                CdKbnno = u.CdKbnno,
+                CdEdano = u.CdEdano,
+                Kokuji1 = u.Kokuji1,
+                Kokuji2 = u.Kokuji2,
+                DrugKbn = u.DrugKbn,
+                ReceName = u.ReceName,
+                SanteiItemCd = u.SanteiItemCd,
+                JihiSbt = u.JihiSbt,
+                IsDeleted = u.IsDeleted,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+        }
+
+        private KensaMst ConvertKensaMasterList(KensaMstModel u, int userId, int hpId)
+        {
+            return new KensaMst
+            {
+                HpId = hpId,
+                KensaItemCd = u.KensaItemCd,
+                KensaItemSeqNo = u.KensaItemSeqNo,
+                CenterCd = u.CenterCd,
+                KensaName = u.KensaName,
+                KensaKana = u.KensaKana,
+                Unit = u.Unit,
+                MaterialCd = u.MaterialCd,
+                MaleStd = u.MaleStd,
+                MaleStdLow = u.MaleStdLow,
+                MaleStdHigh = u.MaleStdHigh,
+                FemaleStd = u.FemaleStd,
+                FemaleStdLow = u.FemaleStdLow,
+                FemaleStdHigh = u.FemaleStdHigh,
+                Formula = u.Formula,
+                OyaItemCd = u.OyaItemCd,
+                OyaItemSeqNo = u.OyaItemSeqNo,
+                SortNo = u.SortNo,
+                CenterItemCd1 = u.CenterItemCd1,
+                CenterItemCd2 = u.CenterItemCd2,
+                Digit = u.Digit,
+                IsDelete = u.IsDeleted,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
         }
     }
 }
