@@ -6,6 +6,7 @@ namespace UseCase.IsUsingKensa
     {
         public IsUsingKensaInputData(int hpId, string kensaItemCd, List<string> itemCds) 
         {
+            HpId = hpId;
             KensaItemCd = kensaItemCd;
             ItemCds = itemCds;
         }
