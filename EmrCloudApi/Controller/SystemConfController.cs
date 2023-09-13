@@ -175,7 +175,7 @@ namespace EmrCloudApi.Controller
                                 p.Machine,
                                 p.Path,
                                 string.Empty,
-                                string.Empty,
+                                p.Biko,
                                 0,
                                 1,
                                 UserId,

@@ -51,6 +51,7 @@
         public const string SaveAddressMst = "SaveAddressMst";
         public const string ContainerMasterUpdate = "ContainerMasterUpdate";
         public const string UpsertMaterialMaster = "UpsertMaterialMaster";
+        public const string UpdateKensaMst = "UpdateKensaMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
