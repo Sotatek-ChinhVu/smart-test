@@ -9,13 +9,13 @@ namespace UseCase.MstItem.UpdateKensaStdMst
         {
             HpId = hpId;
             UserId = userId;
-            KensaMsts = kensaStdMsts;
+            KensaStdMsts = kensaStdMsts;
         }
 
         public int HpId { get; private set; }
 
         public int UserId { get; private set; }
 
-        public List<KensaStdMstModel> KensaMsts { get; private set; }
+        public List<KensaStdMstModel> KensaStdMsts { get; private set; }
     }
 }

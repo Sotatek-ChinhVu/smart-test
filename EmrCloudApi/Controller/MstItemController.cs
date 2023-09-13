@@ -58,6 +58,7 @@ using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.MstItem.UpdateCmtCheckMst;
+using UseCase.MstItem.UpdateKensaStdMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
@@ -424,15 +425,34 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.UpdateKensaStdMst)]
-        public ActionResult<Response<UpdateKensaMstResponse>> UpdateKensaStdMst(UpdateKensaMstRequest request)
+        public ActionResult<Response<UpdateKensaStdMstResponse>> UpdateKensaStdMst(UpdateKensaStdMstRequest request)
         {
-            var input = new UpdateKensaMstInputData(HpId, UserId, request.KensaMstItems.Select(x => kensaMstItemsRequestToModel(x)).ToList(), request.TenMstItems.Select(x => TenMstItemsRequestToModel(x)).ToList());
+            var input = new UpdateKensaStdMstInputData(HpId, UserId, request.KensaMstItems.Select(x => kensaStdMstItemsRequestToModel(x)).ToList());
             var output = _bus.Handle(input);
 
-            var presenter = new UpdateKensaMstPresenter();
+            var presenter = new UpdateKensaStdMstPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<UpdateKensaMstResponse>>(presenter.Result);
+            return new ActionResult<Response<UpdateKensaStdMstResponse>>(presenter.Result);
+        }
+
+        private static KensaStdMstModel kensaStdMstItemsRequestToModel(UpdateKensaStdMstInputItem stdMstInputItem)
+        {
+            return
+                new KensaStdMstModel
+                (
+                    stdMstInputItem.KensaItemcd,
+                    stdMstInputItem.MaleStd,
+                    stdMstInputItem.MaleStdLow,
+                    stdMstInputItem.MaleStdHigh,
+                    stdMstInputItem.FemaleStd,
+                    stdMstInputItem.FemaleStdLow,
+                    stdMstInputItem.FemaleStdHigh,
+                    stdMstInputItem.StartDate,
+                    stdMstInputItem.IsModified,
+                    stdMstInputItem.IsDeleted,
+                    stdMstInputItem.CreateId
+                );
         }
 
         [HttpGet(ApiPath.GetSetDataTenMst)]

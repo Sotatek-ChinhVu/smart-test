@@ -2,5 +2,11 @@
 {
     public class UpdateKensaStdMstResponse
     {
+        public UpdateKensaStdMstResponse(bool success)
+        {
+            Success = success;
+        }
+
+        public bool Success { get; set; }
     }
 }

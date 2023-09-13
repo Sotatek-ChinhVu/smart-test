@@ -5,7 +5,7 @@ namespace UseCase.MstItem.UpdateKensaStdMst
     public class UpdateKensaStdMstInputItem
     {
         public UpdateKensaStdMstInputItem(string kensaItemcd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh
-                                         , int startDate, bool isModified, int isDeleted)
+                                         , int startDate, bool isModified, int isDeleted, int createId)
         {
             KensaItemcd = kensaItemcd;
             MaleStd = maleStd;
@@ -17,6 +17,7 @@ namespace UseCase.MstItem.UpdateKensaStdMst
             StartDate = startDate;
             IsModified = isModified;
             IsDeleted = isDeleted;
+            CreateId = createId;
         }
 
         public string KensaItemcd { get; private set; }
@@ -38,5 +39,7 @@ namespace UseCase.MstItem.UpdateKensaStdMst
         public bool IsModified { get; private set; }
 
         public int IsDeleted { get; private set; }
+
+        public int CreateId { get; private set; }
     }
 }

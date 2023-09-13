@@ -5,7 +5,7 @@ namespace Domain.Models.MstItem
     public class KensaStdMstModel
     {
         public KensaStdMstModel(string kensaItemcd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh
-                                         , int startDate, bool isModified, int isDeleted)
+                               , int startDate, bool isModified, int isDeleted, int createId)
         {
             KensaItemcd = kensaItemcd;
             MaleStd = maleStd;
@@ -17,9 +17,14 @@ namespace Domain.Models.MstItem
             StartDate = startDate;
             IsModified = isModified;
             IsDeleted = isDeleted;
+            CreateId = createId;
         }
 
         public string KensaItemcd { get; private set; }
+
+        public int CreateId { get; private set; }
+
+        public bool IsAddNew => CreateId == 0;
 
         public string MaleStd { get; private set; }
 

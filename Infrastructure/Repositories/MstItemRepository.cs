@@ -6191,5 +6191,63 @@ namespace Infrastructure.Repositories
             }
             return result;
         }
+
+        public bool UpdateKensaStdMst(int hpId, int userId, List<KensaStdMstModel> kensaStdMstModels)
+        {
+            foreach (var item in kensaStdMstModels)
+            {
+                if (item.IsDefault) continue;
+
+                if (item.IsDeleted == DeleteTypes.Deleted)
+                {
+                    var kensaStdMaster = TrackingDataContext.KensaStdMsts.Where(x => x.KensaItemCd == item.KensaItemcd && x.StartDate == item.StartDate);
+                    if (kensaStdMaster != null)
+                    {
+                        TrackingDataContext.KensaStdMsts.RemoveRange(kensaStdMaster);
+                    }
+                }
+                else
+                {
+                    var kensaStdMaster = TrackingDataContext.KensaStdMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemcd && x.StartDate == item.StartDate);
+                    if (kensaStdMaster != null)
+                    {
+                        kensaStdMaster.MaleStd = item.MaleStd;
+                        kensaStdMaster.MaleStdLow = item.MaleStdLow;
+                        kensaStdMaster.MaleStdHigh = item.MaleStdHigh;
+                        kensaStdMaster.FemaleStd = item.FemaleStd;
+                        kensaStdMaster.FemaleStdLow = item.FemaleStdLow;
+                        kensaStdMaster.FemaleStdHigh = item.FemaleStdHigh;
+                        kensaStdMaster.UpdateId = userId;
+                        kensaStdMaster.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        KensaStdMst itemtest = ConvertKensaStdMstList(item, userId, hpId);
+                        TrackingDataContext.KensaStdMsts.Add(itemtest);
+                    }
+                }
+            }
+            return TrackingDataContext.SaveChanges() >= 1;
+        }
+
+        private KensaStdMst ConvertKensaStdMstList(KensaStdMstModel u, int userId, int hpId)
+        {
+            return new KensaStdMst
+            {
+                HpId = hpId,
+                KensaItemCd = u.KensaItemcd,
+                StartDate = u.StartDate,
+                MaleStd = u.MaleStd,
+                MaleStdLow = u.MaleStdLow,
+                MaleStdHigh = u.MaleStdHigh,
+                FemaleStd = u.FemaleStd,
+                FemaleStdLow = u.FemaleStdLow,
+                FemaleStdHigh = u.FemaleStdHigh,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+        }
     }
 }

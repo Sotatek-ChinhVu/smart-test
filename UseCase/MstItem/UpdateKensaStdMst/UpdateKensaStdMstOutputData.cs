@@ -6,9 +6,9 @@ namespace UseCase.MstItem.UpdateKensaStdMst
     {
         public UpdateKensaStdMstOutputData(UpdateKensaStdMstStatus status)
         {
-
+            Status = status;
         }
 
-        public UpdateKensaStdMstStatus status { get; private set; }
+        public UpdateKensaStdMstStatus Status { get; private set; }
     }
 }
