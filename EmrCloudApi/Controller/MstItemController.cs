@@ -1,4 +1,5 @@
 ﻿using Domain.Models.ContainerMaster;
+using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
@@ -59,6 +60,7 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.UploadImageDrugInf;
+using UseCase.UpsertMaterialMaster;
 
 namespace EmrCloudApi.Controller
 {
@@ -228,6 +230,30 @@ namespace EmrCloudApi.Controller
             var presenter = new FindTenMstPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpsertMaterialMaster)]
+        public ActionResult<Response<UpsertMaterialMasterResponse>> UpsertMaterialMaster([FromBody] UpsertMaterialMasterRequest request)
+        {
+            var upsertUserList = request.MaterialMasterList.Select(u => MaterialMasterRequestToModel(u)).ToList();
+            var input = new UpsertMaterialMasterInputData(HpId, UserId, upsertUserList);
+            var output = _bus.Handle(input);
+
+            var presenter = new UpsertMaterialMasterPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpsertMaterialMasterResponse>>(presenter.Result);
+        }
+
+        private static MaterialMasterModel MaterialMasterRequestToModel(MaterialMasterRequest MaterialMaster)
+        {
+            return
+                new MaterialMasterModel
+                (
+                    MaterialMaster.MaterialCd,
+                    MaterialMaster.MaterialName,
+                    MaterialMaster.MaterialModelStatus
+                );
         }
 
         [HttpPost(ApiPath.GetAdoptedItemList)]

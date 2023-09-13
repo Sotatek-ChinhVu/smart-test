@@ -4,6 +4,7 @@ using Domain.Enum;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
+using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
@@ -5707,6 +5708,52 @@ namespace Infrastructure.Repositories
                                                                x.PostCd == zipCD);
         }
 
+        public bool UpsertMaterialMaster(int hpId, int userId, List<MaterialMasterModel> materialMasters)
+        {
+            foreach (var item in materialMasters)
+            {
+                if (item.MaterialModelStatus == ModelStatus.Deleted)
+                {
+                    var containerMaster = TrackingDataContext.MaterialMsts.Where(x => x.MaterialCd == item.MaterialCd);
+                    if (containerMaster != null)
+                    {
+                        TrackingDataContext.MaterialMsts.RemoveRange(containerMaster);
+                    }
+                }
+                else
+                {
+                    var materialMaster = TrackingDataContext.MaterialMsts.FirstOrDefault(x => x.MaterialCd == item.MaterialCd);
+                    if (materialMaster != null)
+                    {
+                        materialMaster.MaterialCd = item.MaterialCd;
+                        materialMaster.MaterialName = item.MaterialName;
+                        materialMaster.UpdateId = userId;
+                        materialMaster.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        MaterialMst itemtest = ConvertContainerMasterList(item, userId, hpId);
+                        TrackingDataContext.MaterialMsts.Add(itemtest);
+                    }
+                }
+            }
+            return TrackingDataContext.SaveChanges() >= 1;
+        }
+
+        private MaterialMst ConvertContainerMasterList(MaterialMasterModel u, int userId, int hpId)
+        {
+            return new MaterialMst
+            {
+                HpId = hpId,
+                MaterialCd = u.MaterialCd,
+                MaterialName = u.MaterialName,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+        }
+
         public List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord)
         {
             var result = new List<KensaMstModel>();
@@ -5885,8 +5932,6 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-
-
         public bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters)
         {
             foreach (var item in containerMasters)
@@ -5916,7 +5961,7 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
-            return TrackingDataContext.SaveChanges() >=1;
+            return TrackingDataContext.SaveChanges() >= 1;
         }
 
         private ContainerMst ConvertContainerMasterList(ContainerMasterModel u, int userId, int hpId)

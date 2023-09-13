@@ -3,6 +3,7 @@ using Domain.Models.AuditLog;
 using Domain.Models.ContainerMaster;
 using Domain.Models.Diseases;
 using Domain.Models.Ka;
+using Domain.Models.MaterialMaster;
 using Domain.Models.Medical;
 using Domain.Models.MedicalExamination;
 using Domain.Models.OrdInfDetails;

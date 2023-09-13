@@ -759,6 +759,7 @@ using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.GetParrentKensaMst;
+using UseCase.UpsertMaterialMaster;
 
 namespace EmrCloudApi.Configs.Dependency
 {

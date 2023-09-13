@@ -3,6 +3,7 @@ using Domain.Enum;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
+using Domain.Models.MaterialMaster;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using Helper.Enum;
@@ -14,6 +15,9 @@ namespace Domain.Models.MstItem
         List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord);
 
         bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters);
+
+        bool UpsertMaterialMaster(int hpId, int userId, List<MaterialMasterModel> materialMasters);
+
         List<DosageDrugModel> GetDosages(List<string> yjCds);
 
         List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData();
