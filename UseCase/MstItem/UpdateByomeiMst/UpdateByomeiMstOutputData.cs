@@ -11,7 +11,7 @@ namespace UseCase.MstItem.UpdateByomeiMst
     public class UpdateByomeiMstOutputData : IOutputData
     {
         public UpdateByomeiMstStatus Status { get; private set; }
-        public bool CheckResult { get; set; }
+        public bool CheckResult { get; private set; }
 
         public UpdateByomeiMstOutputData(bool checkResult, UpdateByomeiMstStatus status)
         {

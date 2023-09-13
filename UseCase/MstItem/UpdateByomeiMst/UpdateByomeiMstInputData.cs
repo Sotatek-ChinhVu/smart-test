@@ -18,8 +18,8 @@ namespace UseCase.MstItem.UpdateByomeiMst
             ListData = listData;
         }
 
-        public int HpId { get; set; }
-        public int UserId { get; set; }
-        public List<UpdateByomeiMstModel> ListData { get; set; }
+        public int HpId { get; private set; }
+        public int UserId { get; private set; }
+        public List<UpdateByomeiMstModel> ListData { get; private set; }
     }
 }
