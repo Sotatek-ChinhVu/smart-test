@@ -1019,5 +1019,10 @@
 
         // KensaIrai
         public static readonly string IsDeleteFile = "IsDeleteFile.";
+
+        // Set Sendai Generation
+        public static readonly string DeleteRowIndex0 = "Cannot delete row have index 0.";
+        public static readonly string InvalidRowIndex = "Invalid row index.";
+        public static readonly string InvalidGenerationId = "Invalid GenerationId.";
     }
 }
