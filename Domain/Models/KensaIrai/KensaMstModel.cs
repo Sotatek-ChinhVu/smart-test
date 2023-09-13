@@ -1,4 +1,7 @@
-﻿namespace Domain.Models.KensaIrai;
+﻿using Domain.Models.MstItem;
+using Helper.Extension;
+
+namespace Domain.Models.KensaIrai;
 
 public class KensaMstModel
 {
@@ -25,13 +28,15 @@ public class KensaMstModel
         SortNo = sortNo;
         CenterItemCd1 = centerItemCd1;
         CenterItemCd2 = centerItemCd2;
+        TenMsts = new();
+        ChildKensaMsts = new();
     }
 
     public KensaMstModel()
     {
         KensaItemCd = string.Empty;
         CenterCd = string.Empty;
-        KensaName = string.Empty; 
+        KensaName = string.Empty;
         KensaKana = string.Empty;
         Unit = string.Empty;
         MaleStd = string.Empty;
@@ -44,6 +49,35 @@ public class KensaMstModel
         OyaItemCd = string.Empty;
         CenterItemCd1 = string.Empty;
         CenterItemCd2 = string.Empty;
+        TenMsts = new();
+        ChildKensaMsts = new();
+    }
+
+    public KensaMstModel(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, List<TenItemModel> tenMsts, List<KensaMstModel> kensaMstModels)
+    {
+        KensaItemCd = kensaItemCd;
+        KensaItemSeqNo = kensaItemSeqNo;
+        CenterCd = centerCd;
+        KensaName = kensaName;
+        KensaKana = kensaKana;
+        Unit = unit;
+        MaterialCd = materialCd;
+        ContainerCd = containerCd;
+        MaleStd = maleStd;
+        MaleStdLow = maleStdLow;
+        MaleStdHigh = maleStdHigh;
+        FemaleStd = femaleStd;
+        FemaleStdLow = femaleStdLow;
+        FemaleStdHigh = femaleStdHigh;
+        Formula = formula;
+        Digit = digit;
+        OyaItemCd = oyaItemCd;
+        OyaItemSeqNo = oyaItemSeqNo;
+        SortNo = sortNo;
+        CenterItemCd1 = centerItemCd1;
+        CenterItemCd2 = centerItemCd2;
+        TenMsts = tenMsts;
+        ChildKensaMsts = kensaMstModels;
     }
 
     public string KensaItemCd { get; private set; }
@@ -87,4 +121,30 @@ public class KensaMstModel
     public string CenterItemCd1 { get; private set; }
 
     public string CenterItemCd2 { get; private set; }
+
+    public string CenterItemCd
+    {
+        get { return CenterItemCd1; }
+    }
+
+    public List<TenItemModel> TenMsts { get; private set; }
+
+    public List<KensaMstModel> ChildKensaMsts { get; private set; }
+
+    public int SeqNo
+    {
+        get { return KensaItemSeqNo; }
+    }
+
+    public string ItemCd
+    {
+        get { return KensaItemCd; }
+    }
+
+    public string DisplaySeqNo => string.IsNullOrEmpty(ItemCd) ? string.Empty : SeqNo.AsString();
+
+    public string ItemName
+    {
+        get { return KensaName; }
+    }
 }

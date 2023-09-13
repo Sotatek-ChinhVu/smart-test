@@ -24,6 +24,7 @@
         public const string SaveSuperSetDetail = "SaveSuperSetDetail";
         public const string GetToolTip = "GetToolTip";
         public const string GetSuperSetDetailForTodayOrder = "GetSuperSetDetailForTodayOrder";
+        public const string ParrentKensaMst = "ParrentKensaMst";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
@@ -48,6 +49,8 @@
         public const string GetDiseaseList = "GetDiseaseList";
         public const string UpdateCmtCheckMst = "UpdateCmtCheckMst";
         public const string SaveAddressMst = "SaveAddressMst";
+        public const string ContainerMasterUpdate = "ContainerMasterUpdate";
+        public const string UpsertMaterialMaster = "UpsertMaterialMaster";
         public const string GetSingleDoseMstAndMedicineUnitList = "GetSingleDoseMstAndMedicineUnitList";
 
         //Schema

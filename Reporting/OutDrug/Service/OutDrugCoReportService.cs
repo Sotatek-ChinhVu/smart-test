@@ -449,11 +449,11 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                         filteredOdrInfs = odrInfs.FindAll(p => _isRefillRp(p.RpNo, p.RpEdaNo));
 
-                        if (!filteredOdrInfs.Any(p => !(new int[] { 100, 101 }.Contains(p.OdrKouiKbn))))
-                        {
-                            // 処方コメント、備考しかない場合は出力しない
-                            continue;
-                        }
+                        //if (!filteredOdrInfs.Any(p => !(new int[] { 100, 101 }.Contains(p.OdrKouiKbn))))
+                        //{
+                        //    // 処方コメント、備考しかない場合は出力しない
+                        //    continue;
+                        //}
 
                         filteredOdrInfDtls = odrInfDtls.FindAll(p => _isRefillRp(p.RpNo, p.RpEdaNo));
 
