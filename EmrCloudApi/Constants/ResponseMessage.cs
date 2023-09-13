@@ -1008,6 +1008,7 @@
         public static readonly string InvalidGrpId = "Invalid GrpId!";
         public static readonly string InvalidReportId = "Invalid ReportId!";
         public static readonly string InvalidMenuName = "Invalid MenuName!";
+        public static readonly string InvalidIraiCd = "Invalid IraiCd!";
 
         public static readonly string NoPermission = "No permission";
         public static readonly string InvalidContentFile = "Invalid file content";

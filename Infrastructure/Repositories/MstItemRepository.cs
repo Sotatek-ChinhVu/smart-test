@@ -3426,7 +3426,6 @@ namespace Infrastructure.Repositories
 
         public List<DensiHoukatuModel> GetListDensiHoukatuMaster(int hpId, List<string> listGrpNo)
         {
-            List<DensiHoukatuModel> result = new List<DensiHoukatuModel>();
             var listHoukatu = NoTrackingDataContext.DensiHoukatus.Where(u => u.HpId == hpId &&
                                                                         u.HoukatuGrpNo != null && listGrpNo.Contains(u.HoukatuGrpNo));
 
@@ -3440,25 +3439,25 @@ namespace Infrastructure.Repositories
                             Hokatu = hokatu,
                             ItemName = tenMst.Name,
                         };
-            result = query.AsEnumerable().Where(data => !string.IsNullOrEmpty(data.ItemName))
-                                         .Select(x => new DensiHoukatuModel(x.Hokatu.HpId,
-                                                                           x.Hokatu.ItemCd,
-                                                                           x.Hokatu.StartDate,
-                                                                           x.Hokatu.EndDate,
-                                                                           x.Hokatu.TargetKbn,
-                                                                           x.Hokatu.SeqNo,
-                                                                           x.Hokatu.HoukatuTerm,
-                                                                           x.Hokatu.HoukatuGrpNo ?? string.Empty,
-                                                                           x.Hokatu.UserSetting,
-                                                                           x.Hokatu.IsInvalid,
-                                                                           x.Hokatu.IsInvalid == 1 ? true : false,
-                                                                           x.ItemName,
-                                                                           string.Empty,
-                                                                           0,
-                                                                           false,
-                                                                           false))
-                                         .GroupBy(x => new { x.ItemCd, x.StartDate })
-                                         .Select(x => x.First()).ToList();
+            var result = query.AsEnumerable().Where(data => !string.IsNullOrEmpty(data.ItemName))
+                                             .Select(x => new DensiHoukatuModel(x.Hokatu.HpId,
+                                                                               x.Hokatu.ItemCd,
+                                                                               x.Hokatu.StartDate,
+                                                                               x.Hokatu.EndDate,
+                                                                               x.Hokatu.TargetKbn,
+                                                                               x.Hokatu.SeqNo,
+                                                                               x.Hokatu.HoukatuTerm,
+                                                                               x.Hokatu.HoukatuGrpNo ?? string.Empty,
+                                                                               x.Hokatu.UserSetting,
+                                                                               x.Hokatu.IsInvalid,
+                                                                               x.Hokatu.IsInvalid == 1,
+                                                                               x.ItemName,
+                                                                               string.Empty,
+                                                                               0,
+                                                                               false,
+                                                                               false))
+                                             .GroupBy(x => new { x.ItemCd, x.StartDate })
+                                             .Select(x => x.First()).ToList();
 
             return result;
         }
@@ -3484,7 +3483,7 @@ namespace Infrastructure.Repositories
                                                              data.Kinki.ACd,
                                                              data.Kinki.BCd ?? string.Empty,
                                                              data.Kinki.SeqNo,
-                                                             data.Kinki.IsDeleted == 1 ? true : false,
+                                                             data.Kinki.IsDeleted == 1,
                                                              data.TenMst?.Name ?? string.Empty,
                                                              false,
                                                              false,
@@ -3589,7 +3588,7 @@ namespace Infrastructure.Repositories
             void BasicSettingUpdate()
             {
                 List<CmtKbnMstModel> listSource = setDataTen.BasicSettingTab.CmtKbnMstModels.Where(u => !u.CheckDefaultValue()).ToList();
-                if (listSource.Count() == 0)
+                if (!listSource.Any())
                     return;
 
                 var databaseList = TrackingDataContext.CmtKbnMsts.Where(item => item.HpId == hpId && item.ItemCd == itemCd).ToList();
@@ -5916,7 +5915,7 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
-            return TrackingDataContext.SaveChanges() >=1;
+            return TrackingDataContext.SaveChanges() >= 1;
         }
 
         private ContainerMst ConvertContainerMasterList(ContainerMasterModel u, int userId, int hpId)

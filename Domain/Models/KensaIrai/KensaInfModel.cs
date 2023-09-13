@@ -24,7 +24,6 @@ public class KensaInfModel
         KensaInfDetailModelList = new();
     }
 
-
     public KensaInfModel(long ptId, long raiinNo, string centerCd, int primaryKbn, long iraiCd)
     {
         PtId = ptId;
@@ -40,7 +39,21 @@ public class KensaInfModel
         KensaInfDetailModelList = new();
     }
 
-    public KensaInfModel(long ptId, int iraiDate, long raiinNo, long iraiCd, int inoutKbn, int status, int tosekiKbn, int sikyuKbn, int resultCheck, string centerCd, string nyubi, string yoketu, string bilirubin, bool isDeleted, int createId, int primaryKbn, long ptNum, string ptName, string kensaCenterName, DateTime updateDate, List<KensaInfDetailModel> kensaInfDetailModelList)
+    public KensaInfModel(long ptId, long raiinNo, long iraiCd, List<KensaInfDetailModel> kensaInfDetailModelList)
+    {
+        PtId = ptId;
+        RaiinNo = raiinNo;
+        IraiCd = iraiCd;
+        CenterCd = string.Empty;
+        Nyubi = string.Empty;
+        Yoketu = string.Empty;
+        Bilirubin = string.Empty;
+        PtName = string.Empty;
+        KensaCenterName = string.Empty;
+        KensaInfDetailModelList = kensaInfDetailModelList;
+    }
+
+    public KensaInfModel(long ptId, int iraiDate, long raiinNo, long iraiCd, int inoutKbn, int status, int tosekiKbn, int sikyuKbn, int resultCheck, string centerCd, string nyubi, string yoketu, string bilirubin, bool isDeleted, int createId, int primaryKbn, long ptNum, string ptName, string kensaCenterName, DateTime updateDate, DateTime createDate, List<KensaInfDetailModel> kensaInfDetailModelList)
     {
         PtId = ptId;
         IraiDate = iraiDate;
@@ -62,6 +75,7 @@ public class KensaInfModel
         PtName = ptName;
         KensaCenterName = kensaCenterName;
         UpdateDate = updateDate;
+        CreateDate = createDate;
         KensaInfDetailModelList = kensaInfDetailModelList;
     }
 
@@ -106,6 +120,8 @@ public class KensaInfModel
     public List<KensaInfDetailModel> KensaInfDetailModelList { get; private set; }
 
     public DateTime UpdateDate { get; private set; }
+
+    public DateTime CreateDate { get; private set; }
 
     public long KeyNo { get; set; } = 0;
     public bool IsAddNew { get; set; } = false;

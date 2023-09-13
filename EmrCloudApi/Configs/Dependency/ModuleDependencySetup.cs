@@ -760,6 +760,7 @@ using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MainMenu.GetKensaInf;
+using UseCase.MainMenu.DeleteKensaInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1680,6 +1681,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKensaCenterMstListInputData, GetKensaCenterMstListInteractor>();
             busBuilder.RegisterUseCase<CreateDataKensaIraiRenkeiInputData, CreateDataKensaIraiRenkeiInteractor>();
             busBuilder.RegisterUseCase<GetKensaInfInputData, GetKensaInfInteractor>();
+            busBuilder.RegisterUseCase<DeleteKensaInfInputData, DeleteKensaInfInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
