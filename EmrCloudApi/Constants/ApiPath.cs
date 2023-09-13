@@ -346,6 +346,7 @@
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
         public const string GetAllByomeiByPtId = "GetAllByomeiByPtId";
+        public const string GetTreeByomeiSet = "GetTreeByomeiSet";
 
         //System Conf
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";

@@ -763,6 +763,7 @@ using UseCase.ListSetMst.GetTreeListSet;
 using Interactor.ListSetMst;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.UpsertMaterialMaster;
+using UseCase.Diseases.GetTreeByomeiSet;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1438,6 +1439,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
             busBuilder.RegisterUseCase<DiseaseSearchInputData, DiseaseSearchInteractor>();
             busBuilder.RegisterUseCase<GetSetByomeiTreeInputData, GetSetByomeiTreeInteractor>();
+            busBuilder.RegisterUseCase<GetTreeByomeiSetInputData, GetTreeByomeiSetInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
