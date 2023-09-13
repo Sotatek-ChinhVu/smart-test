@@ -147,7 +147,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetDataPrintDrugInfoResponse>>(presenter.Result);
         }
         [HttpGet("GetTreeListSet")]
-        public ActionResult<Response<GetTreeListSetMstResponse>> GetTreeListSet(GetTreeListSetRequest request)
+        public ActionResult<Response<GetTreeListSetMstResponse>> GetTreeListSet([FromQuery] GetTreeListSetRequest request)
         {
             var input = new GetTreeListSetInputData(HpId, request.SinDate, request.SetKbn);
             var output = _bus.Handle(input);
