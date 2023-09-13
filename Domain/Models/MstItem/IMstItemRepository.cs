@@ -12,6 +12,8 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts);
+
         List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord);
 
         bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters);
@@ -147,7 +149,7 @@ namespace Domain.Models.MstItem
         string GetPrecautions(string yjCd);
 
         bool UpdateCmtCheckMst(int userId, int hpId, List<ItemCmtModel> listData);
-        
+
         bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId);
 
         bool CheckPostCodeExist(int hpId, string zipCD);
