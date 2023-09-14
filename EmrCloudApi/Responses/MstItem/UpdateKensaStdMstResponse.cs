@@ -7,6 +7,6 @@
             Success = success;
         }
 
-        public bool Success { get; set; }
+        public bool Success { get; private set; }
     }
 }

@@ -770,6 +770,7 @@ using UseCase.IsUsingKensa;
 using UseCase.MstItem.UpdateKensaStdMst;
 using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetUsedKensaItemCds;
+using UseCase.IsUsingKensa;
 
 namespace EmrCloudApi.Configs.Dependency
 {

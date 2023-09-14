@@ -6316,7 +6316,7 @@ namespace Infrastructure.Repositories
                                                                  p.MaleStdHigh ?? string.Empty,
                                                                  p.FemaleStd ?? string.Empty,
                                                                  p.FemaleStdLow ?? string.Empty,
-                                                                 p.FemaleStdHigh ?? string.Empty,
+                                                                 p.MaleStdHigh ?? string.Empty,
                                                                  p.StartDate,
                                                                  p.CreateId)).ToList();
         }
