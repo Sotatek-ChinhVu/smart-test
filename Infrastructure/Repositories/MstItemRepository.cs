@@ -6283,5 +6283,21 @@ namespace Infrastructure.Repositories
                                                                  p.StartDate,
                                                                  p.CreateId)).ToList();
         }
+
+        public List<string> GetUsedKensaItemCds(int hpId)
+        {
+            List<string> result = new();
+            var itemCdsFromKensaMst = NoTrackingDataContext.KensaMsts
+                                                           .Where(p => p.HpId == hpId)
+                                                           .Select(p => p.KensaItemCd).ToList();
+            var itemCdsFromTenMst = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && !string.IsNullOrEmpty(p.KensaItemCd) && p.IsDeleted == DeleteTypes.None).Select(p => p.KensaItemCd).ToList();
+
+            foreach (var item in itemCdsFromKensaMst.Union(itemCdsFromTenMst).Distinct().ToList())
+            {
+                result.Add(item ?? string.Empty);
+            }
+
+            return result;
+        }
     }
 }
