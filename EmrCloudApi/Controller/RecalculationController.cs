@@ -32,6 +32,7 @@ public class RecalculationController : AuthorizeControllerBase
     private HubConnection connection;
     private string uniqueKey;
     private bool stopCalculate = false;
+    private bool allowNextStep = false;
 
     public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider, IMessenger messenger) : base(userService)
     {
@@ -50,11 +51,9 @@ public class RecalculationController : AuthorizeControllerBase
         {
             _messenger.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
             _messenger.Register<StopCalcStatus>(this, StopCalculation);
+            _messenger.Register<AllowNextStepStatus>(this, CheckAllowNextStepAction);
 
             HttpContext.Response.ContentType = "application/json";
-            //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
-            HttpResponse response = HttpContext.Response;
-            //response.StatusCode = 202;
 
             uniqueKey = Guid.NewGuid().ToString();
             var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, uniqueKey, cancellationToken, _messenger);
@@ -62,13 +61,18 @@ public class RecalculationController : AuthorizeControllerBase
         }
         catch (Exception ex)
         {
+            allowNextStep = true;
+            stopCalculate = true;
             Console.WriteLine("Exception Cloud:" + ex.Message);
             SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
         }
         finally
         {
+            allowNextStep = true;
+            stopCalculate = true;
             _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
             _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
+            _messenger.Deregister<AllowNextStepStatus>(this, CheckAllowNextStepAction);
             HttpContext.Response.Body.Close();
         }
     }
@@ -86,6 +90,19 @@ public class RecalculationController : AuthorizeControllerBase
         else
         {
             stopCalcStatus.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+        }
+    }
+
+    private void CheckAllowNextStepAction(AllowNextStepStatus status)
+    {
+        if (allowNextStep)
+        {
+            status.CallSuccessCallback(allowNextStep);
+            allowNextStep = false;
+        }
+        else
+        {
+            status.CallFailCallback(allowNextStep);
         }
     }
 
@@ -117,16 +134,20 @@ public class RecalculationController : AuthorizeControllerBase
                             if (objectStatus.Type == -1)
                             {
                                 stopCalculate = true;
+                                allowNextStep = true;
                             }
                             SendMessage(objectStatus);
                             if (objectStatus.Done)
                             {
                                 connection.DisposeAsync();
+                                allowNextStep = true;
                             }
                         }
                     }
                     catch (Exception ex)
                     {
+                        allowNextStep = true;
+                        stopCalculate = true;
                         Console.WriteLine("Exception Calculate:" + data);
                         SendMessage(new RecalculationStatus(true, 0, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
                     }
