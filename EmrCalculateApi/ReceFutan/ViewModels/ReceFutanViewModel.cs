@@ -135,7 +135,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                 _emrLogger.WriteLogEnd(this, conFncName, $"ptIds.Count:{ptIds?.Count ?? 0} seikyuYm:{seikyuYm}");
                 if (AllowSendProgress)
                 {
-                    SendMessager(new RecalculationStatus(true, 2, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                    SendMessager(new RecalculationStatus(true, CalculateStatusConstant.ReceiptAggregationCheckBox, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
                 }
             }
             catch (Exception E)
@@ -254,7 +254,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
             AllCalcCount = ReceInfs.Count;
             if (AllowSendProgress)
             {
-                SendMessager(new RecalculationStatus(false, 2, AllCalcCount, 0, string.Empty, UniqueKey));
+                SendMessager(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, AllCalcCount, 0, string.Empty, UniqueKey));
             }
             CalculatedCount = 0;
             for (int rCnt = ReceInfs.Count - 1; rCnt >= 0 && !IsStopCalc; rCnt--)
@@ -379,7 +379,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                     }
                     if (AllowSendProgress)
                     {
-                        SendMessager(new RecalculationStatus(false, 2, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                        SendMessager(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
                     }
                 }
                 catch (Exception E)

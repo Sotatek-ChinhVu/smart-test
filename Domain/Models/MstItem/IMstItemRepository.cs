@@ -20,6 +20,8 @@ namespace Domain.Models.MstItem
 
         bool UpsertMaterialMaster(int hpId, int userId, List<MaterialMasterModel> materialMasters);
 
+        bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds);
+
         List<DosageDrugModel> GetDosages(List<string> yjCds);
 
         List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData();
@@ -156,6 +158,7 @@ namespace Domain.Models.MstItem
 
         List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize);
         List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
+
         List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today);
         bool UpdateSingleDoseMst(List<SingleDoseMstModel> listToSave);
 
