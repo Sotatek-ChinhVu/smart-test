@@ -10,7 +10,7 @@ namespace UseCase.MstItem.DiseaseNameMstSearch
 {
     public class DiseaseNameMstSearchInputData : IInputData<DiseaseNameMstSearchOutputData>
     {
-        public DiseaseNameMstSearchInputData(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize)
+        public DiseaseNameMstSearchInputData(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize, bool isCheckPage)
         {
             HpId = hpId;
             Keyword = keyword;
@@ -27,6 +27,7 @@ namespace UseCase.MstItem.DiseaseNameMstSearch
             ChkNanbyo = chkNanbyo;
             PageIndex = pageIndex;
             PageSize = pageSize;
+            IsCheckPage = isCheckPage;
         }
 
         public int HpId { get; private set; }
@@ -44,6 +45,7 @@ namespace UseCase.MstItem.DiseaseNameMstSearch
         public bool ChkNanbyo { get; private set; }
         public int PageIndex { get; private set; }
         public int PageSize { get; private set; }
+        public bool IsCheckPage { get; private set; }
     }
 }
     

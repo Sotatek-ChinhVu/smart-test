@@ -44,6 +44,7 @@ using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
+using UseCase.MstItem.GetSingleDoseMstAndMedicineUnitList;
 using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
@@ -64,6 +65,7 @@ using UseCase.MstItem.UpdateKensaStdMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
+using UseCase.MstItem.GetUsedKensaItemCds;
 
 namespace EmrCloudApi.Controller
 {
@@ -673,7 +675,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.DiseaseNameMstSearch)]
         public ActionResult<Response<DiseaseNameMstSearchResponse>> DiseaseNameMstSearch([FromBody] DiseaseNameMstSearchRequest request)
         {
-            var input = new DiseaseNameMstSearchInputData(HpId, request.Keyword, request.ChkByoKbn0, request.ChkByoKbn1, request.ChkSaiKbn, request.ChkMiSaiKbn, request.ChkSidoKbn, request.ChkToku, request.ChkHiToku1, request.ChkHiToku2, request.ChkTenkan, request.ChkTokuTenkan, request.ChkNanbyo, request.PageIndex, request.PageSize);
+            var input = new DiseaseNameMstSearchInputData(HpId, request.Keyword, request.ChkByoKbn0, request.ChkByoKbn1, request.ChkSaiKbn, request.ChkMiSaiKbn, request.ChkSidoKbn, request.ChkToku, request.ChkHiToku1, request.ChkHiToku2, request.ChkTenkan, request.ChkTokuTenkan, request.ChkNanbyo, request.PageIndex, request.PageSize, request.IsCheckPage);
             var output = _bus.Handle(input);
 
             var presenter = new DiseaseNameMstSearchPresenter();
@@ -712,6 +714,16 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveAddressMstResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.GetSingleDoseMstAndMedicineUnitList)]
+        public ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>> GetSingleDoseMstAndMedicineUnitList()
+        {
+            var input = new GetSingleDoseMstAndMedicineUnitListInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetSingleDoseMstAndMedicineUnitListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.UpdateByomeiMst)]
         public ActionResult<Response<UpdateByomeiMstResponse>> UpdateByomeiMst([FromBody] UpdateByomeiMstRequest request)
         {
@@ -730,6 +742,16 @@ namespace EmrCloudApi.Controller
             var presenter = new IsUsingKensaPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<IsUsingKensaResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetUsedKensaItemCds)]
+        public ActionResult<Response<GetUsedKensaItemCdsResponse>> GetUsedKensaItemCds()
+        {
+            var input = new GetUsedKensaItemCdsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetUsedKensaItemCdsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetUsedKensaItemCdsResponse>>(presenter.Result);
         }
     }
 }
