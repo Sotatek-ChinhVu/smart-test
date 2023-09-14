@@ -13,6 +13,8 @@
 
         public string Path { get; set; } = string.Empty;
 
+        public string Biko { get; set; } = string.Empty;
+
         public string Machine { get; set; } = string.Empty;
     }
 }

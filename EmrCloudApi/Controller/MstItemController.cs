@@ -59,6 +59,7 @@ using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.MstItem.UpdateCmtCheckMst;
+using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.MstItem.UpdateKensaStdMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
@@ -709,6 +710,16 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveAddressMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveAddressMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateByomeiMst)]
+        public ActionResult<Response<UpdateByomeiMstResponse>> UpdateByomeiMst([FromBody] UpdateByomeiMstRequest request)
+        {
+            var input = new UpdateByomeiMstInputData(UserId, HpId, request.ListData);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateByomeiMstPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
 
         [HttpPost(ApiPath.IsUsingKensa)]
