@@ -16,6 +16,6 @@ namespace UseCase.MstItem.UpdateSingleDoseMst
 
         public int UserId { get; private set; }
 
-        public List<SingleDoseMstModel> SingleDoseMsts { get; set; }
+        public List<SingleDoseMstModel> SingleDoseMsts { get; private set; }
     }
 }
