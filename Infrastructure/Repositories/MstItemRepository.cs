@@ -17,6 +17,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -5397,6 +5398,41 @@ namespace Infrastructure.Repositories
             return result ?? string.Empty;
         }
 
+        public List<SingleDoseMstModel> GetListSingleDoseModel(int hpId)
+        {
+            string functName = string.Empty;
+            functName = nameof(GetListSingleDoseModel);
+            List<SingleDoseMstModel> result = new List<SingleDoseMstModel>();
+            var listSingleDoseMst = TrackingDataContext.SingleDoseMsts.Where(x => x.HpId == hpId).ToList();
+            result = listSingleDoseMst.Select(i => new SingleDoseMstModel(ModelStatus.None, false, i.Id, i.HpId, i.UnitName)).ToList();
+            return result;
+        }
+
+        public List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today)
+        {
+            string functName = string.Empty;
+            functName = nameof(GetListMedicineUnitModel);
+
+            List<MedicineUnitModel> result = new List<MedicineUnitModel>();
+            var listTenMstName = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId && x.EndDate >= today && x.IsDeleted == DeleteTypes.None)
+                                                           .OrderBy(x => x.OdrUnitName)
+                                                           .Select(x => x.OdrUnitName)
+                                                           .Distinct()
+                                                           .ToList();
+            var listSingleDoseMstName = NoTrackingDataContext.SingleDoseMsts.Where(x => x.HpId == hpId)
+                                                                         .Select(s => s.UnitName)
+                                                                         .ToList();
+
+            foreach (var item in listTenMstName)
+            {
+                if (!listSingleDoseMstName.Contains(item) && !string.IsNullOrEmpty(item))
+                {
+                    result.Add(new MedicineUnitModel(item, false));
+                }
+            }
+            return result;
+        }
+
         private string BuildPathAws(List<string> folders)
         {
             StringBuilder result = new();
@@ -6197,6 +6233,17 @@ namespace Infrastructure.Repositories
                 }
             }  
             return true;
+        }
+
+        public bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds)
+        {
+            bool result = NoTrackingDataContext.KensaInfDetails.Where(p => p.HpId == hpId && p.KensaItemCd == kensaItemCd).Any();
+
+            if (itemCds?.Count > 0)
+            {
+                result = result || NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd ?? string.Empty)).Any();
+            }
+            return result;
         }
     }
 }

@@ -21,6 +21,7 @@ using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
+using UseCase.IsUsingKensa;
 using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
@@ -42,6 +43,7 @@ using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
+using UseCase.MstItem.GetSingleDoseMstAndMedicineUnitList;
 using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
@@ -666,6 +668,16 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveAddressMstResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.GetSingleDoseMstAndMedicineUnitList)]
+        public ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>> GetSingleDoseMstAndMedicineUnitList()
+        {
+            var input = new GetSingleDoseMstAndMedicineUnitListInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetSingleDoseMstAndMedicineUnitListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.UpdateByomeiMst)]
         public ActionResult<Response<UpdateByomeiMstResponse>> UpdateByomeiMst([FromBody] UpdateByomeiMstRequest request)
         {
@@ -674,6 +686,16 @@ namespace EmrCloudApi.Controller
             var presenter = new UpdateByomeiMstPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.IsUsingKensa)]
+        public ActionResult<Response<IsUsingKensaResponse>> IsUsingKensa([FromBody] IsUsingKensaRequest request)
+        {
+            var input = new IsUsingKensaInputData(HpId, request.KensaItemCd, request.ItemCds);
+            var output = _bus.Handle(input);
+            var presenter = new IsUsingKensaPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<IsUsingKensaResponse>>(presenter.Result);
         }
     }
 }
