@@ -5432,6 +5432,67 @@ namespace Infrastructure.Repositories
             }
             return result;
         }
+        public bool UpdateSingleDoseMst(int hpId, int userId, List<SingleDoseMstModel> listToSave)
+        {
+            string functName = string.Empty;
+            functName = nameof(UpdateSingleDoseMst);
+            List<SingleDoseMst> singleDoseAdded = new List<SingleDoseMst>();
+            List<SingleDoseMst> singleDoseEdit = new List<SingleDoseMst>();
+            List<SingleDoseMst> singleDoseDelete = new List<SingleDoseMst>();
+            foreach (var item in listToSave)
+            {
+                if (item != null && !item.CheckDefaultValue())
+                {
+                    if (item.Status == ModelStatus.Modified)
+                    {
+                        var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
+                        if (data != null)
+                        {
+                            data.UnitName = item.UnitName;
+                            _UpdateSingleDose(data, userId);
+                            singleDoseEdit.Add(data);
+                        }
+                    }
+                    if (item.Status == ModelStatus.Added && !item.IsDeleted && item.Id == 0)
+                    {
+                        var singleDoseMst = new SingleDoseMst();
+                        singleDoseMst.UnitName = item.UnitName;
+                        singleDoseMst.HpId = hpId;
+                        _CreateSingleDose(singleDoseMst, userId);
+                        singleDoseAdded.Add(singleDoseMst);
+                    }
+                    if (item.Status == ModelStatus.Deleted)
+                    {
+                        var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
+                        if (data != null)
+                        {
+                            singleDoseDelete.Add(data);
+                        }
+                    }
+                }
+            }
+            TrackingDataContext.SingleDoseMsts.AddRange(singleDoseAdded);
+            TrackingDataContext.SingleDoseMsts.UpdateRange(singleDoseEdit);
+            TrackingDataContext.SingleDoseMsts.RemoveRange(singleDoseDelete);
+            TrackingDataContext.SaveChanges();
+            return TrackingDataContext.SaveChanges() > 0;
+
+        }
+        private void _UpdateSingleDose(SingleDoseMst singleDoseMst, int userId)
+        {
+
+            singleDoseMst.CreateDate = TimeZoneInfo.ConvertTimeToUtc(singleDoseMst.CreateDate);
+            singleDoseMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            singleDoseMst.UpdateId = userId;
+        }
+
+        private void _CreateSingleDose(SingleDoseMst singleDoseMst, int userId)
+        {
+            singleDoseMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+            singleDoseMst.CreateId = userId;
+            singleDoseMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            singleDoseMst.UpdateId = userId;
+        }
 
         private string BuildPathAws(List<string> folders)
         {
@@ -6307,17 +6368,6 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds)
-        {
-            bool result = NoTrackingDataContext.KensaInfDetails.Where(p => p.HpId == hpId && p.KensaItemCd == kensaItemCd).Any();
-
-            if (itemCds?.Count > 0)
-            {
-                result = result || NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd ?? string.Empty)).Any();
-            }
-            return result;
-        }
-
         public List<KensaStdMstModel> GetKensaStdMstModels(int hpId, string kensaItemCd)
         {
             var kensaStdMsts = NoTrackingDataContext.KensaStdMsts.Where(p => p.HpId == hpId && p.KensaItemCd == kensaItemCd);
@@ -6327,7 +6377,7 @@ namespace Infrastructure.Repositories
                                                                  p.MaleStdHigh ?? string.Empty,
                                                                  p.FemaleStd ?? string.Empty,
                                                                  p.FemaleStdLow ?? string.Empty,
-                                                                 p.FemaleStdHigh ?? string.Empty,
+                                                                 p.MaleStdHigh ?? string.Empty,
                                                                  p.StartDate,
                                                                  p.CreateId)).ToList();
         }
@@ -6346,6 +6396,13 @@ namespace Infrastructure.Repositories
             }
 
             return result;
+        }
+
+        public List<string> GetTenItemCds(int hpId)
+        {
+            return NoTrackingDataContext.TenMsts
+                            .Where(p => (p.ItemCd.StartsWith("KN") || p.ItemCd.StartsWith("IGE")) && p.IsDeleted == DeleteTypes.None)
+                            .Select(p => p.ItemCd).Distinct().ToList();
         }
     }
 }

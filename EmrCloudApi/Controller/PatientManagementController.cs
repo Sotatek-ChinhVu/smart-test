@@ -36,7 +36,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SearchPtInfsResponse>>(presenter.Result);
         }
 
-        [HttpPost(ApiPath.GetHokenMst)]
+        [HttpGet(ApiPath.GetHokenMst)]
         public ActionResult<Response<GetHokenMstResponse>> GetHokenMst()
         {
             var input = new GetHokenMstInputData(HpId);

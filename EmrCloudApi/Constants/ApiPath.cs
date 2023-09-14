@@ -52,12 +52,14 @@
         public const string ContainerMasterUpdate = "ContainerMasterUpdate";
         public const string UpsertMaterialMaster = "UpsertMaterialMaster";
         public const string GetSingleDoseMstAndMedicineUnitList = "GetSingleDoseMstAndMedicineUnitList";
+        public const string UpdateSingleDoseMst = "UpdateSingleDoseMst";
         public const string UpdateKensaMst = "UpdateKensaMst";
         public const string UpdateByomeiMst = "UpdateByomeiMst";
         public const string IsUsingKensa = "IsUsingKensa";
         public const string UpdateKensaStdMst = "UpdateKensaStdMst";
         public const string GetKensaStdMst = "GetKensaStdMst";
-        public const string GetUsedKensaItemCds = "GetUsedKensaItemCds";
+        public const string GetUsedKensaItemCds = "GetUsedKensaItemCds"; 
+        public const string GetTenItemCds = "GetTenItemCds";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

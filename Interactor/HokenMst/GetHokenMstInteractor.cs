@@ -21,7 +21,7 @@ namespace Interactor.HokenMst
                 int dateNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
                 var expireHokenMsts = allHokenMsts.Where(x => x.StartDate <= dateNow && x.EndDate >= dateNow).ToList();
 
-                var kohiModelWithFutansyanos = expireHokenMsts.FindAll(kohiInf =>
+                var kohiModelWithFutansyanos = expireHokenMsts.Where(kohiInf =>
                 (kohiInf.HokenSbtKbn == 2
                 || kohiInf.HokenSbtKbn == 5
                 || kohiInf.HokenSbtKbn == 6
@@ -38,7 +38,7 @@ namespace Interactor.HokenMst
                     }
                 }
 
-                var hokenInfModels = expireHokenMsts.FindAll(hokenInf =>
+                var hokenInfModels = expireHokenMsts.Where(hokenInf =>
                 (hokenInf.HokenSbtKbn == 1) &&
                 hokenInf.IsFutansyaNoCheck == 1 &&
                 hokenInf.HokenEdaNo == 0);
