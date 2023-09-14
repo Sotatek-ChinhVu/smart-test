@@ -244,6 +244,7 @@ namespace Infrastructure.Repositories
             if(setMstsBackuped.Any())
             {
                 TrackingDataContext.SetMsts.AddRange(setMstsBackuped);
+                TrackingDataContext.SaveChanges();
             }
 
 
