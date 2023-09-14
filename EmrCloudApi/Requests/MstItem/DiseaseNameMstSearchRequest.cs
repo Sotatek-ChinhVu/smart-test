@@ -16,5 +16,6 @@
         public bool ChkNanbyo { get; set; } = false;
         public int PageIndex { get; set; } = 0;
         public int PageSize { get; set; } = 0;
+        public bool IsCheckPage { get; set; } = false;
     }
 }
