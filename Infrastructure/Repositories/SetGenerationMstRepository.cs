@@ -1,4 +1,5 @@
-﻿using Domain.Models.SetGenerationMst;
+﻿using Amazon.Runtime.Internal.Transform;
+using Domain.Models.SetGenerationMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -7,6 +8,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -152,6 +154,8 @@ namespace Infrastructure.Repositories
             itemAdd.CreateDate = CIUtil.GetJapanDateTimeNow();
             itemAdd.UpdateDate = CIUtil.GetJapanDateTimeNow();
             itemAdd.UpdateId = userId;
+            itemAdd.CreateMachine = "SmartKarte";
+            itemAdd.UpdateMachine = "SmartKarte";
             TrackingDataContext.SetGenerationMsts.Add(itemAdd);
             var checkAdd = TrackingDataContext.SaveChanges();
             if (checkAdd == 0)
@@ -161,7 +165,7 @@ namespace Infrastructure.Repositories
             else
             {
                 // Clone Generation
-                var itemAddGet = TrackingDataContext.Entry(itemAdd).Entity;
+                var itemAddGet = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.StartDate == startDate).OrderByDescending(x => x.StartDate).FirstOrDefault();
                 if (itemNewest != null && itemAddGet != null)
                 {
                     CloneGeneration(itemAddGet.GenerationId, itemNewest.GenerationId, hpId, userId);
@@ -175,12 +179,21 @@ namespace Infrastructure.Repositories
             var setMstsBackuped = TrackingDataContext.SetMsts.Where(x =>
                 x.HpId == hpId &&
                 x.GenerationId == sourceGenerationId).ToList();
-            var setMstDict = new List<int>();
+            var setMstDict = new Dictionary<int, SetMst>();
             for (int i = 0, len = setMstsBackuped.Count; i < len; i++)
             {
-                if (!setMstDict.Contains(setMstsBackuped[i].SetCd))
+                if (!setMstDict.ContainsKey(setMstsBackuped[i].SetCd))
                 {
-                    setMstDict.Add(setMstsBackuped[i].SetCd);
+                    setMstDict[setMstsBackuped[i].SetCd] = setMstsBackuped[i];
+                }
+            }
+
+            var listMstDict = new List<int>();
+            for (int i = 0, len = setMstsBackuped.Count; i < len; i++)
+            {
+                if (!listMstDict.Contains(setMstsBackuped[i].SetCd))
+                {
+                    listMstDict.Add(setMstsBackuped[i].SetCd);
                 }
             }
 
@@ -189,27 +202,27 @@ namespace Infrastructure.Repositories
                 x.GenerationId == sourceGenerationId).ToList();
 
             var setByomeisSource = TrackingDataContext.SetByomei.Where(setByomei =>
-                setByomei.HpId == hpId && setMstDict.Contains(setByomei.SetCd))
+                setByomei.HpId == hpId && listMstDict.Contains(setByomei.SetCd))
                 .ToList();
 
             var setKarteInfsSource = TrackingDataContext.SetKarteInf.Where(setKarteInf =>
-                setKarteInf.HpId == hpId && setMstDict.Contains(setKarteInf.SetCd))
+                setKarteInf.HpId == hpId && listMstDict.Contains(setKarteInf.SetCd))
                 .ToList();
 
             var setKarteImgInfsSource = TrackingDataContext.SetKarteImgInf.Where(setKarteImgInf =>
-                setKarteImgInf.HpId == hpId && setMstDict.Contains(setKarteImgInf.SetCd))
+                setKarteImgInf.HpId == hpId && listMstDict.Contains(setKarteImgInf.SetCd))
                 .ToList();
 
             var setOdrInfsSource = TrackingDataContext.SetOdrInf.Where(setOdrInf =>
-                setOdrInf.HpId == hpId && setMstDict.Contains(setOdrInf.SetCd))
+                setOdrInf.HpId == hpId && listMstDict.Contains(setOdrInf.SetCd))
                 .ToList();
 
             var setOdrInfDetailsSource = TrackingDataContext.SetOdrInfDetail.Where(setOdrInfDetail =>
-                setOdrInfDetail.HpId == hpId && setMstDict.Contains(setOdrInfDetail.SetCd))
+                setOdrInfDetail.HpId == hpId && listMstDict.Contains(setOdrInfDetail.SetCd))
                 .ToList();
 
             var setOdrInfCmtSource = TrackingDataContext.SetOdrInfCmt.Where(setOdrInfCmt =>
-                setOdrInfCmt.HpId == hpId && setMstDict.Contains(setOdrInfCmt.SetCd))
+                setOdrInfCmt.HpId == hpId && listMstDict.Contains(setOdrInfCmt.SetCd))
                 .ToList();
 
             int countData = setMstsBackuped.Count + setByomeisSource.Count + setKarteInfsSource.Count + setKarteImgInfsSource.Count +
@@ -238,10 +251,10 @@ namespace Infrastructure.Repositories
             setKbnMstSource.ForEach(setKbnMst =>
             {
                 setKbnMst.GenerationId = targetGenerationId;
-                setKbnMst.CreateDate = DateTime.Now;
+                setKbnMst.CreateDate = CIUtil.GetJapanDateTimeNow();
                 setKbnMst.CreateId = Session.UserID;
                 setKbnMst.CreateMachine = computerName;
-                setKbnMst.UpdateDate = DateTime.Now;
+                setKbnMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 setKbnMst.UpdateId = Session.UserID;
                 setKbnMst.UpdateMachine = computerName;
             });
@@ -253,12 +266,13 @@ namespace Infrastructure.Repositories
             //setByomeis
             setByomeisSource.ForEach(x =>
             {
-                x.CreateDate = DateTime.Now;
-                x.CreateId = Session.UserID;
-                x.CreateMachine = computerName;
-                x.UpdateDate = DateTime.Now;
-                x.UpdateId = Session.UserID;
-                x.UpdateMachine = computerName;
+                    x.SetCd = setMstDict[x.SetCd].SetCd;
+                    x.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    x.CreateId = Session.UserID;
+                    x.CreateMachine = computerName;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    x.UpdateId = Session.UserID;
+                    x.UpdateMachine = computerName;
             });
             if(setByomeisSource.Any())
             {
@@ -268,10 +282,11 @@ namespace Infrastructure.Repositories
             //setKarteInf
             setKarteInfsSource.ForEach(x =>
             {
-                x.CreateDate = DateTime.Now;
+                x.SetCd = setMstDict[x.SetCd].SetCd;
+                x.CreateDate = CIUtil.GetJapanDateTimeNow();
                 x.CreateId = Session.UserID;
                 x.CreateMachine = computerName;
-                x.UpdateDate = DateTime.Now;
+                x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 x.UpdateId = Session.UserID;
                 x.UpdateMachine = computerName;
             });
@@ -284,6 +299,7 @@ namespace Infrastructure.Repositories
             setKarteImgInfsSource.ForEach(x =>
             {
                 x.Id = 0;
+                x.SetCd = setMstDict[x.SetCd].SetCd;
             });
             if (setKarteImgInfsSource.Any())
             {
@@ -293,11 +309,12 @@ namespace Infrastructure.Repositories
             //setOdrInf
             setOdrInfsSource.ForEach((x) =>
             {
+                x.SetCd = setMstDict[x.SetCd].SetCd;
                 x.Id = 0;
-                x.CreateDate = DateTime.Now;
+                x.CreateDate = CIUtil.GetJapanDateTimeNow();
                 x.CreateId = Session.UserID;
                 x.CreateMachine = computerName;
-                x.UpdateDate = DateTime.Now;
+                x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 x.UpdateId = Session.UserID;
                 x.UpdateMachine = computerName;
             });
@@ -309,7 +326,7 @@ namespace Infrastructure.Repositories
             //setOdrInfDetail
             setOdrInfDetailsSource.ForEach((x) =>
             {
-                
+                x.SetCd = setMstDict[x.SetCd].SetCd;
             });
             if(setOdrInfDetailsSource.Any())
             {
@@ -317,8 +334,8 @@ namespace Infrastructure.Repositories
             }
 
             //setOdrInfCmt
-            setOdrInfCmtSource.ForEach((x) => { 
-            
+            setOdrInfCmtSource.ForEach((x) => {
+                x.SetCd = setMstDict[x.SetCd].SetCd;
             });
             if(setOdrInfCmtSource.Any())
             {

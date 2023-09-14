@@ -763,6 +763,7 @@ using UseCase.UpsertMaterialMaster;
 using UseCase.SetSendaiGeneration.GetList;
 using Interactor.SetSendaiGeneration;
 using UseCase.SetSendaiGeneration.Delete;
+using UseCase.SetSendaiGeneration.Add;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1735,6 +1736,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Get List Set Senkai Generation
             busBuilder.RegisterUseCase<SetSendaiGenerationInputData, SetSendaiGenerationGetListInteractor>();
             busBuilder.RegisterUseCase<DeleteSendaiGenerationInputData, DeleteSetSendaiGenerationInteractor>();
+            busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
