@@ -761,6 +761,7 @@ using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.UpsertMaterialMaster;
 using UseCase.UpdateKensaMst;
+using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.IsUsingKensa;
 using UseCase.MstItem.UpdateKensaStdMst;
 using UseCase.MstItem.GetKensaStdMst;
@@ -1434,6 +1435,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateCmtCheckMstInputData, UpdateCmtCheckMstInteractor>();
             busBuilder.RegisterUseCase<GetParrentKensaMstInputData, GetParrentKensaMstListInteractor>();
             busBuilder.RegisterUseCase<UpdateKensaMstInputData, UpdateKensaMstInteractor>();
+            busBuilder.RegisterUseCase<UpdateByomeiMstInputData, UpdateByomeiMstInteractor>();
+
             busBuilder.RegisterUseCase<IsUsingKensaInputData, IsUsingKensaInteractor>();
             busBuilder.RegisterUseCase<UpdateKensaStdMstInputData, UpdateKensaStdMstInteractor>();
             busBuilder.RegisterUseCase<GetKensaStdMstInputData, GetKensaStdMstModelsInteractor>();
