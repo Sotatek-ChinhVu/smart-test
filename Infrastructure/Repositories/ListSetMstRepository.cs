@@ -78,6 +78,7 @@ namespace Infrastructure.Repositories
                         Level5 = item.Level5,
                         SetKbn = item.SetKbn,
                         IsDeleted = 0,
+                        IsTitle = item.IsTitle,
 
                     });
                 }
@@ -100,6 +101,7 @@ namespace Infrastructure.Repositories
                     listSetMst.Level4 = item.Level4;
                     listSetMst.Level5 = item.Level5;
                     listSetMst.IsDeleted = item.IsDeleted;
+                    listSetMst.IsTitle = item.IsTitle;
                     listSetMst.UpdateMachine = CIUtil.GetComputerName();
                     listSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 }
