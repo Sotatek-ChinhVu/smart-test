@@ -15,6 +15,6 @@ namespace UseCase.SetSendaiGeneration.GetList
             HpId = hpId;
         }
 
-        public int HpId { get; set; }
+        public int HpId { get; private set; }
     }
 }

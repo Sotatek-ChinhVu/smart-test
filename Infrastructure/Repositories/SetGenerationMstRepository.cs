@@ -67,7 +67,6 @@ namespace Infrastructure.Repositories
 
             // Get List Data DB
             var setGenerationMsts = NoTrackingDataContext.SetGenerationMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0).OrderByDescending(x => x.StartDate).ToList();
-            int k = 1;
             for (int i = 0; i < setGenerationMsts.Count; i++)
             {
                 if (i == 0)
@@ -81,7 +80,6 @@ namespace Infrastructure.Repositories
                     var endDateInt = CIUtil.DateTimeToInt(endTimeDate);
                     result.Add(new SetSendaiGenerationModel(hpId, setGenerationMsts[i].GenerationId, setGenerationMsts[i].StartDate, convertDateDisplay(setGenerationMsts[i].StartDate), endDateInt, convertDateDisplay(endDateInt), i));
                 }
-                k++;
             }
             return result;
         }
