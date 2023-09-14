@@ -5409,7 +5409,7 @@ namespace Infrastructure.Repositories
             return result.ToString();
         }
 
-        public List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize)
+        public List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize, bool isCheckPage)
         {
             string kanaKeyword = keyword != string.Empty ? keyword : "";
             if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
@@ -5430,7 +5430,6 @@ namespace Infrastructure.Repositories
                 .Replace("ｭ", "ﾕ")
                 .Replace("ｮ", "ﾖ")
                 .Replace("ｯ", "ﾂ");
-
             var query = NoTrackingDataContext.ByomeiMsts.Where(item => item.HpId == hpId &&
                                     (!String.IsNullOrEmpty(keyword)
                                     &&
@@ -5538,8 +5537,7 @@ namespace Infrastructure.Repositories
                                     item.Icd1022013.StartsWith(keyword)))
                                     &&
                                     (item.ByomeiCd.Length != 4 || item.ByomeiCd.Length == 4 && string.Compare(item.ByomeiCd, "9000") < 0))
-                                    .OrderBy(item => item.KanaName1).ThenByDescending(item => item.IsAdopted).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
+                                    .OrderBy(item => item.KanaName1).ThenByDescending(item => item.IsAdopted).ToList();
             List<ByomeiMstModel> listByomeies = new();
             if (query != null)
             {
@@ -5552,6 +5550,11 @@ namespace Infrastructure.Repositories
                         listByomeies.Add(itemAdd);
                     }
                 }
+            }
+
+            if (isCheckPage)
+            {
+                listByomeies = listByomeies.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             }
             return listByomeies;
         }

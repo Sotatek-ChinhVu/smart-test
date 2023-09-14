@@ -16,6 +16,7 @@ public class DiseaseNameMstSearchModel
         Icd10 = model.Icd10;
         Icd102013 = model.Icd102013;
         IsAdopted = model.IsAdopted;
+        NanByoCd = model.NanbyoCd;
     }
 
     public string ByomeiCd { get; private set; }
@@ -37,4 +38,6 @@ public class DiseaseNameMstSearchModel
     public string Icd102013 { get; private set; }
 
     public bool IsAdopted { get; private set; }
+
+    public int NanByoCd { get; private set; }
 }
