@@ -497,14 +497,6 @@ namespace EmrCloudApi.Controller
             return Ok(presenter.Result);
         }
 
-        [HttpPost(ApiPath.UpdateListSetMst)]
-        public ActionResult<Response<UpdateCmtCheckMstResponse>> UpdateListSetMst([FromBody] UpdateListSetMstRequest request)
-        {
-            var input = new UpdateListSetMstInputData(UserId, HpId, request.ListSetMsts);
-            var output = _bus.Handle(input);
-            return Ok();
-        }
-
         [HttpPost(ApiPath.SaveAddressMst)]
         public ActionResult<Response<SaveAddressMstResponse>> SaveAddressMst([FromBody] SaveAddressMstRequest request)
         {
