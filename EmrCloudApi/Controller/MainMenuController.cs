@@ -21,6 +21,7 @@ using UseCase.MainMenu.GetKensaCenterMstList;
 using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using Domain.Models.KensaIrai;
 using EmrCloudApi.Requests.MainMenu.RequestItem;
+using UseCase.MainMenu.GetKensaInf;
 
 namespace EmrCloudApi.Controller;
 
@@ -101,6 +102,16 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new GetKensaIraiPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetKensaIraiResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKensaInf)]
+    public ActionResult<Response<GetKensaInfResponse>> GetKensaInf([FromQuery] GetKensaInfRequest request)
+    {
+        var input = new GetKensaInfInputData(HpId, request.StartDate, request.EndDate, request.CenterCd);
+        var output = _bus.Handle(input);
+        var presenter = new GetKensaInfPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKensaInfResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.GetKensaIraiByList)]
