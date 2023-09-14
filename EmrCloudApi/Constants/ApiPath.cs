@@ -54,6 +54,8 @@
         public const string UpdateKensaMst = "UpdateKensaMst";
         public const string UpdateByomeiMst = "UpdateByomeiMst";
         public const string IsUsingKensa = "IsUsingKensa";
+        public const string UpdateByomeiMst = "UpdateByomeiMst";
+        public const string IsUsingKensa = "IsUsingKensa";
         public const string UpdateKensaStdMst = "UpdateKensaStdMst";
         public const string GetKensaStdMst = "GetKensaStdMst";
         public const string GetUsedKensaItemCds = "GetUsedKensaItemCds";
@@ -418,6 +420,8 @@
         public const string GetKensaCenterMstList = "GetKensaCenterMstList";
         public const string CreateDataKensaIraiRenkei = "CreateDataKensaIraiRenkei";
         public const string ReCreateDataKensaIraiRenkei = "ReCreateDataKensaIraiRenkei";
+        public const string GetKensaInf = "GetKensaInf";
+        public const string DeleteKensaInf = "DeleteKensaInf";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
