@@ -22,6 +22,7 @@ using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using Domain.Models.KensaIrai;
 using EmrCloudApi.Requests.MainMenu.RequestItem;
 using UseCase.MainMenu.GetKensaInf;
+using UseCase.MainMenu.DeleteKensaInf;
 
 namespace EmrCloudApi.Controller;
 
@@ -152,6 +153,27 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new CreateDataKensaIraiRenkeiPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<CreateDataKensaIraiRenkeiResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.DeleteKensaInf)]
+    public ActionResult<Response<DeleteKensaInfResponse>> DeleteKensaInf([FromBody] DeleteKensaInfRequest request)
+    {
+        var kensaInfList = request.KensaInfList
+            .Select(item => new KensaInfModel(
+                                item.PtId,
+                                item.RaiinNo, 
+                                item.IraiCd, 
+                                item.KensaInfDetailList.Select(item => new KensaInfDetailModel(
+                                                                           item.SeqNo, 
+                                                                           item.PtId, 
+                                                                           item.IraiCd))
+                                                       .ToList()))
+            .ToList();
+        var input = new DeleteKensaInfInputData(HpId, UserId, kensaInfList);
+        var output = _bus.Handle(input);
+        var presenter = new DeleteKensaInfPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<DeleteKensaInfResponse>>(presenter.Result);
     }
 
     #region private function
