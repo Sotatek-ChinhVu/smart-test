@@ -1,11 +1,14 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.HokenMst;
 using EmrCloudApi.Presenters.PatientManagement;
 using EmrCloudApi.Requests.PatientManagement;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.HokenMst;
 using EmrCloudApi.Responses.PatientManagement;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.HokenMst.GetHokenMst;
 using UseCase.PatientManagement;
 
 namespace EmrCloudApi.Controller
@@ -21,7 +24,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.SearchPtInfs)]
-        public ActionResult<Response<SearchPtInfsResponse>> GetList([FromBody] SearchPtInfsRequest request)
+        public ActionResult<Response<SearchPtInfsResponse>> SearchPtInfs([FromBody] SearchPtInfsRequest request)
         {
             var input = new SearchPtInfsInputData(HpId, request.OutputOrder, request.PageIndex, request.PageCount, request.CoSta9000PtConf, request.CoSta9000HokenConf,
                                                    request.CoSta9000ByomeiConf, request.CoSta9000RaiinConf, request.CoSta9000SinConf, request.CoSta9000KarteConf, request.CoSta9000KensaConf);
@@ -31,6 +34,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<SearchPtInfsResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetHokenMst)]
+        public ActionResult<Response<GetHokenMstResponse>> GetHokenMst()
+        {
+            var input = new GetHokenMstInputData(HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetHokenMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetHokenMstResponse>>(presenter.Result);
         }
     }
 }
