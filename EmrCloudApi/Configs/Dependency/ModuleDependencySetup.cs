@@ -760,6 +760,8 @@ using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.UpsertMaterialMaster;
+using UseCase.UpdateKensaMst;
+using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.SetSendaiGeneration.GetList;
 using Interactor.SetSendaiGeneration;
 
@@ -1431,6 +1433,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDiseaseListInputData, GetDiseaseListInteractor>();
             busBuilder.RegisterUseCase<UpdateCmtCheckMstInputData, UpdateCmtCheckMstInteractor>();
             busBuilder.RegisterUseCase<GetParrentKensaMstInputData, GetParrentKensaMstListInteractor>();
+            busBuilder.RegisterUseCase<UpdateKensaMstInputData, UpdateKensaMstInteractor>();
+            busBuilder.RegisterUseCase<UpdateByomeiMstInputData, UpdateByomeiMstInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
