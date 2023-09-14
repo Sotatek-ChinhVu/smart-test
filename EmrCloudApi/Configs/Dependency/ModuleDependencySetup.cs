@@ -766,6 +766,10 @@ using UseCase.UpsertMaterialMaster;
 using UseCase.UpdateKensaMst;
 using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.IsUsingKensa;
+using UseCase.IsUsingKensa;
+using UseCase.MstItem.UpdateKensaStdMst;
+using UseCase.MstItem.GetKensaStdMst;
+using UseCase.MstItem.GetUsedKensaItemCds;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1438,8 +1442,14 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetParrentKensaMstInputData, GetParrentKensaMstListInteractor>();
             busBuilder.RegisterUseCase<UpdateKensaMstInputData, UpdateKensaMstInteractor>();
             busBuilder.RegisterUseCase<UpdateByomeiMstInputData, UpdateByomeiMstInteractor>();
+            busBuilder.RegisterUseCase<UpdateByomeiMstInputData, UpdateByomeiMstInteractor>();
+
             busBuilder.RegisterUseCase<IsUsingKensaInputData, IsUsingKensaInteractor>();
 
+            busBuilder.RegisterUseCase<UpdateKensaStdMstInputData, UpdateKensaStdMstInteractor>();
+            busBuilder.RegisterUseCase<GetKensaStdMstInputData, GetKensaStdMstModelsInteractor>();
+            busBuilder.RegisterUseCase<GetUsedKensaItemCdsInputData, GetUsedKensaItemCdsInteractor>();
+            
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
             busBuilder.RegisterUseCase<DiseaseSearchInputData, DiseaseSearchInteractor>();

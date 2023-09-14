@@ -1,5 +1,4 @@
 ﻿using Domain.Models.KensaIrai;
-using Domain.Models.MstItem;
 
 namespace EmrCloudApi.Responses.MstItem
 {

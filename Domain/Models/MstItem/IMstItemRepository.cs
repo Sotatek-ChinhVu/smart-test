@@ -12,6 +12,12 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        List<string> GetUsedKensaItemCds(int hpId);
+
+        List<KensaStdMstModel> GetKensaStdMstModels(int hpId, string kensaItemCd);
+
+        bool UpdateKensaStdMst(int hpId, int userId, List<KensaStdMstModel> kensaStdMstModels);
+
         bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts);
 
         List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord);
