@@ -6397,5 +6397,12 @@ namespace Infrastructure.Repositories
 
             return result;
         }
+
+        public List<string> GetTenItemCds(int hpId)
+        {
+            return NoTrackingDataContext.TenMsts
+                            .Where(p => (p.ItemCd.StartsWith("KN") || p.ItemCd.StartsWith("IGE")) && p.IsDeleted == DeleteTypes.None)
+                            .Select(p => p.ItemCd).Distinct().ToList();
+        }
     }
 }

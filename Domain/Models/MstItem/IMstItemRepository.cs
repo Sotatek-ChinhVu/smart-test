@@ -12,6 +12,8 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        List<string> GetTenItemCds(int hpId);
+
         List<string> GetUsedKensaItemCds(int hpId);
 
         List<KensaStdMstModel> GetKensaStdMstModels(int hpId, string kensaItemCd);
