@@ -448,5 +448,8 @@
         public const string GetKaCodeYousikiMst = "GetKaCodeYousikiMst";
 
         public const string Test = "Test";
+
+        //SetSendaiGeneration
+        public const string Restore = "Restore";
     }
 }
