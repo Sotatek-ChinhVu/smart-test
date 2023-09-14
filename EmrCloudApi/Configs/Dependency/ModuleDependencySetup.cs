@@ -791,6 +791,8 @@ using UseCase.MstItem.UpdateKensaStdMst;
 using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.IsUsingKensa;
+using UseCase.SetSendaiGeneration.GetList;
+using Interactor.SetSendaiGeneration;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1770,6 +1772,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Disease Name Mst Seach
             busBuilder.RegisterUseCase<DiseaseNameMstSearchInputData, DiseaseNameMstSearchInteractor>();
+
+            //Get List Set Senkai Generation
+            busBuilder.RegisterUseCase<SetSendaiGenerationInputData, SetSendaiGenerationGetListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
