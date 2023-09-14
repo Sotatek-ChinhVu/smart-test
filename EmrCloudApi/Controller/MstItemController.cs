@@ -68,6 +68,7 @@ using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
 using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.MstItem.GetMaterialMsts;
+using UseCase.MstItem.GetContainerMsts;
 
 namespace EmrCloudApi.Controller
 {
@@ -766,6 +767,14 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetMaterialMstsResponse>>(presenter.Result);
         }
 
-
+        [HttpGet(ApiPath.GetContainerMsts)]
+        public ActionResult<Response<GetContainerMstsResponse>> GetContainerMsts()
+        {
+            var input = new GetContainerMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetContainerMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetContainerMstsResponse>>(presenter.Result);
+        }
     }
 }
