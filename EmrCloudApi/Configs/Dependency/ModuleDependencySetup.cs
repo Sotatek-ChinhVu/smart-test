@@ -768,6 +768,7 @@ using UseCase.UpdateKensaMst;
 using UseCase.ListSetGenerationMst.GetListSetGenerationMst;
 using Interactor.ListSetGenerationMst;
 using Domain.Models.ListSetGenerationMst;
+using UseCase.MstItem.UpdateByomeiMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1440,6 +1441,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateCmtCheckMstInputData, UpdateCmtCheckMstInteractor>();
             busBuilder.RegisterUseCase<GetParrentKensaMstInputData, GetParrentKensaMstListInteractor>();
             busBuilder.RegisterUseCase<UpdateKensaMstInputData, UpdateKensaMstInteractor>();
+            busBuilder.RegisterUseCase<UpdateByomeiMstInputData, UpdateByomeiMstInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
