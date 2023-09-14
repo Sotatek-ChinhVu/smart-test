@@ -34,12 +34,30 @@ public class RecalculationInteractor : IRecalculationInputPort
             if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
                 success = RunCalculateMonth(inputData.HpId, inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
+
+                // Check next step
+                while (true)
+                {
+                    if (CheckAllowNextStep())
+                    {
+                        break;
+                    }
+                }
             }
 
             // run Receipt Aggregation
             if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
                 success = ReceFutanCalculateMain(inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
+
+                // Check next step
+                while (true)
+                {
+                    if (CheckAllowNextStep())
+                    {
+                        break;
+                    }
+                }
             }
 
             // check error in month
@@ -113,5 +131,11 @@ public class RecalculationInteractor : IRecalculationInputPort
     private void SendMessager(RecalculationStatus status)
     {
         _messenger!.Send(status);
+    }
+
+    private bool CheckAllowNextStep()
+    {
+        var allowNextStep = _messenger!.SendAsync(new AllowNextStepStatus());
+        return allowNextStep.Result.Result;
     }
 }
