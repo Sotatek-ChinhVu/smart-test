@@ -53,6 +53,8 @@
         public const string UpsertMaterialMaster = "UpsertMaterialMaster";
         public const string GetSingleDoseMstAndMedicineUnitList = "GetSingleDoseMstAndMedicineUnitList";
         public const string UpdateSingleDoseMst = "UpdateSingleDoseMst";
+        public const string UpdateKensaMst = "UpdateKensaMst";
+        public const string UpdateByomeiMst = "UpdateByomeiMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
