@@ -5449,7 +5449,7 @@ namespace Infrastructure.Repositories
                         if (data != null)
                         {
                             data.UnitName = item.UnitName;
-                            _UpdateSingleDose(data);
+                            _UpdateSingleDose(data, item.HpId);
                             singleDoseEdit.Add(data);
                         }
                     }
@@ -5458,7 +5458,7 @@ namespace Infrastructure.Repositories
                         var singleDoseMst = new SingleDoseMst();
                         singleDoseMst.UnitName = item.UnitName;
                         singleDoseMst.HpId = item.HpId;
-                        _CreateSingleDose(singleDoseMst);
+                        _CreateSingleDose(singleDoseMst, item.HpId);
                         singleDoseAdded.Add(singleDoseMst);
                     }
                     if (item.Status == ModelStatus.Deleted)
@@ -5478,23 +5478,20 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
 
         }
-        private void _UpdateSingleDose(SingleDoseMst singleDoseMst)
+        private void _UpdateSingleDose(SingleDoseMst singleDoseMst, int hpId)
         {
 
             singleDoseMst.CreateDate = TimeZoneInfo.ConvertTimeToUtc(singleDoseMst.CreateDate);
             singleDoseMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            singleDoseMst.UpdateId = Session.UserID;
-            singleDoseMst.UpdateMachine = CIUtil.GetComputerName();
+            singleDoseMst.UpdateId = hpId;
         }
 
-        private void _CreateSingleDose(SingleDoseMst singleDoseMst)
+        private void _CreateSingleDose(SingleDoseMst singleDoseMst, int hpId)
         {
             singleDoseMst.CreateDate = CIUtil.GetJapanDateTimeNow();
-            singleDoseMst.CreateId = Session.UserID;
-            singleDoseMst.CreateMachine = CIUtil.GetComputerName();
+            singleDoseMst.CreateId = hpId;
             singleDoseMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            singleDoseMst.UpdateId = Session.UserID;
-            singleDoseMst.UpdateMachine = CIUtil.GetComputerName();
+            singleDoseMst.UpdateId = hpId;
         }
 
         private string BuildPathAws(List<string> folders)
