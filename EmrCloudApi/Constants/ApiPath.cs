@@ -448,5 +448,8 @@
 
         //ListSetMst
         public const string UpdateListSetMst = "UpdateListSetMst";
+
+        //ByomeiSetMst
+        public const string UpdateByomeiSetMst = "UpdateByomeiSetMst";
     }
 }
