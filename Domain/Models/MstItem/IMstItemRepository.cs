@@ -12,6 +12,12 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        List<string> GetUsedKensaItemCds(int hpId);
+
+        List<KensaStdMstModel> GetKensaStdMstModels(int hpId, string kensaItemCd);
+
+        bool UpdateKensaStdMst(int hpId, int userId, List<KensaStdMstModel> kensaStdMstModels);
+
         bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts);
 
         List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord);
@@ -19,6 +25,8 @@ namespace Domain.Models.MstItem
         bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters);
 
         bool UpsertMaterialMaster(int hpId, int userId, List<MaterialMasterModel> materialMasters);
+
+        bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds);
 
         List<DosageDrugModel> GetDosages(List<string> yjCds);
 
@@ -154,8 +162,12 @@ namespace Domain.Models.MstItem
 
         bool CheckPostCodeExist(int hpId, string zipCD);
 
-        List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize);
+        
+        List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
+
+        List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today);
 
         bool UpdateByomeiMst(int userId, int hpId, List<UpdateByomeiMstModel> listData);
+        List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize, bool isCheckPage);
     }
 }
