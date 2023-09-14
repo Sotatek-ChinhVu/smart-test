@@ -20,6 +20,8 @@ namespace Domain.Models.MstItem
 
         bool UpsertMaterialMaster(int hpId, int userId, List<MaterialMasterModel> materialMasters);
 
+        bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds);
+
         List<DosageDrugModel> GetDosages(List<string> yjCds);
 
         List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData();

@@ -21,6 +21,7 @@ using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
+using UseCase.IsUsingKensa;
 using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
@@ -674,6 +675,16 @@ namespace EmrCloudApi.Controller
             var presenter = new UpdateByomeiMstPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.IsUsingKensa)]
+        public ActionResult<Response<IsUsingKensaResponse>> IsUsingKensa([FromBody] IsUsingKensaRequest request)
+        {
+            var input = new IsUsingKensaInputData(HpId, request.KensaItemCd, request.ItemCds);
+            var output = _bus.Handle(input);
+            var presenter = new IsUsingKensaPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<IsUsingKensaResponse>>(presenter.Result);
         }
     }
 }
