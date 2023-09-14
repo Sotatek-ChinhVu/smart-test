@@ -52,6 +52,7 @@
         public const string ContainerMasterUpdate = "ContainerMasterUpdate";
         public const string UpsertMaterialMaster = "UpsertMaterialMaster";
         public const string UpdateKensaMst = "UpdateKensaMst";
+        public const string UpdateByomeiMst = "UpdateByomeiMst";
         public const string IsUsingKensa = "IsUsingKensa";
 
         //Schema

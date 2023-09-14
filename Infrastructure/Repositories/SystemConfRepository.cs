@@ -543,6 +543,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             newEntity.IsInvalid = 1;
             newEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             newEntity.UpdateId = userId;
+            newEntity.Biko = systemConfListXmlPathModel.Biko;
             newEntity.GrpCd = systemConfListXmlPathModel.GrpCd;
             if (entity != null)
             {
