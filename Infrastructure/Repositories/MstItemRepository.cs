@@ -6198,7 +6198,7 @@ namespace Infrastructure.Repositories
             {
                 if (item.IsDefault) continue;
 
-                if (item.IsDeleted == DeleteTypes.Deleted)
+                if (item.IsDeleted)
                 {
                     var kensaStdMaster = TrackingDataContext.KensaStdMsts.Where(x => x.KensaItemCd == item.KensaItemcd && x.StartDate == item.StartDate);
                     if (kensaStdMaster != null)
@@ -6248,6 +6248,20 @@ namespace Infrastructure.Repositories
                 CreateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateDate = CIUtil.GetJapanDateTimeNow()
             };
+        }
+
+        public List<KensaStdMstModel> GetKensaStdMstModels(int hpId, string kensaItemCd)
+        {
+            var kensaStdMsts = NoTrackingDataContext.KensaStdMsts.Where(p => p.HpId == hpId && p.KensaItemCd == kensaItemCd);
+            return kensaStdMsts.Select(p => new KensaStdMstModel(p.KensaItemCd,
+                                                                 p.MaleStd ?? string.Empty,
+                                                                 p.MaleStdLow ?? string.Empty,
+                                                                 p.MaleStdHigh ?? string.Empty,
+                                                                 p.FemaleStd ?? string.Empty,
+                                                                 p.FemaleStdLow ?? string.Empty,
+                                                                 p.FemaleStdHigh ?? string.Empty,
+                                                                 p.StartDate,
+                                                                 p.CreateId)).ToList();
         }
     }
 }

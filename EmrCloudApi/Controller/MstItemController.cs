@@ -37,6 +37,7 @@ using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
+using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetParrentKensaMst;
@@ -165,6 +166,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetParrentKensaMstListResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetKensaStdMst)]
+        public ActionResult<Response<GetKensaStdMstModelsResponse>> GetKensaStdMstModels([FromQuery] GetKensaStdMstModelsRequest request)
+        {
+            var input = new GetKensaStdMstInputData(HpId, request.KensaItemCd);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetKensaStdMstModelsPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetKensaStdMstModelsResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.GetDiseaseList)]

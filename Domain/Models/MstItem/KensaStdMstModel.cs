@@ -5,7 +5,7 @@ namespace Domain.Models.MstItem
     public class KensaStdMstModel
     {
         public KensaStdMstModel(string kensaItemcd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh
-                               , int startDate, bool isModified, int isDeleted, int createId)
+                               , int startDate, bool isModified, bool isDeleted, int createId)
         {
             KensaItemcd = kensaItemcd;
             MaleStd = maleStd;
@@ -17,6 +17,20 @@ namespace Domain.Models.MstItem
             StartDate = startDate;
             IsModified = isModified;
             IsDeleted = isDeleted;
+            CreateId = createId;
+        }
+
+        public KensaStdMstModel(string kensaItemcd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh
+                               , int startDate, int createId)
+        {
+            KensaItemcd = kensaItemcd;
+            MaleStd = maleStd;
+            MaleStdLow = maleStdLow;
+            MaleStdHigh = maleStdHigh;
+            FemaleStd = femaleStd;
+            FemaleStdLow = femaleStdLow;
+            FemaleStdHigh = femaleStdHigh;
+            StartDate = startDate;
             CreateId = createId;
         }
 
@@ -52,7 +66,16 @@ namespace Domain.Models.MstItem
 
         public bool IsModified { get; private set; }
 
-        public int IsDeleted { get; private set; }
+        private bool _isDeleted;
+        public bool IsDeleted
+        {
+            get => _isDeleted;
+            set
+            {
+                _isDeleted = value;
+                IsModified = true;
+            }
+        }
 
         public bool CheckDefaultValue()
         {
