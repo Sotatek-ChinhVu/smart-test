@@ -677,6 +677,14 @@
         public static readonly string CanNotExportPdf = "Can not export file Pdf.";
         public static readonly string CanNotReturnPdfFile = "Can not return file Pdf.";
 
+        //TenMst
+        public static readonly string InvalidMasterSbt = "Invalid MasterSbt";
+        public static readonly string InvalidMinAge = "Invalid MinAge";
+        public static readonly string InvalidMaxAge = "Invalid MaxAge";
+        public static readonly string InvalidCdKbn = "Invalid CdKbn";
+        public static readonly string InvalidKokuji1 = "Invalid Kokuji1";
+        public static readonly string InvalidKokuji2 = "Invalid Kokuji2";
+
         //Valid Kohi
         public static readonly string InvalidKohiEmptyModel1 = "Invalid kohi1 empty model";
         public static readonly string InvalidKohiHokenMstEmpty1 = "Invalid kohi1 hokenMst empty model";
@@ -1008,6 +1016,7 @@
         public static readonly string InvalidGrpId = "Invalid GrpId!";
         public static readonly string InvalidReportId = "Invalid ReportId!";
         public static readonly string InvalidMenuName = "Invalid MenuName!";
+        public static readonly string InvalidIraiCd = "Invalid IraiCd!";
 
         public static readonly string NoPermission = "No permission";
         public static readonly string InvalidContentFile = "Invalid file content";
