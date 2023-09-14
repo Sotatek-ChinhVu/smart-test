@@ -8,7 +8,7 @@ namespace Domain.Models.Reception;
 
 public class RaiinInfToPrintModel
 {
-    public RaiinInfToPrintModel(PrintMode batchPrintingMode, string nameBinding, string tantoIdDisplay, int receInfKaId, int raiinInfKaId, long ptId, long ptNum, string houbetuForPrintPrescription, int hokenKbnForPrintPrescription, string receInfHoubetu, string hokensyaNo, int uketukeNo, int receInfSinYm, int raiinInfSinDate, int receInfTantoId, int raiinInfTantoId, string kaDisplay, int uketukeSbt, string uketsukeDisplay, int receInfHonkeKbn, int hokenPid, int hokenId, int hokenSbtCd, int hokenKbn, string receSbt, string hokenSbtStr, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int kohi1HokenSbtKbn, int kohi2HokenSbtKbn, int kohi3HokenSbtKbn, int kohi4HokenSbtKbn, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int raiinInfStatus)
+    public RaiinInfToPrintModel(PrintMode batchPrintingMode, string nameBinding, string tantoIdDisplay, int receInfKaId, int raiinInfKaId, long ptId, long ptNum, string houbetuForPrintPrescription, int hokenKbnForPrintPrescription, string receInfHoubetu, string hokensyaNo, int uketukeNo, int receInfSinYm, int raiinInfSinDate, int receInfTantoId, int raiinInfTantoId, string kaDisplay, int uketukeSbt, string uketsukeDisplay, int receInfHonkeKbn, int hokenPid, int hokenId, int hokenSbtCd, int hokenKbn, string receSbt, string hokenSbtStr, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int kohi1HokenSbtKbn, int kohi2HokenSbtKbn, int kohi3HokenSbtKbn, int kohi4HokenSbtKbn, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int raiinInfStatus, long raiinNo)
     {
         BatchPrintingMode = batchPrintingMode;
         NameBinding = nameBinding;
@@ -49,6 +49,7 @@ public class RaiinInfToPrintModel
         Kohi3Houbetu = kohi3Houbetu;
         Kohi4Houbetu = kohi4Houbetu;
         RaiinInfStatus = raiinInfStatus;
+        RaiinNo = raiinNo;
     }
 
     public RaiinInfToPrintModel(PrintMode batchPrintingMode, ReceInfModel receInf)
@@ -174,6 +175,7 @@ public class RaiinInfToPrintModel
 
     public int RaiinInfStatus { get; private set; }
 
+    public long RaiinNo { get; private set; }
 
     public string Houbetu
     {

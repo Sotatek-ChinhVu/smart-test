@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.SystemConf;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.SytemConf;
 using EmrCloudApi.Requests.SystemConf;
 using EmrCloudApi.Responses;
@@ -10,10 +11,12 @@ using UseCase.Core.Sync;
 using UseCase.SystemConf;
 using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetDrugCheckSetting;
+using UseCase.SystemConf.GetPathAll;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemConf.GetXmlPath;
 using UseCase.SystemConf.SaveDrugCheckSetting;
+using UseCase.SystemConf.SavePath;
 using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
 
@@ -147,6 +150,43 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetSystemConfListXmlPathResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetAllPath)]
+        public ActionResult<Response<GetAllPathResponse>> GetAllPath()
+        {
+            var input = new GetPathAllInputData(HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetAllPathPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetAllPathResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SavePath)]
+        public ActionResult<Response<SavePathResponse>> SavePath([FromBody] SavePathRequest request)
+        {
+            var input = new SavePathInputData(HpId, UserId, request.SystemConfListXmlPathModels.Select(p => new SystemConfListXmlPathModel(
+                                HpId,
+                                p.GrpCd,
+                                0,
+                                p.SeqNo,
+                                p.Machine,
+                                p.Path,
+                                string.Empty,
+                                p.Biko,
+                                0,
+                                1,
+                                UserId,
+                                DateTime.MinValue
+                            )).ToList());
+            var output = _bus.Handle(input);
+
+            var presenter = new SavePathPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SavePathResponse>>(presenter.Result);
         }
     }
 }

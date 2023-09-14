@@ -139,7 +139,12 @@ public class PdfCreatorController : ControllerBase
     {
         var stringJson = requestStringJson.JsonAccounting;
         var request = JsonSerializer.Deserialize<PeriodReceiptListRequest>(stringJson) ?? new();
-        var data = _reportService.GetPeriodPrintData(request.HpId, request.StartDate, request.EndDate, request.SourcePt, request.PrintSort, request.IsPrintList, request.PrintByMonth, request.PrintByGroup, request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn, request.HakkoDay, request.Memo, request.FormFileName, request.NyukinBase);
+        List<(int grpId, string grpCd)> grpConditions = new();
+        foreach (var item in request.GrpConditions)
+        {
+            grpConditions.Add(new(item.GrpId, item.GrpCd));
+        }
+        var data = _reportService.GetPeriodPrintData(request.HpId, request.StartDate, request.EndDate, request.SourcePt, grpConditions, request.PrintSort, request.IsPrintList, request.PrintByMonth, request.PrintByGroup, request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn, request.HakkoDay, request.Memo, request.FormFileName, request.NyukinBase);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
@@ -219,15 +224,16 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPrint)]
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
-        var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos, request.HokenKbn, request.SelectedReseputoShubeusu, request.DepartmentId, request.DoctorId, request.PrintNoFrom, request.PrintNoTo, request.IncludeTester, request.IsIncludeOutDrug, request.Sort, request.PrintPtIds);
-        return await RenderPdf(data, ReportType.Common, data.JobName);
-    }
-
-    [HttpGet(ApiPath.WelfareDisk)]
-    public IActionResult GenerateKarte1Report([FromQuery] ReceiptPrintExcelRequest request)
-    {
-        var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
-        return RenderCsv(data);
+        if (request.PrintType == 0)
+        {
+            var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos, request.HokenKbn, request.SelectedReseputoShubeusu, request.DepartmentId, request.DoctorId, request.PrintNoFrom, request.PrintNoTo, request.IncludeTester, request.IsIncludeOutDrug, request.Sort, request.PrintPtIds);
+            return await RenderPdf(data, ReportType.Common, data.JobName);
+        }
+        else
+        {
+            var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
+            return RenderCsv(data);
+        }
     }
 
     [HttpPost(ApiPath.MemoMsgPrint)]
@@ -484,7 +490,7 @@ public class PdfCreatorController : ControllerBase
 
     private async Task<IActionResult> ActionReturnPDF(bool returnNoData, object data, ReportType reportType, string fileName)
     {
-        //var json = JsonSerializer.Serialize(data);
+        var json = JsonSerializer.Serialize(data);
         //Console.WriteLine("DataJsonTestPdfString: " + json);
         if (returnNoData)
         {

@@ -49,6 +49,7 @@ namespace Interactor.ReceiptCheck
         private readonly IRealtimeOrderErrorFinder _realtimeOrderErrorFinder;
         private readonly ITenantProvider _tenantProvider;
         private readonly IReceiptRepository _receiptRepository;
+        private IMessenger? _messenger;
 
         private int seikyuYm;
         private List<ReceInfModel> _receInfModels = new List<ReceInfModel>();
@@ -59,7 +60,14 @@ namespace Interactor.ReceiptCheck
         public List<BuiErrorModel> errorOdrInfDetails = new List<BuiErrorModel>();
         public string ErrorText { get; set; } = string.Empty;
 
-        public ReceiptCheckRecalculationInteractor(ICalculateService calculateService, ICalculationInfRepository calculationInfRepository, ISystemConfRepository systemConfRepository, ICommonMedicalCheck commonMedicalCheck, IRealtimeOrderErrorFinder realtimeOrderErrorFinder, ITenantProvider tenantProvider, IReceiptRepository receiptRepository)
+        public ReceiptCheckRecalculationInteractor(
+            ICalculateService calculateService,
+            ICalculationInfRepository calculationInfRepository,
+            ISystemConfRepository systemConfRepository,
+            ICommonMedicalCheck commonMedicalCheck,
+            IRealtimeOrderErrorFinder realtimeOrderErrorFinder,
+            ITenantProvider tenantProvider,
+            IReceiptRepository receiptRepository)
         {
             _calculateService = calculateService;
             _calculationInfRepository = calculationInfRepository;
@@ -72,6 +80,8 @@ namespace Interactor.ReceiptCheck
 
         public ReceiptCheckRecalculationOutputData Handle(ReceiptCheckRecalculationInputData inputData)
         {
+            _messenger = inputData.Messenger;
+
             string errorText = string.Empty;
             try
             {
@@ -91,7 +101,7 @@ namespace Interactor.ReceiptCheck
                     seikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month;
                 }
 
-                SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・", "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, 0, 0, "再計算中・・・", "NotConnectSocket"));
                 _calculateService.RunCalculateMonth(
                     new Request.CalculateMonthRequest()
                     {
@@ -101,22 +111,22 @@ namespace Interactor.ReceiptCheck
                         PreFix = ""
                     }, CancellationToken.None);
 
-                SendMessenger(new RecalculationStatus(false, 2, 0, 0, "レセ集計中・・・", "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, 0, 0, "レセ集計中・・・", "NotConnectSocket"));
                 _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm, string.Empty), CancellationToken.None);
 
-                SendMessenger(new RecalculationStatus(false, 3, 0, 0, "レセチェック中・・・", "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, 0, 0, "レセチェック中・・・", "NotConnectSocket"));
                 CheckErrorInMonth(inputData.HpId, inputData.UserId, inputData.SeikyuYm, inputData.PtIds);
 
                 errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.PtIds, inputData.SeikyuYm);
 
-                SendMessenger(new RecalculationStatus(false, 4, 0, 0, errorText, "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.ReceCheckCalculate, 0, 0, errorText, "NotConnectSocket"));
                 _receiptRepository.UpdateReceStatus(inputData.ReceStatus, inputData.HpId, inputData.UserId);
 
                 return new ReceiptCheckRecalculationOutputData(true);
             }
             finally
             {
-                SendMessenger(new RecalculationStatus(true, 5, 0, 0, string.Empty, "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(true, CalculateStatusConstant.ReceCheckMessage, 0, 0, string.Empty, "NotConnectSocket"));
 
                 _calculationInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
@@ -2036,7 +2046,7 @@ namespace Interactor.ReceiptCheck
 
         private void SendMessenger(RecalculationStatus status)
         {
-            Messenger.Instance.Send(status);
+            _messenger!.Send(status);
         }
     }
 }

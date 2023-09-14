@@ -3,7 +3,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Reporting.Accounting.Model;
 
 namespace Reporting.Accounting.DB;
@@ -50,7 +49,8 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             (!raiinNos.Any() || raiinNos.Contains(p.RaiinNo)) &&
             (!hokenSeikyu || p.PtFutan > 0) &&
             (!jihiSeikyu || p.JihiFutan > 0)
-        ).ToList();
+        );
+
         // 来院情報の取得
         var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r =>
             r.HpId == hpId &&
@@ -101,7 +101,6 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
         );
 
-
         var join = (
             from kaikeiInf in kaikeiInfs
             join raiinInf in raiinInfs on
@@ -132,7 +131,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
             ).ToList();
 
-        var entities = join.AsEnumerable().Select(
+        var entities = join.Select(
             data =>
                 new CoKaikeiInfModel(
                     data.kaikeiInf,

@@ -1,6 +1,10 @@
 ﻿using Domain.Models.Online;
+using System.Globalization;
 using System.Xml;
+using System.Xml.Serialization;
+using UseCase.Online;
 using UseCase.Online.InsertOnlineConfirmHistory;
+using UseCase.Online.QualificationConfirmation;
 
 namespace Interactor.Online;
 
@@ -20,23 +24,32 @@ public class InsertOnlineConfirmHistoryInteractor : IInsertOnlineConfirmHistoryI
             var validateResult = ValidateData(inputData);
             if (validateResult != InsertOnlineConfirmHistoryStatus.ValidateSuccess)
             {
-                return new InsertOnlineConfirmHistoryOutputData(validateResult);
+                return new InsertOnlineConfirmHistoryOutputData(new(), validateResult);
             }
-            var onlineModelList = inputData.OnlineList.Select(item => new OnlineConfirmationHistoryModel(
-                                                                          0,
-                                                                          item.PtId,
-                                                                          item.OnlineConfirmationDate,
-                                                                          item.ConfirmationType,
-                                                                          item.InfoConsFlg,
-                                                                          item.ConfirmationResult,
-                                                                          item.PrescriptionIssueType,
-                                                                          item.UketukeStatus))
-                                                      .ToList();
-            if (_onlineRepository.InsertOnlineConfirmHistory(inputData.UserId, onlineModelList))
+
+            List<OnlineConfirmationHistoryModel> onlineModelList = new();
+            foreach (var item in inputData.OnlineList)
             {
-                return new InsertOnlineConfirmHistoryOutputData(InsertOnlineConfirmHistoryStatus.Successed);
+                var xmlObject = new XmlSerializer(typeof(QCXmlMsgResponse)).Deserialize(new StringReader(item.ConfirmationResult)) as QCXmlMsgResponse;
+                if (xmlObject != null)
+                {
+                    var onlineConfirmationDate = xmlObject.MessageHeader.ProcessExecutionTime;
+                    onlineModelList.Add(new OnlineConfirmationHistoryModel(0,
+                                                                           item.PtId,
+                                                                           TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(onlineConfirmationDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)),
+                                                                           item.ConfirmationType,
+                                                                           item.InfoConsFlg,
+                                                                           item.ConfirmationResult,
+                                                                           item.PrescriptionIssueType,
+                                                                           item.UketukeStatus));
+                }
             }
-            return new InsertOnlineConfirmHistoryOutputData(InsertOnlineConfirmHistoryStatus.Failed);
+            var idList = _onlineRepository.InsertOnlineConfirmHistory(inputData.UserId, onlineModelList);
+            if (idList.Any())
+            {
+                return new InsertOnlineConfirmHistoryOutputData(idList, InsertOnlineConfirmHistoryStatus.Successed);
+            }
+            return new InsertOnlineConfirmHistoryOutputData(idList, InsertOnlineConfirmHistoryStatus.Failed);
         }
         finally
         {

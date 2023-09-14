@@ -11,5 +11,7 @@
         public string FunctionCod { get; set; } = string.Empty;
 
         public string TabKey { get; set; } = string.Empty;
+
+        public string LoginKey { get; set; } = string.Empty;
     }
 }

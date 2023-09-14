@@ -508,8 +508,8 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
     {
         List<PathConf> pathConf;
 
-        pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId 
-                                                                           && item.GrpCd == grpCd 
+        pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId
+                                                                           && item.GrpCd == grpCd
                                                                            && item.Machine == machine)
                                                                            .ToList();
         if (pathConf == null || !pathConf.Any())
@@ -523,8 +523,60 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         return pathConf.Select(item => ToModel(item)).ToList();
     }
 
+    public List<SystemConfListXmlPathModel> GetAllPathConf(int hpId)
+    {
+        var pathConfs = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId).ToList();
+
+        return pathConfs.Select(item => ToModel(item)).ToList();
+    }
+
+    public bool SavePathConfOnline(int hpId, int userId, List<SystemConfListXmlPathModel> systemConfListXmlPathModels)
+    {
+        foreach (var systemConfListXmlPathModel in systemConfListXmlPathModels)
+        {
+            var entity = TrackingDataContext.PathConfs.FirstOrDefault(p => p.HpId == systemConfListXmlPathModel.HpId && p.SeqNo == systemConfListXmlPathModel.SeqNo && p.GrpCd == systemConfListXmlPathModel.GrpCd && p.GrpEdaNo == systemConfListXmlPathModel.GrpEdaNo);
+
+            var newEntity = new PathConf();
+            newEntity.HpId = hpId;
+            newEntity.Machine = systemConfListXmlPathModel.Machine;
+            newEntity.Path = systemConfListXmlPathModel.Path;
+            newEntity.IsInvalid = 1;
+            newEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            newEntity.UpdateId = userId;
+            newEntity.Biko = systemConfListXmlPathModel.Biko;
+            newEntity.GrpCd = systemConfListXmlPathModel.GrpCd;
+            if (entity != null)
+            {
+                newEntity.SeqNo = systemConfListXmlPathModel.SeqNo;
+                TrackingDataContext.PathConfs.Remove(entity);
+                newEntity.CreateDate = TimeZoneInfo.ConvertTimeToUtc(systemConfListXmlPathModel.CreateDate);
+                newEntity.CreateId = systemConfListXmlPathModel.CreateId;
+                newEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                newEntity.UpdateId = userId;
+            }
+            else
+            {
+                newEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                newEntity.CreateId = userId;
+                newEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                newEntity.UpdateId = userId;
+            }
+
+            TrackingDataContext.Add(newEntity);
+        }
+        var first = systemConfListXmlPathModels.FirstOrDefault();
+        var grpCd = first?.GrpCd ?? 0;
+        var grpCdEdaNo = first?.GrpEdaNo ?? 0;
+
+        var itemDeleted = NoTrackingDataContext.PathConfs.AsEnumerable().Where(p => p.HpId == hpId && p.GrpCd == grpCd && p.GrpEdaNo == grpCdEdaNo && !systemConfListXmlPathModels.Any(p1 => p.HpId == p1.HpId && p.GrpCd == p1.GrpCd && p.GrpEdaNo == p1.GrpEdaNo && p.SeqNo == p1.SeqNo));
+        TrackingDataContext.RemoveRange(itemDeleted);
+
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+
     private SystemConfListXmlPathModel ToModel(PathConf pathConf)
     {
-        return new SystemConfListXmlPathModel(pathConf.HpId, pathConf.GrpCd, pathConf.GrpEdaNo, pathConf.SeqNo, pathConf.Machine ?? string.Empty, pathConf.Path ?? string.Empty, pathConf.Param ?? string.Empty, pathConf.Biko ?? string.Empty, pathConf.CharCd, pathConf.IsInvalid);
+        return new SystemConfListXmlPathModel(pathConf.HpId, pathConf.GrpCd, pathConf.GrpEdaNo, pathConf.SeqNo, pathConf.Machine ?? string.Empty, pathConf.Path ?? string.Empty, pathConf.Param ?? string.Empty, pathConf.Biko ?? string.Empty, pathConf.CharCd, pathConf.IsInvalid, pathConf.CreateId, pathConf.CreateDate);
     }
 }
