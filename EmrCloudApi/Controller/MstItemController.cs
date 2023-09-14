@@ -668,6 +668,16 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveAddressMstResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.GetSingleDoseMstAndMedicineUnitList)]
+        public ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>> GetSingleDoseMstAndMedicineUnitList()
+        {
+            var input = new GetSingleDoseMstAndMedicineUnitListInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetSingleDoseMstAndMedicineUnitListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.UpdateByomeiMst)]
         public ActionResult<Response<UpdateByomeiMstResponse>> UpdateByomeiMst([FromBody] UpdateByomeiMstRequest request)
         {
@@ -686,16 +696,6 @@ namespace EmrCloudApi.Controller
             var presenter = new IsUsingKensaPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<IsUsingKensaResponse>>(presenter.Result);
-        }
-
-        [HttpGet(ApiPath.GetSingleDoseMstAndMedicineUnitList)]
-        public ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>> GetSingleDoseMstAndMedicineUnitList()
-        {
-            var input = new GetSingleDoseMstAndMedicineUnitListInputData(HpId);
-            var output = _bus.Handle(input);
-            var presenter = new GetSingleDoseMstAndMedicineUnitListPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>>(presenter.Result);
         }
     }
 }
