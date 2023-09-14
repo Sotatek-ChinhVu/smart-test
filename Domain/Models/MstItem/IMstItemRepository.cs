@@ -1,6 +1,9 @@
 ﻿using Domain.Common;
 using Domain.Enum;
+using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
+using Domain.Models.KensaIrai;
+using Domain.Models.MaterialMaster;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using Helper.Enum;
@@ -9,6 +12,16 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts);
+
+        List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord);
+
+        bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters);
+
+        bool UpsertMaterialMaster(int hpId, int userId, List<MaterialMasterModel> materialMasters);
+
+        bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds);
+
         List<DosageDrugModel> GetDosages(List<string> yjCds);
 
         List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData();
@@ -138,11 +151,17 @@ namespace Domain.Models.MstItem
         string GetPrecautions(string yjCd);
 
         bool UpdateCmtCheckMst(int userId, int hpId, List<ItemCmtModel> listData);
-        
+
         bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId);
 
         bool CheckPostCodeExist(int hpId, string zipCD);
 
         List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize);
+        
+        List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
+
+        List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today);
+
+        bool UpdateByomeiMst(int userId, int hpId, List<UpdateByomeiMstModel> listData);
     }
 }

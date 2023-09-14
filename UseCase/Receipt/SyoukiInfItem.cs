@@ -29,6 +29,12 @@ public class SyoukiInfItem
         HokenId = 0;
     }
 
+    public SyoukiInfItem ChangeSyoukiKbn(int syoukiKbn)
+    {
+        SyoukiKbn = syoukiKbn;
+        return this;
+    }
+
     public long PtId { get; private set; }
 
     public int SinYm { get; private set; }

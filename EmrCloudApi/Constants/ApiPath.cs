@@ -24,6 +24,7 @@
         public const string SaveSuperSetDetail = "SaveSuperSetDetail";
         public const string GetToolTip = "GetToolTip";
         public const string GetSuperSetDetailForTodayOrder = "GetSuperSetDetailForTodayOrder";
+        public const string ParrentKensaMst = "ParrentKensaMst";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
@@ -48,6 +49,12 @@
         public const string GetDiseaseList = "GetDiseaseList";
         public const string UpdateCmtCheckMst = "UpdateCmtCheckMst";
         public const string SaveAddressMst = "SaveAddressMst";
+        public const string ContainerMasterUpdate = "ContainerMasterUpdate";
+        public const string UpsertMaterialMaster = "UpsertMaterialMaster";
+        public const string GetSingleDoseMstAndMedicineUnitList = "GetSingleDoseMstAndMedicineUnitList";
+        public const string UpdateKensaMst = "UpdateKensaMst";
+        public const string UpdateByomeiMst = "UpdateByomeiMst";
+        public const string IsUsingKensa = "IsUsingKensa";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -409,6 +416,8 @@
         public const string GetKensaCenterMstList = "GetKensaCenterMstList";
         public const string CreateDataKensaIraiRenkei = "CreateDataKensaIraiRenkei";
         public const string ReCreateDataKensaIraiRenkei = "ReCreateDataKensaIraiRenkei";
+        public const string GetKensaInf = "GetKensaInf";
+        public const string DeleteKensaInf = "DeleteKensaInf";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";

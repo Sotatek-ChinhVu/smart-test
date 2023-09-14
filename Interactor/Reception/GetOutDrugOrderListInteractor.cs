@@ -43,6 +43,7 @@ public class GetOutDrugOrderListInteractor : IGetOutDrugOrderListInputPort
             {
                 result = FormatRaiinInfWithReceInfParam(inputData);
             }
+            result = result.OrderBy(item => item.PtNum).ToList();
             return new GetOutDrugOrderListOutputData(result, GetOutDrugOrderListStatus.Successed);
         }
         finally
