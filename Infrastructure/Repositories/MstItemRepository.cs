@@ -17,6 +17,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -3427,7 +3428,6 @@ namespace Infrastructure.Repositories
 
         public List<DensiHoukatuModel> GetListDensiHoukatuMaster(int hpId, List<string> listGrpNo)
         {
-            List<DensiHoukatuModel> result = new List<DensiHoukatuModel>();
             var listHoukatu = NoTrackingDataContext.DensiHoukatus.Where(u => u.HpId == hpId &&
                                                                         u.HoukatuGrpNo != null && listGrpNo.Contains(u.HoukatuGrpNo));
 
@@ -3441,25 +3441,25 @@ namespace Infrastructure.Repositories
                             Hokatu = hokatu,
                             ItemName = tenMst.Name,
                         };
-            result = query.AsEnumerable().Where(data => !string.IsNullOrEmpty(data.ItemName))
-                                         .Select(x => new DensiHoukatuModel(x.Hokatu.HpId,
-                                                                           x.Hokatu.ItemCd,
-                                                                           x.Hokatu.StartDate,
-                                                                           x.Hokatu.EndDate,
-                                                                           x.Hokatu.TargetKbn,
-                                                                           x.Hokatu.SeqNo,
-                                                                           x.Hokatu.HoukatuTerm,
-                                                                           x.Hokatu.HoukatuGrpNo ?? string.Empty,
-                                                                           x.Hokatu.UserSetting,
-                                                                           x.Hokatu.IsInvalid,
-                                                                           x.Hokatu.IsInvalid == 1 ? true : false,
-                                                                           x.ItemName,
-                                                                           string.Empty,
-                                                                           0,
-                                                                           false,
-                                                                           false))
-                                         .GroupBy(x => new { x.ItemCd, x.StartDate })
-                                         .Select(x => x.First()).ToList();
+            var result = query.AsEnumerable().Where(data => !string.IsNullOrEmpty(data.ItemName))
+                                             .Select(x => new DensiHoukatuModel(x.Hokatu.HpId,
+                                                                               x.Hokatu.ItemCd,
+                                                                               x.Hokatu.StartDate,
+                                                                               x.Hokatu.EndDate,
+                                                                               x.Hokatu.TargetKbn,
+                                                                               x.Hokatu.SeqNo,
+                                                                               x.Hokatu.HoukatuTerm,
+                                                                               x.Hokatu.HoukatuGrpNo ?? string.Empty,
+                                                                               x.Hokatu.UserSetting,
+                                                                               x.Hokatu.IsInvalid,
+                                                                               x.Hokatu.IsInvalid == 1,
+                                                                               x.ItemName,
+                                                                               string.Empty,
+                                                                               0,
+                                                                               false,
+                                                                               false))
+                                             .GroupBy(x => new { x.ItemCd, x.StartDate })
+                                             .Select(x => x.First()).ToList();
 
             return result;
         }
@@ -3485,7 +3485,7 @@ namespace Infrastructure.Repositories
                                                              data.Kinki.ACd,
                                                              data.Kinki.BCd ?? string.Empty,
                                                              data.Kinki.SeqNo,
-                                                             data.Kinki.IsDeleted == 1 ? true : false,
+                                                             data.Kinki.IsDeleted == 1,
                                                              data.TenMst?.Name ?? string.Empty,
                                                              false,
                                                              false,
@@ -3590,7 +3590,7 @@ namespace Infrastructure.Repositories
             void BasicSettingUpdate()
             {
                 List<CmtKbnMstModel> listSource = setDataTen.BasicSettingTab.CmtKbnMstModels.Where(u => !u.CheckDefaultValue()).ToList();
-                if (listSource.Count() == 0)
+                if (!listSource.Any())
                     return;
 
                 var databaseList = TrackingDataContext.CmtKbnMsts.Where(item => item.HpId == hpId && item.ItemCd == itemCd).ToList();
@@ -5398,6 +5398,41 @@ namespace Infrastructure.Repositories
             return result ?? string.Empty;
         }
 
+        public List<SingleDoseMstModel> GetListSingleDoseModel(int hpId)
+        {
+            string functName = string.Empty;
+            functName = nameof(GetListSingleDoseModel);
+            List<SingleDoseMstModel> result = new List<SingleDoseMstModel>();
+            var listSingleDoseMst = TrackingDataContext.SingleDoseMsts.Where(x => x.HpId == hpId).ToList();
+            result = listSingleDoseMst.Select(i => new SingleDoseMstModel(ModelStatus.None, false, i.Id, i.HpId, i.UnitName)).ToList();
+            return result;
+        }
+
+        public List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today)
+        {
+            string functName = string.Empty;
+            functName = nameof(GetListMedicineUnitModel);
+
+            List<MedicineUnitModel> result = new List<MedicineUnitModel>();
+            var listTenMstName = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId && x.EndDate >= today && x.IsDeleted == DeleteTypes.None)
+                                                           .OrderBy(x => x.OdrUnitName)
+                                                           .Select(x => x.OdrUnitName)
+                                                           .Distinct()
+                                                           .ToList();
+            var listSingleDoseMstName = NoTrackingDataContext.SingleDoseMsts.Where(x => x.HpId == hpId)
+                                                                         .Select(s => s.UnitName)
+                                                                         .ToList();
+
+            foreach (var item in listTenMstName)
+            {
+                if (!listSingleDoseMstName.Contains(item) && !string.IsNullOrEmpty(item))
+                {
+                    result.Add(new MedicineUnitModel(item, false));
+                }
+            }
+            return result;
+        }
+
         private string BuildPathAws(List<string> folders)
         {
             StringBuilder result = new();
@@ -6201,6 +6236,17 @@ namespace Infrastructure.Repositories
                 }
             }  
             return true;
+        }
+
+        public bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds)
+        {
+            bool result = NoTrackingDataContext.KensaInfDetails.Where(p => p.HpId == hpId && p.KensaItemCd == kensaItemCd).Any();
+
+            if (itemCds?.Count > 0)
+            {
+                result = result || NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd ?? string.Empty)).Any();
+            }
+            return result;
         }
     }
 }
