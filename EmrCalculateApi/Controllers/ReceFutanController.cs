@@ -10,6 +10,7 @@ using EmrCalculateApi.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Threading;
+using Helper.Constants;
 
 namespace EmrCalculateApi.Controllers
 {
@@ -49,7 +50,7 @@ namespace EmrCalculateApi.Controllers
             }
             catch (Exception ex)
             {
-                RecalculationStatus status = new RecalculationStatus(false, -1, 0, 0, ex.Message, calculateRequest.UniqueKey);
+                RecalculationStatus status = new RecalculationStatus(false, CalculateStatusConstant.Invalid, 0, 0, ex.Message, calculateRequest.UniqueKey);
                 var objectJson = JsonSerializer.Serialize(status);
                 var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, objectJson);
                 sendMessager.Wait();

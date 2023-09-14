@@ -513,12 +513,12 @@ namespace EmrCalculateApi.Ika.ViewModels
                 }
                 if (AllowSendProgress)
                 {
-                    SendMessager(new RecalculationStatus(false, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
+                    SendMessager(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, AllCalcCount, successCount, string.Empty, UniqueKey));
                 }
             }
             if (AllowSendProgress)
             {
-                SendMessager(new RecalculationStatus(true, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
+                SendMessager(new RecalculationStatus(true, CalculateStatusConstant.RecalculationCheckBox, AllCalcCount, successCount, string.Empty, UniqueKey));
             }
         }
         /// <summary>
@@ -541,7 +541,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(preFix);
             if (AllowSendProgress)
             {
-                SendMessager(new RecalculationStatus(false, 1, AllCalcCount, 0, string.Empty, UniqueKey));
+                SendMessager(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, AllCalcCount, 0, string.Empty, UniqueKey));
             }
 
             //計算処理
