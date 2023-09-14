@@ -32,9 +32,14 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
                 return new SaveSyoukiInfListOutputData(responseValidate, new());
             }
 
-            var listSyoukiInfDB = _receiptRepository.GetSyoukiInfList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-            var listSeqNoDB = listSyoukiInfDB.Select(item => item.SeqNo).Distinct().ToList();
-            List<SyoukiInfItem> syoukiInfInvalidList = inputData.SyoukiInfList.Where(item => item.SeqNo > 0 && !listSeqNoDB.Contains(item.SeqNo)).ToList();
+            var listSyoukiInfDB = _receiptRepository.GetSyoukiInfList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId, true);
+            var listSeqNoNotDeletedDB = listSyoukiInfDB.Where(item => !item.IsDeleted).Select(item => item.SeqNo).Distinct().ToList();
+            List<SyoukiInfItem> syoukiInfInvalidList = inputData.SyoukiInfList.Where(item => item.SeqNo > 0 && !listSeqNoNotDeletedDB.Contains(item.SeqNo)).ToList();
+            foreach (var syoukiInf in syoukiInfInvalidList)
+            {
+                var syoukiKbn = listSyoukiInfDB.FirstOrDefault(item => item.SeqNo == syoukiInf.SeqNo)?.SyoukiKbn ?? syoukiInf.SyoukiKbn;
+                syoukiInf.ChangeSyoukiKbn(syoukiKbn);
+            }
 
             var listReceCmtModel = inputData.SyoukiInfList.Select(item => ConvertToSyoukiInfModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
                                                           .ToList();
