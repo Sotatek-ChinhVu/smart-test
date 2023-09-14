@@ -43,6 +43,7 @@ using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
+using UseCase.MstItem.GetSingleDoseMstAndMedicineUnitList;
 using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
@@ -665,6 +666,16 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveAddressMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveAddressMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetSingleDoseMstAndMedicineUnitList)]
+        public ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>> GetSingleDoseMstAndMedicineUnitList()
+        {
+            var input = new GetSingleDoseMstAndMedicineUnitListInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetSingleDoseMstAndMedicineUnitListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.UpdateByomeiMst)]
