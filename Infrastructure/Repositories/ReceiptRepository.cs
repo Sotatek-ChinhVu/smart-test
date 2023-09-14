@@ -1367,13 +1367,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         TrackingDataContext.SaveChanges();
     }
 
-    public List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId)
+    public List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId, bool isGetAll = false)
     {
         var syoukiInfList = NoTrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
                                                                            && (sinYm == 0 || item.SinYm == sinYm)
                                                                            && item.PtId == ptId
                                                                            && (hokenId == 0 || item.HokenId == hokenId)
-                                                                           && item.IsDeleted == DeleteTypes.None)
+                                                                           && (isGetAll || item.IsDeleted == DeleteTypes.None))
                                                             .OrderBy(item => item.SortNo)
                                                             .ToList();
 
@@ -3029,7 +3029,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                     syoukiInf.SeqNo,
                                     syoukiInf.SortNo,
                                     syoukiInf.SyoukiKbn,
-                                    syoukiInf.Syouki ?? string.Empty
+                                    syoukiInf.Syouki ?? string.Empty,
+                                    syoukiInf.IsDeleted == 1
                                 );
     }
 

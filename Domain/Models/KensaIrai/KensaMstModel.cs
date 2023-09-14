@@ -80,6 +80,34 @@ public class KensaMstModel
         ChildKensaMsts = kensaMstModels;
     }
 
+    public KensaMstModel(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, int isDeleted)
+    {
+        KensaItemCd = kensaItemCd;
+        KensaItemSeqNo = kensaItemSeqNo;
+        CenterCd = centerCd;
+        KensaName = kensaName;
+        KensaKana = kensaKana;
+        Unit = unit;
+        MaterialCd = materialCd;
+        ContainerCd = containerCd;
+        MaleStd = maleStd;
+        MaleStdLow = maleStdLow;
+        MaleStdHigh = maleStdHigh;
+        FemaleStd = femaleStd;
+        FemaleStdLow = femaleStdLow;
+        FemaleStdHigh = femaleStdHigh;
+        Formula = formula;
+        Digit = digit;
+        OyaItemCd = oyaItemCd;
+        OyaItemSeqNo = oyaItemSeqNo;
+        SortNo = sortNo;
+        CenterItemCd1 = centerItemCd1;
+        CenterItemCd2 = centerItemCd2;
+        IsDeleted = isDeleted;
+        TenMsts = new();
+        ChildKensaMsts = new();
+    }
+
     public string KensaItemCd { get; private set; }
 
     public int KensaItemSeqNo { get; private set; }
@@ -147,4 +175,6 @@ public class KensaMstModel
     {
         get { return KensaName; }
     }
+
+    public int IsDeleted { get; private set; }
 }
