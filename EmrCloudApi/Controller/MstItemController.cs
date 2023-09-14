@@ -67,6 +67,7 @@ using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
 using UseCase.MstItem.GetUsedKensaItemCds;
+using UseCase.MstItem.GetMaterialMsts;
 
 namespace EmrCloudApi.Controller
 {
@@ -755,14 +756,16 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<IsUsingKensaResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.GetUsedKensaItemCds)]
-        public ActionResult<Response<GetUsedKensaItemCdsResponse>> GetUsedKensaItemCds()
+        [HttpGet(ApiPath.GetMaterialMsts)]
+        public ActionResult<Response<GetMaterialMstsResponse>> GetMaterialMsts()
         {
-            var input = new GetUsedKensaItemCdsInputData(HpId);
+            var input = new GetMaterialMstsInputData(HpId);
             var output = _bus.Handle(input);
-            var presenter = new GetUsedKensaItemCdsPresenter();
+            var presenter = new GetMaterialMstsPresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<GetUsedKensaItemCdsResponse>>(presenter.Result);
+            return new ActionResult<Response<GetMaterialMstsResponse>>(presenter.Result);
         }
+
+
     }
 }

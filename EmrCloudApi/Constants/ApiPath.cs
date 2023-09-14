@@ -58,7 +58,8 @@
         public const string IsUsingKensa = "IsUsingKensa";
         public const string UpdateKensaStdMst = "UpdateKensaStdMst";
         public const string GetKensaStdMst = "GetKensaStdMst";
-        public const string GetUsedKensaItemCds = "GetUsedKensaItemCds";
+        public const string GetUsedKensaItemCds = "GetUsedKensaItemCds"; 
+        public const string GetMaterialMsts = "GetMaterialMsts";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
