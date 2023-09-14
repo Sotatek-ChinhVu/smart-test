@@ -12,6 +12,8 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        List<string> GetTenItemCds(int hpId);
+
         Dictionary<int, string> GetContainerMsts(int hpId);
 
         Dictionary<int, string> GetMaterialMsts(int hpId);
