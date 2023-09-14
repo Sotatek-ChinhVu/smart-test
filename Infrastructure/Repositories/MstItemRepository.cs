@@ -6278,20 +6278,9 @@ namespace Infrastructure.Repositories
                                                                  p.MaleStdHigh ?? string.Empty,
                                                                  p.FemaleStd ?? string.Empty,
                                                                  p.FemaleStdLow ?? string.Empty,
-                                                                 p.FemaleStdHigh ?? string.Empty,
+                                                                 p.MaleStdHigh ?? string.Empty,
                                                                  p.StartDate,
                                                                  p.CreateId)).ToList();
-        }
-
-        public bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds)
-        {
-            bool result = NoTrackingDataContext.KensaInfDetails.Where(p => p.HpId == hpId && p.KensaItemCd == kensaItemCd).Any();
-
-            if (itemCds?.Count > 0)
-            {
-                result = result || NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd ?? string.Empty)).Any();
-            }
-            return result;
         }
     }
 }

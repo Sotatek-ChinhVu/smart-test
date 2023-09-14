@@ -1439,7 +1439,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetParrentKensaMstInputData, GetParrentKensaMstListInteractor>();
             busBuilder.RegisterUseCase<UpdateKensaMstInputData, UpdateKensaMstInteractor>();
             busBuilder.RegisterUseCase<UpdateByomeiMstInputData, UpdateByomeiMstInteractor>();
-            busBuilder.RegisterUseCase<UpdateByomeiMstInputData, UpdateByomeiMstInteractor>();
 
             busBuilder.RegisterUseCase<IsUsingKensaInputData, IsUsingKensaInteractor>();
 
