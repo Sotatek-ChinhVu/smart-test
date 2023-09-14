@@ -728,7 +728,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.UpdateSingleDoseMst)]
         public ActionResult<Response<UpdateSingleDoseMstResponse>> UpdateSingleDoseMst(UpdateSingleDoseMstRequest request)
         {
-            var input = new UpdateSingleDoseMstInputData(request.SingleDoseMsts);
+            var input = new UpdateSingleDoseMstInputData(HpId, UserId, request.SingleDoseMsts);
             var output = _bus.Handle(input);
             var presenter = new UpdateSingleDoseMstPresenter();
             presenter.Complete(output);

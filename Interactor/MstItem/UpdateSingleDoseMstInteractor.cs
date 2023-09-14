@@ -14,7 +14,7 @@ namespace Interactor.MstItem
         {
             try
             {
-                var updateSingleDoseMst = _mstItemRepository.UpdateSingleDoseMst(input.SingleDoseMsts);
+                var updateSingleDoseMst = _mstItemRepository.UpdateSingleDoseMst(input.HpId, input.UserId, input.SingleDoseMsts);
                 return new UpdateSingleDoseMstOutputData(true);
             }
             catch

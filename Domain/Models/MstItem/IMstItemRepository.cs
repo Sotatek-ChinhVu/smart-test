@@ -166,9 +166,11 @@ namespace Domain.Models.MstItem
         List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
 
         List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today);
-        bool UpdateSingleDoseMst(List<SingleDoseMstModel> listToSave);
+
+        bool UpdateSingleDoseMst(int hpId, int userId, List<SingleDoseMstModel> listToSave);
 
         bool UpdateByomeiMst(int userId, int hpId, List<UpdateByomeiMstModel> listData);
+
         List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize, bool isCheckPage);
     }
 }

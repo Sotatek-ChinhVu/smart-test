@@ -5432,7 +5432,7 @@ namespace Infrastructure.Repositories
             }
             return result;
         }
-        public bool UpdateSingleDoseMst(List<SingleDoseMstModel> listToSave)
+        public bool UpdateSingleDoseMst(int hpId, int userId, List<SingleDoseMstModel> listToSave)
         {
             string functName = string.Empty;
             functName = nameof(UpdateSingleDoseMst);
@@ -5449,7 +5449,7 @@ namespace Infrastructure.Repositories
                         if (data != null)
                         {
                             data.UnitName = item.UnitName;
-                            _UpdateSingleDose(data, item.HpId);
+                            _UpdateSingleDose(data, userId);
                             singleDoseEdit.Add(data);
                         }
                     }
@@ -5457,8 +5457,8 @@ namespace Infrastructure.Repositories
                     {
                         var singleDoseMst = new SingleDoseMst();
                         singleDoseMst.UnitName = item.UnitName;
-                        singleDoseMst.HpId = item.HpId;
-                        _CreateSingleDose(singleDoseMst, item.HpId);
+                        singleDoseMst.HpId = hpId;
+                        _CreateSingleDose(singleDoseMst, userId);
                         singleDoseAdded.Add(singleDoseMst);
                     }
                     if (item.Status == ModelStatus.Deleted)
@@ -5478,20 +5478,20 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
 
         }
-        private void _UpdateSingleDose(SingleDoseMst singleDoseMst, int hpId)
+        private void _UpdateSingleDose(SingleDoseMst singleDoseMst, int userId)
         {
 
             singleDoseMst.CreateDate = TimeZoneInfo.ConvertTimeToUtc(singleDoseMst.CreateDate);
             singleDoseMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            singleDoseMst.UpdateId = hpId;
+            singleDoseMst.UpdateId = userId;
         }
 
-        private void _CreateSingleDose(SingleDoseMst singleDoseMst, int hpId)
+        private void _CreateSingleDose(SingleDoseMst singleDoseMst, int userId)
         {
             singleDoseMst.CreateDate = CIUtil.GetJapanDateTimeNow();
-            singleDoseMst.CreateId = hpId;
+            singleDoseMst.CreateId = userId;
             singleDoseMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            singleDoseMst.UpdateId = hpId;
+            singleDoseMst.UpdateId = userId;
         }
 
         private string BuildPathAws(List<string> folders)
