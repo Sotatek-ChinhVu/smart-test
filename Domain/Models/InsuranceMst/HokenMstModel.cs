@@ -263,5 +263,13 @@ namespace Domain.Models.InsuranceMst
         {
             get { return IsLimitList; }
         }
+
+        public string HoubetuDisplayText
+        {
+            get
+            {
+                return HokenNameCd + "(" + Houbetu.AsString().PadLeft(2, '0') + ")";
+            }
+        }
     }
 }

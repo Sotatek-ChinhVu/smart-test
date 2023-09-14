@@ -98,7 +98,6 @@ namespace Infrastructure.Repositories
 
         public List<HokenMstModel> FindHokenMst(int hpId)
         {
-            string FuncName = nameof(FindHokenMst);
             List<HokenMstModel> result = new List<HokenMstModel>();
             int dateTimeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
             var hospitalInfo = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(x => x.StartDate).FirstOrDefault(x => x.StartDate <= dateTimeNow);
