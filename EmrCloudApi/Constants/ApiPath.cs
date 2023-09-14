@@ -56,8 +56,6 @@
         public const string UpdateKensaMst = "UpdateKensaMst";
         public const string UpdateByomeiMst = "UpdateByomeiMst";
         public const string IsUsingKensa = "IsUsingKensa";
-        public const string UpdateByomeiMst = "UpdateByomeiMst";
-        public const string IsUsingKensa = "IsUsingKensa";
         public const string UpdateKensaStdMst = "UpdateKensaStdMst";
         public const string GetKensaStdMst = "GetKensaStdMst";
         public const string GetUsedKensaItemCds = "GetUsedKensaItemCds";

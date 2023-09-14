@@ -6368,17 +6368,6 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds)
-        {
-            bool result = NoTrackingDataContext.KensaInfDetails.Where(p => p.HpId == hpId && p.KensaItemCd == kensaItemCd).Any();
-
-            if (itemCds?.Count > 0)
-            {
-                result = result || NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd ?? string.Empty)).Any();
-            }
-            return result;
-        }
-
         public List<KensaStdMstModel> GetKensaStdMstModels(int hpId, string kensaItemCd)
         {
             var kensaStdMsts = NoTrackingDataContext.KensaStdMsts.Where(p => p.HpId == hpId && p.KensaItemCd == kensaItemCd);
