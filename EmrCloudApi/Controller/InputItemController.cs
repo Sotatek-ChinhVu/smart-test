@@ -2,6 +2,7 @@
 using EmrCloudApi.Presenters.DrugDetail;
 using EmrCloudApi.Presenters.DrugDetailData;
 using EmrCloudApi.Presenters.DrugInfor;
+using EmrCloudApi.Presenters.ListSetGenerationMst;
 using EmrCloudApi.Presenters.ListSetMst;
 using EmrCloudApi.Presenters.UsageTreeSet;
 using EmrCloudApi.Presenters.YohoSetMst;
@@ -13,6 +14,7 @@ using EmrCloudApi.Requests.YohoSetMst;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.DrugDetail;
 using EmrCloudApi.Responses.DrugInfor;
+using EmrCloudApi.Responses.ListSetGenerationMst;
 using EmrCloudApi.Responses.ListSetMst;
 using EmrCloudApi.Responses.UsageTreeSetResponse;
 using EmrCloudApi.Responses.YohoSetMst;
@@ -27,6 +29,7 @@ using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
+using UseCase.ListSetGenerationMst.GetListSetGenerationMst;
 using UseCase.ListSetMst.GetTreeListSet;
 using UseCase.UsageTreeSet.GetTree;
 using UseCase.YohoSetMst.GetByItemCd;
@@ -156,6 +159,16 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetTreeListSetMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet("GetListSetGeneration")]
+        public ActionResult<Response<GetListSetGenerationMstResponse>> GetListSetGeneration()
+        {
+            var input = new GetListSetGenerationMstInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetListSetGenerationMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListSetGenerationMstResponse>>(presenter.Result);
         }
     }
 }

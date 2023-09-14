@@ -765,6 +765,9 @@ using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.UpsertMaterialMaster;
 using UseCase.Diseases.GetTreeByomeiSet;
 using UseCase.UpdateKensaMst;
+using UseCase.ListSetGenerationMst.GetListSetGenerationMst;
+using Interactor.ListSetGenerationMst;
+using Domain.Models.ListSetGenerationMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1165,6 +1168,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IStaticsticExportCsvService, StaticsticExportCsvService>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
+            services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1739,6 +1743,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //ListSetMst
             busBuilder.RegisterUseCase<GetTreeListSetInputData, GetTreeListSetInteractor>();
+
+            //ListSetGeneration
+            busBuilder.RegisterUseCase<GetListSetGenerationMstInputData, ListSetGenerationMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
