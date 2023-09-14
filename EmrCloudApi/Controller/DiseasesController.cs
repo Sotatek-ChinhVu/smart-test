@@ -6,6 +6,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Diseases;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.ByomeiSetGenerationMst.GetListByomeiSetGenerationMst;
 using UseCase.Core.Sync;
 using UseCase.Diseases.GetAllByomeiByPtId;
 using UseCase.Diseases.GetDiseaseList;
@@ -141,6 +142,15 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTreeByomeiSetPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTreeByomeiSetResponse>>(presenter.Result);
+        }
+        [HttpGet("GetListByomeiSetGeneration")]
+        public ActionResult<Response<GetListByomeiSetGenerationMstResponse>> GetListByomeiSetGeneration()
+        {
+            var input = new GetListByomeiSetGenerationMstInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetListByomeiSetGenerationMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListByomeiSetGenerationMstResponse>>(presenter.Result);
         }
     }
 }

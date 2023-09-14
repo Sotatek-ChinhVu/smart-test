@@ -769,6 +769,8 @@ using UseCase.ListSetGenerationMst.GetListSetGenerationMst;
 using Interactor.ListSetGenerationMst;
 using Domain.Models.ListSetGenerationMst;
 using UseCase.MstItem.UpdateByomeiMst;
+using Domain.Models.ByomeiSetGenerationMst;
+using UseCase.ByomeiSetGenerationMst.GetListByomeiSetGenerationMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1170,6 +1172,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
             services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
+            services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1448,6 +1451,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DiseaseSearchInputData, DiseaseSearchInteractor>();
             busBuilder.RegisterUseCase<GetSetByomeiTreeInputData, GetSetByomeiTreeInteractor>();
             busBuilder.RegisterUseCase<GetTreeByomeiSetInputData, GetTreeByomeiSetInteractor>();
+            busBuilder.RegisterUseCase<GetListByomeiSetGenerationMstInputData, GetListByomeiSetGenerationMstInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
