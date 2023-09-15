@@ -867,13 +867,13 @@ namespace Infrastructure.Repositories
             var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate).ToList();
             foreach (var historyPid in distinctHistoryPids)
             {
-                var historyPidList = GetDefaultSelectPattern(hpId, ptId, sinDate, historyPid, selectedHokenPid, hokenPatternModels);
+                var historyPidList = GetDefaultSelectPattern(historyPid, selectedHokenPid, hokenPatternModels);
                 result.Add(new(historyPid, historyPidList));
             }
             return result;
         }
 
-        public int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid, List<InsuranceModel> hokenPatternModels)
+        public int GetDefaultSelectPattern(int historyPid, int selectedHokenPid, List<InsuranceModel> hokenPatternModels)
         {
             bool _isSameKohiHoubetu(InsuranceModel pattern1, InsuranceModel pattern2)
             {
