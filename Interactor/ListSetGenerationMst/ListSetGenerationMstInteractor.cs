@@ -14,11 +14,11 @@ namespace Interactor.ListSetGenerationMst
         {
             try
             {
-                if (inputData.hpId < 0)
+                if (inputData.HpId < 0)
                 {
                     return new GetListSetGenerationMstOutputData(new List<ListSetGenerationMstModel>(), GetListSetGenerationMstStatus.InvalidHpId);
                 }
-                var data = _listSetGenerationMstRepository.GetAll(inputData.hpId);
+                var data = _listSetGenerationMstRepository.GetAll(inputData.HpId);
                 if (!data.Any())
                 {
                     new GetListSetGenerationMstOutputData(new List<ListSetGenerationMstModel>(), GetListSetGenerationMstStatus.NoData);

@@ -11,9 +11,9 @@ namespace UseCase.ListSetGenerationMst.GetListSetGenerationMst
     {
         public GetListSetGenerationMstInputData(int hpId)
         {
-            this.hpId = hpId;
+            HpId = hpId;
         }
 
-        public int hpId { get; private set; }
+        public int HpId { get; private set; }
     }
 }
