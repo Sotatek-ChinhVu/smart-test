@@ -4,6 +4,11 @@ namespace EmrCloudApi.Responses.ListSetGenerationMst
 {
     public class GetListSetGenerationMstResponse
     {
-        public List<ListSetGenerationMstModel> Data { get; set; } = new List<ListSetGenerationMstModel>();
+        public GetListSetGenerationMstResponse(List<ListSetGenerationMstModel> data)
+        {
+            Data = data;
+        }
+
+        public List<ListSetGenerationMstModel> Data { get; private set; } = new List<ListSetGenerationMstModel>();
     }
 }
