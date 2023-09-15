@@ -4819,7 +4819,7 @@ namespace Infrastructure.Repositories
                 .Where(item => item.IsDeleted == 0
                                                 && item.HpId == hpId)
                 .OrderBy(i => i.SortNo)
-                .AsEnumerable().Select(i => new JihiSbtMstModel(i.HpId, i.JihiSbt, i.SortNo, i.Name ?? string.Empty, i.IsDeleted)).ToList();
+                .AsEnumerable().Select(i => new JihiSbtMstModel(i.HpId, i.JihiSbt, i.SortNo, i.Name ?? string.Empty,i.IsYobo, i.IsDeleted, ModelStatus.None)).ToList();
             return result;
         }
 
@@ -6364,7 +6364,7 @@ namespace Infrastructure.Repositories
                     itemUpdate.UpdateId = userId;
                     TrackingDataContext.SaveChanges();
                 }
-            }  
+            }
             return true;
         }
 
@@ -6403,6 +6403,62 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.TenMsts
                             .Where(p => (p.ItemCd.StartsWith("KN") || p.ItemCd.StartsWith("IGE")) && p.IsDeleted == DeleteTypes.None)
                             .Select(p => p.ItemCd).Distinct().ToList();
+        }
+
+        public bool UpdateJihiSbtMst(int hpId, int userId, List<JihiSbtMstModel> jihiSbtMsts)
+        {
+            int jihiSbt = NoTrackingDataContext.JihiSbtMsts.OrderByDescending(i => i.JihiSbt).FirstOrDefault()?.JihiSbt ?? 0;
+            var jihiSbtMstAdd = new List<JihiSbtMst>();
+            var jihiSbtMstUpdate = new List<JihiSbtMst>();
+            foreach (var item in jihiSbtMsts)
+            {
+
+                if (item.Status == ModelStatus.Added && item.JihiSbt == 0)
+                {
+                    var jihiSbtMst = new JihiSbtMst();
+                    jihiSbtMst.Name = item.Name;
+                    jihiSbtMst.HpId = hpId;
+                    jihiSbtMst.SortNo = item.SortNo;
+                    jihiSbtMst.IsYobo = item.IsYobo;
+                    jihiSbtMst.JihiSbt = ++jihiSbt;
+                    _CreateJihiSbtMst(userId, jihiSbtMst);
+                    jihiSbtMstAdd.Add(jihiSbtMst);
+                }
+                else if (item.Status == ModelStatus.Modified || item.Status == ModelStatus.Deleted)
+                {
+                    var jihiSbtMst = NoTrackingDataContext.JihiSbtMsts.FirstOrDefault(i => i.JihiSbt == item.JihiSbt);
+                    if (jihiSbtMst != null)
+                    {
+                        jihiSbtMst.Name = item.Name;
+                        jihiSbtMst.IsYobo = item.IsYobo;
+                        jihiSbtMst.SortNo = item.SortNo;
+                        if (item.Status == ModelStatus.Deleted)
+                        {
+                            jihiSbtMst.IsDeleted = 1;
+                        }
+                        _UpdateJihiSbtMst(userId, jihiSbtMst);
+                        jihiSbtMstUpdate.Add(jihiSbtMst);
+                    }
+                }
+            }
+            TrackingDataContext.JihiSbtMsts.AddRange(jihiSbtMstAdd);
+            TrackingDataContext.JihiSbtMsts.UpdateRange(jihiSbtMstUpdate);
+            TrackingDataContext.SaveChanges();
+            return TrackingDataContext.SaveChanges() > 0;
+
+        }
+        private void _UpdateJihiSbtMst(int userId, JihiSbtMst jihiSbtMst)
+        {
+            jihiSbtMst.CreateDate = TimeZoneInfo.ConvertTimeToUtc(jihiSbtMst.CreateDate);
+            jihiSbtMst.UpdateId = userId;
+            jihiSbtMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        }
+        private void _CreateJihiSbtMst(int userId, JihiSbtMst jihiSbtMst)
+        {
+            jihiSbtMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+            jihiSbtMst.CreateId = userId;
+            jihiSbtMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            jihiSbtMst.UpdateId = userId;
         }
     }
 }

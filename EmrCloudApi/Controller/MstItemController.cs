@@ -69,6 +69,7 @@ using UseCase.MstItem.UpdateKensaStdMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
+using UseCase.MstItem.UpdateJihiSbtMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -775,6 +776,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTenItemCdsPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenItemCdsResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateJihiSbtMst)]
+        public ActionResult<Response<UpdateJihiSbtMstResponse>> UpdateJihiSbtMst(UpdateJihiMstRequest request)
+        {
+            var input = new UpdateJihiSbtMstInputData(HpId, UserId, request.JihiSbtMsts);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateJihiSbtMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateJihiSbtMstResponse>>(presenter.Result);
         }
     }
 }
