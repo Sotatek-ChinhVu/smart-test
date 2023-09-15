@@ -2304,23 +2304,29 @@ namespace Infrastructure.Repositories
                     }
                     else if (tenItem.ModeStatus == 0)
                     {
-                        var conversionItem = new ConversionItemInf
+                        var checkConversionItem = TrackingDataContext.ConversionItemInfs.FirstOrDefault(c => c.HpId == hpId && c.SourceItemCd == value.Key && c.DestItemCd == tenItem.ItemCd);
+                        if (checkConversionItem == null)
                         {
-                            HpId = hpId,
-                            SourceItemCd = value.Key,
-                            DestItemCd = tenItem.ItemCd,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            CreateId = userId,
-                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = userId,
-                            SortNo = ++maxSortNo
-                        };
-                        TrackingDataContext.ConversionItemInfs.Add(conversionItem);
+                            var conversionItem = new ConversionItemInf
+                            {
+                                HpId = hpId,
+                                SourceItemCd = value.Key,
+                                DestItemCd = tenItem.ItemCd,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                CreateId = userId,
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = userId,
+                                SortNo = ++maxSortNo
+                            };
+                            TrackingDataContext.ConversionItemInfs.Add(conversionItem);
+                        }
                     }
                 }
             }
 
-            return TrackingDataContext.SaveChanges() > 0;
+            TrackingDataContext.SaveChanges();
+
+            return true;
         }
 
         public List<HolidayModel> FindHolidayMstList(int hpId, int fromDate, int toDate)
