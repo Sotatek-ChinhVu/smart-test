@@ -31,15 +31,18 @@ using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.GetCmtCheckMstList;
+using UseCase.MstItem.GetContainerMsts;
 using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDiseaseList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
+using UseCase.MstItem.GetKensaCenterMsts;
 using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
@@ -61,11 +64,10 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
-using UseCase.MstItem.UpdateCmtCheckMst;
-using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.UpdateKensaStdMst;
+using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
@@ -768,6 +770,26 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetUsedKensaItemCdsResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.GetMaterialMsts)]
+        public ActionResult<Response<GetMaterialMstsResponse>> GetMaterialMsts()
+        {
+            var input = new GetMaterialMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetMaterialMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetMaterialMstsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetContainerMsts)]
+        public ActionResult<Response<GetContainerMstsResponse>> GetContainerMsts()
+        {
+            var input = new GetContainerMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetContainerMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetContainerMstsResponse>>(presenter.Result);
+        }
+
         [HttpGet(ApiPath.GetTenItemCds)]
         public ActionResult<Response<GetTenItemCdsResponse>> GetTenItemCds()
         {
@@ -786,6 +808,16 @@ namespace EmrCloudApi.Controller
             var presenter = new UpdateJihiSbtMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UpdateJihiSbtMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetKensaCenterMsts)]
+        public ActionResult<Response<GetKensaCenterMstsResponse>> GetKensaCenterMsts()
+        {
+            var input = new GetKensaCenterMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetKensaCenterMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetKensaCenterMstsResponse>>(presenter.Result);
         }
     }
 }
