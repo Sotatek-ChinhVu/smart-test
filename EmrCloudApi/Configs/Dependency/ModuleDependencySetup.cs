@@ -447,15 +447,16 @@ using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.GetCmtCheckMstList;
+using UseCase.MstItem.GetContainerMsts;
 using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDiseaseList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
-using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
@@ -480,6 +481,7 @@ using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.UpdateKensaStdMst;
+using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.NextOrder.Check;
 using UseCase.NextOrder.CheckNextOrdHaveOdr;
@@ -793,6 +795,8 @@ using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.IsUsingKensa;
 using UseCase.SetSendaiGeneration.GetList;
 using Interactor.SetSendaiGeneration;
+using UseCase.MstItem.GetMaterialMsts;
+using UseCase.MstItem.GetKensaCenterMsts;
 using UseCase.SetSendaiGeneration.Delete;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -1472,6 +1476,10 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKensaStdMstInputData, GetKensaStdMstModelsInteractor>();
             busBuilder.RegisterUseCase<GetUsedKensaItemCdsInputData, GetUsedKensaItemCdsInteractor>();
             busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
+
+            busBuilder.RegisterUseCase<GetMaterialMstsInputData, GetMaterialMstsInteractor>();
+            busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
+            busBuilder.RegisterUseCase<GetKensaCenterMstsInputData, GetKensaCenterMstsInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();

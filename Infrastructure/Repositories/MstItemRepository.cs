@@ -17,7 +17,6 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -6364,7 +6363,7 @@ namespace Infrastructure.Repositories
                     itemUpdate.UpdateId = userId;
                     TrackingDataContext.SaveChanges();
                 }
-            }  
+            }
             return true;
         }
 
@@ -6403,6 +6402,46 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.TenMsts
                             .Where(p => (p.ItemCd.StartsWith("KN") || p.ItemCd.StartsWith("IGE")) && p.IsDeleted == DeleteTypes.None)
                             .Select(p => p.ItemCd).Distinct().ToList();
+        }
+
+        public Dictionary<int, string> GetMaterialMsts(int hpId)
+        {
+            var result = new Dictionary<int, string>();
+            result.Add(0, string.Empty);
+
+            var materialMsts = NoTrackingDataContext.MaterialMsts.Where(p => p.HpId == hpId);
+            foreach (var materialMst in materialMsts)
+            {
+                result.Add(materialMst.MaterialCd.AsInteger(), materialMst.MaterialName ?? string.Empty);
+            }
+            return result;
+        }
+
+        public Dictionary<int, string> GetContainerMsts(int hpId)
+        {
+            var result = new Dictionary<int, string>();
+            result.Add(0, string.Empty);
+
+            var containerMsts = NoTrackingDataContext.ContainerMsts.Where(p => p.HpId == hpId);
+            foreach (var containerMst in containerMsts)
+            {
+                result.Add(containerMst.ContainerCd.AsInteger(), containerMst.ContainerName ?? string.Empty);
+            }
+            return result;
+        }
+
+        public Dictionary<string, string> GetKensaCenterMsts(int hpId)
+        {
+            var result = new Dictionary<string, string>();
+            result.Add(string.Empty, string.Empty);
+            var kensaCenterMsts = NoTrackingDataContext.KensaCenterMsts.Where(p => p.HpId == hpId);
+
+            foreach (var kensaCenterMst in kensaCenterMsts)
+            {
+                result.Add(kensaCenterMst.CenterCd ?? string.Empty, kensaCenterMst.CenterName ?? string.Empty);
+            }
+
+            return result;
         }
     }
 }
