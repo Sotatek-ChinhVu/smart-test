@@ -31,23 +31,29 @@ using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.GetCmtCheckMstList;
+using UseCase.MstItem.GetContainerMsts;
 using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDiseaseList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
+using UseCase.MstItem.GetKensaCenterMsts;
+using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
 using UseCase.MstItem.GetSingleDoseMstAndMedicineUnitList;
 using UseCase.MstItem.GetTeikyoByomei;
+using UseCase.MstItem.GetTenItemCds;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
@@ -58,8 +64,10 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
-using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.UpdateByomeiMst;
+using UseCase.MstItem.UpdateCmtCheckMst;
+using UseCase.MstItem.UpdateKensaStdMst;
+using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
@@ -166,6 +174,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetParrentKensaMstListResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetKensaStdMst)]
+        public ActionResult<Response<GetKensaStdMstModelsResponse>> GetKensaStdMstModels([FromQuery] GetKensaStdMstModelsRequest request)
+        {
+            var input = new GetKensaStdMstInputData(HpId, request.KensaItemCd);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetKensaStdMstModelsPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetKensaStdMstModelsResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.GetDiseaseList)]
@@ -425,6 +445,37 @@ namespace EmrCloudApi.Controller
                 );
         }
 
+        [HttpPost(ApiPath.UpdateKensaStdMst)]
+        public ActionResult<Response<UpdateKensaStdMstResponse>> UpdateKensaStdMst(UpdateKensaStdMstRequest request)
+        {
+            var input = new UpdateKensaStdMstInputData(HpId, UserId, request.KensaMstItems.Select(x => kensaStdMstItemsRequestToModel(x)).ToList());
+            var output = _bus.Handle(input);
+
+            var presenter = new UpdateKensaStdMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpdateKensaStdMstResponse>>(presenter.Result);
+        }
+
+        private static KensaStdMstModel kensaStdMstItemsRequestToModel(UpdateKensaStdMstInputItem stdMstInputItem)
+        {
+            return
+                new KensaStdMstModel
+                (
+                    stdMstInputItem.KensaItemcd,
+                    stdMstInputItem.MaleStd,
+                    stdMstInputItem.MaleStdLow,
+                    stdMstInputItem.MaleStdHigh,
+                    stdMstInputItem.FemaleStd,
+                    stdMstInputItem.FemaleStdLow,
+                    stdMstInputItem.FemaleStdHigh,
+                    stdMstInputItem.StartDate,
+                    stdMstInputItem.IsModified,
+                    stdMstInputItem.IsDeleted,
+                    stdMstInputItem.CreateId
+                );
+        }
+
         [HttpGet(ApiPath.GetSetDataTenMst)]
         public ActionResult<Response<GetSetDataTenMstResponse>> GetSetDataTenMstOrigin([FromQuery] GetSetDataTenMstRequest request)
         {
@@ -678,6 +729,16 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetSingleDoseMstAndMedicineUnitResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.UpdateSingleDoseMst)]
+        public ActionResult<Response<UpdateSingleDoseMstResponse>> UpdateSingleDoseMst(UpdateSingleDoseMstRequest request)
+        {
+            var input = new UpdateSingleDoseMstInputData(HpId, UserId, request.SingleDoseMsts);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateSingleDoseMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateSingleDoseMstResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.UpdateByomeiMst)]
         public ActionResult<Response<UpdateByomeiMstResponse>> UpdateByomeiMst([FromBody] UpdateByomeiMstRequest request)
         {
@@ -696,6 +757,56 @@ namespace EmrCloudApi.Controller
             var presenter = new IsUsingKensaPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<IsUsingKensaResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetUsedKensaItemCds)]
+        public ActionResult<Response<GetUsedKensaItemCdsResponse>> GetUsedKensaItemCds()
+        {
+            var input = new GetUsedKensaItemCdsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetUsedKensaItemCdsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetUsedKensaItemCdsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetMaterialMsts)]
+        public ActionResult<Response<GetMaterialMstsResponse>> GetMaterialMsts()
+        {
+            var input = new GetMaterialMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetMaterialMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetMaterialMstsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetContainerMsts)]
+        public ActionResult<Response<GetContainerMstsResponse>> GetContainerMsts()
+        {
+            var input = new GetContainerMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetContainerMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetContainerMstsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTenItemCds)]
+        public ActionResult<Response<GetTenItemCdsResponse>> GetTenItemCds()
+        {
+            var input = new GetTenItemCdsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenItemCdsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenItemCdsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetKensaCenterMsts)]
+        public ActionResult<Response<GetKensaCenterMstsResponse>> GetKensaCenterMsts()
+        {
+            var input = new GetKensaCenterMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetKensaCenterMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetKensaCenterMstsResponse>>(presenter.Result);
         }
     }
 }

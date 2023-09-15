@@ -12,6 +12,20 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        Dictionary<string, string> GetKensaCenterMsts(int hpId);
+
+        List<string> GetTenItemCds(int hpId);
+
+        Dictionary<int, string> GetContainerMsts(int hpId);
+
+        Dictionary<int, string> GetMaterialMsts(int hpId);
+
+        List<string> GetUsedKensaItemCds(int hpId);
+
+        List<KensaStdMstModel> GetKensaStdMstModels(int hpId, string kensaItemCd);
+
+        bool UpdateKensaStdMst(int hpId, int userId, List<KensaStdMstModel> kensaStdMstModels);
+
         bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts);
 
         List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord);
@@ -161,7 +175,10 @@ namespace Domain.Models.MstItem
 
         List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today);
 
+        bool UpdateSingleDoseMst(int hpId, int userId, List<SingleDoseMstModel> listToSave);
+
         bool UpdateByomeiMst(int userId, int hpId, List<UpdateByomeiMstModel> listData);
+
         List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize, bool isCheckPage);
     }
 }
