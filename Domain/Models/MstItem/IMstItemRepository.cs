@@ -14,6 +14,8 @@ namespace Domain.Models.MstItem
     {
         List<string> GetTenItemCds(int hpId);
 
+        Dictionary<int, string> GetMaterialMsts(int hpId);
+
         List<string> GetUsedKensaItemCds(int hpId);
 
         List<KensaStdMstModel> GetKensaStdMstModels(int hpId, string kensaItemCd);

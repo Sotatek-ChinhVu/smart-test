@@ -272,7 +272,21 @@ public class ReportService : IReportService
 
         List<CoAccountDueListModel> nyukinModels = _coAccountingFinder.GetAccountDueList(hpId, ptId);
         List<int> months = new();
+
+        List<CoAccountDueListModel> accountDueListUnique = new();
         foreach (var model in multiAccountDueListModels)
+        {
+            if (accountDueListUnique.Any(item => item.SinDate == model.SinDate
+                                                 && item.NyukinKbn == model.NyukinKbn
+                                                 && item.RaiinNo == model.RaiinNo
+                                                 && item.OyaRaiinNo == model.OyaRaiinNo))
+            {
+                continue;
+            }
+            accountDueListUnique.Add(model);
+        }
+
+        foreach (var model in accountDueListUnique)
         {
             var selectedAccountDueListModel = model;
             var accountDueListModels = nyukinModels.FindAll(p => p.SinDate / 100 == model.SinDate / 100);

@@ -6404,5 +6404,18 @@ namespace Infrastructure.Repositories
                             .Where(p => (p.ItemCd.StartsWith("KN") || p.ItemCd.StartsWith("IGE")) && p.IsDeleted == DeleteTypes.None)
                             .Select(p => p.ItemCd).Distinct().ToList();
         }
+
+        public Dictionary<int, string> GetMaterialMsts(int hpId)
+        {
+            var result = new Dictionary<int, string>();
+            result.Add(0, string.Empty);
+
+            var materialMsts = NoTrackingDataContext.MaterialMsts.Where(p => p.HpId == hpId);
+            foreach (var materialMst in materialMsts)
+            {
+                result.Add(materialMst.MaterialCd.AsInteger(), materialMst.MaterialName ?? string.Empty);
+            }
+            return result;
+        }
     }
 }
