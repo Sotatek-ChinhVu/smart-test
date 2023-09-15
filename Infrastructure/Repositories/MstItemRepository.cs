@@ -6429,5 +6429,19 @@ namespace Infrastructure.Repositories
                             .Where(p => (p.ItemCd.StartsWith("KN") || p.ItemCd.StartsWith("IGE")) && p.IsDeleted == DeleteTypes.None)
                             .Select(p => p.ItemCd).Distinct().ToList();
         }
+
+        public Dictionary<string, string> GetKensaCenterMsts(int hpId)
+        {
+            var result = new Dictionary<string, string>();
+            result.Add(string.Empty, string.Empty);
+            var kensaCenterMsts = NoTrackingDataContext.KensaCenterMsts.Where(p => p.HpId == hpId);
+
+            foreach (var kensaCenterMst in kensaCenterMsts)
+            {
+                result.Add(kensaCenterMst.CenterCd ?? string.Empty, kensaCenterMst.CenterName ?? string.Empty);
+            }
+
+            return result;
+        }
     }
 }
