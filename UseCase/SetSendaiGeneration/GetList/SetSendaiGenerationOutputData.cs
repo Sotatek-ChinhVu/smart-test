@@ -17,7 +17,7 @@ namespace UseCase.SetSendaiGeneration.GetList
             Status = status;
         }
 
-        public List<SetSendaiGenerationModel> ListData { get; set; }
-        public SetSendaiGenerationStatus Status { get; set; }
+        public List<SetSendaiGenerationModel> ListData { get; private set; }
+        public SetSendaiGenerationStatus Status { get; private set; }
     }
 }

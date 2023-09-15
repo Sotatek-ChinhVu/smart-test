@@ -9,6 +9,6 @@ namespace EmrCloudApi.Responses.GetSendaiGeneration
         {
             ListData = listData;
         }
-        public List<SetSendaiGenerationModel> ListData { get; set; }
+        public List<SetSendaiGenerationModel> ListData { get; private set; }
     }
 }
