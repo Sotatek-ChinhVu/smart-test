@@ -13,10 +13,7 @@ namespace EmrCloudApi.Presenters.ListSetMst
         {
             Result = new Response<GetTreeListSetMstResponse>
             {
-                Data = new GetTreeListSetMstResponse()
-                {
-                    Data = outputData.TreeListSet
-                },
+                Data = new GetTreeListSetMstResponse(outputData.TreeListSet),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
