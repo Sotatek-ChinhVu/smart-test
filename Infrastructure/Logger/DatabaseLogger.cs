@@ -41,15 +41,15 @@ namespace Infrastructure.Logger
         private string GetMetaData()
         {
             string domain = GetDomain();
-            int hpId = 0;
-            int userId = 0;
-            int departmentId = 0;
+            string hpId = string.Empty;
+            string userId = string.Empty;
+            string departmentId = string.Empty;
             if (_httpContextAccessor.HttpContext != null)
             {
                 var user = _httpContextAccessor.HttpContext.User;
-                int.TryParse(user.FindFirstValue(ParamConstant.HpId), out hpId);
-                int.TryParse(user.FindFirstValue(ParamConstant.UserId), out userId);
-                int.TryParse(user.FindFirstValue(ParamConstant.DepartmentId), out departmentId);
+                hpId = user.Claims.Where(c => c.Type == ParamConstant.HpId).Select(c => c.Value).SingleOrDefault() ?? string.Empty;
+                userId = user.Claims.Where(c => c.Type == ParamConstant.UserId).Select(c => c.Value).SingleOrDefault() ?? string.Empty;
+                departmentId = user.Claims.Where(c => c.Type == ParamConstant.DepartmentId).Select(c => c.Value).SingleOrDefault() ?? string.Empty;
             }
             return $"{domain}-{hpId}-{userId}";
         }
