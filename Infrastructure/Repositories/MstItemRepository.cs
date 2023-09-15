@@ -2077,6 +2077,25 @@ namespace Infrastructure.Repositories
                     mst.NanbyoCd
                 );
         }
+        
+        private static ByomeiMstModel ConvertToByomeiMstModelInDeseaseNameMst(ByomeiMst mst)
+        {
+            return new ByomeiMstModel(
+                    mst.ByomeiCd,
+                    mst.Byomei ?? string.Empty,
+                    ConvertByomeiCdDisplay(mst.ByomeiCd),
+                    mst.Sbyomei ?? string.Empty,
+                    mst.KanaName1 ?? string.Empty,
+                    mst.SikkanCd,
+                    ConvertSikkanDisplay(mst.SikkanCd),
+                    mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
+                    ConvertIcd10Display(mst.Icd101 ?? string.Empty, mst.Icd102 ?? string.Empty),
+                    ConvertIcd102013Display(mst.Icd1012013 ?? string.Empty, mst.Icd1022013 ?? string.Empty),
+                    mst.IsAdopted == 1,
+                    mst.NanbyoCd,
+                    mst.KanaName2 ?? string.Empty
+                );
+        }
 
         /// Get the ByomeiCdDisplay depend on ByomeiCd
         private static string ConvertByomeiCdDisplay(string byomeiCd)
@@ -5641,7 +5660,7 @@ namespace Infrastructure.Repositories
                     var itemCheck = checkIsMatch(item, chkByoKbn0, chkByoKbn1, chkSaiKbn, chkMiSaiKbn, chkSidoKbn, chkToku, chkHiToku1, chkHiToku2, chkTenkan, chkTokuTenkan, chkNanbyo);
                     if (itemCheck)
                     {
-                        var itemAdd = ConvertToByomeiMstModel(item);
+                        var itemAdd = ConvertToByomeiMstModelInDeseaseNameMst(item);
                         listByomeies.Add(itemAdd);
                     }
                 }
