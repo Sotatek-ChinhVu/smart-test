@@ -40,6 +40,7 @@ using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
@@ -61,16 +62,13 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
-using UseCase.MstItem.UpdateCmtCheckMst;
-using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.UpdateKensaStdMst;
+using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
-using UseCase.MstItem.GetUsedKensaItemCds;
-using UseCase.MstItem.GetMaterialMsts;
 
 namespace EmrCloudApi.Controller
 {
@@ -757,6 +755,16 @@ namespace EmrCloudApi.Controller
             var presenter = new IsUsingKensaPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<IsUsingKensaResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetUsedKensaItemCds)]
+        public ActionResult<Response<GetUsedKensaItemCdsResponse>> GetUsedKensaItemCds()
+        {
+            var input = new GetUsedKensaItemCdsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetUsedKensaItemCdsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetUsedKensaItemCdsResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetMaterialMsts)]
