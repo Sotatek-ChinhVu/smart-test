@@ -4,6 +4,11 @@ namespace EmrCloudApi.Responses.ListSetMst
 {
     public class GetTreeListSetMstResponse
     {
-        public List<ListSetMstModel> Data { get; set; } = new List<ListSetMstModel>();
+        public GetTreeListSetMstResponse(List<ListSetMstModel> data)
+        {
+            Data = data;
+        }
+
+        public List<ListSetMstModel> Data { get; private set; } = new List<ListSetMstModel>();
     }
 }

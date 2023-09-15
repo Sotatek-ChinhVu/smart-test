@@ -13,10 +13,7 @@ namespace EmrCloudApi.Presenters.ListSetGenerationMst
         {
             Result = new Response<GetListSetGenerationMstResponse>
             {
-                Data = new GetListSetGenerationMstResponse()
-                {
-                    Data = outputData.ListSetGenerationMsts
-                },
+                Data = new GetListSetGenerationMstResponse(outputData.ListSetGenerationMsts),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
