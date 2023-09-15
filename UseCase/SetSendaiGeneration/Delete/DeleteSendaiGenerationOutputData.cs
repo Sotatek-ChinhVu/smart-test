@@ -15,7 +15,7 @@ namespace UseCase.SetSendaiGeneration.Delete
             Status = status;
         }
 
-        public bool CheckResult { get; set; }
-        public DeleteSendaiGenerationStatus Status { get; set; }
+        public bool CheckResult { get; private set; }
+        public DeleteSendaiGenerationStatus Status { get; private set; }
     }
 }

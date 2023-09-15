@@ -543,6 +543,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             newEntity.IsInvalid = 1;
             newEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             newEntity.UpdateId = userId;
+            newEntity.Biko = systemConfListXmlPathModel.Biko;
             newEntity.GrpCd = systemConfListXmlPathModel.GrpCd;
             if (entity != null)
             {
@@ -550,11 +551,15 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                 TrackingDataContext.PathConfs.Remove(entity);
                 newEntity.CreateDate = TimeZoneInfo.ConvertTimeToUtc(systemConfListXmlPathModel.CreateDate);
                 newEntity.CreateId = systemConfListXmlPathModel.CreateId;
+                newEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                newEntity.UpdateId = userId;
             }
             else
             {
                 newEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
                 newEntity.CreateId = userId;
+                newEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                newEntity.UpdateId = userId;
             }
 
             TrackingDataContext.Add(newEntity);
