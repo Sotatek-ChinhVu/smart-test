@@ -139,11 +139,10 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveSystemSettingResponse>>(presenter.Result);
         }
 
-        [AllowAnonymous]
         [HttpGet(ApiPath.GetSystemConfListXmlPath)]
         public ActionResult<Response<GetSystemConfListXmlPathResponse>> GetSystemConfListXmlPath([FromQuery] GetSystemConfListXmlPathRequest request)
         {
-            var input = new GetSystemConfListXmlPathInputData(1, request.GrpCd, request.Machine);
+            var input = new GetSystemConfListXmlPathInputData(HpId, request.GrpCd, request.Machine);
             var output = _bus.Handle(input);
 
             var presenter = new GetSystemConfListXmlPathPresenter();
