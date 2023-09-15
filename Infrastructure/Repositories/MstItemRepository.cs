@@ -17,7 +17,6 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -2078,6 +2077,25 @@ namespace Infrastructure.Repositories
                     mst.NanbyoCd
                 );
         }
+        
+        private static ByomeiMstModel ConvertToByomeiMstModelInDeseaseNameMst(ByomeiMst mst)
+        {
+            return new ByomeiMstModel(
+                    mst.ByomeiCd,
+                    mst.Byomei ?? string.Empty,
+                    ConvertByomeiCdDisplay(mst.ByomeiCd),
+                    mst.Sbyomei ?? string.Empty,
+                    mst.KanaName1 ?? string.Empty,
+                    mst.SikkanCd,
+                    ConvertSikkanDisplay(mst.SikkanCd),
+                    mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
+                    ConvertIcd10Display(mst.Icd101 ?? string.Empty, mst.Icd102 ?? string.Empty),
+                    ConvertIcd102013Display(mst.Icd1012013 ?? string.Empty, mst.Icd1022013 ?? string.Empty),
+                    mst.IsAdopted == 1,
+                    mst.NanbyoCd,
+                    mst.KanaName2 ?? string.Empty
+                );
+        }
 
         /// Get the ByomeiCdDisplay depend on ByomeiCd
         private static string ConvertByomeiCdDisplay(string byomeiCd)
@@ -2286,23 +2304,29 @@ namespace Infrastructure.Repositories
                     }
                     else if (tenItem.ModeStatus == 0)
                     {
-                        var conversionItem = new ConversionItemInf
+                        var checkConversionItem = TrackingDataContext.ConversionItemInfs.FirstOrDefault(c => c.HpId == hpId && c.SourceItemCd == value.Key && c.DestItemCd == tenItem.ItemCd);
+                        if (checkConversionItem == null)
                         {
-                            HpId = hpId,
-                            SourceItemCd = value.Key,
-                            DestItemCd = tenItem.ItemCd,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            CreateId = userId,
-                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = userId,
-                            SortNo = ++maxSortNo
-                        };
-                        TrackingDataContext.ConversionItemInfs.Add(conversionItem);
+                            var conversionItem = new ConversionItemInf
+                            {
+                                HpId = hpId,
+                                SourceItemCd = value.Key,
+                                DestItemCd = tenItem.ItemCd,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                CreateId = userId,
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = userId,
+                                SortNo = ++maxSortNo
+                            };
+                            TrackingDataContext.ConversionItemInfs.Add(conversionItem);
+                        }
                     }
                 }
             }
 
-            return TrackingDataContext.SaveChanges() > 0;
+            TrackingDataContext.SaveChanges();
+
+            return true;
         }
 
         public List<HolidayModel> FindHolidayMstList(int hpId, int fromDate, int toDate)
@@ -5642,7 +5666,7 @@ namespace Infrastructure.Repositories
                     var itemCheck = checkIsMatch(item, chkByoKbn0, chkByoKbn1, chkSaiKbn, chkMiSaiKbn, chkSidoKbn, chkToku, chkHiToku1, chkHiToku2, chkTenkan, chkTokuTenkan, chkNanbyo);
                     if (itemCheck)
                     {
-                        var itemAdd = ConvertToByomeiMstModel(item);
+                        var itemAdd = ConvertToByomeiMstModelInDeseaseNameMst(item);
                         listByomeies.Add(itemAdd);
                     }
                 }
@@ -6364,7 +6388,7 @@ namespace Infrastructure.Repositories
                     itemUpdate.UpdateId = userId;
                     TrackingDataContext.SaveChanges();
                 }
-            }  
+            }
             return true;
         }
 
@@ -6403,6 +6427,46 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.TenMsts
                             .Where(p => (p.ItemCd.StartsWith("KN") || p.ItemCd.StartsWith("IGE")) && p.IsDeleted == DeleteTypes.None)
                             .Select(p => p.ItemCd).Distinct().ToList();
+        }
+
+        public Dictionary<int, string> GetMaterialMsts(int hpId)
+        {
+            var result = new Dictionary<int, string>();
+            result.Add(0, string.Empty);
+
+            var materialMsts = NoTrackingDataContext.MaterialMsts.Where(p => p.HpId == hpId);
+            foreach (var materialMst in materialMsts)
+            {
+                result.Add(materialMst.MaterialCd.AsInteger(), materialMst.MaterialName ?? string.Empty);
+            }
+            return result;
+        }
+
+        public Dictionary<int, string> GetContainerMsts(int hpId)
+        {
+            var result = new Dictionary<int, string>();
+            result.Add(0, string.Empty);
+
+            var containerMsts = NoTrackingDataContext.ContainerMsts.Where(p => p.HpId == hpId);
+            foreach (var containerMst in containerMsts)
+            {
+                result.Add(containerMst.ContainerCd.AsInteger(), containerMst.ContainerName ?? string.Empty);
+            }
+            return result;
+        }
+
+        public Dictionary<string, string> GetKensaCenterMsts(int hpId)
+        {
+            var result = new Dictionary<string, string>();
+            result.Add(string.Empty, string.Empty);
+            var kensaCenterMsts = NoTrackingDataContext.KensaCenterMsts.Where(p => p.HpId == hpId);
+
+            foreach (var kensaCenterMst in kensaCenterMsts)
+            {
+                result.Add(kensaCenterMst.CenterCd ?? string.Empty, kensaCenterMst.CenterName ?? string.Empty);
+            }
+
+            return result;
         }
     }
 }

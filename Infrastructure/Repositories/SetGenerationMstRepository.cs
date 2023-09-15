@@ -1,6 +1,9 @@
 ﻿using Domain.Models.SetGenerationMst;
+using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories
@@ -57,6 +60,78 @@ namespace Infrastructure.Repositories
                 return 0;
             }
             return generationId;
+        }
+
+        public List<SetSendaiGenerationModel> GetListSendaiGeneration(int hpId)
+        {
+            var result = new List<SetSendaiGenerationModel>();
+
+            // Get List Data DB
+            var setGenerationMsts = NoTrackingDataContext.SetGenerationMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0).OrderByDescending(x => x.StartDate).ToList();
+            for (int i = 0; i < setGenerationMsts.Count; i++)
+            {
+                if (i == 0)
+                {
+                    result.Add(new SetSendaiGenerationModel(hpId, setGenerationMsts[i].GenerationId, setGenerationMsts[i].StartDate, convertDateDisplay(setGenerationMsts[i].StartDate), 0, convertDateDisplay(0), i));
+                }
+                else
+                {
+                    DateTime endTimeDate = CIUtil.IntToDate(setGenerationMsts[i - 1].StartDate);
+                    endTimeDate = endTimeDate == DateTime.MinValue ? DateTime.MinValue : endTimeDate.AddDays(-1);
+                    var endDateInt = CIUtil.DateTimeToInt(endTimeDate);
+                    result.Add(new SetSendaiGenerationModel(hpId, setGenerationMsts[i].GenerationId, setGenerationMsts[i].StartDate, convertDateDisplay(setGenerationMsts[i].StartDate), endDateInt, convertDateDisplay(endDateInt), i));
+                }
+            }
+            return result;
+        }
+
+        private string convertDateDisplay(int date)
+        {
+            if(date == 0)
+            {
+                return "xxx/xx";
+            }
+            if(date > 0)
+            {
+                var formatDate = CIUtil.IntToDate(date);
+                return formatDate.Year.ToString() + "/" + (formatDate.Month > 9 ? formatDate.Month.ToString() : "0" + formatDate.Month.ToString());
+            }
+            return "";
+        }
+
+        public bool DeleteSetSenDaiGeneration(int generationId, int userId)
+        {
+            var ListDataUpdate = new List<SetGenerationMst>();
+            var setGenrationCurrent = TrackingDataContext.SetGenerationMsts.FirstOrDefault(x => x.GenerationId == generationId);
+            if(setGenrationCurrent != null)
+            {
+                // Update item delete
+                setGenrationCurrent.IsDeleted = 1;
+                setGenrationCurrent.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                setGenrationCurrent.UpdateId = userId;
+                setGenrationCurrent.CreateDate = TimeZoneInfo.ConvertTimeToUtc(setGenrationCurrent.CreateDate);
+                ListDataUpdate.Add(setGenrationCurrent);
+                // Get Item Above and Update
+                var itemAbove = TrackingDataContext.SetGenerationMsts.Where(x => x.StartDate > setGenrationCurrent.StartDate).OrderBy(x => x.StartDate).FirstOrDefault();
+                if(itemAbove != null)
+                {
+                    itemAbove.StartDate = setGenrationCurrent.StartDate;
+                    itemAbove.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    itemAbove.UpdateId = userId;
+                    itemAbove.CreateDate = TimeZoneInfo.ConvertTimeToUtc(setGenrationCurrent.CreateDate);
+                    ListDataUpdate.Add(itemAbove);
+                }
+
+                if(ListDataUpdate.Count > 0) {
+                    TrackingDataContext.SetGenerationMsts.UpdateRange(ListDataUpdate);
+                    return TrackingDataContext.SaveChanges() > 0;
+                }
+                return false;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void ReleaseResource()
