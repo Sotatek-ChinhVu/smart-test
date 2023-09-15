@@ -5,7 +5,7 @@ using UseCase.MstItem.GetKensaCenterMsts;
 
 namespace EmrCloudApi.Presenters.MstItem
 {
-    public class GetKensaCenterMstsPresenter
+    public class GetKensaCenterMstsPresenter : IGetKensaCenterMstsOutputPort
     {
         public Response<GetKensaCenterMstsResponse> Result { get; private set; } = default!;
 

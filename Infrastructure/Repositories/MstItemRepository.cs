@@ -6477,5 +6477,13 @@ namespace Infrastructure.Repositories
 
             return latestSedai != null ? latestSedai.Ten : 0;
         }
+
+        public double GetTenOfHRTItem(int hpId)
+        {
+            var latestSedai = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160162950" && p.IsDeleted == DeleteTypes.None)
+                                                        .OrderByDescending(p => p.StartDate).FirstOrDefault();
+
+            return latestSedai != null ? latestSedai.Ten : 0;
+        }
     }
 }
