@@ -31,12 +31,14 @@ using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.GetCmtCheckMstList;
+using UseCase.MstItem.GetContainerMsts;
 using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDiseaseList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
+using UseCase.MstItem.GetKensaCenterMsts;
 using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
@@ -777,6 +779,16 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetMaterialMstsResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.GetContainerMsts)]
+        public ActionResult<Response<GetContainerMstsResponse>> GetContainerMsts()
+        {
+            var input = new GetContainerMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetContainerMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetContainerMstsResponse>>(presenter.Result);
+        }
+
         [HttpGet(ApiPath.GetTenItemCds)]
         public ActionResult<Response<GetTenItemCdsResponse>> GetTenItemCds()
         {
@@ -785,6 +797,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTenItemCdsPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenItemCdsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetKensaCenterMsts)]
+        public ActionResult<Response<GetKensaCenterMstsResponse>> GetKensaCenterMsts()
+        {
+            var input = new GetKensaCenterMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetKensaCenterMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetKensaCenterMstsResponse>>(presenter.Result);
         }
     }
 }
