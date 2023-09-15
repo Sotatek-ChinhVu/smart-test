@@ -60,6 +60,7 @@
         public const string GetKensaStdMst = "GetKensaStdMst";
         public const string GetUsedKensaItemCds = "GetUsedKensaItemCds"; 
         public const string GetTenItemCds = "GetTenItemCds";
+        public const string GetMaterialMsts = "GetMaterialMsts";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
