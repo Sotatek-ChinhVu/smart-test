@@ -1,5 +1,4 @@
-﻿using Helper.Constants;
-using Helper.Extension;
+﻿using Helper.Extension;
 
 namespace Domain.Models.InsuranceMst
 {
@@ -92,7 +91,7 @@ namespace Domain.Models.InsuranceMst
             ExcepHokenSyas = new List<ExceptHokensyaModel>();
         }
 
-        public HokenMstModel(int hokenNo, int hokenEdaNo, int startDate, int prefNo , int sort)
+        public HokenMstModel(int hokenNo, int hokenEdaNo, int startDate, int prefNo, int sort)
         {
             HokenEdaNo = hokenEdaNo;
             HokenNo = hokenNo;
@@ -269,6 +268,20 @@ namespace Domain.Models.InsuranceMst
             get
             {
                 return HokenNameCd + "(" + Houbetu.AsString().PadLeft(2, '0') + ")";
+            }
+        }
+
+        public string DisplayTextMasterWithoutHokenNo
+        {
+            get
+            {
+                string DisplayText = HokenSName;
+                if (IsOtherPrefValid == 1 && !string.IsNullOrEmpty(PrefactureName))
+                {
+
+                    DisplayText += "（" + PrefactureName + "）";
+                }
+                return DisplayText;
             }
         }
     }

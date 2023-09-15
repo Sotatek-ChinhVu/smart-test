@@ -21,6 +21,21 @@ namespace Interactor.HokenMst
                 int dateNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
                 var expireHokenMsts = allHokenMsts.Where(x => x.StartDate <= dateNow && x.EndDate >= dateNow).ToList();
 
+                var kohis = expireHokenMsts.Where(kohiInf =>
+                  kohiInf.HokenSbtKbn == 2
+                  || kohiInf.HokenSbtKbn == 5
+                  || kohiInf.HokenSbtKbn == 6
+                  || kohiInf.HokenSbtKbn == 7);
+
+                var kohiModels = new Dictionary<string, string>();
+                foreach (var item in kohis)
+                {
+                    if (!kohiModels.ContainsKey(item.SelectedValueMaster))
+                    {
+                        kohiModels.Add(item.SelectedValueMaster, item.DisplayTextMasterWithoutHokenNo);
+                    }
+                }
+
                 var kohiModelWithFutansyanos = expireHokenMsts.Where(kohiInf =>
                 (kohiInf.HokenSbtKbn == 2
                 || kohiInf.HokenSbtKbn == 5
@@ -52,7 +67,7 @@ namespace Interactor.HokenMst
                     }
                 }
 
-                return new GetHokenMstOutputData(hokenInfDict, kohiDict, GetHokenMstStatus.Successed);
+                return new GetHokenMstOutputData(hokenInfDict, kohiDict, kohiModels, GetHokenMstStatus.Successed);
             }
             finally
             {

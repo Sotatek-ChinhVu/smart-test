@@ -10,7 +10,7 @@ namespace EmrCloudApi.Presenters.HokenMst
         public Response<GetHokenMstResponse> Result { get; private set; } = new Response<GetHokenMstResponse>();
         public void Complete(GetHokenMstOutputData outputData)
         {
-            Result.Data = new GetHokenMstResponse(outputData.HokenInfModels, outputData.KohiModelWithFutansyanos);
+            Result.Data = new GetHokenMstResponse(outputData.HokenInfModels, outputData.KohiModelWithFutansyanos, outputData.KohiModels);
             Result.Status = (int)outputData.Status;
             Result.Message = GetMessage(outputData.Status);
         }
