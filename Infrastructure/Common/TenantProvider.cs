@@ -1,5 +1,7 @@
 ﻿using Helper.Constants;
+using Infrastructure.Common;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -53,11 +55,11 @@ namespace Infrastructure.CommonDB
         public string GetDomainFromHeader()
         {
             var headers = _httpContextAccessor.HttpContext.Request.Headers;
-            if (headers == null || !headers.ContainsKey("domain"))
+            if (headers == null || !headers.ContainsKey(ParamConstant.Domain))
             {
                 return string.Empty;
             }
-            string? clientDomain = headers["domain"];
+            string? clientDomain = headers[ParamConstant.Domain];
 
             return clientDomain ?? string.Empty;
         }
@@ -65,7 +67,7 @@ namespace Infrastructure.CommonDB
         public string GetDomainFromQueryString()
         {
             var queryString = _httpContextAccessor.HttpContext.Request.QueryString.Value;
-            if (string.IsNullOrEmpty(queryString) || !queryString.Contains("domain"))
+            if (string.IsNullOrEmpty(queryString) || !queryString.Contains(ParamConstant.Domain))
             {
                 return string.Empty;
             }
@@ -79,7 +81,7 @@ namespace Infrastructure.CommonDB
         {
             try
             {
-                var indexStart = queryString.IndexOf("domain");
+                var indexStart = queryString.IndexOf(ParamConstant.Domain);
                 var indexSub = indexStart > 0 ? indexStart + 7 : 0;
                 var tempInedexEnd = queryString.IndexOf("&", indexStart);
                 var indexEndSub = indexStart > 0 ? tempInedexEnd == -1 ? queryString.Length : tempInedexEnd : 0;
@@ -92,17 +94,18 @@ namespace Infrastructure.CommonDB
             }
         }
 
+        public string GetTenantInfo()
+        {
+            return "Tenant1";
+        }
+
+        #region Return DataContext
         private TenantNoTrackingDataContext? _noTrackingDataContext;
         public TenantNoTrackingDataContext GetNoTrackingDataContext()
         {
             if (_noTrackingDataContext == null)
             {
-                var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
-                {
-                    buider.EnableRetryOnFailure(maxRetryCount: 3);
-                }).LogTo(Console.WriteLine, LogLevel.Information).Options;
-                var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
-                _noTrackingDataContext = factory.CreateDbContext();
+                _noTrackingDataContext = CreateNewNoTrackingDataContext();
             }
             return _noTrackingDataContext;
         }
@@ -112,66 +115,52 @@ namespace Infrastructure.CommonDB
         {
             if (_trackingDataContext == null)
             {
-                var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
-                {
-                    buider.EnableRetryOnFailure(maxRetryCount: 3);
-                }).LogTo(Console.WriteLine, LogLevel.Information).Options;
-                var factory = new PooledDbContextFactory<TenantDataContext>(options);
-                _trackingDataContext = factory.CreateDbContext();
+                _trackingDataContext = CreateNewTrackingDataContext();
             }
             return _trackingDataContext;
-        }
-
-        public string GetTenantInfo()
-        {
-            return "Tenant1";
         }
 
         public TenantNoTrackingDataContext ReloadNoTrackingDataContext()
         {
             _noTrackingDataContext?.Dispose();
-
-            var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
-            {
-                buider.EnableRetryOnFailure(maxRetryCount: 3);
-            }).LogTo(Console.WriteLine, LogLevel.Information).Options;
-            var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
-            _noTrackingDataContext = factory.CreateDbContext();
+            _noTrackingDataContext = CreateNewNoTrackingDataContext();
             return _noTrackingDataContext;
         }
 
         public TenantDataContext ReloadTrackingDataContext()
         {
             _trackingDataContext?.Dispose();
-
-            var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
-            {
-                buider.EnableRetryOnFailure(maxRetryCount: 3);
-            }).LogTo(Console.WriteLine, LogLevel.Information).Options;
-            var factory = new PooledDbContextFactory<TenantDataContext>(options);
-            _trackingDataContext = factory.CreateDbContext();
+            _trackingDataContext = CreateNewTrackingDataContext();
             return _trackingDataContext;
         }
 
         public TenantDataContext CreateNewTrackingDataContext()
         {
+            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
-            {
-                buider.EnableRetryOnFailure(maxRetryCount: 3);
-            }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+                    {
+                        buider.EnableRetryOnFailure(maxRetryCount: 3);
+                    })
+                    .UseLoggerFactory(loggerFactory)
+                    .Options;
             var factory = new PooledDbContextFactory<TenantDataContext>(options);
             return factory.CreateDbContext();
         }
 
         public TenantNoTrackingDataContext CreateNewNoTrackingDataContext()
         {
+            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
-            {
-                buider.EnableRetryOnFailure(maxRetryCount: 3);
-            }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+                {
+                    buider.EnableRetryOnFailure(maxRetryCount: 3);
+                })
+                .UseLoggerFactory(loggerFactory)
+                .Options;
             var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
             return factory.CreateDbContext();
         }
+
+        #endregion
 
         public void DisposeDataContext()
         {
