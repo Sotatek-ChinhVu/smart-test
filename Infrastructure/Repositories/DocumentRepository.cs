@@ -156,6 +156,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
                 return false;
             }
             docInfDB.CategoryCd = model.CategoryCd;
+            docInfDB.GetDate = model.GetDate;
             docInfDB.DspFileName = model.DisplayFileName;
             if (overwriteFile)
             {
