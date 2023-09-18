@@ -54,6 +54,7 @@ using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.GetTenOfItem;
+using UseCase.MstItem.GetTreeListSet;
 using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -818,6 +819,18 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTenOfHRTItemPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenOfHRTItemResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTreeListSet)]
+        public ActionResult<Response<GetTreeListSetMstResponse>> GetTreeListSet([FromQuery] GetTreeListSetRequest request)
+        {
+            var input = new GetTreeListSetInputData(HpId, request.SinDate, request.SetKbn);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetTreeListSetMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetTreeListSetMstResponse>>(presenter.Result);
         }
     }
 }

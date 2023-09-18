@@ -714,10 +714,9 @@ using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
 using Domain.Models.ListSetMst;
-using UseCase.ListSetMst.GetTreeListSet;
-using Interactor.ListSetMst;
 using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.SetSendaiGeneration.Add;
+using UseCase.MstItem.GetTreeListSet;
 
 namespace EmrCloudApi.Configs.Dependency
 {

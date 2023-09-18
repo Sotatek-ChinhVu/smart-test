@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UseCase.ListSetMst.GetTreeListSet
+namespace UseCase.MstItem.GetTreeListSet
 {
     public enum GetTreeListSetStatus
     {

@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Requests.ListSetMst
+﻿namespace EmrCloudApi.Requests.MstItem
 {
     public class GetTreeListSetRequest
     {
