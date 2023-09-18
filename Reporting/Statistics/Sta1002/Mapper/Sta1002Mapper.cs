@@ -27,6 +27,14 @@ public class Sta1002Mapper : CommonReportingRequest
         return _rowCountFieldName;
     }
 
+    public override Dictionary<string, string> GetFileNamePageMap()
+    {
+        var fileName = new Dictionary<string, string>();
+        fileName.Add("1", "sta1002a.rse");
+        return fileName;
+    }
+
+
     public override Dictionary<string, string> GetSingleFieldData()
     {
         return _singleFieldData;
