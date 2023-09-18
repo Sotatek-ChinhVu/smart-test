@@ -464,5 +464,9 @@
         public const string GetKaCodeYousikiMst = "GetKaCodeYousikiMst";
 
         public const string Test = "Test";
+
+        //PatientManagement
+        public const string SearchPtInfs = "SearchPtInfs";
+        public const string GetHokenMst = "GetHokenMst";
     }
 }

@@ -131,6 +131,7 @@ using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
 using Interactor.PatientInfor.PtKyuseiInf;
 using Interactor.PatientInfor.SortPatientCommon;
+using Interactor.PatientManagement;
 using Interactor.PtGroupMst;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
@@ -349,6 +350,7 @@ using UseCase.FlowSheet.GetTooltip;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
+using UseCase.HokenMst.GetHokenMst;
 using UseCase.Holiday.SaveHoliday;
 using UseCase.Insurance.FindHokenInfByPtId;
 using UseCase.Insurance.FindPtHokenList;
@@ -534,6 +536,7 @@ using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
+using UseCase.PatientManagement;
 using UseCase.PtGroupMst.CheckAllowDelete;
 using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
@@ -709,7 +712,6 @@ using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinIn
 using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
-using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
 using UseCase.Receipt.CheckExistsReceInf;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetDiseaseList;
@@ -1487,6 +1489,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateKensaStdMstInputData, UpdateKensaStdMstInteractor>();
             busBuilder.RegisterUseCase<GetKensaStdMstInputData, GetKensaStdMstModelsInteractor>();
             busBuilder.RegisterUseCase<GetUsedKensaItemCdsInputData, GetUsedKensaItemCdsInteractor>();
+
             busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
             busBuilder.RegisterUseCase<GetMaterialMstsInputData, GetMaterialMstsInteractor>();
             busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
@@ -1794,6 +1797,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Disease Name Mst Seach
             busBuilder.RegisterUseCase<DiseaseNameMstSearchInputData, DiseaseNameMstSearchInteractor>();
+
+            //PatientManagement
+            busBuilder.RegisterUseCase<SearchPtInfsInputData, SearchPtInfsInteractor>();
+            busBuilder.RegisterUseCase<GetHokenMstInputData, GetHokenMstInteractor>();
 
             //ListSetMst
             busBuilder.RegisterUseCase<GetTreeListSetInputData, GetTreeListSetInteractor>();
