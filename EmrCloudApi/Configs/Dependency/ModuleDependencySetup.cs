@@ -780,6 +780,9 @@ using UseCase.MainMenu.GetKensaCenterMstList;
 using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
+using Domain.Models.ListSetMst;
+using UseCase.ListSetMst.GetTreeListSet;
+using Interactor.ListSetMst;
 using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MainMenu.GetKensaInf;
@@ -1198,6 +1201,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IOnlineRepository, OnlineRepository>();
             services.AddTransient<IStaticsticExportCsvService, StaticsticExportCsvService>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1784,6 +1788,9 @@ namespace EmrCloudApi.Configs.Dependency
             // Disease Name Mst Seach
             busBuilder.RegisterUseCase<DiseaseNameMstSearchInputData, DiseaseNameMstSearchInteractor>();
 
+            //ListSetMst
+            busBuilder.RegisterUseCase<GetTreeListSetInputData, GetTreeListSetInteractor>();
+            
             //Get List Set Senkai Generation
             busBuilder.RegisterUseCase<SetSendaiGenerationInputData, SetSendaiGenerationGetListInteractor>();
             busBuilder.RegisterUseCase<DeleteSendaiGenerationInputData, DeleteSetSendaiGenerationInteractor>();
