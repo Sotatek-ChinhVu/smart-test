@@ -7,6 +7,7 @@ using EmrCloudApi.Responses.SetSendaiGeneration;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.SetSendaiGeneration.Add;
 using UseCase.SetSendaiGeneration.Delete;
 using UseCase.SetSendaiGeneration.GetList;
 
@@ -41,7 +42,16 @@ namespace EmrCloudApi.Controller
             var presenter = new DeleteSetSendaiGenerationPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<DeleteSetSendaiGenerationResponse>>(presenter.Result);
+        }
 
+        [HttpPost(ApiPath.Insert)]
+        public ActionResult<Response<AddSetSendaiGenerationResponse>> AddSetSensaiGeneration([FromBody]  AddSetSendaiGenerationRequest request)
+        {
+            var input = new AddSetSendaiGenerationInputData(request.StartDate, HpId, UserId);
+            var output = _bus.Handle(input);
+            var presenter = new AddSetSendaiGenerationPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<AddSetSendaiGenerationResponse>>(presenter.Result);
         }
     }
 }
