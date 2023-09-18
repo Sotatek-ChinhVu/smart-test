@@ -10,12 +10,14 @@ public class DiseaseNameMstSearchModel
         ByomeiType = model.ByomeiType;
         Sbyomei = model.Sbyomei;
         KanaName1 = model.KanaName1;
+        KanaName2 = model.KanaName2;
         Sikkan = model.Sikkan;
         SikkanCd = model.SikkanCd;
         NanByo = model.NanByo;
         Icd10 = model.Icd10;
         Icd102013 = model.Icd102013;
         IsAdopted = model.IsAdopted;
+        NanByoCd = model.NanbyoCd;
     }
 
     public string ByomeiCd { get; private set; }
@@ -25,6 +27,7 @@ public class DiseaseNameMstSearchModel
     public string Sbyomei { get; private set; }
 
     public string KanaName1 { get; private set; }
+    public string KanaName2 { get; private set; }
 
     public int SikkanCd { get; private set; }
 
@@ -37,4 +40,6 @@ public class DiseaseNameMstSearchModel
     public string Icd102013 { get; private set; }
 
     public bool IsAdopted { get; private set; }
+
+    public int NanByoCd { get; private set; }
 }

@@ -19,6 +19,20 @@ public class KensaInfDetailModel
         KensaMstModel = kensaMstModel;
     }
 
+    public KensaInfDetailModel(long seqNo, long ptId, long iraiCd)
+    {
+        IraiCd = iraiCd;
+        SeqNo = seqNo;
+        PtId = ptId;
+        KensaItemCd = string.Empty;
+        ResultVal = string.Empty;
+        ResultType = string.Empty;
+        AbnormalKbn = string.Empty;
+        CmtCd1 = string.Empty;
+        CmtCd2 = string.Empty;
+        KensaMstModel = new();
+    }
+
     public long PtId { get; private set; }
 
     public int IraiDate { get; private set; }

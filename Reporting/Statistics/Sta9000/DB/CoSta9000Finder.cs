@@ -2620,4 +2620,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         }
         return result;
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

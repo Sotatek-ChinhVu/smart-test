@@ -551,11 +551,15 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                 TrackingDataContext.PathConfs.Remove(entity);
                 newEntity.CreateDate = TimeZoneInfo.ConvertTimeToUtc(systemConfListXmlPathModel.CreateDate);
                 newEntity.CreateId = systemConfListXmlPathModel.CreateId;
+                newEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                newEntity.UpdateId = userId;
             }
             else
             {
                 newEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
                 newEntity.CreateId = userId;
+                newEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                newEntity.UpdateId = userId;
             }
 
             TrackingDataContext.Add(newEntity);

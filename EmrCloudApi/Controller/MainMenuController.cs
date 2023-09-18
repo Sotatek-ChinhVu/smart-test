@@ -21,6 +21,9 @@ using UseCase.MainMenu.GetKensaCenterMstList;
 using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using Domain.Models.KensaIrai;
 using EmrCloudApi.Requests.MainMenu.RequestItem;
+using UseCase.MainMenu.GetKensaInf;
+using UseCase.MainMenu.DeleteKensaInf;
+using UseCase.MainMenu.GetKensaIraiLog;
 
 namespace EmrCloudApi.Controller;
 
@@ -103,6 +106,16 @@ public class MainMenuController : AuthorizeControllerBase
         return new ActionResult<Response<GetKensaIraiResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetKensaInf)]
+    public ActionResult<Response<GetKensaInfResponse>> GetKensaInf([FromQuery] GetKensaInfRequest request)
+    {
+        var input = new GetKensaInfInputData(HpId, request.StartDate, request.EndDate, request.CenterCd);
+        var output = _bus.Handle(input);
+        var presenter = new GetKensaInfPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKensaInfResponse>>(presenter.Result);
+    }
+
     [HttpPost(ApiPath.GetKensaIraiByList)]
     public ActionResult<Response<GetKensaIraiResponse>> GetKensaIraiByList([FromBody] GetKensaIraiByListRequest request)
     {
@@ -141,6 +154,37 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new CreateDataKensaIraiRenkeiPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<CreateDataKensaIraiRenkeiResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.DeleteKensaInf)]
+    public ActionResult<Response<DeleteKensaInfResponse>> DeleteKensaInf([FromBody] DeleteKensaInfRequest request)
+    {
+        var kensaInfList = request.KensaInfList
+            .Select(item => new KensaInfModel(
+                                item.PtId,
+                                item.RaiinNo,
+                                item.IraiCd,
+                                item.KensaInfDetailList.Select(item => new KensaInfDetailModel(
+                                                                           item.SeqNo,
+                                                                           item.PtId,
+                                                                           item.IraiCd))
+                                                       .ToList()))
+            .ToList();
+        var input = new DeleteKensaInfInputData(HpId, UserId, kensaInfList);
+        var output = _bus.Handle(input);
+        var presenter = new DeleteKensaInfPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<DeleteKensaInfResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKensaIraiLog)]
+    public ActionResult<Response<GetKensaIraiLogResponse>> GetKensaIraiLogLog([FromQuery] GetKensaIraiLogRequest request)
+    {
+        var input = new GetKensaIraiLogInputData(HpId, request.StartDate, request.EndDate);
+        var output = _bus.Handle(input);
+        var presenter = new GetKensaIraiLogLogPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKensaIraiLogResponse>>(presenter.Result);
     }
 
     #region private function

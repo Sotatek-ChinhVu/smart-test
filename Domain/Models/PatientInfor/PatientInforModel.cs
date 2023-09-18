@@ -212,6 +212,39 @@ namespace Domain.Models.PatientInfor
             Comment = string.Empty;
         }
 
+        public PatientInforModel(int hpId, long ptId, long ptNum, string kanaName, string name, int sex, int birthday, int isDead, int deathDate, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string mail, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int firstVisitDate, int lastVisitDate) : this(ptId, ptNum, kanaName, name, sex, birthday)
+        {
+            HpId = hpId;
+            IsDead = isDead;
+            DeathDate = deathDate;
+            HomePost = homePost;
+            HomeAddress1 = homeAddress1;
+            HomeAddress2 = homeAddress2;
+            Tel1 = tel1;
+            Tel2 = tel2;
+            Mail = mail;
+            Setanusi = setanusi;
+            Zokugara = zokugara;
+            Job = job;
+            RenrakuName = renrakuName;
+            RenrakuPost = renrakuPost;
+            RenrakuAddress1 = renrakuAddress1;
+            RenrakuAddress2 = renrakuAddress2;
+            RenrakuTel = renrakuTel;
+            RenrakuMemo = renrakuMemo;
+            OfficeName = officeName;
+            OfficePost = officePost;
+            OfficeAddress1 = officeAddress1;
+            OfficeAddress2 = officeAddress2;
+            OfficeTel = officeTel;
+            OfficeMemo = officeMemo;
+            IsRyosyoDetail = isRyosyoDetail;
+            PrimaryDoctor = primaryDoctor;
+            IsTester = isTester;
+            FirstVisitDate = firstVisitDate;
+            LastVisitDate = lastVisitDate;
+        }
+
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
