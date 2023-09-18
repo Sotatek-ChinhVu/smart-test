@@ -10,7 +10,6 @@ using UseCase.Core.Sync;
 using UseCase.Diseases.GetAllByomeiByPtId;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.GetSetByomeiTree;
-using UseCase.Diseases.GetTreeByomeiSet;
 using UseCase.Diseases.Upsert;
 using UseCase.Diseases.Validation;
 
@@ -133,14 +132,6 @@ namespace EmrCloudApi.Controller
 
             return new ActionResult<Response<ValidationPtDiseaseListResponse>>(presenter.Result);
         }
-        [HttpGet(ApiPath.GetTreeByomeiSet)]
-        public ActionResult<Response<GetTreeByomeiSetResponse>> GetTreeByomeiSet([FromQuery] GetTreeByomeiSetRequest request)
-        {
-            var input = new GetTreeByomeiSetInputData(HpId, request.SinDate);
-            var output = _bus.Handle(input);
-            var presenter = new GetTreeByomeiSetPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<GetTreeByomeiSetResponse>>(presenter.Result);
-        }
+        
     }
 }

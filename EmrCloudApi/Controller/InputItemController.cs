@@ -8,7 +8,6 @@ using EmrCloudApi.Presenters.UsageTreeSet;
 using EmrCloudApi.Presenters.YohoSetMst;
 using EmrCloudApi.Requests.DrugDetail;
 using EmrCloudApi.Requests.DrugInfor;
-using EmrCloudApi.Requests.ListSetMst;
 using EmrCloudApi.Requests.UsageTreeSet;
 using EmrCloudApi.Requests.YohoSetMst;
 using EmrCloudApi.Responses;
@@ -149,17 +148,7 @@ namespace EmrCloudApi.Controller
 
             return new ActionResult<Response<GetDataPrintDrugInfoResponse>>(presenter.Result);
         }
-        [HttpGet("GetTreeListSet")]
-        public ActionResult<Response<GetTreeListSetMstResponse>> GetTreeListSet([FromQuery] GetTreeListSetRequest request)
-        {
-            var input = new GetTreeListSetInputData(HpId, request.SinDate, request.SetKbn);
-            var output = _bus.Handle(input);
 
-            var presenter = new GetTreeListSetMstPresenter();
-            presenter.Complete(output);
-
-            return new ActionResult<Response<GetTreeListSetMstResponse>>(presenter.Result);
-        }
 
         [HttpGet("GetListSetGeneration")]
         public ActionResult<Response<GetListSetGenerationMstResponse>> GetListSetGeneration()

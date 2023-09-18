@@ -58,7 +58,14 @@
         public const string IsUsingKensa = "IsUsingKensa";
         public const string UpdateKensaStdMst = "UpdateKensaStdMst";
         public const string GetKensaStdMst = "GetKensaStdMst";
-        public const string GetUsedKensaItemCds = "GetUsedKensaItemCds";
+        public const string GetUsedKensaItemCds = "GetUsedKensaItemCds"; 
+        public const string GetTenItemCds = "GetTenItemCds";
+        public const string GetMaterialMsts = "GetMaterialMsts";
+        public const string GetContainerMsts = "GetContainerMsts"; 
+        public const string GetKensaCenterMsts = "GetKensaCenterMsts"; 
+        public const string GetTenOfHRTItem = "GetTenOfHRTItem";
+        public const string GetTreeListSet = "GetTreeListSet";
+        public const string GetTreeByomeiSet = "GetTreeByomeiSet";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -354,7 +361,6 @@
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
         public const string GetAllByomeiByPtId = "GetAllByomeiByPtId";
-        public const string GetTreeByomeiSet = "GetTreeByomeiSet";
 
         //System Conf
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";
@@ -423,6 +429,7 @@
         public const string ReCreateDataKensaIraiRenkei = "ReCreateDataKensaIraiRenkei";
         public const string GetKensaInf = "GetKensaInf";
         public const string DeleteKensaInf = "DeleteKensaInf";
+        public const string GetKensaIraiLog = "GetKensaIraiLog";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
@@ -459,5 +466,9 @@
         public const string GetKaCodeYousikiMst = "GetKaCodeYousikiMst";
 
         public const string Test = "Test";
+
+        //PatientManagement
+        public const string SearchPtInfs = "SearchPtInfs";
+        public const string GetHokenMst = "GetHokenMst";
     }
 }

@@ -5,6 +5,7 @@ using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.Diseases;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Requests.MedicalExamination;
@@ -31,24 +32,32 @@ using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.GetCmtCheckMstList;
+using UseCase.MstItem.GetContainerMsts;
 using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDiseaseList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
+using UseCase.MstItem.GetKensaCenterMsts;
 using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
 using UseCase.MstItem.GetSingleDoseMstAndMedicineUnitList;
 using UseCase.MstItem.GetTeikyoByomei;
+using UseCase.MstItem.GetTenItemCds;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.GetTenOfItem;
+using UseCase.MstItem.GetTreeByomeiSet;
+using UseCase.MstItem.GetTreeListSet;
+using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
@@ -59,14 +68,13 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
-using UseCase.MstItem.UpdateCmtCheckMst;
-using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UpdateByomeiMst;
+using UseCase.MstItem.UpdateCmtCheckMst;
 using UseCase.MstItem.UpdateKensaStdMst;
+using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
-using UseCase.MstItem.GetUsedKensaItemCds;
 
 namespace EmrCloudApi.Controller
 {
@@ -763,6 +771,78 @@ namespace EmrCloudApi.Controller
             var presenter = new GetUsedKensaItemCdsPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetUsedKensaItemCdsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetMaterialMsts)]
+        public ActionResult<Response<GetMaterialMstsResponse>> GetMaterialMsts()
+        {
+            var input = new GetMaterialMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetMaterialMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetMaterialMstsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetContainerMsts)]
+        public ActionResult<Response<GetContainerMstsResponse>> GetContainerMsts()
+        {
+            var input = new GetContainerMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetContainerMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetContainerMstsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTenItemCds)]
+        public ActionResult<Response<GetTenItemCdsResponse>> GetTenItemCds()
+        {
+            var input = new GetTenItemCdsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenItemCdsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenItemCdsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetKensaCenterMsts)]
+        public ActionResult<Response<GetKensaCenterMstsResponse>> GetKensaCenterMsts()
+        {
+            var input = new GetKensaCenterMstsInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetKensaCenterMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetKensaCenterMstsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTenOfHRTItem)]
+        public ActionResult<Response<GetTenOfHRTItemResponse>> GetTenOfHRTItem()
+        {
+            var input = new GetTenOfItemInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenOfHRTItemPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenOfHRTItemResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTreeListSet)]
+        public ActionResult<Response<GetTreeListSetMstResponse>> GetTreeListSet([FromQuery] GetTreeListSetRequest request)
+        {
+            var input = new GetTreeListSetInputData(HpId, request.SinDate, request.SetKbn);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetTreeListSetMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetTreeListSetMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTreeByomeiSet)]
+        public ActionResult<Response<GetTreeByomeiSetResponse>> GetTreeByomeiSet([FromQuery] GetTreeByomeiSetRequest request)
+        {
+            var input = new GetTreeByomeiSetInputData(HpId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetTreeByomeiSetPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTreeByomeiSetResponse>>(presenter.Result);
         }
     }
 }
