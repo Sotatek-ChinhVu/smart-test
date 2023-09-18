@@ -58,11 +58,11 @@ namespace Infrastructure.Repositories
             if (todoInfs.Count <= 1)
             {
                 var firtTodo = todoInfs.FirstOrDefault() ?? new();
-                result = GetList(hpId, firtTodo.TodoNo, firtTodo.TodoEdaNo, true);
+                result = GetList(hpId, firtTodo.TodoNo, firtTodo.TodoEdaNo, true, true);
                 return result;
             }
 
-            result = GetList(hpId, 0, 0, true);
+            result = GetList(hpId, 0, 0, true, true);
             return result;
         }
 
@@ -110,16 +110,16 @@ namespace Infrastructure.Repositories
             return inputs.Count == countptIds;
         }
 
-        public List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, bool incDone)
+        public List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, bool incDone, bool isDeleted = false)
         {
             List<TodoInfModel> result;
-            var todoInfRes = NoTrackingDataContext.TodoInfs.Where(inf => inf.HpId == hpId && inf.IsDeleted == 0);
+            var todoInfRes = NoTrackingDataContext.TodoInfs.Where(inf => inf.HpId == hpId && (isDeleted || inf.IsDeleted == 0));
             var raiinInfRes = NoTrackingDataContext.RaiinInfs.Where(inf => inf.HpId == hpId);
-            var patientInfRes = NoTrackingDataContext.PtInfs.Where(inf => inf.HpId == hpId && inf.IsDelete == 0);
-            var userMstRes = NoTrackingDataContext.UserMsts.Where(mst => mst.HpId == hpId && mst.IsDeleted == 0);
-            var kaMstRes = NoTrackingDataContext.KaMsts.Where(mst => mst.HpId == hpId && mst.IsDeleted == 0);
+            var patientInfRes = NoTrackingDataContext.PtInfs.Where(inf => inf.HpId == hpId);
+            var userMstRes = NoTrackingDataContext.UserMsts.Where(mst => mst.HpId == hpId);
+            var kaMstRes = NoTrackingDataContext.KaMsts.Where(mst => mst.HpId == hpId);
             var todoKbnMstRes = NoTrackingDataContext.TodoKbnMsts.Where(mst => mst.HpId == hpId);
-            var todoGrpMstRes = NoTrackingDataContext.TodoGrpMsts.Where(mst => mst.HpId == hpId && mst.IsDeleted == 0);
+            var todoGrpMstRes = NoTrackingDataContext.TodoGrpMsts.Where(mst => mst.HpId == hpId);
             var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(
                 (p) => p.HpId == Session.HospitalID &&
                        p.IsDeleted == 0
