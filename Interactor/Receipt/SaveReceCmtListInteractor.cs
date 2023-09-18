@@ -38,8 +38,11 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
             List<ReceCmtItem> receCmtInvalidList = inputData.ReceCmtList.Where(item => item.Id > 0 && !receCmtIdNotDeletedDB.Contains(item.Id)).ToList();
             foreach (var receCmt in receCmtInvalidList)
             {
-                var cmtData = listReceCmtDB.FirstOrDefault(item => item.Id == receCmt.Id)?.CmtData ?? string.Empty;
-                receCmt.ChangeCmtData(cmtData);
+                var cmtData = listReceCmtDB.FirstOrDefault(item => item.Id == receCmt.Id);
+                if (cmtData != null)
+                {
+                    receCmt.ChangeCmtData(cmtData.CmtData, cmtData.Cmt);
+                }
             }
 
             var receCmtDeletedList = listReceCmtDB.Where(item => (item.CmtKbn == ReceCmtKbn.Header || item.CmtKbn == ReceCmtKbn.Footer) && item.CmtSbt == ReceCmtSbt.FreeCmt)

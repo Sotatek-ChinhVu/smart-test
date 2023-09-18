@@ -65,9 +65,10 @@ public class ReceCmtItem
         HokenId = 0;
     }
 
-    public ReceCmtItem ChangeCmtData(string cmtData)
+    public ReceCmtItem ChangeCmtData(string cmtData, string cmt)
     {
         CmtData = cmtData;
+        Cmt = cmt;
         return this;
     }
 
