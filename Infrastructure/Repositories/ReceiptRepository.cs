@@ -1,4 +1,5 @@
-﻿using Domain.Constant;
+﻿using Domain.CalculationInf;
+using Domain.Constant;
 using Domain.Models.Accounting;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
@@ -22,9 +23,11 @@ namespace Infrastructure.Repositories;
 public class ReceiptRepository : RepositoryBase, IReceiptRepository
 {
     private readonly IMstItemRepository _mstItemRepository;
-    public ReceiptRepository(ITenantProvider tenantProvider, IMstItemRepository mstItemRepository) : base(tenantProvider)
+    private readonly ICalculationInfRepository _calculationInfRepository;
+    public ReceiptRepository(ITenantProvider tenantProvider, IMstItemRepository mstItemRepository, ICalculationInfRepository calculationInfRepository) : base(tenantProvider)
     {
         _mstItemRepository = mstItemRepository;
+        _calculationInfRepository = calculationInfRepository;
     }
 
     #region Rece check list
@@ -1364,13 +1367,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         TrackingDataContext.SaveChanges();
     }
 
-    public List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId)
+    public List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId, bool isGetAll = false)
     {
         var syoukiInfList = NoTrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
                                                                            && (sinYm == 0 || item.SinYm == sinYm)
                                                                            && item.PtId == ptId
                                                                            && (hokenId == 0 || item.HokenId == hokenId)
-                                                                           && item.IsDeleted == DeleteTypes.None)
+                                                                           && (isGetAll || item.IsDeleted == DeleteTypes.None))
                                                             .OrderBy(item => item.SortNo)
                                                             .ToList();
 
@@ -2863,6 +2866,114 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         TrackingDataContext.SaveChanges();
     }
 
+    public bool ResetStatusAfterReCalc(int hpId, List<long> ptIds, int seikyuYm)
+    {
+        var receInfModels = _calculationInfRepository.GetReceInfModels(hpId, ptIds, seikyuYm);
+        var sinYmList = receInfModels.Select(item => item.SinYm).Distinct().ToList();
+        var ptIdList = receInfModels.Select(item => item.PtId).Distinct().ToList();
+        var hokenIdList = receInfModels.Select(item => item.HokenId).Distinct().ToList();
+
+        var receCheckStatusList = TrackingDataContext.ReceStatuses.Where(item => item.HpId == hpId
+                                                                                 && item.IsDeleted == DeleteTypes.None
+                                                                                 && item.SeikyuYm == seikyuYm
+                                                                                 && sinYmList.Contains(item.SinYm)
+                                                                                 && ptIdList.Contains(item.PtId)
+                                                                                 && hokenIdList.Contains(item.HokenId))
+                                                                  .ToList();
+
+        foreach (var receInfModel in receInfModels)
+        {
+            var receStatus = receCheckStatusList.Where(item => item.SinYm == receInfModel.SinYm
+                                                               && item.PtId == receInfModel.PtId
+                                                               && item.HokenId == receInfModel.HokenId)
+                                                .OrderByDescending(item => item.CreateDate)
+                                                .ThenByDescending(item => item.UpdateDate)
+                                                .FirstOrDefault();
+            if (receStatus == null)
+            {
+                continue;
+            }
+            if (receStatus.StatusKbn == (int)ReceCheckStatusEnum.TempComfirmed)
+            {
+                receStatus.StatusKbn = (int)ReceCheckStatusEnum.UnConfirmed;
+            }
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public bool ResetStatusAfterCheckErr(int hpId, int userId, int seikyuYm, List<ReceRecalculationModel> receRecalculationList)
+    {
+        if (receRecalculationList == null || !receRecalculationList.Any())
+        {
+            return false;
+        }
+
+        var sinYmList = receRecalculationList.Select(item => item.SinYm).Distinct().ToList();
+        var ptIdList = receRecalculationList.Select(item => item.PtId).Distinct().ToList();
+        var hokenIdList = receRecalculationList.Select(item => item.HokenId).Distinct().ToList();
+
+        var receCheckStatusList = TrackingDataContext.ReceStatuses.Where(item => item.HpId == hpId
+                                                                                 && item.IsDeleted == DeleteTypes.None
+                                                                                 && item.SeikyuYm == seikyuYm
+                                                                                 && sinYmList.Contains(item.SinYm)
+                                                                                 && ptIdList.Contains(item.PtId)
+                                                                                 && hokenIdList.Contains(item.HokenId))
+                                                                  .ToList();
+
+        var receCheckErrList = NoTrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
+                                                                                 && sinYmList.Contains(item.SinYm)
+                                                                                 && ptIdList.Contains(item.PtId)
+                                                                                 && hokenIdList.Contains(item.HokenId))
+                                                                  .ToList();
+        foreach (var receInfModel in receRecalculationList)
+        {
+            var receStatus = receCheckStatusList.Where(item => item.SinYm == receInfModel.SinYm
+                                                               && item.PtId == receInfModel.PtId
+                                                               && item.HokenId == receInfModel.HokenId)
+                                                .OrderByDescending(item => item.CreateDate)
+                                                .ThenByDescending(item => item.UpdateDate)
+                                                .FirstOrDefault();
+
+            bool hasError = receCheckErrList.Any(item => item.SinYm == receInfModel.SinYm
+                                                         && item.PtId == receInfModel.PtId
+                                                         && item.HokenId == receInfModel.HokenId);
+            if (receStatus == null)
+            {
+                if (hasError)
+                {
+                    ReceStatus entity = new();
+                    entity.HpId = hpId;
+                    entity.PtId = receInfModel.PtId;
+                    entity.SeikyuYm = seikyuYm;
+                    entity.SinYm = receInfModel.SinYm;
+                    entity.HokenId = receInfModel.HokenId;
+                    entity.StatusKbn = (int)ReceCheckStatusEnum.SystemPending;
+                    entity.CreateId = userId;
+                    entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    entity.UpdateId = userId;
+                    entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    TrackingDataContext.ReceStatuses.Add(entity);
+                }
+                continue;
+            }
+
+            if (hasError)
+            {
+                if (receStatus.StatusKbn == (int)ReceCheckStatusEnum.UnConfirmed || receStatus.StatusKbn == (int)ReceCheckStatusEnum.TempComfirmed)
+                {
+                    receStatus.StatusKbn = (int)ReceCheckStatusEnum.SystemPending;
+                }
+            }
+            else
+            {
+                if (receStatus.StatusKbn == (int)ReceCheckStatusEnum.SystemPending)
+                {
+                    receStatus.StatusKbn = (int)ReceCheckStatusEnum.UnConfirmed;
+                }
+            }
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
     #endregion
 
     #region Private function
@@ -2918,7 +3029,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                     syoukiInf.SeqNo,
                                     syoukiInf.SortNo,
                                     syoukiInf.SyoukiKbn,
-                                    syoukiInf.Syouki ?? string.Empty
+                                    syoukiInf.Syouki ?? string.Empty,
+                                    syoukiInf.IsDeleted == 1
                                 );
     }
 
@@ -3708,6 +3820,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                       && item.HokenId == hokenId);
         return existReceInf;
     }
+
     public bool CheckExistSyobyoKeikaSinDay(int hpId, int sinYm, long ptId, int hokenId, int sinDay)
     {
         return NoTrackingDataContext.SyobyoKeikas.Any(item => item.HpId == hpId

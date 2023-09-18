@@ -29,16 +29,6 @@ namespace Interactor.TimeZoneConf
                     return new GetTimeZoneConfGroupOutputData(GetTimeZoneConfGroupStatus.NoData, false, datas);
                 else
                 {
-                    int defaultYouKbn = (int)CIUtil.GetJapanDateTimeNow().DayOfWeek + 1;
-                    var timeZoneConfGroupModel = datas.FirstOrDefault(x => x.YoubiKbn == defaultYouKbn);
-                    if (timeZoneConfGroupModel != null && timeZoneConfGroupModel.Details.Count == 1 &&
-                        timeZoneConfGroupModel.Details[0].StartTime == 0 &&
-                        timeZoneConfGroupModel.Details[0].EndTime == 0)
-                    {
-                        timeZoneConfGroupModel.Details[0].SetIsNewStartTime(true);
-                        timeZoneConfGroupModel.Details[0].SetIsNewEndTime(true);
-                    }
-
                     bool isHavePermission = _userRepository.GetPermissionByScreenCode(inputData.HpId, inputData.UserId ,FunctionCode.MasterMaintenanceCode) == PermissionType.Unlimited;
                     return new GetTimeZoneConfGroupOutputData(GetTimeZoneConfGroupStatus.Successful, isHavePermission, datas);
                 }    

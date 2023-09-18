@@ -22,6 +22,7 @@ namespace EmrCalculateApi.Ika.ViewModels
     public class IkaCalculateViewModel : IIkaCalculateViewModel
     {
         private readonly IFutancalcViewModel _iFutancalcViewModel;
+        private readonly IMessenger _messenger;
 
         private const string ModuleName = ModuleNameConst.EmrCalculateIka;
         private IkaCalculateFinder _ikaCalculateFinder;
@@ -96,7 +97,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
 
-        public IkaCalculateViewModel(IFutancalcViewModel iFutancalcViewModel, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
+        public IkaCalculateViewModel(IFutancalcViewModel iFutancalcViewModel, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger)
         {
             _iFutancalcViewModel = iFutancalcViewModel;
             // 変数初期化
@@ -115,6 +116,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             // 点数マスタのキャッシュ
             //_cacheTenMst = new List<TenMstModel>();
             _cacheTenMst = GetDefaultTenMst();
+            _messenger = messenger;
             // 電子算定回数マスタのキャッシュ
             //_cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu();
             //FutanCalcVM = new FutancalcViewModel();
@@ -511,12 +513,12 @@ namespace EmrCalculateApi.Ika.ViewModels
                 }
                 if (AllowSendProgress)
                 {
-                    SendMessager(new RecalculationStatus(false, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
+                    SendMessager(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, AllCalcCount, successCount, string.Empty, UniqueKey));
                 }
             }
             if (AllowSendProgress)
             {
-                SendMessager(new RecalculationStatus(true, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
+                SendMessager(new RecalculationStatus(true, CalculateStatusConstant.RecalculationCheckBox, AllCalcCount, successCount, string.Empty, UniqueKey));
             }
         }
         /// <summary>
@@ -539,7 +541,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(preFix);
             if (AllowSendProgress)
             {
-                SendMessager(new RecalculationStatus(false, 1, AllCalcCount, 0, string.Empty, UniqueKey));
+                SendMessager(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, AllCalcCount, 0, string.Empty, UniqueKey));
             }
 
             //計算処理
@@ -550,7 +552,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
         private void SendMessager(RecalculationStatus status)
         {
-            Messenger.Instance.Send(status);
+            _messenger.Send(status);
         }
 
         /// <summary>

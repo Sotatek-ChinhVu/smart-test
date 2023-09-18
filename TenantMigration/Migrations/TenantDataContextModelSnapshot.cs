@@ -22,6 +22,104 @@ namespace TenantMigration.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Emr.DatabaseEntity.KacodeReceYousiki", b =>
+                {
+                    b.Property<string>("ReceKaCd")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
+                        .HasColumnName("RECE_KA_CD")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("YousikiKaCd")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("YOUSIKI_KA_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("ReceKaCd", "YousikiKaCd");
+
+                    b.ToTable("KACODE_RECE_YOUSIKI");
+                });
+
+            modelBuilder.Entity("Emr.DatabaseEntity.KacodeYousikiMst", b =>
+                {
+                    b.Property<string>("YousikiKaCd")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("YOUSIKI_KA_CD")
+                        .HasColumnOrder(1);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<string>("KaName")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("KA_NAME");
+
+                    b.Property<int>("SortNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("SORT_NO");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("YousikiKaCd");
+
+                    b.ToTable("KACODE_YOUSIKI_MST");
+                });
+
             modelBuilder.Entity("Entity.Tenant.AccountingFormMst", b =>
                 {
                     b.Property<int>("HpId")
@@ -4885,6 +4983,11 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
+                    b.Property<string>("YousikiKaCd")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("YOUSIKI_KA_CD");
+
                     b.HasKey("Id", "HpId");
 
                     b.HasIndex(new[] { "KaId" }, "PT_KA_MST_IDX01");
@@ -7185,6 +7288,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("LOCK_DATE");
 
+                    b.Property<string>("LoginKey")
+                        .HasColumnType("text")
+                        .HasColumnName("LOGINKEY");
+
                     b.Property<string>("Machine")
                         .HasColumnType("text")
                         .HasColumnName("MACHINE");
@@ -9455,13 +9562,39 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
 
+                    b.Property<string>("InfoConsFlg")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("INFO_CONS_FLG");
+
                     b.Property<DateTime>("OnlineConfirmationDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("ONLINE_CONFIRMATION_DATE");
 
+                    b.Property<int>("PrescriptionIssueType")
+                        .HasColumnType("integer")
+                        .HasColumnName("PRESCRIPTION_ISSUE_TYPE");
+
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")
                         .HasColumnName("PT_ID");
+
+                    b.Property<int>("UketukeStatus")
+                        .HasColumnType("integer")
+                        .HasColumnName("UKETUKE_STATUS");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("ID");
 
@@ -13612,6 +13745,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("CONFIRMATION_STATE");
 
+                    b.Property<int>("ConfirmationType")
+                        .HasColumnType("integer")
+                        .HasColumnName("CONFIRMATION_TYPE");
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -13628,6 +13765,11 @@ namespace TenantMigration.Migrations
                     b.Property<int>("HokenPid")
                         .HasColumnType("integer")
                         .HasColumnName("HOKEN_PID");
+
+                    b.Property<string>("InfoConsFlg")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("INFO_CONS_FLG");
 
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
@@ -13657,6 +13799,10 @@ namespace TenantMigration.Migrations
                     b.Property<long>("OyaRaiinNo")
                         .HasColumnType("bigint")
                         .HasColumnName("OYA_RAIIN_NO");
+
+                    b.Property<int>("PrescriptionIssueType")
+                        .HasColumnType("integer")
+                        .HasColumnName("PRESCRIPTION_ISSUE_TYPE");
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")
@@ -30258,6 +30404,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("CONFIRMATION_STATE");
 
+                    b.Property<int>("ConfirmationType")
+                        .HasColumnType("integer")
+                        .HasColumnName("CONFIRMATION_TYPE");
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -30278,6 +30428,11 @@ namespace TenantMigration.Migrations
                     b.Property<int>("HpId")
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID");
+
+                    b.Property<string>("InfoConsFlg")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("INFO_CONS_FLG");
 
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
@@ -30326,6 +30481,10 @@ namespace TenantMigration.Migrations
                     b.Property<long>("OyaRaiinNo")
                         .HasColumnType("bigint")
                         .HasColumnName("OYA_RAIIN_NO");
+
+                    b.Property<int>("PrescriptionIssueType")
+                        .HasColumnType("integer")
+                        .HasColumnName("PRESCRIPTION_ISSUE_TYPE");
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")

@@ -1,4 +1,5 @@
-﻿using Entity.Tenant;
+﻿using Emr.DatabaseEntity;
+using Entity.Tenant;
 using Microsoft.EntityFrameworkCore;
 
 namespace PostgreDataContext
@@ -420,6 +421,9 @@ namespace PostgreDataContext
             modelBuilder.Entity<M56AnalogueCd>().HasKey(i => new { i.AnalogueCd });
             modelBuilder.Entity<PtFamily>().HasKey(p => new { p.FamilyId });
             modelBuilder.Entity<SokatuMst>().HasKey(s => new { s.HpId, s.PrefNo, s.StartYm, s.ReportEdaNo, s.ReportId });
+            modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
+            modelBuilder.Entity<KacodeYousikiMst>().HasKey(s => new { s.YousikiKaCd});
+            modelBuilder.Entity<KacodeReceYousiki>().HasKey(s => new { s.ReceKaCd, s.YousikiKaCd});
             modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
             modelBuilder.Entity<SetMst>()
            .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter("IsDeleted = 0").IsUnique();
@@ -1162,5 +1166,9 @@ namespace PostgreDataContext
         public DbSet<KouiHoukatuMst> KouiHoukatuMsts { get; set; } = default!;
 
         public DbSet<UserToken> UserTokens { get; set; } = default!;
+
+        public DbSet<KacodeYousikiMst> KacodeYousikiMsts { get; set; } = default!;
+
+        public DbSet<KacodeReceYousiki> KacodeReceYousikis { get; set; } = default!;
     }
 }

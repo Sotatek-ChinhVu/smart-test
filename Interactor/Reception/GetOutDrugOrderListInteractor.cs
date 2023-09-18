@@ -1,8 +1,10 @@
-﻿using Domain.Models.CalculateModel;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using Domain.Models.CalculateModel;
 using Domain.Models.Ka;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Domain.Models.User;
+using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Interactor.CalculateService;
@@ -41,6 +43,7 @@ public class GetOutDrugOrderListInteractor : IGetOutDrugOrderListInputPort
             {
                 result = FormatRaiinInfWithReceInfParam(inputData);
             }
+            result = result.OrderBy(item => item.PtNum).ToList();
             return new GetOutDrugOrderListOutputData(result, GetOutDrugOrderListStatus.Successed);
         }
         finally
@@ -54,7 +57,7 @@ public class GetOutDrugOrderListInteractor : IGetOutDrugOrderListInputPort
 
     private List<RaiinInfToPrintModel> FormatRaiinInfWithReceInfParam(GetOutDrugOrderListInputData inputData)
     {
-        var kaMstList = _kaMstRepository.GetList();
+        var kaMstList = _kaMstRepository.GetList(DeleteTypes.None);
         var userMstList = _userRepository.GetAll(inputData.SinDate, true, false);
         List<RaiinInfToPrintModel> listSource = new();
         int intStartDate = inputData.FromDate;
@@ -73,20 +76,33 @@ public class GetOutDrugOrderListInteractor : IGetOutDrugOrderListInputPort
         /// get list model by KaikeiTotalCalculate 
         /// KaikeiTotalCalculate is get for 1 month only
         /// So have to get data per month and group it
+
+        List<int> dateList = new();
         while (intStartDate <= intEndDate)
         {
-            var receInfs = _calculateService.GetListReceInf(new GetInsuranceInfInputData(inputData.HpId, 0, intStartDate.AsInteger())).ReceInfModels;
+            dateList.Add(intStartDate);
+            intStartDate++;
+        }
+
+        object obj = new object();
+        Parallel.ForEach(dateList, date =>
+        {
+            var receInfs = _calculateService.GetListReceInf(new GetInsuranceInfInputData(inputData.HpId, 0, date.AsInteger())).ReceInfModels;
             if (receInfs != null && receInfs.Any())
             {
-                listKaikeFrm.AddRange(receInfs);
+                lock (obj)
+                {
+                    listKaikeFrm.AddRange(receInfs);
+                }
             }
-            intStartDate += 1;
-        }
+        });
 
         listSource.AddRange(listKaikeFrm.Select(u => new RaiinInfToPrintModel(inputData.IsPrintAccountingCard ? PrintMode.PrintAccountingCard : PrintMode.PrintAccountingCardList, u)).ToList());
 
         var ptIdList = listSource.Select(item => item.PtId).Distinct().ToList();
         var ptInfList = _patientInforRepository.SearchPatient(inputData.HpId, ptIdList);
+
+        listSource = listSource.OrderBy(item => item.SinDate).ToList();
         foreach (var model in listSource)
         {
             // Formart for RaiinInfToPrintModel with param ReceInfModel

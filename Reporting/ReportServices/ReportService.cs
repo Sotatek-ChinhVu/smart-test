@@ -77,8 +77,9 @@ public class ReportService : IReportService
     private readonly IKensaLabelCoReportService _kensaLabelCoReportService;
     private readonly IReceiptPrintExcelService _receiptPrintExcelService;
     private readonly IImportCSVCoReportService _importCSVCoReportService;
+    private readonly IStaticsticExportCsvService _staticsticExportCsvService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService, IReceiptPrintExcelService receiptPrintExcelService, IImportCSVCoReportService importCSVCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService, IReceiptPrintExcelService receiptPrintExcelService, IImportCSVCoReportService importCSVCoReportService, IStaticsticExportCsvService staticsticExportCsvService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -111,6 +112,7 @@ public class ReportService : IReportService
         _kensaLabelCoReportService = kensaLabelCoReportService;
         _receiptPrintExcelService = receiptPrintExcelService;
         _importCSVCoReportService = importCSVCoReportService;
+        _staticsticExportCsvService = staticsticExportCsvService;
     }
 
     //Byomei
@@ -270,7 +272,21 @@ public class ReportService : IReportService
 
         List<CoAccountDueListModel> nyukinModels = _coAccountingFinder.GetAccountDueList(hpId, ptId);
         List<int> months = new();
+
+        List<CoAccountDueListModel> accountDueListUnique = new();
         foreach (var model in multiAccountDueListModels)
+        {
+            if (accountDueListUnique.Any(item => item.SinDate == model.SinDate
+                                                 && item.NyukinKbn == model.NyukinKbn
+                                                 && item.RaiinNo == model.RaiinNo
+                                                 && item.OyaRaiinNo == model.OyaRaiinNo))
+            {
+                continue;
+            }
+            accountDueListUnique.Add(model);
+        }
+
+        foreach (var model in accountDueListUnique)
         {
             var selectedAccountDueListModel = model;
             var accountDueListModels = nyukinModels.FindAll(p => p.SinDate / 100 == model.SinDate / 100);
@@ -548,7 +564,7 @@ public class ReportService : IReportService
     }
 
     #region Period Report
-    public AccountingResponse GetPeriodPrintData(int hpId, int startDate, int endDate, List<PtInfInputItem> sourcePt, int printSort, bool isPrintList, bool printByMonth, bool printByGroup, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn, int hakkoDay, string memo, string formFileName, bool nyukinBase)
+    public AccountingResponse GetPeriodPrintData(int hpId, int startDate, int endDate, List<PtInfInputItem> sourcePt, List<(int grpId, string grpCd)> grpConditions, int printSort, bool isPrintList, bool printByMonth, bool printByGroup, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn, int hakkoDay, string memo, string formFileName, bool nyukinBase)
     {
         DateTime startDateOrigin = CIUtil.IntToDate(startDate);
         DateTime endDateOrigin = CIUtil.IntToDate(endDate);
@@ -558,7 +574,6 @@ public class ReportService : IReportService
         List<(int startDate, int endDate)> dates = GetDates(startDateOrigin, endDateOrigin, startDate, endDate, printByMonth);
         if (isPrintList)
         {
-            List<(int grpId, string grpCd)> grpConditions = GetGrpCondition(hpId);
             List<(long ptId, int hokenId)> ptCoditions = GetPtCondition(sourcePt, printSort);
 
             if (printByGroup)
@@ -652,32 +667,6 @@ public class ReportService : IReportService
         return 12 * (endD.Year - startD.Year) + endD.Month - startD.Month;
     }
 
-    private List<(int grpId, string grpCd)> GetGrpCondition(int hpId)
-    {
-        List<(int grpId, string grpCd)> grpConditions = new();
-        var ptGrpNameMstModels = _coAccountingFinder.GetPtGrpNameMstModels(hpId);
-        foreach (var item in ptGrpNameMstModels)
-        {
-            if (!string.IsNullOrEmpty(item.GrpItemSelected) && !item.IsSelecteAllGrpItem)
-            {
-                var model = item.PtGrpItemModels.FirstOrDefault(x => x.GrpCode == item.GrpItemSelected);
-                if (model != null)
-                {
-                    grpConditions.Add((model.GrpId, model.GrpCode));
-                }
-            }
-            else if (item.IsSelecteAllGrpItem)
-            {
-                foreach (var grpItem in item.PtGrpItemModels)
-                {
-                    if (grpItem.GrpCode == "al" || string.IsNullOrEmpty(grpItem.GrpCode)) continue;
-                    grpConditions.Add((grpItem.GrpId, grpItem.GrpCode));
-                }
-            }
-        }
-        return grpConditions;
-    }
-
     private List<(long ptId, int hokenId)> GetPtCondition(List<PtInfInputItem> sourcePt, int printSort, bool exportCSV = false)
     {
         List<(long ptId, int hokenId)> ptCoditions = new();
@@ -704,4 +693,9 @@ public class ReportService : IReportService
     }
     #endregion
     #endregion
+
+    public CommonExcelReportingModel ExportCsv(int hpId, string menuName, int menuId, int timeFrom, int timeTo, int? monthFrom = 0, int? monthTo = 0, int? dateFrom = 0, int? dateTo = 0, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0, bool? isPutColName = false, CoFileType? coFileType = null)
+    {
+        return _staticsticExportCsvService.ExportCsv(hpId, menuName, menuId, timeFrom, timeTo, monthFrom, monthTo, dateFrom, dateTo, isPutTotalRow, tenkiDateFrom, tenkiDateTo, enableRangeFrom, enableRangeTo, ptNumFrom, ptNumTo, isPutColName, coFileType);
+    }
 }

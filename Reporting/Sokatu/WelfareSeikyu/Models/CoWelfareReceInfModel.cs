@@ -110,10 +110,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         public string? JyukyusyaNo(List<string> kohiHoubetus)
         {
             return
-                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1.JyukyusyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2.JyukyusyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3.JyukyusyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4.JyukyusyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu ?? string.Empty) ? PtKohi1?.JyukyusyaNo ?? string.Empty :
+                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu ?? string.Empty) ? PtKohi2?.JyukyusyaNo ?? string.Empty :
+                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu ?? string.Empty) ? PtKohi3?.JyukyusyaNo ?? string.Empty :
+                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu ?? string.Empty) ? PtKohi4?.JyukyusyaNo ?? string.Empty :
                 "";
         }
 
@@ -152,10 +152,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         public string TokusyuNo(List<string> kohiHoubetus)
         {
             return
-                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1.TokusyuNo ?? "" :
-                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2.TokusyuNo ?? "" :
-                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3.TokusyuNo ?? "" :
-                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4.TokusyuNo ?? "" :
+                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1?.TokusyuNo ?? "" :
+                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2?.TokusyuNo ?? "" :
+                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3?.TokusyuNo ?? "" :
+                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4?.TokusyuNo ?? "" :
                 "";
         }
 

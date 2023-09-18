@@ -18,7 +18,7 @@ public interface IReceiptRepository : IRepositoryBase
 
     bool SaveReceCmtList(int hpId, int userId, List<ReceCmtModel> receCmtList);
 
-    List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId);
+    List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId, bool isGetAll = false);
 
     List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId);
 
@@ -106,6 +106,10 @@ public interface IReceiptRepository : IRepositoryBase
     List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByStartDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
 
     List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByEndDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
+
+    bool ResetStatusAfterReCalc(int hpId, List<long> ptIds, int seikyuYm);
+
+    bool ResetStatusAfterCheckErr(int hpId, int userId, int seikyuYm, List<ReceRecalculationModel> receRecalculationList);
     #endregion
 
     int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm);
