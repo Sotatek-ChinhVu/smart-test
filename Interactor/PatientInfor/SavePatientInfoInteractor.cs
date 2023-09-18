@@ -1,4 +1,5 @@
-﻿using Domain.Constant;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using Domain.Constant;
 using Domain.Models.Diseases;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
@@ -9,6 +10,8 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using UseCase.PatientInfor.Save;
 
 namespace Interactor.PatientInfor
@@ -19,6 +22,7 @@ namespace Interactor.PatientInfor
         private readonly ISystemConfRepository _systemConfRepository;
         private readonly IPtDiseaseRepository _ptDiseaseRepository;
         private readonly IAmazonS3Service _amazonS3Service;
+        private const byte retryNumber = 50;
 
         public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service, IPtDiseaseRepository ptDiseaseRepository)
         {
@@ -28,6 +32,7 @@ namespace Interactor.PatientInfor
             _ptDiseaseRepository = ptDiseaseRepository;
         }
 
+        [Obsolete]
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
         {
             PatientInforModel patientInforModel = new();
@@ -82,10 +87,31 @@ namespace Interactor.PatientInfor
                     return listReturn;
                 }
 
-                (bool resultSave, long ptId) result;
+                (bool resultSave, long ptId) result = new();
                 if (inputData.Patient.PtId == 0)
                 {
-                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                    bool retry = true;
+                    var count = 0;
+                    while (retry == true && count < retryNumber) {
+                        try
+                        {
+                            result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                        } catch (Exception ex)
+                        {
+                            if (HandleException(ex) == "23505" && ex.InnerException?.Message.Contains("PT_INF_UKEY02") == true)
+                            {
+                                Thread.Sleep(1000);
+                                count++;
+                                continue;
+                            }
+                            else
+                            {
+                                throw ex ?? new();
+                            }
+                        }
+                        retry = false;
+                        count++;
+                    } 
                 }
                 else
                     result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId, inputData.HokenIdList);
@@ -846,5 +872,28 @@ namespace Interactor.PatientInfor
             }
             return true;
         }
+
+        #region Catch Exception
+        [Obsolete]
+        private static string HandleException(Exception exception)
+        {
+            if (exception is DbUpdateConcurrencyException concurrencyEx)
+            {
+                return "0";
+            }
+            else if (exception is DbUpdateException dbUpdateEx)
+            {
+                if (dbUpdateEx.InnerException != null)
+                {
+                    if (dbUpdateEx.InnerException is PostgresException postgreException)
+                    {
+                        return postgreException.Code ?? string.Empty;
+                    }
+                }
+            }
+
+            return "0";
+        }
+        #endregion
     }
 }
