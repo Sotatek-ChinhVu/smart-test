@@ -131,6 +131,7 @@ using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
 using Interactor.PatientInfor.PtKyuseiInf;
 using Interactor.PatientInfor.SortPatientCommon;
+using Interactor.PatientManagement;
 using Interactor.PtGroupMst;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
@@ -147,6 +148,7 @@ using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SetMst.CommonSuperSet;
+using Interactor.SetSendaiGeneration;
 using Interactor.SinKoui;
 using Interactor.SpecialNote;
 using Interactor.StickyNote;
@@ -348,6 +350,7 @@ using UseCase.FlowSheet.GetTooltip;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
+using UseCase.HokenMst.GetHokenMst;
 using UseCase.Holiday.SaveHoliday;
 using UseCase.Insurance.FindHokenInfByPtId;
 using UseCase.Insurance.FindPtHokenList;
@@ -454,6 +457,8 @@ using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
+using UseCase.MstItem.GetKensaCenterMsts;
+using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetMaterialMsts;
@@ -467,6 +472,7 @@ using UseCase.MstItem.GetTenItemCds;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.GetTenOfItem;
 using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -530,6 +536,7 @@ using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
+using UseCase.PatientManagement;
 using UseCase.PtGroupMst.CheckAllowDelete;
 using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
@@ -627,6 +634,8 @@ using UseCase.SetMst.GetList;
 using UseCase.SetMst.GetToolTip;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
+using UseCase.SetSendaiGeneration.Delete;
+using UseCase.SetSendaiGeneration.GetList;
 using UseCase.SinKoui.GetSinKoui;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
@@ -708,13 +717,8 @@ using Domain.Models.ListSetMst;
 using UseCase.ListSetMst.GetTreeListSet;
 using Interactor.ListSetMst;
 using UseCase.MainMenu.GetKensaIraiLog;
-using UseCase.SetSendaiGeneration.GetList;
-using Interactor.SetSendaiGeneration;
-using UseCase.MstItem.GetKensaCenterMsts;
-using UseCase.SetSendaiGeneration.Delete;
 using UseCase.SetSendaiGeneration.Add;
 using UseCase.MainMenu.KensaIraiReport;
-using UseCase.MstItem.GetKensaStdMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1393,11 +1397,12 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateKensaStdMstInputData, UpdateKensaStdMstInteractor>();
             busBuilder.RegisterUseCase<GetKensaStdMstInputData, GetKensaStdMstModelsInteractor>();
             busBuilder.RegisterUseCase<GetUsedKensaItemCdsInputData, GetUsedKensaItemCdsInteractor>();
-            busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
 
+            busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
             busBuilder.RegisterUseCase<GetMaterialMstsInputData, GetMaterialMstsInteractor>();
             busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
             busBuilder.RegisterUseCase<GetKensaCenterMstsInputData, GetKensaCenterMstsInteractor>();
+            busBuilder.RegisterUseCase<GetTenOfItemInputData, GetTenOfItemInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -1701,6 +1706,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Disease Name Mst Seach
             busBuilder.RegisterUseCase<DiseaseNameMstSearchInputData, DiseaseNameMstSearchInteractor>();
+
+            //PatientManagement
+            busBuilder.RegisterUseCase<SearchPtInfsInputData, SearchPtInfsInteractor>();
+            busBuilder.RegisterUseCase<GetHokenMstInputData, GetHokenMstInteractor>();
 
             //ListSetMst
             busBuilder.RegisterUseCase<GetTreeListSetInputData, GetTreeListSetInteractor>();

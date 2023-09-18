@@ -17,6 +17,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -6465,6 +6466,25 @@ namespace Infrastructure.Repositories
             {
                 result.Add(kensaCenterMst.CenterCd ?? string.Empty, kensaCenterMst.CenterName ?? string.Empty);
             }
+
+            return result;
+        }
+
+        public Dictionary<string, double> GetTenOfItem(int hpId)
+        {
+            Dictionary<string, double> result = new Dictionary<string, double>();
+            var tenOfHRTItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160162950" && p.IsDeleted == DeleteTypes.None)
+                                                        .OrderByDescending(p => p.StartDate).FirstOrDefault();
+
+            var a = tenOfHRTItem != null ? tenOfHRTItem.Ten : 0;
+
+            var tenOfIGEItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160056110" && p.IsDeleted == DeleteTypes.None)
+                                                        .OrderByDescending(p => p.StartDate).FirstOrDefault();
+
+            var b = tenOfIGEItem != null ? tenOfIGEItem.Ten : 0;
+
+            result.Add("TenOfHRTItem", a);
+            result.Add("TenOfIGEItem", b);
 
             return result;
         }
