@@ -147,6 +147,7 @@ using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SetMst.CommonSuperSet;
+using Interactor.SetSendaiGeneration;
 using Interactor.SinKoui;
 using Interactor.SpecialNote;
 using Interactor.StickyNote;
@@ -454,6 +455,8 @@ using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
+using UseCase.MstItem.GetKensaCenterMsts;
+using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetMaterialMsts;
@@ -467,6 +470,7 @@ using UseCase.MstItem.GetTenItemCds;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.GetTenOfItem;
 using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -627,6 +631,8 @@ using UseCase.SetMst.GetList;
 using UseCase.SetMst.GetToolTip;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
+using UseCase.SetSendaiGeneration.Delete;
+using UseCase.SetSendaiGeneration.GetList;
 using UseCase.SinKoui.GetSinKoui;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
@@ -1482,10 +1488,10 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKensaStdMstInputData, GetKensaStdMstModelsInteractor>();
             busBuilder.RegisterUseCase<GetUsedKensaItemCdsInputData, GetUsedKensaItemCdsInteractor>();
             busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
-
             busBuilder.RegisterUseCase<GetMaterialMstsInputData, GetMaterialMstsInteractor>();
             busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
             busBuilder.RegisterUseCase<GetKensaCenterMstsInputData, GetKensaCenterMstsInteractor>();
+            busBuilder.RegisterUseCase<GetTenOfItemInputData, GetTenOfItemInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
