@@ -1,5 +1,5 @@
 ﻿using Domain.Models.ByomeiSetGenerationMst;
-using UseCase.ByomeiSetGenerationMst.GetListByomeiSetGenerationMst;
+using UseCase.MstItem.GetListByomeiSetGenerationMst;
 
 namespace Interactor.Diseases
 {

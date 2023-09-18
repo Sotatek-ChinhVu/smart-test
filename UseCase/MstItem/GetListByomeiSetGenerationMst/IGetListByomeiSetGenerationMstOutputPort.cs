@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.ByomeiSetGenerationMst.GetListByomeiSetGenerationMst
+namespace UseCase.MstItem.GetListByomeiSetGenerationMst
 {
     public interface IGetListByomeiSetGenerationMstOutputPort : IOutputPort<GetListByomeiSetGenerationMstOutputData>
     {

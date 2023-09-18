@@ -1,7 +1,7 @@
 ﻿using Domain.Models.ByomeiSetGenerationMst;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.ByomeiSetGenerationMst.GetListByomeiSetGenerationMst
+namespace UseCase.MstItem.GetListByomeiSetGenerationMst
 {
     public sealed class GetListByomeiSetGenerationMstOutputData : IOutputData
     {

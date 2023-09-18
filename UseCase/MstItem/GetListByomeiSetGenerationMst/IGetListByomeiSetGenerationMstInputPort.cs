@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.ByomeiSetGenerationMst.GetListByomeiSetGenerationMst
+namespace UseCase.MstItem.GetListByomeiSetGenerationMst
 {
     public interface IGetListByomeiSetGenerationMstInputPort : IInputPort<GetListByomeiSetGenerationMstInputData, GetListByomeiSetGenerationMstOutputData>
     {

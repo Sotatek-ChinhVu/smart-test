@@ -1,4 +1,4 @@
-﻿namespace UseCase.ByomeiSetGenerationMst.GetListByomeiSetGenerationMst
+﻿namespace UseCase.MstItem.GetListByomeiSetGenerationMst
 {
     public enum GetListByomeiSetGenerationMstStatus
     {

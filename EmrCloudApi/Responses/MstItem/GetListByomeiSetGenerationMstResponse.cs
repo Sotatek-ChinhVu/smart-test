@@ -1,6 +1,6 @@
 ﻿using Domain.Models.ByomeiSetGenerationMst;
 
-namespace EmrCloudApi.Responses.Diseases
+namespace EmrCloudApi.Responses.MstItem
 {
     public class GetListByomeiSetGenerationMstResponse
     {

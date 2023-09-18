@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.ByomeiSetGenerationMst.GetListByomeiSetGenerationMst
+namespace UseCase.MstItem.GetListByomeiSetGenerationMst
 {
     public sealed class GetListByomeiSetGenerationMstInputData : IInputData<GetListByomeiSetGenerationMstOutputData>
     {
@@ -8,6 +8,6 @@ namespace UseCase.ByomeiSetGenerationMst.GetListByomeiSetGenerationMst
         {
             HpId = hpId;
         }
-        public int HpId {  get; private set; }
+        public int HpId { get; private set; }
     }
 }

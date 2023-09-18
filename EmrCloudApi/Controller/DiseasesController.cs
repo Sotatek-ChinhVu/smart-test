@@ -6,7 +6,6 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Diseases;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using UseCase.ByomeiSetGenerationMst.GetListByomeiSetGenerationMst;
 using UseCase.Core.Sync;
 using UseCase.Diseases.GetAllByomeiByPtId;
 using UseCase.Diseases.GetDiseaseList;

@@ -714,23 +714,16 @@ using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
 using Domain.Models.ListSetMst;
-using UseCase.ListSetMst.GetTreeListSet;
-using Interactor.ListSetMst;
 using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.SetSendaiGeneration.Add;
 using UseCase.UpsertMaterialMaster;
-using UseCase.Diseases.GetTreeByomeiSet;
-using UseCase.ListSetGenerationMst.GetListSetGenerationMst;
 using Interactor.ListSetGenerationMst;
 using Domain.Models.ListSetGenerationMst;
-using UseCase.MainMenu.GetKensaIraiLog;
-using UseCase.SetSendaiGeneration.Add;
+using Domain.Models.ByomeiSetGenerationMst;
+using UseCase.MstItem.GetListByomeiSetGenerationMst;
 using UseCase.MstItem.GetTreeListSet;
 using UseCase.MstItem.GetTreeByomeiSet;
 using UseCase.MstItem.GetListSetGenerationMst;
-using Domain.Models.ByomeiSetGenerationMst;
-using UseCase.ByomeiSetGenerationMst.GetListByomeiSetGenerationMst;
-
 namespace EmrCloudApi.Configs.Dependency
 {
     public class ModuleDependencySetup : IDependencySetup
