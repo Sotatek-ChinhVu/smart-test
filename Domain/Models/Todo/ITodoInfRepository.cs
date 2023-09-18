@@ -4,7 +4,7 @@ namespace Domain.Models.Todo
 {
     public interface ITodoInfRepository : IRepositoryBase
     {
-        void Upsert(List<TodoInfModel> upsertTodoList, int userId, int hpId);
+        List<TodoInfModel> Upsert(List<TodoInfModel> upsertTodoList, int userId, int hpId);
 
         List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, bool incDone);
 

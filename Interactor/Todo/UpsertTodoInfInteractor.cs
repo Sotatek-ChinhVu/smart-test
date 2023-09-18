@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Todo;
 using UseCase.Todo;
+using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoInf;
 
 namespace Interactor.Todo;
@@ -124,5 +125,45 @@ public class UpsertTodoInfInteractor : IUpsertTodoInfInputPort
         }
 
         return UpsertTodoInfStatus.Success;
+    }
+
+    private List<GetListTodoInfFinderOutputItem> GetListTodoInfos(List<TodoInfModel> todoInfModels)
+    {
+        List<GetListTodoInfFinderOutputItem> result = new(todoInfModels.Select(x => new GetListTodoInfFinderOutputItem(
+                                                                        x.HpId,
+                                                                        x.PtId,
+                                                                        x.PtNum,
+                                                                        x.PatientName,
+                                                                        x.SinDate,
+                                                                        x.PrimaryDoctorName,
+                                                                        x.KaSname,
+                                                                        x.TodoKbnName,
+                                                                        x.Cmt1,
+                                                                        x.CreateDate,
+                                                                        x.CreaterName,
+                                                                        x.TantoName,
+                                                                        x.Cmt2,
+                                                                        x.UpdateDate,
+                                                                        x.UpdaterName,
+                                                                        x.TodoGrpName,
+                                                                        x.Term,
+                                                                        x.HokenPid,
+                                                                        x.Houbetu,
+                                                                        x.HokenKbn,
+                                                                        x.HokensyaNo,
+                                                                        x.HokenId,
+                                                                        x.Tanto,
+                                                                        x.TodoNo,
+                                                                        x.TodoEdaNo,
+                                                                        x.RaiinNo,
+                                                                        x.TodoKbnNo,
+                                                                        x.TodoGrpNo,
+                                                                        x.IsDone,
+                                                                        x.Status,
+                                                                        x.Sex,
+                                                                        x.GroupColor,
+                                                                        x.CreateId
+                                                                        )));
+        return result;
     }
 }

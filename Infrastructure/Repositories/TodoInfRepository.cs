@@ -14,39 +14,56 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public void Upsert(List<TodoInfModel> upsertTodoList, int userId, int hpId)
+        public List<TodoInfModel> Upsert(List<TodoInfModel> upsertTodoList, int userId, int hpId)
         {
+
+            var todoInfs = new List<TodoInf>();
             foreach (var input in upsertTodoList)
             {
-                var todoInfs = TrackingDataContext.TodoInfs.FirstOrDefault(x => x.TodoNo == input.TodoNo && x.TodoEdaNo == input.TodoEdaNo && x.PtId == input.PtId && x.IsDeleted == DeleteTypes.None);
-                if (todoInfs != null)
+                var todoInf = TrackingDataContext.TodoInfs.FirstOrDefault(x => x.TodoNo == input.TodoNo && x.TodoEdaNo == input.TodoEdaNo && x.PtId == input.PtId && x.IsDeleted == DeleteTypes.None);
+                if (todoInf != null)
                 {
                     if (input.IsDeleted == DeleteTypes.Deleted)
                     {
-                        todoInfs.IsDeleted = DeleteTypes.Deleted;
+                        todoInf.IsDeleted = DeleteTypes.Deleted;
                     }
                     else
                     {
-                        todoInfs.SinDate = input.SinDate;
-                        todoInfs.RaiinNo = input.RaiinNo;
-                        todoInfs.TodoKbnNo = input.TodoKbnNo;
-                        todoInfs.TodoGrpNo = input.TodoGrpNo;
-                        todoInfs.Tanto = input.Tanto;
-                        todoInfs.Term = input.Term;
-                        todoInfs.Cmt1 = input.Cmt1;
-                        todoInfs.Cmt2 = input.Cmt2;
-                        todoInfs.IsDone = input.IsDone;
-                        todoInfs.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        todoInfs.UpdateId = userId;
-                        todoInfs.UpdateMachine = string.Empty;
+                        todoInf.SinDate = input.SinDate;
+                        todoInf.RaiinNo = input.RaiinNo;
+                        todoInf.TodoKbnNo = input.TodoKbnNo;
+                        todoInf.TodoGrpNo = input.TodoGrpNo;
+                        todoInf.Tanto = input.Tanto;
+                        todoInf.Term = input.Term;
+                        todoInf.Cmt1 = input.Cmt1;
+                        todoInf.Cmt2 = input.Cmt2;
+                        todoInf.IsDone = input.IsDone;
+                        todoInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        todoInf.UpdateId = userId;
+                        todoInf.UpdateMachine = string.Empty;
                     }
+                    todoInfs.Add(todoInf);
                 }
                 else
                 {
-                    TrackingDataContext.TodoInfs.AddRange(ConvertTo_TodoGrpMst(input, userId, hpId));
+                    var newTodoInf = ConvertTo_TodoGrpMst(input, userId, hpId);
+                    TrackingDataContext.TodoInfs.AddRange(newTodoInf);
+                    todoInfs.Add(newTodoInf);
                 }
             }
             TrackingDataContext.SaveChanges();
+
+            if (todoInfs.Count <= 1)
+            {
+                var firtTodo = todoInfs.FirstOrDefault() ?? new();
+                var result = GetList(hpId, firtTodo.TodoNo, firtTodo.TodoEdaNo, true);
+                return result;
+            }
+            else
+            {
+                var result = GetList(hpId, 0, 0, true);
+                return result;
+            }
         }
 
         private TodoInf ConvertTo_TodoGrpMst(TodoInfModel u, int userId, int hpId)
