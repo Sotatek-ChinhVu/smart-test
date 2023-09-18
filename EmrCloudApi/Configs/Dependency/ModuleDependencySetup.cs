@@ -722,6 +722,7 @@ using UseCase.Diseases.GetTreeByomeiSet;
 using UseCase.UpdateKensaMst;
 using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.SetSendaiGeneration.Add;
+using UseCase.MstItem.GetTreeListSet;
 
 namespace EmrCloudApi.Configs.Dependency
 {
