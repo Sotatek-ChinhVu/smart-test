@@ -176,14 +176,17 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 }
             );
 
+            var maxReceSeikyuList = maxReceSeikyus.Where(item => item.SeikyuYm == seikyuYm).ToList();
+            var ptIdList = maxReceSeikyuList.Select(item => item.PtId).ToList();
             var raiinInfs = _tenantDataContext.RaiinInfs.FindListQueryableNoTrack();
+
             if (ptIds?.Count >= 1)
             {
+                ptIdList.AddRange(ptIds);
                 raiinInfs = raiinInfs.Where(r => ptIds.Contains(r.PtId));
             }
 
-            var maxReceSeikyuList = maxReceSeikyus.Where(item => item.SeikyuYm == seikyuYm).ToList();
-            var ptIdList = maxReceSeikyuList.Select(item => item.PtId).Distinct().ToList();
+            ptIdList = ptIdList.Distinct().ToList();
             var sinYmList = maxReceSeikyuList.Select(item => item.SinYm).Distinct().ToList();
 
             var raiinInfList = raiinInfs.Where(raiinInf => raiinInf.HpId == hpId &&
@@ -198,6 +201,14 @@ namespace EmrCalculateApi.Ika.DB.Finder
                                                    sinYmList.Contains(raiinInf.SinDate / 100))
                                                ))
                                          .ToList();
+
+            if (ptIds?.Count >= 1)
+            {
+                raiinInfList = raiinInfList.Where(r => ptIds.Contains(r.PtId)).ToList();
+            }
+
+            ptIdList = raiinInfList.Select(item => item.PtId).Distinct().ToList();
+            sinYmList = raiinInfList.Select(item => (int)Math.Floor((double)item.SinDate / 100)).Distinct().ToList();
             var receSeikyuList = receSeikyus.Where(item => item.HpId == hpId
                                                            && ptIdList.Contains(item.PtId)
                                                            && sinYmList.Contains(item.SinYm))
