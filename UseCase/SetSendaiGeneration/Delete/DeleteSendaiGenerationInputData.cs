@@ -17,8 +17,8 @@ namespace UseCase.SetSendaiGeneration.Delete
             UserId = userId;
         }
 
-        public int GenerationId { get; set; }
-        public int RowIndex { get; set; }
-        public int UserId { get; set; }
+        public int GenerationId { get; private set; }
+        public int RowIndex { get; private set; }
+        public int UserId { get; private set; }
     }
 }
