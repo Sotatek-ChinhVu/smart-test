@@ -919,6 +919,42 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         return iraiCdList.Count == kensaInfCount;
     }
 
+    public List<KensaIraiLogModel> GetKensaIraiLogModels(int hpId, int startDate, int endDate)
+    {
+        Stopwatch stopWatch = new Stopwatch();
+        stopWatch.Start();
+        var kensaIraiLogEntities = NoTrackingDataContext.KensaIraiLogs.Where(item => item.HpId == hpId
+                                                                                     && item.IraiDate >= startDate
+                                                                                     && item.IraiDate <= endDate);
+        var kencenterMstEntities = NoTrackingDataContext.KensaCenterMsts.Where(item => item.HpId == hpId);
+        var query = from kensaIraiLog in kensaIraiLogEntities
+                    join kensaCenterMst in kencenterMstEntities on
+                    new { kensaIraiLog.HpId, kensaIraiLog.CenterCd } equals
+                    new { kensaCenterMst.HpId, kensaCenterMst.CenterCd } into kensaInfList
+                    from kensaInf in kensaInfList.DefaultIfEmpty()
+                    select new
+                    {
+                        kensaIraiLog,
+                        CenterName = kensaInf == null ? string.Empty : kensaInf.CenterName,
+                    };
+        var result = query.AsEnumerable()
+                          .Select(item => new KensaIraiLogModel(
+                                              item.kensaIraiLog.IraiDate,
+                                              item.kensaIraiLog.CenterCd,
+                                              item.CenterName,
+                                              item.kensaIraiLog.FromDate,
+                                              item.kensaIraiLog.ToDate,
+                                              item.kensaIraiLog.IraiFile ?? string.Empty,
+                                              item.kensaIraiLog.IraiList ?? new byte[] { },
+                                              item.kensaIraiLog.CreateDate))
+                          .ToList();
+        stopWatch.Stop();
+        TimeSpan ts = stopWatch.Elapsed;
+        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+            ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+        return result;
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
