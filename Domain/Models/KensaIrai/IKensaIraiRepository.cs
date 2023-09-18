@@ -27,4 +27,6 @@ public interface IKensaIraiRepository : IRepositoryBase
     bool DeleteKensaInfModel(int hpId, int userId, List<KensaInfModel> kensaInfList);
 
     bool CheckExistIraiCdList(int hpId, List<long> iraiCdList);
+
+    List<KensaIraiLogModel> GetKensaIraiLogModels(int hpId, int startDate, int endDate);
 }

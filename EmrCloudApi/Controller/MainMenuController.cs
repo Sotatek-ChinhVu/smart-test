@@ -23,6 +23,7 @@ using Domain.Models.KensaIrai;
 using EmrCloudApi.Requests.MainMenu.RequestItem;
 using UseCase.MainMenu.GetKensaInf;
 using UseCase.MainMenu.DeleteKensaInf;
+using UseCase.MainMenu.GetKensaIraiLog;
 
 namespace EmrCloudApi.Controller;
 
@@ -161,11 +162,11 @@ public class MainMenuController : AuthorizeControllerBase
         var kensaInfList = request.KensaInfList
             .Select(item => new KensaInfModel(
                                 item.PtId,
-                                item.RaiinNo, 
-                                item.IraiCd, 
+                                item.RaiinNo,
+                                item.IraiCd,
                                 item.KensaInfDetailList.Select(item => new KensaInfDetailModel(
-                                                                           item.SeqNo, 
-                                                                           item.PtId, 
+                                                                           item.SeqNo,
+                                                                           item.PtId,
                                                                            item.IraiCd))
                                                        .ToList()))
             .ToList();
@@ -174,6 +175,16 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new DeleteKensaInfPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<DeleteKensaInfResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKensaIraiLog)]
+    public ActionResult<Response<GetKensaIraiLogResponse>> GetKensaIraiLogLog([FromQuery] GetKensaIraiLogRequest request)
+    {
+        var input = new GetKensaIraiLogInputData(HpId, request.StartDate, request.EndDate);
+        var output = _bus.Handle(input);
+        var presenter = new GetKensaIraiLogLogPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKensaIraiLogResponse>>(presenter.Result);
     }
 
     #region private function
