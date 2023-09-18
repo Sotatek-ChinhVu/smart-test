@@ -53,8 +53,7 @@ using UseCase.MstItem.GetTenItemCds;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
-using UseCase.MstItem.GetTenOfHRTItem;
-using UseCase.MstItem.GetTenOfIGEItem;
+using UseCase.MstItem.GetTenOfItem;
 using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -811,20 +810,10 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetKensaCenterMstsResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.GetTenOfIGEItem)]
-        public ActionResult<Response<GetTenOfIGEItemResponse>> GetTenOfIGEItem()
-        {
-            var input = new GetTenOfIGEItemInputData(HpId);
-            var output = _bus.Handle(input);
-            var presenter = new GetTenOfIGEItemPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<GetTenOfIGEItemResponse>>(presenter.Result);
-        }
-
         [HttpGet(ApiPath.GetTenOfHRTItem)]
         public ActionResult<Response<GetTenOfHRTItemResponse>> GetTenOfHRTItem()
         {
-            var input = new GetTenOfHRTItemInputData(HpId);
+            var input = new GetTenOfItemInputData(HpId);
             var output = _bus.Handle(input);
             var presenter = new GetTenOfHRTItemPresenter();
             presenter.Complete(output);

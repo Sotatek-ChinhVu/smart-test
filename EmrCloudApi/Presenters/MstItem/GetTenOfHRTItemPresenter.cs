@@ -1,24 +1,24 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MstItem;
-using UseCase.MstItem.GetTenOfHRTItem;
+using UseCase.MstItem.GetTenOfItem;
 
 namespace EmrCloudApi.Presenters.MstItem
 {
-    public class GetTenOfHRTItemPresenter : IGetTenOfHRTItemOutputPort
+    public class GetTenOfHRTItemPresenter : IGetTenOfItemOutputPort
     {
         public Response<GetTenOfHRTItemResponse> Result { get; private set; } = default!;
 
-        public void Complete(GetTenOfHRTItemOutputData outputData)
+        public void Complete(GetTenOfItemOutputData outputData)
         {
             Result = new Response<GetTenOfHRTItemResponse>()
             {
-                Data = new GetTenOfHRTItemResponse(outputData.TenOfHRTItem),
+                Data = new GetTenOfHRTItemResponse(outputData.TenOfItem),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
             {
-                case GetTenOfHRTItemStatus.Success:
+                case GetTenOfItemStatus.Success:
                     Result.Message = ResponseMessage.Success;
                     break;
             }

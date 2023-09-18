@@ -2,11 +2,11 @@
 {
     public class GetTenOfHRTItemResponse
     {
-        public GetTenOfHRTItemResponse(double tenOfHRTItem)
+        public GetTenOfHRTItemResponse(Dictionary<string, double> tenOfItem)
         {
-            TenOfHRTItem = tenOfHRTItem;
+            TenOfItem = tenOfItem;
         }
 
-        public double TenOfHRTItem { get; private set; }
+        public Dictionary<string, double> TenOfItem { get; private set; }
     }
 }

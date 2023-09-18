@@ -12,9 +12,7 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
-        double GetTenOfHRTItem(int hpId);
-
-        double GetTenOfIGEItem(int hpId);
+        Dictionary<string, double> GetTenOfItem(int hpId);
 
         Dictionary<string, string> GetKensaCenterMsts(int hpId);
 
