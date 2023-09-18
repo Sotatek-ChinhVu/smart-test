@@ -31,13 +31,18 @@ namespace Reporting.Statistics.Sta1001.Service
         private int maxRow = 43;
         private int HpId;
         private List<string> _objectRseList;
-        private int _currentPage;
+        private int currentPage;
         private string _rowCountFieldName = string.Empty;
-        private bool _hasNextPage;
+        private bool hasNextPage;
 
         Dictionary<string, string> _extralData = new Dictionary<string, string>();
         Dictionary<string, string> SingleData = new Dictionary<string, string>();
         List<Dictionary<string, CellModel>> CellData = new List<Dictionary<string, CellModel>>();
+        private const string _formFileName = "p46KoukiSeikyu.rse";
+        private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
+        private readonly Dictionary<string, string> _singleFieldData;
+        private readonly Dictionary<int, List<ListTextObject>> _listTextData;
+        private readonly Dictionary<string, bool> _visibleFieldData;
 
         private readonly ICoSta1001Finder _sta1001Finder;
         private readonly IReadRseReportFileService _readRseReportFileService;
@@ -195,6 +200,11 @@ namespace Reporting.Statistics.Sta1001.Service
             _readRseReportFileService = readRseReportFileService;
             _dailyStatisticCommandFinder = dailyStatisticCommandFinder;
             _objectRseList = new();
+            _singleFieldData = new();
+            _setFieldData = new();
+            _listTextData = new();
+            _extralData = new();
+            _visibleFieldData = new();
         }
 
         public CommonReportingRequestModel GetSta1001ReportingData(CoSta1001PrintConf printConf, int hpId)
@@ -206,17 +216,21 @@ namespace Reporting.Statistics.Sta1001.Service
             GetRowCount();
             putCurColumns.AddRange(putColumns);
             _objectRseList = new();
+
             if (GetData())
             {
-                _hasNextPage = true;
-                _currentPage = 1;
-                while (_hasNextPage)
+                hasNextPage = true;
+                currentPage = 1;
+                while (hasNextPage)
                 {
                     UpdateDrawForm();
-                    _currentPage++;
+                    currentPage++;
                 }
             }
-            return new Sta1001Mapper(_extralData, SingleData, CellData, _rowCountFieldName).GetData();
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new Sta1001Mapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
         }
 
         private void GetFieldNameList()
@@ -593,7 +607,7 @@ namespace Reporting.Statistics.Sta1001.Service
         }
 
         #region Update Draw Form
-        public void UpdateDrawForm()
+        /*public void UpdateDrawForm()
         {
             _hasNextPage = true;
 
@@ -715,6 +729,133 @@ namespace Reporting.Statistics.Sta1001.Service
             #endregion
 
             #endregion
+        }*/
+        private bool UpdateDrawForm()
+        {
+            bool _hasNextPage = true;
+
+            #region SubMethod
+            List<ListTextObject> listDataPerPage = new();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+            #region Header
+            int UpdateFormHeader()
+            {
+                //タイトル
+                SetFieldData("Title", _printConf.ReportName);
+                //医療機関名
+                listDataPerPage.Add(new("HeaderR", 0, 0, hpInf.HpName));
+                //作成日時
+                listDataPerPage.Add(new("HeaderR", 0, 1, CIUtil.SDateToShowSWDate(
+                    CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
+                ) + DateTime.Now.ToString(" HH:mm") + "作成"));
+                //ページ数
+                int totalPage = (int)Math.Ceiling((double)printDatas.Count / maxRow);
+                listDataPerPage.Add(new("HeaderR", 0, 2, currentPage + " / " + totalPage));
+                //入金日
+                listDataPerPage.Add(new("HeaderL", 0, 1, headerL1.Count >= currentPage ? headerL1[currentPage - 1] : ""));
+                //改ページ条件
+                listDataPerPage.Add(new("HeaderL", 0, 2, headerL2.Count >= currentPage ? headerL2[currentPage - 1] : ""));
+
+                //期間
+                SetFieldData("Range",
+                    string.Format(
+                        "期間: {0} ～ {1}",
+                        CIUtil.SDateToShowSWDate(_printConf.StartNyukinDate, 0, 1),
+                        CIUtil.SDateToShowSWDate(_printConf.EndNyukinDate, 0, 1)
+                    )
+                );
+
+                return 1;
+            }
+            #endregion
+
+            #region Body
+            int UpdateFormBody()
+            {
+                int ptIndex = (currentPage - 1) * maxRow;
+                int lineCount = 0;
+
+                //存在しているフィールドに絞り込み
+                var existsCols = putCurColumns.Where(p => _objectRseList.Contains(p.ColName)).Select(p => p.ColName).ToList();
+
+                for (short rowNo = 0; rowNo < maxRow; rowNo++)
+                {
+                    var printData = printDatas[ptIndex];
+                    string baseListName = "";
+
+                    //保険外金額（内訳）タイトル
+                    foreach (var jihiSbtMst in jihiSbtMsts)
+                    {
+                        Dictionary<string, string> fieldDataPerPage = _setFieldData.ContainsKey(pageIndex) ? _setFieldData[pageIndex] : new();
+                        pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                        fieldDataPerPage.Add(string.Format("tJihiFutanSbt{0}", jihiSbtMst.JihiSbt), jihiSbtMst.Name);
+
+                        if (!_setFieldData.ContainsKey(pageIndex))
+                        {
+                            _setFieldData.Add(pageIndex, fieldDataPerPage);
+                        }
+                    }
+
+                    //明細データ出力
+                    foreach (var colName in existsCols)
+                    {
+                        var value = typeof(CoSta1001PrintData).GetProperty(colName).GetValue(printData);
+                        listDataPerPage.Add(new(colName, 0, rowNo, value == null ? "" : value.ToString()));
+
+                        if (baseListName == "" && _objectRseList.Contains(colName))
+                        {
+                            baseListName = colName;
+                        }
+                    }
+                    //自費種別毎の金額
+                    for (int i = 0; i <= jihiSbtMsts.Count - 1; i++)
+                    {
+                        if (printData.JihiSbtFutans == null) break;
+
+                        var jihiSbtMst = jihiSbtMsts[i];
+                        listDataPerPage.Add(new(string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), 0, rowNo, printData.JihiSbtFutans[i]));
+                    }
+
+                    //合計行キャプションと件数
+                    listDataPerPage.Add(new("TotalCaption", 0, rowNo, printData.TotalCaption));
+                    listDataPerPage.Add(new("TotalCount", 0, rowNo, printData.TotalCount));
+                    listDataPerPage.Add(new("TotalPtCount", 0, rowNo, printData.TotalPtCount));
+
+                    //5行毎に区切り線を引く
+                    lineCount = printData.RowType != RowType.Brank ? lineCount + 1 : lineCount;
+
+                    /*if (lineCount == 5)
+                    {
+                        lineCount = 0;
+                        (long startX1, long startY1, long endX1, long endY1) = CoRep.GetBounds("headerLine");
+                        (long startX2, long startY2, long endX2, long endY2) = CoRep.GetListRowBounds(baseListName, rowNo);
+
+                        CoRep.DrawLine(startX1, endY2, endX1, endY2, 10, Hos.CnDraw.Constants.ConLineStyle.Dash);
+                    }*/
+
+                    ptIndex++;
+                    if (ptIndex >= printDatas.Count)
+                    {
+                        _hasNextPage = false;
+                        break;
+                    }
+                }
+
+                return ptIndex;
+            }
+            _listTextData.Add(pageIndex, listDataPerPage);
+            #endregion
+
+            #endregion
+
+            if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
+            {
+                hasNextPage = _hasNextPage;
+                return false;
+            }
+
+            hasNextPage = _hasNextPage;
+            return true;
         }
 
         public CommonExcelReportingModel ExportCsv(CoSta1001PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
