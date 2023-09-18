@@ -51,19 +51,19 @@ namespace Infrastructure.Repositories
                     todoInfs.Add(newTodoInf);
                 }
             }
+
             TrackingDataContext.SaveChanges();
 
+            var result = new List<TodoInfModel>();
             if (todoInfs.Count <= 1)
             {
                 var firtTodo = todoInfs.FirstOrDefault() ?? new();
-                var result = GetList(hpId, firtTodo.TodoNo, firtTodo.TodoEdaNo, true);
+                result = GetList(hpId, firtTodo.TodoNo, firtTodo.TodoEdaNo, true);
                 return result;
             }
-            else
-            {
-                var result = GetList(hpId, 0, 0, true);
-                return result;
-            }
+
+            result = GetList(hpId, 0, 0, true);
+            return result;
         }
 
         private TodoInf ConvertTo_TodoGrpMst(TodoInfModel u, int userId, int hpId)

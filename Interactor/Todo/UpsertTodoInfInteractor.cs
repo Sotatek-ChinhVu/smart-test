@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Todo;
+using System.Collections.Generic;
 using UseCase.Todo;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoInf;
@@ -21,28 +22,28 @@ public class UpsertTodoInfInteractor : IUpsertTodoInfInputPort
             var validateResult = ValidateDataInput(input.TodoInfs);
             if (validateResult != UpsertTodoInfStatus.Success)
             {
-                return new UpsertTodoInfOutputData(validateResult);
+                return new UpsertTodoInfOutputData(new(), validateResult);
             }
 
             if (input.TodoInfs.Count == 0)
             {
-                return new UpsertTodoInfOutputData(UpsertTodoInfStatus.InputNoData);
+                return new UpsertTodoInfOutputData(new(), UpsertTodoInfStatus.InputNoData);
             }
 
             var checkInputTodoNo = input.TodoInfs.Where(x => x.TodoNo > 0).Select(x => x.TodoNo);
             if (checkInputTodoNo.Count() != checkInputTodoNo.Distinct().Count())
             {
-                return new UpsertTodoInfOutputData(UpsertTodoInfStatus.InvalidTodoInf);
+                return new UpsertTodoInfOutputData(new(), UpsertTodoInfStatus.InvalidTodoInf);
             }
 
             if (!_todoInfRepository.CheckExist(input.TodoInfs.Where(x => x.TodoNo > 0).Select(x => new Tuple<int, int, long>(x.TodoNo, x.TodoEdaNo, x.PtId)).ToList()))
             {
-                return new UpsertTodoInfOutputData(UpsertTodoInfStatus.InvalidExistedInput);
+                return new UpsertTodoInfOutputData(new(), UpsertTodoInfStatus.InvalidExistedInput);
             }
             var todoInfList = ConvertToInsertTodoInfDto(input.TodoInfs);
-            _todoInfRepository.Upsert(todoInfList, input.UserId, input.HpId);
-
-            return new UpsertTodoInfOutputData(UpsertTodoInfStatus.Success);
+            var upsertResult = _todoInfRepository.Upsert(todoInfList, input.UserId, input.HpId);
+            var result = GetListTodoInfos(upsertResult);
+            return new UpsertTodoInfOutputData(result, UpsertTodoInfStatus.Success);
         }
         finally
         {
