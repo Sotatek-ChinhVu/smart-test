@@ -1,15 +1,10 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Domain.Models.KensaIrai;
+﻿using Domain.Models.KensaIrai;
 using Entity.Tenant;
-using Helper.Enum;
+using Helper.Common;
 using Microsoft.Extensions.Configuration;
 using Reporting.Kensalrai.Service;
-using System.Net.Http;
-using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
-using System.Web;
 using UseCase.MainMenu.KensaIraiReport;
 
 namespace Interactor.MainMenu;
@@ -35,15 +30,28 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             var kensaIraiList = AsKensaIraiReportModel(inputData.KensaIraiList);
             List<string> data = _kensaIraiCoReportService.GetIraiFileData(inputData.CenterCd, kensaIraiList);
             var datFileByte = data.SelectMany(item => Encoding.UTF8.GetBytes(item + Environment.NewLine)).ToArray();
-            string datFile = Convert.ToBase64String(datFileByte, Base64FormattingOptions.InsertLineBreaks);
+            string datFile = Convert.ToBase64String(datFileByte);
 
             var outputPrint = _kensaIraiCoReportService.GetKensalraiData(inputData.HpId, inputData.SystemDate, inputData.FromDate, inputData.ToDate, inputData.CenterCd, kensaIraiList);
             var waitResult = ReturnPDF(outputPrint);
             waitResult.Wait();
             var pdfFileByte = waitResult.Result;
-            string pdfFile = Convert.ToBase64String(pdfFileByte, Base64FormattingOptions.InsertLineBreaks);
+            string pdfFile = Convert.ToBase64String(pdfFileByte);
 
-            return new KensaIraiReportOutputData(pdfFile, datFile, KensaIraiReportStatus.Successed);
+            var kensaIraiLogModel = new KensaIraiLogModel(
+                                        inputData.SystemDate,
+                                        inputData.CenterCd,
+                                        string.Empty,
+                                        inputData.FromDate,
+                                        inputData.ToDate,
+                                        ListToString(data),
+                                        pdfFileByte,
+                                        CIUtil.GetJapanDateTimeNow());
+            if (_kensaIraiRepository.SaveKensaIraiLog(inputData.HpId, inputData.UserId, kensaIraiLogModel))
+            {
+                return new KensaIraiReportOutputData(pdfFile, datFile, KensaIraiReportStatus.Successed);
+            }
+            return new KensaIraiReportOutputData(pdfFile, datFile, KensaIraiReportStatus.Failed);
         }
         finally
         {
@@ -85,7 +93,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             kensaMst.CenterItemCd1 = kensaDetail.CenterItemCd;
             kensaMst.KensaKana = kensaDetail.KensaKana;
             kensaMst.KensaName = kensaDetail.KensaName;
-            kensaMst.ContainerCd = (int)kensaDetail.ContainerCd;
+            kensaMst.ContainerCd = kensaDetail.ContainerCd;
             kensaIraiDetails.Add(new Reporting.Kensalrai.Model.KensaIraiDetailModel(true, kensaDetail.RpNo, kensaDetail.RpEdaNo, kensaDetail.RowNo, kensaDetail.SeqNo, kensaMst));
         }
         return kensaIraiDetails;
@@ -108,6 +116,16 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 return byteData;
             }
         }
+    }
+
+    private string ListToString(List<string> data)
+    {
+        StringBuilder line = new();
+        foreach (var item in data)
+        {
+            line.AppendLine(item);
+        }
+        return line.ToString();
     }
     #endregion
 }

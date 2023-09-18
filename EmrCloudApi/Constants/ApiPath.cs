@@ -424,6 +424,7 @@
         public const string GetKensaInf = "GetKensaInf";
         public const string DeleteKensaInf = "DeleteKensaInf";
         public const string GetKensaIraiLog = "GetKensaIraiLog";
+        public const string KensaIraiReport = "KensaIraiReport";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";

@@ -706,6 +706,7 @@ using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.SetSendaiGeneration.GetList;
 using Interactor.SetSendaiGeneration;
+using UseCase.MainMenu.KensaIraiReport;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1639,6 +1640,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKensaInfInputData, GetKensaInfInteractor>();
             busBuilder.RegisterUseCase<DeleteKensaInfInputData, DeleteKensaInfInteractor>();
             busBuilder.RegisterUseCase<GetKensaIraiLogInputData, GetKensaIraiLogInteractor>();
+            busBuilder.RegisterUseCase<KensaIraiReportInputData, KensaIraiReportInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();

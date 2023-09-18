@@ -191,6 +191,7 @@ namespace Reporting.Kensalrai.Service
                 }
 
                 string result = str;
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 Encoding enc = Encoding.GetEncoding("Shift_JIS");
                 Byte[] b = enc.GetBytes(str);
 
