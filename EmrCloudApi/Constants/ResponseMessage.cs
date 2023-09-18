@@ -1016,6 +1016,7 @@
         public static readonly string InvalidGrpId = "Invalid GrpId!";
         public static readonly string InvalidReportId = "Invalid ReportId!";
         public static readonly string InvalidMenuName = "Invalid MenuName!";
+        public static readonly string InvalidIraiCd = "Invalid IraiCd!";
 
         public static readonly string NoPermission = "No permission";
         public static readonly string InvalidContentFile = "Invalid file content";
@@ -1027,5 +1028,10 @@
 
         // KensaIrai
         public static readonly string IsDeleteFile = "IsDeleteFile.";
+
+        // Set Sendai Generation
+        public static readonly string DeleteRowIndex0 = "Cannot delete row have index 0.";
+        public static readonly string InvalidRowIndex = "Invalid row index.";
+        public static readonly string InvalidGenerationId = "Invalid GenerationId.";
     }
 }
