@@ -1,5 +1,5 @@
 ﻿using Domain.Models.ListSetGenerationMst;
-using UseCase.ListSetGenerationMst.GetListSetGenerationMst;
+using UseCase.MstItem.GetListSetGenerationMst;
 
 namespace Interactor.ListSetGenerationMst
 {

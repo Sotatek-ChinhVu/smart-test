@@ -64,6 +64,9 @@
         public const string GetContainerMsts = "GetContainerMsts"; 
         public const string GetKensaCenterMsts = "GetKensaCenterMsts"; 
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
+        public const string GetTreeListSet = "GetTreeListSet";
+        public const string GetTreeByomeiSet = "GetTreeByomeiSet";
+        public const string GetListSetGeneration = "GetListSetGeneration";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -359,7 +362,6 @@
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
         public const string GetAllByomeiByPtId = "GetAllByomeiByPtId";
-        public const string GetTreeByomeiSet = "GetTreeByomeiSet";
 
         //System Conf
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";
