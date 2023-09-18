@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Diseases;
 
-namespace UseCase.Diseases.GetTreeByomeiSet
+namespace UseCase.MstItem.GetTreeByomeiSet
 {
     public class ByomeiSetMstItem
     {

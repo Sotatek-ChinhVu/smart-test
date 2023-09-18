@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Diseases.GetTreeByomeiSet
+namespace UseCase.MstItem.GetTreeByomeiSet
 {
     public sealed class GetTreeByomeiSetInputData : IInputData<GetTreeByomeiSetOutputData>
     {

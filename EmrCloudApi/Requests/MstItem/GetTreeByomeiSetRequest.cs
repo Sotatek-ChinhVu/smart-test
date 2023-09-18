@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Requests.Diseases
+﻿namespace EmrCloudApi.Requests.MstItem
 {
     public class GetTreeByomeiSetRequest
     {

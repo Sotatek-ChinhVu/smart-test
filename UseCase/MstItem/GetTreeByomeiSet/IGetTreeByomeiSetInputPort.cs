@@ -1,7 +1,6 @@
-﻿
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Diseases.GetTreeByomeiSet
+namespace UseCase.MstItem.GetTreeByomeiSet
 {
     public interface IGetTreeByomeiSetInputPort : IInputPort<GetTreeByomeiSetInputData, GetTreeByomeiSetOutputData>
     {

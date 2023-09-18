@@ -1,8 +1,7 @@
 ﻿using Domain.Models.Diseases;
-using UseCase.Diseases.GetTreeByomeiSet;
-using UseCase.Family.GetRaiinInfList;
+using UseCase.MstItem.GetTreeByomeiSet;
 
-namespace Interactor.Diseases
+namespace Interactor.MstItem
 {
     public class GetTreeByomeiSetInteractor : IGetTreeByomeiSetInputPort
     {
@@ -27,8 +26,8 @@ namespace Interactor.Diseases
                 else
                 {
                     var dataItems = datas.Select(item => new ByomeiSetMstItem(item)).ToList();
-                    List<ByomeiSetMstItem> result = new List<ByomeiSetMstItem>();                   
-                     var rootNodes = dataItems.FindAll(p => p.Level == 1).OrderBy(p => p.Level1).ToList();
+                    List<ByomeiSetMstItem> result = new List<ByomeiSetMstItem>();
+                    var rootNodes = dataItems.FindAll(p => p.Level == 1).OrderBy(p => p.Level1).ToList();
                     foreach (var levelNode1 in rootNodes)
                     {
                         levelNode1.Childrens = dataItems.FindAll(p => p.Level == 2 && p.Level1 == levelNode1.Level1).OrderBy(p => p.Level2).ToList();
@@ -47,7 +46,7 @@ namespace Interactor.Diseases
                     }
                     ByomeiSetMstItem rootLevel = new ByomeiSetMstItem("共通");
                     rootLevel.Childrens = rootNodes;
-                    result.Add(rootLevel);                    
+                    result.Add(rootLevel);
                     return new GetTreeByomeiSetOutputData(result, GetTreeByomeiSetStatus.Successful);
                 }
             }

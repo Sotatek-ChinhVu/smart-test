@@ -1,7 +1,6 @@
-﻿using Domain.Models.Diseases;
-using UseCase.Diseases.GetTreeByomeiSet;
+﻿using UseCase.MstItem.GetTreeByomeiSet;
 
-namespace EmrCloudApi.Responses.Diseases
+namespace EmrCloudApi.Responses.MstItem
 {
     public class GetTreeByomeiSetResponse
     {

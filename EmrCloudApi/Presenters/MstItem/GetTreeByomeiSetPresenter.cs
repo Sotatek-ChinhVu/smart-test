@@ -1,9 +1,9 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.Diseases;
-using UseCase.Diseases.GetTreeByomeiSet;
+using EmrCloudApi.Responses.MstItem;
+using UseCase.MstItem.GetTreeByomeiSet;
 
-namespace EmrCloudApi.Presenters.Diseases
+namespace EmrCloudApi.Presenters.MstItem
 {
     public class GetTreeByomeiSetPresenter : IGetTreeByomeiSetOutputPort
     {

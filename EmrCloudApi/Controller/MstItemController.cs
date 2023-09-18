@@ -5,6 +5,7 @@ using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.Diseases;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Requests.MedicalExamination;
@@ -54,6 +55,7 @@ using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.GetTenOfItem;
+using UseCase.MstItem.GetTreeByomeiSet;
 using UseCase.MstItem.GetTreeListSet;
 using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.MstItem.SaveAddressMst;
@@ -831,6 +833,16 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetTreeListSetMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTreeByomeiSet)]
+        public ActionResult<Response<GetTreeByomeiSetResponse>> GetTreeByomeiSet([FromQuery] GetTreeByomeiSetRequest request)
+        {
+            var input = new GetTreeByomeiSetInputData(HpId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetTreeByomeiSetPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTreeByomeiSetResponse>>(presenter.Result);
         }
     }
 }

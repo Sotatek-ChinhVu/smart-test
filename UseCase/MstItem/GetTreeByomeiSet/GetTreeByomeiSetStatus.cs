@@ -1,4 +1,4 @@
-﻿namespace UseCase.Diseases.GetTreeByomeiSet
+﻿namespace UseCase.MstItem.GetTreeByomeiSet
 {
     public enum GetTreeByomeiSetStatus
     {
