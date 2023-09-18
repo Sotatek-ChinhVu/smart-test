@@ -1,12 +1,15 @@
 ﻿using Domain.Models.MainMenu;
 using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.HokenMst;
 using EmrCloudApi.Presenters.PatientManagement;
 using EmrCloudApi.Requests.PatientManagement;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.HokenMst;
 using EmrCloudApi.Responses.PatientManagement;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.HokenMst.GetHokenMst;
 using UseCase.PatientManagement.SaveStaConf;
 using UseCase.PatientManagement.SearchPtInfs;
 
@@ -33,6 +36,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<SearchPtInfsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetHokenMst)]
+        public ActionResult<Response<GetHokenMstResponse>> GetHokenMst()
+        {
+            var input = new GetHokenMstInputData(HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetHokenMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetHokenMstResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.SaveStaConfMenu)]

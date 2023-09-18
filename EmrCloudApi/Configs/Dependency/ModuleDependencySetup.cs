@@ -352,6 +352,7 @@ using UseCase.FlowSheet.GetTooltip;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
+using UseCase.HokenMst.GetHokenMst;
 using UseCase.Holiday.SaveHoliday;
 using UseCase.Insurance.FindHokenInfByPtId;
 using UseCase.Insurance.FindPtHokenList;
@@ -475,6 +476,7 @@ using UseCase.MstItem.GetTenItemCds;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.GetTenOfItem;
 using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -1395,11 +1397,12 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateKensaStdMstInputData, UpdateKensaStdMstInteractor>();
             busBuilder.RegisterUseCase<GetKensaStdMstInputData, GetKensaStdMstModelsInteractor>();
             busBuilder.RegisterUseCase<GetUsedKensaItemCdsInputData, GetUsedKensaItemCdsInteractor>();
-            busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
 
+            busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
             busBuilder.RegisterUseCase<GetMaterialMstsInputData, GetMaterialMstsInteractor>();
             busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
             busBuilder.RegisterUseCase<GetKensaCenterMstsInputData, GetKensaCenterMstsInteractor>();
+            busBuilder.RegisterUseCase<GetTenOfItemInputData, GetTenOfItemInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -1703,6 +1706,11 @@ namespace EmrCloudApi.Configs.Dependency
             // Disease Name Mst Seach
             busBuilder.RegisterUseCase<DiseaseNameMstSearchInputData, DiseaseNameMstSearchInteractor>();
 
+            //PatientManagement
+            busBuilder.RegisterUseCase<SearchPtInfsInputData, SearchPtInfsInteractor>();
+            busBuilder.RegisterUseCase<GetHokenMstInputData, GetHokenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveStaConfMenuInputData, SaveStaConfMenuInteractor>();
+
             //ListSetMst
             busBuilder.RegisterUseCase<GetTreeListSetInputData, GetTreeListSetInteractor>();
 
@@ -1711,9 +1719,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteSendaiGenerationInputData, DeleteSetSendaiGenerationInteractor>();
             busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
 
-            //PatientManagement
-            busBuilder.RegisterUseCase<SearchPtInfsInputData, SearchPtInfsInteractor>();
-            busBuilder.RegisterUseCase<SaveStaConfMenuInputData, SaveStaConfMenuInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

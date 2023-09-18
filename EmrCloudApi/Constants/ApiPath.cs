@@ -62,7 +62,8 @@
         public const string GetTenItemCds = "GetTenItemCds";
         public const string GetMaterialMsts = "GetMaterialMsts";
         public const string GetContainerMsts = "GetContainerMsts"; 
-        public const string GetKensaCenterMsts = "GetKensaCenterMsts";
+        public const string GetKensaCenterMsts = "GetKensaCenterMsts"; 
+        public const string GetTenOfHRTItem = "GetTenOfHRTItem";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -466,6 +467,7 @@
 
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
+        public const string GetHokenMst = "GetHokenMst";
         public const string SaveStaConfMenu = "SaveStaConfMenu";
     }
 }
