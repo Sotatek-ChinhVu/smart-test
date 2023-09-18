@@ -1,7 +1,7 @@
 ﻿using Domain.Models.ListSetGenerationMst;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.ListSetGenerationMst.GetListSetGenerationMst
+namespace UseCase.MstItem.GetListSetGenerationMst
 {
     public class GetListSetGenerationMstOutputData : IOutputData
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.ListSetGenerationMst.GetListSetGenerationMst
+namespace UseCase.MstItem.GetListSetGenerationMst
 {
     public sealed class GetListSetGenerationMstInputData : IInputData<GetListSetGenerationMstOutputData>
     {

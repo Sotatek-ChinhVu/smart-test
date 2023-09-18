@@ -1,9 +1,9 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.ListSetGenerationMst;
-using UseCase.ListSetGenerationMst.GetListSetGenerationMst;
+using EmrCloudApi.Responses.MstItem;
+using UseCase.MstItem.GetListSetGenerationMst;
 
-namespace EmrCloudApi.Presenters.ListSetGenerationMst
+namespace EmrCloudApi.Presenters.MstItem
 {
     public class GetListSetGenerationMstPresenter : IGetListSetGenerationMstOutputPort
     {

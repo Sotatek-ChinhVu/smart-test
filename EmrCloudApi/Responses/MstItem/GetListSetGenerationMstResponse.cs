@@ -1,6 +1,6 @@
 ﻿using Domain.Models.ListSetGenerationMst;
 
-namespace EmrCloudApi.Responses.ListSetGenerationMst
+namespace EmrCloudApi.Responses.MstItem
 {
     public class GetListSetGenerationMstResponse
     {

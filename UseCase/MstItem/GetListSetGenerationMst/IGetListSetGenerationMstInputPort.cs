@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.ListSetGenerationMst.GetListSetGenerationMst
+namespace UseCase.MstItem.GetListSetGenerationMst
 {
     public interface IGetListSetGenerationMstInputPort : IInputPort<GetListSetGenerationMstInputData, GetListSetGenerationMstOutputData>
     {
