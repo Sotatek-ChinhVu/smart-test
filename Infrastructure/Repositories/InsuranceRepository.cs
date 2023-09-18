@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate, bool flag, bool isDeletedPtHokenInf)
+        public InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate, byte sortType, bool flag, bool isDeletedPtHokenInf)
         {
             int prefCd = 0;
             var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
@@ -385,7 +385,16 @@ namespace Infrastructure.Repositories
                 ));
             }
             #endregion PtHokenPattern
-
+            if (sortType == 1)
+            {
+                listInsurance = listInsurance.OrderByDescending(i => i.EndDate).ThenByDescending(i => i.HokenId).ToList();
+                hokenInfList = hokenInfList.OrderByDescending(h => h.EndDate).ThenByDescending(h => h.HokenId).ToList();
+            }
+            else if (sortType == 2)
+            {
+                listInsurance = listInsurance.OrderByDescending(i => i.IsExpirated).ThenBy(i => i.EndDate).ToList();
+                hokenInfList = hokenInfList.OrderByDescending(h => h.IsExpirated).ThenBy(h => h.EndDate).ToList();
+            }
             return new InsuranceDataModel(listInsurance, hokenInfList, kohiInfList, maxIdHokenInf, maxIdKohi, maxPidHokenPattern);
         }
 

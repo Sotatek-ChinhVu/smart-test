@@ -160,7 +160,7 @@ namespace EmrCloudApi.Controller
         [HttpGet("InsuranceListByPtId")]
         public ActionResult<Response<GetInsuranceListResponse>> GetInsuranceListByPtId([FromQuery] GetInsuranceListRequest request)
         {
-            var input = new GetInsuranceListInputData(HpId, request.PtId, request.SinDate);
+            var input = new GetInsuranceListInputData(HpId, request.PtId, request.SinDate, request.SortType);
             var output = _bus.Handle(input);
 
             var presenter = new GetInsuranceListPresenter();
