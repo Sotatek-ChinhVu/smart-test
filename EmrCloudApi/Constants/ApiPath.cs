@@ -60,6 +60,10 @@
         public const string GetKensaStdMst = "GetKensaStdMst";
         public const string GetUsedKensaItemCds = "GetUsedKensaItemCds"; 
         public const string GetTenItemCds = "GetTenItemCds";
+        public const string GetMaterialMsts = "GetMaterialMsts";
+        public const string GetContainerMsts = "GetContainerMsts"; 
+        public const string GetKensaCenterMsts = "GetKensaCenterMsts"; 
+        public const string GetTenOfHRTItem = "GetTenOfHRTItem";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -423,6 +427,7 @@
         public const string ReCreateDataKensaIraiRenkei = "ReCreateDataKensaIraiRenkei";
         public const string GetKensaInf = "GetKensaInf";
         public const string DeleteKensaInf = "DeleteKensaInf";
+        public const string GetKensaIraiLog = "GetKensaIraiLog";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
