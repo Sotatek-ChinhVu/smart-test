@@ -718,6 +718,7 @@ using UseCase.ListSetMst.GetTreeListSet;
 using Interactor.ListSetMst;
 using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.SetSendaiGeneration.Add;
+using UseCase.UpsertMaterialMaster;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1396,7 +1397,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateKensaStdMstInputData, UpdateKensaStdMstInteractor>();
             busBuilder.RegisterUseCase<GetKensaStdMstInputData, GetKensaStdMstModelsInteractor>();
             busBuilder.RegisterUseCase<GetUsedKensaItemCdsInputData, GetUsedKensaItemCdsInteractor>();
-
+            busBuilder.RegisterUseCase<UpsertMaterialMasterInputData, UpsertMaterialMasterInteractor>();
             busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
             busBuilder.RegisterUseCase<GetMaterialMstsInputData, GetMaterialMstsInteractor>();
             busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
