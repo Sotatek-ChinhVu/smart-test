@@ -65,6 +65,12 @@ public class ReceCmtItem
         HokenId = 0;
     }
 
+    public ReceCmtItem ChangeCmtData(string cmtData)
+    {
+        CmtData = cmtData;
+        return this;
+    }
+
     public long Id { get; private set; }
 
     public long PtId { get; private set; }
