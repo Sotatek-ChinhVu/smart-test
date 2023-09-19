@@ -5644,6 +5644,19 @@ namespace Infrastructure.Repositories
                                         .Replace("ｮ", "ﾖ")
                                         .Replace("ｯ", "ﾂ")
                                         .StartsWith(sBigKeyword))
+                                     ||
+                                        (item.Sbyomei != null &&
+                                         item.Sbyomei.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .Contains(sBigKeyword))
                                     ||
                                     (item.Icd101 != null &&
                                     item.Icd101.StartsWith(keyword))
@@ -5657,7 +5670,7 @@ namespace Infrastructure.Repositories
                                     (item.Icd1022013 != null &&
                                     item.Icd1022013.StartsWith(keyword)))
                                     &&
-                                    (item.ByomeiCd.Length != 4 || item.ByomeiCd.Length == 4 && string.Compare(item.ByomeiCd, "9000") < 0))
+                                    (item.ByomeiCd.Length != 4 || (item.ByomeiCd.Length == 4 && string.Compare(item.ByomeiCd, "9000") < 0)))
                                     .OrderBy(item => item.KanaName1).ThenByDescending(item => item.IsAdopted).ToList();
             List<ByomeiMstModel> listByomeies = new();
             if (query != null)
@@ -5675,9 +5688,9 @@ namespace Infrastructure.Repositories
 
             if (isCheckPage)
             {
-                listByomeies = listByomeies.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                listByomeies = listByomeies.OrderBy(x => x.DisplayedOrder).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             }
-            return listByomeies;
+            return listByomeies.OrderBy(x => x.DisplayedOrder).ToList();
         }
 
         private bool checkIsMatch(ByomeiMst? pt, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo)

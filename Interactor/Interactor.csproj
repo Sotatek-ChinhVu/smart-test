@@ -16,6 +16,7 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\EventProcessorService\EventProcessor.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Reporting\Reporting.csproj" />
     <ProjectReference Include="..\UseCase\UseCase.csproj" />
   </ItemGroup>
 

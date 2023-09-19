@@ -20,7 +20,7 @@ public class KensaIraiDetailRequestItem
 
     public string KensaName { get; set; } = string.Empty;
 
-    public long ContainerCd { get; set; }
+    public int ContainerCd { get; set; }
 
     public long RpNo { get; set; }
 

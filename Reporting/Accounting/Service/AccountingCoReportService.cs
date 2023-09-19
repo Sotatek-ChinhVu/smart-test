@@ -14,15 +14,6 @@ using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
 using System.Text;
-using Reporting.Calculate.Receipt.ViewModels;
-using Domain.Models.CalculateModel;
-using Reporting.Calculate.Interface;
-using Reporting.Calculate.Receipt.Constants;
-using Amazon.Runtime.Internal;
-using Reporting.Karte1.Mapper;
-using Reporting.CommonMasters.Enums;
-using Infrastructure.Services;
-using PostgreDataContext;
 using Domain.Constant;
 
 namespace Reporting.Accounting.Service;
