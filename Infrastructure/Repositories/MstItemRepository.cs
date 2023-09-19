@@ -5966,8 +5966,8 @@ namespace Infrastructure.Repositories
                                    ChildKensaMsts = childKensaMsts,
                                };
 
-            var KensaItemCd = kensaMsts.Select(x => x.KensaItemCd).ToList();
-            var KensaItemSeqNo = kensaMsts.Select(x => x.KensaItemSeqNo).ToList();
+            var KensaItemCd = kensaMsts.Select(x => x.KensaItemCd);
+            var KensaItemSeqNo = kensaMsts.Select(x => x.KensaItemSeqNo);
 
             var tenMsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && KensaItemCd.Contains(p.KensaItemCd ?? string.Empty) && KensaItemSeqNo.Contains(p.KensaItemSeqNo));
 
@@ -5999,14 +5999,15 @@ namespace Infrastructure.Repositories
                                                                             x.OyaItemSeqNo,
                                                                             x.SortNo,
                                                                             x.CenterItemCd1 ?? string.Empty,
-                                                                            x.CenterItemCd2 ?? string.Empty)).ToList(),
-                            TenMsts = tempTenMsts.OrderByDescending(x => x.StartDate).ToList()
+                                                                            x.CenterItemCd2 ?? string.Empty)),
+                            TenMsts = tempTenMsts.OrderByDescending(x => x.StartDate)
                         };
 
             foreach (var entity in query)
             {
                 var ChildKensaMsts = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == entity.ParrentKensaMst.KensaItemCd);
-                var tenmst = entity.TenMsts.GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault()).ToList();
+                var tenmst = entity.TenMsts.GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault());
+                var tenmstModel = entity.TenMsts;
                 result.Add(new KensaMstModel(
                     entity.ParrentKensaMst.KensaItemCd,
                     entity.ParrentKensaMst.KensaItemSeqNo,
@@ -6052,31 +6053,31 @@ namespace Infrastructure.Repositories
                                   x.SanteiItemCd ?? string.Empty,
                                   x.SanteigaiKbn,
                                   x.IsNosearch,
-                                  entity.TenMsts.Select(x => CIUtil.SDateToShowSDate(x.StartDate)).Distinct().ToList())).ToList(),  
-                                  entity.TenMsts.Select(y => new TenItemModel(
-                                                                              y.SinKouiKbn,
-                                                                              y.MasterSbt ?? string.Empty,
-                                                                              y.ItemCd,
-                                                                              y.KensaItemCd ?? string.Empty,
-                                                                              y.KensaItemSeqNo,
-                                                                              y.Ten,
-                                                                              y.Name ?? string.Empty,
-                                                                              y.ReceName ?? string.Empty,
-                                                                              y.KanaName1 ?? string.Empty,
-                                                                              y.KanaName2 ?? string.Empty,
-                                                                              y.KanaName3 ?? string.Empty,
-                                                                              y.KanaName4 ?? string.Empty,
-                                                                              y.KanaName5 ?? string.Empty,
-                                                                              y.KanaName6 ?? string.Empty,
-                                                                              y.KanaName7 ?? string.Empty,
-                                                                              y.StartDate,
-                                                                              y.EndDate,
-                                                                              y.DefaultVal,
-                                                                              y.OdrUnitName ?? string.Empty,
-                                                                              y.SanteiItemCd ?? string.Empty,
-                                                                              y.SanteigaiKbn,
-                                                                              y.IsNosearch)).ToList(),
-                    entity.ChildKensaMsts
+                                  entity.TenMsts.Select(x => CIUtil.SDateToShowSDate(x.StartDate)).Distinct().ToList())).ToList(),
+                    tenmstModel.Select(y => new TenItemModel(
+                                                                y.SinKouiKbn,
+                                                                y.MasterSbt ?? string.Empty,
+                                                                y.ItemCd,
+                                                                y.KensaItemCd ?? string.Empty,
+                                                                y.KensaItemSeqNo,
+                                                                y.Ten,
+                                                                y.Name ?? string.Empty,
+                                                                y.ReceName ?? string.Empty,
+                                                                y.KanaName1 ?? string.Empty,
+                                                                y.KanaName2 ?? string.Empty,
+                                                                y.KanaName3 ?? string.Empty,
+                                                                y.KanaName4 ?? string.Empty,
+                                                                y.KanaName5 ?? string.Empty,
+                                                                y.KanaName6 ?? string.Empty,
+                                                                y.KanaName7 ?? string.Empty,
+                                                                y.StartDate,
+                                                                y.EndDate,
+                                                                y.DefaultVal,
+                                                                y.OdrUnitName ?? string.Empty,
+                                                                y.SanteiItemCd ?? string.Empty,
+                                                                y.SanteigaiKbn,
+                                                                y.IsNosearch)).ToList(),
+                    entity.ChildKensaMsts.ToList()
                     ));
             }
 
