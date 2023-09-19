@@ -12,6 +12,8 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        double GetTenOfKNItem(int hpId, string itemCd);
+
         bool IsKensaItemOrdering(int hpId, string tenItemCd);
 
         Dictionary<string, double> GetTenOfItem(int hpId);

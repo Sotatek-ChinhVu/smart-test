@@ -6493,5 +6493,12 @@ namespace Infrastructure.Repositories
         {
             return NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && p.ItemCd == tenItemCd).Any();
         }
+
+        public double GetTenOfKNItem(int hpId, string itemCd)
+        {
+            var latestSedai = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == itemCd && p.IsDeleted == DeleteTypes.None)
+                                                        .OrderByDescending(p => p.StartDate).FirstOrDefault();
+            return latestSedai != null ? latestSedai.Ten : 0;
+        }
     }
 }

@@ -64,7 +64,8 @@
         public const string GetContainerMsts = "GetContainerMsts"; 
         public const string GetKensaCenterMsts = "GetKensaCenterMsts"; 
         public const string GetTenOfHRTItem = "GetTenOfHRTItem"; 
-        public const string IsKensaItemOrdering = "IsKensaItemOrdering";
+        public const string IsKensaItemOrdering = "IsKensaItemOrdering"; 
+        public const string GetTenOfKNItem = "GetTenOfKNItem";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
