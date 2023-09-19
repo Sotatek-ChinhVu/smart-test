@@ -122,9 +122,11 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                                                                                 && item.IsDeleted == 2);
             if (staMenuTempDb != null)
             {
-                staMenuConfigDBList.AddRange(TrackingDataContext.StaConfs.Where(item => item.HpId == hpId
-                                                                                        && staMenuTempDb.MenuId == item.MenuId)
-                                                                         .ToList());
+                var staConfigTemp = TrackingDataContext.StaConfs.Where(item => item.HpId == hpId
+                                                                               && staMenuTempDb.MenuId == item.MenuId)
+                                                                .ToList();
+                TrackingDataContext.RemoveRange(staConfigTemp);
+                TrackingDataContext.SaveChanges();
             }
         }
 
