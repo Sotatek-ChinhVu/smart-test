@@ -30,6 +30,7 @@ public class KensaMstModel
         CenterItemCd2 = centerItemCd2;
         TenMsts = new();
         ChildKensaMsts = new();
+        TenItemModels = new();
     }
 
     public KensaMstModel()
@@ -51,9 +52,10 @@ public class KensaMstModel
         CenterItemCd2 = string.Empty;
         TenMsts = new();
         ChildKensaMsts = new();
+        TenItemModels = new();
     }
 
-    public KensaMstModel(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, List<TenItemModel> tenMsts, List<KensaMstModel> kensaMstModels)
+    public KensaMstModel(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, List<TenItemModel> tenMsts, List<TenItemModel> tenItemModels, List<KensaMstModel> kensaMstModels)
     {
         KensaItemCd = kensaItemCd;
         KensaItemSeqNo = kensaItemSeqNo;
@@ -77,6 +79,7 @@ public class KensaMstModel
         CenterItemCd1 = centerItemCd1;
         CenterItemCd2 = centerItemCd2;
         TenMsts = tenMsts;
+        TenItemModels = tenItemModels;
         ChildKensaMsts = kensaMstModels;
     }
 
@@ -106,6 +109,7 @@ public class KensaMstModel
         IsDeleted = isDeleted;
         TenMsts = new();
         ChildKensaMsts = new();
+        TenItemModels = new();
     }
 
     public string KensaItemCd { get; private set; }
@@ -156,6 +160,8 @@ public class KensaMstModel
     }
 
     public List<TenItemModel> TenMsts { get; private set; }
+
+    public List<TenItemModel> TenItemModels { get; private set; }
 
     public List<KensaMstModel> ChildKensaMsts { get; private set; }
 
