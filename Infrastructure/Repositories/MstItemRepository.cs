@@ -6472,6 +6472,25 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public Dictionary<string, double> GetTenOfItem(int hpId)
+        {
+            Dictionary<string, double> result = new Dictionary<string, double>();
+            var tenOfHRTItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160162950" && p.IsDeleted == DeleteTypes.None)
+                                                        .OrderByDescending(p => p.StartDate).FirstOrDefault();
+
+            var a = tenOfHRTItem != null ? tenOfHRTItem.Ten : 0;
+
+            var tenOfIGEItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160056110" && p.IsDeleted == DeleteTypes.None)
+                                                        .OrderByDescending(p => p.StartDate).FirstOrDefault();
+
+            var b = tenOfIGEItem != null ? tenOfIGEItem.Ten : 0;
+
+            result.Add("TenOfHRTItem", a);
+            result.Add("TenOfIGEItem", b);
+
+            return result;
+        }
+
         public List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison)
         {
             var result = new List<CompareTenMstModel>();

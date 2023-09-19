@@ -4,6 +4,7 @@ using Domain.Models.Santei;
 using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
 using UseCase.SystemConf.SaveSystemSetting;
+using static Helper.Constants.StatusConstant;
 
 namespace Interactor.SystemConf
 {
@@ -68,6 +69,12 @@ namespace Interactor.SystemConf
 
             foreach (var item in hpInfs)
             {
+                var validationStatus = item.Validation();
+                if (validationStatus != ValidationHpInfStatus.None)
+                {
+                    return new();
+                }
+
                 result.Add(new HpInfModel(
                     item.HpId,
                     item.StartDate,

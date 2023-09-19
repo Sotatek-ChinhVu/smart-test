@@ -310,7 +310,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
             ).ToList();
 
-        var entities = join.AsEnumerable().Select(
+        var entities = join.Select(
             data =>
                 new CoKaikeiInfModel(
                     data.kaikeiInf,
@@ -581,7 +581,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
             ).ToList();
 
-        var entities = join.AsEnumerable().Select(
+        var entities = join.Select(
             data =>
                 new CoKaikeiInfListModel(
                     data.HpId,
@@ -1032,7 +1032,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
         ).ToList();
 
-        var entities = ptKohiQuery.AsEnumerable().Select(
+        var entities = ptKohiQuery.Select(
             data =>
                 new CoPtKohiModel(
                     data.ptKohi,

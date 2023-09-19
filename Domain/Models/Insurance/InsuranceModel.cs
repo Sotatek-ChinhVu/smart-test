@@ -117,6 +117,34 @@ namespace Domain.Models.InsuranceInfor
             HokenPatternSelected = hokenPatternSelected;
         }
 
+        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int startDate, int endDate, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, bool isAddNew, int isDeleted, bool hokenPatternSelected)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            PtBirthday = ptBirthday;
+            SeqNo = seqNo;
+            HokenSbtCd = hokenSbtCd;
+            HokenPid = hokenPid;
+            HokenKbn = hokenKbn;
+            HokenMemo = hokenMemo;
+            SinDate = sinDate;
+            IsDeleted = isDeleted;
+            HokenInf = hokenInf;
+            Kohi1 = kohi1;
+            Kohi2 = kohi2;
+            Kohi3 = kohi3;
+            Kohi4 = kohi4;
+            StartDate = startDate;
+            EndDate = endDate;
+            HokenId = hokenInf.HokenId;
+            Kohi1Id = kohi1.HokenId;
+            Kohi2Id = kohi2.HokenId;
+            Kohi3Id = kohi3.HokenId;
+            Kohi4Id = kohi4.HokenId;
+            IsAddNew = isAddNew;
+            HokenPatternSelected = hokenPatternSelected;
+        }
+
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
