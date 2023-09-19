@@ -6052,8 +6052,30 @@ namespace Infrastructure.Repositories
                                   x.SanteiItemCd ?? string.Empty,
                                   x.SanteigaiKbn,
                                   x.IsNosearch,
-                                  entity.TenMsts.Select(x => CIUtil.SDateToShowSDate(x.StartDate)).Distinct().ToList())).ToList(),
-                                                        
+                                  entity.TenMsts.Select(x => CIUtil.SDateToShowSDate(x.StartDate)).Distinct().ToList())).ToList(),  
+                                  entity.TenMsts.Select(y => new TenItemModel(
+                                                                              y.SinKouiKbn,
+                                                                              y.MasterSbt ?? string.Empty,
+                                                                              y.ItemCd,
+                                                                              y.KensaItemCd ?? string.Empty,
+                                                                              y.KensaItemSeqNo,
+                                                                              y.Ten,
+                                                                              y.Name ?? string.Empty,
+                                                                              y.ReceName ?? string.Empty,
+                                                                              y.KanaName1 ?? string.Empty,
+                                                                              y.KanaName2 ?? string.Empty,
+                                                                              y.KanaName3 ?? string.Empty,
+                                                                              y.KanaName4 ?? string.Empty,
+                                                                              y.KanaName5 ?? string.Empty,
+                                                                              y.KanaName6 ?? string.Empty,
+                                                                              y.KanaName7 ?? string.Empty,
+                                                                              y.StartDate,
+                                                                              y.EndDate,
+                                                                              y.DefaultVal,
+                                                                              y.OdrUnitName ?? string.Empty,
+                                                                              y.SanteiItemCd ?? string.Empty,
+                                                                              y.SanteigaiKbn,
+                                                                              y.IsNosearch)).ToList(),
                     entity.ChildKensaMsts
                     ));
             }
