@@ -23,6 +23,7 @@ using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
 using UseCase.IsUsingKensa;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using UseCase.MstItem.CompareTenMst;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseNameMstSearch;
@@ -807,6 +808,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetKensaCenterMstsPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetKensaCenterMstsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.SearchCompareTenMst)]
+        public ActionResult<Response<CompareTenMstResponse>> SearchCompareTenMst([FromBody] CompareTenMstRequest request)
+        {
+            var input = new CompareTenMstInputData(request.Actions, request.Comparison, request.SinDate, HpId);
+            var output = _bus.Handle(input);
+            var presenter = new CompareTenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CompareTenMstResponse>>(presenter.Result);
         }
     }
 }

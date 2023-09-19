@@ -462,5 +462,7 @@
         public const string GetKaCodeYousikiMst = "GetKaCodeYousikiMst";
 
         public const string Test = "Test";
+        //Search Compare Tenmst
+        public const string SearchCompareTenMst = "SearchCompareTenMst";
     }
 }
