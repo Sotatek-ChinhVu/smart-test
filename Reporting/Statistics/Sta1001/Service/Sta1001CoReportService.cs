@@ -10,6 +10,7 @@ using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Mapper;
 using Reporting.Statistics.Sta1001.Models;
 using System.Globalization;
+using System.Text.Json;
 
 namespace Reporting.Statistics.Sta1001.Service
 {
@@ -205,7 +206,6 @@ namespace Reporting.Statistics.Sta1001.Service
             GetFieldNameList();
             GetRowCount();
             putCurColumns.AddRange(putColumns);
-            _objectRseList = new();
             if (GetData())
             {
                 _hasNextPage = true;
@@ -562,7 +562,7 @@ namespace Reporting.Statistics.Sta1001.Service
             }
 
             hpInf = _sta1001Finder.GetHpInf(HpId, _printConf.StartNyukinDate);
-
+            
             syunoInfs = _sta1001Finder.GetSyunoInfs(HpId, _printConf, 0);
             if ((syunoInfs?.Count ?? 0) == 0) return false;
 
@@ -589,6 +589,14 @@ namespace Reporting.Statistics.Sta1001.Service
             if (!string.IsNullOrEmpty(field) && !SingleData.ContainsKey(field))
             {
                 SingleData.Add(field, value);
+            }
+        }
+
+        private void AddListData(ref Dictionary<string, CellModel> dictionary, string field, string value)
+        {
+            if (!string.IsNullOrEmpty(field) && !dictionary.ContainsKey(field))
+            {
+                dictionary.Add(field, new CellModel(value));
             }
         }
 
@@ -639,7 +647,7 @@ namespace Reporting.Statistics.Sta1001.Service
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                var celldata = new Dictionary<string, CellModel>();
+                Dictionary<string, CellModel> data = new();
 
                 var printData = printDatas[ptIndex];
                 string baseListName = "";
@@ -655,7 +663,7 @@ namespace Reporting.Statistics.Sta1001.Service
                 {
                     var value = typeof(CoSta1001PrintData).GetProperty(colName).GetValue(printData);
                     string valueInput = value?.ToString() ?? string.Empty;
-                    celldata.Add(colName, new CellModel(valueInput));
+                    AddListData(ref data, colName, valueInput);
                     if (baseListName == "" && _objectRseList.Contains(colName))
                     {
                         baseListName = colName;
@@ -666,13 +674,13 @@ namespace Reporting.Statistics.Sta1001.Service
                 {
                     if (printData.JihiSbtFutans == null) break;
                     var jihiSbtMst = jihiSbtMsts[i];
-                    celldata.Add(string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), new CellModel(printData.JihiSbtFutans[i]));
+                    AddListData(ref data, string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), printData.JihiSbtFutans[i]);
                 }
 
                 //合計行キャプションと件数
-                celldata.Add("TotalCaption", new CellModel(printData.TotalCaption));
-                celldata.Add("TotalCount", new CellModel(printData.TotalCount));
-                celldata.Add("TotalPtCount", new CellModel(printData.TotalPtCount));
+                AddListData(ref data, "TotalCaption", printData.TotalCaption);
+                AddListData(ref data, "TotalCount", printData.TotalCount);
+                AddListData(ref data, "TotalPtCount", printData.TotalPtCount);
 
                 ////5行毎に区切り線を引く
                 //lineCount = printData.RowType != RowType.Brank ? lineCount + 1 : lineCount;
@@ -702,7 +710,7 @@ namespace Reporting.Statistics.Sta1001.Service
                     _extralData.Add("rowNo" + rowNoKey, rowNo.ToString());
                 }
 
-                CellData.Add(celldata);
+                CellData.Add(data);
 
                 ptIndex++;
                 if (ptIndex >= printDatas.Count)
