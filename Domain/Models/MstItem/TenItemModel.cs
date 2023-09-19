@@ -325,7 +325,7 @@ namespace Domain.Models.MstItem
 
         public TenItemModel(int sinKouiKbn, string masterSbt, string itemCd, string kensaItemCd, int kensaItemSeqNo, double ten, string name, string receName, string kanaName1
                           , string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, int startDate, int endDate, double defaultValue
-                          , string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch, List<int> listGenDate)
+                          , string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch, List<string> listGenDate)
         {
             SinKouiKbn = sinKouiKbn;
             MasterSbt = masterSbt;
@@ -361,6 +361,7 @@ namespace Domain.Models.MstItem
             MaxAge = string.Empty;
             CdKbn = string.Empty;
             ListGenDate = listGenDate;
+            SetItemType();
         }
 
         public TenItemModel(string itemCd, int sinKouiKbn, string name, string odrUnitName, string cnvUnitName, int isNodspRece, int yohoKbn, double odrTermVal, double cnvTermVal, string yjCd, string kensaItemCd, int kensaItemSeqNo
@@ -546,7 +547,7 @@ namespace Domain.Models.MstItem
 
         public bool IsGetPriceInYakka { get; private set; }
 
-        public List<int> ListGenDate { get; private set; }
+        public List<string> ListGenDate { get; private set; }
 
         public string RousaiKbnDisplay
         {
@@ -709,6 +710,20 @@ namespace Domain.Models.MstItem
             {
                 if (IsDefault) return string.Empty;
                 return StartDate > 0 ? CIUtil.SDateToShowSDate(StartDate) : "0";
+            }
+        }
+
+        public int ItemType { get; private set; }
+
+        private void SetItemType()
+        {
+            if (IsDefault)
+            {
+                ItemType = -1;
+            }
+            else
+            {
+                ItemType = ItemCd.AsString().StartsWith("IGE") ? 1 : 0;
             }
         }
 

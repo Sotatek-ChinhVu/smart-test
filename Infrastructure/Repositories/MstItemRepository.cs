@@ -6052,7 +6052,7 @@ namespace Infrastructure.Repositories
                                   x.SanteiItemCd ?? string.Empty,
                                   x.SanteigaiKbn,
                                   x.IsNosearch,
-                                  entity.TenMsts.Select(x => x.StartDate).Distinct().ToList())).ToList(),
+                                  entity.TenMsts.Select(x => CIUtil.SDateToShowSDate(x.StartDate)).Distinct().ToList())).ToList(),
                                                         
                     entity.ChildKensaMsts
                     ));
