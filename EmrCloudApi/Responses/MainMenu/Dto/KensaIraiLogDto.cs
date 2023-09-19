@@ -12,7 +12,7 @@ public class KensaIraiLogDto
         FromDate = model.FromDate;
         ToDate = model.ToDate;
         IraiFile = model.IraiFile;
-        IraiList = model.IraiList;
+        IraiList = Convert.ToBase64String(model.IraiList);
         CreateDate = model.CreateDate;
     }
 
@@ -28,7 +28,7 @@ public class KensaIraiLogDto
 
     public string IraiFile { get; private set; }
 
-    public byte[] IraiList { get; private set; }
+    public string IraiList { get; private set; }
 
     public DateTime CreateDate { get; private set; }
 }
