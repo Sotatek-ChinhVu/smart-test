@@ -5999,33 +5999,13 @@ namespace Infrastructure.Repositories
                                                                             x.SortNo,
                                                                             x.CenterItemCd1 ?? string.Empty,
                                                                             x.CenterItemCd2 ?? string.Empty)).ToList(),
-                            TenMsts = tempTenMsts.Select(x => new TenItemModel(x.SinKouiKbn,
-                                                                              x.MasterSbt ?? string.Empty,
-                                                                              x.ItemCd,
-                                                                              x.KensaItemCd ?? string.Empty,
-                                                                              x.KensaItemSeqNo,
-                                                                              x.Ten,
-                                                                              x.Name ?? string.Empty,
-                                                                              x.ReceName ?? string.Empty,
-                                                                              x.KanaName1 ?? string.Empty,
-                                                                              x.KanaName2 ?? string.Empty,
-                                                                              x.KanaName3 ?? string.Empty,
-                                                                              x.KanaName4 ?? string.Empty,
-                                                                              x.KanaName5 ?? string.Empty,
-                                                                              x.KanaName6 ?? string.Empty,
-                                                                              x.KanaName7 ?? string.Empty,
-                                                                              x.StartDate,
-                                                                              x.EndDate,
-                                                                              x.DefaultVal,
-                                                                              x.OdrUnitName ?? string.Empty,
-                                                                              x.SanteiItemCd ?? string.Empty,
-                                                                              x.SanteigaiKbn,
-                                                                              x.IsNosearch)).ToList()
+                            TenMsts = tempTenMsts.OrderByDescending(x => x.StartDate).ToList()
                         };
 
             foreach (var entity in query)
             {
                 var ChildKensaMsts = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == entity.ParrentKensaMst.KensaItemCd);
+                var tenmst = entity.TenMsts.GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault()).ToList();
                 result.Add(new KensaMstModel(
                     entity.ParrentKensaMst.KensaItemCd,
                     entity.ParrentKensaMst.KensaItemSeqNo,
@@ -6048,9 +6028,31 @@ namespace Infrastructure.Repositories
                     entity.ParrentKensaMst.SortNo,
                     entity.ParrentKensaMst.CenterItemCd1 ?? string.Empty,
                     entity.ParrentKensaMst.CenterItemCd2 ?? string.Empty,
-                    entity.TenMsts,
-                    entity.ChildKensaMsts
-                    ));
+                    tenmst.Select(x => new TenItemModel(x.SinKouiKbn,
+                                                        x.MasterSbt ?? string.Empty,
+                                                        x.ItemCd,
+                                                        x.KensaItemCd ?? string.Empty,
+                                                        x.KensaItemSeqNo,
+                                                        x.Ten,
+                                                        x.Name ?? string.Empty,
+                                                        x.ReceName ?? string.Empty,
+                                                        x.KanaName1 ?? string.Empty,
+                                                        x.KanaName2 ?? string.Empty,
+                                                        x.KanaName3 ?? string.Empty,
+                                                        x.KanaName4 ?? string.Empty,
+                                                        x.KanaName5 ?? string.Empty,
+                                                        x.KanaName6 ?? string.Empty,
+                                                        x.KanaName7 ?? string.Empty,
+                                                        x.StartDate,
+                                                        x.EndDate,
+                                                        x.DefaultVal,
+                                                        x.OdrUnitName ?? string.Empty,
+                                                        x.SanteiItemCd ?? string.Empty,
+                                                        x.SanteigaiKbn,
+                                                        x.IsNosearch
+                                                        )).ToList(),
+                                                        entity.ChildKensaMsts
+                                                        ));
             }
 
             return result;
