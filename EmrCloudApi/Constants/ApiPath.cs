@@ -20,9 +20,11 @@
         public const string Paste = "Paste";
         public const string GetSuperSetDetail = "GetSuperSetDetail";
         public const string DiseaseSearch = "DiseaseSearch";
+        public const string DiseaseNameMstSearch = "DiseaseNameMstSearch";
         public const string SaveSuperSetDetail = "SaveSuperSetDetail";
         public const string GetToolTip = "GetToolTip";
         public const string GetSuperSetDetailForTodayOrder = "GetSuperSetDetailForTodayOrder";
+        public const string ParrentKensaMst = "ParrentKensaMst";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
@@ -36,6 +38,7 @@
         public const string GetAdoptedItemList = "GetAdoptedItemList";
         public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
         public const string GetCmtCheckMstList = "GetCmtCheckMstList";
+        public const string GetAllCmtCheckMst = "GetAllCmtCheckMst";
         public const string GetJihiMstList = "GetJihiMstList";
         public const string SearchTenMstItem = "SearchTenMstItem";
         public const string ConvertStringChkJISKj = "ConvertStringChkJISKj";
@@ -44,6 +47,23 @@
         public const string GetDefaultPrecautions = "GetDefaultPrecautions";
         public const string UploadImageDrugInf = "UploadImageDrugInf";
         public const string GetDiseaseList = "GetDiseaseList";
+        public const string UpdateCmtCheckMst = "UpdateCmtCheckMst";
+        public const string SaveAddressMst = "SaveAddressMst";
+        public const string ContainerMasterUpdate = "ContainerMasterUpdate";
+        public const string UpsertMaterialMaster = "UpsertMaterialMaster";
+        public const string GetSingleDoseMstAndMedicineUnitList = "GetSingleDoseMstAndMedicineUnitList";
+        public const string UpdateSingleDoseMst = "UpdateSingleDoseMst";
+        public const string UpdateKensaMst = "UpdateKensaMst";
+        public const string UpdateByomeiMst = "UpdateByomeiMst";
+        public const string IsUsingKensa = "IsUsingKensa";
+        public const string UpdateKensaStdMst = "UpdateKensaStdMst";
+        public const string GetKensaStdMst = "GetKensaStdMst";
+        public const string GetUsedKensaItemCds = "GetUsedKensaItemCds"; 
+        public const string GetTenItemCds = "GetTenItemCds";
+        public const string GetMaterialMsts = "GetMaterialMsts";
+        public const string GetContainerMsts = "GetContainerMsts"; 
+        public const string GetKensaCenterMsts = "GetKensaCenterMsts"; 
+        public const string GetTenOfHRTItem = "GetTenOfHRTItem";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -400,6 +420,14 @@
         public const string SaveStatisticMenuList = "SaveStatisticMenuList";
         public const string GetListStaticReport = "GetListStaticReport";
         public const string FindPtHokenList = "FindPtHokenList";
+        public const string GetKensaIrai = "GetKensaIrai";
+        public const string GetKensaIraiByList = "GetKensaIraiByList";
+        public const string GetKensaCenterMstList = "GetKensaCenterMstList";
+        public const string CreateDataKensaIraiRenkei = "CreateDataKensaIraiRenkei";
+        public const string ReCreateDataKensaIraiRenkei = "ReCreateDataKensaIraiRenkei";
+        public const string GetKensaInf = "GetKensaInf";
+        public const string DeleteKensaInf = "DeleteKensaInf";
+        public const string GetKensaIraiLog = "GetKensaIraiLog";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
@@ -431,7 +459,14 @@
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
         public const string UpdateAccountingFormMst = "UpdateAccountingFormMst";
 
+        //Ka
+        public const string GetKaCodeMstYossi = "GetKaCodeMstYossi";
+        public const string GetKaCodeYousikiMst = "GetKaCodeYousikiMst";
+
         public const string Test = "Test";
 
+        //PatientManagement
+        public const string SearchPtInfs = "SearchPtInfs";
+        public const string GetHokenMst = "GetHokenMst";
     }
 }

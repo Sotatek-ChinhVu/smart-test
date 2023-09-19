@@ -9,6 +9,7 @@ using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Threading;
+using Helper.Constants;
 
 namespace EmrCalculateApi.Controllers
 {
@@ -81,7 +82,7 @@ namespace EmrCalculateApi.Controllers
             }
             catch (Exception ex)
             {
-                RecalculationStatus status = new RecalculationStatus(false, -1, 0, 0, ex.Message, monthRequest.UniqueKey);
+                RecalculationStatus status = new RecalculationStatus(false, CalculateStatusConstant.Invalid, 0, 0, ex.Message, monthRequest.UniqueKey);
                 var objectJson = JsonSerializer.Serialize(status);
                 var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, objectJson);
                 sendMessager.Wait();

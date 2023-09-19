@@ -12,13 +12,13 @@ public interface IReceiptRepository : IRepositoryBase
 {
     List<ReceiptListModel> GetReceiptList(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel);
 
-    List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId, int sinDate);
+    List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId, int sinDate, bool isGetAll = false);
 
     List<ReceCmtModel> GetLastMonthReceCmt(int hpId, int sinDate, long ptId);
 
     bool SaveReceCmtList(int hpId, int userId, List<ReceCmtModel> receCmtList);
 
-    List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId);
+    List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId, bool isGetAll = false);
 
     List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId);
 

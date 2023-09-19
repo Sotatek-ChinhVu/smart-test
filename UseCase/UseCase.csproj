@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CommonChecker\CommonChecker.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Reporting\Reporting.csproj" />
   </ItemGroup>
 
   <ItemGroup>
