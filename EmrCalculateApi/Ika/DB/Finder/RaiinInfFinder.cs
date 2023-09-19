@@ -1,14 +1,9 @@
-﻿using EmrCalculateApi.Constants;
-using EmrCalculateApi.Extensions;
-using Entity.Tenant;
+﻿using EmrCalculateApi.Extensions;
 using PostgreDataContext;
 using Helper.Constants;
 using EmrCalculateApi.Ika.Models;
-using Helper.Common;
 using EmrCalculateApi.Interface;
 using Domain.Constant;
-using Infrastructure.Interfaces;
-using System.Diagnostics;
 
 namespace EmrCalculateApi.Ika.DB.Finder
 {
@@ -198,6 +193,9 @@ namespace EmrCalculateApi.Ika.DB.Finder
                                                    sinYmList.Contains(raiinInf.SinDate / 100))
                                                ))
                                          .ToList();
+
+            ptIdList = raiinInfList.Select(item => item.PtId).Distinct().ToList();
+            sinYmList = raiinInfList.Select(item => (int)Math.Floor((double)item.SinDate / 100)).Distinct().ToList();
             var receSeikyuList = receSeikyus.Where(item => item.HpId == hpId
                                                            && ptIdList.Contains(item.PtId)
                                                            && sinYmList.Contains(item.SinYm))

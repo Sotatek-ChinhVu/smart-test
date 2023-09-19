@@ -718,6 +718,8 @@ using UseCase.ListSetMst.GetTreeListSet;
 using Interactor.ListSetMst;
 using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.SetSendaiGeneration.Add;
+using UseCase.MainMenu.KensaIraiReport;
+using UseCase.UpsertMaterialMaster;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1396,7 +1398,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateKensaStdMstInputData, UpdateKensaStdMstInteractor>();
             busBuilder.RegisterUseCase<GetKensaStdMstInputData, GetKensaStdMstModelsInteractor>();
             busBuilder.RegisterUseCase<GetUsedKensaItemCdsInputData, GetUsedKensaItemCdsInteractor>();
-
+            busBuilder.RegisterUseCase<UpsertMaterialMasterInputData, UpsertMaterialMasterInteractor>();
             busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
             busBuilder.RegisterUseCase<GetMaterialMstsInputData, GetMaterialMstsInteractor>();
             busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
@@ -1657,6 +1659,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKensaInfInputData, GetKensaInfInteractor>();
             busBuilder.RegisterUseCase<DeleteKensaInfInputData, DeleteKensaInfInteractor>();
             busBuilder.RegisterUseCase<GetKensaIraiLogInputData, GetKensaIraiLogInteractor>();
+            busBuilder.RegisterUseCase<KensaIraiReportInputData, KensaIraiReportInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
