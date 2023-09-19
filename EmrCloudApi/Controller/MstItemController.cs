@@ -55,6 +55,7 @@ using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.GetTenOfItem;
 using UseCase.MstItem.GetUsedKensaItemCds;
+using UseCase.MstItem.IsKensaItemOrdering;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
@@ -818,6 +819,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTenOfHRTItemPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenOfHRTItemResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.IsKensaItemOrdering)]
+        public ActionResult<Response<IsKensaItemOrderingResponse>> IsKensaItemOrdering([FromQuery] IsKensaItemOrderingRequest request)
+        {
+            var input = new IsKensaItemOrderingInputData(HpId, request.TenItemCd);
+            var output = _bus.Handle(input);
+            var presenter = new IsKensaItemOrderingPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<IsKensaItemOrderingResponse>>(presenter.Result);
         }
     }
 }

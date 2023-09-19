@@ -6488,5 +6488,10 @@ namespace Infrastructure.Repositories
 
             return result;
         }
+
+        public bool IsKensaItemOrdering(int hpId, string tenItemCd)
+        {
+            return NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && p.ItemCd == tenItemCd).Any();
+        }
     }
 }
