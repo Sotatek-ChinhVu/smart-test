@@ -33,9 +33,17 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
                 return new SaveReceCmtListOutputData(new(), responseValidate);
             }
 
-            var listReceCmtDB = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId, 0);
-            var receCmtIdDB = listReceCmtDB.Select(item => item.Id).Distinct().ToList();
-            List<ReceCmtItem> receCmtInvalidList = inputData.ReceCmtList.Where(item => item.Id > 0 && !receCmtIdDB.Contains(item.Id)).ToList();
+            var listReceCmtDB = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId, 0, true);
+            var receCmtIdNotDeletedDB = listReceCmtDB.Where(item => !item.IsDeleted).Select(item => item.Id).Distinct().ToList();
+            List<ReceCmtItem> receCmtInvalidList = inputData.ReceCmtList.Where(item => item.Id > 0 && !receCmtIdNotDeletedDB.Contains(item.Id)).ToList();
+            foreach (var receCmt in receCmtInvalidList)
+            {
+                var cmtData = listReceCmtDB.FirstOrDefault(item => item.Id == receCmt.Id);
+                if (cmtData != null)
+                {
+                    receCmt.ChangeCmtData(cmtData.CmtData, cmtData.Cmt);
+                }
+            }
 
             var receCmtDeletedList = listReceCmtDB.Where(item => (item.CmtKbn == ReceCmtKbn.Header || item.CmtKbn == ReceCmtKbn.Footer) && item.CmtSbt == ReceCmtSbt.FreeCmt)
                                                   .Select(item => new ReceCmtItem(item, true))
