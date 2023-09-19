@@ -1,4 +1,6 @@
-﻿using Helper.Constants;
+﻿using Helper.Common;
+using Helper.Constants;
+using Helper.Extension;
 using System.Text.Json.Serialization;
 using static Helper.Constants.TenMstConst;
 
@@ -63,9 +65,10 @@ namespace Domain.Models.MstItem
             KensaItemCd = string.Empty;
             ReceName = string.Empty;
             CdKbn = string.Empty;
+            ListGenDate = new();
         }
-        
-        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted, int handanGrpKbn, bool isKensaMstEmpty, double yakka,  bool isGetPriceInYakka)
+
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted, int handanGrpKbn, bool isKensaMstEmpty, double yakka, bool isGetPriceInYakka)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -123,6 +126,7 @@ namespace Domain.Models.MstItem
             KensaItemCd = string.Empty;
             ReceName = string.Empty;
             CdKbn = string.Empty;
+            ListGenDate = new();
         }
 
         public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted)
@@ -179,6 +183,7 @@ namespace Domain.Models.MstItem
             KensaItemCd = string.Empty;
             ReceName = string.Empty;
             CdKbn = string.Empty;
+            ListGenDate = new();
         }
 
         public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, int modeStatus)
@@ -235,8 +240,9 @@ namespace Domain.Models.MstItem
             KensaItemCd = string.Empty;
             ReceName = string.Empty;
             CdKbn = string.Empty;
+            ListGenDate = new();
         }
-        
+
         public TenItemModel()
         {
             HpId = 0;
@@ -270,7 +276,7 @@ namespace Domain.Models.MstItem
             OdrTermVal = 0;
             Kokuji1 = string.Empty;
             Kokuji2 = string.Empty;
-            IpnName  = string.Empty;
+            IpnName = string.Empty;
             KanaName2 = string.Empty;
             KanaName3 = string.Empty;
             KanaName4 = string.Empty;
@@ -280,8 +286,9 @@ namespace Domain.Models.MstItem
             KensaItemCd = string.Empty;
             ReceName = string.Empty;
             CdKbn = string.Empty;
+            ListGenDate = new();
         }
-        
+
         public TenItemModel(int hpId, string itemCd, string minAge, string maxAge, string santeiItemCd, int startDate, int endDate)
         {
             HpId = hpId;
@@ -304,7 +311,7 @@ namespace Domain.Models.MstItem
             Kokuji1 = string.Empty;
             Kokuji2 = string.Empty;
             IpnName = string.Empty;
-            ReceName = string.Empty; 
+            ReceName = string.Empty;
             KanaName2 = string.Empty;
             KanaName3 = string.Empty;
             KanaName4 = string.Empty;
@@ -313,11 +320,12 @@ namespace Domain.Models.MstItem
             KanaName7 = string.Empty;
             KensaItemCd = string.Empty;
             CdKbn = string.Empty;
+            ListGenDate = new();
         }
-        
+
         public TenItemModel(int sinKouiKbn, string masterSbt, string itemCd, string kensaItemCd, int kensaItemSeqNo, double ten, string name, string receName, string kanaName1
-                          , string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6
-                          , string kanaName7, int startDate, int endDate, double defaultValue, string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch)
+                          , string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, int startDate, int endDate, double defaultValue
+                          , string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch, List<int> listGenDate)
         {
             SinKouiKbn = sinKouiKbn;
             MasterSbt = masterSbt;
@@ -352,6 +360,7 @@ namespace Domain.Models.MstItem
             MinAge = string.Empty;
             MaxAge = string.Empty;
             CdKbn = string.Empty;
+            ListGenDate = listGenDate;
         }
 
         public TenItemModel(string itemCd, int sinKouiKbn, string name, string odrUnitName, string cnvUnitName, int isNodspRece, int yohoKbn, double odrTermVal, double cnvTermVal, string yjCd, string kensaItemCd, int kensaItemSeqNo
@@ -408,6 +417,7 @@ namespace Domain.Models.MstItem
             KensaMstCenterItemCd1 = string.Empty;
             KensaMstCenterItemCd2 = string.Empty;
             IpnCD = string.Empty;
+            ListGenDate = new();
         }
 
         public int HpId { get; private set; }
@@ -535,6 +545,8 @@ namespace Domain.Models.MstItem
         public double Yakka { get; private set; }
 
         public bool IsGetPriceInYakka { get; private set; }
+
+        public List<int> ListGenDate { get; private set; }
 
         public string RousaiKbnDisplay
         {
@@ -676,6 +688,34 @@ namespace Domain.Models.MstItem
         }
 
         public string CdKbn { get; private set; }
+
+        public string FormattedStartDate
+        {
+            get => StartDate > 0 ? CIUtil.SDateToShowSDate(StartDate) : "0";
+            set => StartDate = value.Replace("/", string.Empty).AsInteger();
+        }
+
+        public string FormattedEndDate
+        {
+            get => EndDate != 99999999 ? CIUtil.SDateToShowSDate(EndDate) : "9999/99/99";
+            set => EndDate = value.Replace("/", string.Empty).AsInteger();
+        }
+
+        public bool IsDefault => CheckDefaultValue();
+
+        public string ReadOnlyStartDate
+        {
+            get
+            {
+                if (IsDefault) return string.Empty;
+                return StartDate > 0 ? CIUtil.SDateToShowSDate(StartDate) : "0";
+            }
+        }
+
+        public bool CheckDefaultValue()
+        {
+            return string.IsNullOrEmpty(ItemCd);
+        }
 
         public ValidationStatus Validation()
         {
