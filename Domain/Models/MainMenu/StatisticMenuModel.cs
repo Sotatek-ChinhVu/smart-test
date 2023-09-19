@@ -29,11 +29,12 @@ public class StatisticMenuModel
         IsSaveTemp = isSaveTemp;
     }
 
-    public StatisticMenuModel(int menuId, int grpId, int reportId, int sortNo, bool isDeleted, bool isModified, PatientManagementItem patientManagement)
+    public StatisticMenuModel(int menuId, int grpId, int reportId, string menuName, int sortNo, bool isDeleted, bool isModified, PatientManagementModel patientManagement)
     {
         MenuId = menuId;
         GrpId = grpId;
         ReportId = reportId;
+        MenuName = menuName;
         SortNo = sortNo;
         IsDeleted = isDeleted;
         IsModified = isModified;
@@ -67,5 +68,5 @@ public class StatisticMenuModel
 
     public bool IsModified { get; private set; }
 
-    public PatientManagementItem PatientManagement { get; private set; }
+    public PatientManagementModel PatientManagement { get; private set; }
 }

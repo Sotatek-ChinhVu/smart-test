@@ -10,6 +10,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.HokenMst.GetHokenMst;
+using UseCase.PatientManagement.GetStaConf;
 using UseCase.PatientManagement.SaveStaConf;
 using UseCase.PatientManagement.SearchPtInfs;
 
@@ -68,11 +69,24 @@ namespace EmrCloudApi.Controller
                                           staConf.StaConfMenu.MenuId,
                                           staConf.StaConfMenu.GrpId,
                                           staConf.StaConfMenu.ReportId,
+                                          staConf.StaConfMenu.MenuName ?? string.Empty,
                                           staConf.StaConfMenu.SortNo,
                                           staConf.StaConfMenu.IsDeleted,
                                           staConf.StaConfMenu.IsModified,
                                           staConf.StaConfMenu.PatientManagement
                                           );
+        }
+
+        [HttpGet(ApiPath.GetStaConfMenu)]
+        public ActionResult<Response<GetStaConfMenuResponse>> GetStaConfMenu()
+        {
+            var input = new GetStaConfMenuInputData(HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetStaConfMenuPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetStaConfMenuResponse>>(presenter.Result);
         }
     }
 }

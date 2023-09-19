@@ -1,0 +1,17 @@
+﻿using Domain.Models.MainMenu;
+using UseCase.Core.Sync.Core;
+
+namespace UseCase.PatientManagement.GetStaConf
+{
+    public class GetStaConfMenuOutputData : IOutputData
+    {
+        public GetStaConfMenuOutputData(List<StatisticMenuModel> statisticMenus, GetStaConfMenuStatus status)
+        {
+            StatisticMenus = statisticMenus;
+            Status = status;
+        }
+
+        public List<StatisticMenuModel> StatisticMenus { get; private set; }
+        public GetStaConfMenuStatus Status { get; private set; }
+    }
+}

@@ -11,4 +11,6 @@ public interface IStatisticRepository : IRepositoryBase
     (int menuIdTemp, bool success) SaveStatisticMenu(int hpId, int userId, List<StatisticMenuModel> statisticMenuModelList);
 
     bool SaveStaConfMenu(int hpId, int userId, StatisticMenuModel statisticMenu);
+
+    List<StatisticMenuModel> GetStatisticMenuModels(int hpId);
 }

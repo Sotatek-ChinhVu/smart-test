@@ -541,6 +541,7 @@ using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
+using UseCase.PatientManagement.GetStaConf;
 using UseCase.PatientManagement.SaveStaConf;
 using UseCase.PatientManagement.SearchPtInfs;
 using UseCase.PtGroupMst.CheckAllowDelete;
@@ -1713,6 +1714,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchPtInfsInputData, SearchPtInfsInteractor>();
             busBuilder.RegisterUseCase<GetHokenMstInputData, GetHokenMstInteractor>();
             busBuilder.RegisterUseCase<SaveStaConfMenuInputData, SaveStaConfMenuInteractor>();
+            busBuilder.RegisterUseCase<GetStaConfMenuInputData, GetStaConfMenuInteractor>();
 
             //ListSetMst
             busBuilder.RegisterUseCase<GetTreeListSetInputData, GetTreeListSetInteractor>();
