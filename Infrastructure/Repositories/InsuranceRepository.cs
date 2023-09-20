@@ -387,13 +387,13 @@ namespace Infrastructure.Repositories
             #endregion PtHokenPattern
             if (sortType == 1)
             {
-                listInsurance = listInsurance.OrderByDescending(i => i.EndDate).ThenByDescending(i => i.HokenId).ToList();
-                hokenInfList = hokenInfList.OrderByDescending(h => h.EndDate).ThenByDescending(h => h.HokenId).ToList();
+                listInsurance = listInsurance.OrderBy(i => i.IsExpirated).OrderByDescending(i => i.EndDate).ThenByDescending(i => i.HokenId).ToList();
+                hokenInfList = hokenInfList.OrderBy(i => i.IsExpirated).OrderByDescending(h => h.EndDate).ThenByDescending(h => h.HokenId).ToList();
             }
             else if (sortType == 2)
             {
-                listInsurance = listInsurance.OrderByDescending(i => i.IsExpirated).ThenBy(i => i.EndDate).ToList();
-                hokenInfList = hokenInfList.OrderByDescending(h => h.IsExpirated).ThenBy(h => h.EndDate).ToList();
+                listInsurance = listInsurance.OrderBy(i => i.IsExpirated).ThenBy(i => i.EndDate).ToList();
+                hokenInfList = hokenInfList.OrderBy(h => h.IsExpirated).ThenBy(h => h.EndDate).ToList();
             }
             return new InsuranceDataModel(listInsurance, hokenInfList, kohiInfList, maxIdHokenInf, maxIdKohi, maxPidHokenPattern);
         }
