@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.MstItem
         {
             Result = new Response<F17CommonResponse>()
             {
-                Data = new F17CommonResponse(outputData.KensaItemCd, outputData.Status, outputData.KensaStdMsts, outputData.ItemCd, outputData.MaterialMsts, outputData.ContainerMsts, outputData.KensaCenterMsts, outputData.TenOfItem),
+                Data = new F17CommonResponse(outputData.KensaItemCd, outputData.Status, outputData.KensaStdMsts, outputData.ItemCd, outputData.MaterialMsts, outputData.ContainerMsts, outputData.KensaCenterMsts, outputData.TenOfItem, outputData.LatestSedai),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)

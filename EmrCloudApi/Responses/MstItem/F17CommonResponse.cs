@@ -5,7 +5,7 @@ namespace EmrCloudApi.Responses.MstItem
 {
     public class F17CommonResponse
     {
-        public F17CommonResponse(List<string> kensaItemCd, F17CommonStatus status, List<KensaStdMstModel> kensaStdMsts, List<string> itemCd, Dictionary<int, string> materialMsts, Dictionary<int, string> containerMsts, Dictionary<string, string> kensaCenterMsts, Dictionary<string, double> tenOfItem)
+        public F17CommonResponse(List<string> kensaItemCd, F17CommonStatus status, List<KensaStdMstModel> kensaStdMsts, List<string> itemCd, Dictionary<int, string> materialMsts, Dictionary<int, string> containerMsts, Dictionary<string, string> kensaCenterMsts, Dictionary<string, double> tenOfItem, double latestSedai)
         {
             KensaItemCd = kensaItemCd;
             Status = status;
@@ -15,6 +15,8 @@ namespace EmrCloudApi.Responses.MstItem
             ContainerMsts = containerMsts;
             KensaCenterMsts = kensaCenterMsts;
             TenOfItem = tenOfItem;
+            TenOfItem = tenOfItem;
+            LatestSedai = latestSedai;
         }
 
         public List<string> KensaItemCd { get; private set; }
@@ -32,5 +34,7 @@ namespace EmrCloudApi.Responses.MstItem
         public Dictionary<string, string> KensaCenterMsts { get; private set; }
 
         public Dictionary<string, double> TenOfItem { get; private set; }
+
+        public double LatestSedai { get; private set; }
     }
 }

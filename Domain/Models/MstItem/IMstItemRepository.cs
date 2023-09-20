@@ -12,6 +12,10 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        bool IsKensaItemOrdering(int hpId, string tenItemCd);
+
+        double GetTenOfKNItem(int hpId, string itemCd);
+
         Dictionary<string, double> GetTenOfItem(int hpId);
 
         Dictionary<string, string> GetKensaCenterMsts(int hpId);
@@ -172,7 +176,7 @@ namespace Domain.Models.MstItem
 
         bool CheckPostCodeExist(int hpId, string zipCD);
 
-        
+
         List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
 
         List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today);
