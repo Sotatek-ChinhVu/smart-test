@@ -17,7 +17,6 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -1824,7 +1823,7 @@ namespace Infrastructure.Repositories
                 if (entities == null) continue;
                 foreach (var entity in entities)
                 {
-                    result.Add(new ItemCmtModel(itemCd, entity.HpId, entity.SeqNo, entity.Cmt ?? string.Empty, entity.SortNo));
+                    result.Add(new ItemCmtModel(itemCd, entity.HpId, entity.SeqNo, entity.Cmt ?? string.Empty, entity.SortNo, entity.IsDeleted));
                 }
             }
             return result;
@@ -2078,7 +2077,7 @@ namespace Infrastructure.Repositories
                     mst.NanbyoCd
                 );
         }
-        
+
         private static ByomeiMstModel ConvertToByomeiMstModelInDeseaseNameMst(ByomeiMst mst)
         {
             return new ByomeiMstModel(
@@ -5763,15 +5762,40 @@ namespace Infrastructure.Repositories
         {
             foreach (var item in listData)
             {
-                var itemUpdate = TrackingDataContext.CmtCheckMsts.FirstOrDefault(t => t.HpId == item.HpId && t.ItemCd == item.ItemCd && t.SeqNo == item.SeqNo);
-                if (itemUpdate != null)
+                // Create
+                if (item.SeqNo == 0 && item.IsDeleted == 0)
                 {
-                    itemUpdate.Cmt = item.Comment;
-                    itemUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    itemUpdate.UpdateId = userId;
-                    TrackingDataContext.SaveChanges();
+
+                    TrackingDataContext.CmtCheckMsts.Add(new CmtCheckMst()
+                    {
+                        HpId = hpId,
+                        ItemCd = item.ItemCd,
+                        Cmt = item.Comment,
+                        KarteKbn = KarteConst.KarteKbn,
+                        SortNo = item.SortNo,
+                        CreateMachine = CIUtil.GetComputerName(),
+                        IsDeleted = 0,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                    });
                 }
+                // Update
+                else
+                {
+                    var itemUpdate = TrackingDataContext.CmtCheckMsts.FirstOrDefault(t => t.HpId == item.HpId && t.ItemCd == item.ItemCd && t.SeqNo == item.SeqNo);
+                    if (itemUpdate != null)
+                    {
+                        itemUpdate.Cmt = item.Comment;
+                        itemUpdate.SortNo = item.SortNo;
+                        itemUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        itemUpdate.UpdateId = userId;
+                        itemUpdate.UpdateMachine = CIUtil.GetComputerName();
+                        itemUpdate.IsDeleted = item.IsDeleted;
+                    }
+                }
+
             }
+            TrackingDataContext.SaveChanges();
             return true;
         }
 
