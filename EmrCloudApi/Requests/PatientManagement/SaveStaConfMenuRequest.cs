@@ -2,6 +2,6 @@
 {
     public class SaveStaConfMenuRequest
     {
-        public SaveStaConfMenuRequestItem StaConfMenu { get; set; } = new();
+        public StaConfMenuRequestItem StaConfMenu { get; set; } = new();
     }
 }

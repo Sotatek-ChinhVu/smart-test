@@ -225,6 +225,8 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                 HpId = hpId,
                 GrpId = 9,
                 ReportId = 9000,
+                SortNo = statisticMenu.SortNo,
+                MenuName = statisticMenu.MenuName,
                 CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = userId,
                 UpdateDate = CIUtil.GetJapanDateTimeNow(),
