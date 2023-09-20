@@ -469,5 +469,8 @@
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";
+
+        //SetSendaiGeneration
+        public const string Restore = "Restore";
     }
 }
