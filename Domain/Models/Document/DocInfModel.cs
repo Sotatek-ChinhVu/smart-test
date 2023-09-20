@@ -4,12 +4,6 @@ public class DocInfModel
 {
     public DocInfModel()
     {
-        HpId = 0;
-        PtId = 0;
-        SinDate = 0;
-        RaiinNo = 0;
-        SeqNo = 0;
-        CategoryCd = 0;
         CategoryName = string.Empty;
         FileName = string.Empty;
         DisplayFileName = string.Empty;
@@ -17,13 +11,12 @@ public class DocInfModel
         FileLink = string.Empty;
     }
 
-    public DocInfModel(int hpId, long ptId, int sinDate, long raiinNo, int seqNo, int categoryCd, string categoryName, string fileName, string displayFileName, DateTime updateDate)
+    public DocInfModel(int hpId, long fileId, long ptId, int getDate, int categoryCd, string categoryName, string fileName, string displayFileName, DateTime updateDate)
     {
         HpId = hpId;
+        FileId = fileId;
         PtId = ptId;
-        SinDate = sinDate;
-        RaiinNo = raiinNo;
-        SeqNo = seqNo;
+        GetDate = getDate;
         CategoryCd = categoryCd;
         CategoryName = categoryName;
         FileName = fileName;
@@ -40,13 +33,11 @@ public class DocInfModel
 
     public int HpId { get; private set; }
 
+    public long FileId { get; private set; }
+
     public long PtId { get; private set; }
 
-    public int SinDate { get; private set; }
-
-    public long RaiinNo { get; private set; }
-
-    public int SeqNo { get; private set; }
+    public int GetDate { get; private set; }
 
     public int CategoryCd { get; private set; }
 

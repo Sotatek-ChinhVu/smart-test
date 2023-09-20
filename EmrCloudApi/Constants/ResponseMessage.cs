@@ -910,6 +910,7 @@
         public static readonly string DocInfNotFound = "DocInf Not Found!";
         public static readonly string TemplateLinkIsNotExists = "TemplateLink is not exists!";
         public static readonly string InvalidExtentionFile = "Extention file is must .docx or .xlsx!";
+        public static readonly string InvalidGetDate = "Invalid GetDate!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";
