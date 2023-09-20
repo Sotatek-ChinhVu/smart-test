@@ -1,8 +1,9 @@
 ﻿namespace UseCase.IsUsingKensa
 {
-    public enum IsUsingKensaStatus
+    public enum F17CommonStatus
     {
         Success,
         Failed,
+        NoData,
     }
 }

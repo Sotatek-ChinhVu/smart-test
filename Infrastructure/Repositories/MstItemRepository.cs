@@ -6517,15 +6517,15 @@ namespace Infrastructure.Repositories
             var tenOfHRTItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160162950" && p.IsDeleted == DeleteTypes.None)
                                                         .OrderByDescending(p => p.StartDate).FirstOrDefault();
 
-            var a = tenOfHRTItem != null ? tenOfHRTItem.Ten : 0;
+            //tenOfHRTItem = tenOfHRTItem != null ? tenOfHRTItem.Ten : 0;
 
             var tenOfIGEItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160056110" && p.IsDeleted == DeleteTypes.None)
                                                         .OrderByDescending(p => p.StartDate).FirstOrDefault();
 
-            var b = tenOfIGEItem != null ? tenOfIGEItem.Ten : 0;
+            //tenOfIGEItem = tenOfIGEItem != null ? tenOfIGEItem.Ten : 0;
 
-            result.Add("TenOfHRTItem", a);
-            result.Add("TenOfIGEItem", b);
+            result.Add("TenOfHRTItem", tenOfHRTItem != null ? tenOfHRTItem.Ten : 0);
+            result.Add("TenOfIGEItem", tenOfIGEItem != null ? tenOfIGEItem.Ten : 0);
 
             return result;
         }
