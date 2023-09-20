@@ -56,7 +56,8 @@
         public const string UpdateKensaMst = "UpdateKensaMst";
         public const string UpdateByomeiMst = "UpdateByomeiMst";
         public const string f_17_Common = "f_17_Common";
-        public const string UpdateKensaStdMst = "UpdateKensaStdMst";
+        public const string UpdateKensaStdMst = "UpdateKensaStdMst"; 
+        public const string IsUsingKensa = "IsUsingKensa";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

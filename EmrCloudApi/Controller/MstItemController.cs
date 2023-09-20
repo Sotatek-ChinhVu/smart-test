@@ -48,6 +48,7 @@ using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.IsUsingKensa;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
@@ -739,6 +740,16 @@ namespace EmrCloudApi.Controller
             var presenter = new F17CommonPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<F17CommonResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.IsUsingKensa)]
+        public ActionResult<Response<IsUsingKensaResponse>> IsUsingKensa([FromBody] IsUsingKensaRequest request)
+        {
+            var input = new IsUsingKensaInputData(HpId, request.KensaItemCd, request.ItemCds);
+            var output = _bus.Handle(input);
+            var presenter = new IsUsingKensaPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<IsUsingKensaResponse>>(presenter.Result);
         }
     }
 }

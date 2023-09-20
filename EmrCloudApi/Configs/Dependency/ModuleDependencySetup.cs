@@ -472,6 +472,7 @@ using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.IsUsingKensa;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
@@ -1390,6 +1391,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<F17CommonInputData, F17CommonInteractor>();
             busBuilder.RegisterUseCase<UpdateKensaStdMstInputData, UpdateKensaStdMstInteractor>();
             busBuilder.RegisterUseCase<UpsertMaterialMasterInputData, UpsertMaterialMasterInteractor>();
+            busBuilder.RegisterUseCase<IsUsingKensaInputData, IsUsingKensaInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();

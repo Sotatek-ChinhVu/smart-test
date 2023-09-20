@@ -15,22 +15,12 @@ namespace Interactor.MstItem
         {
             try
             {
-                if (inputData.UsingKensaItemCd != "" && inputData.UsingItemCds.Count != 0)
-                {
-                    var result = _mstItemRepository.IsUsingKensa(inputData.HpId, inputData.UsingKensaItemCd, inputData.UsingItemCds);
-                    if (result)
-                    {
-                        return new F17CommonOutputData(new(), F17CommonStatus.Success, new(), new(), new(), new(), new(), new(), 0);
-                    }
-                    else
-                    {
-                        return new F17CommonOutputData(new(), F17CommonStatus.Failed, new(), new(), new(), new(), new(), new(), 0);
-                    }
-                }else if (inputData.ItemCd != "")
+                if (inputData.ItemCd != "")
                 {
                     var result = _mstItemRepository.GetTenOfKNItem(inputData.HpId, inputData.ItemCd);
                     return new F17CommonOutputData(new(), F17CommonStatus.Success, new(), new(), new(), new(), new(), new(), result);
-                }else if (inputData.TenItemCd != "")
+                }
+                else if (inputData.TenItemCd != "")
                 {
                     var result = _mstItemRepository.IsKensaItemOrdering(inputData.HpId, inputData.TenItemCd);
                     if (result)
