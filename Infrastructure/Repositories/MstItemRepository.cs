@@ -21,6 +21,7 @@ using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KensaCenterMstModel = Domain.Models.MstItem.KensaCenterMstModel;
@@ -6515,14 +6516,12 @@ namespace Infrastructure.Repositories
         {
             Dictionary<string, double> result = new Dictionary<string, double>();
             var tenOfHRTItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160162950" && p.IsDeleted == DeleteTypes.None)
-                                                        .OrderByDescending(p => p.StartDate).FirstOrDefault();
-
-            //tenOfHRTItem = tenOfHRTItem != null ? tenOfHRTItem.Ten : 0;
+                                                            .OrderByDescending(p => p.StartDate)
+                                                            .FirstOrDefault();
 
             var tenOfIGEItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160056110" && p.IsDeleted == DeleteTypes.None)
-                                                        .OrderByDescending(p => p.StartDate).FirstOrDefault();
-
-            //tenOfIGEItem = tenOfIGEItem != null ? tenOfIGEItem.Ten : 0;
+                                                            .OrderByDescending(p => p.StartDate)
+                                                            .FirstOrDefault();
 
             result.Add("TenOfHRTItem", tenOfHRTItem != null ? tenOfHRTItem.Ten : 0);
             result.Add("TenOfIGEItem", tenOfIGEItem != null ? tenOfIGEItem.Ten : 0);
@@ -6540,6 +6539,41 @@ namespace Infrastructure.Repositories
             var latestSedai = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == itemCd && p.IsDeleted == DeleteTypes.None)
                                                         .OrderByDescending(p => p.StartDate).FirstOrDefault();
             return latestSedai != null ? latestSedai.Ten : 0;
+        }
+
+        public List<TenItemModel> GetTenMstsWithStartDate(int hpId, string itemCd)
+        {
+            List<TenItemModel> result = new();
+
+            var tenmsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == itemCd && p.IsDeleted == DeleteTypes.None)
+                                                       .OrderByDescending(p => p.StartDate)
+                                                       .ToList();
+            result = tenmsts.Select(x => new TenItemModel(x.SinKouiKbn,
+                                                          x.MasterSbt ?? string.Empty,
+                                                          x.ItemCd,
+                                                          x.KensaItemCd ?? string.Empty,
+                                                          x.KensaItemSeqNo,
+                                                          x.Ten,
+                                                          x.Name ?? string.Empty,
+                                                          x.ReceName ?? string.Empty,
+                                                          x.KanaName1 ?? string.Empty,
+                                                          x.KanaName2 ?? string.Empty,
+                                                          x.KanaName3 ?? string.Empty,
+                                                          x.KanaName4 ?? string.Empty,
+                                                          x.KanaName5 ?? string.Empty,
+                                                          x.KanaName6 ?? string.Empty,
+                                                          x.KanaName7 ?? string.Empty,
+                                                          x.StartDate,
+                                                          x.EndDate,
+                                                          x.DefaultVal,
+                                                          x.OdrUnitName ?? string.Empty,
+                                                          x.SanteiItemCd ?? string.Empty,
+                                                          x.SanteigaiKbn,
+                                                          x.IsNosearch,
+                                                          new List<string>()
+                                                          )).ToList();
+
+            return result;
         }
     }
 }

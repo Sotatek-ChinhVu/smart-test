@@ -5,7 +5,7 @@ namespace UseCase.IsUsingKensa
 {
     public class F17CommonOutputData : IOutputData
     {
-        public F17CommonOutputData(List<string> kensaItemCd, F17CommonStatus status, List<KensaStdMstModel> kensaStdMsts, List<string> itemCd, Dictionary<int, string> materialMsts, Dictionary<int, string> containerMsts, Dictionary<string, string> kensaCenterMsts, Dictionary<string, double> tenOfItem, double latestSedai) 
+        public F17CommonOutputData(List<string> kensaItemCd, F17CommonStatus status, List<KensaStdMstModel> kensaStdMsts, List<string> itemCd, Dictionary<int, string> materialMsts, Dictionary<int, string> containerMsts, Dictionary<string, string> kensaCenterMsts, Dictionary<string, double> tenOfItem, double latestSedai, List<TenItemModel> tenItemModels) 
         {
             KensaItemCd = kensaItemCd;
             Status = status;
@@ -16,6 +16,7 @@ namespace UseCase.IsUsingKensa
             KensaCenterMsts = kensaCenterMsts;
             TenOfItem = tenOfItem;
             LatestSedai = latestSedai;
+            TenItemModels = tenItemModels;
         }
 
         public List<string> KensaItemCd { get; private set; }
@@ -35,5 +36,7 @@ namespace UseCase.IsUsingKensa
         public Dictionary<string, double> TenOfItem { get; private set; }
 
         public double LatestSedai { get; private set; }
+
+        public List<TenItemModel> TenItemModels { get; private set; }
     }
 }
