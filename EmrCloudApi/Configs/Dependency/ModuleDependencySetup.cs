@@ -734,6 +734,7 @@ using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetKensaCenterMsts;
 using UseCase.SetSendaiGeneration.Delete;
 using UseCase.MstItem.CompareTenMst;
+using UseCase.MstItem.SaveCompareTenMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1736,6 +1737,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Compare TenMst CompareTenMstInputData
             busBuilder.RegisterUseCase<CompareTenMstInputData, CompareTenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveCompareTenMstInputData, SaveCompareTenMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

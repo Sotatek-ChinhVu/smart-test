@@ -6519,7 +6519,9 @@ namespace Infrastructure.Repositories
                         break;
                     case ComparisonSearchModel.ReceName:
                         tenMstCommparsons = from tenMstCompar in tenMstCommparsons
-                                            where tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName != null && tenMstCompar.TenMstMother.ReceName.Trim() != tenMstCompar.TenMst.ReceName.Trim()
+                                            where (tenMstCompar.TenMstMother.ReceName == null && tenMstCompar.TenMst.ReceName != null) ||
+                                                   (tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName == null) || 
+                                                   (tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName != null && tenMstCompar.TenMstMother.ReceName.Trim() != tenMstCompar.TenMst.ReceName.Trim())
                                             select tenMstCompar;
                         break;
                     case ComparisonSearchModel.OdrUnitName:
@@ -6548,9 +6550,9 @@ namespace Infrastructure.Repositories
                         break;
                 }
 
-                result = tenMstCommparsons.AsEnumerable().Select(u => 
+                result = tenMstCommparsons.AsEnumerable().Select(u =>
                                     new CompareTenMstModel(
-                                        u != null && u.TenMst != null ? u.TenMst.ItemCd : string.Empty, hpId, 
+                                        u != null && u.TenMst != null ? u.TenMst.ItemCd : string.Empty, hpId,
                                         u != null && u.TenMst != null ? u.TenMst.StartDate : 0,
                                         u?.TenMst?.Name ?? string.Empty,
                                         u?.TenMst?.ReceName ?? string.Empty,
@@ -6709,6 +6711,54 @@ namespace Infrastructure.Repositories
                                     select tenMstMother;
             }
             return tenMstMotherRepos;
+        }
+
+        public bool SaveCompareTenMst(List<SaveCompareTenMstModel> ListData, ComparisonSearchModel comparison, int userId)
+        {
+            try
+            {
+                var listAdd = new List<TenMst>();
+                foreach (var item in ListData)
+                {
+                    var itemAdd = TrackingDataContext.TenMsts.FirstOrDefault(x => x.HpId == item.HpId && x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
+                    if (itemAdd != null)
+                    {
+                        switch (comparison)
+                        {
+                            case ComparisonSearchModel.Name:
+                                itemAdd.Name = item.NameNew;
+                                break;
+                            case ComparisonSearchModel.ReceName:
+                                itemAdd.ReceName = item.NameNew;
+                                break;
+                            case ComparisonSearchModel.OdrUnitName:
+                                itemAdd.OdrUnitName = item.NameNew;
+                                break;
+                            case ComparisonSearchModel.ReceUnitName:
+                                itemAdd.ReceUnitName = item.NameNew;
+                                break;
+                            case ComparisonSearchModel.SaiketuKbn:
+                                itemAdd.SaiketuKbn = item.TenSaiketuKbnNew;
+                                break;
+                        }
+                        itemAdd.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        itemAdd.UpdateId = userId;
+                        itemAdd.CreateDate = TimeZoneInfo.ConvertTimeToUtc(itemAdd.CreateDate);
+                        listAdd.Add(itemAdd);
+                    }
+                }
+                if (listAdd.Any())
+                {
+                    TrackingDataContext.UpdateRange(listAdd);
+                    TrackingDataContext.SaveChanges();
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

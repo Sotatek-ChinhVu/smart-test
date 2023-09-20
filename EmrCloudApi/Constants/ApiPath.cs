@@ -471,5 +471,6 @@
         public const string GetHokenMst = "GetHokenMst";
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";
+        public const string SaveCompareTenMst = "SaveCompareTenMst";
     }
 }

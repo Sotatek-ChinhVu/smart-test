@@ -57,6 +57,7 @@ using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.GetTenOfItem;
 using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.MstItem.SaveAddressMst;
+using UseCase.MstItem.SaveCompareTenMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
@@ -829,6 +830,16 @@ namespace EmrCloudApi.Controller
             var presenter = new CompareTenMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CompareTenMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveCompareTenMst)]
+        public ActionResult<Response<SaveCompareTenMstResponse>> SaveCompareTenMst([FromBody] SaveCompareTenMstRequest request)
+        {
+            var input = new SaveCompareTenMstInputData(request.ListData, request.Comparions, UserId);
+            var output = _bus.Handle(input);
+            var presenter = new SaveCompareTenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveCompareTenMstResponse>>(presenter.Result);
         }
     }
 }
