@@ -426,17 +426,17 @@ namespace PostgreDataContext
             modelBuilder.Entity<KacodeReceYousiki>().HasKey(s => new { s.ReceKaCd, s.YousikiKaCd});
             modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
             modelBuilder.Entity<SetMst>()
-           .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter("IsDeleted = 0").IsUnique();
+           .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
 
             modelBuilder.Entity<RsvkrtMst>()
-           .HasIndex(r => new { r.HpId, r.PtId, r.RsvDate }).HasFilter("RsvkrtKbn = 0 AND IsDeleted = 0").IsUnique();
+           .HasIndex(r => new { r.HpId, r.PtId, r.RsvDate }).HasFilter($"\"RSVKRT_KBN\" = 0 AND \"IS_DELETED\" = 0").IsUnique();
 
             modelBuilder
                 .Entity<SetMst>()
                 .HasQueryFilter(p => p.IsDeleted == 0);
 
             modelBuilder.Entity<LockInf>()
-           .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter($"{nameof(LockInf.FunctionCd)} IN (02000000, 03000000)").IsUnique();
+           .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter($"\"FUNCTION_CD\" IN ('02000000', '03000000')").IsUnique();
             modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
         }
 
