@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.PatientManagement
 
         public void Complete(GetStaConfMenuOutputData outputData)
         {
-            Result.Data = new GetStaConfMenuResponse(outputData.StatisticMenus);
+            Result.Data = new GetStaConfMenuResponse(outputData.StatisticMenus, outputData.TenMstItems);
             Result.Status = (int)outputData.Status;
             Result.Message = GetMessage(outputData.Status);
         }
