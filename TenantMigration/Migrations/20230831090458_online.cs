@@ -132,7 +132,6 @@ namespace TenantMigration.Migrations
             migrationBuilder.DropColumn(
                 name: "INFO_CONS_FLG",
                 table: "ONLINE_CONFIRMATION_HISTORY");
-
             migrationBuilder.DropColumn(
                 name: "PRESCRIPTION_ISSUE_TYPE",
                 table: "ONLINE_CONFIRMATION_HISTORY");

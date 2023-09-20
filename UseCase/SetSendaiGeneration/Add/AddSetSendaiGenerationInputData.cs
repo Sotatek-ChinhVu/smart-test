@@ -16,8 +16,8 @@ namespace UseCase.SetSendaiGeneration.Add
             UserId = userId;
         }
 
-        public int StartDate { get; set; }
-        public int HpId { get; set; }
-        public int UserId { get; set; }
+        public int StartDate { get; private set; }
+        public int HpId { get; private set; }
+        public int UserId { get; private set; }
     }
 }

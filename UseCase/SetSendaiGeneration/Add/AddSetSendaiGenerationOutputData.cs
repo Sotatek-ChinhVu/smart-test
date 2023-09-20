@@ -15,7 +15,7 @@ namespace UseCase.SetSendaiGeneration.Add
             Status = status;
         }
 
-        public bool Result { get; set; }
-        public AddSetSendaiGenerationStatus Status { get; set; }
+        public bool Result { get; private set; }
+        public AddSetSendaiGenerationStatus Status { get; private set; }
     }
 }
