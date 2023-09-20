@@ -41,6 +41,7 @@ using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetKensaCenterMsts;
 using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
+using UseCase.MstItem.GetListKensaIjiSetting;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
@@ -818,6 +819,15 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTenOfHRTItemPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenOfHRTItemResponse>>(presenter.Result);
+        }
+        [HttpGet(ApiPath.GetListKensaIjiSetting)]
+        public ActionResult<Response<GetListKensaIjiSettingResponse>> GetListKensaIjiSetting([FromQuery] GetListKensaIjiSettingRequest request)
+        {
+            var input = new GetListKensaIjiSettingInputData(HpId, request.KeyWords, request.IsValid, request.IsExpired);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaIjiSettingPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaIjiSettingResponse>>(presenter.Result);
         }
     }
 }
