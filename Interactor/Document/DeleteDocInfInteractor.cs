@@ -1,8 +1,5 @@
 ﻿using Domain.Models.Document;
-using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
-using Domain.Models.Reception;
-using Domain.Models.User;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using UseCase.Document.DeleteDocInf;
@@ -25,8 +22,8 @@ public class DeleteDocInfInteractor : IDeleteDocInfInputPort
     {
         try
         {
-            var docInfDetail = _documentRepository.GetDocInfDetail(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.SeqNo);
-            if (docInfDetail.RaiinNo == 0)
+            var docInfDetail = _documentRepository.GetDocInfDetail(inputData.HpId, inputData.FileId);
+            if (docInfDetail.FileId == 0)
             {
                 return new DeleteDocInfOutputData(DeleteDocInfStatus.DocInfNotFound);
             }
@@ -38,7 +35,7 @@ public class DeleteDocInfInteractor : IDeleteDocInfInputPort
             string path = _amazonS3Service.GetFolderUploadToPtNum(listFolderPath, ptNum);
             var response = _amazonS3Service.DeleteObjectAsync(path + docInfDetail.FileName);
             response.Wait();
-            if (response.Result && _documentRepository.DeleteDocInf(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.SeqNo))
+            if (response.Result && _documentRepository.DeleteDocInf(inputData.HpId, inputData.UserId, inputData.FileId))
             {
                 return new DeleteDocInfOutputData(DeleteDocInfStatus.Successed);
             }
