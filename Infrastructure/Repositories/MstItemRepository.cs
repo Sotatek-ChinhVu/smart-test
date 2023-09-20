@@ -6519,7 +6519,9 @@ namespace Infrastructure.Repositories
                         break;
                     case ComparisonSearchModel.ReceName:
                         tenMstCommparsons = from tenMstCompar in tenMstCommparsons
-                                            where tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName != null && tenMstCompar.TenMstMother.ReceName.Trim() != tenMstCompar.TenMst.ReceName.Trim()
+                                            where (tenMstCompar.TenMstMother.ReceName == null && tenMstCompar.TenMst.ReceName != null) ||
+                                                   (tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName == null) ||
+                                                   (tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName != null && tenMstCompar.TenMstMother.ReceName.Trim() != tenMstCompar.TenMst.ReceName.Trim())
                                             select tenMstCompar;
                         break;
                     case ComparisonSearchModel.OdrUnitName:
