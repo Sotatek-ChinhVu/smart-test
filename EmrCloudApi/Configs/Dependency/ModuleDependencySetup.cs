@@ -720,6 +720,7 @@ using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.SetSendaiGeneration.Add;
 using UseCase.MainMenu.KensaIraiReport;
 using UseCase.UpsertMaterialMaster;
+using UseCase.SetSendaiGeneration.Restore;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1719,6 +1720,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SetSendaiGenerationInputData, SetSendaiGenerationGetListInteractor>();
             busBuilder.RegisterUseCase<DeleteSendaiGenerationInputData, DeleteSetSendaiGenerationInteractor>();
             busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
+            busBuilder.RegisterUseCase<RestoreSetSendaiGenerationInputData, RestoreSetSendaiGenerationInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
