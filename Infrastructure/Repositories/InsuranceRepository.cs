@@ -387,8 +387,8 @@ namespace Infrastructure.Repositories
             #endregion PtHokenPattern
             if (sortType == 1)
             {
-                listInsurance = listInsurance.OrderBy(i => i.IsExpirated).OrderByDescending(i => i.EndDate).ThenByDescending(i => i.HokenId).ToList();
-                hokenInfList = hokenInfList.OrderBy(i => i.IsExpirated).OrderByDescending(h => h.EndDate).ThenByDescending(h => h.HokenId).ToList();
+                listInsurance = listInsurance.OrderBy(i => i.IsExpirated).ThenByDescending(i => i.EndDate).ThenByDescending(i => i.HokenId).ToList();
+                hokenInfList = hokenInfList.OrderBy(i => i.IsExpirated).ThenByDescending(h => h.EndDate).ThenByDescending(h => h.HokenId).ToList();
             }
             else if (sortType == 2)
             {
