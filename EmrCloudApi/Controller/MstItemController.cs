@@ -48,6 +48,7 @@ using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.IsKensaItemOrdering;
 using UseCase.MstItem.IsUsingKensa;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -735,7 +736,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.f_17_Common)]
         public ActionResult<Response<F17CommonResponse>> f_17_Common([FromBody] F17CommonRequest request)
         {
-            var input = new F17CommonInputData(HpId, request.UsingKensaItemCd, request.UsingItemCds, request.kensaStdItemCd, request.TenItemCd, request.ItemCd);
+            var input = new F17CommonInputData(HpId, request.kensaStdItemCd, request.ItemCd);
             var output = _bus.Handle(input);
             var presenter = new F17CommonPresenter();
             presenter.Complete(output);
@@ -750,6 +751,16 @@ namespace EmrCloudApi.Controller
             var presenter = new IsUsingKensaPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<IsUsingKensaResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.IsKensaItemOrdering)]
+        public ActionResult<Response<IsKensaItemOrderingResponse>> IsKensaItemOrdering([FromQuery] IsKensaItemOrderingRequest request)
+        {
+            var input = new IsKensaItemOrderingInputData(HpId, request.TenItemCd);
+            var output = _bus.Handle(input);
+            var presenter = new IsKensaItemOrderingPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<IsKensaItemOrderingResponse>>(presenter.Result);
         }
     }
 }
