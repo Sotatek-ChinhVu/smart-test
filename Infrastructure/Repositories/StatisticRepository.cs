@@ -217,35 +217,35 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
 
     public bool SaveStaConfMenu(int hpId, int userId, StatisticMenuModel statisticMenu)
     {
-        var addStamenus = new List<StaMenu>();
+        var staMenu = new StaMenu();
         if (!statisticMenu.IsDeleted && statisticMenu.IsModified && statisticMenu.MenuId == 0)
         {
-            TrackingDataContext.Add(new StaMenu()
-            {
-                HpId = hpId,
-                GrpId = 9,
-                ReportId = 9000,
-                SortNo = statisticMenu.SortNo,
-                MenuName = statisticMenu.MenuName,
-                CreateDate = CIUtil.GetJapanDateTimeNow(),
-                CreateId = userId,
-                UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                UpdateId = userId,
-            });
+            staMenu.HpId = hpId;
+            staMenu.GrpId = 9;
+            staMenu.ReportId = 9000;
+            staMenu.SortNo = statisticMenu.SortNo;
+            staMenu.MenuName = statisticMenu.MenuName;
+            staMenu.IsDeleted = statisticMenu.IsDeleted == true ? 1 : 0;
+            staMenu.CreateDate = CIUtil.GetJapanDateTimeNow();
+            staMenu.CreateId = userId;
+            staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            staMenu.UpdateId = userId;
         }
         else if (statisticMenu.IsModified)
         {
             var staMenuUpdate = TrackingDataContext.StaMenus.FirstOrDefault(x => x.HpId == hpId && x.MenuId == statisticMenu.MenuId);
             if (staMenuUpdate != null)
             {
+                staMenu.MenuId = statisticMenu.MenuId;
                 staMenuUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 staMenuUpdate.UpdateId = userId;
             }
         }
 
+        TrackingDataContext.StaMenus.AddRange(staMenu);
         TrackingDataContext.SaveChanges();
 
-        return SavePtManagementConf(hpId, userId, statisticMenu.MenuId, statisticMenu.PatientManagement, statisticMenu.IsDeleted);
+        return SavePtManagementConf(hpId, userId, staMenu.MenuId, statisticMenu.PatientManagement, statisticMenu.IsDeleted);
     }
 
     public bool SavePtManagementConf(int hpId, int userId, int menuId, PatientManagementModel patientManagementModel, bool isDeleted)
