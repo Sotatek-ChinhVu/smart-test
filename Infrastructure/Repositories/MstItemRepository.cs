@@ -5778,6 +5778,8 @@ namespace Infrastructure.Repositories
                         IsDeleted = 0,
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,
+                        UpdateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow()
                     });
                 }
                 // Update
