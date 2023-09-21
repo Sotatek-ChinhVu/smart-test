@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.SetMst;
 
 namespace Domain.Models.SetGenerationMst
 {
@@ -11,6 +12,24 @@ namespace Domain.Models.SetGenerationMst
 
         bool DeleteSetSenDaiGeneration(int generationId, int userId);
 
-        bool AddSetSendaiGeneration(int userId, int hpId, int startDate);
+        AddSetSendaiModel? AddSetSendaiGeneration(int userId, int hpId, int startDate);
+
+        GetCountProcessModel GetCountStepProcess(int targetGenerationId, int sourceGenerationId, int hpId, int userId);
+
+        bool SaveCloneMstBackup(int targetGenerationId, int sourceGenerationId, int hpId, int userId);
+
+        bool SaveCloneKbnMst(int targetGenerationId, int sourceGenerationId, int hpId, int userId);
+
+        bool SaveCloneByomei(int hpId, int userId, Dictionary<int, SetMstModel> setMstDict, List<int> listMstDict);
+
+        bool SaveCloneKarteInf(int hpId, int userId, Dictionary<int, SetMstModel> setMstDict, List<int> listMstDict);
+
+        bool SaveCloneKarteImgInf(int hpId, Dictionary<int, SetMstModel> setMstDict, List<int> listMstDict);
+
+        bool SaveCloneOdrInf(int hpId, int userId, Dictionary<int, SetMstModel> setMstDict, List<int> listMstDict);
+
+        bool SaveCloneOdrInfDetail(int hpId, Dictionary<int, SetMstModel> setMstDict, List<int> listMstDict);
+
+        bool SaveCloneOdrInfCmt(int hpId, Dictionary<int, SetMstModel> setMstDict, List<int> listMstDict);
     }
 }
