@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.RaiinListSetting
 
         public void Complete(GetRaiiinListSettingOutputData outputData)
         {
-            Result.Data = new GetRaiiinListSettingResponse(outputData.Data);
+            Result.Data = new GetRaiiinListSettingResponse(outputData.Data, outputData.GrpIdMax, outputData.SortNoMax, outputData.SortNoDetailMax, outputData.KbnCdMax);
             Result.Status = (int)outputData.Status;
             Result.Message = GetMessage(outputData.Status);
         }
