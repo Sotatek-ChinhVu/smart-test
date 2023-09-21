@@ -5892,10 +5892,9 @@ namespace Infrastructure.Repositories
             };
         }
 
-        public List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord)
+        public List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord, string itemCd)
         {
             var result = new List<KensaMstModel>();
-            string itemCd = "";
             var kensaInKensaMst = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId);
             var kensaInTenMst = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId);
 

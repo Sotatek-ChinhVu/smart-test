@@ -168,7 +168,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.ParrentKensaMst)]
         public ActionResult<Response<GetParrentKensaMstListResponse>> GetParrentKensaMst([FromQuery] GetParrentKensaMstRequest request)
         {
-            var input = new GetParrentKensaMstInputData(HpId, request.KeyWord);
+            var input = new GetParrentKensaMstInputData(HpId, request.KeyWord, request.ItemCd);
             var output = _bus.Handle(input);
 
             var presenter = new GetParrentKensaMstListPresenter();
