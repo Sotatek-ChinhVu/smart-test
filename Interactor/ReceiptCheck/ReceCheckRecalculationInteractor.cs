@@ -36,7 +36,7 @@ namespace Interactor.ReceiptCheck
                         HpId = inputData.HpId,
                         SeikyuYm = inputData.SeikyuYm,
                         PtIds = inputData.PtIds,
-                        PreFix = ""
+                        PreFix = inputData.UserId.ToString(),
                     }, CancellationToken.None);
 
                 SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, 0, 0, "レセ集計中・・・", "NotConnectSocket"));

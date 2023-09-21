@@ -1,6 +1,6 @@
 ﻿using Domain.Models.PatientInfor;
 using Reporting.Statistics.Sta9000.DB;
-using UseCase.PatientManagement;
+using UseCase.PatientManagement.SearchPtInfs;
 
 namespace Interactor.PatientManagement
 {

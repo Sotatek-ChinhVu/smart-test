@@ -1,7 +1,7 @@
 ﻿using Reporting.Statistics.Sta9000.Models;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.PatientManagement
+namespace UseCase.PatientManagement.SearchPtInfs
 {
     public class SearchPtInfsInputData : IInputData<SearchPtInfsOutputData>
     {

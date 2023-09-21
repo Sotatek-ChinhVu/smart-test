@@ -34,7 +34,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             // run Recalculation
             if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
-                success = RunCalculateMonth(inputData.HpId, inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
+                success = RunCalculateMonth(inputData.HpId, inputData.UserId, inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
 
                 // Check next step
                 while (true)
@@ -97,7 +97,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         }
     }
 
-    private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
+    private bool RunCalculateMonth(int hpId, int userId, int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
     {
         SendMessager(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, 0, 0, "StartCalculateMonth", string.Empty));
         var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
@@ -111,6 +111,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             HpId = hpId,
             PtIds = ptInfList,
             SeikyuYm = seikyuYm,
+            PreFix = userId.ToString(),
             UniqueKey = uniqueKey
         }, cancellationToken);
         return true;
