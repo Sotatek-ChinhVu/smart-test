@@ -718,6 +718,9 @@ using UseCase.ListSetMst.GetTreeListSet;
 using Interactor.ListSetMst;
 using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.SetSendaiGeneration.Add;
+using UseCase.MainMenu.KensaIraiReport;
+using UseCase.UpsertMaterialMaster;
+using UseCase.SetSendaiGeneration.Restore;
 using UseCase.MainMenu.GetStaCsvMstModel;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -1397,7 +1400,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateKensaStdMstInputData, UpdateKensaStdMstInteractor>();
             busBuilder.RegisterUseCase<GetKensaStdMstInputData, GetKensaStdMstModelsInteractor>();
             busBuilder.RegisterUseCase<GetUsedKensaItemCdsInputData, GetUsedKensaItemCdsInteractor>();
-
+            busBuilder.RegisterUseCase<UpsertMaterialMasterInputData, UpsertMaterialMasterInteractor>();
             busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
             busBuilder.RegisterUseCase<GetMaterialMstsInputData, GetMaterialMstsInteractor>();
             busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
@@ -1658,6 +1661,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKensaInfInputData, GetKensaInfInteractor>();
             busBuilder.RegisterUseCase<DeleteKensaInfInputData, DeleteKensaInfInteractor>();
             busBuilder.RegisterUseCase<GetKensaIraiLogInputData, GetKensaIraiLogInteractor>();
+            busBuilder.RegisterUseCase<KensaIraiReportInputData, KensaIraiReportInteractor>();
             busBuilder.RegisterUseCase<GetStaCsvMstInputData, GetStaCsvMstInteractor>();
 
             //TimeZoneConfGroup
@@ -1718,6 +1722,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SetSendaiGenerationInputData, SetSendaiGenerationGetListInteractor>();
             busBuilder.RegisterUseCase<DeleteSendaiGenerationInputData, DeleteSetSendaiGenerationInteractor>();
             busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
+            busBuilder.RegisterUseCase<RestoreSetSendaiGenerationInputData, RestoreSetSendaiGenerationInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

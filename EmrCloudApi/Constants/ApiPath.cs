@@ -429,6 +429,7 @@
         public const string DeleteKensaInf = "DeleteKensaInf";
         public const string GetKensaIraiLog = "GetKensaIraiLog";
         public const string GetStaCsvMst = "GetStaCsvMst";
+        public const string KensaIraiReport = "KensaIraiReport";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
@@ -469,5 +470,8 @@
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";
+
+        //SetSendaiGeneration
+        public const string Restore = "Restore";
     }
 }

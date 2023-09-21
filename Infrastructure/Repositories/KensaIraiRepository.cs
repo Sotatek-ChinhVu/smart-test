@@ -7,12 +7,6 @@ using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System;
-using System.Diagnostics;
-using System.Xml.Linq;
-using Infrastructure.Services;
-using System.Linq;
 
 namespace Infrastructure.Repositories;
 
@@ -147,8 +141,6 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
     public List<KensaIraiModel> GetKensaIraiModels(int hpId, long ptId, int startDate, int endDate, string kensaCenterMstCenterCd, int kensaCenterMstPrimaryKbn)
     {
         List<KensaIraiModel> result = new();
-        Stopwatch stopWatch = new Stopwatch();
-        stopWatch.Start();
         var odrInfList = TrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
                                                                    && item.IsDeleted == 0
                                                                    && (ptId == 0 || item.PtId == ptId)
@@ -282,6 +274,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                             firstTodayOdr.PtInf.Birthday,
                             firstTodayOdr.TosekiKbn,
                             firstTodayOdr.SikyuKbn,
+                            firstTodayOdr.RaiinInf.KaId,
                             kensaIraiDetailList
                 ));
         }
@@ -291,18 +284,11 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                        .ThenBy(item => item.PtNum)
                        .ThenBy(item => item.SikyuKbn)
                        .ToList();
-        stopWatch.Stop();
-        TimeSpan ts = stopWatch.Elapsed;
-        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
         return result;
     }
 
     public List<KensaIraiModel> GetKensaIraiModels(int hpId, List<KensaInfModel> kensaInfModelList)
     {
-        Stopwatch stopWatch = new Stopwatch();
-        stopWatch.Start();
-
         List<KensaIraiModel> result = new();
 
         var ptIdList = kensaInfModelList.Select(item => item.PtId).Distinct().ToList();
@@ -442,6 +428,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                 firstTodayOdr.PtInf.Birthday,
                                 firstTodayOdr.TosekiKbn,
                                 firstTodayOdr.SikyuKbn,
+                                firstTodayOdr.RaiinInf.KaId,
                                 kensaIraiDetailList
                          ));
             }
@@ -452,10 +439,6 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                        .ThenBy(item => item.PtNum)
                        .ThenBy(item => item.SikyuKbn)
                        .ToList();
-        stopWatch.Stop();
-        TimeSpan ts = stopWatch.Elapsed;
-        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
         return result;
     }
 
@@ -792,7 +775,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                         kensaInf,
                         ptInf.Name,
                         ptInf.PtNum,
-                        KensaInfCenterMst.CenterName,
+                        CenterName = KensaInfCenterMst != null ? KensaInfCenterMst.CenterName : string.Empty,
                         PrimaryKbn = KensaInfCenterMst == null ? 0 : KensaInfCenterMst.PrimaryKbn,
                         KensaInfDetails = from kensaInfDetail in kensaInfDetailList
                                           where kensaInf.HpId == kensaInfDetail.HpId &&
@@ -921,8 +904,6 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
 
     public List<KensaIraiLogModel> GetKensaIraiLogModels(int hpId, int startDate, int endDate)
     {
-        Stopwatch stopWatch = new Stopwatch();
-        stopWatch.Start();
         var kensaIraiLogEntities = NoTrackingDataContext.KensaIraiLogs.Where(item => item.HpId == hpId
                                                                                      && item.IraiDate >= startDate
                                                                                      && item.IraiDate <= endDate);
@@ -948,11 +929,25 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                               item.kensaIraiLog.IraiList ?? new byte[] { },
                                               item.kensaIraiLog.CreateDate))
                           .ToList();
-        stopWatch.Stop();
-        TimeSpan ts = stopWatch.Elapsed;
-        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
         return result;
+    }
+
+    public bool SaveKensaIraiLog(int hpId, int userId, KensaIraiLogModel model)
+    {
+        KensaIraiLog kensaIraiLog = new();
+        kensaIraiLog.HpId = hpId;
+        kensaIraiLog.CenterCd = model.CenterCd;
+        kensaIraiLog.IraiDate = model.IraiDate;
+        kensaIraiLog.FromDate = model.FromDate;
+        kensaIraiLog.ToDate = model.ToDate;
+        kensaIraiLog.IraiList = model.IraiList;
+        kensaIraiLog.IraiFile = model.IraiFile;
+        kensaIraiLog.CreateDate = CIUtil.GetJapanDateTimeNow();
+        kensaIraiLog.CreateId = userId;
+        kensaIraiLog.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        kensaIraiLog.UpdateId = userId;
+        TrackingDataContext.Add(kensaIraiLog);
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     public void ReleaseResource()

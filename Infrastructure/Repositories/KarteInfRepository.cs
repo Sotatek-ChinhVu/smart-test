@@ -62,7 +62,7 @@ namespace Infrastructure.Repositories
                     if (ptPregnancy != null && !string.IsNullOrEmpty(periodWeek))
                     {
                         return new() {
-                                         new KarteInfModel(hpId, rainNo, ptId, sinDate, periodWeek),
+                                         new KarteInfModel(hpId, rainNo, ptId, sinDate, periodWeek, true),
                                      };
                     }
                 }
