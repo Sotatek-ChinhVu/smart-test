@@ -196,9 +196,9 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpPost(ApiPath.PatientManagement)]
-    public async Task<IActionResult> GeneratePatientManagement([FromBody] PatientManagementRequest request)
+    public async Task<IActionResult> GeneratePatientManagement([FromForm] StringObjectRequest requestString)
     {
-        //var request = JsonSerializer.Deserialize<PatientManagementRequest>(requestString.StringJson) ?? new();
+        var request = JsonSerializer.Deserialize<PatientManagementRequest>(requestString.StringJson) ?? new();
         PatientManagementModel patientManagementModel = ConvertToPatientManagementModel(request.PatientManagement);
         var data = _reportService.GetPatientManagement(request.HpId, patientManagementModel);
         return await RenderPdf(data, ReportType.Common, data.JobName);
