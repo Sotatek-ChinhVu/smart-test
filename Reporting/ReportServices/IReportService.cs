@@ -9,6 +9,7 @@ using Reporting.KensaLabel.Model;
 using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
 using Reporting.OutDrug.Model.Output;
+using Reporting.PatientManagement.Models;
 using Reporting.ReceiptList.Model;
 using Reporting.ReceiptPrint.Service;
 
@@ -56,7 +57,7 @@ public interface IReportService
 
     CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, int seikyuYm, int hokenKbn, bool isIncludeOutDrug, bool isModePrint, bool isOpenedFromAccounting);
 
-    CommonReportingRequestModel GetPatientManagement(int hpId, int menuId);
+    CommonReportingRequestModel GetPatientManagement(int hpId, PatientManagementModel patientManagementModel);
 
     CommonReportingRequestModel GetSyojyoSyokiReportingData(int hpId, long ptId, int seikyuYm, int hokenId);
 
