@@ -9,6 +9,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Infrastructure.Repositories
@@ -585,7 +586,7 @@ namespace Infrastructure.Repositories
                 x.CreateId = userId;
                 x.CreateMachine = computerName;
                 x.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                x.UpdateId = Session.UserID;
+                x.UpdateId = userId;
                 x.UpdateMachine = computerName;
             });
             if (setMstsBackuped.Any())
@@ -594,7 +595,7 @@ namespace Infrastructure.Repositories
                 TrackingDataContext.SaveChanges();
             }
 
-
+            
             //setKbnMst
             setKbnMstSource.ForEach(setKbnMst =>
             {
@@ -632,10 +633,10 @@ namespace Infrastructure.Repositories
             {
                 x.SetCd = setMstDict[x.SetCd].SetCd;
                 x.CreateDate = CIUtil.GetJapanDateTimeNow();
-                x.CreateId = Session.UserID;
+                x.CreateId = userId;
                 x.CreateMachine = computerName;
                 x.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                x.UpdateId = Session.UserID;
+                x.UpdateId = userId;
                 x.UpdateMachine = computerName;
             });
             if (setKarteInfsSource.Any())
@@ -660,10 +661,10 @@ namespace Infrastructure.Repositories
                 x.SetCd = setMstDict[x.SetCd].SetCd;
                 x.Id = 0;
                 x.CreateDate = CIUtil.GetJapanDateTimeNow();
-                x.CreateId = Session.UserID;
+                x.CreateId = userId;
                 x.CreateMachine = computerName;
                 x.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                x.UpdateId = Session.UserID;
+                x.UpdateId = userId;
                 x.UpdateMachine = computerName;
             });
             if (setOdrInfsSource.Any())
@@ -695,6 +696,113 @@ namespace Infrastructure.Repositories
             {
                 TrackingDataContext.SaveChanges();
             }
+        }
+
+        public bool RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId)
+        {
+            // get SendaiGeneration newest
+            var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).FirstOrDefault();
+            if (itemNewest != null && itemNewest.GenerationId != restoreGenerationId)
+            {
+                // delete newest
+                var targetSetMsts = TrackingDataContext.SetMsts.Where(x =>
+                        x.HpId == hpId &&
+                        x.GenerationId == itemNewest.GenerationId).ToList();
+
+                var targetSetMstsDict = new HashSet<int>();
+                for (int i = 0, len = targetSetMsts.Count; i < len; i++)
+                {
+                    if (!targetSetMstsDict.Contains(targetSetMsts[i].SetCd))
+                    {
+                        targetSetMstsDict.Add(targetSetMsts[i].SetCd);
+                    }
+                }
+
+                var setKbnMstSource = TrackingDataContext.SetKbnMsts.Where(x =>
+                        x.HpId == hpId &&
+                        x.GenerationId == itemNewest.GenerationId).ToList();
+
+                var targetSetByomeis = TrackingDataContext.SetByomei.Where(setByomei =>
+                       setByomei.HpId == hpId && targetSetMstsDict.Contains(setByomei.SetCd))
+                       .ToList();
+
+                var targetSetKarteInfs = TrackingDataContext.SetKarteInf.Where(setKarteInf =>
+                        setKarteInf.HpId == hpId && targetSetMstsDict.Contains(setKarteInf.SetCd))
+                        .ToList();
+
+                var targetSetKarteImgInfs = TrackingDataContext.SetKarteImgInf.Where(setKarteImgInf =>
+                       setKarteImgInf.HpId == hpId && targetSetMstsDict.Contains(setKarteImgInf.SetCd))
+                       .ToList();
+
+                var targetSetOdrInfs = TrackingDataContext.SetOdrInf.Where(setOdrInf =>
+                        setOdrInf.HpId == hpId && targetSetMstsDict.Contains(setOdrInf.SetCd))
+                        .ToList();
+
+                var targetSetOdrInfDetails = TrackingDataContext.SetOdrInfDetail.Where(setOdrInfDetail =>
+                    setOdrInfDetail.HpId == hpId && targetSetMstsDict.Contains(setOdrInfDetail.SetCd))
+                    .ToList();
+                var targetSetOdrInfCmtSource = TrackingDataContext.SetOdrInfCmt.Where(setOdrInfCmt =>
+                     setOdrInfCmt.HpId == hpId && targetSetMstsDict.Contains(setOdrInfCmt.SetCd))
+                     .ToList();
+
+                try
+                {
+                    setKbnMstSource.ForEach(setKbnMst =>
+                    {
+                        setKbnMst.IsDeleted = 1;
+                        setKbnMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        setKbnMst.UpdateId = userId;
+                        setKbnMst.UpdateMachine = "SmartKarte";
+                    });
+
+                    targetSetMsts.ForEach(setMst =>
+                    {
+                        setMst.IsDeleted = 1;
+                        setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        setMst.UpdateId = userId;
+                        setMst.UpdateMachine = "SmartKarte";
+                    });
+
+                    targetSetByomeis.ForEach(setByomei =>
+                    {
+                        setByomei.IsDeleted = 1;
+                        setByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        setByomei.UpdateId = userId;
+                        setByomei.UpdateMachine = "SmartKarte";
+                    });
+
+                    targetSetKarteInfs.ForEach(setKarteInf =>
+                    {
+                        setKarteInf.IsDeleted = 1;
+                        setKarteInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        setKarteInf.UpdateId = userId;
+                        setKarteInf.UpdateMachine = "SmartKarte";
+                    });
+
+                    targetSetOdrInfs.ForEach(setOdrInf =>
+                    {
+                        setOdrInf.IsDeleted = 1;
+                        setOdrInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        setOdrInf.UpdateId = userId;
+                        setOdrInf.UpdateMachine = "SmartKarte";
+                    });
+                    TrackingDataContext.SetOdrInfCmt.RemoveRange(targetSetOdrInfCmtSource);
+                    TrackingDataContext.SetKarteImgInf.RemoveRange(targetSetKarteImgInfs);
+                    TrackingDataContext.SetOdrInfDetail.RemoveRange(targetSetOdrInfDetails);
+                    TrackingDataContext.SaveChanges();
+
+                    // clone data from newest to restore item
+                    CloneGeneration(itemNewest.GenerationId, restoreGenerationId, hpId, userId);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+
+            return false;
         }
 
         public void ReleaseResource()

@@ -10,7 +10,7 @@ public class ReceptionRowModel
         long ptNum, string kanaName, string name, int sex, int birthday, string yoyakuTime, int confirmationType,
         string rsvFrameName, int uketukeSbtId, string uketukeTime, string sinStartTime,
         string sinEndTime, string kaikeiTime, string raiinCmt, string ptComment,
-        int tantoId, int kaId, int lastVisitDate, int firstVisitDate, string sname, string raiinRemark,
+        int tantoId, string drName, string tantoKanaName, int kaId, string kaName, int lastVisitDate, int firstVisitDate, string sname, string raiinRemark,
         int confirmationState, string confirmationResult, List<int> grpIds, List<DynamicCell> dynamicCells, int sinDate,
         int hokenPid, int hokenStartDate, int hokenEndDate, int hokenSbtCd, int hokenKbn,
         int kohi1HokenSbtKbn, string kohi1Houbetu, int kohi2HokenSbtKbn, string kohi2Houbetu,
@@ -47,7 +47,10 @@ public class ReceptionRowModel
             kohi1HokenSbtKbn, kohi1Houbetu, kohi2HokenSbtKbn, kohi2Houbetu,
             kohi3HokenSbtKbn, kohi3Houbetu, kohi4HokenSbtKbn, kohi4Houbetu, true);
         TantoId = tantoId;
+        DrName = drName;
+        TantoKanaName = tantoKanaName;
         KaId = kaId;
+        KaName = kaName;
         LastVisitDate = CIUtil.SDateToShowWDate2(lastVisitDate);
         FirstVisitDate = CIUtil.SDateToShowWDate2(firstVisitDate);
         Sname = sname;
@@ -147,8 +150,11 @@ public class ReceptionRowModel
     public string HokenPatternNameForAccountDueList { get; private set; }
     // 担当医
     public int TantoId { get; private set; }
+    public string DrName { get; private set; }
+    public string TantoKanaName { get; private set; }
     // 診療科
     public int KaId { get; private set; }
+    public string KaName { get; private set; }
     // 前回来院
     public string LastVisitDate { get; private set; }
     public string FirstVisitDate { get; private set; }

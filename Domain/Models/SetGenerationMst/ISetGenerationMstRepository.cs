@@ -31,5 +31,7 @@ namespace Domain.Models.SetGenerationMst
         bool SaveCloneOdrInfDetail(int hpId, Dictionary<int, SetMstModel> setMstDict, List<int> listMstDict);
 
         bool SaveCloneOdrInfCmt(int hpId, Dictionary<int, SetMstModel> setMstDict, List<int> listMstDict);
+
+        bool RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace UseCase.PatientManagement
+﻿namespace UseCase.PatientManagement.SearchPtInfs
 {
     public enum SearchPtInfsStatus
     {

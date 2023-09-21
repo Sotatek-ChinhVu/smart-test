@@ -504,20 +504,29 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         }
     }
 
-    public List<SystemConfListXmlPathModel> GetSystemConfListXmlPath(int hpId, int grpCd, string machine)
+    public List<SystemConfListXmlPathModel> GetSystemConfListXmlPath(int hpId, int grpCd, string machine, bool isKesaIrai)
     {
         List<PathConf> pathConf;
 
-        pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId
-                                                                           && item.GrpCd == grpCd
-                                                                           && item.Machine == machine)
-                                                                           .ToList();
-        if (pathConf == null || !pathConf.Any())
+        if (isKesaIrai)
         {
             pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId
                                                                            && item.GrpCd == grpCd
-                                                                           && (item.Machine == string.Empty || item.Machine == null))
+                                                                           && item.IsInvalid == 0).ToList();
+        }
+        else
+        {
+            pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId
+                                                                           && item.GrpCd == grpCd
+                                                                           && item.Machine == machine)
                                                                            .ToList();
+            if (pathConf == null || !pathConf.Any())
+            {
+                pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId
+                                                                               && item.GrpCd == grpCd
+                                                                               && (item.Machine == string.Empty || item.Machine == null))
+                                                                               .ToList();
+            }
         }
 
         return pathConf.Select(item => ToModel(item)).ToList();

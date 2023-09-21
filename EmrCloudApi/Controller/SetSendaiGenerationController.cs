@@ -14,6 +14,7 @@ using UseCase.Core.Sync;
 using UseCase.SetSendaiGeneration.Add;
 using UseCase.SetSendaiGeneration.Delete;
 using UseCase.SetSendaiGeneration.GetList;
+using UseCase.SetSendaiGeneration.Restore;
 
 namespace EmrCloudApi.Controller
 {
@@ -106,6 +107,16 @@ namespace EmrCloudApi.Controller
             var resultForFrontEnd = Encoding.UTF8.GetBytes(titleProgressbar.ToString());
             HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
             HttpContext.Response.Body.FlushAsync();
+        }
+
+        [HttpPost(ApiPath.Restore)]
+        public ActionResult<Response<RestoreSetSendaiGenerationResponse>> Restore([FromBody]  RestoreSetSendaiGenerationRequest request)
+        {
+            var input = new RestoreSetSendaiGenerationInputData(request.RestoreGenerationId, HpId, UserId);
+            var output = _bus.Handle(input);
+            var presenter = new RestoreSetSendaiGenerationPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<RestoreSetSendaiGenerationResponse>>(presenter.Result);
         }
     }
 }
