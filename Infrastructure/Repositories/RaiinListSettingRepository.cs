@@ -28,8 +28,12 @@ namespace Infrastructure.Repositories
         public List<RaiinListMstModel> GetRaiiinListSetting(int hpId)
         {
             var list = NoTrackingDataContext.RaiinListMsts.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None).ToList();
+            var grpIdMax = list.Select(x => x.GrpId).Max();
+            var sortNoMstMax = list.Select(x => x.SortNo).Max();
 
             var listDetail = GetActionGroupValueCollection(hpId);
+            var sortNoDetailMax = listDetail.Select(x => x.SortNo).Max();
+            var kbnCdMax = listDetail.Select(x => x.KbnCd).Max();
 
             var memJoin = from mst in list
                           join detail in listDetail
@@ -39,7 +43,7 @@ namespace Infrastructure.Repositories
                               Detals = details 
                           };
 
-            return memJoin.Select(item => new RaiinListMstModel(item.Mst.GrpId, item.Mst.GrpName ?? string.Empty, item.Mst.SortNo, item.Mst.IsDeleted, item.Detals.ToList())).ToList();
+            return memJoin.Select(item => new RaiinListMstModel(item.Mst.GrpId, item.Mst.GrpName ?? string.Empty, item.Mst.SortNo, item.Mst.IsDeleted, item.Detals.ToList(), grpIdMax, sortNoMstMax, sortNoDetailMax, kbnCdMax)).ToList();
         }
 
         private List<RaiinListDetailModel> GetActionGroupValueCollection(int hpId)
