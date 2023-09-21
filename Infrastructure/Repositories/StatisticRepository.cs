@@ -195,6 +195,44 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         return result;
     }
 
+    public void SaveStaCsvMst(int hpId, int userId, StaCsvMstModel staCsvMstModel)
+    {
+        var addStaCsvMsts = new List<StaCsv>();
+        var deleteStaCsvMsts = new List<StaCsv>();
+        var ids = staCsvMstModel.StaCsvModelsSelected.Select(s => s.Id).ToList();
+        var staCsvs = NoTrackingDataContext.StaCsvs.Where(s => s.HpId == hpId).AsEnumerable().Where(s => ids.Contains(s.Id)).ToList();
+        foreach (var item in staCsvMstModel.StaCsvModelsSelected)
+        {
+            if (item.IsModified)
+            {
+                var staCsv = staCsvs.FirstOrDefault(s => s.Id == item.Id);
+                if (staCsv != null)
+                {
+                    staCsv.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    staCsv.UpdateId = userId;
+                }
+
+                if (item.Id > 0 && item.IsDeleted && staCsv != null)
+                {
+                    deleteStaCsvMsts.Add(staCsv);
+                }
+                else if (item.Id == 0 && !item.IsDeleted && item.IsSelected)
+                {
+                    var newStaCsv = ConvertStaCsvModelToStaCsv(hpId, userId, item);
+                    addStaCsvMsts.Add(newStaCsv);
+                }
+                else if (item.Id > 0 && !item.IsSelected && staCsv != null)
+                {
+                    deleteStaCsvMsts.Add(staCsv);
+                }
+            }
+        }
+
+        TrackingDataContext.StaCsvs.AddRange(addStaCsvMsts);
+        TrackingDataContext.StaCsvs.RemoveRange(deleteStaCsvMsts);
+        TrackingDataContext.SaveChanges();
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
@@ -716,5 +754,24 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                                               );
 
         return result;
+    }
+
+    private StaCsv ConvertStaCsvModelToStaCsv(int hpId, int userId, StaCsvModel staCsv)
+    {
+        return new StaCsv
+        {
+            HpId = hpId,
+            Id = staCsv.Id,
+            ReportId = staCsv.ReportId,
+            RowNo = staCsv.RowNo,
+            ConfName = staCsv.ConfName,
+            DataSbt = staCsv.DataSbt,
+            Columns = staCsv.Columns,
+            SortKbn = staCsv.SortKbn,
+            CreateDate = CIUtil.GetJapanDateTimeNow(),
+            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+            CreateId = userId,
+            UpdateId = userId
+        };
     }
 }
