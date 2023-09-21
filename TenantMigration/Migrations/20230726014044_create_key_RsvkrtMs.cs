@@ -15,7 +15,7 @@ namespace TenantMigration.Migrations
                 table: "RSVKRT_MST",
                 columns: new[] { "HP_ID", "PT_ID", "RSV_DATE" },
                 unique: true,
-                filter: "RsvkrtKbn = 0 AND IsDeleted = 0");
+                filter: $"\"RSVKRT_KBN\" = 0 AND \"IS_DELETED\" = 0");
         }
 
         /// <inheritdoc />

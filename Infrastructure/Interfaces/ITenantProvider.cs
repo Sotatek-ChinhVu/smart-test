@@ -32,5 +32,17 @@ namespace Infrastructure.Interfaces
         string GetDomainFromQueryString();
 
         string GetDomainFromHeader();
+
+        string GetDomain();
+
+        string GetClientIp();
+
+        int GetHpId();
+
+        int GetUserId();
+
+        int GetDepartmentId();
+
+        Task<string> GetRequestInfoAsync();
     }
 }

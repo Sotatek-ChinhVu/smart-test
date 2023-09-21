@@ -142,7 +142,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetSystemConfListXmlPath)]
         public ActionResult<Response<GetSystemConfListXmlPathResponse>> GetSystemConfListXmlPath([FromQuery] GetSystemConfListXmlPathRequest request)
         {
-            var input = new GetSystemConfListXmlPathInputData(HpId, request.GrpCd, request.Machine);
+            var input = new GetSystemConfListXmlPathInputData(HpId, request.GrpCd, request.Machine, request.IsKensaIrai);
             var output = _bus.Handle(input);
 
             var presenter = new GetSystemConfListXmlPathPresenter();

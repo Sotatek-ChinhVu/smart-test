@@ -53,6 +53,7 @@ using UseCase.MstItem.GetTenItemCds;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.GetTenOfItem;
 using UseCase.MstItem.GetUsedKensaItemCds;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
@@ -807,6 +808,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetKensaCenterMstsPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetKensaCenterMstsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTenOfHRTItem)]
+        public ActionResult<Response<GetTenOfHRTItemResponse>> GetTenOfHRTItem()
+        {
+            var input = new GetTenOfItemInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenOfHRTItemPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenOfHRTItemResponse>>(presenter.Result);
         }
     }
 }

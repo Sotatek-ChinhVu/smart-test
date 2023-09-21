@@ -12,6 +12,8 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        Dictionary<string, double> GetTenOfItem(int hpId);
+
         Dictionary<string, string> GetKensaCenterMsts(int hpId);
 
         List<string> GetTenItemCds(int hpId);
@@ -170,7 +172,7 @@ namespace Domain.Models.MstItem
 
         bool CheckPostCodeExist(int hpId, string zipCD);
 
-        
+
         List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
 
         List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today);
@@ -180,5 +182,7 @@ namespace Domain.Models.MstItem
         bool UpdateByomeiMst(int userId, int hpId, List<UpdateByomeiMstModel> listData);
 
         List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize, bool isCheckPage);
+
+        string GetNameByItemCd(int hpId, string itemCd);
     }
 }

@@ -2,7 +2,7 @@
 
 public class ReceCmtModel
 {
-    public ReceCmtModel(long id, long ptId, int seqNo, int sinYm, int hokenId, int cmtKbn, int cmtSbt, string cmt, string cmtData, string itemCd, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4)
+    public ReceCmtModel(long id, long ptId, int seqNo, int sinYm, int hokenId, int cmtKbn, int cmtSbt, string cmt, string cmtData, string itemCd, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, bool isDeleted)
     {
         Id = id;
         PtId = ptId;
@@ -22,7 +22,7 @@ public class ReceCmtModel
         CmtColKeta2 = cmtColKeta2;
         CmtColKeta3 = cmtColKeta3;
         CmtColKeta4 = cmtColKeta4;
-        IsDeleted = false;
+        IsDeleted = isDeleted;
     }
 
     public ReceCmtModel(long id, long ptId, int seqNo, int sinYm, int hokenId, int cmtKbn, int cmtSbt, string cmt, string cmtData, string itemCd, bool isDeleted)

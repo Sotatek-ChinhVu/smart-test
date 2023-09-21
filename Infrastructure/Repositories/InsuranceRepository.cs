@@ -864,16 +864,16 @@ namespace Infrastructure.Repositories
         {
             var distinctHistoryPids = historyPids.Distinct();
             List<(int, int)> result = new();
-            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate).Where(i => i.StartDate <= sinDate && i.EndDate >= sinDate).ToList();
+            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate).ToList();
             foreach (var historyPid in distinctHistoryPids)
             {
-                var historyPidList = GetDefaultSelectPattern(hpId, ptId, sinDate, historyPid, selectedHokenPid, hokenPatternModels);
+                var historyPidList = GetDefaultSelectPattern(historyPid, selectedHokenPid, hokenPatternModels);
                 result.Add(new(historyPid, historyPidList));
             }
             return result;
         }
 
-        public int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid, List<InsuranceModel> hokenPatternModels)
+        public int GetDefaultSelectPattern(int historyPid, int selectedHokenPid, List<InsuranceModel> hokenPatternModels)
         {
             bool _isSameKohiHoubetu(InsuranceModel pattern1, InsuranceModel pattern2)
             {
@@ -901,7 +901,7 @@ namespace Infrastructure.Repositories
             }
             else if (syosaisinHokenPattern?.HokenSbtCd >= 500)
             {
-                if (historyHokenPattern.StartDate <= sinDate && historyHokenPattern.EndDate >= sinDate)
+                if (!historyHokenPattern.IsExpirated)
                 {
                     // ① 履歴のPIDが有効な保険パターンの場合は、履歴と同じPID
                     return historyHokenPattern.HokenPid;
@@ -915,7 +915,7 @@ namespace Infrastructure.Repositories
                 else
                 {
                     var sameKohiPattern = hokenPatternModels
-                        .Where(p => p.HokenSbtCd >= 500 && !(historyHokenPattern.StartDate <= sinDate && historyHokenPattern.EndDate >= sinDate) && _isSameKohiHoubetu(historyHokenPattern, p))
+                        .Where(p => p.HokenSbtCd >= 500 && !historyHokenPattern.IsExpirated && _isSameKohiHoubetu(historyHokenPattern, p))
                         .OrderBy(p => p.IsExpirated)
                         .ThenBy(p => p.HokenPid)
                         .FirstOrDefault();
@@ -937,7 +937,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                if (historyHokenPattern.StartDate <= sinDate && historyHokenPattern.EndDate >= sinDate)
+                if (!historyHokenPattern.IsExpirated)
                 {
                     // ① 履歴のPIDが有効な保険パターンの場合は、履歴と同じPID
                     return historyHokenPattern.HokenPid;

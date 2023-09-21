@@ -10,5 +10,9 @@ namespace Domain.Models.SetGenerationMst
         List<SetSendaiGenerationModel> GetListSendaiGeneration(int hpId);
 
         bool DeleteSetSenDaiGeneration(int generationId, int userId);
+
+        bool AddSetSendaiGeneration(int userId, int hpId, int startDate);
+
+        bool RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId);
     }
 }
