@@ -1,21 +1,13 @@
-﻿using Entity.Logger;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace PostgreDataContext
 {
-    public class AdminDataContext : DbContext
+    internal class AdminDataContext : DbContext
     {
-        public AdminDataContext(DbContextOptions options)
-        : base(options)
-        {
-
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<AuditLog>().HasKey(a => new { a.LogId });
-        }
-
-        public DbSet<AuditLog> AuditLogs { get; set; } = default!;
     }
 }
