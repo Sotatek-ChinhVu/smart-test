@@ -720,6 +720,7 @@ using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.SetSendaiGeneration.Add;
 using UseCase.MainMenu.KensaIraiReport;
 using UseCase.UpsertMaterialMaster;
+using Infrastructure.Logger;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -760,6 +761,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
 
             services.AddScoped<IMessenger, Messenger>();
+            services.AddScoped<ILoggingHandler, LoggingHandler>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
