@@ -753,6 +753,8 @@ namespace Domain.Models.MstItem
             }
         }
 
+        public bool IsSanteiItem => SanteigaiKbn != 1 && SanteiItemCd != "9999999999";
+
         public int ItemType { get; private set; }
 
         private void SetItemType()
