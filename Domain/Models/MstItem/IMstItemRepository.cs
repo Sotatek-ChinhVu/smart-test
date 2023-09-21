@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Enum;
+using Domain.Models.AuditLog;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
@@ -184,5 +185,7 @@ namespace Domain.Models.MstItem
         List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize, bool isCheckPage);
 
         string GetNameByItemCd(int hpId, string itemCd);
+
+        void AddAuditTrailLog(int hpId, int userId, ArgumentModel arg);
     }
 }

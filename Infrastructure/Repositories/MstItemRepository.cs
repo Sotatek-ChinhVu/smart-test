@@ -1,6 +1,7 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Domain.Constant;
 using Domain.Enum;
+using Domain.Models.AuditLog;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
@@ -17,10 +18,10 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
-using System.Linq;
 using System.Text;
 using KensaCenterMstModel = Domain.Models.MstItem.KensaCenterMstModel;
 
@@ -6545,6 +6546,50 @@ namespace Infrastructure.Repositories
                       ?? tenMsts.OrderByDescending(x => x.StartDate).FirstOrDefault();
 
             return tenMst != null ? tenMst.Name ?? string.Empty : string.Empty;
+        }
+
+        public void AddAuditTrailLog(int hpId,int userId, ArgumentModel arg)
+        {
+            var eventMsts = GetEventMstModel();
+
+            if (eventMsts.Any(p => p.EventCd == arg.EventCd && p.AuditTrailing == 1))
+            {
+                var auditTrailLog = new AuditTrailLog();
+
+                auditTrailLog.HpId = hpId;
+                auditTrailLog.PtId = arg.PtId;
+                auditTrailLog.SinDay = arg.SinDate;
+                auditTrailLog.UserId = userId;
+                auditTrailLog.RaiinNo = arg.RaiinNo;
+                auditTrailLog.EventCd = arg.EventCd;
+                auditTrailLog.LogDate = CIUtil.GetJapanDateTimeNow();
+
+                TrackingDataContext.AuditTrailLogs.Add(auditTrailLog);
+                TrackingDataContext.SaveChanges();
+
+                if (!string.IsNullOrEmpty(arg.Hosoku))
+                {
+                    var auditTrailLogDetail = new AuditTrailLogDetail();
+                    auditTrailLogDetail.LogId = auditTrailLog.LogId;
+                    auditTrailLogDetail.Hosoku = arg.Hosoku;
+                    TrackingDataContext.AuditTrailLogDetails.Add(auditTrailLogDetail);
+                    TrackingDataContext.SaveChanges();
+                }
+            }
+        }
+
+        private List<EventMstModel> GetEventMstModel()
+        {
+            var eventMsts = NoTrackingDataContext.EventMsts
+                                                 .Where(p => p.AuditTrailing == 1)
+                                                 .Select(x => new EventMstModel(
+                                                                                x.EventCd ?? string.Empty,
+                                                                                x.EventName ?? string.Empty,
+                                                                                x.AuditTrailing,
+                                                                                x.CreateDate
+                                                 )).ToList();
+
+            return eventMsts ?? new();
         }
     }
 }
