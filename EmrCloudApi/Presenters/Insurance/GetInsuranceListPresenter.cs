@@ -10,12 +10,27 @@ namespace EmrCloudApi.Presenters.InsuranceList
         public Response<GetInsuranceListResponse> Result { get; private set; } = default!;
         public void Complete(GetInsuranceListByIdOutputData output)
         {
+            var convertInsuranceList = output.Data.ListInsurance.Select(i => new PatternDto(i)).ToList();
+
+            var convertHokenInfList = output.Data.ListHokenInf.Select(i => new HokenInfDto(i)).ToList();
+
+            if (output.SortType == 1)
+            {
+                convertInsuranceList = convertInsuranceList.OrderBy(i => i.IsExpirated).ThenByDescending(i => i.EndDate).ThenByDescending(i => i.HokenId).ToList();
+                convertHokenInfList = convertHokenInfList.OrderBy(i => i.IsExpirated).ThenByDescending(h => h.EndDate).ThenByDescending(h => h.HokenId).ToList();
+            }
+            else if (output.SortType == 2)
+            {
+                convertInsuranceList = convertInsuranceList.OrderBy(i => i.IsExpirated).ThenBy(i => i.EndDate).ToList();
+                convertHokenInfList = convertHokenInfList.OrderBy(h => h.IsExpirated).ThenBy(h => h.EndDate).ToList();
+            }
+
             Result = new Response<GetInsuranceListResponse>()
             {
 
                 Data = new GetInsuranceListResponse()
                 {
-                    Data = new PatientInsuranceDto(output.Data.ListInsurance, output.Data.ListHokenInf, output.Data.ListKohi, output.Data.MaxIdHokenInf, output.Data.MaxIdHokenKohi, output.Data.MaxPidHokenPattern)
+                    Data = new PatientInsuranceDto(convertInsuranceList, convertHokenInfList, output.Data.ListKohi, output.Data.MaxIdHokenInf, output.Data.MaxIdHokenKohi, output.Data.MaxPidHokenPattern)
                 },
                 Status = (byte)output.Status,
             };

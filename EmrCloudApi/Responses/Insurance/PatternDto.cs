@@ -29,6 +29,7 @@ namespace EmrCloudApi.Responses.Insurance
             DisplayRateOnly = insuranceModel.DisplayRateOnly;
             HokenName = insuranceModel.HokenName;
             PatternRate = insuranceModel.PatternRate;
+            HokenId = insuranceModel.HokenId;
         }
 
         public int HpId { get; private set; }
@@ -99,6 +100,8 @@ namespace EmrCloudApi.Responses.Insurance
         }
 
         public int StartDate { get; private set; }
+
+        public int HokenId { get; private set; }
 
         public int EndDate { get; private set; }
 

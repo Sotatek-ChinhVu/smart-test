@@ -13,12 +13,15 @@ namespace UseCase.Insurance.GetList
     {
         public InsuranceDataModel Data { get; private set; }
 
+        public byte SortType { get; private set; }
+
         public GetInsuranceListStatus Status { get; private set; }
 
-        public GetInsuranceListByIdOutputData(InsuranceDataModel data, GetInsuranceListStatus status)
+        public GetInsuranceListByIdOutputData(InsuranceDataModel data, GetInsuranceListStatus status, byte sortType)
         {
             Data = data;
             Status = status;
+            SortType = sortType;
         }
     }
 }
