@@ -194,7 +194,7 @@ public class Sta3061CoReportService : ISta3061CoReportService
 
         // get data to print
         GetFieldNameList(formFileName);
-        GetRowCount(formFileName);
+        GetRowCount();
 
         if (GetData(hpId))
         {
@@ -746,14 +746,6 @@ public class Sta3061CoReportService : ISta3061CoReportService
         }
     }
 
-    private void AddListData(ref Dictionary<string, CellModel> dictionary, string field, string value)
-    {
-        if (!string.IsNullOrEmpty(field) && !dictionary.ContainsKey(field))
-        {
-            dictionary.Add(field, new CellModel(value));
-        }
-    }
-
     private void GetFieldNameList(string fileName)
     {
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3061, fileName, new());
@@ -761,17 +753,9 @@ public class Sta3061CoReportService : ISta3061CoReportService
         objectRseList = javaOutputData.objectNames;
     }
 
-    private void GetRowCount(string fileName)
+    private void GetRowCount()
     {
         rowCountFieldName = putColumns.Find(p => objectRseList.Contains(p.ColName)).ColName;
-        List<ObjectCalculate> fieldInputList = new()
-        {
-            new ObjectCalculate(rowCountFieldName, (int)CalculateTypeEnum.GetListRowCount)
-        };
-
-        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3061, fileName, fieldInputList);
-        var javaOutputData = _readRseReportFileService.ReadFileRse(data);
-        maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
 
     public CommonExcelReportingModel ExportCsv(CoSta3061PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)

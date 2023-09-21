@@ -775,7 +775,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                         kensaInf,
                         ptInf.Name,
                         ptInf.PtNum,
-                        KensaInfCenterMst.CenterName,
+                        CenterName = KensaInfCenterMst != null ? KensaInfCenterMst.CenterName : string.Empty,
                         PrimaryKbn = KensaInfCenterMst == null ? 0 : KensaInfCenterMst.PrimaryKbn,
                         KensaInfDetails = from kensaInfDetail in kensaInfDetailList
                                           where kensaInf.HpId == kensaInfDetail.HpId &&
