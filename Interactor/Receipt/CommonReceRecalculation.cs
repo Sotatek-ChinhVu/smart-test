@@ -83,6 +83,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         List<ReceCheckErrModel> newReceCheckErrList = new();
         StringBuilder errorText = new();
         StringBuilder errorTextSinKouiCount = new();
+        StringBuilder errorTextRosai = new();
         var receCheckOptList = GetReceCheckOptModelList(hpId);
         var ptIdList = receRecalculationList.Select(item => item.PtId).Distinct().ToList();
         var sinYmList = receRecalculationList.Select(item => item.SinYm).Distinct().ToList();
@@ -132,13 +133,14 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                 newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
                 newReceCheckErrList = CheckByomeiError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails, systemConfigList);
                 newReceCheckErrList = CheckOrderError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
-                newReceCheckErrList = CheckRosaiError(sinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
+                newReceCheckErrList = CheckRosaiError(sinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
                 newReceCheckErrList = CheckAftercare(sinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
             }
 
             if (isReceiptAggregationCheckBox)
             {
                 errorTextSinKouiCount = GetErrorTextSinKouiCount(sinYm, errorTextSinKouiCount, recalculationItem, sinKouiCountList);
+                errorTextRosai = GetErrorRosai(errorTextRosai, recalculationItem, sinKouiCountList);
             }
 
             if (allCheckCount == successCount)
@@ -152,6 +154,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             }
             successCount++;
         }
+        errorText.Append(errorTextRosai);
         errorText.Append(errorTextSinKouiCount);
         ptIdList = ptIds.Distinct().ToList();
         if (isCheckErrorCheckBox)
@@ -1859,34 +1862,8 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         return newReceCheckErrList;
     }
 
-    private List<ReceCheckErrModel> CheckRosaiError(int seikyuYm, ref StringBuilder errorText, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceSinKouiCountModel> sinKouiCountList, List<SystemConfModel> systemConfList, List<IsKantokuCdValidModel> allIsKantokuCdValidList, List<SyobyoKeikaModel> allSyobyoKeikaList)
+    private List<ReceCheckErrModel> CheckRosaiError(int seikyuYm, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceSinKouiCountModel> sinKouiCountList, List<SystemConfModel> systemConfList, List<IsKantokuCdValidModel> allIsKantokuCdValidList, List<SyobyoKeikaModel> allSyobyoKeikaList)
     {
-        //check use normal hoken but order Rosai item
-        //■健康保険のレセプトで労災項目がオーダーされています。
-        if (recalculationModel.HokenKbn == 1 || recalculationModel.HokenKbn == 2)
-        {
-            List<string> orderRosaiErrors = new();
-            foreach (var sinKouiCount in sinKouiCountList)
-            {
-                foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
-                {
-                    if (sinKouiDetailModel.MasterSbt == "R")
-                    {
-                        orderRosaiErrors.Add(string.Format("    {0}/{1} ID:{2} [{3}] {4}", recalculationModel.SeikyuYm / 100, recalculationModel.SeikyuYm % 100, recalculationModel.PtNum, sinKouiDetailModel.ItemCd, sinKouiDetailModel.ReceName));
-                    }
-                }
-            }
-            if (orderRosaiErrors.Any())
-            {
-                orderRosaiErrors.Insert(0, "■健康保険のレセプトで労災項目がオーダーされています。");
-                foreach (var error in orderRosaiErrors)
-                {
-                    errorText.AppendLine(error);
-                }
-                errorText.AppendLine();
-            }
-        }
-
         // check rosai can using
         if (GetSettingValue(systemConfList, 100003, 0) == 1
             && seikyuYm >= GetSettingParam(systemConfList, 100003, 0).AsInteger()
@@ -1965,8 +1942,39 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         return newReceCheckErrList;
     }
 
+    private StringBuilder GetErrorRosai(StringBuilder errorTextRosai, ReceRecalculationModel recalculationModel, List<ReceSinKouiCountModel> sinKouiCountList)
+    {
+        //check use normal hoken but order Rosai item
+        //■健康保険のレセプトで労災項目がオーダーされています。
+        if (recalculationModel.HokenKbn == 1 || recalculationModel.HokenKbn == 2)
+        {
+            List<string> orderRosaiErrors = new();
+            foreach (var sinKouiCount in sinKouiCountList)
+            {
+                foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
+                {
+                    if (sinKouiDetailModel.MasterSbt == "R")
+                    {
+                        orderRosaiErrors.Add(string.Format("    {0}/{1} ID:{2} [{3}] {4}", recalculationModel.SeikyuYm / 100, recalculationModel.SeikyuYm % 100, recalculationModel.PtNum, sinKouiDetailModel.ItemCd, sinKouiDetailModel.ReceName));
+                    }
+                }
+            }
+            if (orderRosaiErrors.Any())
+            {
+                orderRosaiErrors.Insert(0, "■健康保険のレセプトで労災項目がオーダーされています。");
+                foreach (var error in orderRosaiErrors)
+                {
+                    errorTextRosai.AppendLine(error);
+                }
+                errorTextRosai.AppendLine();
+            }
+        }
+        return errorTextRosai;
+    }
+
     private StringBuilder GetErrorTextSinKouiCount(int seikyuYm, StringBuilder errorTextSinKouiCount, ReceRecalculationModel recalculationModel, List<ReceSinKouiCountModel> sinKouiCountList)
     {
+        //■請求できない項目がオーダーされています。
         List<string> errors = new();
         foreach (var sinKouiCount in sinKouiCountList)
         {
