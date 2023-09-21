@@ -24,6 +24,7 @@ using EmrCloudApi.Requests.MainMenu.RequestItem;
 using UseCase.MainMenu.GetKensaInf;
 using UseCase.MainMenu.DeleteKensaInf;
 using UseCase.MainMenu.GetKensaIraiLog;
+using UseCase.MainMenu.GetStaCsvMstModel;
 
 namespace EmrCloudApi.Controller;
 
@@ -178,13 +179,23 @@ public class MainMenuController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetKensaIraiLog)]
-    public ActionResult<Response<GetKensaIraiLogResponse>> GetKensaIraiLogLog([FromQuery] GetKensaIraiLogRequest request)
+    public ActionResult<Response<GetKensaIraiLogResponse>> GetKensaIraiLog([FromQuery] GetKensaIraiLogRequest request)
     {
         var input = new GetKensaIraiLogInputData(HpId, request.StartDate, request.EndDate);
         var output = _bus.Handle(input);
         var presenter = new GetKensaIraiLogLogPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetKensaIraiLogResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetStaCsvMst)]
+    public ActionResult<Response<GetStaCsvMstResponse>> GetStaCsvMst()
+    {
+        var input = new GetStaCsvMstInputData(HpId);
+        var output = _bus.Handle(input);
+        var presenter = new GetStaCsvMstPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetStaCsvMstResponse>>(presenter.Result);
     }
 
     #region private function
