@@ -471,5 +471,8 @@
         public const string GetHokenMst = "GetHokenMst";
         public const string SaveStaConfMenu = "SaveStaConfMenu";
         public const string GetStaConfMenu = "GetStaConfMenu";
+
+        //SetSendaiGeneration
+        public const string Restore = "Restore";
     }
 }

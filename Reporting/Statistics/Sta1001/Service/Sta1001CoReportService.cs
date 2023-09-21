@@ -205,7 +205,6 @@ namespace Reporting.Statistics.Sta1001.Service
             GetFieldNameList();
             GetRowCount();
             putCurColumns.AddRange(putColumns);
-            _objectRseList = new();
             if (GetData())
             {
                 _hasNextPage = true;

@@ -644,6 +644,7 @@ using UseCase.SetMst.SaveSetMst;
 using UseCase.SetSendaiGeneration.Add;
 using UseCase.SetSendaiGeneration.Delete;
 using UseCase.SetSendaiGeneration.GetList;
+using UseCase.SetSendaiGeneration.Restore;
 using UseCase.SinKoui.GetSinKoui;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
@@ -1723,6 +1724,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SetSendaiGenerationInputData, SetSendaiGenerationGetListInteractor>();
             busBuilder.RegisterUseCase<DeleteSendaiGenerationInputData, DeleteSetSendaiGenerationInteractor>();
             busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
+            busBuilder.RegisterUseCase<RestoreSetSendaiGenerationInputData, RestoreSetSendaiGenerationInteractor>();
 
 
             var bus = busBuilder.Build();
