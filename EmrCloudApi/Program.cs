@@ -163,13 +163,13 @@ builder.Services.AddDbContext<AdminDataContext>(options =>
 var app = builder.Build();
 
 // Migrate latest database changes during startup
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AdminDataContext>();
+//using (var scope = app.Services.CreateScope())
+//{
+//    var dbContext = scope.ServiceProvider.GetRequiredService<AdminDataContext>();
 
-    // Here is the migration executed
-    dbContext.Database.Migrate();
-}
+//    // Here is the migration executed
+//    dbContext.Database.Migrate();
+//}
 
 //Add config from json file
 string enviroment = "Development";
