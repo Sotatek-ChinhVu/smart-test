@@ -3,7 +3,13 @@
     public class F17CommonRequest
     {
 
-        public string kensaStdItemCd { get; set; } = string.Empty;
+        public F17CommonRequest(string kensaStdItemCd, string itemCd)
+        {
+            KensaStdItemCd = kensaStdItemCd;
+            ItemCd = itemCd;
+        }
+
+        public string KensaStdItemCd { get; set; } = string.Empty;
 
         public string ItemCd { get; set; } = string.Empty;
     }
