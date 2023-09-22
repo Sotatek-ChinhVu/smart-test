@@ -1,20 +1,20 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.MainMenu;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.MainMenu.SaveStaCsvMst;
 
 public class SaveStaCsvMstInputData : IInputData<SaveStaCsvMstOutputData>
 {
-    public SaveStaCsvMstInputData(int hpId, int userId, int grpId, List<StatisticMenuItem> staticMenuList)
+    public SaveStaCsvMstInputData(int hpId, int userId, List<StaCsvMstModel> staCsvModels)
     {
         HpId = hpId;
         UserId = userId;
-        StaticMenuList = staticMenuList;
-        GrpId = grpId;
+        StaCsvModels = staCsvModels;
     }
 
     public int HpId { get; private set; }
 
     public int UserId { get; private set; }
 
-    public List<StatisticMenuItem> StaticMenuList { get; private set; }
+    public List<StaCsvMstModel> StaCsvModels { get; private set; }
 }

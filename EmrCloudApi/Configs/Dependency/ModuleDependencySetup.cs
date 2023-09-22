@@ -732,6 +732,7 @@ using UseCase.MainMenu.KensaIraiReport;
 using UseCase.UpsertMaterialMaster;
 using UseCase.SetSendaiGeneration.Restore;
 using UseCase.MainMenu.GetStaCsvMstModel;
+using UseCase.MainMenu.SaveStaCsvMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1673,6 +1674,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKensaIraiLogInputData, GetKensaIraiLogInteractor>();
             busBuilder.RegisterUseCase<KensaIraiReportInputData, KensaIraiReportInteractor>();
             busBuilder.RegisterUseCase<GetStaCsvMstInputData, GetStaCsvMstInteractor>();
+            busBuilder.RegisterUseCase<SaveStaCsvMstInputData, SaveStaCsvMstInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();

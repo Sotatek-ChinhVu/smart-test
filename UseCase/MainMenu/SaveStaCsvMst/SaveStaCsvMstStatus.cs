@@ -2,11 +2,10 @@
 
 public enum SaveStaCsvMstStatus : byte
 {
-    ValidateSuccess = 0,
     Successed,
     Failed,
-    InvalidMenuId,
-    InvalidGrpId,
-    InvalidReportId,
-    InvalidMenuName,
+    InvalidHpId,
+    InvalidUserId,
+    InvalidConFName,
+    InvalidColumnName,
 }

@@ -16,5 +16,5 @@ public interface IStatisticRepository : IRepositoryBase
 
     List<StaCsvMstModel> GetStaCsvMstModels(int hpId);
 
-    void SaveStaCsvMst(int hpId, int userId, StaCsvMstModel staCsvMstModel);
+    void SaveStaCsvMst(int hpId, int userId, List<StaCsvMstModel> staCsvMstModels);
 }

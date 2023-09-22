@@ -1,7 +1,10 @@
-﻿namespace Domain.Models.MainMenu
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.MainMenu
 {
     public class StaCsvModel
     {
+        [JsonConstructor]
         public StaCsvModel(bool isShowTemplateModel, bool isModified, bool isDeleted, int id, int hpId, int reportId, int rowNo, string confName, int dataSbt, string columns, int sortKbn, bool isSelected, string columnsDisplay)
         {
             IsShowTemplateModel = isShowTemplateModel;

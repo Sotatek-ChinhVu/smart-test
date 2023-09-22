@@ -1034,5 +1034,9 @@
         public static readonly string DeleteRowIndex0 = "Cannot delete row have index 0.";
         public static readonly string InvalidRowIndex = "Invalid row index.";
         public static readonly string InvalidGenerationId = "Invalid GenerationId.";
+
+        //Main Menu
+        public static readonly string InvalidConFName = "Invalid ConfName.";
+        public static readonly string InvalidColumnName = "Invalid ColumnName.";
     }
 }

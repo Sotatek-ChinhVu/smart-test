@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.Models.MainMenu
 {
     public class StaCsvMstModel
     {
+        [JsonConstructor]
         public StaCsvMstModel(string groupName, bool isDefault, int dataSbt, int rowNo, bool isDeleted, List<StaCsvModel> staCsvModels, List<StaCsvModel> staCsvModelsSelected)
         {
             GroupName = groupName;
@@ -25,21 +22,21 @@ namespace Domain.Models.MainMenu
             DataSbt = dataSbt;
             StaCsvModels = staCsvModels;
             StaCsvModelsSelected = staCsvModelsSelected;
-            RowNo= rowNo;
+            RowNo = rowNo;
             IsDefault = isDefault;
         }
 
-        public string GroupName{ get; private set; }
+        public string GroupName { get; private set; }
 
-        public bool IsDefault{ get; private set; }
+        public bool IsDefault { get; private set; }
 
-        public int DataSbt{ get; private set;  }
+        public int DataSbt { get; private set; }
 
-        public int RowNo{ get; private set; }
+        public int RowNo { get; private set; }
 
-        public bool IsDeleted{ get; private set; }
+        public bool IsDeleted { get; private set; }
 
-        public List<StaCsvModel> StaCsvModels{ get; private set; }
+        public List<StaCsvModel> StaCsvModels { get; private set; }
 
         public List<StaCsvModel> StaCsvModelsSelected { get; private set; }
     }

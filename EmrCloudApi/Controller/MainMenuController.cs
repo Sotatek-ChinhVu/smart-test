@@ -21,10 +21,11 @@ using UseCase.MainMenu.GetKensaCenterMstList;
 using UseCase.MainMenu.GetKensaInf;
 using UseCase.MainMenu.GetKensaIrai;
 using UseCase.MainMenu.GetKensaIraiLog;
-using UseCase.MainMenu.KensaIraiReport;
-using UseCase.MainMenu.GetStatisticMenu;
-using UseCase.MainMenu.SaveStatisticMenu;
 using UseCase.MainMenu.GetStaCsvMstModel;
+using UseCase.MainMenu.GetStatisticMenu;
+using UseCase.MainMenu.KensaIraiReport;
+using UseCase.MainMenu.SaveStaCsvMst;
+using UseCase.MainMenu.SaveStatisticMenu;
 
 namespace EmrCloudApi.Controller;
 
@@ -207,6 +208,16 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new GetStaCsvMstPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetStaCsvMstResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveStaCsvMst)]
+    public ActionResult<Response<SaveStaCsvMstResponse>> SaveStaCsvMst([FromBody] SaveStaCsvMstRequest request)
+    {
+        var input = new SaveStaCsvMstInputData(HpId, UserId, request.StaCsvMstModels);
+        var output = _bus.Handle(input);
+        var presenter = new SaveStaCsvMstPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<SaveStaCsvMstResponse>>(presenter.Result);
     }
 
     #region private function

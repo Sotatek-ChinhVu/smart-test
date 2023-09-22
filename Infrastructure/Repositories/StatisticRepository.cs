@@ -195,35 +195,39 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         return result;
     }
 
-    public void SaveStaCsvMst(int hpId, int userId, StaCsvMstModel staCsvMstModel)
+    public void SaveStaCsvMst(int hpId, int userId, List<StaCsvMstModel> staCsvMstModels)
     {
         var addStaCsvMsts = new List<StaCsv>();
         var deleteStaCsvMsts = new List<StaCsv>();
-        var ids = staCsvMstModel.StaCsvModelsSelected.Select(s => s.Id).ToList();
-        var staCsvs = NoTrackingDataContext.StaCsvs.Where(s => s.HpId == hpId).AsEnumerable().Where(s => ids.Contains(s.Id)).ToList();
-        foreach (var item in staCsvMstModel.StaCsvModelsSelected)
-        {
-            if (item.IsModified)
-            {
-                var staCsv = staCsvs.FirstOrDefault(s => s.Id == item.Id);
-                if (staCsv != null)
-                {
-                    staCsv.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    staCsv.UpdateId = userId;
-                }
 
-                if (item.Id > 0 && item.IsDeleted && staCsv != null)
+        foreach (var staCsvMstModel in staCsvMstModels)
+        {
+            var ids = staCsvMstModel.StaCsvModelsSelected.Select(s => s.Id).ToList();
+            var staCsvs = NoTrackingDataContext.StaCsvs.Where(s => s.HpId == hpId).AsEnumerable().Where(s => ids.Contains(s.Id)).ToList();
+            foreach (var item in staCsvMstModel.StaCsvModelsSelected)
+            {
+                if (item.IsModified)
                 {
-                    deleteStaCsvMsts.Add(staCsv);
-                }
-                else if (item.Id == 0 && !item.IsDeleted && item.IsSelected)
-                {
-                    var newStaCsv = ConvertStaCsvModelToStaCsv(hpId, userId, item);
-                    addStaCsvMsts.Add(newStaCsv);
-                }
-                else if (item.Id > 0 && !item.IsSelected && staCsv != null)
-                {
-                    deleteStaCsvMsts.Add(staCsv);
+                    var staCsv = staCsvs.FirstOrDefault(s => s.Id == item.Id);
+                    if (staCsv != null)
+                    {
+                        staCsv.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        staCsv.UpdateId = userId;
+                    }
+
+                    if (item.Id > 0 && item.IsDeleted && staCsv != null)
+                    {
+                        deleteStaCsvMsts.Add(staCsv);
+                    }
+                    else if (item.Id == 0 && !item.IsDeleted && item.IsSelected)
+                    {
+                        var newStaCsv = ConvertStaCsvModelToStaCsv(hpId, userId, item);
+                        addStaCsvMsts.Add(newStaCsv);
+                    }
+                    else if (item.Id > 0 && !item.IsSelected && staCsv != null)
+                    {
+                        deleteStaCsvMsts.Add(staCsv);
+                    }
                 }
             }
         }
@@ -231,6 +235,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         TrackingDataContext.StaCsvs.AddRange(addStaCsvMsts);
         TrackingDataContext.StaCsvs.RemoveRange(deleteStaCsvMsts);
         TrackingDataContext.SaveChanges();
+
     }
 
     public void ReleaseResource()
