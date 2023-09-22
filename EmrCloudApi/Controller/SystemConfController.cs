@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.SystemConf;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.SytemConf;
 using EmrCloudApi.Requests.SystemConf;
 using EmrCloudApi.Responses;
@@ -138,11 +139,10 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveSystemSettingResponse>>(presenter.Result);
         }
 
-        [AllowAnonymous]
         [HttpGet(ApiPath.GetSystemConfListXmlPath)]
         public ActionResult<Response<GetSystemConfListXmlPathResponse>> GetSystemConfListXmlPath([FromQuery] GetSystemConfListXmlPathRequest request)
         {
-            var input = new GetSystemConfListXmlPathInputData(1, request.GrpCd, request.Machine);
+            var input = new GetSystemConfListXmlPathInputData(HpId, request.GrpCd, request.Machine, request.IsKensaIrai);
             var output = _bus.Handle(input);
 
             var presenter = new GetSystemConfListXmlPathPresenter();
@@ -166,7 +166,20 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SavePath)]
         public ActionResult<Response<SavePathResponse>> SavePath([FromBody] SavePathRequest request)
         {
-            var input = new SavePathInputData(HpId, UserId, request.SystemConfListXmlPathModels);
+            var input = new SavePathInputData(HpId, UserId, request.SystemConfListXmlPathModels.Select(p => new SystemConfListXmlPathModel(
+                                HpId,
+                                p.GrpCd,
+                                0,
+                                p.SeqNo,
+                                p.Machine,
+                                p.Path,
+                                string.Empty,
+                                p.Biko,
+                                0,
+                                1,
+                                UserId,
+                                DateTime.MinValue
+                            )).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new SavePathPresenter();

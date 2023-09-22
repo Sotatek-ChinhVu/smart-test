@@ -1,4 +1,7 @@
 ﻿using Domain.Models.HokenMst;
+using Domain.Models.InsuranceMst;
+using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -91,6 +94,95 @@ namespace Infrastructure.Repositories
                        x.HokenEdaNo
                )).ToList();
             return existHokenEdaNo;
+        }
+
+        public List<HokenMstModel> FindHokenMst(int hpId)
+        {
+            List<HokenMstModel> result = new List<HokenMstModel>();
+            int dateTimeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
+            var hospitalInfo = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(x => x.StartDate).FirstOrDefault(x => x.StartDate <= dateTimeNow);
+            if (hospitalInfo == null)
+            {
+                hospitalInfo = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(x => x.StartDate).FirstOrDefault();
+            }
+
+            int PrefCd = hospitalInfo == null ? 0 : hospitalInfo.PrefNo;
+
+            List<HokenMst> entities = NoTrackingDataContext.HokenMsts
+                .Where(
+                    entity => entity.HpId == hpId
+                    && (entity.PrefNo == PrefCd
+                        || entity.PrefNo == 0
+                        || entity.IsOtherPrefValid == 1))
+                .OrderBy(e => e.HpId)
+                .ThenBy(e => e.HokenNo)
+                .ThenByDescending(e => e.PrefNo)
+                .ThenBy(e => e.SortNo)
+            .ThenByDescending(e => e.StartDate)
+            .ToList();
+
+            List<RoudouMst> roudouMsts = NoTrackingDataContext.RoudouMsts.ToList();
+            entities?.ForEach(entity =>
+            {
+                string? prefName = roudouMsts.FirstOrDefault(roudou => roudou.RoudouCd == entity.PrefNo.ToString())?.RoudouName;
+                result.Add(new HokenMstModel(
+                          entity.FutanKbn,
+                          entity.FutanRate,
+                          entity.StartDate,
+                          entity.EndDate,
+                          entity.HokenNo,
+                          entity.HokenEdaNo,
+                          entity.HokenSname ?? string.Empty,
+                          entity.Houbetu ?? string.Empty,
+                          entity.HokenSbtKbn,
+                          entity.CheckDigit,
+                          entity.AgeStart,
+                          entity.AgeEnd,
+                          entity.IsFutansyaNoCheck,
+                          entity.IsJyukyusyaNoCheck,
+                          entity.JyukyuCheckDigit,
+                          entity.IsTokusyuNoCheck,
+                          entity.HokenName ?? string.Empty,
+                          entity.HokenNameCd ?? string.Empty,
+                          entity.HokenKohiKbn,
+                          entity.IsOtherPrefValid,
+                          entity.ReceKisai,
+                          entity.IsLimitList,
+                          entity.IsLimitListSum,
+                          entity.EnTen,
+                          entity.KaiLimitFutan,
+                          entity.DayLimitFutan,
+                          entity.MonthLimitFutan,
+                          entity.MonthLimitCount,
+                          entity.LimitKbn,
+                          entity.CountKbn,
+                          entity.FutanYusen,
+                          entity.CalcSpKbn,
+                          entity.MonthSpLimit,
+                          entity.KogakuTekiyo,
+                          entity.KogakuTotalKbn,
+                          entity.KogakuHairyoKbn,
+                          entity.ReceSeikyuKbn,
+                          entity.ReceKisaiKokho,
+                          entity.ReceKisai2,
+                          entity.ReceTenKisai,
+                          entity.ReceFutanRound,
+                          entity.ReceZeroKisai,
+                          entity.ReceSpKbn,
+                          prefName ?? string.Empty,
+                          entity.PrefNo,
+                          entity.SortNo,
+                          entity.SeikyuYm,
+                          entity.ReceFutanHide,
+                          entity.ReceFutanKbn,
+                          entity.KogakuTotalAll,
+                          true,
+                          entity.DayLimitCount,
+                          new List<ExceptHokensyaModel>()
+                    ));
+            });
+
+            return result;
         }
 
         public void ReleaseResource()

@@ -1,7 +1,10 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Domain.Constant;
 using Domain.Enum;
+using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
+using Domain.Models.KensaIrai;
+using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
@@ -17,7 +20,9 @@ using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
+using System.Linq;
 using System.Text;
+using KensaCenterMstModel = Domain.Models.MstItem.KensaCenterMstModel;
 
 namespace Infrastructure.Repositories
 {
@@ -1735,11 +1740,11 @@ namespace Infrastructure.Repositories
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
             }
-            else if (!string.IsNullOrEmpty(postCode1))
+            if (!string.IsNullOrEmpty(postCode1))
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
             }
-            else if (!string.IsNullOrEmpty(postCode2))
+            if (!string.IsNullOrEmpty(postCode2))
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.EndsWith(postCode2));
             }
@@ -1763,7 +1768,10 @@ namespace Infrastructure.Repositories
 
             var totalCount = query.Count();
 
-            var result = query.OrderBy(x => x.PostCd)
+            var result = new List<PostCodeMstModel>();
+            if (pageIndex == -1 && pageSize == -1)
+            {
+                result = query.OrderBy(x => x.PostCd)
                                   .ThenBy(x => x.PrefName)
                                   .ThenBy(x => x.CityName)
                                   .ThenBy(x => x.Banti)
@@ -1777,9 +1785,28 @@ namespace Infrastructure.Repositories
                                       x.PrefName ?? string.Empty,
                                       x.CityName ?? string.Empty,
                                       x.Banti ?? string.Empty,
-                                      x.IsDeleted))
-                                  .Skip(pageIndex - 1).Take(pageSize)
-                                  .ToList();
+                                      x.IsDeleted)).ToList();
+            }
+            else
+            {
+                result = query.OrderBy(x => x.PostCd)
+                                 .ThenBy(x => x.PrefName)
+                                 .ThenBy(x => x.CityName)
+                                 .ThenBy(x => x.Banti)
+                                 .Select(x => new PostCodeMstModel(
+                                     x.Id,
+                                     x.HpId,
+                                     x.PostCd ?? string.Empty,
+                                     x.PrefKana ?? string.Empty,
+                                     x.CityKana ?? string.Empty,
+                                     x.PostalTermKana ?? string.Empty,
+                                     x.PrefName ?? string.Empty,
+                                     x.CityName ?? string.Empty,
+                                     x.Banti ?? string.Empty,
+                                     x.IsDeleted))
+                                 .Skip(pageIndex - 1).Take(pageSize)
+                                 .ToList();
+            }
 
             return (totalCount, result);
         }
@@ -1797,9 +1824,68 @@ namespace Infrastructure.Repositories
                 if (entities == null) continue;
                 foreach (var entity in entities)
                 {
-                    result.Add(new ItemCmtModel(itemCd, entity.Cmt ?? string.Empty, entity.SortNo));
+                    result.Add(new ItemCmtModel(itemCd, entity.HpId, entity.SeqNo, entity.Cmt ?? string.Empty, entity.SortNo));
                 }
             }
+            return result;
+        }
+
+        public List<CommentCheckMstModel> GetAllCmtCheckMst(int hpId, int sinDay)
+        {
+            var cmtCheckMsts = NoTrackingDataContext.CmtCheckMsts.Where(
+                    (x) => x.HpId == hpId && x.IsDeleted == 0);
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(
+                    (x) => x.HpId == Session.HospitalID && x.StartDate <= sinDay && x.EndDate >= sinDay);
+
+            var sinKouiCollection = new SinkouiCollection();
+
+            var tenJoinYakkaSyusai = from cmtCheckMst in cmtCheckMsts
+                                     join tenMst in tenMsts on
+                                         new { cmtCheckMst.HpId, cmtCheckMst.ItemCd } equals
+                                         new { tenMst.HpId, tenMst.ItemCd }
+                                     select new
+                                     {
+                                         CmtCheckMst = cmtCheckMst,
+                                         TenMstName = tenMst.Name,
+                                         KanaName1 = tenMst.KanaName1,
+                                         KanaName2 = tenMst.KanaName2,
+                                         KanaName3 = tenMst.KanaName3,
+                                         KohatuKbn = tenMst.KohatuKbn,
+                                         ItemCd = tenMst.ItemCd,
+                                         Ten = tenMst.Ten,
+                                         TenId = tenMst.TenId,
+                                         BuiKbn = tenMst.BuiKbn,
+                                         SinKouiKbn = tenMst.SinKouiKbn,
+                                         DrugKbn = tenMst.DrugKbn,
+                                         MasterSbt = tenMst.MasterSbt
+                                     };
+
+            var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
+                             join kouiKbnItem in sinKouiCollection.AsEnumerable()
+                             on ten.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
+                             from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
+                             select new
+                             {
+                                 CmtCheckMst = ten.CmtCheckMst,
+                                 TenMstName = ten.TenMstName,
+                                 KanaName1 = ten.KanaName1,
+                                 KanaName2 = ten.KanaName2,
+                                 KanaName3 = ten.KanaName3,
+                                 KohatuKbn = ten.KohatuKbn,
+                                 ItemCd = ten.ItemCd,
+                                 Ten = ten.Ten,
+                                 TenId = ten.TenId,
+                                 BuiKbn = ten.BuiKbn,
+                                 SinKouiKbn = ten.SinKouiKbn,
+                                 KouiName = tenKouiKbn.SinkouiName,
+                                 DrugKbn = ten.DrugKbn,
+                                 MasterSbt = ten.MasterSbt
+                             };
+
+            var result = queryFinal.AsEnumerable()
+                              .Select((x) => new CommentCheckMstModel(x.ItemCd, x.TenMstName, x.KanaName1, x.KanaName2, x.KanaName3,
+                              x.KouiName, x.KohatuKbn, x.Ten, x.TenId)).DistinctBy(x => x.ItemCd)
+                              .ToList();
             return result;
         }
 
@@ -1990,6 +2076,25 @@ namespace Infrastructure.Repositories
                     ConvertIcd102013Display(mst.Icd1012013 ?? string.Empty, mst.Icd1022013 ?? string.Empty),
                     mst.IsAdopted == 1,
                     mst.NanbyoCd
+                );
+        }
+
+        private static ByomeiMstModel ConvertToByomeiMstModelInDeseaseNameMst(ByomeiMst mst)
+        {
+            return new ByomeiMstModel(
+                    mst.ByomeiCd,
+                    mst.Byomei ?? string.Empty,
+                    ConvertByomeiCdDisplay(mst.ByomeiCd),
+                    mst.Sbyomei ?? string.Empty,
+                    mst.KanaName1 ?? string.Empty,
+                    mst.SikkanCd,
+                    ConvertSikkanDisplay(mst.SikkanCd),
+                    mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
+                    ConvertIcd10Display(mst.Icd101 ?? string.Empty, mst.Icd102 ?? string.Empty),
+                    ConvertIcd102013Display(mst.Icd1012013 ?? string.Empty, mst.Icd1022013 ?? string.Empty),
+                    mst.IsAdopted == 1,
+                    mst.NanbyoCd,
+                    mst.KanaName2 ?? string.Empty
                 );
         }
 
@@ -2200,23 +2305,29 @@ namespace Infrastructure.Repositories
                     }
                     else if (tenItem.ModeStatus == 0)
                     {
-                        var conversionItem = new ConversionItemInf
+                        var checkConversionItem = TrackingDataContext.ConversionItemInfs.FirstOrDefault(c => c.HpId == hpId && c.SourceItemCd == value.Key && c.DestItemCd == tenItem.ItemCd);
+                        if (checkConversionItem == null)
                         {
-                            HpId = hpId,
-                            SourceItemCd = value.Key,
-                            DestItemCd = tenItem.ItemCd,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            CreateId = userId,
-                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = userId,
-                            SortNo = ++maxSortNo
-                        };
-                        TrackingDataContext.ConversionItemInfs.Add(conversionItem);
+                            var conversionItem = new ConversionItemInf
+                            {
+                                HpId = hpId,
+                                SourceItemCd = value.Key,
+                                DestItemCd = tenItem.ItemCd,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                CreateId = userId,
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = userId,
+                                SortNo = ++maxSortNo
+                            };
+                            TrackingDataContext.ConversionItemInfs.Add(conversionItem);
+                        }
                     }
                 }
             }
 
-            return TrackingDataContext.SaveChanges() > 0;
+            TrackingDataContext.SaveChanges();
+
+            return true;
         }
 
         public List<HolidayModel> FindHolidayMstList(int hpId, int fromDate, int toDate)
@@ -3342,7 +3453,6 @@ namespace Infrastructure.Repositories
 
         public List<DensiHoukatuModel> GetListDensiHoukatuMaster(int hpId, List<string> listGrpNo)
         {
-            List<DensiHoukatuModel> result = new List<DensiHoukatuModel>();
             var listHoukatu = NoTrackingDataContext.DensiHoukatus.Where(u => u.HpId == hpId &&
                                                                         u.HoukatuGrpNo != null && listGrpNo.Contains(u.HoukatuGrpNo));
 
@@ -3356,25 +3466,25 @@ namespace Infrastructure.Repositories
                             Hokatu = hokatu,
                             ItemName = tenMst.Name,
                         };
-            result = query.AsEnumerable().Where(data => !string.IsNullOrEmpty(data.ItemName))
-                                         .Select(x => new DensiHoukatuModel(x.Hokatu.HpId,
-                                                                           x.Hokatu.ItemCd,
-                                                                           x.Hokatu.StartDate,
-                                                                           x.Hokatu.EndDate,
-                                                                           x.Hokatu.TargetKbn,
-                                                                           x.Hokatu.SeqNo,
-                                                                           x.Hokatu.HoukatuTerm,
-                                                                           x.Hokatu.HoukatuGrpNo ?? string.Empty,
-                                                                           x.Hokatu.UserSetting,
-                                                                           x.Hokatu.IsInvalid,
-                                                                           x.Hokatu.IsInvalid == 1 ? true : false,
-                                                                           x.ItemName,
-                                                                           string.Empty,
-                                                                           0,
-                                                                           false,
-                                                                           false))
-                                         .GroupBy(x => new { x.ItemCd, x.StartDate })
-                                         .Select(x => x.First()).ToList();
+            var result = query.AsEnumerable().Where(data => !string.IsNullOrEmpty(data.ItemName))
+                                             .Select(x => new DensiHoukatuModel(x.Hokatu.HpId,
+                                                                               x.Hokatu.ItemCd,
+                                                                               x.Hokatu.StartDate,
+                                                                               x.Hokatu.EndDate,
+                                                                               x.Hokatu.TargetKbn,
+                                                                               x.Hokatu.SeqNo,
+                                                                               x.Hokatu.HoukatuTerm,
+                                                                               x.Hokatu.HoukatuGrpNo ?? string.Empty,
+                                                                               x.Hokatu.UserSetting,
+                                                                               x.Hokatu.IsInvalid,
+                                                                               x.Hokatu.IsInvalid == 1,
+                                                                               x.ItemName,
+                                                                               string.Empty,
+                                                                               0,
+                                                                               false,
+                                                                               false))
+                                             .GroupBy(x => new { x.ItemCd, x.StartDate })
+                                             .Select(x => x.First()).ToList();
 
             return result;
         }
@@ -3400,7 +3510,7 @@ namespace Infrastructure.Repositories
                                                              data.Kinki.ACd,
                                                              data.Kinki.BCd ?? string.Empty,
                                                              data.Kinki.SeqNo,
-                                                             data.Kinki.IsDeleted == 1 ? true : false,
+                                                             data.Kinki.IsDeleted == 1,
                                                              data.TenMst?.Name ?? string.Empty,
                                                              false,
                                                              false,
@@ -3505,7 +3615,7 @@ namespace Infrastructure.Repositories
             void BasicSettingUpdate()
             {
                 List<CmtKbnMstModel> listSource = setDataTen.BasicSettingTab.CmtKbnMstModels.Where(u => !u.CheckDefaultValue()).ToList();
-                if (listSource.Count() == 0)
+                if (!listSource.Any())
                     return;
 
                 var databaseList = TrackingDataContext.CmtKbnMsts.Where(item => item.HpId == hpId && item.ItemCd == itemCd).ToList();
@@ -5313,6 +5423,102 @@ namespace Infrastructure.Repositories
             return result ?? string.Empty;
         }
 
+        public List<SingleDoseMstModel> GetListSingleDoseModel(int hpId)
+        {
+            string functName = string.Empty;
+            functName = nameof(GetListSingleDoseModel);
+            List<SingleDoseMstModel> result = new List<SingleDoseMstModel>();
+            var listSingleDoseMst = TrackingDataContext.SingleDoseMsts.Where(x => x.HpId == hpId).ToList();
+            result = listSingleDoseMst.Select(i => new SingleDoseMstModel(ModelStatus.None, false, i.Id, i.HpId, i.UnitName)).ToList();
+            return result;
+        }
+
+        public List<MedicineUnitModel> GetListMedicineUnitModel(int hpId, int today)
+        {
+            string functName = string.Empty;
+            functName = nameof(GetListMedicineUnitModel);
+
+            List<MedicineUnitModel> result = new List<MedicineUnitModel>();
+            var listTenMstName = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId && x.EndDate >= today && x.IsDeleted == DeleteTypes.None)
+                                                           .OrderBy(x => x.OdrUnitName)
+                                                           .Select(x => x.OdrUnitName)
+                                                           .Distinct()
+                                                           .ToList();
+            var listSingleDoseMstName = NoTrackingDataContext.SingleDoseMsts.Where(x => x.HpId == hpId)
+                                                                         .Select(s => s.UnitName)
+                                                                         .ToList();
+
+            foreach (var item in listTenMstName)
+            {
+                if (!listSingleDoseMstName.Contains(item) && !string.IsNullOrEmpty(item))
+                {
+                    result.Add(new MedicineUnitModel(item, false));
+                }
+            }
+            return result;
+        }
+        public bool UpdateSingleDoseMst(int hpId, int userId, List<SingleDoseMstModel> listToSave)
+        {
+            string functName = string.Empty;
+            functName = nameof(UpdateSingleDoseMst);
+            List<SingleDoseMst> singleDoseAdded = new List<SingleDoseMst>();
+            List<SingleDoseMst> singleDoseEdit = new List<SingleDoseMst>();
+            List<SingleDoseMst> singleDoseDelete = new List<SingleDoseMst>();
+            foreach (var item in listToSave)
+            {
+                if (item != null && !item.CheckDefaultValue())
+                {
+                    if (item.Status == ModelStatus.Modified)
+                    {
+                        var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
+                        if (data != null)
+                        {
+                            data.UnitName = item.UnitName;
+                            _UpdateSingleDose(data, userId);
+                            singleDoseEdit.Add(data);
+                        }
+                    }
+                    if (item.Status == ModelStatus.Added && !item.IsDeleted && item.Id == 0)
+                    {
+                        var singleDoseMst = new SingleDoseMst();
+                        singleDoseMst.UnitName = item.UnitName;
+                        singleDoseMst.HpId = hpId;
+                        _CreateSingleDose(singleDoseMst, userId);
+                        singleDoseAdded.Add(singleDoseMst);
+                    }
+                    if (item.Status == ModelStatus.Deleted)
+                    {
+                        var data = TrackingDataContext.SingleDoseMsts.FirstOrDefault(i => i.Id == item.Id);
+                        if (data != null)
+                        {
+                            singleDoseDelete.Add(data);
+                        }
+                    }
+                }
+            }
+            TrackingDataContext.SingleDoseMsts.AddRange(singleDoseAdded);
+            TrackingDataContext.SingleDoseMsts.UpdateRange(singleDoseEdit);
+            TrackingDataContext.SingleDoseMsts.RemoveRange(singleDoseDelete);
+            TrackingDataContext.SaveChanges();
+            return TrackingDataContext.SaveChanges() > 0;
+
+        }
+        private void _UpdateSingleDose(SingleDoseMst singleDoseMst, int userId)
+        {
+
+            singleDoseMst.CreateDate = TimeZoneInfo.ConvertTimeToUtc(singleDoseMst.CreateDate);
+            singleDoseMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            singleDoseMst.UpdateId = userId;
+        }
+
+        private void _CreateSingleDose(SingleDoseMst singleDoseMst, int userId)
+        {
+            singleDoseMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+            singleDoseMst.CreateId = userId;
+            singleDoseMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            singleDoseMst.UpdateId = userId;
+        }
+
         private string BuildPathAws(List<string> folders)
         {
             StringBuilder result = new();
@@ -5322,6 +5528,1023 @@ namespace Infrastructure.Repositories
                 result.Append("/");
             }
             return result.ToString();
+        }
+
+        public List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize, bool isCheckPage)
+        {
+            string kanaKeyword = keyword != string.Empty ? keyword : "";
+            if (WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
+            {
+                var inputKeyword = keyword;
+                kanaKeyword = CIUtil.ToHalfsize(keyword);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
+            }
+
+            string sBigKeyword = kanaKeyword.ToUpper()
+                .Replace("ｧ", "ｱ")
+                .Replace("ｨ", "ｲ")
+                .Replace("ｩ", "ｳ")
+                .Replace("ｪ", "ｴ")
+                .Replace("ｫ", "ｵ")
+                .Replace("ｬ", "ﾔ")
+                .Replace("ｭ", "ﾕ")
+                .Replace("ｮ", "ﾖ")
+                .Replace("ｯ", "ﾂ");
+            var query = NoTrackingDataContext.ByomeiMsts.Where(item => item.HpId == hpId &&
+                                    (!String.IsNullOrEmpty(keyword)
+                                    &&
+                                    (item.KanaName1 != null &&
+                                     item.KanaName1.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName2 != null &&
+                                     item.KanaName2.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName3 != null &&
+                                     item.KanaName3.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName4 != null &&
+                                     item.KanaName4.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName5 != null &&
+                                     item.KanaName5.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName6 != null &&
+                                     item.KanaName6.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                    ||
+                                    (item.KanaName7 != null &&
+                                     item.KanaName7.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .StartsWith(sBigKeyword))
+                                     ||
+                                        (item.Sbyomei != null &&
+                                         item.Sbyomei.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ")
+                                        .Contains(sBigKeyword))
+                                    ||
+                                    (item.Icd101 != null &&
+                                    item.Icd101.StartsWith(keyword))
+                                    ||
+                                    (item.Icd1012013 != null &&
+                                    item.Icd1012013.StartsWith(keyword))
+                                    ||
+                                    (item.Icd102 != null &&
+                                    item.Icd102.StartsWith(keyword))
+                                    ||
+                                    (item.Icd1022013 != null &&
+                                    item.Icd1022013.StartsWith(keyword)))
+                                    &&
+                                    (item.ByomeiCd.Length != 4 || (item.ByomeiCd.Length == 4 && string.Compare(item.ByomeiCd, "9000") < 0)))
+                                    .OrderBy(item => item.KanaName1).ThenByDescending(item => item.IsAdopted).ToList();
+            List<ByomeiMstModel> listByomeies = new();
+            if (query != null)
+            {
+                foreach (var item in query)
+                {
+                    var itemCheck = checkIsMatch(item, chkByoKbn0, chkByoKbn1, chkSaiKbn, chkMiSaiKbn, chkSidoKbn, chkToku, chkHiToku1, chkHiToku2, chkTenkan, chkTokuTenkan, chkNanbyo);
+                    if (itemCheck)
+                    {
+                        var itemAdd = ConvertToByomeiMstModelInDeseaseNameMst(item);
+                        listByomeies.Add(itemAdd);
+                    }
+                }
+            }
+
+            if (isCheckPage)
+            {
+                listByomeies = listByomeies.OrderBy(x => x.DisplayedOrder).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+            }
+            return listByomeies.OrderBy(x => x.DisplayedOrder).ToList();
+        }
+
+        private bool checkIsMatch(ByomeiMst? pt, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo)
+        {
+            if (pt == null)
+                return false;
+            bool isMatch = false;
+            if (chkByoKbn0)
+            {
+                isMatch = pt.ByomeiCd.Length != 4;
+            }
+            if (chkByoKbn1)
+            {
+                isMatch = isMatch ? isMatch : pt.ByomeiCd.Length == 4;
+            }
+
+            if (!isMatch)
+            {
+                return isMatch;
+            }
+
+            isMatch = false;
+            if (chkSaiKbn)
+            {
+                isMatch = pt.IsAdopted == 1;
+            }
+            if (chkMiSaiKbn)
+            {
+                isMatch = isMatch ? isMatch : pt.IsAdopted == 0;
+            }
+
+            if (!isMatch)
+            {
+                return isMatch;
+            }
+
+            isMatch = false;
+            if (chkSidoKbn)
+            {
+                isMatch = pt.SikkanCd != 3 && pt.SikkanCd != 5 && pt.SikkanCd != 4 && pt.SikkanCd != 7 && pt.SikkanCd != 8;
+            }
+            if (chkToku)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 5;
+            }
+            if (chkHiToku1)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 3;
+            }
+            if (chkHiToku2)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 4;
+            }
+            if (chkTenkan)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 7;
+            }
+            if (chkTokuTenkan)
+            {
+                isMatch = isMatch ? isMatch : pt.SikkanCd == 8;
+            }
+            if (chkNanbyo)
+            {
+                isMatch = isMatch ? isMatch : pt.NanbyoCd == 9;
+            }
+            return isMatch;
+        }
+
+        public bool UpdateCmtCheckMst(int userId, int hpId, List<ItemCmtModel> listData)
+        {
+            foreach (var item in listData)
+            {
+                var itemUpdate = TrackingDataContext.CmtCheckMsts.FirstOrDefault(t => t.HpId == item.HpId && t.ItemCd == item.ItemCd && t.SeqNo == item.SeqNo);
+                if (itemUpdate != null)
+                {
+                    itemUpdate.Cmt = item.Comment;
+                    itemUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    itemUpdate.UpdateId = userId;
+                    TrackingDataContext.SaveChanges();
+                }
+            }
+            return true;
+        }
+
+        public bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId)
+        {
+            var addedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Added && k.Id == 0);
+            var updatedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Modified);
+            var deletedModels = postCodes.Where(k => k.PostCodeStatus == ModelStatus.Deleted);
+
+            if (deletedModels.Any())
+            {
+                foreach (var model in deletedModels)
+                {
+                    var postCodeUpdate = TrackingDataContext.PostCodeMsts.FirstOrDefault(x => x.HpId == model.HpId && x.Id == model.Id);
+
+                    if (postCodeUpdate != null)
+                    {
+                        postCodeUpdate.IsDeleted = 1;
+                        postCodeUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        postCodeUpdate.UpdateId = userId;
+                    }
+                }
+            }
+
+            if (updatedModels.Any())
+            {
+                foreach (var model in updatedModels)
+                {
+                    var postCodeUpdate = TrackingDataContext.PostCodeMsts.FirstOrDefault(x => x.HpId == model.HpId && x.Id == model.Id);
+
+                    if (postCodeUpdate != null)
+                    {
+                        postCodeUpdate.PostCd = model.PostCd;
+                        postCodeUpdate.PrefName = model.PrefName;
+                        postCodeUpdate.CityName = model.CityName;
+                        postCodeUpdate.Banti = model.Banti;
+                        postCodeUpdate.IsDeleted = model.IsDeleted;
+                        postCodeUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        postCodeUpdate.UpdateId = userId;
+                    }
+                }
+            }
+
+            if (addedModels.Any())
+            {
+                foreach (var model in addedModels)
+                {
+                    TrackingDataContext.PostCodeMsts.Add(new PostCodeMst()
+                    {
+                        HpId = hpId,
+                        PostCd = model.PostCd,
+                        PrefName = model.PrefName,
+                        CityName = model.CityName,
+                        Banti = model.Banti,
+                        IsDeleted = 0,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                    });
+                }
+            }
+
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool CheckPostCodeExist(int hpId, string zipCD)
+        {
+            return NoTrackingDataContext.PostCodeMsts.Any(x => x.HpId == hpId &&
+                                                               x.IsDeleted == 0 &&
+                                                               x.PostCd == zipCD);
+        }
+
+        public bool UpsertMaterialMaster(int hpId, int userId, List<MaterialMasterModel> materialMasters)
+        {
+            foreach (var item in materialMasters)
+            {
+                if (item.MaterialModelStatus == ModelStatus.Deleted)
+                {
+                    var containerMaster = TrackingDataContext.MaterialMsts.Where(x => x.MaterialCd == item.MaterialCd);
+                    if (containerMaster != null)
+                    {
+                        TrackingDataContext.MaterialMsts.RemoveRange(containerMaster);
+                    }
+                }
+                else
+                {
+                    var materialMaster = TrackingDataContext.MaterialMsts.FirstOrDefault(x => x.MaterialCd == item.MaterialCd);
+                    if (materialMaster != null)
+                    {
+                        materialMaster.MaterialCd = item.MaterialCd;
+                        materialMaster.MaterialName = item.MaterialName;
+                        materialMaster.UpdateId = userId;
+                        materialMaster.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        MaterialMst itemtest = ConvertContainerMasterList(item, userId, hpId);
+                        TrackingDataContext.MaterialMsts.Add(itemtest);
+                    }
+                }
+            }
+            return TrackingDataContext.SaveChanges() >= 1;
+        }
+
+        private MaterialMst ConvertContainerMasterList(MaterialMasterModel u, int userId, int hpId)
+        {
+            return new MaterialMst
+            {
+                HpId = hpId,
+                MaterialCd = u.MaterialCd,
+                MaterialName = u.MaterialName,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+        }
+
+        public List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord)
+        {
+            var result = new List<KensaMstModel>();
+            string itemCd = "";
+            var kensaInKensaMst = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId);
+            var kensaInTenMst = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId);
+
+            if (string.IsNullOrEmpty(keyWord))
+            {
+                kensaInKensaMst = NoTrackingDataContext.KensaMsts.Where(p => p.HpId == hpId &&
+                                                                                      p.IsDelete == DeleteTypes.None &&
+                                                                                      (string.IsNullOrEmpty(p.OyaItemCd) || p.KensaItemCd == p.OyaItemCd));
+
+                kensaInTenMst = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId &&
+                                                                                  !string.IsNullOrEmpty(p.KensaItemCd) &&
+                                                                                  p.IsDeleted == DeleteTypes.None);
+            }
+            else
+            {
+                string bigKeyWord = keyWord.ToUpper()
+                                           .Replace("ｧ", "ｱ")
+                                           .Replace("ｨ", "ｲ")
+                                           .Replace("ｩ", "ｳ")
+                                           .Replace("ｪ", "ｴ")
+                                           .Replace("ｫ", "ｵ")
+                                           .Replace("ｬ", "ﾔ")
+                                           .Replace("ｭ", "ﾕ")
+                                           .Replace("ｮ", "ﾖ")
+                                           .Replace("ｯ", "ﾂ");
+
+                //get kensa in KensaMst
+                kensaInKensaMst = NoTrackingDataContext.KensaMsts.Where(p => p.HpId == hpId &&
+                                                                                          p.IsDelete == DeleteTypes.None &&
+                                                                                          (string.IsNullOrEmpty(p.OyaItemCd) || p.KensaItemCd == p.OyaItemCd) &&
+                                                                                          (keyWord == "ﾊﾞｲﾀﾙ" ? p.KensaItemCd.Contains("V") :
+                                                                                          (p.KensaName.ToUpper().Contains(bigKeyWord) ||
+                                                                                           p.KensaKana.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                                .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ")
+                                                                                                                .StartsWith(bigKeyWord))));
+
+                //get kensa in TenMst
+                kensaInTenMst = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId &&
+                                                                                  p.IsDeleted == DeleteTypes.None &&
+                                                                                      !string.IsNullOrEmpty(p.KensaItemCd) &&
+                                                                                      (keyWord == "IGE" ? p.ItemCd.StartsWith("IGE") :
+                                                                                      (p.Name.ToUpper().Contains(bigKeyWord)
+                                                                                    || p.KanaName1.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName2.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName3.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName4.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName5.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName6.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord)
+                                                                                    || p.KanaName7.ToUpper().Replace("ｧ", "ｱ").Replace("ｨ", "ｲ").Replace("ｩ", "ｳ").Replace("ｪ", "ｴ").Replace("ｫ", "ｵ")
+                                                                                                            .Replace("ｬ", "ﾔ").Replace("ｭ", "ﾕ").Replace("ｮ", "ﾖ").Replace("ｯ", "ﾂ").StartsWith(bigKeyWord))));
+            }
+            if (!string.IsNullOrEmpty(itemCd))
+            {
+                kensaInKensaMst = kensaInKensaMst.Where(u => u.KensaItemCd == itemCd);
+            }
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
+
+            var tenMstJoinKensaMstQuery = from kensaTenMst in kensaInTenMst
+                                          join kensaMst in kensaMsts.Where(p => string.IsNullOrEmpty(p.OyaItemCd) || p.KensaItemCd == p.OyaItemCd)
+                                          on new { kensaTenMst.KensaItemCd, kensaTenMst.KensaItemSeqNo } equals new { kensaMst.KensaItemCd, kensaMst.KensaItemSeqNo }
+                                          select new
+                                          {
+                                              KensaMst = kensaMst
+                                          };
+
+            var allParrentKensaMsts = tenMstJoinKensaMstQuery.Select(p => p.KensaMst).Union(kensaInKensaMst).OrderBy(p => p.KensaKana).Distinct().ToList();
+
+            //get all child kensaMst 
+            var allKensaMsts = from parrentKensaMst in allParrentKensaMsts
+                               join kensaMst in kensaMsts.Where(p => !string.IsNullOrEmpty(p.OyaItemCd) && p.KensaItemCd != p.OyaItemCd)
+                               on parrentKensaMst.KensaItemCd equals kensaMst.OyaItemCd into childKensaMsts
+                               select new
+                               {
+                                   ParrentKensaMst = parrentKensaMst,
+                                   ChildKensaMsts = childKensaMsts,
+                               };
+
+            var KensaItemCd = kensaMsts.Select(x => x.KensaItemCd);
+            var KensaItemSeqNo = kensaMsts.Select(x => x.KensaItemSeqNo);
+
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && KensaItemCd.Contains(p.KensaItemCd ?? string.Empty) && KensaItemSeqNo.Contains(p.KensaItemSeqNo));
+
+            var query = from kensaMst in allKensaMsts
+                        join tenMst in tenMsts
+                        on new { kensaMst.ParrentKensaMst.KensaItemCd, kensaMst.ParrentKensaMst.KensaItemSeqNo }
+                        equals new { tenMst.KensaItemCd, tenMst.KensaItemSeqNo } into tempTenMsts
+                        select new
+                        {
+                            ParrentKensaMst = kensaMst.ParrentKensaMst,
+                            ChildKensaMsts = kensaMst.ChildKensaMsts.Select(x => new KensaMstModel(
+                                                                            x.KensaItemCd,
+                                                                            x.KensaItemSeqNo,
+                                                                            x.CenterCd ?? string.Empty,
+                                                                            x.KensaName ?? string.Empty,
+                                                                            x.KensaKana ?? string.Empty,
+                                                                            x.Unit ?? string.Empty,
+                                                                            x.MaterialCd,
+                                                                            x.ContainerCd,
+                                                                            x.MaleStd ?? string.Empty,
+                                                                            x.MaleStdLow ?? string.Empty,
+                                                                            x.MaleStdHigh ?? string.Empty,
+                                                                            x.FemaleStd ?? string.Empty,
+                                                                            x.FemaleStdLow ?? string.Empty,
+                                                                            x.FemaleStdHigh ?? string.Empty,
+                                                                            x.Formula ?? string.Empty,
+                                                                            x.Digit,
+                                                                            x.OyaItemCd ?? string.Empty,
+                                                                            x.OyaItemSeqNo,
+                                                                            x.SortNo,
+                                                                            x.CenterItemCd1 ?? string.Empty,
+                                                                            x.CenterItemCd2 ?? string.Empty)),
+                            TenMsts = tempTenMsts.OrderByDescending(x => x.StartDate)
+                        };
+
+            foreach (var entity in query)
+            {
+                var ChildKensaMsts = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == entity.ParrentKensaMst.KensaItemCd);
+                var tenmst = entity.TenMsts.GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault());
+                var tenmstModel = entity.TenMsts;
+                result.Add(new KensaMstModel(
+                    entity.ParrentKensaMst.KensaItemCd,
+                    entity.ParrentKensaMst.KensaItemSeqNo,
+                    entity.ParrentKensaMst.CenterCd ?? string.Empty,
+                    entity.ParrentKensaMst.KensaName ?? string.Empty,
+                    entity.ParrentKensaMst.KensaKana ?? string.Empty,
+                    entity.ParrentKensaMst.Unit ?? string.Empty,
+                    entity.ParrentKensaMst.MaterialCd,
+                    entity.ParrentKensaMst.ContainerCd,
+                    entity.ParrentKensaMst.MaleStd ?? string.Empty,
+                    entity.ParrentKensaMst.MaleStdLow ?? string.Empty,
+                    entity.ParrentKensaMst.MaleStdHigh ?? string.Empty,
+                    entity.ParrentKensaMst.FemaleStd ?? string.Empty,
+                    entity.ParrentKensaMst.FemaleStdLow ?? string.Empty,
+                    entity.ParrentKensaMst.FemaleStdHigh ?? string.Empty,
+                    entity.ParrentKensaMst.Formula ?? string.Empty,
+                    entity.ParrentKensaMst.Digit,
+                    entity.ParrentKensaMst.OyaItemCd ?? string.Empty,
+                    entity.ParrentKensaMst.OyaItemSeqNo,
+                    entity.ParrentKensaMst.SortNo,
+                    entity.ParrentKensaMst.CenterItemCd1 ?? string.Empty,
+                    entity.ParrentKensaMst.CenterItemCd2 ?? string.Empty,
+                    tenmst.Select(x => new TenItemModel(
+                                  x.SinKouiKbn,
+                                  x.MasterSbt ?? string.Empty,
+                                  x.ItemCd,
+                                  x.KensaItemCd ?? string.Empty,
+                                  x.KensaItemSeqNo,
+                                  x.Ten,
+                                  x.Name ?? string.Empty,
+                                  x.ReceName ?? string.Empty,
+                                  x.KanaName1 ?? string.Empty,
+                                  x.KanaName2 ?? string.Empty,
+                                  x.KanaName3 ?? string.Empty,
+                                  x.KanaName4 ?? string.Empty,
+                                  x.KanaName5 ?? string.Empty,
+                                  x.KanaName6 ?? string.Empty,
+                                  x.KanaName7 ?? string.Empty,
+                                  x.StartDate,
+                                  x.EndDate,
+                                  x.DefaultVal,
+                                  x.OdrUnitName ?? string.Empty,
+                                  x.SanteiItemCd ?? string.Empty,
+                                  x.SanteigaiKbn,
+                                  x.IsNosearch,
+                                  entity.TenMsts.Select(x => CIUtil.SDateToShowSDate(x.StartDate)).Distinct().ToList())).ToList(),
+                    tenmstModel.Select(y => new TenItemModel(
+                                                                y.SinKouiKbn,
+                                                                y.MasterSbt ?? string.Empty,
+                                                                y.ItemCd,
+                                                                y.KensaItemCd ?? string.Empty,
+                                                                y.KensaItemSeqNo,
+                                                                y.Ten,
+                                                                y.Name ?? string.Empty,
+                                                                y.ReceName ?? string.Empty,
+                                                                y.KanaName1 ?? string.Empty,
+                                                                y.KanaName2 ?? string.Empty,
+                                                                y.KanaName3 ?? string.Empty,
+                                                                y.KanaName4 ?? string.Empty,
+                                                                y.KanaName5 ?? string.Empty,
+                                                                y.KanaName6 ?? string.Empty,
+                                                                y.KanaName7 ?? string.Empty,
+                                                                y.StartDate,
+                                                                y.EndDate,
+                                                                y.DefaultVal,
+                                                                y.OdrUnitName ?? string.Empty,
+                                                                y.SanteiItemCd ?? string.Empty,
+                                                                y.SanteigaiKbn,
+                                                                y.IsNosearch)).ToList(),
+                    entity.ChildKensaMsts.ToList()
+                    ));
+            }
+
+            return result;
+        }
+
+        public bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters)
+        {
+            foreach (var item in containerMasters)
+            {
+                if (item.ContainerModelStatus == ModelStatus.Deleted)
+                {
+                    var containerMaster = TrackingDataContext.ContainerMsts.Where(x => x.ContainerCd == item.ContainerCd);
+                    if (containerMaster != null)
+                    {
+                        TrackingDataContext.ContainerMsts.RemoveRange(containerMaster);
+                    }
+                }
+                else
+                {
+                    var containerMaster = TrackingDataContext.ContainerMsts.FirstOrDefault(x => x.ContainerCd == item.ContainerCd);
+                    if (containerMaster != null)
+                    {
+                        containerMaster.ContainerCd = item.ContainerCd;
+                        containerMaster.ContainerName = item.ContainerName;
+                        containerMaster.UpdateId = userId;
+                        containerMaster.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        ContainerMst itemtest = ConvertContainerMasterList(item, userId, hpId);
+                        TrackingDataContext.ContainerMsts.Add(itemtest);
+                    }
+                }
+            }
+            return TrackingDataContext.SaveChanges() >= 1;
+        }
+
+        private ContainerMst ConvertContainerMasterList(ContainerMasterModel u, int userId, int hpId)
+        {
+            return new ContainerMst
+            {
+                HpId = hpId,
+                ContainerCd = u.ContainerCd,
+                ContainerName = u.ContainerName,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+        }
+
+        public bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels)
+        {
+            List<KensaMst> newKensaMsts = new List<KensaMst>();
+            List<TenMst> newTenMsts = new List<TenMst>();
+
+            foreach (var item in kensaMstModels)
+            {
+                if (item.IsDeleted == 1)
+                {
+                    var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
+                    if (listKensaMst != null)
+                    {
+                        listKensaMst.IsDelete = 1;
+                    }
+                }
+                else
+                {
+                    var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
+                    if (listKensaMst != null)
+                    {
+                        listKensaMst.CenterCd = item.CenterCd;
+                        listKensaMst.KensaName = item.KensaName;
+                        listKensaMst.KensaKana = item.KensaKana;
+                        listKensaMst.Unit = item.Unit;
+                        listKensaMst.MaterialCd = item.MaterialCd;
+                        listKensaMst.MaleStd = item.MaleStd;
+                        listKensaMst.MaleStdLow = item.MaleStdLow;
+                        listKensaMst.MaleStdHigh = item.MaleStdHigh;
+                        listKensaMst.FemaleStd = item.FemaleStd;
+                        listKensaMst.FemaleStdLow = item.FemaleStdLow;
+                        listKensaMst.FemaleStdHigh = item.FemaleStdHigh;
+                        listKensaMst.Formula = item.Formula;
+                        listKensaMst.OyaItemCd = item.OyaItemCd;
+                        listKensaMst.OyaItemSeqNo = item.OyaItemSeqNo;
+                        listKensaMst.SortNo = item.SortNo;
+                        listKensaMst.CenterItemCd1 = item.CenterItemCd1;
+                        listKensaMst.CenterItemCd2 = item.CenterItemCd2;
+                        listKensaMst.Digit = item.Digit;
+                        listKensaMst.UpdateId = userId;
+                        listKensaMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        KensaMst itemtest = ConvertKensaMasterList(item, userId, hpId);
+                        TrackingDataContext.KensaMsts.AddRange(itemtest);
+                    }
+                }
+            }
+
+            foreach (var item in tenMstModels)
+            {
+                if (item.IsDeleted == 1)
+                {
+                    var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
+                    if (listTenMst != null)
+                    {
+                        listTenMst.IsDeleted = 1;
+                    }
+                }
+                else
+                {
+                    var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
+                    if (listTenMst != null)
+                    {
+                        listTenMst.ItemCd = item.ItemCd;
+                        listTenMst.SinKouiKbn = item.SinKouiKbn;
+                        listTenMst.Name = item.Name;
+                        listTenMst.OdrUnitName = item.OdrUnitName;
+                        listTenMst.IsNodspRece = item.IsNodspRece;
+                        listTenMst.YohoKbn = item.YohoKbn;
+                        listTenMst.OdrTermVal = item.OdrTermVal;
+                        listTenMst.CnvTermVal = item.CnvTermVal;
+                        listTenMst.YjCd = item.YjCd;
+                        listTenMst.KensaItemCd = item.KensaItemCd;
+                        listTenMst.KensaItemSeqNo = item.KensaItemSeqNo;
+                        listTenMst.KohatuKbn = item.KohatuKbn;
+                        listTenMst.Ten = item.Ten;
+                        listTenMst.HandanGrpKbn = item.HandanGrpKbn;
+                        listTenMst.IpnNameCd = item.IpnNameCd;
+                        listTenMst.CmtCol1 = item.CmtCol1;
+                        listTenMst.CmtCol2 = item.CmtCol2;
+                        listTenMst.CmtCol3 = item.CmtCol3;
+                        listTenMst.CmtCol4 = item.CmtCol4;
+                        listTenMst.CmtColKeta1 = item.CmtColKeta1;
+                        listTenMst.CmtColKeta2 = item.CmtColKeta2;
+                        listTenMst.CmtColKeta3 = item.CmtColKeta3;
+                        listTenMst.CmtColKeta4 = item.CmtColKeta4;
+                        listTenMst.MinAge = item.MaxAge;
+                        listTenMst.StartDate = item.StartDate;
+                        listTenMst.EndDate = item.EndDate;
+                        listTenMst.MasterSbt = item.MasterSbt;
+                        listTenMst.BuiKbn = item.BuiKbn;
+                        listTenMst.CdKbn = item.CdKbn;
+                        listTenMst.CdKbnno = item.CdKbnno;
+                        listTenMst.CdEdano = item.CdEdano;
+                        listTenMst.Kokuji1 = item.Kokuji1;
+                        listTenMst.Kokuji2 = item.Kokuji2;
+                        listTenMst.DrugKbn = item.DrugKbn;
+                        listTenMst.ReceName = item.ReceName;
+                        listTenMst.SanteiItemCd = item.SanteiItemCd;
+                        listTenMst.JihiSbt = item.JihiSbt;
+                        listTenMst.IsDeleted = item.IsDeleted;
+                        listTenMst.UpdateId = userId;
+                        listTenMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        TenMst itemtest = ConvertTenMasterList(item, userId, hpId);
+                        newTenMsts.Add(itemtest);
+                        TrackingDataContext.TenMsts.AddRange(newTenMsts);
+                    }
+                }
+            }
+
+            return TrackingDataContext.SaveChanges() >= 1;
+        }
+
+        private TenMst ConvertTenMasterList(TenItemModel u, int userId, int hpId)
+        {
+            return new TenMst
+            {
+                HpId = hpId,
+                ItemCd = u.ItemCd,
+                SinKouiKbn = u.SinKouiKbn,
+                Name = u.Name,
+                OdrUnitName = u.OdrUnitName,
+                CnvUnitName = u.CnvUnitName,
+                IsNodspRece = u.IsNodspRece,
+                YohoKbn = u.YohoKbn,
+                OdrTermVal = u.OdrTermVal,
+                CnvTermVal = u.CnvTermVal,
+                YjCd = u.YjCd,
+                KensaItemCd = u.KensaItemCd,
+                KensaItemSeqNo = u.KensaItemSeqNo,
+                KohatuKbn = u.KohatuKbn,
+                Ten = u.Ten,
+                HandanGrpKbn = u.HandanGrpKbn,
+                IpnNameCd = u.IpnNameCd,
+                CmtCol1 = u.CmtCol1,
+                CmtCol2 = u.CmtCol2,
+                CmtCol3 = u.CmtCol3,
+                CmtCol4 = u.CmtCol4,
+                CmtColKeta1 = u.CmtColKeta1,
+                CmtColKeta2 = u.CmtColKeta2,
+                CmtColKeta3 = u.CmtColKeta3,
+                CmtColKeta4 = u.CmtColKeta4,
+                MinAge = u.MinAge,
+                MaxAge = u.MaxAge,
+                StartDate = u.StartDate,
+                EndDate = u.EndDate,
+                MasterSbt = u.MasterSbt,
+                BuiKbn = u.BuiKbn,
+                CdKbn = u.CdKbn,
+                CdKbnno = u.CdKbnno,
+                CdEdano = u.CdEdano,
+                Kokuji1 = u.Kokuji1,
+                Kokuji2 = u.Kokuji2,
+                DrugKbn = u.DrugKbn,
+                ReceName = u.ReceName,
+                SanteiItemCd = u.SanteiItemCd,
+                JihiSbt = u.JihiSbt,
+                IsDeleted = u.IsDeleted,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+        }
+
+        private KensaMst ConvertKensaMasterList(KensaMstModel u, int userId, int hpId)
+        {
+            return new KensaMst
+            {
+                HpId = hpId,
+                KensaItemCd = u.KensaItemCd,
+                KensaItemSeqNo = u.KensaItemSeqNo,
+                CenterCd = u.CenterCd,
+                KensaName = u.KensaName,
+                KensaKana = u.KensaKana,
+                Unit = u.Unit,
+                MaterialCd = u.MaterialCd,
+                MaleStd = u.MaleStd,
+                MaleStdLow = u.MaleStdLow,
+                MaleStdHigh = u.MaleStdHigh,
+                FemaleStd = u.FemaleStd,
+                FemaleStdLow = u.FemaleStdLow,
+                FemaleStdHigh = u.FemaleStdHigh,
+                Formula = u.Formula,
+                OyaItemCd = u.OyaItemCd,
+                OyaItemSeqNo = u.OyaItemSeqNo,
+                SortNo = u.SortNo,
+                CenterItemCd1 = u.CenterItemCd1,
+                CenterItemCd2 = u.CenterItemCd2,
+                Digit = u.Digit,
+                IsDelete = u.IsDeleted,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+        }
+
+        public bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds)
+        {
+            bool result = NoTrackingDataContext.KensaInfDetails.Where(p => p.HpId == hpId && p.KensaItemCd == kensaItemCd).Any();
+
+            if (itemCds?.Count > 0)
+            {
+                result = result || NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd ?? string.Empty)).Any();
+            }
+            return result;
+        }
+
+        public bool UpdateKensaStdMst(int hpId, int userId, List<KensaStdMstModel> kensaStdMstModels)
+        {
+            foreach (var item in kensaStdMstModels)
+            {
+                if (item.IsDefault) continue;
+
+                if (item.IsDeleted)
+                {
+                    var kensaStdMaster = TrackingDataContext.KensaStdMsts.Where(x => x.KensaItemCd == item.KensaItemcd && x.StartDate == item.StartDate);
+                    if (kensaStdMaster != null)
+                    {
+                        TrackingDataContext.KensaStdMsts.RemoveRange(kensaStdMaster);
+                    }
+                }
+                else
+                {
+                    var kensaStdMaster = TrackingDataContext.KensaStdMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemcd && x.StartDate == item.StartDate);
+                    if (kensaStdMaster != null)
+                    {
+                        kensaStdMaster.MaleStd = item.MaleStd;
+                        kensaStdMaster.MaleStdLow = item.MaleStdLow;
+                        kensaStdMaster.MaleStdHigh = item.MaleStdHigh;
+                        kensaStdMaster.FemaleStd = item.FemaleStd;
+                        kensaStdMaster.FemaleStdLow = item.FemaleStdLow;
+                        kensaStdMaster.FemaleStdHigh = item.FemaleStdHigh;
+                        kensaStdMaster.UpdateId = userId;
+                        kensaStdMaster.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        KensaStdMst itemtest = ConvertKensaStdMstList(item, userId, hpId);
+                        TrackingDataContext.KensaStdMsts.Add(itemtest);
+                    }
+                }
+            }
+            return TrackingDataContext.SaveChanges() >= 1;
+        }
+
+        private KensaStdMst ConvertKensaStdMstList(KensaStdMstModel u, int userId, int hpId)
+        {
+            return new KensaStdMst
+            {
+                HpId = hpId,
+                KensaItemCd = u.KensaItemcd,
+                StartDate = u.StartDate,
+                MaleStd = u.MaleStd,
+                MaleStdLow = u.MaleStdLow,
+                MaleStdHigh = u.MaleStdHigh,
+                FemaleStd = u.FemaleStd,
+                FemaleStdLow = u.FemaleStdLow,
+                FemaleStdHigh = u.FemaleStdHigh,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
+        }
+
+        public bool UpdateByomeiMst(int userId, int hpId, List<UpdateByomeiMstModel> listData)
+        {
+            // Update IsAdopted Item TenMst
+            foreach (var item in listData)
+            {
+                var itemUpdate = TrackingDataContext.ByomeiMsts.FirstOrDefault(t => t.HpId == hpId && t.ByomeiCd == item.ByomeiCd);
+                if (itemUpdate != null)
+                {
+                    itemUpdate.KanaName2 = item.KanaName2;
+                    itemUpdate.SikkanCd = item.SikkanCd;
+                    itemUpdate.NanbyoCd = item.NanbyoCd;
+                    itemUpdate.IsAdopted = item.IsAdopted ? 1 : 0;
+                    itemUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    itemUpdate.UpdateId = userId;
+                    TrackingDataContext.SaveChanges();
+                }
+            }
+            return true;
+        }
+
+        public List<KensaStdMstModel> GetKensaStdMstModels(int hpId, string kensaItemCd)
+        {
+            var kensaStdMsts = NoTrackingDataContext.KensaStdMsts.Where(p => p.HpId == hpId && p.KensaItemCd == kensaItemCd);
+            return kensaStdMsts.Select(p => new KensaStdMstModel(p.KensaItemCd,
+                                                                 p.MaleStd ?? string.Empty,
+                                                                 p.MaleStdLow ?? string.Empty,
+                                                                 p.MaleStdHigh ?? string.Empty,
+                                                                 p.FemaleStd ?? string.Empty,
+                                                                 p.FemaleStdLow ?? string.Empty,
+                                                                 p.MaleStdHigh ?? string.Empty,
+                                                                 p.StartDate,
+                                                                 p.CreateId)).ToList();
+        }
+
+        public List<string> GetUsedKensaItemCds(int hpId)
+        {
+            List<string> result = new();
+            var itemCdsFromKensaMst = NoTrackingDataContext.KensaMsts
+                                                           .Where(p => p.HpId == hpId)
+                                                           .Select(p => p.KensaItemCd).ToList();
+            var itemCdsFromTenMst = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && !string.IsNullOrEmpty(p.KensaItemCd) && p.IsDeleted == DeleteTypes.None).Select(p => p.KensaItemCd).ToList();
+
+            foreach (var item in itemCdsFromKensaMst.Union(itemCdsFromTenMst).Distinct().ToList())
+            {
+                result.Add(item ?? string.Empty);
+            }
+
+            return result;
+        }
+
+        public List<string> GetTenItemCds(int hpId)
+        {
+            return NoTrackingDataContext.TenMsts
+                            .Where(p => (p.ItemCd.StartsWith("KN") || p.ItemCd.StartsWith("IGE")) && p.IsDeleted == DeleteTypes.None)
+                            .Select(p => p.ItemCd).Distinct().ToList();
+        }
+
+        public Dictionary<int, string> GetMaterialMsts(int hpId)
+        {
+            var result = new Dictionary<int, string>();
+            result.Add(0, string.Empty);
+
+            var materialMsts = NoTrackingDataContext.MaterialMsts.Where(p => p.HpId == hpId);
+            foreach (var materialMst in materialMsts)
+            {
+                result.Add(materialMst.MaterialCd.AsInteger(), materialMst.MaterialName ?? string.Empty);
+            }
+            return result;
+        }
+
+        public Dictionary<int, string> GetContainerMsts(int hpId)
+        {
+            var result = new Dictionary<int, string>();
+            result.Add(0, string.Empty);
+
+            var containerMsts = NoTrackingDataContext.ContainerMsts.Where(p => p.HpId == hpId);
+            foreach (var containerMst in containerMsts)
+            {
+                result.Add(containerMst.ContainerCd.AsInteger(), containerMst.ContainerName ?? string.Empty);
+            }
+            return result;
+        }
+
+        public Dictionary<string, string> GetKensaCenterMsts(int hpId)
+        {
+            var result = new Dictionary<string, string>();
+            result.Add(string.Empty, string.Empty);
+            var kensaCenterMsts = NoTrackingDataContext.KensaCenterMsts.Where(p => p.HpId == hpId);
+
+            foreach (var kensaCenterMst in kensaCenterMsts)
+            {
+                result.Add(kensaCenterMst.CenterCd ?? string.Empty, kensaCenterMst.CenterName ?? string.Empty);
+            }
+
+            return result;
+        }
+
+        public Dictionary<string, double> GetTenOfItem(int hpId)
+        {
+            Dictionary<string, double> result = new Dictionary<string, double>();
+            var tenOfHRTItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160162950" && p.IsDeleted == DeleteTypes.None)
+                                                        .OrderByDescending(p => p.StartDate).FirstOrDefault();
+
+            var a = tenOfHRTItem != null ? tenOfHRTItem.Ten : 0;
+
+            var tenOfIGEItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160056110" && p.IsDeleted == DeleteTypes.None)
+                                                        .OrderByDescending(p => p.StartDate).FirstOrDefault();
+
+            var b = tenOfIGEItem != null ? tenOfIGEItem.Ten : 0;
+
+            result.Add("TenOfHRTItem", a);
+            result.Add("TenOfIGEItem", b);
+
+            return result;
+        }
+
+        public string GetNameByItemCd(int hpId, string itemCd)
+        {
+            var sindate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
+
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId &&
+                                                                   x.ItemCd == itemCd &&
+                                                                   x.IsDeleted == DeleteTypes.None)
+                                                        .ToList();
+
+
+            var tenMst = tenMsts.FirstOrDefault(x =>
+                                                    x.StartDate <= sindate &&
+                                                    sindate <= x.EndDate)
+                      ?? tenMsts.OrderByDescending(x => x.StartDate).FirstOrDefault();
+
+            return tenMst != null ? tenMst.Name ?? string.Empty : string.Empty;
         }
     }
 }

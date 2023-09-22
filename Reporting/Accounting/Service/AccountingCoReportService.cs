@@ -14,15 +14,6 @@ using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
 using System.Text;
-using Reporting.Calculate.Receipt.ViewModels;
-using Domain.Models.CalculateModel;
-using Reporting.Calculate.Interface;
-using Reporting.Calculate.Receipt.Constants;
-using Amazon.Runtime.Internal;
-using Reporting.Karte1.Mapper;
-using Reporting.CommonMasters.Enums;
-using Infrastructure.Services;
-using PostgreDataContext;
 using Domain.Constant;
 
 namespace Reporting.Accounting.Service;
@@ -579,16 +570,7 @@ public class AccountingCoReportService : IAccountingCoReportService
     {
         formFileName = templateName;
         this.printType = printType;
-        bool isExist = true;
-        try
-        {
-            GetParamFromRseFile();
-        }
-        catch
-        {
-            isExist = false;
-        }
-        return isExist;
+        return GetParamFromRseFile();
     }
 
     public bool CheckOpenReportingForm(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
@@ -597,15 +579,20 @@ public class AccountingCoReportService : IAccountingCoReportService
         mode = PrintMode.MultiPrint;
         @params = coAccountingParamModels;
         var allType = coAccountingParamModels.Select(item => item.PrintType).Distinct().ToList();
-        try
+        var existTemplate = false;
+
+        foreach (var type in allType)
         {
-            foreach (var type in allType)
+            printType = type;
+            if (GetParamFromRseFile())
             {
-                this.printType = type;
-                GetParamFromRseFile();
+                existTemplate = true;
+                break;
             }
+            formFileName = string.Empty;
         }
-        catch
+
+        if (!existTemplate)
         {
             return false;
         }
@@ -665,7 +652,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
     }
 
-    private void GetParamFromRseFile()
+    private bool GetParamFromRseFile()
     {
         SetFormFilePath();
         List<ObjectCalculate> fieldInputList = new();
@@ -682,7 +669,15 @@ public class AccountingCoReportService : IAccountingCoReportService
         fieldInputList.Add(new ObjectCalculate("MessageListF", (int)CalculateTypeEnum.GetListFormatLendB));
 
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Accounting, formFileName, fieldInputList);
-        JavaOutputData = _readRseReportFileService.ReadFileRse(data);
+        try
+        {
+            JavaOutputData = _readRseReportFileService.ReadFileRse(data);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     #region Accounting Form
@@ -793,7 +788,10 @@ public class AccountingCoReportService : IAccountingCoReportService
     private void PrintOutList()
     {
         coModelList = GetDataList(hpId, startDate, endDate, ptConditions, grpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
-        GetParamFromRseFile();
+        if (!GetParamFromRseFile())
+        {
+            return;
+        }
         var objectList = JavaOutputData.objectNames;
         if (objectList.Contains("lsPtNum_1"))
         {
@@ -1058,6 +1056,12 @@ public class AccountingCoReportService : IAccountingCoReportService
                 memo = param.Memo;
                 printType = param.PrintType;
                 formFileName = param.FormFileName;
+
+                if (!GetParamFromRseFile())
+                {
+                    continue;
+                }
+
                 try
                 {
                     coModel = GetData(hpId, ptId, startDate, endDate);
@@ -1074,7 +1078,6 @@ public class AccountingCoReportService : IAccountingCoReportService
                     continue;
                 }
 
-                GetParamFromRseFile();
                 _sinmeiListPropertysPage1 = new List<(string field, int charCount, int rowCount)>();
                 _sinmeiListPropertysPage2 = new List<(string field, int charCount, int rowCount)>();
 

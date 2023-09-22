@@ -1245,13 +1245,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     #endregion
 
     #region Rece check screeen
-    public List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId, int sinDate)
+    public List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId, int sinDate, bool isGetAll = false)
     {
         var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
                                                                     && (sinYm == 0 || item.SinYm == sinYm)
                                                                     && item.PtId == ptId
                                                                     && (hokenId == 0 || item.HokenId == hokenId)
-                                                                    && item.IsDeleted == DeleteTypes.None)
+                                                                    && (isGetAll || item.IsDeleted == DeleteTypes.None))
                                                      .ToList();
 
         var itemCdList = receCmts.Select(item => item.ItemCd).Distinct().ToList();
@@ -1367,13 +1367,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         TrackingDataContext.SaveChanges();
     }
 
-    public List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId)
+    public List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId, bool isGetAll = false)
     {
         var syoukiInfList = NoTrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
                                                                            && (sinYm == 0 || item.SinYm == sinYm)
                                                                            && item.PtId == ptId
                                                                            && (hokenId == 0 || item.HokenId == hokenId)
-                                                                           && item.IsDeleted == DeleteTypes.None)
+                                                                           && (isGetAll || item.IsDeleted == DeleteTypes.None))
                                                             .OrderBy(item => item.SortNo)
                                                             .ToList();
 
@@ -2936,7 +2936,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
             bool hasError = receCheckErrList.Any(item => item.SinYm == receInfModel.SinYm
                                                          && item.PtId == receInfModel.PtId
-                                                         && item.HokenId == receInfModel.HokenId);
+                                                         && item.HokenId == receInfModel.HokenId
+                                                         && item.IsChecked == 0);
             if (receStatus == null)
             {
                 if (hasError)
@@ -3016,7 +3017,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 tenMst?.CmtColKeta1 ?? 0,
                 tenMst?.CmtColKeta2 ?? 0,
                 tenMst?.CmtColKeta3 ?? 0,
-                tenMst?.CmtColKeta4 ?? 0
+                tenMst?.CmtColKeta4 ?? 0,
+                receCmt.IsDeleted == 1
             );
     }
 
@@ -3029,7 +3031,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                     syoukiInf.SeqNo,
                                     syoukiInf.SortNo,
                                     syoukiInf.SyoukiKbn,
-                                    syoukiInf.Syouki ?? string.Empty
+                                    syoukiInf.Syouki ?? string.Empty,
+                                    syoukiInf.IsDeleted == 1
                                 );
     }
 

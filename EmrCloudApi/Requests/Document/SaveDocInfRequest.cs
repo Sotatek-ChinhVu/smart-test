@@ -4,11 +4,9 @@ public class SaveDocInfRequest
 {
     public long PtId { get; set; }
 
-    public int SinDate { get; set; }
+    public long FileId { get; set; }
 
-    public long RaiinNo { get; set; }
-
-    public int SeqNo { get; set; }
+    public int GetDate { get; set; }
 
     public int CategoryCd { get; set; }
 

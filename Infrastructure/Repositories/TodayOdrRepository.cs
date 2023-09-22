@@ -6,6 +6,7 @@ using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKubunMst;
+using Domain.Models.ReceptionSameVisit;
 using Domain.Models.SystemConf;
 using Domain.Models.TodayOdr;
 using Entity.Tenant;
@@ -2085,6 +2086,16 @@ namespace Infrastructure.Repositories
             {
                 List<OrdInfDetailModel> odrInfDetails = new();
 
+                int newSanteiKbn = 0;
+                if (_systemConf.GetSettingValue(2008, 1, hpId) == 1 || historyOdrInfModel.SanteiKbn == 1)
+                {
+                    newSanteiKbn = historyOdrInfModel.SanteiKbn;
+                }
+                else
+                {
+                    newSanteiKbn = sainteiKbn;
+                }
+
                 foreach (var detail in historyOdrInfModel.OrdInfDetails)
                 {
                     string ipnCd = "";
@@ -2315,7 +2326,7 @@ namespace Infrastructure.Repositories
                    historyOdrInfModel.InoutKbn,
                    historyOdrInfModel.SikyuKbn,
                    historyOdrInfModel.SyohoSbt,
-                   historyOdrInfModel.SanteiKbn == 1 ? 1 : sainteiKbn,
+                   newSanteiKbn,
                    historyOdrInfModel.TosekiKbn,
                    historyOdrInfModel.DaysCnt,
                    historyOdrInfModel.SortNo,

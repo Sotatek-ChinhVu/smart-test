@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
+using Helper.Constants;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Interactor.CalculateService;
@@ -11,7 +12,7 @@ namespace Interactor.Receipt;
 public class RecalculationInteractor : IRecalculationInputPort
 {
     private readonly IReceiptRepository _receiptRepository;
-    private readonly ICalculateService _calculateRepository;
+    private readonly ICalculateService _calculateService;
     private readonly ICommonReceRecalculation _commonReceRecalculation;
     private IMessenger? _messenger;
 
@@ -21,7 +22,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     {
         _receiptRepository = receiptRepository;
         _commonReceRecalculation = commonReceRecalculation;
-        _calculateRepository = calculateRepository;
+        _calculateService = calculateRepository;
     }
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
@@ -33,13 +34,31 @@ public class RecalculationInteractor : IRecalculationInputPort
             // run Recalculation
             if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
-                success = RunCalculateMonth(inputData.HpId, inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
+                success = RunCalculateMonth(inputData.HpId, inputData.UserId, inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
+
+                // Check next step
+                while (true)
+                {
+                    if (CheckAllowNextStep())
+                    {
+                        break;
+                    }
+                }
             }
 
             // run Receipt Aggregation
             if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
                 success = ReceFutanCalculateMain(inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
+
+                // Check next step
+                while (true)
+                {
+                    if (CheckAllowNextStep())
+                    {
+                        break;
+                    }
+                }
             }
 
             // check error in month
@@ -67,7 +86,7 @@ public class RecalculationInteractor : IRecalculationInputPort
 
             if (!inputData.IsCheckErrorCheckBox && !inputData.IsReceiptAggregationCheckBox && !inputData.IsRecalculationCheckBox)
             {
-                SendMessager(new RecalculationStatus(true, 0, 0, 0, string.Empty, string.Empty));
+                SendMessager(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, string.Empty, string.Empty));
             }
             return new RecalculationOutputData(success);
         }
@@ -78,20 +97,21 @@ public class RecalculationInteractor : IRecalculationInputPort
         }
     }
 
-    private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
+    private bool RunCalculateMonth(int hpId, int userId, int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
     {
-        SendMessager(new RecalculationStatus(false, 1, 0, 0, "StartCalculateMonth", string.Empty));
+        SendMessager(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, 0, 0, "StartCalculateMonth", string.Empty));
         var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
         isStopCalc = statusCallBack.Result.Result;
         if (isStopCalc)
         {
             return false;
         }
-        _calculateRepository.RunCalculateMonth(new CalculateMonthRequest()
+        _calculateService.RunCalculateMonth(new CalculateMonthRequest()
         {
             HpId = hpId,
             PtIds = ptInfList,
             SeikyuYm = seikyuYm,
+            PreFix = userId.ToString(),
             UniqueKey = uniqueKey
         }, cancellationToken);
         return true;
@@ -99,19 +119,25 @@ public class RecalculationInteractor : IRecalculationInputPort
 
     private bool ReceFutanCalculateMain(int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
     {
-        SendMessager(new RecalculationStatus(false, 2, 0, 0, "StartFutanCalculateMain", string.Empty));
+        SendMessager(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, 0, 0, "StartFutanCalculateMain", string.Empty));
         var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
         isStopCalc = statusCallBack.Result.Result;
         if (isStopCalc)
         {
             return false;
         }
-        _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(ptInfList, seikyuYm, uniqueKey), cancellationToken);
+        _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(ptInfList, seikyuYm, uniqueKey), cancellationToken);
         return true;
     }
 
     private void SendMessager(RecalculationStatus status)
     {
         _messenger!.Send(status);
+    }
+
+    private bool CheckAllowNextStep()
+    {
+        var allowNextStep = _messenger!.SendAsync(new AllowNextStepStatus());
+        return allowNextStep.Result.Result;
     }
 }

@@ -61,12 +61,12 @@ namespace Interactor.ReceiptCheck
         public string ErrorText { get; set; } = string.Empty;
 
         public ReceiptCheckRecalculationInteractor(
-            ICalculateService calculateService, 
-            ICalculationInfRepository calculationInfRepository, 
-            ISystemConfRepository systemConfRepository, 
-            ICommonMedicalCheck commonMedicalCheck, 
-            IRealtimeOrderErrorFinder realtimeOrderErrorFinder, 
-            ITenantProvider tenantProvider, 
+            ICalculateService calculateService,
+            ICalculationInfRepository calculationInfRepository,
+            ISystemConfRepository systemConfRepository,
+            ICommonMedicalCheck commonMedicalCheck,
+            IRealtimeOrderErrorFinder realtimeOrderErrorFinder,
+            ITenantProvider tenantProvider,
             IReceiptRepository receiptRepository)
         {
             _calculateService = calculateService;
@@ -101,32 +101,32 @@ namespace Interactor.ReceiptCheck
                     seikyuYm = DateTime.Now.Year * 100 + DateTime.Now.Month;
                 }
 
-                SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・", "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, 0, 0, "再計算中・・・", "NotConnectSocket"));
                 _calculateService.RunCalculateMonth(
                     new Request.CalculateMonthRequest()
                     {
                         HpId = inputData.HpId,
                         SeikyuYm = inputData.SeikyuYm,
                         PtIds = inputData.PtIds,
-                        PreFix = ""
+                        PreFix = inputData.UserId.ToString(),
                     }, CancellationToken.None);
 
-                SendMessenger(new RecalculationStatus(false, 2, 0, 0, "レセ集計中・・・", "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, 0, 0, "レセ集計中・・・", "NotConnectSocket"));
                 _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm, string.Empty), CancellationToken.None);
 
-                SendMessenger(new RecalculationStatus(false, 3, 0, 0, "レセチェック中・・・", "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, 0, 0, "レセチェック中・・・", "NotConnectSocket"));
                 CheckErrorInMonth(inputData.HpId, inputData.UserId, inputData.SeikyuYm, inputData.PtIds);
 
                 errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.PtIds, inputData.SeikyuYm);
 
-                SendMessenger(new RecalculationStatus(false, 4, 0, 0, errorText, "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.ReceCheckCalculate, 0, 0, errorText, "NotConnectSocket"));
                 _receiptRepository.UpdateReceStatus(inputData.ReceStatus, inputData.HpId, inputData.UserId);
 
                 return new ReceiptCheckRecalculationOutputData(true);
             }
             finally
             {
-                SendMessenger(new RecalculationStatus(true, 5, 0, 0, string.Empty, "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(true, CalculateStatusConstant.ReceCheckMessage, 0, 0, string.Empty, "NotConnectSocket"));
 
                 _calculationInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();

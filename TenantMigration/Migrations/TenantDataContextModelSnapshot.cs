@@ -22,6 +22,104 @@ namespace TenantMigration.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Emr.DatabaseEntity.KacodeReceYousiki", b =>
+                {
+                    b.Property<string>("ReceKaCd")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
+                        .HasColumnName("RECE_KA_CD")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("YousikiKaCd")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("YOUSIKI_KA_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("ReceKaCd", "YousikiKaCd");
+
+                    b.ToTable("KACODE_RECE_YOUSIKI");
+                });
+
+            modelBuilder.Entity("Emr.DatabaseEntity.KacodeYousikiMst", b =>
+                {
+                    b.Property<string>("YousikiKaCd")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("YOUSIKI_KA_CD")
+                        .HasColumnOrder(1);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<string>("KaName")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("KA_NAME");
+
+                    b.Property<int>("SortNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("SORT_NO");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("YousikiKaCd");
+
+                    b.ToTable("KACODE_YOUSIKI_MST");
+                });
+
             modelBuilder.Entity("Entity.Tenant.AccountingFormMst", b =>
                 {
                     b.Property<int>("HpId")
@@ -4885,6 +4983,11 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
+                    b.Property<string>("YousikiKaCd")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("YOUSIKI_KA_CD");
+
                     b.HasKey("Id", "HpId");
 
                     b.HasIndex(new[] { "KaId" }, "PT_KA_MST_IDX01");
@@ -7201,7 +7304,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "UserId")
                         .IsUnique()
-                        .HasFilter("FunctionCd IN (02000000, 03000000)");
+                        .HasFilter("\"FUNCTION_CD\" IN ('02000000', '03000000')");
 
                     b.ToTable("LOCK_INF");
                 });
@@ -18452,7 +18555,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "RsvDate")
                         .IsUnique()
-                        .HasFilter("RsvkrtKbn = 0 AND IsDeleted = 0");
+                        .HasFilter("\"RSVKRT_KBN\" = 0 AND \"IS_DELETED\" = 0");
 
                     b.ToTable("RSVKRT_MST");
                 });
@@ -20029,7 +20132,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "SetCd", "SetKbn", "SetKbnEdaNo", "GenerationId", "Level1", "Level2", "Level3")
                         .IsUnique()
-                        .HasFilter("IsDeleted = 0");
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.ToTable("SET_MST");
                 });

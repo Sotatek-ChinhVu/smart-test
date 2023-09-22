@@ -30,6 +30,7 @@ using Reporting.OrderLabel.Model;
 using Reporting.OrderLabel.Service;
 using Reporting.OutDrug.Model.Output;
 using Reporting.OutDrug.Service;
+using Reporting.PatientManagement.Models;
 using Reporting.PatientManagement.Service;
 using Reporting.Receipt.Service;
 using Reporting.ReceiptCheck.Service;
@@ -272,7 +273,21 @@ public class ReportService : IReportService
 
         List<CoAccountDueListModel> nyukinModels = _coAccountingFinder.GetAccountDueList(hpId, ptId);
         List<int> months = new();
+
+        List<CoAccountDueListModel> accountDueListUnique = new();
         foreach (var model in multiAccountDueListModels)
+        {
+            if (accountDueListUnique.Any(item => item.SinDate == model.SinDate
+                                                 && item.NyukinKbn == model.NyukinKbn
+                                                 && item.RaiinNo == model.RaiinNo
+                                                 && item.OyaRaiinNo == model.OyaRaiinNo))
+            {
+                continue;
+            }
+            accountDueListUnique.Add(model);
+        }
+
+        foreach (var model in accountDueListUnique)
         {
             var selectedAccountDueListModel = model;
             var accountDueListModels = nyukinModels.FindAll(p => p.SinDate / 100 == model.SinDate / 100);
@@ -460,9 +475,9 @@ public class ReportService : IReportService
         return _statisticService.PrintExecute(hpId, formName, menuId, monthFrom, monthTo, dateFrom, dateTo, timeFrom, timeTo, coFileType, isPutTotalRow, tenkiDateFrom, tenkiDateTo, enableRangeFrom, enableRangeTo, ptNumFrom, ptNumTo);
     }
 
-    public CommonReportingRequestModel GetPatientManagement(int hpId, int menuId)
+    public CommonReportingRequestModel GetPatientManagement(int hpId, PatientManagementModel patientManagementModel)
     {
-        return _patientManagementService.PrintData(hpId, menuId);
+        return _patientManagementService.PrintData(hpId, patientManagementModel);
     }
 
     //Receipt Preview

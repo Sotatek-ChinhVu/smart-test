@@ -5,6 +5,7 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
@@ -13,6 +14,7 @@ using System;
 using System.Globalization;
 using System.Linq.Dynamic.Core.Tokenizer;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Infrastructure.Repositories
 {
@@ -65,6 +67,7 @@ namespace Infrastructure.Repositories
 
                 // Insert RaiinInf
                 var raiinInf = CreateNewRaiinInf(new ReceptionModel(dto.Reception), hpId, userId);
+                UpdateConfirmationInfo(hpId, raiinInf.SinDate, raiinInf.PtId, ref raiinInf);
                 TrackingDataContext.RaiinInfs.Add(raiinInf);
                 TrackingDataContext.SaveChanges();
 
@@ -164,6 +167,114 @@ namespace Infrastructure.Repositories
                 };
             }
 
+            void UpdateConfirmationInfo(int hpId, int sinDate, long ptId, ref RaiinInf raiinInf)
+            {
+                int confirmationType = 0;
+                var raiinInfsInSameday = TrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                                     && item.SinDate == sinDate
+                                                                                     && item.PtId == ptId)
+                                                                      .ToList();
+
+                var onlineConfirmationHistoryInSameday = TrackingDataContext.OnlineConfirmationHistories.Where(item => item.PtId == ptId)
+                                                                                                        .AsEnumerable()
+                                                                                                        .Where(item => CIUtil.DateTimeToInt(item.OnlineConfirmationDate) == sinDate)
+                                                                                                        .ToList();
+
+                #region update ConfirmationType
+                if (raiinInfsInSameday.Any())
+                {
+                    var confirmedRaiinInfs = raiinInfsInSameday.Where(x => x.ConfirmationType > 0);
+                    confirmationType = confirmedRaiinInfs.Any() ? confirmedRaiinInfs.Min(x => x.ConfirmationType) : 0;
+                    raiinInf.ConfirmationType = confirmationType;
+                }
+                if (onlineConfirmationHistoryInSameday.Any())
+                {
+                    var confirmedOnlineConfirmationHistorys = onlineConfirmationHistoryInSameday.Where(x => x.ConfirmationType > 0);
+                    confirmationType = confirmedOnlineConfirmationHistorys.Any() ? confirmedOnlineConfirmationHistorys.Min(x => x.ConfirmationType) : 0;
+                    raiinInf.ConfirmationType = confirmationType;
+                }
+                #endregion
+
+                #region update InfConsFlg
+                string infoConsFlg = "    ";
+                if (raiinInfsInSameday.Any())
+                {
+                    void UpdateFlgValue(int flgIdx)
+                    {
+                        char flgToChar(int flg)
+                        {
+                            if (flg == 1)
+                            {
+                                return '1';
+                            }
+                            else if (flg == 2)
+                            {
+                                return '2';
+                            }
+                            return ' ';
+                        }
+
+                        var confirmedFlgRaiinInfs = raiinInfsInSameday.Where(x => !string.IsNullOrEmpty(x.InfoConsFlg) && x.InfoConsFlg.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
+                        int infConsFlg = confirmedFlgRaiinInfs.Count() == 0 ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg[flgIdx].AsInteger());
+                        infoConsFlg = ReplaceAt(infoConsFlg, flgIdx, flgToChar(infConsFlg));
+                    }
+                    //Update PharmacistsInfoConsFlg
+                    UpdateFlgValue(0);
+                    //Update SpecificHealthCheckupsInfoConsFlg
+                    UpdateFlgValue(1);
+                    //Update DiagnosisInfoConsFlg
+                    UpdateFlgValue(2);
+                    //Update OperationInfoConsFlg
+                    UpdateFlgValue(3);
+                }
+                if (onlineConfirmationHistoryInSameday.Any())
+                {
+                    void UpdateFlgValue(int flgIdx)
+                    {
+                        char flgToChar(int flg)
+                        {
+                            if (flg == 1)
+                            {
+                                return '1';
+                            }
+                            else if (flg == 2)
+                            {
+                                return '2';
+                            }
+                            return ' ';
+                        }
+
+                        var confirmedFlgRaiinInfs = onlineConfirmationHistoryInSameday.Where(x => !string.IsNullOrEmpty(x.InfoConsFlg) && x.InfoConsFlg.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
+                        int infConsFlg = confirmedFlgRaiinInfs.Count() == 0 ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg[flgIdx].AsInteger());
+                        infoConsFlg = ReplaceAt(infoConsFlg, flgIdx, flgToChar(infConsFlg));
+                    }
+                    //Update PharmacistsInfoConsFlg
+                    UpdateFlgValue(0);
+                    //Update SpecificHealthCheckupsInfoConsFlg
+                    UpdateFlgValue(1);
+                    //Update DiagnosisInfoConsFlg
+                    UpdateFlgValue(2);
+                    //Update OperationInfoConsFlg
+                    UpdateFlgValue(3);
+                }
+                if (string.IsNullOrWhiteSpace(infoConsFlg))
+                {
+                    infoConsFlg = "";
+                }
+                raiinInf.InfoConsFlg = infoConsFlg;
+                #endregion
+            }
+
+            string ReplaceAt(string input, int index, char newChar)
+            {
+                if (input == null)
+                {
+                    return string.Empty;
+                }
+                StringBuilder builder = new StringBuilder(input);
+                builder[index] = newChar;
+                return builder.ToString();
+            }
             #endregion
         }
 
@@ -838,7 +949,10 @@ namespace Infrastructure.Repositories
                 r.relatedRaiinCmtInfComment?.Text ?? string.Empty,
                 r.ptCmtInf?.Text ?? string.Empty,
                 r.relatedTanto?.UserId ?? CommonConstants.InvalidId,
+                string.IsNullOrEmpty(r.relatedTanto?.DrName) ? r.relatedTanto?.Name ?? string.Empty : r.relatedTanto?.DrName ?? string.Empty,
+                r.relatedTanto?.KanaName ?? string.Empty,
                 r.relatedKaMst?.KaId ?? CommonConstants.InvalidId,
+                r.relatedKaMst?.KaName ?? string.Empty,
                 r.lastVisitDate,
                 r.firstVisitDate,
                 r.primaryDoctorName ?? string.Empty,

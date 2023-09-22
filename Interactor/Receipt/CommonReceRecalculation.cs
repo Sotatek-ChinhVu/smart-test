@@ -39,16 +39,16 @@ public class CommonReceRecalculation : ICommonReceRecalculation
     private IMessenger? _messenger;
 
     public CommonReceRecalculation(
-        IReceiptRepository receiptRepository, 
-        ISystemConfRepository systemConfRepository, 
-        IInsuranceMstRepository insuranceMstRepository, 
-        IMstItemRepository mstItemRepository, 
-        IPtDiseaseRepository ptDiseaseRepository, 
-        IOrdInfRepository ordInfRepository, 
-        ICommonMedicalCheck commonMedicalCheck, 
-        ITodayOdrRepository todayOdrRepository, 
-        IReceSeikyuRepository receSeikyuRepository, 
-        IDrugDetailRepository drugDetailRepository, 
+        IReceiptRepository receiptRepository,
+        ISystemConfRepository systemConfRepository,
+        IInsuranceMstRepository insuranceMstRepository,
+        IMstItemRepository mstItemRepository,
+        IPtDiseaseRepository ptDiseaseRepository,
+        IOrdInfRepository ordInfRepository,
+        ICommonMedicalCheck commonMedicalCheck,
+        ITodayOdrRepository todayOdrRepository,
+        IReceSeikyuRepository receSeikyuRepository,
+        IDrugDetailRepository drugDetailRepository,
         ICalculationInfRepository calculationInfRepository)
     {
         _receiptRepository = receiptRepository;
@@ -83,20 +83,27 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         List<ReceCheckErrModel> newReceCheckErrList = new();
         StringBuilder errorText = new();
         StringBuilder errorTextSinKouiCount = new();
+        StringBuilder errorTextRosai = new();
         var receCheckOptList = GetReceCheckOptModelList(hpId);
         var ptIdList = receRecalculationList.Select(item => item.PtId).Distinct().ToList();
         var sinYmList = receRecalculationList.Select(item => item.SinYm).Distinct().ToList();
         var hokenIdList = receRecalculationList.Select(item => item.HokenId).Distinct().ToList();
         var kantokuCdValidList = receRecalculationList.Select(item => new IsKantokuCdValidModel(item.PtId, item.HokenId)).ToList();
-
-        var allReceCheckErrList = _receiptRepository.GetReceCheckErrList(hpId, sinYmList, ptIdList, hokenIdList);
         var systemConfigList = _systemConfRepository.GetAllSystemConfig(hpId);
-        var allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(hpId, sinYmList, ptIdList, hokenIdList);
-        var allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(hpId, kantokuCdValidList);
 
-        if (!receCheckCalculate && isCheckErrorCheckBox)
+        List<ReceCheckErrModel> allReceCheckErrList = new();
+        List<SyobyoKeikaModel> allSyobyoKeikaList = new();
+        List<IsKantokuCdValidModel> allIsKantokuCdValidList = new();
+
+        if (isCheckErrorCheckBox)
         {
-            SendMessager(new RecalculationStatus(false, 3, allCheckCount, 0, string.Empty, string.Empty));
+            if (!receCheckCalculate)
+            {
+                SendMessager(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, 0, string.Empty, string.Empty));
+            }
+            allReceCheckErrList = _receiptRepository.GetReceCheckErrList(hpId, sinYmList, ptIdList, hokenIdList);
+            allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(hpId, sinYmList, ptIdList, hokenIdList);
+            allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(hpId, kantokuCdValidList);
         }
         int successCount = 1;
         foreach (var recalculationItem in receRecalculationList)
@@ -126,13 +133,14 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                 newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
                 newReceCheckErrList = CheckByomeiError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails, systemConfigList);
                 newReceCheckErrList = CheckOrderError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
-                newReceCheckErrList = CheckRosaiError(sinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
+                newReceCheckErrList = CheckRosaiError(sinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
                 newReceCheckErrList = CheckAftercare(sinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
             }
 
             if (isReceiptAggregationCheckBox)
             {
                 errorTextSinKouiCount = GetErrorTextSinKouiCount(sinYm, errorTextSinKouiCount, recalculationItem, sinKouiCountList);
+                errorTextRosai = GetErrorRosai(errorTextRosai, recalculationItem, sinKouiCountList);
             }
 
             if (allCheckCount == successCount)
@@ -140,15 +148,19 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                 break;
             }
 
-            if (!receCheckCalculate)
+            if (!receCheckCalculate && isCheckErrorCheckBox)
             {
-                SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty, string.Empty));
+                SendMessager(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, successCount, string.Empty, string.Empty));
             }
             successCount++;
         }
+        errorText.Append(errorTextRosai);
         errorText.Append(errorTextSinKouiCount);
         ptIdList = ptIds.Distinct().ToList();
-        _receiptRepository.ClearReceCmtErr(hpId, receRecalculationList);
+        if (isCheckErrorCheckBox)
+        {
+            _receiptRepository.ClearReceCmtErr(hpId, receRecalculationList);
+        }
 
         if (isReceiptAggregationCheckBox)
         {
@@ -159,18 +171,31 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         {
             if (!receCheckCalculate)
             {
-                SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty, string.Empty));
+                SendMessager(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, successCount, string.Empty, string.Empty));
             }
             return false;
         }
-        string resultError = errorText.ToString().Replace(Environment.NewLine, "\\r\\n");
+
+        string resultError = string.Empty;
+        if (isReceiptAggregationCheckBox)
+        {
+            resultError = errorText.ToString().Replace(Environment.NewLine, "\\r\\n");
+        }
+
         if (!receCheckCalculate)
         {
-            SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, resultError, string.Empty));
+            if (isCheckErrorCheckBox)
+            {
+                SendMessager(new RecalculationStatus(true, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, successCount, resultError, string.Empty));
+            }
+            else
+            {
+                SendMessager(new RecalculationStatus(true, CalculateStatusConstant.ErrorAfterCheck, allCheckCount, successCount, resultError, string.Empty));
+            }
         }
         else
         {
-            SendMessager(new RecalculationStatus(true, 4, allCheckCount, successCount, resultError, string.Empty));
+            SendMessager(new RecalculationStatus(true, CalculateStatusConstant.ReceCheckCalculate, allCheckCount, successCount, resultError, string.Empty));
         }
         return true;
     }
@@ -1837,34 +1862,8 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         return newReceCheckErrList;
     }
 
-    private List<ReceCheckErrModel> CheckRosaiError(int seikyuYm, ref StringBuilder errorText, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceSinKouiCountModel> sinKouiCountList, List<SystemConfModel> systemConfList, List<IsKantokuCdValidModel> allIsKantokuCdValidList, List<SyobyoKeikaModel> allSyobyoKeikaList)
+    private List<ReceCheckErrModel> CheckRosaiError(int seikyuYm, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceSinKouiCountModel> sinKouiCountList, List<SystemConfModel> systemConfList, List<IsKantokuCdValidModel> allIsKantokuCdValidList, List<SyobyoKeikaModel> allSyobyoKeikaList)
     {
-        //check use normal hoken but order Rosai item
-        //■健康保険のレセプトで労災項目がオーダーされています。
-        if (recalculationModel.HokenKbn == 1 || recalculationModel.HokenKbn == 2)
-        {
-            List<string> orderRosaiErrors = new();
-            foreach (var sinKouiCount in sinKouiCountList)
-            {
-                foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
-                {
-                    if (sinKouiDetailModel.MasterSbt == "R")
-                    {
-                        orderRosaiErrors.Add(string.Format("    {0}/{1} ID:{2} [{3}] {4}", recalculationModel.SeikyuYm / 100, recalculationModel.SeikyuYm % 100, recalculationModel.PtNum, sinKouiDetailModel.ItemCd, sinKouiDetailModel.ReceName));
-                    }
-                }
-            }
-            if (orderRosaiErrors.Any())
-            {
-                orderRosaiErrors.Insert(0, "■健康保険のレセプトで労災項目がオーダーされています。");
-                foreach (var error in orderRosaiErrors)
-                {
-                    errorText.AppendLine(error);
-                }
-                errorText.AppendLine();
-            }
-        }
-
         // check rosai can using
         if (GetSettingValue(systemConfList, 100003, 0) == 1
             && seikyuYm >= GetSettingParam(systemConfList, 100003, 0).AsInteger()
@@ -1943,8 +1942,39 @@ public class CommonReceRecalculation : ICommonReceRecalculation
         return newReceCheckErrList;
     }
 
+    private StringBuilder GetErrorRosai(StringBuilder errorTextRosai, ReceRecalculationModel recalculationModel, List<ReceSinKouiCountModel> sinKouiCountList)
+    {
+        //check use normal hoken but order Rosai item
+        //■健康保険のレセプトで労災項目がオーダーされています。
+        if (recalculationModel.HokenKbn == 1 || recalculationModel.HokenKbn == 2)
+        {
+            List<string> orderRosaiErrors = new();
+            foreach (var sinKouiCount in sinKouiCountList)
+            {
+                foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
+                {
+                    if (sinKouiDetailModel.MasterSbt == "R")
+                    {
+                        orderRosaiErrors.Add(string.Format("    {0}/{1} ID:{2} [{3}] {4}", recalculationModel.SeikyuYm / 100, recalculationModel.SeikyuYm % 100, recalculationModel.PtNum, sinKouiDetailModel.ItemCd, sinKouiDetailModel.ReceName));
+                    }
+                }
+            }
+            if (orderRosaiErrors.Any())
+            {
+                orderRosaiErrors.Insert(0, "■健康保険のレセプトで労災項目がオーダーされています。");
+                foreach (var error in orderRosaiErrors)
+                {
+                    errorTextRosai.AppendLine(error);
+                }
+                errorTextRosai.AppendLine();
+            }
+        }
+        return errorTextRosai;
+    }
+
     private StringBuilder GetErrorTextSinKouiCount(int seikyuYm, StringBuilder errorTextSinKouiCount, ReceRecalculationModel recalculationModel, List<ReceSinKouiCountModel> sinKouiCountList)
     {
+        //■請求できない項目がオーダーされています。
         List<string> errors = new();
         foreach (var sinKouiCount in sinKouiCountList)
         {

@@ -1,5 +1,8 @@
-﻿using Helper.Constants;
+﻿using Helper.Common;
+using Helper.Constants;
+using Helper.Extension;
 using System.Text.Json.Serialization;
+using static Helper.Constants.TenMstConst;
 
 namespace Domain.Models.MstItem
 {
@@ -53,9 +56,19 @@ namespace Domain.Models.MstItem
             IsDeleted = isDeleted;
             HandanGrpKbn = handanGrpKbn;
             IsKensaMstEmpty = isKensaMstEmpty;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            KensaItemCd = string.Empty;
+            ReceName = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = new();
         }
 
-        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted, int handanGrpKbn, bool isKensaMstEmpty, double yakka,  bool isGetPriceInYakka)
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted, int handanGrpKbn, bool isKensaMstEmpty, double yakka, bool isGetPriceInYakka)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -104,6 +117,16 @@ namespace Domain.Models.MstItem
             IsKensaMstEmpty = isKensaMstEmpty;
             Yakka = yakka;
             IsGetPriceInYakka = isGetPriceInYakka;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            KensaItemCd = string.Empty;
+            ReceName = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = new();
         }
 
         public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted)
@@ -151,6 +174,16 @@ namespace Domain.Models.MstItem
             Kokuji2 = kokuji2;
             IpnName = ipnName;
             IsDeleted = isDeleted;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            KensaItemCd = string.Empty;
+            ReceName = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = new();
         }
 
         public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, int modeStatus)
@@ -198,6 +231,16 @@ namespace Domain.Models.MstItem
             Kokuji2 = kokuji2;
             ModeStatus = modeStatus;
             IpnName = string.Empty;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            KensaItemCd = string.Empty;
+            ReceName = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = new();
         }
 
         public TenItemModel()
@@ -233,7 +276,17 @@ namespace Domain.Models.MstItem
             OdrTermVal = 0;
             Kokuji1 = string.Empty;
             Kokuji2 = string.Empty;
-            IpnName  = string.Empty;
+            IpnName = string.Empty;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            KensaItemCd = string.Empty;
+            ReceName = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = new();
         }
 
         public TenItemModel(int hpId, string itemCd, string minAge, string maxAge, string santeiItemCd, int startDate, int endDate)
@@ -258,9 +311,187 @@ namespace Domain.Models.MstItem
             Kokuji1 = string.Empty;
             Kokuji2 = string.Empty;
             IpnName = string.Empty;
+            ReceName = string.Empty;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            KensaItemCd = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = new();
+        }
+
+        public TenItemModel(int sinKouiKbn, string masterSbt, string itemCd, string kensaItemCd, int kensaItemSeqNo, double ten, string name, string receName, string kanaName1
+                          , string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, int startDate, int endDate, double defaultValue
+                          , string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch, List<string> listGenDate)
+        {
+            SinKouiKbn = sinKouiKbn;
+            MasterSbt = masterSbt;
+            ItemCd = itemCd;
+            KensaItemCd = kensaItemCd;
+            KensaItemSeqNo = kensaItemSeqNo;
+            Ten = ten;
+            Name = name;
+            ReceName = receName;
+            KanaName1 = kanaName1;
+            KanaName2 = kanaName2;
+            KanaName3 = kanaName3;
+            KanaName4 = kanaName4;
+            KanaName5 = kanaName5;
+            KanaName6 = kanaName6;
+            KanaName7 = kanaName7;
+            StartDate = startDate;
+            EndDate = endDate;
+            DefaultValue = defaultValue;
+            OdrUnitName = odrUnitName;
+            SanteiItemCd = santeiItemCd;
+            SanteigaiKbn = santeigaiKbn;
+            IsNoSearch = isNoSearch;
+            KensaMstCenterItemCd1 = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            IpnNameCd = string.Empty;
+            YjCd = string.Empty;
+            CnvUnitName = string.Empty;
+            IpnCD = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            MinAge = string.Empty;
+            MaxAge = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = listGenDate;
+            SetItemType();
+        }
+
+        public TenItemModel(int sinKouiKbn, string masterSbt, string itemCd, string kensaItemCd, int kensaItemSeqNo, double ten, string name, string receName, string kanaName1
+                          , string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, int startDate, int endDate, double defaultValue
+                          , string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch)
+        {
+            SinKouiKbn = sinKouiKbn;
+            MasterSbt = masterSbt;
+            ItemCd = itemCd;
+            KensaItemCd = kensaItemCd;
+            KensaItemSeqNo = kensaItemSeqNo;
+            Ten = ten;
+            Name = name;
+            ReceName = receName;
+            KanaName1 = kanaName1;
+            KanaName2 = kanaName2;
+            KanaName3 = kanaName3;
+            KanaName4 = kanaName4;
+            KanaName5 = kanaName5;
+            KanaName6 = kanaName6;
+            KanaName7 = kanaName7;
+            StartDate = startDate;
+            EndDate = endDate;
+            DefaultValue = defaultValue;
+            OdrUnitName = odrUnitName;
+            SanteiItemCd = santeiItemCd;
+            SanteigaiKbn = santeigaiKbn;
+            IsNoSearch = isNoSearch;
+            KensaMstCenterItemCd1 = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            IpnNameCd = string.Empty;
+            YjCd = string.Empty;
+            CnvUnitName = string.Empty;
+            IpnCD = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            MinAge = string.Empty;
+            MaxAge = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = new();
+        }
+
+        public TenItemModel(string itemCd, int sinKouiKbn, string name, string odrUnitName, string cnvUnitName, int isNodspRece, int yohoKbn, double odrTermVal, double cnvTermVal, string yjCd, string kensaItemCd, int kensaItemSeqNo
+                          , int kohatuKbn, double ten, int handanGrpKbn, string ipnNameCd, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, string minAge
+                          , string maxAge, int startDate, int endDate, string masterSbt, int buiKbn, string cdKbn, int cdKbnNo, int cdEdano, string kokuji1, string kokuji2, int drugKbn, string receName, string santeiItemCd, int jihiSbt, int isDeleted)
+        {
+            ItemCd = itemCd;
+            SinKouiKbn = sinKouiKbn;
+            Name = name;
+            OdrUnitName = odrUnitName;
+            CnvUnitName = cnvUnitName;
+            IsNodspRece = isNodspRece;
+            YohoKbn = yohoKbn;
+            OdrTermVal = odrTermVal;
+            CnvTermVal = cnvTermVal;
+            YjCd = yjCd;
+            KensaItemCd = kensaItemCd;
+            KensaItemSeqNo = kensaItemSeqNo;
+            KohatuKbn = kohatuKbn;
+            Ten = ten;
+            HandanGrpKbn = handanGrpKbn;
+            IpnNameCd = ipnNameCd;
+            CmtCol1 = cmtCol1;
+            CmtCol2 = cmtCol2;
+            CmtCol3 = cmtCol3;
+            CmtCol4 = cmtCol4;
+            CmtColKeta1 = cmtColKeta1;
+            CmtColKeta2 = cmtColKeta2;
+            CmtColKeta3 = cmtColKeta3;
+            CmtColKeta4 = cmtColKeta4;
+            MinAge = minAge;
+            MaxAge = maxAge;
+            StartDate = startDate;
+            EndDate = endDate;
+            MasterSbt = masterSbt;
+            BuiKbn = buiKbn;
+            CdKbn = cdKbn;
+            CdKbnno = cdKbnNo;
+            CdEdano = cdEdano;
+            Kokuji1 = kokuji1;
+            Kokuji2 = kokuji2;
+            DrugKbn = drugKbn;
+            ReceName = receName;
+            SanteiItemCd = santeiItemCd;
+            JihiSbt = jihiSbt;
+            IsDeleted = isDeleted;
+            KanaName1 = string.Empty;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            KensaMstCenterItemCd1 = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            IpnCD = string.Empty;
+            ListGenDate = new();
         }
 
         public int HpId { get; private set; }
+
+        public string ReceName { get; private set; }
+
+        public int IsNodspRece { get; private set; }
+
+        public int IsNoSearch { get; private set; }
+
+        public int SanteigaiKbn { get; private set; }
+
+        public int CdKbnno { get; private set; }
+
+        public int CdEdano { get; private set; }
+
+        public int JihiSbt { get; private set; }
+
+        public string KanaName2 { get; private set; }
+
+        public string KanaName3 { get; private set; }
+
+        public string KanaName4 { get; private set; }
+
+        public string KanaName5 { get; private set; }
+
+        public string KanaName6 { get; private set; }
+
+        public string KanaName7 { get; private set; }
+
+        public string KensaItemCd { get; private set; }
+
+        public int KensaItemSeqNo { get; private set; }
 
         public string ItemCd { get; private set; }
 
@@ -355,6 +586,8 @@ namespace Domain.Models.MstItem
         public double Yakka { get; private set; }
 
         public bool IsGetPriceInYakka { get; private set; }
+
+        public List<string> ListGenDate { get; private set; }
 
         public string RousaiKbnDisplay
         {
@@ -495,5 +728,88 @@ namespace Domain.Models.MstItem
             return rs;
         }
 
+        public string CdKbn { get; private set; }
+
+        public string FormattedStartDate
+        {
+            get => StartDate > 0 ? CIUtil.SDateToShowSDate(StartDate) : "0";
+            set => StartDate = value.Replace("/", string.Empty).AsInteger();
+        }
+
+        public string FormattedEndDate
+        {
+            get => EndDate != 99999999 ? CIUtil.SDateToShowSDate(EndDate) : "9999/99/99";
+            set => EndDate = value.Replace("/", string.Empty).AsInteger();
+        }
+
+        public bool IsDefault => CheckDefaultValue();
+
+        public string ReadOnlyStartDate
+        {
+            get
+            {
+                if (IsDefault) return string.Empty;
+                return StartDate > 0 ? CIUtil.SDateToShowSDate(StartDate) : "0";
+            }
+        }
+
+        public int ItemType { get; private set; }
+
+        private void SetItemType()
+        {
+            if (IsDefault)
+            {
+                ItemType = -1;
+            }
+            else
+            {
+                ItemType = ItemCd.AsString().StartsWith("IGE") ? 1 : 0;
+            }
+        }
+
+        public bool CheckDefaultValue()
+        {
+            return string.IsNullOrEmpty(ItemCd);
+        }
+
+        public ValidationStatus Validation()
+        {
+            if (MasterSbt.Length > 1)
+            {
+                return ValidationStatus.InvalidMasterSbt;
+            }
+
+            if (ItemCd.Length > 10)
+            {
+                return ValidationStatus.InvalidItemCd;
+            }
+
+            if (MinAge.Length > 2)
+            {
+                return ValidationStatus.InvalidMinAge;
+            }
+
+            if (MaxAge.Length > 2)
+            {
+                return ValidationStatus.InvalidMaxAge;
+            }
+
+            if (CdKbn.Length > 1)
+            {
+                return ValidationStatus.InvalidCdKbn;
+            }
+
+            if (Kokuji1.Length > 1)
+            {
+                return ValidationStatus.InvalidKokuji1;
+            }
+
+            if (Kokuji2.Length > 1)
+            {
+                return ValidationStatus.InvalidKokuji2;
+            }
+
+            return ValidationStatus.Valid;
+        }
     }
 }

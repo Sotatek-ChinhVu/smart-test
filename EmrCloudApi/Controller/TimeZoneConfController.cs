@@ -24,7 +24,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetTimeZoneConfGroup)]
-        public ActionResult<Response<GetTimeZoneConfGroupResponse>> GetListReceSeikyu()
+        public ActionResult<Response<GetTimeZoneConfGroupResponse>> GetTimeZoneConfGroup()
         {
             var input = new GetTimeZoneConfGroupInputData(HpId, UserId);
             var output = _bus.Handle(input);

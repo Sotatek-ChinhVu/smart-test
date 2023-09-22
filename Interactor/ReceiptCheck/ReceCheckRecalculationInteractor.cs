@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Receipt;
+using Helper.Constants;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Interactor.CalculateService;
@@ -28,20 +29,20 @@ namespace Interactor.ReceiptCheck
             _messenger = inputData.Messenger;
             try
             {
-                SendMessenger(new RecalculationStatus(false, 1, 0, 0, "再計算中・・・", "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, 0, 0, "再計算中・・・", "NotConnectSocket"));
                 _calculateService.RunCalculateMonth(
                     new CalculateMonthRequest()
                     {
                         HpId = inputData.HpId,
                         SeikyuYm = inputData.SeikyuYm,
                         PtIds = inputData.PtIds,
-                        PreFix = ""
+                        PreFix = inputData.UserId.ToString(),
                     }, CancellationToken.None);
 
-                SendMessenger(new RecalculationStatus(false, 2, 0, 0, "レセ集計中・・・", "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, 0, 0, "レセ集計中・・・", "NotConnectSocket"));
                 _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm, string.Empty), CancellationToken.None);
 
-                SendMessenger(new RecalculationStatus(false, 3, 0, 0, "レセチェック中・・・", "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, 0, 0, "レセチェック中・・・", "NotConnectSocket"));
 
                 var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SeikyuYm, inputData.PtIds);
                 int allCheckCount = receRecalculationList.Count;
@@ -54,7 +55,7 @@ namespace Interactor.ReceiptCheck
             }
             finally
             {
-                SendMessenger(new RecalculationStatus(true, 5, 0, 0, string.Empty, "NotConnectSocket"));
+                SendMessenger(new RecalculationStatus(true, CalculateStatusConstant.ReceCheckMessage, 0, 0, string.Empty, "NotConnectSocket"));
                 _commonReceRecalculation.ReleaseResource();
                 _receiptRepository.ReleaseResource();
             }
