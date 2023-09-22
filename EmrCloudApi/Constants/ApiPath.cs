@@ -64,6 +64,7 @@
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
+        public const string GetRenkeiConf = "GetRenkeiConf";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

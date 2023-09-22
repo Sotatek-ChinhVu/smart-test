@@ -468,6 +468,7 @@ using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
+using UseCase.MstItem.GetRenkeiConf;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
@@ -1671,6 +1672,7 @@ namespace EmrCloudApi.Configs.Dependency
             //MstItem
             busBuilder.RegisterUseCase<GetJihiSbtMstListInputData, GetJihiMstsInteractor>();
             busBuilder.RegisterUseCase<SaveAddressMstInputData, SaveAddressMstInteractor>();
+            busBuilder.RegisterUseCase<GetRenkeiConfInputData, GetRenkeiConfInteractor>();
 
             //HolidayMst
             busBuilder.RegisterUseCase<SaveHolidayMstInputData, SaveHolidayMstInteractor>();
