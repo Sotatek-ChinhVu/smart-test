@@ -184,9 +184,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-               var setMstsBackuped = TrackingDataContext.SetMsts.Where(x =>
-               x.HpId == hpId &&
-               x.GenerationId == sourceGenerationId).ToList();
+                var setMstsBackuped = TrackingDataContext.SetMsts.Where(x =>
+                x.HpId == hpId &&
+                x.GenerationId == sourceGenerationId).ToList();
                 var setMstDict = new Dictionary<int, SetMst>();
                 var ListSetMstNew = new Dictionary<int, SetMstModel>();
                 for (int i = 0, len = setMstsBackuped.Count; i < len; i++)
@@ -303,36 +303,36 @@ namespace Infrastructure.Repositories
 
         public bool SaveCloneKbnMst(int targetGenerationId, int sourceGenerationId, int hpId, int userId)
         {
-            try
-            {
-                var setKbnMstSource = TrackingDataContext.SetKbnMsts.Where(x =>
+            var setKbnMstSource = TrackingDataContext.SetKbnMsts.Where(x =>
                     x.HpId == hpId &&
                     x.GenerationId == sourceGenerationId).ToList();
+            //setKbnMst
+            setKbnMstSource.ForEach(setKbnMst =>
+            {
+                setKbnMst.GenerationId = targetGenerationId;
+                setKbnMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+                setKbnMst.CreateId = userId;
+                setKbnMst.CreateMachine = _computerName;
+                setKbnMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                setKbnMst.UpdateId = userId;
+                setKbnMst.UpdateMachine = _computerName;
+            });
 
-                //setKbnMst
-                setKbnMstSource.ForEach(setKbnMst =>
+            if (setKbnMstSource.Any())
+            {
+                TrackingDataContext.SetKbnMsts.AddRange(setKbnMstSource);
+                try
                 {
-                    setKbnMst.GenerationId = targetGenerationId;
-                    setKbnMst.CreateDate = CIUtil.GetJapanDateTimeNow();
-                    setKbnMst.CreateId = userId;
-                    setKbnMst.CreateMachine = _computerName;
-                    setKbnMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    setKbnMst.UpdateId = userId;
-                    setKbnMst.UpdateMachine = _computerName;
-                });
-
-                if (setKbnMstSource.Any())
-                {
-                    TrackingDataContext.SetKbnMsts.AddRange(setKbnMstSource);
                     TrackingDataContext.SaveChanges();
                     return true;
                 }
-                return false;
+                catch
+                {
+                    TrackingDataContext.SetKbnMsts.RemoveRange(setKbnMstSource);
+                    return false;
+                }
             }
-            catch
-            {
-                return false;
-            }
+            return false;
         }
 
         public bool SaveCloneByomei(int hpId, int userId, Dictionary<int, SetMstModel> setMstDict, List<int> listMstDict)
@@ -357,8 +357,15 @@ namespace Infrastructure.Repositories
                 if (setByomeisSource.Any())
                 {
                     TrackingDataContext.SetByomei.AddRange(setByomeisSource);
-                    TrackingDataContext.SaveChanges();
-                    return true;
+                    try
+                    {
+                        TrackingDataContext.SaveChanges();
+                        return true;
+                    }
+                    catch {
+                        TrackingDataContext.SetByomei.RemoveRange(setByomeisSource);
+                        return false;
+                    }
                 }
 
                 return false;
@@ -373,9 +380,9 @@ namespace Infrastructure.Repositories
         {
             try
             {
-               var setKarteInfsSource = TrackingDataContext.SetKarteInf.Where(setKarteInf =>
-               setKarteInf.HpId == hpId && listMstDict.Contains(setKarteInf.SetCd))
-               .ToList();
+                var setKarteInfsSource = TrackingDataContext.SetKarteInf.Where(setKarteInf =>
+                setKarteInf.HpId == hpId && listMstDict.Contains(setKarteInf.SetCd))
+                .ToList();
 
                 //setKarteInf
                 setKarteInfsSource.ForEach(x =>
@@ -391,8 +398,16 @@ namespace Infrastructure.Repositories
                 if (setKarteInfsSource.Any())
                 {
                     TrackingDataContext.SetKarteInf.AddRange(setKarteInfsSource);
-                    TrackingDataContext.SaveChanges();
-                    return true;
+                    try
+                    {
+                        TrackingDataContext.SaveChanges();
+                        return true;
+                    }
+                    catch
+                    {
+                        TrackingDataContext.SetKarteInf.RemoveRange(setKarteInfsSource);
+                        return false;
+                    }
                 }
                 return false;
             }
@@ -419,8 +434,16 @@ namespace Infrastructure.Repositories
                 if (setKarteImgInfsSource.Any())
                 {
                     TrackingDataContext.SetKarteImgInf.AddRange(setKarteImgInfsSource);
-                    TrackingDataContext.SaveChanges();
-                    return true;
+                    try
+                    {
+                        TrackingDataContext.SaveChanges();
+                        return true;
+                    }
+                    catch
+                    {
+                        TrackingDataContext.SetKarteImgInf.RemoveRange(setKarteImgInfsSource);
+                        return false;
+                    }
                 }
 
                 return false;
@@ -454,8 +477,16 @@ namespace Infrastructure.Repositories
                 if (setOdrInfsSource.Any())
                 {
                     TrackingDataContext.SetOdrInf.AddRange(setOdrInfsSource);
-                    TrackingDataContext.SaveChanges();
-                    return true;
+                    try
+                    {
+                        TrackingDataContext.SaveChanges();
+                        return true;
+                    }
+                    catch
+                    {
+                        TrackingDataContext.SetOdrInf.RemoveRange(setOdrInfsSource);
+                        return false;
+                    }
                 }
 
                 return false;
@@ -482,8 +513,16 @@ namespace Infrastructure.Repositories
                 if (setOdrInfDetailsSource.Any())
                 {
                     TrackingDataContext.SetOdrInfDetail.AddRange(setOdrInfDetailsSource);
-                    TrackingDataContext.SaveChanges();
-                    return true;
+                    try
+                    {
+                        TrackingDataContext.SaveChanges();
+                        return true;
+                    }
+                    catch
+                    {
+                        TrackingDataContext.SetOdrInfDetail.RemoveRange(setOdrInfDetailsSource);
+                        return false;
+                    }
                 }
 
                 return false;
@@ -510,8 +549,16 @@ namespace Infrastructure.Repositories
                 if (setOdrInfCmtSource.Any())
                 {
                     TrackingDataContext.SetOdrInfCmt.AddRange(setOdrInfCmtSource);
-                    TrackingDataContext.SaveChanges();
-                    return true;
+                    try
+                    {
+                        TrackingDataContext.SaveChanges();
+                        return true;
+                    }
+                    catch
+                    {
+                        TrackingDataContext.SetOdrInfCmt.RemoveRange(setOdrInfCmtSource);
+                        return false;
+                    }
                 }
 
                 return false;
@@ -522,183 +569,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public void CloneGeneration(int targetGenerationId, int sourceGenerationId, int hpId, int userId)
-        {
-            var setMstsBackuped = TrackingDataContext.SetMsts.Where(x =>
-                x.HpId == hpId &&
-                x.GenerationId == sourceGenerationId).ToList();
-            var setMstDict = new Dictionary<int, SetMst>();
-            for (int i = 0, len = setMstsBackuped.Count; i < len; i++)
-            {
-                if (!setMstDict.ContainsKey(setMstsBackuped[i].SetCd))
-                {
-                    setMstDict[setMstsBackuped[i].SetCd] = setMstsBackuped[i];
-                }
-            }
-
-            var listMstDict = new List<int>();
-            for (int i = 0, len = setMstsBackuped.Count; i < len; i++)
-            {
-                if (!listMstDict.Contains(setMstsBackuped[i].SetCd))
-                {
-                    listMstDict.Add(setMstsBackuped[i].SetCd);
-                }
-            }
-
-            var setKbnMstSource = TrackingDataContext.SetKbnMsts.Where(x =>
-                x.HpId == hpId &&
-                x.GenerationId == sourceGenerationId).ToList();
-
-            var setByomeisSource = TrackingDataContext.SetByomei.Where(setByomei =>
-                setByomei.HpId == hpId && listMstDict.Contains(setByomei.SetCd))
-                .ToList();
-
-            var setKarteInfsSource = TrackingDataContext.SetKarteInf.Where(setKarteInf =>
-                setKarteInf.HpId == hpId && listMstDict.Contains(setKarteInf.SetCd))
-                .ToList();
-
-            var setKarteImgInfsSource = TrackingDataContext.SetKarteImgInf.Where(setKarteImgInf =>
-                setKarteImgInf.HpId == hpId && listMstDict.Contains(setKarteImgInf.SetCd))
-                .ToList();
-
-            var setOdrInfsSource = TrackingDataContext.SetOdrInf.Where(setOdrInf =>
-                setOdrInf.HpId == hpId && listMstDict.Contains(setOdrInf.SetCd))
-                .ToList();
-
-            var setOdrInfDetailsSource = TrackingDataContext.SetOdrInfDetail.Where(setOdrInfDetail =>
-                setOdrInfDetail.HpId == hpId && listMstDict.Contains(setOdrInfDetail.SetCd))
-                .ToList();
-
-            var setOdrInfCmtSource = TrackingDataContext.SetOdrInfCmt.Where(setOdrInfCmt =>
-                setOdrInfCmt.HpId == hpId && listMstDict.Contains(setOdrInfCmt.SetCd))
-                .ToList();
-
-            int countData = setMstsBackuped.Count + setByomeisSource.Count + setKarteInfsSource.Count + setKarteImgInfsSource.Count +
-                            setOdrInfsSource.Count + setOdrInfDetailsSource.Count + setOdrInfCmtSource.Count + setKbnMstSource.Count;
-            // add process save data
-            var computerName = "SmartKarte";
-            // setMsts
-            setMstsBackuped.ForEach(x =>
-            {
-                x.SetCd = 0;
-                x.GenerationId = targetGenerationId;
-                x.CreateDate = CIUtil.GetJapanDateTimeNow();
-                x.CreateId = userId;
-                x.CreateMachine = computerName;
-                x.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                x.UpdateId = userId;
-                x.UpdateMachine = computerName;
-            });
-            if (setMstsBackuped.Any())
-            {
-                TrackingDataContext.SetMsts.AddRange(setMstsBackuped);
-                TrackingDataContext.SaveChanges();
-            }
-
-            
-            //setKbnMst
-            setKbnMstSource.ForEach(setKbnMst =>
-            {
-                setKbnMst.GenerationId = targetGenerationId;
-                setKbnMst.CreateDate = CIUtil.GetJapanDateTimeNow();
-                setKbnMst.CreateId = Session.UserID;
-                setKbnMst.CreateMachine = computerName;
-                setKbnMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                setKbnMst.UpdateId = Session.UserID;
-                setKbnMst.UpdateMachine = computerName;
-            });
-            if (setKbnMstSource.Any())
-            {
-                TrackingDataContext.SetKbnMsts.AddRange(setKbnMstSource);
-            }
-
-            //setByomeis
-            setByomeisSource.ForEach(x =>
-            {
-                x.SetCd = setMstDict[x.SetCd].SetCd;
-                x.CreateDate = CIUtil.GetJapanDateTimeNow();
-                x.CreateId = Session.UserID;
-                x.CreateMachine = computerName;
-                x.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                x.UpdateId = Session.UserID;
-                x.UpdateMachine = computerName;
-            });
-            if (setByomeisSource.Any())
-            {
-                TrackingDataContext.SetByomei.AddRange(setByomeisSource);
-            }
-
-            //setKarteInf
-            setKarteInfsSource.ForEach(x =>
-            {
-                x.SetCd = setMstDict[x.SetCd].SetCd;
-                x.CreateDate = CIUtil.GetJapanDateTimeNow();
-                x.CreateId = userId;
-                x.CreateMachine = computerName;
-                x.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                x.UpdateId = userId;
-                x.UpdateMachine = computerName;
-            });
-            if (setKarteInfsSource.Any())
-            {
-                TrackingDataContext.SetKarteInf.AddRange(setKarteInfsSource);
-            }
-
-            //setKarteImgInf
-            setKarteImgInfsSource.ForEach(x =>
-            {
-                x.Id = 0;
-                x.SetCd = setMstDict[x.SetCd].SetCd;
-            });
-            if (setKarteImgInfsSource.Any())
-            {
-                TrackingDataContext.SetKarteImgInf.AddRange(setKarteImgInfsSource);
-            }
-
-            //setOdrInf
-            setOdrInfsSource.ForEach((x) =>
-            {
-                x.SetCd = setMstDict[x.SetCd].SetCd;
-                x.Id = 0;
-                x.CreateDate = CIUtil.GetJapanDateTimeNow();
-                x.CreateId = userId;
-                x.CreateMachine = computerName;
-                x.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                x.UpdateId = userId;
-                x.UpdateMachine = computerName;
-            });
-            if (setOdrInfsSource.Any())
-            {
-                TrackingDataContext.SetOdrInf.AddRange(setOdrInfsSource);
-            }
-
-            //setOdrInfDetail
-            setOdrInfDetailsSource.ForEach((x) =>
-            {
-                x.SetCd = setMstDict[x.SetCd].SetCd;
-            });
-            if (setOdrInfDetailsSource.Any())
-            {
-                TrackingDataContext.SetOdrInfDetail.AddRange(setOdrInfDetailsSource);
-            }
-
-            //setOdrInfCmt
-            setOdrInfCmtSource.ForEach((x) =>
-            {
-                x.SetCd = setMstDict[x.SetCd].SetCd;
-            });
-            if (setOdrInfCmtSource.Any())
-            {
-                TrackingDataContext.SetOdrInfCmt.AddRange(setOdrInfCmtSource);
-            }
-
-            if (countData > 0)
-            {
-                TrackingDataContext.SaveChanges();
-            }
-        }
-
-        public bool RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId)
+        public AddSetSendaiModel? RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId)
         {
             // get SendaiGeneration newest
             var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).FirstOrDefault();
@@ -792,17 +663,16 @@ namespace Infrastructure.Repositories
                     TrackingDataContext.SaveChanges();
 
                     // clone data from newest to restore item
-                    CloneGeneration(itemNewest.GenerationId, restoreGenerationId, hpId, userId);
-                    return true;
+                    return new AddSetSendaiModel(itemNewest.GenerationId, restoreGenerationId);
                 }
                 catch
                 {
-                    return false;
+                    return null;
                 }
             }
 
 
-            return false;
+            return null;
         }
 
         public void ReleaseResource()

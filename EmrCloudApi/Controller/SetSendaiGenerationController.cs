@@ -60,6 +60,8 @@ namespace EmrCloudApi.Controller
             {
                 _messenger.Register<ProcessSetSendaiGenerationStatus>(this, UpdateProcessSave);
                 _messenger.Register<ProcessSetSendaiGenerationStop>(this, StopProcess);
+                HttpContext.Response.ContentType = "application/json";
+                HttpResponse response = HttpContext.Response;
                 var input = new AddSetSendaiGenerationInputData(request.StartDate, HpId, UserId, _messenger);
                 var output = _bus.Handle(input);
                 var presenter = new AddSetSendaiGenerationPresenter();
@@ -110,13 +112,31 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.Restore)]
-        public ActionResult<Response<RestoreSetSendaiGenerationResponse>> Restore([FromBody]  RestoreSetSendaiGenerationRequest request)
+        public void Restore([FromBody] RestoreSetSendaiGenerationRequest request, CancellationToken cancellationToken)
         {
-            var input = new RestoreSetSendaiGenerationInputData(request.RestoreGenerationId, HpId, UserId);
-            var output = _bus.Handle(input);
-            var presenter = new RestoreSetSendaiGenerationPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<RestoreSetSendaiGenerationResponse>>(presenter.Result);
+            _cancellationToken = cancellationToken;
+            try
+            {
+                _messenger.Register<ProcessSetSendaiGenerationStatus>(this, UpdateProcessSave);
+                _messenger.Register<ProcessSetSendaiGenerationStop>(this, StopProcess);
+                HttpContext.Response.ContentType = "application/json";
+                HttpResponse response = HttpContext.Response;
+                var input = new RestoreSetSendaiGenerationInputData(request.RestoreGenerationId, HpId, UserId, _messenger);
+                var output = _bus.Handle(input);
+                if (output.Status == RestoreSetSendaiGenerationStatus.Success)
+                {
+                    UpdateProcessSave(new ProcessSetSendaiGenerationStatus(string.Empty, 100, true, true));
+                }
+                else
+                {
+                    UpdateProcessSave(new ProcessSetSendaiGenerationStatus(string.Empty, 100, true, false));
+                }
+            }
+            finally
+            {
+                _messenger.Deregister<ProcessSetSendaiGenerationStatus>(this, UpdateProcessSave);
+                _messenger.Deregister<ProcessSetSendaiGenerationStop>(this, StopProcess);
+            }
         }
     }
 }

@@ -15,7 +15,6 @@ namespace Interactor.SetSendaiGeneration
     {
         private readonly ISetGenerationMstRepository _inputItemRepository;
         private IMessenger? _messenger;
-        bool isStopProcess = false;
 
         public AddSetSendaiGenerationInteractor(ISetGenerationMstRepository inputItemRepository)
         {
