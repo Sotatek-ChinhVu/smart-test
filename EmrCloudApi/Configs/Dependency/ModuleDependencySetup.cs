@@ -723,6 +723,7 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using Infrastructure.Logger;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -763,6 +764,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
 
             services.AddScoped<IMessenger, Messenger>();
+            services.AddScoped<ILoggingHandler, LoggingHandler>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
