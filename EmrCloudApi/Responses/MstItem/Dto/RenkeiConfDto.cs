@@ -17,8 +17,6 @@ public class RenkeiConfDto
         Biko = model.Biko;
         SortNo = model.SortNo;
         IsDeleted = model.IsDeleted;
-        RenkeiTemplateMstModel = new RenkeiTemplateMstDto(model.RenkeiTemplateMstModel);
-        RenkeiMstModel = new RenkeiMstDto(model.RenkeiMstModel);
         RenkeiPathConfModelList = model.RenkeiPathConfModelList.Select(item => new RenkeiPathConfDto(item)).ToList();
         RenkeiTimingModelList = model.RenkeiTimingModelList.Select(item => new RenkeiTimingDto(item)).ToList();
     }
@@ -44,10 +42,6 @@ public class RenkeiConfDto
     public int SortNo { get; private set; }
 
     public bool IsDeleted { get; private set; }
-
-    public RenkeiTemplateMstDto RenkeiTemplateMstModel { get; private set; }
-
-    public RenkeiMstDto RenkeiMstModel { get; private set; }
 
     public List<RenkeiPathConfDto> RenkeiPathConfModelList { get; private set; }
 
