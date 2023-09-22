@@ -720,6 +720,7 @@ using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.SetSendaiGeneration.Add;
 using UseCase.MainMenu.KensaIraiReport;
 using UseCase.UpsertMaterialMaster;
+using UseCase.MstItem.GetListResultKensaMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1404,6 +1405,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
             busBuilder.RegisterUseCase<GetKensaCenterMstsInputData, GetKensaCenterMstsInteractor>();
             busBuilder.RegisterUseCase<GetTenOfItemInputData, GetTenOfItemInteractor>();
+            busBuilder.RegisterUseCase<GetListResultKensaMstInputData, GetListResultKensaMstInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();

@@ -18,6 +18,7 @@ using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
 using Helper.Extension;
 using Helper.Mapping;
+using Interactor.MstItem;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
@@ -41,6 +42,7 @@ using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetKensaCenterMsts;
 using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
+using UseCase.MstItem.GetListResultKensaMst;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
@@ -818,6 +820,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTenOfHRTItemPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenOfHRTItemResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListKensaMst)]
+        public ActionResult<Response<GetListKensaMstResponse>> GetListKensaMst([FromQuery] GetListKensaMstRequest request)
+        {
+            var input = new GetListResultKensaMstInputData(HpId, request.Keyword);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaMstResponse>>(presenter.Result);
         }
     }
 }
