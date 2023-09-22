@@ -211,6 +211,12 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                     var staCsv = staCsvs.FirstOrDefault(s => s.Id == item.Id);
                     if (staCsv != null)
                     {
+                        staCsv.ReportId = item.ReportId;
+                        staCsv.RowNo = item.RowNo;
+                        staCsv.ConfName = item.ConfName;
+                        staCsv.DataSbt = item.DataSbt;
+                        staCsv.Columns = item.Columns;
+                        staCsv.SortKbn = item.SortKbn;
                         staCsv.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         staCsv.UpdateId = userId;
                     }
@@ -237,6 +243,8 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         TrackingDataContext.SaveChanges();
 
     }
+
+
 
     public void ReleaseResource()
     {
