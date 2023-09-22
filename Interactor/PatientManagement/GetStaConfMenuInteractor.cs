@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Diseases;
 using Domain.Models.MainMenu;
 using Domain.Models.MstItem;
+using Helper.Constants;
 using UseCase.PatientManagement.GetStaConf;
 
 namespace Interactor.PatientManagement
@@ -91,6 +92,7 @@ namespace Interactor.PatientManagement
         {
             var result = new Dictionary<string, string>();
 
+            byomeiCds = byomeiCds.Where(x => x != ByomeiConstant.FreeWordCode).ToList();
             var byomeis = _ptDiseaseRepository.GetByomeiMst(hpId, byomeiCds);
 
             foreach (var item in byomeis)
