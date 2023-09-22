@@ -17,6 +17,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -6550,73 +6551,144 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     public List<RenkeiConfModel> GetRenkeiConfModels(int hpId, int renkeiSbt)
     {
         List<RenkeiConfModel> result = new();
-        var renkeiMstList = NoTrackingDataContext.RenkeiMsts.Where(item => item.HpId == hpId && item.RenkeiSbt == renkeiSbt).ToList();
-        var renkeiIdList = renkeiMstList.Select(item => item.RenkeiId).Distinct().ToList();
+        var renkeiMstModelList = NoTrackingDataContext.RenkeiMsts.Where(item => item.HpId == hpId
+                                                                                && item.RenkeiSbt == renkeiSbt)
+                                                                 .Select(item => new RenkeiMstModel(
+                                                                                     item.HpId,
+                                                                                     item.RenkeiId,
+                                                                                     item.RenkeiName ?? string.Empty,
+                                                                                     item.RenkeiSbt,
+                                                                                     item.FunctionType,
+                                                                                     item.IsInvalid,
+                                                                                     item.SortNo
+                                                                 )).ToList();
+        var renkeiIdList = renkeiMstModelList.Select(item => item.RenkeiId).Distinct().ToList();
 
-        var renkeiConfList = NoTrackingDataContext.RenkeiConfs.Where(item => item.HpId == hpId
-                                                                             && renkeiIdList.Contains(item.RenkeiId))
-                                                              .ToList();
+        var renkeiConfDBList = NoTrackingDataContext.RenkeiConfs.Where(item => item.HpId == hpId
+                                                                               && renkeiIdList.Contains(item.RenkeiId))
+                                                                .ToList();
 
-        var templateIdList = renkeiConfList.Select(item => item.TemplateId).Distinct().ToList();
-        var seqNoList = renkeiConfList.Select(item => item.SeqNo).Distinct().ToList();
-        var renkeiTemplateList = NoTrackingDataContext.RenkeiTemplateMsts.Where(item => item.HpId == hpId
-                                                                                        && templateIdList.Contains(item.TemplateId))
-                                                                         .ToList();
+        var templateIdList = renkeiConfDBList.Select(item => item.TemplateId).Distinct().ToList();
+        var seqNoList = renkeiConfDBList.Select(item => item.SeqNo).Distinct().ToList();
+        var renkeiTemplateDBList = NoTrackingDataContext.RenkeiTemplateMsts.Where(item => item.HpId == hpId
+                                                                                          && templateIdList.Contains(item.TemplateId))
+                                                                           .ToList();
 
-        var renkeiPathConfList = NoTrackingDataContext.RenkeiPathConfs.Where(item => item.HpId == hpId
-                                                                                     && seqNoList.Contains(item.SeqNo)
-                                                                                     && renkeiIdList.Contains(item.RenkeiId))
-                                                                      .ToList();
-        var renkeiTimingConfList = NoTrackingDataContext.RenkeiTimingConfs.Where(item => item.HpId == hpId
-                                                                                         && renkeiIdList.Contains(item.RenkeiId)
-                                                                                         && seqNoList.Contains(item.SeqNo))
-                                                                          .ToList();
-        var evendCdList = renkeiTimingConfList.Select(item => item.EventCd).Distinct().ToList();
-        var eventMstList = NoTrackingDataContext.EventMsts.Where(item => evendCdList.Contains(item.EventCd)).ToList();
-        var query = (from renkeiMst in renkeiMstList
-                     select new
-                     {
-                         renkeiMst,
-                         Configs = (from renkeiConf in renkeiConfList
-                                    where renkeiConf.RenkeiId == renkeiMst.RenkeiId
-                                    join renkeiTemplate in renkeiTemplateList on
-                                        renkeiConf.TemplateId equals renkeiTemplate.TemplateId into renkeiConfTemplates
-                                    from renkeiConfTemplate in renkeiConfTemplates
-                                    select new
-                                    {
-                                        renkeiConf,
-                                        renkeiConfTemplate,
-                                        PathConfigs = (from renkeiPathConf in renkeiPathConfList
-                                                       where renkeiPathConf.SeqNo == renkeiConf.SeqNo &&
-                                                             renkeiPathConf.RenkeiId == renkeiConf.RenkeiId
-                                                       select renkeiPathConf),
-                                        TimingConfigs = (from renkeiTimingConf in renkeiTimingConfList
-                                                         where renkeiTimingConf.RenkeiId == renkeiConf.RenkeiId &&
-                                                               renkeiTimingConf.SeqNo == renkeiConf.SeqNo
-                                                         join eventMst in eventMstList on
-                                                              renkeiTimingConf.EventCd equals eventMst.EventCd into eventMstTimings
-                                                         from eventMstTiming in eventMstTimings
-                                                         select new
-                                                         {
-                                                             renkeiTimingConf,
-                                                             eventMstTiming.EventName
-                                                         })
-                                    }),
-                     }).ToList();
-        //foreach (var item in query)
-        //{
-        //    foreach (var config in item.Configs)
-        //    {
-        //        result.Add(new RenkeiConfModel(
-        //            config.renkeiConf,
-        //            new RenkeiMstModel(item.renkeiMst),
-        //            new RenkeiTemplateMstModel(config.renkeiConfTemplate),
-        //            config.PathConfigs.AsEnumerable().Select(pathConf => new RenkeiPathConfModel(pathConf)),
-        //            config.TimingConfigs.AsEnumerable().Select(timingConf => new RenkeiTimingModel(timingConf.renkeiTimingConf, timingConf.EventName))
-        //            ));
-        //    }
-        //}
+        var renkeiPathConfDBList = NoTrackingDataContext.RenkeiPathConfs.Where(item => item.HpId == hpId
+                                                                                       && seqNoList.Contains(item.SeqNo)
+                                                                                       && renkeiIdList.Contains(item.RenkeiId))
+                                                                        .ToList();
+        var renkeiTimingConfDBList = NoTrackingDataContext.RenkeiTimingConfs.Where(item => item.HpId == hpId
+                                                                                           && renkeiIdList.Contains(item.RenkeiId)
+                                                                                           && seqNoList.Contains(item.SeqNo))
+                                                                            .ToList();
+        var evendCdList = renkeiTimingConfDBList.Select(item => item.EventCd).Distinct().ToList();
+        var eventMstDBList = NoTrackingDataContext.EventMsts.Where(item => evendCdList.Contains(item.EventCd)).ToList();
+
+        foreach (var renkeiMst in renkeiMstModelList)
+        {
+            var renkeiConfList = renkeiConfDBList.Where(renkeiConf => renkeiConf.RenkeiId == renkeiMst.RenkeiId).ToList();
+            foreach (var renkeiConf in renkeiConfList)
+            {
+                var renkeiTemplateModel = renkeiTemplateDBList.Where(renkeiTemplate => renkeiConf.TemplateId == renkeiTemplate.TemplateId)
+                                                              .Select(item => new RenkeiTemplateMstModel(
+                                                                                  item.TemplateId,
+                                                                                  item.TemplateName ?? string.Empty,
+                                                                                  item.Param ?? string.Empty,
+                                                                                  item.File ?? string.Empty,
+                                                                                  item.SortNo
+                                                               )).FirstOrDefault();
+                if (renkeiTemplateModel == null)
+                {
+                    continue;
+                }
+                var pathConfigModelList = renkeiPathConfDBList.Where(renkeiPathConf => renkeiPathConf.SeqNo == renkeiConf.SeqNo
+                                                                                       && renkeiPathConf.RenkeiId == renkeiConf.RenkeiId)
+                                                              .Select(item => new RenkeiPathConfModel(
+                                                                                  item.RenkeiId,
+                                                                                  item.SeqNo,
+                                                                                  item.EdaNo,
+                                                                                  item.Path ?? string.Empty,
+                                                                                  item.Machine ?? string.Empty,
+                                                                                  item.CharCd,
+                                                                                  item.WorkPath ?? string.Empty,
+                                                                                  item.Interval,
+                                                                                  item.Param ?? string.Empty,
+                                                                                  item.User ?? string.Empty,
+                                                                                  item.PassWord ?? string.Empty,
+                                                                                  item.IsInvalid,
+                                                                                  item.Biko ?? string.Empty,
+                                                                                  false
+                                                              )).ToList();
+
+                List<RenkeiTimingModel> timingConfigModelList = new();
+                var timingConfigList = renkeiTimingConfDBList.Where(renkeiTimingConf => renkeiTimingConf.RenkeiId == renkeiConf.RenkeiId &&
+                                                                                        renkeiTimingConf.SeqNo == renkeiConf.SeqNo)
+                                                             .ToList();
+                foreach (var timingConfig in timingConfigList)
+                {
+                    var eventMst = eventMstDBList.FirstOrDefault(item => timingConfig.EventCd == item.EventCd);
+                    if (eventMst != null)
+                    {
+                        timingConfigModelList.Add(new RenkeiTimingModel(
+                                                      eventMst.EventName ?? string.Empty,
+                                                      timingConfig.RenkeiId,
+                                                      timingConfig.SeqNo,
+                                                      timingConfig.EventCd,
+                                                      timingConfig.IsInvalid,
+                                                      false));
+                    }
+                }
+                result.Add(new RenkeiConfModel(
+                               renkeiConf.RenkeiId,
+                               renkeiMst.RenkeiName,
+                               renkeiConf.SeqNo,
+                               renkeiConf.Param ?? string.Empty,
+                               renkeiConf.PtNumLength,
+                               renkeiConf.TemplateId,
+                               renkeiConf.IsInvalid,
+                               renkeiConf.Biko ?? string.Empty,
+                               renkeiConf.SortNo,
+                               false,
+                               renkeiTemplateModel,
+                               renkeiMst,
+                               pathConfigModelList,
+                               timingConfigModelList));
+            }
+        }
+
         return result.OrderBy(x => x.RenkeiId).ThenBy(x => x.Biko).ToList();
     }
 
+    public List<RenkeiMstModel> GetRenkeiMstModels(int hpId)
+    {
+        var result = NoTrackingDataContext.RenkeiMsts.Where(item => item.HpId == hpId
+                                                                    && item.IsInvalid == 0)
+                                                     .AsEnumerable()
+                                                     .Select(item => new RenkeiMstModel(
+                                                                         item.HpId,
+                                                                         item.RenkeiId,
+                                                                         item.RenkeiName ?? string.Empty,
+                                                                         item.RenkeiSbt,
+                                                                         item.FunctionType,
+                                                                         item.IsInvalid,
+                                                                         item.SortNo
+                                                     )).OrderBy(item => item.SortNo)
+                                                     .ToList();
+        return result;
+    }
+
+    public List<RenkeiTemplateMstModel> GetRenkeiTemplateMstModels(int hpId)
+    {
+        var result = NoTrackingDataContext.RenkeiTemplateMsts.Where(item => item.HpId == hpId)
+                                                             .OrderBy(item => item.SortNo)
+                                                             .Select(item => new RenkeiTemplateMstModel(
+                                                                                 item.TemplateId,
+                                                                                 item.TemplateName ?? string.Empty,
+                                                                                 item.Param ?? string.Empty,
+                                                                                 item.File ?? string.Empty,
+                                                                                 item.SortNo
+                                                              )).ToList();
+        return result;
+    }
 }

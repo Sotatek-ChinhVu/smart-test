@@ -824,7 +824,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetRenkeiConf)]
         public ActionResult<Response<GetRenkeiConfResponse>> GetRenkeiConf([FromQuery] GetRenkeiConfRequest request)
         {
-            var input = new GetRenkeiConfInputData(HpId, request.RenkeiSbt);
+            var input = new GetRenkeiConfInputData(HpId, request.RenkeiSbt, request.NotLoadMst);
             var output = _bus.Handle(input);
             var presenter = new GetRenkeiConfPresenter();
             presenter.Complete(output);

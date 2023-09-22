@@ -186,5 +186,9 @@ namespace Domain.Models.MstItem
         string GetNameByItemCd(int hpId, string itemCd);
 
         List<RenkeiConfModel> GetRenkeiConfModels(int hpId, int renkeiSbt);
+
+        List<RenkeiMstModel> GetRenkeiMstModels(int hpId);
+
+        List<RenkeiTemplateMstModel> GetRenkeiTemplateMstModels(int hpId);
     }
 }

@@ -16,8 +16,10 @@ public class GetRenkeiConfInteractor : IGetRenkeiConfInputPort
     {
         try
         {
-            var result = _mstItemRepository.GetRenkeiConfModels(inputData.HpId, inputData.RenkeiSbt);
-            return new GetRenkeiConfOutputData(result, GetRenkeiConfStatus.Successed);
+            var renkeiConfList = _mstItemRepository.GetRenkeiConfModels(inputData.HpId, inputData.RenkeiSbt);
+            List<RenkeiMstModel> renkeiMstModelList = inputData.NotLoadMst ? new() : _mstItemRepository.GetRenkeiMstModels(inputData.HpId);
+            List<RenkeiTemplateMstModel> renkeiTemplateMstModelList = inputData.NotLoadMst ? new() : _mstItemRepository.GetRenkeiTemplateMstModels(inputData.HpId);
+            return new GetRenkeiConfOutputData(renkeiConfList, renkeiMstModelList, renkeiTemplateMstModelList, GetRenkeiConfStatus.Successed);
         }
         finally
         {

@@ -12,7 +12,9 @@ public class GetRenkeiConfPresenter : IGetRenkeiConfOutputPort
 
     public void Complete(GetRenkeiConfOutputData output)
     {
-        Result.Data = new GetRenkeiConfResponse(output.RenkeiConfList.Select(item => new RenkeiConfDto(item)).ToList());
+        Result.Data = new GetRenkeiConfResponse(output.RenkeiConfList.Select(item => new RenkeiConfDto(item)).ToList(),
+                                                output.RenkeiMstModelList.Select(item => new RenkeiMstDto(item)).ToList(),
+                                                output.RenkeiTemplateMstModelList.Select(item => new RenkeiTemplateMstDto(item)).ToList());
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }
