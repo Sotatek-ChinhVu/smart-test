@@ -19,18 +19,18 @@ namespace Interactor.RaiinListSetting
             {
                 if (inputData.HpId <= 0)
                 {
-                    return new GetRaiiinListSettingOutputData(GetRaiiinListSettingStatus.InvalidHpId, new(), 0, 0, 0, 0);
+                    return new GetRaiiinListSettingOutputData(GetRaiiinListSettingStatus.InvalidHpId, new(), 0, 0);
                 }
 
                 var data = _raiinListSettingRepository.GetRaiiinListSetting(inputData.HpId);
 
                 if (data.raiinListMsts.Any())
                 {
-                    return new GetRaiiinListSettingOutputData(GetRaiiinListSettingStatus.Successful, data.raiinListMsts, data.grpIdMax, data.sortNoMax, data.sortNoDetailMax, data.kbnCdMax);
+                    return new GetRaiiinListSettingOutputData(GetRaiiinListSettingStatus.Successful, data.raiinListMsts, data.grpIdMax, data.sortNoMax);
                 }
                 else
                 {
-                    return new GetRaiiinListSettingOutputData(GetRaiiinListSettingStatus.NoData, new(), 0, 0, 0, 0);
+                    return new GetRaiiinListSettingOutputData(GetRaiiinListSettingStatus.NoData, new(), 0, 0);
                 }
             }
             finally

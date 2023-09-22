@@ -25,25 +25,28 @@ namespace Infrastructure.Repositories
                         .Select(x=> new FilingCategoryModel(x.HpId, x.SortNo, x.CategoryCd, x.CategoryName ?? string.Empty, x.DspKanzok)).ToList();
         }
 
-        public (List<RaiinListMstModel> raiinListMsts, int grpIdMax, int sortNoMax, int sortNoDetailMax, int kbnCdMax) GetRaiiinListSetting(int hpId)
+        public (List<RaiinListMstModel> raiinListMsts, int grpIdMax, int sortNoMax) GetRaiiinListSetting(int hpId)
         {
             var list = NoTrackingDataContext.RaiinListMsts.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None).ToList();
-            var grpIdMax = list.Select(x => x.GrpId).Max();
+            var listRaiinMstAll = NoTrackingDataContext.RaiinListMsts.Where(x => x.HpId == hpId).ToList();
+            var listRaiinDetailAll = NoTrackingDataContext.RaiinListDetails.Where(x => x.HpId == hpId).ToList();
+            var listRaiinDetailFinder = NoTrackingDataContext.RaiinListDetails.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+            var grpIdMstMax = listRaiinMstAll.Select(x => x.GrpId).Max();
             var sortNoMstMax = list.Select(x => x.SortNo).Max();
 
             var listDetail = GetActionGroupValueCollection(hpId);
-            var sortNoDetailMax = listDetail.Select(x => x.SortNo).Max();
-            var kbnCdMax = listDetail.Select(x => x.KbnCd).Max();
 
             var memJoin = from mst in list
                           join detail in listDetail
                           on mst.GrpId equals detail.GrpId into details
                           select new { 
                               Mst = mst, 
-                              Detals = details 
+                              Detals = details,
+                              MaxSortNoDetail = listRaiinDetailFinder.Select(x => x.SortNo).Max(),
+                              MaxKbnCdDetail = listRaiinDetailAll.Select(x => x.KbnCd).Max()
                           };
 
-            return (memJoin.Select(item => new RaiinListMstModel(item.Mst.GrpId, item.Mst.GrpName ?? string.Empty, item.Mst.SortNo, item.Mst.IsDeleted, item.Detals.ToList())).ToList(), grpIdMax, sortNoMstMax, sortNoDetailMax, kbnCdMax);
+            return (memJoin.Select(item => new RaiinListMstModel(item.Mst.GrpId, item.Mst.GrpName ?? string.Empty, item.Mst.SortNo, item.Mst.IsDeleted, item.MaxSortNoDetail, item.MaxKbnCdDetail, item.Detals.ToList())).ToList(), grpIdMstMax, sortNoMstMax);
         }
 
         private List<RaiinListDetailModel> GetActionGroupValueCollection(int hpId)
