@@ -6553,15 +6553,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         List<RenkeiConfModel> result = new();
         var renkeiMstModelList = NoTrackingDataContext.RenkeiMsts.Where(item => item.HpId == hpId
                                                                                 && item.RenkeiSbt == renkeiSbt)
-                                                                 .Select(item => new RenkeiMstModel(
-                                                                                     item.HpId,
-                                                                                     item.RenkeiId,
-                                                                                     item.RenkeiName ?? string.Empty,
-                                                                                     item.RenkeiSbt,
-                                                                                     item.FunctionType,
-                                                                                     item.IsInvalid,
-                                                                                     item.SortNo
-                                                                 )).ToList();
+                                                                 .ToList();
         var renkeiIdList = renkeiMstModelList.Select(item => item.RenkeiId).Distinct().ToList();
 
         var renkeiConfDBList = NoTrackingDataContext.RenkeiConfs.Where(item => item.HpId == hpId
@@ -6590,14 +6582,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             var renkeiConfList = renkeiConfDBList.Where(renkeiConf => renkeiConf.RenkeiId == renkeiMst.RenkeiId).ToList();
             foreach (var renkeiConf in renkeiConfList)
             {
-                var renkeiTemplateModel = renkeiTemplateDBList.Where(renkeiTemplate => renkeiConf.TemplateId == renkeiTemplate.TemplateId)
-                                                              .Select(item => new RenkeiTemplateMstModel(
-                                                                                  item.TemplateId,
-                                                                                  item.TemplateName ?? string.Empty,
-                                                                                  item.Param ?? string.Empty,
-                                                                                  item.File ?? string.Empty,
-                                                                                  item.SortNo
-                                                               )).FirstOrDefault();
+                var renkeiTemplateModel = renkeiTemplateDBList.FirstOrDefault(renkeiTemplate => renkeiConf.TemplateId == renkeiTemplate.TemplateId);
                 if (renkeiTemplateModel == null)
                 {
                     continue;
@@ -6644,7 +6629,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 result.Add(new RenkeiConfModel(
                                renkeiConf.Id,
                                renkeiConf.RenkeiId,
-                               renkeiMst.RenkeiName,
+                               renkeiMst.RenkeiName ?? string.Empty,
                                renkeiConf.SeqNo,
                                renkeiConf.Param ?? string.Empty,
                                renkeiConf.PtNumLength,
@@ -6653,8 +6638,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                renkeiConf.Biko ?? string.Empty,
                                renkeiConf.SortNo,
                                false,
-                               renkeiTemplateModel,
-                               renkeiMst,
                                pathConfigModelList,
                                timingConfigModelList));
             }

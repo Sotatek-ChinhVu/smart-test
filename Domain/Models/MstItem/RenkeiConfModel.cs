@@ -2,7 +2,7 @@
 
 public class RenkeiConfModel
 {
-    public RenkeiConfModel(long id, int renkeiId, string renkeiMstName, int seqNo, string param, int ptNumLength, int templateId, int isInvalid, string biko, int sortNo, bool isDeleted, RenkeiTemplateMstModel renkeiTemplateMstModel, RenkeiMstModel renkeiMstModel, List<RenkeiPathConfModel> renkeiPathConfModelList, List<RenkeiTimingModel> renkeiTimingModelList)
+    public RenkeiConfModel(long id, int renkeiId, string renkeiMstName, int seqNo, string param, int ptNumLength, int templateId, int isInvalid, string biko, int sortNo, bool isDeleted, List<RenkeiPathConfModel> renkeiPathConfModelList, List<RenkeiTimingModel> renkeiTimingModelList)
     {
         Id = id;
         RenkeiId = renkeiId;
@@ -15,8 +15,6 @@ public class RenkeiConfModel
         Biko = biko;
         SortNo = sortNo;
         IsDeleted = isDeleted;
-        RenkeiTemplateMstModel = renkeiTemplateMstModel;
-        RenkeiMstModel = renkeiMstModel;
         RenkeiPathConfModelList = renkeiPathConfModelList;
         RenkeiTimingModelList = renkeiTimingModelList;
     }
@@ -42,10 +40,6 @@ public class RenkeiConfModel
     public int SortNo { get; private set; }
 
     public bool IsDeleted { get; private set; }
-
-    public RenkeiTemplateMstModel RenkeiTemplateMstModel { get; private set; }
-
-    public RenkeiMstModel RenkeiMstModel { get; private set; }
 
     public List<RenkeiPathConfModel> RenkeiPathConfModelList { get; private set; }
 
