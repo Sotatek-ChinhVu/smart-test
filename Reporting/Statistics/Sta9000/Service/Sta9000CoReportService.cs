@@ -466,8 +466,9 @@ public class Sta9000CoReportService : ISta9000CoReportService
         return new Sta9000Mapper(_singleFieldData, _tableFieldData, _extralData, formFileName).GetData();
     }
 
-    private CoPrintExitCode outPutFile(int hpId, string outputFileName)
+    public (string, CoPrintExitCode, List<string>) OutPutFile(int hpId, List<string> outputColumns, bool isPutColName)
     {
+        string printExitMessage = string.Empty;
         #region SubMethod
         string RecordData(CoSta9000PrintData csvData, List<string> columns)
         {
@@ -495,7 +496,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 }
                 else
                 {
-                    object value = null;
+                    object? value = null;
                     switch (outputDataType)
                     {
                         #region 保険情報
@@ -623,7 +624,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
                             break;
                         #endregion
                         default:
-                            value = typeof(CoSta9000PrintData).GetProperty(colName).GetValue(csvData);
+                            value = typeof(CoSta9000PrintData).GetProperty(colName)?.GetValue(csvData);
                             break;
                     }
                     colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
@@ -636,10 +637,10 @@ public class Sta9000CoReportService : ISta9000CoReportService
 
         try
         {
-            if (!GetData(hpId)) return CoPrintExitCode.EndNoData;
+            if (!GetData(hpId)) return (string.Empty, CoPrintExitCode.EndNoData, new());
 
             var csvDatas = printDatas.Where(p => p.RowType == RowType.Data).ToList();
-            if (csvDatas.Count == 0) return CoPrintExitCode.EndNoData;
+            if (csvDatas.Count == 0) return (string.Empty, CoPrintExitCode.EndNoData, new());
 
 
             List<string> retDatas = new List<string>();
@@ -655,9 +656,12 @@ public class Sta9000CoReportService : ISta9000CoReportService
             if (outputDataType == 3)
             {
                 var raiinKbns = csvDatas.Find(c => c.RaiinInf != null)?.RaiinInf?.RaiinKbns;
-                foreach (var raiinKbn in raiinKbns)
+                if (raiinKbns != null)
                 {
-                    putColumns.Add(new PutColumn(3, string.Format("RaiinKbn_{0}", raiinKbn.GrpId), string.Format("来院区分({0})", raiinKbn.GrpName)));
+                    foreach (var raiinKbn in raiinKbns)
+                    {
+                        putColumns.Add(new PutColumn(3, string.Format("RaiinKbn_{0}", raiinKbn.GrpId), string.Format("来院区分({0})", raiinKbn.GrpName)));
+                    }
                 }
             }
 
@@ -687,8 +691,8 @@ public class Sta9000CoReportService : ISta9000CoReportService
 
             if (wrkColumns.Count == 0)
             {
-                PrintExitMessage = "出力フィールドなし";
-                return CoPrintExitCode.EndNoData;
+                printExitMessage = "出力フィールドなし";
+                return (string.Empty, CoPrintExitCode.EndNoData, new());
             }
 
             //タイトル行
@@ -704,19 +708,14 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 retDatas.Add(RecordData(csvData, wrkColumns));
             }
 
-            var encoding = Encoding.UTF8;
-            var path = Path.Combine(outputDirectory, outputFileName);
-            path = Path.HasExtension(path) ? path : Path.ChangeExtension(path, "csv");
 
-            //ファイル保存
-            File.WriteAllLines(path, retDatas, encoding);
-
-            return CoPrintExitCode.EndSuccess;
+            return (string.Empty, CoPrintExitCode.EndSuccess, retDatas);
         }
         catch (Exception ex)
         {
-            Log.WriteLogError(ModuleName, this, nameof(outPutFile), ex);
-            return CoPrintExitCode.EndError;
+            //Log.WriteLogError(ModuleName, this, nameof(outPutFile), ex);
+            Console.WriteLine(ex);
+            return (string.Empty, CoPrintExitCode.EndError, new());
         }
     }
 
