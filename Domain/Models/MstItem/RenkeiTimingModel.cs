@@ -2,8 +2,9 @@
 
 public class RenkeiTimingModel
 {
-    public RenkeiTimingModel(string eventName, int renkeiId, int seqNo, string eventCd, int isInvalid, bool isDeleted)
+    public RenkeiTimingModel(long id, string eventName, int renkeiId, int seqNo, string eventCd, int isInvalid, bool isDeleted)
     {
+        Id = id;
         EventName = eventName;
         RenkeiId = renkeiId;
         SeqNo = seqNo;
@@ -11,6 +12,8 @@ public class RenkeiTimingModel
         IsInvalid = isInvalid;
         IsDeleted = isDeleted;
     }
+
+    public long Id { get; private set; }
 
     public string EventName { get; private set; }
 

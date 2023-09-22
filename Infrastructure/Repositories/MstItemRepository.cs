@@ -6605,6 +6605,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 var pathConfigModelList = renkeiPathConfDBList.Where(renkeiPathConf => renkeiPathConf.SeqNo == renkeiConf.SeqNo
                                                                                        && renkeiPathConf.RenkeiId == renkeiConf.RenkeiId)
                                                               .Select(item => new RenkeiPathConfModel(
+                                                                                  item.Id,
                                                                                   item.RenkeiId,
                                                                                   item.SeqNo,
                                                                                   item.EdaNo,
@@ -6631,6 +6632,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     if (eventMst != null)
                     {
                         timingConfigModelList.Add(new RenkeiTimingModel(
+                                                      timingConfig.Id,
                                                       eventMst.EventName ?? string.Empty,
                                                       timingConfig.RenkeiId,
                                                       timingConfig.SeqNo,
@@ -6640,6 +6642,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     }
                 }
                 result.Add(new RenkeiConfModel(
+                               renkeiConf.Id,
                                renkeiConf.RenkeiId,
                                renkeiMst.RenkeiName,
                                renkeiConf.SeqNo,
@@ -6690,5 +6693,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                                  item.SortNo
                                                               )).ToList();
         return result;
+    }
+
+    public bool SaveRenkei(int hpId, int userId, List<(int renkeiSbt, List<RenkeiConfModel> renkeiConfList)> renkeiTabList)
+    {
+
+        return TrackingDataContext.SaveChanges() > 0;
     }
 }

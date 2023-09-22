@@ -6,6 +6,7 @@ public class RenkeiConfDto
 {
     public RenkeiConfDto(RenkeiConfModel model)
     {
+        Id = model.Id;
         RenkeiId = model.RenkeiId;
         RenkeiMstName = model.RenkeiMstName;
         SeqNo = model.SeqNo;
@@ -21,6 +22,8 @@ public class RenkeiConfDto
         RenkeiPathConfModelList = model.RenkeiPathConfModelList.Select(item => new RenkeiPathConfDto(item)).ToList();
         RenkeiTimingModelList = model.RenkeiTimingModelList.Select(item => new RenkeiTimingDto(item)).ToList();
     }
+
+    public long Id { get; private set; }
 
     public int RenkeiId { get; private set; }
 

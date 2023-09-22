@@ -6,6 +6,7 @@ public class RenkeiPathConfDto
 {
     public RenkeiPathConfDto(RenkeiPathConfModel model)
     {
+        Id = model.Id;
         RenkeiId = model.RenkeiId;
         SeqNo = model.SeqNo;
         EdaNo = model.EdaNo;
@@ -23,6 +24,8 @@ public class RenkeiPathConfDto
         PassWordDisplay = model.PassWordDisplay;
         CharCdName = model.CharCdName;
     }
+
+    public long Id { get; private set; }
 
     public int RenkeiId { get; private set; }
 

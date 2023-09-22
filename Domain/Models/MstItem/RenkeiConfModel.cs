@@ -2,8 +2,9 @@
 
 public class RenkeiConfModel
 {
-    public RenkeiConfModel(int renkeiId, string renkeiMstName, int seqNo, string param, int ptNumLength, int templateId, int isInvalid, string biko, int sortNo, bool isDeleted, RenkeiTemplateMstModel renkeiTemplateMstModel, RenkeiMstModel renkeiMstModel, List<RenkeiPathConfModel> renkeiPathConfModelList, List<RenkeiTimingModel> renkeiTimingModelList)
+    public RenkeiConfModel(long id, int renkeiId, string renkeiMstName, int seqNo, string param, int ptNumLength, int templateId, int isInvalid, string biko, int sortNo, bool isDeleted, RenkeiTemplateMstModel renkeiTemplateMstModel, RenkeiMstModel renkeiMstModel, List<RenkeiPathConfModel> renkeiPathConfModelList, List<RenkeiTimingModel> renkeiTimingModelList)
     {
+        Id = id;
         RenkeiId = renkeiId;
         RenkeiMstName = renkeiMstName;
         SeqNo = seqNo;
@@ -19,6 +20,8 @@ public class RenkeiConfModel
         RenkeiPathConfModelList = renkeiPathConfModelList;
         RenkeiTimingModelList = renkeiTimingModelList;
     }
+
+    public long Id { get; private set; }
 
     public int RenkeiId { get; private set; }
 

@@ -2,8 +2,9 @@
 
 public class RenkeiPathConfModel
 {
-    public RenkeiPathConfModel(int renkeiId, int seqNo, int edaNo, string path, string machine, int charCd, string workPath, int interval, string param, string user, string passWord, int isInvalid, string biko, bool isDeleted)
+    public RenkeiPathConfModel(long id, int renkeiId, int seqNo, int edaNo, string path, string machine, int charCd, string workPath, int interval, string param, string user, string passWord, int isInvalid, string biko, bool isDeleted)
     {
+        Id = id;
         RenkeiId = renkeiId;
         SeqNo = seqNo;
         EdaNo = edaNo;
@@ -19,6 +20,8 @@ public class RenkeiPathConfModel
         Biko = biko;
         IsDeleted = isDeleted;
     }
+
+    public long Id { get; private set; }
 
     public int RenkeiId { get; private set; }
 
