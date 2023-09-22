@@ -1,13 +1,17 @@
 ﻿using Helper.Common;
 using Helper.Extension;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
+using Reporting.Statistics.Enums;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta9000.DB;
 using Reporting.Statistics.Sta9000.Mapper;
 using Reporting.Statistics.Sta9000.Models;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Text;
 
 namespace Reporting.Statistics.Sta9000.Service;
 
@@ -460,6 +464,260 @@ public class Sta9000CoReportService : ISta9000CoReportService
         }
 
         return new Sta9000Mapper(_singleFieldData, _tableFieldData, _extralData, formFileName).GetData();
+    }
+
+    private CoPrintExitCode outPutFile(int hpId, string outputFileName)
+    {
+        #region SubMethod
+        string RecordData(CoSta9000PrintData csvData, List<string> columns)
+        {
+            List<string> colDatas = new List<string>();
+
+            foreach (var colName in columns)
+            {
+                //患者グループ（区分名称）
+                if (colName.StartsWith("PtGrpCdName_"))
+                {
+                    var grpId = Regex.Replace(colName, @"[^0-9]", "");
+                    if (grpId != string.Empty)
+                    {
+                        colDatas.Add("\"" + csvData.PtGrps.Find(p => p.GrpId == int.Parse(grpId)).GrpCodeName + "\"");
+                    }
+                }
+                //患者グループ（区分コード）
+                else if (colName.StartsWith("PtGrpCd_"))
+                {
+                    var grpId = Regex.Replace(colName, @"[^0-9]", "");
+                    if (grpId != string.Empty)
+                    {
+                        colDatas.Add("\"" + csvData.PtGrps.Find(p => p.GrpId == int.Parse(grpId)).GrpCode + "\"");
+                    }
+                }
+                else
+                {
+                    object value = null;
+                    switch (outputDataType)
+                    {
+                        #region 保険情報
+                        case 1:
+                            var propertyInfo = typeof(CoPtHokenModel).GetProperty(colName);
+                            if (propertyInfo != null && csvData.PtHoken != null)
+                            {
+                                value = propertyInfo.GetValue(csvData.PtHoken) ?? new();
+                                break;
+                            }
+                            propertyInfo = typeof(CoSta9000PrintData).GetProperty(colName);
+                            if (propertyInfo != null)
+                            {
+                                value = propertyInfo.GetValue(csvData) ?? new();
+                                break;
+                            }
+                            break;
+                        #endregion
+                        #region 病名情報
+                        case 2:
+                            propertyInfo = typeof(CoPtByomeiModel).GetProperty(colName);
+                            if (propertyInfo != null && csvData.PtByomei != null)
+                            {
+                                value = propertyInfo.GetValue(csvData.PtByomei) ?? new();
+                                break;
+                            }
+                            propertyInfo = typeof(CoSta9000PrintData).GetProperty(colName);
+                            if (propertyInfo != null)
+                            {
+                                value = propertyInfo.GetValue(csvData) ?? new();
+                                break;
+                            }
+                            break;
+                        #endregion
+                        #region 来院情報
+                        case 3:
+                            if (colName.StartsWith("RaiinKbn_"))
+                            {
+                                var grpId = Regex.Replace(colName, @"[^0-9]", "");
+                                if (grpId != string.Empty)
+                                {
+                                    value = csvData.RaiinInf?.RaiinKbns.Find(p => p.GrpId == int.Parse(grpId)).KbnName;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                propertyInfo = typeof(CoRaiinInfModel).GetProperty(colName);
+                                if (propertyInfo != null && csvData.RaiinInf != null)
+                                {
+                                    value = propertyInfo.GetValue(csvData.RaiinInf);
+                                    break;
+                                }
+                                propertyInfo = typeof(CoSta9000PrintData).GetProperty(colName);
+                                if (propertyInfo != null)
+                                {
+                                    value = propertyInfo.GetValue(csvData);
+                                    break;
+                                }
+                            }
+                            break;
+                        #endregion
+                        #region 算定情報(オーダー)
+                        case 4:
+                            propertyInfo = typeof(CoOdrInfModel).GetProperty(colName);
+                            if (propertyInfo != null && csvData.OdrInf != null)
+                            {
+                                value = propertyInfo.GetValue(csvData.OdrInf);
+                                break;
+                            }
+                            propertyInfo = typeof(CoSta9000PrintData).GetProperty(colName);
+                            if (propertyInfo != null)
+                            {
+                                value = propertyInfo.GetValue(csvData);
+                                break;
+                            }
+                            break;
+                        #endregion
+                        #region 算定情報(算定)
+                        case 5:
+                            propertyInfo = typeof(CoSinKouiModel).GetProperty(colName);
+                            if (propertyInfo != null && csvData.SinKoui != null)
+                            {
+                                value = propertyInfo.GetValue(csvData.SinKoui);
+                                break;
+                            }
+                            propertyInfo = typeof(CoSta9000PrintData).GetProperty(colName);
+                            if (propertyInfo != null)
+                            {
+                                value = propertyInfo.GetValue(csvData);
+                                break;
+                            }
+                            break;
+                        #endregion
+                        #region カルテ情報
+                        case 6:
+                            propertyInfo = typeof(CoKarteInfModel).GetProperty(colName);
+                            if (propertyInfo != null && csvData.KarteInf != null)
+                            {
+                                value = propertyInfo.GetValue(csvData.KarteInf);
+                                break;
+                            }
+                            propertyInfo = typeof(CoSta9000PrintData).GetProperty(colName);
+                            if (propertyInfo != null)
+                            {
+                                value = propertyInfo.GetValue(csvData);
+                                break;
+                            }
+                            break;
+                        #endregion
+                        #region 検査情報
+                        case 7:
+                            propertyInfo = typeof(CoKensaModel).GetProperty(colName);
+                            if (propertyInfo != null && csvData.KensaInf != null)
+                            {
+                                value = propertyInfo.GetValue(csvData.KensaInf);
+                                break;
+                            }
+                            propertyInfo = typeof(CoSta9000PrintData).GetProperty(colName);
+                            if (propertyInfo != null)
+                            {
+                                value = propertyInfo.GetValue(csvData);
+                                break;
+                            }
+                            break;
+                        #endregion
+                        default:
+                            value = typeof(CoSta9000PrintData).GetProperty(colName).GetValue(csvData);
+                            break;
+                    }
+                    colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+                }
+            }
+
+            return string.Join(",", colDatas);
+        }
+        #endregion
+
+        try
+        {
+            if (!GetData(hpId)) return CoPrintExitCode.EndNoData;
+
+            var csvDatas = printDatas.Where(p => p.RowType == RowType.Data).ToList();
+            if (csvDatas.Count == 0) return CoPrintExitCode.EndNoData;
+
+
+            List<string> retDatas = new List<string>();
+
+            //出力フィールドのリストに患者グループを追加
+            var ptGrps = csvDatas.First().PtGrps;
+            foreach (var ptGrp in ptGrps)
+            {
+                putColumns.Add(new PutColumn(0, string.Format("PtGrpCd_{0}", ptGrp.GrpId), string.Format("{0}(区分コード)", ptGrp.GrpName)));
+                putColumns.Add(new PutColumn(0, string.Format("PtGrpCdName_{0}", ptGrp.GrpId), string.Format("{0}(区分名称)", ptGrp.GrpName)));
+            }
+            //出力フィールドのリストに来院区分を追加
+            if (outputDataType == 3)
+            {
+                var raiinKbns = csvDatas.Find(c => c.RaiinInf != null)?.RaiinInf?.RaiinKbns;
+                foreach (var raiinKbn in raiinKbns)
+                {
+                    putColumns.Add(new PutColumn(3, string.Format("RaiinKbn_{0}", raiinKbn.GrpId), string.Format("来院区分({0})", raiinKbn.GrpName)));
+                }
+            }
+
+            //データ種類で出力フィールドを絞り込み
+            var curPutColumns = putColumns.Where(p => p.DataType == 0 || p.DataType == outputDataType).ToList();
+
+            //出力フィールドの絞り込み
+            List<string> wrkTitles = new List<string>();
+            List<string> wrkColumns = new List<string>();
+
+            if (outputColumns?.Count >= 1)
+            {
+                foreach (var outputColumn in outputColumns)
+                {
+                    int index = curPutColumns.FindIndex(p => p.ColName == outputColumn);
+                    if (index == -1) continue;
+
+                    wrkTitles.Add(curPutColumns[index].JpName);
+                    wrkColumns.Add(curPutColumns[index].ColName);
+                }
+            }
+            else
+            {
+                wrkTitles = curPutColumns.Select(p => p.JpName).ToList();
+                wrkColumns = curPutColumns.Select(p => p.ColName).ToList();
+            }
+
+            if (wrkColumns.Count == 0)
+            {
+                PrintExitMessage = "出力フィールドなし";
+                return CoPrintExitCode.EndNoData;
+            }
+
+            //タイトル行
+            retDatas.Add("\"" + string.Join("\",\"", wrkTitles) + "\"");
+            if (isPutColName)
+            {
+                retDatas.Add("\"" + string.Join("\",\"", wrkColumns) + "\"");
+            }
+
+            //データ
+            foreach (var csvData in csvDatas)
+            {
+                retDatas.Add(RecordData(csvData, wrkColumns));
+            }
+
+            var encoding = Encoding.UTF8;
+            var path = Path.Combine(outputDirectory, outputFileName);
+            path = Path.HasExtension(path) ? path : Path.ChangeExtension(path, "csv");
+
+            //ファイル保存
+            File.WriteAllLines(path, retDatas, encoding);
+
+            return CoPrintExitCode.EndSuccess;
+        }
+        catch (Exception ex)
+        {
+            Log.WriteLogError(ModuleName, this, nameof(outPutFile), ex);
+            return CoPrintExitCode.EndError;
+        }
     }
 
     private bool GetData(int hpId)
