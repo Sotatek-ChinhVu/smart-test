@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Document;
 using Domain.Models.RaiinListSetting;
+using Helper.Extension;
 using UseCase.RaiinListSetting.GetRaiiinListSetting;
 
 namespace Interactor.RaiinListSetting

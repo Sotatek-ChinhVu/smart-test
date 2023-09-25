@@ -7,6 +7,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -36,10 +37,12 @@ namespace Infrastructure.Repositories
                           select new
                           {
                               Mst = mst,
-                              Detals = details
+                              Detals = details.OrderBy(x => x.SortNo).ToList(),
+                              SortNoDetailMax = details.Select(x => x.SortNoDetailMax).FirstOrDefault(),
+                              KbnCdDetailMax = details.Select(x => x.KbnCdDetailMax).FirstOrDefault()
                           };
 
-            return (memJoin.Select(item => new RaiinListMstModel(item.Mst.GrpId, item.Mst.GrpName ?? string.Empty, item.Mst.SortNo, item.Mst.IsDeleted, item.Detals.ToList())).ToList(), grpIdMstMax, sortNoMstMax);
+            return (memJoin.Select(item => new RaiinListMstModel(item.Mst.GrpId, item.Mst.GrpName ?? string.Empty, item.Mst.SortNo, item.Mst.IsDeleted, item.SortNoDetailMax, item.KbnCdDetailMax, item.Detals.ToList())).OrderBy(x => x.SortNo).ToList(), grpIdMstMax, sortNoMstMax);
         }
 
         private List<RaiinListDetailModel> GetActionGroupValueCollection(int hpId)
