@@ -1,16 +1,12 @@
-﻿using Domain.Models.DrugDetail;
-using Domain.Models.Ka;
-using Domain.Models.RaiinListMst;
+﻿using Domain.Models.RaiinListMst;
 using Domain.Models.RaiinListSetting;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Collections.Generic;
 
 namespace Infrastructure.Repositories
 {
@@ -22,15 +18,13 @@ namespace Infrastructure.Repositories
         {
             return NoTrackingDataContext.FilingCategoryMst.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None)
                         .OrderBy(f => f.SortNo)
-                        .Select(x=> new FilingCategoryModel(x.HpId, x.SortNo, x.CategoryCd, x.CategoryName ?? string.Empty, x.DspKanzok)).ToList();
+                        .Select(x => new FilingCategoryModel(x.HpId, x.SortNo, x.CategoryCd, x.CategoryName ?? string.Empty, x.DspKanzok)).ToList();
         }
 
         public (List<RaiinListMstModel> raiinListMsts, int grpIdMax, int sortNoMax) GetRaiiinListSetting(int hpId)
         {
             var list = NoTrackingDataContext.RaiinListMsts.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None).ToList();
             var listRaiinMstAll = NoTrackingDataContext.RaiinListMsts.Where(x => x.HpId == hpId).ToList();
-            var listRaiinDetailAll = NoTrackingDataContext.RaiinListDetails.Where(x => x.HpId == hpId).ToList();
-            var listRaiinDetailFinder = NoTrackingDataContext.RaiinListDetails.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
             var grpIdMstMax = listRaiinMstAll.Select(x => x.GrpId).Max();
             var sortNoMstMax = list.Select(x => x.SortNo).Max();
 
@@ -39,14 +33,13 @@ namespace Infrastructure.Repositories
             var memJoin = from mst in list
                           join detail in listDetail
                           on mst.GrpId equals detail.GrpId into details
-                          select new { 
-                              Mst = mst, 
-                              Detals = details,
-                              MaxSortNoDetail = listRaiinDetailFinder.Select(x => x.SortNo).Max(),
-                              MaxKbnCdDetail = listRaiinDetailAll.Select(x => x.KbnCd).Max()
+                          select new
+                          {
+                              Mst = mst,
+                              Detals = details
                           };
 
-            return (memJoin.Select(item => new RaiinListMstModel(item.Mst.GrpId, item.Mst.GrpName ?? string.Empty, item.Mst.SortNo, item.Mst.IsDeleted, item.MaxSortNoDetail, item.MaxKbnCdDetail, item.Detals.ToList())).ToList(), grpIdMstMax, sortNoMstMax);
+            return (memJoin.Select(item => new RaiinListMstModel(item.Mst.GrpId, item.Mst.GrpName ?? string.Empty, item.Mst.SortNo, item.Mst.IsDeleted, item.Detals.ToList())).ToList(), grpIdMstMax, sortNoMstMax);
         }
 
         private List<RaiinListDetailModel> GetActionGroupValueCollection(int hpId)
@@ -64,6 +57,8 @@ namespace Infrastructure.Repositories
             List<RaiinListDetailModel> result = new List<RaiinListDetailModel>();
             foreach (var item in details)
             {
+                var sortNoDetailMax = details.Where(x => x.GrpId == item.GrpId && x.IsDeleted == 0).OrderByDescending(x => x.SortNo).Select(x => x.SortNo).FirstOrDefault();
+                var kbnCdDetailMax = details.Where(x => x.GrpId == item.GrpId).OrderByDescending(x => x.KbnCd).Select(x => x.KbnCd).FirstOrDefault();
                 //MedicalSupervision
                 RaiinListKouiModel iKanModel = CreateRaiinListKouiModel(hpId, raiinListKouiCollection, KouiKbnIdConst.IKanId, item.GrpId, item.KbnCd);
 
@@ -130,7 +125,7 @@ namespace Infrastructure.Repositories
                 //OwnCost
                 RaiinListKouiModel jihiModel = CreateRaiinListKouiModel(hpId, raiinListKouiCollection, KouiKbnIdConst.JihiId, item.GrpId, item.KbnCd);
 
-                result.Add(new RaiinListDetailModel(item.GrpId, item.KbnCd, item.SortNo, item.KbnName ?? string.Empty, item.ColorCd ?? string.Empty, item.IsDeleted, false,
+                result.Add(new RaiinListDetailModel(item.GrpId, item.KbnCd, item.SortNo, item.KbnName ?? string.Empty, item.ColorCd ?? string.Empty, item.IsDeleted, false, sortNoDetailMax, kbnCdDetailMax,
                                                                                                                                     raiinListDocCollection.Where(x => x.GrpId == item.GrpId && x.KbnCd == item.KbnCd).ToList(),
                                                                                                                                     raiinListItemCollection.Where(x => x.GrpId == item.GrpId && x.KbnCd == item.KbnCd).ToList(),
                                                                                                                                     raiinListFileCollection.Where(x => x.GrpId == item.GrpId && x.KbnCd == item.KbnCd).ToList(),
@@ -157,6 +152,7 @@ namespace Infrastructure.Repositories
                                                                                                                                                                byoriModel,
                                                                                                                                                                jihiModel)));
             }
+
             return result;
         }
 
@@ -167,8 +163,9 @@ namespace Infrastructure.Repositories
             var items = NoTrackingDataContext.RaiinListItems.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None);
 
             var joinQuerry = from raiinkbItem in items
-                             select new {
-                                 RaiinkbItem = raiinkbItem, 
+                             select new
+                             {
+                                 RaiinkbItem = raiinkbItem,
                                  TenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.StartDate <= stDate && t.EndDate >= stDate && t.ItemCd == raiinkbItem.ItemCd)
                              };
 
@@ -188,9 +185,10 @@ namespace Infrastructure.Repositories
             var raiinListDocs = NoTrackingDataContext.RaiinListDocs.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None);
 
             var joinQuerry = from raiinListDoc in raiinListDocs
-                             select new { 
-                                 RaiinListDoc = raiinListDoc, 
-                                 DocCategory = NoTrackingDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.CategoryCd == raiinListDoc.CategoryCd)  
+                             select new
+                             {
+                                 RaiinListDoc = raiinListDoc,
+                                 DocCategory = NoTrackingDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.CategoryCd == raiinListDoc.CategoryCd)
                              };
 
             return joinQuerry.AsEnumerable().Select(x => new RaiinListDocModel(x.RaiinListDoc.HpId,
@@ -206,8 +204,9 @@ namespace Infrastructure.Repositories
             var raiinListFiles = NoTrackingDataContext.RaiinListFile.Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None);
 
             var joinQuerry = from raiinListFile in raiinListFiles
-                             select new { 
-                                 RaiinListFile = raiinListFile, 
+                             select new
+                             {
+                                 RaiinListFile = raiinListFile,
                                  FilingCategory = NoTrackingDataContext.FilingCategoryMst.FirstOrDefault(x => x.HpId == hpId && x.CategoryCd == raiinListFile.CategoryCd)
                              };
 
@@ -276,7 +275,7 @@ namespace Infrastructure.Repositories
                     if (updateKoui != null)
                     {
                         updateKoui.IsDeleted = kouCollection.IKanModel.IsDeleted;
-                        if(updateKoui.IsDeleted == DeleteTypes.Deleted)
+                        if (updateKoui.IsDeleted == DeleteTypes.Deleted)
                         {
                             kouiDeleteList.Add(kouCollection.IKanModel);
                         }
@@ -288,7 +287,7 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        if(kouCollection.IKanModel.IsDeleted == DeleteTypes.None && kouCollection.IKanModel.SeqNo == 0)
+                        if (kouCollection.IKanModel.IsDeleted == DeleteTypes.None && kouCollection.IKanModel.SeqNo == 0)
                         {
                             TrackingDataContext.RaiinListKouis.Add(new RaiinListKoui()
                             {
@@ -1456,7 +1455,7 @@ namespace Infrastructure.Repositories
                                         x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                         x.UpdateId = userId;
                                     });
-                                    itemDeleteList.AddRange(deleteListItems.Select(x=> new RaiinListItemModel(x.HpId, x.GrpId, x.KbnCd, x.ItemCd ?? string.Empty, x.SeqNo, string.Empty, x.IsExclude, false, x.IsDeleted)));
+                                    itemDeleteList.AddRange(deleteListItems.Select(x => new RaiinListItemModel(x.HpId, x.GrpId, x.KbnCd, x.ItemCd ?? string.Empty, x.SeqNo, string.Empty, x.IsExclude, false, x.IsDeleted)));
 
                                     var deleteListDocs = databaseRaiinListDocs.Where(x => x.GrpId == mstInDb.GrpId).ToList();
                                     deleteListDocs.ForEach(x =>
@@ -1465,7 +1464,7 @@ namespace Infrastructure.Repositories
                                         x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                         x.UpdateId = userId;
                                     });
-                                    docDeleteList.AddRange(deleteListDocs.Select(x=> new RaiinListDocModel(x.HpId, x.GrpId, x.KbnCd, x.SeqNo, x.CategoryCd, string.Empty, x.IsDeleted)));
+                                    docDeleteList.AddRange(deleteListDocs.Select(x => new RaiinListDocModel(x.HpId, x.GrpId, x.KbnCd, x.SeqNo, x.CategoryCd, string.Empty, x.IsDeleted)));
 
                                     var deleteListFiles = databaseRaiinListFiles.Where(x => x.GrpId == mstInDb.GrpId).ToList();
                                     deleteListFiles.ForEach(x =>
@@ -1474,7 +1473,7 @@ namespace Infrastructure.Repositories
                                         x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                         x.UpdateId = userId;
                                     });
-                                    fileDeleteList.AddRange(deleteListFiles.Select(x=> new RaiinListFileModel(x.HpId, x.GrpId, x.KbnCd, x.CategoryCd, string.Empty, x.SeqNo, x.IsDeleted)));
+                                    fileDeleteList.AddRange(deleteListFiles.Select(x => new RaiinListFileModel(x.HpId, x.GrpId, x.KbnCd, x.CategoryCd, string.Empty, x.SeqNo, x.IsDeleted)));
 
                                     var deleteListKoui = databaseRaiinListKoui.Where(x => x.GrpId == mstInDb.GrpId).ToList();
                                     deleteListKoui.ForEach(x =>
@@ -1483,7 +1482,7 @@ namespace Infrastructure.Repositories
                                         x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                         x.UpdateId = userId;
                                     });
-                                    kouiDeleteList.AddRange(deleteListKoui.Select(x=> new RaiinListKouiModel(x.HpId, x.GrpId, x.KbnCd, x.SeqNo, x.KouiKbnId, x.IsDeleted)));
+                                    kouiDeleteList.AddRange(deleteListKoui.Select(x => new RaiinListKouiModel(x.HpId, x.GrpId, x.KbnCd, x.SeqNo, x.KouiKbnId, x.IsDeleted)));
                                 }
                                 else
                                 {
@@ -1652,7 +1651,7 @@ namespace Infrastructure.Repositories
                                                     updateDocModel.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                                     updateDocModel.UpdateId = userId;
                                                     updateDocModel.IsDeleted = updateDoc.IsDeleted;
-                                                    if(updateDocModel.IsDeleted == DeleteTypes.Deleted)
+                                                    if (updateDocModel.IsDeleted == DeleteTypes.Deleted)
                                                     {
                                                         docDeleteList.Add(updateDoc);
                                                     }
@@ -1683,7 +1682,7 @@ namespace Infrastructure.Repositories
                                                     updateFileModel.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                                     updateFileModel.UpdateId = userId;
                                                     updateFileModel.IsDeleted = updateFile.IsDeleted;
-                                                    if(updateFileModel.IsDeleted == DeleteTypes.Deleted)
+                                                    if (updateFileModel.IsDeleted == DeleteTypes.Deleted)
                                                     {
                                                         fileDeleteList.Add(updateFile);
                                                     }
@@ -1718,7 +1717,7 @@ namespace Infrastructure.Repositories
                                                     updateItemModel.ItemCd = updateItem.ItemCd;
                                                     updateItemModel.IsExclude = updateItem.IsExclude;
                                                     updateItemModel.IsDeleted = updateItem.IsDeleted;
-                                                    if(updateItemModel.IsDeleted == DeleteTypes.Deleted)
+                                                    if (updateItemModel.IsDeleted == DeleteTypes.Deleted)
                                                     {
                                                         itemDeleteList.Add(updateItem);
                                                     }
