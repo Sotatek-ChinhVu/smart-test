@@ -6678,9 +6678,176 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
+    public List<EventMstModel> GetEventMstModelList()
+    {
+        var result = NoTrackingDataContext.EventMsts.Select(item => new EventMstModel(item.EventCd, item.EventName, item.AuditTrailing)).ToList();
+        return result;
+    }
+
     public bool SaveRenkei(int hpId, int userId, List<(int renkeiSbt, List<RenkeiConfModel> renkeiConfList)> renkeiTabList)
     {
+        List<int> renkeiIdList = new();
+        foreach (var renkei in renkeiTabList.Select(item => item.renkeiConfList))
+        {
+            renkeiIdList.AddRange(renkei.Select(item => item.RenkeiId).Distinct().ToList());
+        }
 
+        renkeiIdList = renkeiIdList.Distinct().ToList();
+        var renkeiConfDBList = TrackingDataContext.RenkeiConfs.Where(item => renkeiIdList.Contains(item.RenkeiId)).ToList();
+
+        var seqNoList = renkeiConfDBList.Select(item => item.SeqNo).Distinct().ToList();
+        var renkeiPathConfDBList = TrackingDataContext.RenkeiPathConfs.Where(item => renkeiIdList.Contains(item.RenkeiId)
+                                                                                     && seqNoList.Contains(item.SeqNo))
+                                                                      .ToList();
+        var renkeiTimingDBList = TrackingDataContext.RenkeiTimingConfs.Where(item => renkeiIdList.Contains(item.RenkeiId)
+                                                                                     && seqNoList.Contains(item.SeqNo))
+                                                                      .ToList();
+
+        foreach (var tab in renkeiTabList)
+        {
+            foreach (var renkeiModel in tab.renkeiConfList)
+            {
+                var renkeiEntity = renkeiConfDBList.FirstOrDefault(item => item.Id == renkeiModel.Id);
+                if (renkeiEntity == null)
+                {
+                    if (renkeiModel.Id != 0 || renkeiModel.IsDeleted)
+                    {
+                        continue;
+                    }
+                    renkeiEntity = new();
+                    renkeiEntity.Id = 0;
+                    renkeiEntity.HpId = hpId;
+                    renkeiEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    renkeiEntity.CreateId = userId;
+                    renkeiEntity.RenkeiId = renkeiModel.RenkeiId;
+                    renkeiEntity.SeqNo = GetSeqNo(renkeiConfDBList, renkeiModel.RenkeiId);
+                }
+                if (renkeiModel.IsDeleted)
+                {
+
+                    // remove renkeiPathConf
+                    var renkeiPathConfRemoveList = renkeiPathConfDBList.Where(item => item.RenkeiId == renkeiEntity.RenkeiId
+                                                                                      && item.SeqNo == renkeiEntity.SeqNo)
+                                                                       .ToList();
+                    TrackingDataContext.RenkeiPathConfs.RemoveRange(renkeiPathConfRemoveList);
+
+                    // remove renkeiTiming
+                    var renkeiTimingRemoveList = renkeiTimingDBList.Where(item => item.RenkeiId == renkeiEntity.RenkeiId
+                                                                                  && item.SeqNo == renkeiEntity.SeqNo)
+                                                                   .ToList();
+                    TrackingDataContext.RenkeiTimingConfs.RemoveRange(renkeiTimingRemoveList);
+
+                    // remove renkeiConf
+                    TrackingDataContext.RenkeiConfs.Remove(renkeiEntity);
+                    continue;
+                }
+                renkeiEntity.Param = renkeiModel.Param;
+                renkeiEntity.PtNumLength = renkeiModel.PtNumLength;
+                renkeiEntity.TemplateId = renkeiModel.TemplateId;
+                renkeiEntity.IsInvalid = renkeiModel.IsInvalid;
+                renkeiEntity.Biko = renkeiModel.Biko;
+                renkeiEntity.SortNo = renkeiModel.SortNo;
+                renkeiEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                renkeiEntity.UpdateId = userId;
+                if (renkeiEntity.Id == 0)
+                {
+                    TrackingDataContext.RenkeiConfs.Add(renkeiEntity);
+                }
+
+                // save renkeiPathConf
+                foreach (var pathModel in renkeiModel.RenkeiPathConfModelList)
+                {
+                    var pathEntity = renkeiPathConfDBList.FirstOrDefault(item => item.Id == pathModel.Id);
+                    if (pathEntity == null)
+                    {
+                        if (pathModel.Id != 0 || pathModel.IsDeleted)
+                        {
+                            continue;
+                        }
+                        pathEntity = new();
+                        pathEntity.Id = 0;
+                        pathEntity.HpId = hpId;
+                        pathEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        pathEntity.CreateId = userId;
+                        pathEntity.RenkeiId = renkeiEntity.RenkeiId;
+                        pathEntity.SeqNo = renkeiEntity.SeqNo;
+                    }
+                    if (pathModel.IsDeleted)
+                    {
+                        TrackingDataContext.RenkeiPathConfs.Remove(pathEntity);
+                        continue;
+                    }
+                    pathEntity.Path = pathModel.Path;
+                    pathEntity.Machine = pathModel.Machine;
+                    pathEntity.CharCd = pathModel.CharCd;
+                    pathEntity.IsInvalid = pathModel.IsInvalid;
+                    pathEntity.Biko = pathModel.Biko;
+                    pathEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    pathEntity.UpdateId = userId;
+                    if (pathEntity.Id == 0)
+                    {
+                        TrackingDataContext.RenkeiPathConfs.Add(pathEntity);
+                    }
+                }
+
+                // remove renkeiTiming
+                foreach (var timingModel in renkeiModel.RenkeiTimingModelList)
+                {
+                    var timingEntity = renkeiTimingDBList.FirstOrDefault(item => item.Id == timingModel.Id);
+                    if (timingEntity == null)
+                    {
+                        if (timingModel.Id != 0 || timingModel.IsDeleted)
+                        {
+                            continue;
+                        }
+                        timingEntity = new();
+                        timingEntity.Id = 0;
+                        timingEntity.HpId = hpId;
+                        timingEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        timingEntity.CreateId = userId;
+                        timingEntity.RenkeiId = renkeiEntity.RenkeiId;
+                        timingEntity.SeqNo = renkeiEntity.SeqNo;
+                    }
+                    if (timingModel.IsDeleted)
+                    {
+                        TrackingDataContext.RenkeiTimingConfs.Remove(timingEntity);
+                        continue;
+                    }
+                    timingEntity.IsInvalid = timingModel.IsInvalid;
+                    timingEntity.EventCd = timingModel.EventCd;
+                    timingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    timingEntity.UpdateId = userId;
+                    if (timingEntity.Id == 0)
+                    {
+                        TrackingDataContext.RenkeiTimingConfs.Add(timingEntity);
+                    }
+                }
+            }
+        }
         return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    private int GetSeqNo(List<RenkeiConf> renkeiConfList, int renkeiId)
+    {
+        renkeiConfList = renkeiConfList.Where(item => item.RenkeiId == renkeiId).ToList();
+        if (renkeiConfList.Any())
+        {
+            var seqNoList = renkeiConfList.Select(item => item.SeqNo).OrderBy(item => item).ToList();
+            for (int i = 0; i < seqNoList.Count; i++)
+            {
+                int seqNo = seqNoList[i];
+                if (seqNoList.Count == (i + 1))
+                {
+                    return seqNo + 1;
+                }
+                int nextSeqNo = seqNoList[i + 1];
+                if (seqNo + 1 == nextSeqNo)
+                {
+                    continue;
+                }
+                return seqNo + 1;
+            }
+        }
+        return 1;
     }
 }

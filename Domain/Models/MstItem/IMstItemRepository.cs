@@ -190,5 +190,9 @@ namespace Domain.Models.MstItem
         List<RenkeiMstModel> GetRenkeiMstModels(int hpId);
 
         List<RenkeiTemplateMstModel> GetRenkeiTemplateMstModels(int hpId);
+
+        List<EventMstModel> GetEventMstModelList();
+
+        bool SaveRenkei(int hpId, int userId, List<(int renkeiSbt, List<RenkeiConfModel> renkeiConfList)> renkeiTabList);
     }
 }
