@@ -39,6 +39,7 @@ using Reporting.ReceiptList.Service;
 using Reporting.ReceiptPrint.Service;
 using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
+using Reporting.Statistics.Sta9000.Models;
 using Reporting.Statistics.Sta9000.Service;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
@@ -703,8 +704,8 @@ public class ReportService : IReportService
         return _staticsticExportCsvService.ExportCsv(hpId, menuName, menuId, timeFrom, timeTo, monthFrom, monthTo, dateFrom, dateTo, isPutTotalRow, tenkiDateFrom, tenkiDateTo, enableRangeFrom, enableRangeTo, ptNumFrom, ptNumTo, isPutColName, coFileType);
     }
 
-    public (string message, CoPrintExitCode code, List<string> data) OutPutFileSta900(int hpId, List<string> outputColumns, bool isPutColName)
+    public (string message, CoPrintExitCode code, List<string> data) OutPutFileSta900(int hpId, List<string> outputColumns, bool isPutColName, CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf, CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf, CoSta9000KensaConf? kensaConf, List<long> ptIds, int sortOrder, int sortOrder2, int sortOrder3)
     {
-        return _sta9000CoReportService.OutPutFile(hpId, outputColumns, isPutColName);
+        return _sta9000CoReportService.OutPutFile(hpId, outputColumns, isPutColName, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf, kensaConf, ptIds, sortOrder, sortOrder2, sortOrder3);
     }
 }

@@ -191,6 +191,165 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         return ptDatas;
     }
 
+    public List<CoPtInfModel> GetPtInfs(int hpId,
+    CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
+    CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf,
+    CoSta9000KensaConf? kensaConf, List<long> ptIds)
+    {
+        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+
+        if (ptIds.Count > 0)
+        {
+            ptInfs = ptInfs.Where(p => ptIds.Any(p1 => p1 == p.PtId));
+        }
+
+        var ptFirstVisits = GetPtFirstVisits();
+        var ptLastVisits = NoTrackingDataContext.PtLastVisitDates;
+        var ptCmts = NoTrackingDataContext.PtCmtInfs.Where(p => p.IsDeleted == DeleteStatus.None);
+
+        //患者情報 + 初回来院日 + 最終来院日 + 患者コメント
+        var joinPtInfs = (
+            from ptInf in ptInfs
+            join ptFirstVisit in ptFirstVisits on
+                new { ptInf.HpId, ptInf.PtId } equals
+                new { ptFirstVisit.HpId, ptFirstVisit.PtId } into pfJoin
+            from ptFirstVisitJoin in pfJoin.DefaultIfEmpty()
+            join ptLastVisit in ptLastVisits on
+                new { ptInf.HpId, ptInf.PtId } equals
+                new { ptLastVisit.HpId, ptLastVisit.PtId } into plJoin
+            from ptVisitJoin in plJoin.DefaultIfEmpty()
+            join ptCmt in ptCmts on
+                new { ptInf.HpId, ptInf.PtId } equals
+                new { ptCmt.HpId, ptCmt.PtId } into pcJoin
+            from ptCmtJoin in pcJoin.DefaultIfEmpty()
+            where
+                ptInf.HpId == hpId
+            orderby
+                ptInf.PtNum
+            select new
+            {
+                ptInf,
+                ptFirstVisitJoin,
+                ptVisitJoin,
+                ptCmt = ptCmtJoin.Text
+            }
+        );
+
+        var ptDatas = joinPtInfs.AsEnumerable().Select(
+            d =>
+                new CoPtInfModel
+                (
+                    d.ptInf,
+                    d.ptFirstVisitJoin?.SinDate ?? 0,
+                    d.ptVisitJoin?.LastVisitDate ?? 0,
+                    d.ptCmt
+                )
+        ).ToList();
+
+        //検査条件で絞りこみ
+        ptDatas = GetPtInfKensaFilter(hpId, kensaConf, ptDatas);
+
+        #region 算定条件（調整額・調整率・自動算定）の取得
+        var ptSanteis = NoTrackingDataContext.PtSanteiConfs;
+        int nowDate = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
+
+        var santeiDatas = (
+            from ptSantei in ptSanteis
+            join ptInf in ptInfs on
+                new { ptSantei.HpId, ptSantei.PtId } equals
+                new { ptInf.HpId, ptInf.PtId }
+            where
+                ptSantei.IsDeleted == DeleteStatus.None &&
+                ptSantei.StartDate <= nowDate &&
+                ptSantei.EndDate >= nowDate
+            select
+                ptSantei
+        ).ToList();
+        #endregion
+
+        #region 患者グループの取得
+        var ptGrpInfs = NoTrackingDataContext.PtGrpInfs;
+        var ptGrpItems = NoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == DeleteStatus.None);
+
+        var ptGrpDatas = (
+            from ptGrpInf in ptGrpInfs
+            join ptGrpItem in ptGrpItems on
+                new { ptGrpInf.HpId, ptGrpInf.GroupId, ptGrpInf.GroupCode } equals
+                new { ptGrpItem.HpId, GroupId = ptGrpItem.GrpId, GroupCode = ptGrpItem.GrpCode }
+            join ptInf in ptInfs on
+                new { ptGrpInf.HpId, ptGrpInf.PtId } equals
+                new { ptInf.HpId, ptInf.PtId }
+            where
+                ptGrpInf.IsDeleted == DeleteStatus.None
+            select new
+            {
+                ptGrpInf.PtId,
+                ptGrpItem.GrpId,
+                ptGrpItem.GrpCode,
+                ptGrpItem.GrpCodeName
+            }
+        ).ToList();
+
+        var ptGrpMsts = NoTrackingDataContext.PtGrpNameMsts
+            .Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None)
+            .OrderBy(p => p.GrpId)
+            .ToList();
+        #endregion
+
+        #region 患者情報へ格納
+        foreach (var ptData in ptDatas)
+        {
+            //調整額
+            ptData.AdjFutan =
+                string.Join
+                (
+                    " ",
+                    santeiDatas
+                        .Where(s => s.PtId == ptData.PtId && s.KbnNo == 1)
+                        .Select(s => string.Format("{0}({1}円)", s.EdaNo == 1 ? "自費除く" : s.EdaNo == 2 ? "自費のみ" : "すべて", s.KbnVal))
+                );
+            //調整率
+            ptData.AdjRate =
+                string.Join
+                (
+                    " ",
+                    santeiDatas
+                        .Where(s => s.PtId == ptData.PtId && s.KbnNo == 2)
+                        .Select(s => string.Format("{0}({1}%)", s.EdaNo == 1 ? "自費除く" : s.EdaNo == 2 ? "自費のみ" : "すべて", s.KbnVal))
+                );
+            //自動算定
+            ptData.AutoSantei =
+                string.Join
+                (
+                    " ",
+                    santeiDatas
+                        .Where(s => s.PtId == ptData.PtId && s.KbnNo == 3)
+                        .Select(s => s.KbnVal == 1 ? "地域包括診療料" : s.KbnVal == 2 ? "認知症地域包括診療料" : "")
+                );
+            //患者グループ
+            ptData.PtGrps = new List<CoPtInfModel.PtGrp>();
+
+            foreach (var ptGrpMst in ptGrpMsts)
+            {
+                var curGrps = ptGrpDatas.FirstOrDefault(p => p.PtId == ptData.PtId && p.GrpId == ptGrpMst.GrpId);
+
+                ptData.PtGrps.Add
+                (
+                    new CoPtInfModel.PtGrp()
+                    {
+                        GrpId = ptGrpMst.GrpId,
+                        GrpName = ptGrpMst.GrpName ?? string.Empty,
+                        GrpCode = curGrps?.GrpCode ?? string.Empty,
+                        GrpCodeName = curGrps?.GrpCodeName ?? string.Empty
+                    }
+                );
+            }
+        }
+        #endregion
+
+        return ptDatas;
+    }
+
     /// <summary>
     /// 処方一覧の取得
     /// </summary>

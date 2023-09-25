@@ -54,7 +54,7 @@ public class ExportCSVController : AuthorizeControllerBase
     [HttpPost(ApiPath.ExportSta9000Csv)]
     public IActionResult ExportSta9000Csv([FromBody] ExportCsvSta9000Request request)
     {
-        var data = _reportService.OutPutFileSta900(HpId, request.OutputColumns, request.IsPutColName);
+        var data = _reportService.OutPutFileSta900(HpId, request.OutputColumns, request.IsPutColName, request.PtConf, request.HokenConf, request.ByomeiConf, request.RaiinConf, request.SinConf, request.KarteConf, request.KensaConf, request.PtIds, request.SortOrder, request.SortOrder2, request.SortOrder3);
         if (data.code == CoPrintExitCode.EndNoData && !string.IsNullOrEmpty(data.message))
         {
             return Ok("EndNoData");

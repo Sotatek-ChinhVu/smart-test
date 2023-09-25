@@ -10,5 +10,8 @@ public interface ISta9000CoReportService
             CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
             CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf,
             CoSta9000KensaConf? kensaConf);
-    (string, CoPrintExitCode, List<string>) OutPutFile(int hpId, List<string> outputColumns, bool isPutColName);
+    (string, CoPrintExitCode, List<string>) OutPutFile(int hpId, List<string> outputColumns, bool isPutColName, CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
+            CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf,
+            CoSta9000KensaConf? kensaConf, List<long> ptIds, int sortOrder, int sortOrder2, int sortOrder3);
+
 }
