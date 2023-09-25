@@ -1,5 +1,8 @@
-﻿using Domain.Models.SetMst;
+﻿using Domain.Models.AuditLog;
+using Domain.Models.MstItem;
+using Domain.Models.SetMst;
 using Domain.Models.User;
+using Helper.Constants;
 using Interactor.SetMst.CommonSuperSet;
 using UseCase.SetMst.SaveSetMst;
 
@@ -10,12 +13,14 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
     private readonly ISetMstRepository _setMstRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICommonSuperSet _commonSuperSet;
+    private readonly IMstItemRepository _mstItemRepository;
 
-    public SaveSetMstInteractor(ISetMstRepository setMstRepository, IUserRepository userRepository, ICommonSuperSet commonSuperSet)
+    public SaveSetMstInteractor(ISetMstRepository setMstRepository, IUserRepository userRepository, ICommonSuperSet commonSuperSet, IMstItemRepository mstItemRepository)
     {
         _setMstRepository = setMstRepository;
         _userRepository = userRepository;
         _commonSuperSet = commonSuperSet;
+        _mstItemRepository = mstItemRepository;
     }
 
     public SaveSetMstOutputData Handle(SaveSetMstInputData inputData)
@@ -76,6 +81,7 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
                                 inputData.IsAddNew
                              );
             var resultData = _setMstRepository.SaveSetMstModel(inputData.UserId, inputData.SinDate, setMstModel);
+            AddAuditTrailLog(inputData.HpId, inputData.UserId, setMstModel.GenerationId, setMstModel.SetKbn, setMstModel.SetKbnEdaNo);
             if (resultData != null)
             {
                 var data = _commonSuperSet.BuildTreeSetKbn(resultData);
@@ -86,6 +92,26 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
         finally
         {
             _setMstRepository.ReleaseResource();
+            _mstItemRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
         }
+    }
+
+    private void AddAuditTrailLog(int hpId, int userId, int generationId, int setKbn, int setKbnEdaNo)
+    {
+        string hosoku = $"{generationId}-{setKbn}-{setKbnEdaNo}";
+        var arg = new ArgumentModel(
+            EventCode.SupetSetDetailChanged,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            hosoku
+            );
+
+        _mstItemRepository.AddAuditTrailLog(hpId, userId, arg);
     }
 }
