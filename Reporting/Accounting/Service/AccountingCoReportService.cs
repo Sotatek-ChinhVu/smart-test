@@ -842,14 +842,15 @@ public class AccountingCoReportService : IAccountingCoReportService
     {
         List<(long ptId, int hokenId)> dataListPtConditions = new();
         List<(int grpId, string grpCd)> dataListGrpConditions = new();
-        foreach (var item in ptConditions)
-        {
-            dataListPtConditions.Add((item.Item1, item.Item2));
-        }
         foreach (var item in grpConditions)
         {
             dataListGrpConditions.Add((item.Item1, item.Item2));
         }
+        if (dataListGrpConditions.Any())
+        {
+            dataListPtConditions.AddRange(_finder.FindPtInf(hpId, dataListGrpConditions));
+        }
+        
         var coModelList = GetDataList(hpId, startDate, endDate, dataListPtConditions, dataListGrpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
         if (coModelList == null || coModelList.KaikeiInfListModels == null || coModelList.KaikeiInfListModels.Any() == false)
         {
