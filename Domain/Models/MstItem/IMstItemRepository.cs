@@ -5,6 +5,7 @@ using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
 using Domain.Models.MaterialMaster;
 using Domain.Models.OrdInf;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.TodayOdr;
 using Helper.Enum;
 
@@ -184,5 +185,6 @@ namespace Domain.Models.MstItem
         List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize, bool isCheckPage);
 
         string GetNameByItemCd(int hpId, string itemCd);
+        List<YohoSetMstModel> GetListYohoSetMstModelByUserID(int hpId, int userIdLogin, int sinDate, int userId = 0);
     }
 }

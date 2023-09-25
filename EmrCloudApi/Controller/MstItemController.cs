@@ -42,6 +42,7 @@ using UseCase.MstItem.GetKensaCenterMsts;
 using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetListYohoSetMstModelByUserID;
 using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
@@ -818,6 +819,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTenOfHRTItemPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenOfHRTItemResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListYohoSetMstModelByUserID)]
+        public ActionResult<Response<GetListYohoSetMstModelByUserIDResponse>> GetListYohoSetMstModelByUserID(GetListYohoSetMstModelByUserIDRequest request)
+        {
+            var input = new GetListYohoSetMstModelByUserIDInputData(HpId, UserId, request.SinDate, request.UserId);
+            var output = _bus.Handle(input);
+            var presenter = new GetListYohoSetMstModelByUserIDPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListYohoSetMstModelByUserIDResponse>>(presenter.Result);
         }
     }
 }
