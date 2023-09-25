@@ -8,7 +8,7 @@ using UseCase.MstItem.GetListTenMstOrigin;
 
 namespace UseCase.MstItem.GetListResultKensaMst
 {
-    public interface IGetListKensaMstInputPort : IInputPort<GetListResultKensaMstInputData, GetListKensaMstOuputData>
+    public interface IGetListKensaMstInputPort : IInputPort<GetListKensaMstInputData, GetListKensaMstOuputData>
     {
     }
 }
