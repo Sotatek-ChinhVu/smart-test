@@ -14,6 +14,7 @@
         InvalidPayType = 10,
         InvalidComment = 11,
         InvalidSindate = 12,
-        InvalidRaiinNo = 13
+        InvalidRaiinNo = 13,
+        NoPermission = 14,
     }
 }

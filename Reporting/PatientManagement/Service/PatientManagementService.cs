@@ -18,9 +18,8 @@ public class PatientManagementService : IPatientManagementService
         _sta9000CoReportService = sta9000CoReportService;
     }
 
-    public CommonReportingRequestModel PrintData(int hpId, int menuId)
+    public CommonReportingRequestModel PrintData(int hpId, PatientManagementModel patientManagementModel)
     {
-        PatientManagementModel patientManagementModel = _finder.GetPatientManagement(hpId, menuId);
         var groupInfos = _finder.GetListGroupInfo(hpId);
         var coSta9000PtConf = patientManagementModel.IsDefaultPtConfInView() ? null : patientManagementModel?.AsCoSta9000PtConf(groupInfos.Where(x => x.GroupItemSelected != null && !string.IsNullOrEmpty(x.GroupCodeSelected)).Select(x => new PtGrp(x.GroupId, x.GroupCodeSelected)).ToList());
         var coSta9000HokenConf = patientManagementModel!.IsDefaultHokenConfInView() ? null : patientManagementModel?.AsCoSta9000HokenConf();
