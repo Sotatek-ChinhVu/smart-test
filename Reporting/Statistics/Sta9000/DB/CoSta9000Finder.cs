@@ -200,7 +200,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
         if (ptIds.Count > 0)
         {
-            ptInfs = ptInfs.Where(p => ptIds.Any(p1 => p1 == p.PtId));
+            ptInfs = ptInfs.AsEnumerable().Where(p => ptIds.Any(p1 => p1 == p.PtId)).AsQueryable();
         }
 
         var ptFirstVisits = GetPtFirstVisits();
