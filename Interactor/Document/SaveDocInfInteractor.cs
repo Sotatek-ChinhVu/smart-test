@@ -1,4 +1,6 @@
-﻿using Domain.Models.Document;
+﻿using Domain.Models.AuditLog;
+using Domain.Models.Document;
+using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Helper.Common;
@@ -15,13 +17,15 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IReceptionRepository _receptionRepository;
+    private readonly IMstItemRepository _mstItemRepository;
 
-    public SaveDocInfInteractor(IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository)
+    public SaveDocInfInteractor(IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IMstItemRepository mstItemRepository)
     {
         _documentRepository = documentRepository;
         _amazonS3Service = amazonS3Service;
         _patientInforRepository = patientInforRepository;
         _receptionRepository = receptionRepository;
+        _mstItemRepository = mstItemRepository;
     }
 
     public SaveDocInfOutputData Handle(SaveDocInfInputData inputData)
@@ -67,6 +71,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             }
             if (_documentRepository.SaveDocInf(inputData.UserId, ConvertToDocInfModel(inputData), overwriteFile))
             {
+                AddAuditTrailLog(inputData.HpId, inputData.UserId, inputData.PtId, inputData.FileName);
                 return new SaveDocInfOutputData(SaveDocInfStatus.Successed);
             }
             if (!string.IsNullOrEmpty(path) && !string.IsNullOrEmpty(fileName))
@@ -126,5 +131,21 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             }
         }
         return SaveDocInfStatus.ValidateSuccess;
+    }
+
+    private void AddAuditTrailLog(int hpId, int userId, long ptId, string hosoku)
+    {
+        var arg = new ArgumentModel(
+                        EventCode.EditDocumentSave,
+                        ptId,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        hosoku
+            );
+        _mstItemRepository.AddAuditTrailLog(hpId, userId, arg);
     }
 }
