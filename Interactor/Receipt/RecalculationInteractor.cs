@@ -1,4 +1,6 @@
-﻿using Domain.Models.Receipt;
+﻿using Domain.Models.AuditLog;
+using Domain.Models.MstItem;
+using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
 using Helper.Constants;
 using Helper.Messaging;
@@ -14,15 +16,17 @@ public class RecalculationInteractor : IRecalculationInputPort
     private readonly IReceiptRepository _receiptRepository;
     private readonly ICalculateService _calculateService;
     private readonly ICommonReceRecalculation _commonReceRecalculation;
+    private readonly IMstItemRepository _mstItemRepository;
     private IMessenger? _messenger;
 
     bool isStopCalc = false;
 
-    public RecalculationInteractor(IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation, ICalculateService calculateRepository)
+    public RecalculationInteractor(IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation, ICalculateService calculateRepository, IMstItemRepository mstItemRepository)
     {
         _receiptRepository = receiptRepository;
         _commonReceRecalculation = commonReceRecalculation;
         _calculateService = calculateRepository;
+        _mstItemRepository = mstItemRepository;
     }
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
@@ -88,6 +92,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             {
                 SendMessager(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, string.Empty, string.Empty));
             }
+            AddAuditLog(inputData.HpId, inputData.UserId, inputData.SinYm, inputData.IsRecalculationCheckBox, inputData.IsReceiptAggregationCheckBox, inputData.IsCheckErrorCheckBox, inputData.PtIdList.Any());
             return new RecalculationOutputData(success);
         }
         finally
@@ -139,5 +144,27 @@ public class RecalculationInteractor : IRecalculationInputPort
     {
         var allowNextStep = _messenger!.SendAsync(new AllowNextStepStatus());
         return allowNextStep.Result.Result;
+    }
+
+    private void AddAuditLog(int hpId, int userId,  int sinDate, bool recalculation, bool receiptAggregation, bool isCheckError, bool isSpecifiedPt)
+    {
+        var hosoku = string.Format("CALC:{0},SUMRECE:{1},CHECK:{2},PT:{3}",
+                                                   recalculation ? 1 : 0,
+                                                   receiptAggregation ? 1 : 0,
+                                                   isCheckError ? 1 : 0,
+                                                   isSpecifiedPt ? 1 : 0);
+        var arg = new ArgumentModel(
+                        EventCode.Recalculation,
+                        0,
+                        sinDate,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        hosoku
+            );
+
+        _mstItemRepository.AddAuditTrailLog(hpId, userId, arg);
     }
 }

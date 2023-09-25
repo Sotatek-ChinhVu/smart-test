@@ -1,6 +1,9 @@
-﻿using Domain.Models.Diseases;
+﻿using Domain.Models.AuditLog;
+using Domain.Models.Diseases;
 using Domain.Models.Insurance;
+using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
+using Helper.Constants;
 using UseCase.Diseases.Upsert;
 using static Helper.Constants.PtDiseaseConst;
 namespace Interactor.Diseases
@@ -10,12 +13,16 @@ namespace Interactor.Diseases
         private readonly IPtDiseaseRepository _diseaseRepository;
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IInsuranceRepository _insuranceInforRepository;
-        public UpsertPtDiseaseListInteractor(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository)
+        private readonly IMstItemRepository _mstItemRepository;
+
+        public UpsertPtDiseaseListInteractor(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IMstItemRepository mstItemRepository)
         {
             _diseaseRepository = diseaseRepository;
             _patientInforRepository = patientInforRepository;
             _insuranceInforRepository = insuranceInforRepository;
+            _mstItemRepository = mstItemRepository;
         }
+
         public UpsertPtDiseaseListOutputData Handle(UpsertPtDiseaseListInputData inputData)
         {
             try
@@ -69,6 +76,9 @@ namespace Interactor.Diseases
                 }
 
                 var result = _diseaseRepository.Upsert(datas, inputData.HpId, inputData.UserId);
+
+                AddAuditLog(inputData.HpId, inputData.UserId, inputData.PtDiseaseModel.FirstOrDefault()?.PtId ?? 0);
+
                 return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.Success, result);
             }
             catch
@@ -133,6 +143,23 @@ namespace Interactor.Diseases
                 return UpsertPtDiseaseListStatus.PtInvalidIsDeleted;
 
             return UpsertPtDiseaseListStatus.Success;
+        }
+
+        private void AddAuditLog(int hpId, int userId, long ptId)
+        {
+            var arg = new ArgumentModel(
+                            EventCode.DiseaseRegUpdate,
+                            ptId,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            string.Empty
+                );
+
+            _mstItemRepository.AddAuditTrailLog(hpId, userId, arg);
         }
     }
 }
