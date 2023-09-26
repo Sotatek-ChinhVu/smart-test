@@ -24,6 +24,7 @@ public class SaveStatisticMenuPresenter : ISaveStatisticMenuOutputPort
         SaveStatisticMenuStatus.InvalidGrpId => ResponseMessage.InvalidGrpId,
         SaveStatisticMenuStatus.InvalidReportId => ResponseMessage.InvalidReportId,
         SaveStatisticMenuStatus.InvalidMenuName => ResponseMessage.InvalidMenuName,
+        SaveStatisticMenuStatus.NoPermission => ResponseMessage.NoPermission,
         _ => string.Empty
     };
 }

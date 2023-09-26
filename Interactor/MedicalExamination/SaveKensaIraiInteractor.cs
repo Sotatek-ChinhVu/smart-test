@@ -1,10 +1,13 @@
-﻿using Domain.Models.KensaIrai;
+﻿using Domain.Models.GroupInf;
+using Domain.Models.KensaIrai;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Domain.Models.SystemConf;
+using Entity.Tenant;
 using Helper.Common;
+using Reporting.Kensalrai.Service;
 using UseCase.MedicalExamination.SaveKensaIrai;
 
 namespace Interactor.MedicalExamination;
@@ -16,14 +19,18 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IReceptionRepository _receptionRepository;
     private readonly IOrdInfRepository _ordInfRepository;
+    private readonly IKensaIraiCoReportService _kensaIraiCoReportService;
+    private readonly IGroupInfRepository _groupInfRepository;
 
-    public SaveKensaIraiInteractor(IKensaIraiRepository kensaIraiRepository, ISystemConfRepository systemConfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IOrdInfRepository ordInfRepository)
+    public SaveKensaIraiInteractor(IKensaIraiRepository kensaIraiRepository, ISystemConfRepository systemConfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IOrdInfRepository ordInfRepository, IKensaIraiCoReportService kensaIraiCoReportService, IGroupInfRepository groupInfRepository)
     {
         _kensaIraiRepository = kensaIraiRepository;
         _systemConfRepository = systemConfRepository;
         _patientInforRepository = patientInforRepository;
         _receptionRepository = receptionRepository;
         _ordInfRepository = ordInfRepository;
+        _kensaIraiCoReportService = kensaIraiCoReportService;
+        _groupInfRepository = groupInfRepository;
         kensaCenterMst = new();
         odrInfModels = new();
         odrInfDetailModels = new();
@@ -59,7 +66,7 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
             ptId = inputData.PtId;
             sinDate = inputData.SinDate;
             raiinNo = inputData.RaiinNo;
-
+            List<KensaIraiReportItem> kensaIraiReportItemList = new();
             // 初期処理（設定の取得、および、チェック）
             if (Init())
             {
@@ -71,20 +78,20 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
                 {
                     // 患者情報なし
                     messageResult = $"患者情報がみつかりません。 ptid:{ptId}";
-                    return new SaveKensaIraiOutputData(messageResult, SaveKensaIraiStatus.Successed);
+                    return new SaveKensaIraiOutputData(messageResult, new(), SaveKensaIraiStatus.Failed);
                 }
 
                 if (odrInfModels == null || !odrInfModels.Any() || odrInfDetailModels == null || !odrInfDetailModels.Any())
                 {
                     // オーダー情報なし
                     messageResult = $"院外検査オーダーがみつかりません。 ptid:{ptId} raiinNo:{raiinNo}";
-                    return new SaveKensaIraiOutputData(messageResult, SaveKensaIraiStatus.IsDeleteFile);
+                    return new SaveKensaIraiOutputData(messageResult, new(), SaveKensaIraiStatus.Failed);
                 }
 
                 // 依頼データを作成する
-                MakeIraiData();
+                kensaIraiReportItemList = MakeIraiData();
             }
-            return new SaveKensaIraiOutputData(messageResult, SaveKensaIraiStatus.Successed);
+            return new SaveKensaIraiOutputData(messageResult, kensaIraiReportItemList, SaveKensaIraiStatus.Successed);
         }
         finally
         {
@@ -93,6 +100,7 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
             _patientInforRepository.ReleaseResource();
             _receptionRepository.ReleaseResource();
             _ordInfRepository.ReleaseResource();
+            _groupInfRepository.ReleaseResource();
         }
     }
 
@@ -167,7 +175,7 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
     /// <summary>
     /// 依頼データを作成する
     /// </summary>
-    private void MakeIraiData()
+    private List<KensaIraiReportItem> MakeIraiData()
     {
         long keyNo = 0;
 
@@ -298,7 +306,7 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
         _kensaIraiRepository.SaveKensaInf(hpId, userId, kensaInfModels, kensaInfDetailModels);
 
         //// 依頼ファイルを作成する
-        //SaveIraiFile();
+        return SaveIraiFile();
     }
 
     /// <summary>
@@ -373,5 +381,114 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
             }
         }
         return results;
+    }
+
+    private List<KensaIraiReportItem> SaveIraiFile()
+    {
+        List<KensaIraiReportItem> result = new();
+        int odrKensaIraiFileType = (int)_systemConfRepository.GetByGrpCd(hpId, 100019, 7).Val;
+        var odrKensaIraiKaCode = _systemConfRepository.GetByGrpCd(hpId, 100019, 8).Val;
+        var odrkensaIraiKaCodeParam = _systemConfRepository.GetByGrpCd(hpId, 100019, 8).Param;
+        var odrKensaIraiSameFileModel = _systemConfRepository.GetByGrpCd(hpId, 100019, 9);
+        int odrKensaIraiSameFile = odrKensaIraiSameFileModel.GrpCd == 0 ? 1 : (int)odrKensaIraiSameFileModel.Val;
+        var ptIdList = kensaInfModels.Select(item => item.PtId).Distinct().ToList();
+        var ptGrpList = _groupInfRepository.GetAllByPtIdList(hpId, ptIdList);
+
+        // KeyNo > 0 ・・・ 依頼対象の検査情報レコード
+        foreach (var kensaInf in kensaInfModels.FindAll(p => p.KeyNo > 0))
+        {
+            int seqNo = 0;
+
+            // detail生成
+            List<Reporting.Kensalrai.Model.KensaIraiDetailModel> addKensaIraiDtls = new();
+            foreach (var kensaDtl in kensaInfDetailModels.FindAll(p => p.KeyNo == kensaInf.KeyNo))
+            {
+                KensaMst kensaMst = new();
+                kensaMst.KensaItemCd = kensaDtl.KensaMstModel.KensaItemCd;
+                kensaMst.CenterItemCd1 = kensaDtl.KensaMstModel.CenterItemCd;
+                kensaMst.KensaKana = kensaDtl.KensaMstModel.KensaKana;
+                kensaMst.KensaName = kensaDtl.KensaMstModel.KensaName;
+                kensaMst.ContainerCd = kensaDtl.KensaMstModel.ContainerCd;
+                addKensaIraiDtls.Add(new Reporting.Kensalrai.Model.KensaIraiDetailModel(true, 0, 0, 0, seqNo, kensaMst));
+            }
+
+            if (addKensaIraiDtls.Any())
+            {
+                // 検査依頼データ生成
+                var addKensaIrai =
+                    new Reporting.Kensalrai.Model.KensaIraiModel(
+                        raiinInfModel?.SinDate ?? 0,
+                        kensaInf.RaiinNo,
+                        kensaInf.IraiCd,
+                        kensaInf.PtId,
+                        kensaInf.PtNum,
+                        ptInfModel?.Name ?? string.Empty,
+                        ptInfModel?.KanaName ?? string.Empty,
+                        ptInfModel?.Sex ?? 0,
+                        ptInfModel?.Birthday ?? 0,
+                        kensaInf.TosekiKbn,
+                        kensaInf.SikyuKbn,
+                        raiinInfModel?.KaId ?? 0,
+                        addKensaIraiDtls);
+                addKensaIrai.UpdateTime = kensaInf.UpdateDate.ToString("HHmm");
+
+                if (odrKensaIraiFileType == 2)
+                {
+                    // 福山臨床
+                    addKensaIrai.KaName = raiinInfModel?.KaName ?? string.Empty;
+                    addKensaIrai.DrName = raiinInfModel?.DrName ?? string.Empty;
+                }
+                if (odrKensaIraiKaCode == 1)
+                {
+                    // グループに合わせた科コードを出力する場合
+
+                    addKensaIrai.KaCodeName = string.Empty;
+
+                    // パラメータを分解
+                    if (!string.IsNullOrEmpty(odrkensaIraiKaCodeParam))
+                    {
+                        string[] parameters = odrkensaIraiKaCodeParam.Split(',');
+
+                        foreach (string param in parameters)
+                        {
+                            string[] dtls = param.Split('=');
+
+                            if (dtls.Count() == 3 && ExistPtGroup(addKensaIrai.PtId, CIUtil.StrToIntDef(dtls[0], 0), dtls[1]))
+                            {
+                                addKensaIrai.KaCodeName = dtls[2];
+                                break;
+                            }
+
+                            if (!string.IsNullOrEmpty(addKensaIrai.KaCodeName))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                addKensaIrai.TantoKanaName = raiinInfModel?.TantoKanaName ?? string.Empty;
+
+                // ファイルの内容を取得
+                List<string> output = _kensaIraiCoReportService.GetIraiFileData(kensaCenterMst.CenterCd, new List<Reporting.Kensalrai.Model.KensaIraiModel> { addKensaIrai }, odrKensaIraiFileType);
+                List<string> outputDummy = _kensaIraiCoReportService.GetIraiFileDataDummy(kensaCenterMst.CenterCd, new List<Reporting.Kensalrai.Model.KensaIraiModel> { addKensaIrai }, odrKensaIraiFileType);
+                result.Add(new KensaIraiReportItem(
+                               output,
+                               outputDummy,
+                               odrKensaIraiSameFile,
+                               raiinInfModel?.KaId ?? 0,
+                               kensaInf.IraiCd,
+                               ptInfModel?.PtNum ?? 0));
+            }
+        }
+
+        bool ExistPtGroup(long ptid, int grpid, string grpcd)
+        {
+            var exist = ptGrpList.Any(item => item.PtId == ptid
+                                              && item.GroupId == grpid
+                                              && item.GroupCode == grpcd);
+            return exist;
+        }
+
+        return result;
     }
 }
