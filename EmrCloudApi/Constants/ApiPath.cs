@@ -65,6 +65,7 @@
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
+        public const string GetListKensaIjiSetting = "GetListKensaIjiSetting";
         public const string GetTreeListSet = "GetTreeListSet";
         public const string GetTreeByomeiSet = "GetTreeByomeiSet";
         public const string GetListSetGeneration = "GetListSetGeneration";

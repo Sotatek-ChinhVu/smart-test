@@ -6529,6 +6529,54 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public List<KensaIjiSettingModel> GetListKensaIjiSettingModel(int hpId, string keyWords, bool isValid, bool isExpired, bool? isPayment)
+        {
+            List<KensaIjiSettingModel> result = null;
+            try
+            {
+                int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
+                var santeiItemQuery = NoTrackingDataContext.TenMsts.Where(u => u.HpId == hpId &&
+                                                                                           u.ItemCd.StartsWith("KN") &&
+                                                                                           u.SanteigaiKbn != 1 &&
+                                                                                           u.IsDeleted == DeleteTypes.None &&
+                                                                                           (u.Name + u.KanaName1 + u.KanaName2 + u.KanaName3 + u.KanaName4 + u.KanaName5 + u.KanaName6 + u.KanaName7).Contains(keyWords))
+                                                                .Select(item => new { item.ItemCd, item.SanteiItemCd, item.Name, item.KensaItemCd, item.StartDate })
+                                                                .GroupBy(item => item.ItemCd)
+                                                                .Select(key => key.OrderByDescending(s => s.StartDate).FirstOrDefault());
+                var itemMstQuery = NoTrackingDataContext.TenMsts.Where(u => u.IsDeleted == DeleteTypes.None)
+                                    .Select(item => new { item.ItemCd, item.StartDate, item.EndDate, item.SanteiItemCd, item.Ten, item.ReceName }).ToList();
+
+                var santenInfList = from santei in santeiItemQuery.ToList()
+                                    join ten in itemMstQuery on new { santei.SanteiItemCd }
+                                          equals new { SanteiItemCd = ten.ItemCd } into itemMstQueryLeft
+                                    from tenItem in itemMstQueryLeft.OrderByDescending(item => item.EndDate).Take(1).DefaultIfEmpty()
+                                    where tenItem != null && ((isValid && tenItem.EndDate >= sinDate) || (isExpired && tenItem.EndDate < sinDate))
+                                    select new
+                                    {
+                                        Santei = santei,
+                                        TenItem = tenItem,
+                                    };
+                result = santenInfList.Select(u => new KensaIjiSettingModel(
+                    u.Santei.ItemCd,
+                    u.Santei.KensaItemCd,
+                    u.Santei.Name,
+                    u.TenItem != null ? u.TenItem.ItemCd : string.Empty,
+                    u.TenItem != null ? u.TenItem.ReceName : string.Empty,
+                    u.TenItem != null ? u.TenItem.Ten : 0,
+                    u.TenItem != null ? u.TenItem.StartDate : 0,
+                    u.TenItem != null ? u.TenItem.EndDate : 99999999)).ToList();
+            }
+            finally
+            {
+                if (result == null)
+                {
+                    result = new List<KensaIjiSettingModel>();
+                }
+            }
+            return result;
+
+        }
+
         public bool UpdateJihiSbtMst(int hpId, int userId, List<JihiSbtMstModel> jihiSbtMsts)
         {
             int jihiSbt = NoTrackingDataContext.JihiSbtMsts.OrderByDescending(i => i.JihiSbt).FirstOrDefault()?.JihiSbt ?? 0;
