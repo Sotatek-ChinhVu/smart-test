@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MstItem;
-using UseCase.MstItem.IsUsingKensa;
+using UseCase.IsUsingKensa;
 
 namespace EmrCloudApi.Presenters.MstItem
 {
