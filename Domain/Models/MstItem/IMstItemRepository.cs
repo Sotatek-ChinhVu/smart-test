@@ -190,6 +190,8 @@ namespace Domain.Models.MstItem
         string GetNameByItemCd(int hpId, string itemCd);
         
         List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison);
+
+        bool SaveCompareTenMst(List<SaveCompareTenMstModel> ListData, ComparisonSearchModel comparison, int userId);
     }
 
 }
