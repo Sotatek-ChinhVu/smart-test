@@ -23,6 +23,7 @@ using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
 using UseCase.IsUsingKensa;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using UseCase.MstItem.CompareTenMst;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseNameMstSearch;
@@ -37,7 +38,10 @@ using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
+using UseCase.MstItem.GetListByomeiSetGenerationMst;
 using UseCase.MstItem.GetListDrugImage;
+using UseCase.MstItem.GetListKensaIjiSetting;
+using UseCase.MstItem.GetListSetGenerationMst;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
@@ -48,9 +52,12 @@ using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.GetTreeByomeiSet;
+using UseCase.MstItem.GetTreeListSet;
 using UseCase.MstItem.IsKensaItemOrdering;
 using UseCase.MstItem.IsUsingKensa;
 using UseCase.MstItem.SaveAddressMst;
+using UseCase.MstItem.SaveCompareTenMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
@@ -163,7 +170,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.ParrentKensaMst)]
         public ActionResult<Response<GetParrentKensaMstListResponse>> GetParrentKensaMst([FromQuery] GetParrentKensaMstRequest request)
         {
-            var input = new GetParrentKensaMstInputData(HpId, request.KeyWord);
+            var input = new GetParrentKensaMstInputData(HpId, request.KeyWord, request.ItemCd);
             var output = _bus.Handle(input);
 
             var presenter = new GetParrentKensaMstListPresenter();
@@ -761,6 +768,77 @@ namespace EmrCloudApi.Controller
             var presenter = new IsKensaItemOrderingPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<IsKensaItemOrderingResponse>>(presenter.Result);
+        }
+        [HttpGet(ApiPath.GetListKensaIjiSetting)]
+        public ActionResult<Response<GetListKensaIjiSettingResponse>> GetListKensaIjiSetting([FromQuery] GetListKensaIjiSettingRequest request)
+        {
+            var input = new GetListKensaIjiSettingInputData(HpId, request.KeyWords, request.IsValid, request.IsExpired);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaIjiSettingPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaIjiSettingResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTreeListSet)]
+        public ActionResult<Response<GetTreeListSetMstResponse>> GetTreeListSet([FromQuery] GetTreeListSetRequest request)
+        {
+            var input = new GetTreeListSetInputData(HpId, request.SinDate, request.SetKbn);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetTreeListSetMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetTreeListSetMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTreeByomeiSet)]
+        public ActionResult<Response<GetTreeByomeiSetResponse>> GetTreeByomeiSet([FromQuery] GetTreeByomeiSetRequest request)
+        {
+            var input = new GetTreeByomeiSetInputData(HpId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetTreeByomeiSetPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTreeByomeiSetResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListSetGeneration)]
+        public ActionResult<Response<GetListSetGenerationMstResponse>> GetListSetGeneration()
+        {
+            var input = new GetListSetGenerationMstInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetListSetGenerationMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListSetGenerationMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListByomeiSetGeneration)]
+        public ActionResult<Response<GetListByomeiSetGenerationMstResponse>> GetListByomeiSetGeneration()
+        {
+            var input = new GetListByomeiSetGenerationMstInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetListByomeiSetGenerationMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListByomeiSetGenerationMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SearchCompareTenMst)]
+        public ActionResult<Response<CompareTenMstResponse>> SearchCompareTenMst([FromBody] CompareTenMstRequest request)
+        {
+            var input = new CompareTenMstInputData(request.Actions, request.Comparison, request.SinDate, HpId);
+            var output = _bus.Handle(input);
+            var presenter = new CompareTenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CompareTenMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveCompareTenMst)]
+        public ActionResult<Response<SaveCompareTenMstResponse>> SaveCompareTenMst([FromBody] SaveCompareTenMstRequest request)
+        {
+            var input = new SaveCompareTenMstInputData(request.ListData, request.Comparions, UserId);
+            var output = _bus.Handle(input);
+            var presenter = new SaveCompareTenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveCompareTenMstResponse>>(presenter.Result);
         }
     }
 }
