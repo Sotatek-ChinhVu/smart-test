@@ -70,6 +70,7 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
+using UseCase.MstItem.UpdateJihiSbtMst;
 using UseCase.MstItem.UpdateKensaStdMst;
 using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
