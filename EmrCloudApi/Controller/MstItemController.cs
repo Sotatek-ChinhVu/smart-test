@@ -733,8 +733,8 @@ namespace EmrCloudApi.Controller
             return Ok(presenter.Result);
         }
 
-        [HttpPost(ApiPath.f_17_Common)]
-        public ActionResult<Response<F17CommonResponse>> f_17_Common([FromBody] F17CommonRequest request)
+        [HttpPost(ApiPath.F17Common)]
+        public ActionResult<Response<F17CommonResponse>> F17Common([FromBody] F17CommonRequest request)
         {
             var input = new F17CommonInputData(HpId, request.KensaStdItemCd, request.ItemCd);
             var output = _bus.Handle(input);

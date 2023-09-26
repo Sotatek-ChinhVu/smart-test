@@ -64,7 +64,7 @@
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
-        public const string f_17_Common = "f_17_Common";
+        public const string F17Common = "F17Common";
         public const string IsKensaItemOrdering = "IsKensaItemOrdering";
 
         //Schema
