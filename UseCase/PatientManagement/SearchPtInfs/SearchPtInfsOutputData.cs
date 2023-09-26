@@ -1,7 +1,7 @@
 ﻿using Domain.Models.PatientInfor;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.PatientManagement
+namespace UseCase.PatientManagement.SearchPtInfs
 {
     public class SearchPtInfsOutputData : IOutputData
     {

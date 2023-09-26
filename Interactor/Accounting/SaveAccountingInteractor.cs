@@ -6,6 +6,7 @@ using Domain.Models.SystemConf;
 using Domain.Models.User;
 using Helper.Constants;
 using UseCase.Accounting.SaveAccounting;
+using static Helper.Constants.UserConst;
 
 namespace Interactor.Accounting
 {
@@ -121,7 +122,10 @@ namespace Interactor.Accounting
             {
                 return SaveAccountingStatus.InvalidRaiinNo;
             }
-
+            else if (_userRepository.GetPermissionByScreenCode(inputData.HpId, inputData.UserId, FunctionCode.Accounting) != PermissionType.Unlimited)
+            {
+                return SaveAccountingStatus.NoPermission;
+            }
             return SaveAccountingStatus.ValidateSuccess;
         }
     }

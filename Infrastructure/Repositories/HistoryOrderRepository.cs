@@ -392,7 +392,7 @@ namespace Infrastructure.Repositories
 
         //flag == 0 : get for accounting
         //flag == 1 : get for one rp in todayorder
-        public List<HistoryOrderModel> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiin, byte flag, List<Tuple<long, bool>> raiinNos)
+        public List<HistoryOrderModel> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiin, byte flag, List<Tuple<long, bool>> raiinNos, int isShowApproval)
         {
 
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted, raiinNos);
@@ -422,6 +422,7 @@ namespace Infrastructure.Repositories
             List<FileInfModel> listKarteFile = _karteInfRepository.GetListKarteFile(hpId, ptId, raiinNoList, isDeleted != 0);
 
             List<HistoryOrderModel> historyOrderModelList = new List<HistoryOrderModel>();
+            var approveInfs = (isShowApproval == 1 || isShowApproval == 2) ? GetApproveInf(hpId, ptId, isShowApproval == 2, raiinNoList) : new List<ApproveInfModel>();
             foreach (long raiinNo in raiinNoList)
             {
                 RaiinInf? raiinInf = raiinInfList.FirstOrDefault(r => r.RaiinNo == raiinNo);
@@ -441,6 +442,7 @@ namespace Infrastructure.Repositories
                 List<FileInfModel> listKarteFileModel = listKarteFile.Where(item => item.RaiinNo == raiinNo).ToList();
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
+                var approveInf = approveInfs?.Count() > 0 ? approveInfs.FirstOrDefault(a => a.RaiinNo == raiinNo) : new();
 
                 var headerOrderModels = new List<HeaderOrderModel>();
                 foreach (var headerOrder in headerOrders)
@@ -455,7 +457,7 @@ namespace Infrastructure.Repositories
                     headerOrderModels.Add(headerOrderModel);
                 }
 
-                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tagModel.TagNo, string.Empty, listKarteFileModel, headerOrderModels));
+                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tagModel.TagNo, approveInf?.DisplayApprovalInfo ?? string.Empty, listKarteFileModel, headerOrderModels));
             }
 
             return historyOrderModelList;
