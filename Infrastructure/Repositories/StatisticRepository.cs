@@ -203,7 +203,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         foreach (var staCsvMstModel in staCsvMstModels)
         {
             var ids = staCsvMstModel.StaCsvModelsSelected.Select(s => s.Id).ToList();
-            var staCsvs = NoTrackingDataContext.StaCsvs.Where(s => s.HpId == hpId).AsEnumerable().Where(s => ids.Contains(s.Id)).ToList();
+            var staCsvs = TrackingDataContext.StaCsvs.Where(s => s.HpId == hpId).AsEnumerable().Where(s => ids.Contains(s.Id)).ToList();
             foreach (var item in staCsvMstModel.StaCsvModelsSelected)
             {
                 if (item.IsModified)
