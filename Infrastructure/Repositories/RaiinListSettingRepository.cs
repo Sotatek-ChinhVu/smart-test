@@ -233,8 +233,7 @@ namespace Infrastructure.Repositories
                     KouiKbnId = kouiKbnId,
                     KbnCd = KbnCd,
                     HpId = hpId,
-                    IsDeleted = DeleteTypes.Deleted,
-                    SeqNo = 0
+                    IsDeleted = DeleteTypes.Deleted
                 };
             }
             return new RaiinListKouiModel(raiinListKoui.HpId, raiinListKoui.GrpId, raiinListKoui.KbnCd, raiinListKoui.SeqNo, raiinListKoui.KouiKbnId, raiinListKoui.IsDeleted);
