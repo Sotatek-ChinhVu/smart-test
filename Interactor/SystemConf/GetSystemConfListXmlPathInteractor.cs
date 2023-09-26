@@ -16,7 +16,7 @@ namespace Interactor.SystemConf
         {
             try
             {
-                var result = _systemConfRepository.GetSystemConfListXmlPath(inputData.HpId, inputData.GrpCd, inputData.Machine);
+                var result = _systemConfRepository.GetSystemConfListXmlPath(inputData.HpId, inputData.GrpCd, inputData.Machine, inputData.IsKensaIrai);
 
                 if (result == null || !result.Any())
                     return new GetSystemConfListXmlPathOutputData(GetSystemConfListXmlPathStatus.NoData);

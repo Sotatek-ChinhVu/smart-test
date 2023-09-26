@@ -48,7 +48,8 @@ namespace Interactor.MedicalExamination
                     inputData.DeleteConditon,
                     inputData.RaiinNo,
                     inputData.Flag,
-                    new()
+                    new(),
+                    inputData.IsShowApproval
                     );
 
                 var insuranceModelList = _insuranceRepository.GetInsuranceList(inputData.HpId, inputData.PtId, inputData.SinDate, true);

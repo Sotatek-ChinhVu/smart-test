@@ -132,7 +132,7 @@ public class DocumentController : AuthorizeControllerBase
                 Status = (int)SaveDocInfStatus.InvalidSizeFile
             });
         }
-        var input = new SaveDocInfInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.SeqNo, request.CategoryCd, request.FileName, request.DisplayFileName, Request.Body);
+        var input = new SaveDocInfInputData(HpId, UserId, request.PtId, request.GetDate, request.FileId, request.CategoryCd, request.FileName, request.DisplayFileName, Request.Body);
         var output = _bus.Handle(input);
 
         var presenter = new SaveDocInfPresenter();
@@ -144,7 +144,7 @@ public class DocumentController : AuthorizeControllerBase
     [HttpPut(ApiPath.DeleteDocInf)]
     public ActionResult<Response<DeleteDocInfResponse>> DeleteDocInf([FromBody] DeleteDocInfRequest request)
     {
-        var input = new DeleteDocInfInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.SeqNo);
+        var input = new DeleteDocInfInputData(HpId, UserId, request.FileId, request.PtId);
         var output = _bus.Handle(input);
 
         var presenter = new DeleteDocInfPresenter();
