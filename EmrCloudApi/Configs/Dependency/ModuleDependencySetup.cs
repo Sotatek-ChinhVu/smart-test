@@ -732,6 +732,9 @@ using UseCase.MainMenu.KensaIraiReport;
 using UseCase.UpsertMaterialMaster;
 using UseCase.MstItem.GetListResultKensaMst;
 using Infrastructure.Logger;
+using UseCase.KensaHistory.UpdateKensaSet;
+using Interactor.KensaHistory;
+using Domain.Models.KensaSet;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1133,6 +1136,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IStaticsticExportCsvService, StaticsticExportCsvService>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
+            services.AddTransient<IKensaSetRepository, KensaSetRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1736,6 +1740,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteSendaiGenerationInputData, DeleteSetSendaiGenerationInteractor>();
             busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
             busBuilder.RegisterUseCase<RestoreSetSendaiGenerationInputData, RestoreSetSendaiGenerationInteractor>();
+            
+            // KensaHistory
+            busBuilder.RegisterUseCase<UpdateKensaSetInputData, UpdateKensaSetInteractor>();
 
 
             var bus = busBuilder.Build();

@@ -475,5 +475,8 @@
 
         //SetSendaiGeneration
         public const string Restore = "Restore";
+
+        //KensaHistory
+        public const string UpdateKensaSet = "UpdateKensaSet";
     }
 }
