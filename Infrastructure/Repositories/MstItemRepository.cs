@@ -8,6 +8,7 @@ using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
+using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -6545,6 +6546,26 @@ namespace Infrastructure.Repositories
                       ?? tenMsts.OrderByDescending(x => x.StartDate).FirstOrDefault();
 
             return tenMst != null ? tenMst.Name ?? string.Empty : string.Empty;
+        }
+
+        public List<UserMstModel> GetListUser(int hpId, int userId, int sinDate)
+        {
+            List<UserMstModel> result = new List<UserMstModel>();
+            var listYohoSetMst = TrackingDataContext.YohoSetMsts.Where(u => u.HpId == hpId &&
+                                                                                       u.IsDeleted == 0).OrderBy(u => u.UserId);
+            var listUser = TrackingDataContext.UserMsts.Where(u => u.HpId == hpId &&
+                                                                                     u.StartDate <= sinDate &&
+                                                                                     u.EndDate >= sinDate &&
+                                                                                     u.IsDeleted == 0);
+            var query = from yoho in listYohoSetMst
+                        join user in listUser on yoho.UserId equals user.UserId
+                        select new
+                        {
+                            User = user
+                        };
+            List<UserMstModel> userMstModels = query.AsEnumerable().Where(u => u.User != null).Select(u => new UserMstModel(u.User.HpId, u.User.UserId, u.User.KanaName, u.User.Name, u.User.StartDate, u.User.EndDate, u.User.IsDeleted, u.User.Id)).ToList();
+            result = userMstModels.Where(u => u.UserId != userId).ToList().GroupBy(u => u.UserId).Select(p => p.First()).ToList();
+            return result;
         }
     }
 }
