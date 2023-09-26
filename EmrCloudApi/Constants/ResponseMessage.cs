@@ -519,6 +519,7 @@
         public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
         public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
         public static readonly string TodayOrdInvalidAddedAutoItem = "Invalid Added Auto Item List";
+        public static readonly string NoPermissionSaveSummary = "No Permission Save Summary.";
 
         // SuperSetDetail
         public static readonly string InvalidSetByomeiId = "Invalid SetByomeiId, SetByomeiId > 0.";
