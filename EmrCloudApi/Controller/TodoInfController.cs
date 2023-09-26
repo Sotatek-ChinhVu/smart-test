@@ -48,11 +48,14 @@ namespace EmrCloudApi.Tenant.Controllers
                                                         UserId,
                                                         HpId
                                                         );
+            
             var output = _bus.Handle(input);
 
             if (output.Status == UpsertTodoInfStatus.Success)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.TodoInfChanged, new TodoInfMessage(output.OutputItems));
+                var first = request.UpsertTodoInf.FirstOrDefault();
+                var type = (first?.TodoNo > 0 && first?.IsDeleted == 1) ? 0 : first?.TodoNo > 0 ? 1 : 2;
+                await _webSocketService.SendMessageAsync(type == 0 ? FunctionCodes.TodoInfIsDeleted : type == 1 ? FunctionCodes.TodoInfUpdated : FunctionCodes.TodoInfInserted, new TodoInfMessage(output.OutputItems));
             }
 
             var presenter = new UpsertTodoInfPresenter();
