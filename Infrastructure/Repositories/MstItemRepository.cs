@@ -4846,7 +4846,7 @@ namespace Infrastructure.Repositories
                 .Where(item => item.IsDeleted == 0
                                                 && item.HpId == hpId)
                 .OrderBy(i => i.SortNo)
-                .AsEnumerable().Select(i => new JihiSbtMstModel(i.HpId, i.JihiSbt, i.SortNo, i.Name ?? string.Empty,i.IsYobo, i.IsDeleted, ModelStatus.None)).ToList();
+                .AsEnumerable().Select(i => new JihiSbtMstModel(i.HpId, i.JihiSbt, i.SortNo, i.Name ?? string.Empty, i.IsYobo, i.IsDeleted, ModelStatus.None)).ToList();
             return result;
         }
 
@@ -7224,6 +7224,52 @@ namespace Infrastructure.Repositories
                         };
             result = query.AsEnumerable().Select(u => new YohoSetMstModel(u.Yoho.HpId, u.Yoho.SetId, u.Yoho.UserId, u.Yoho.SortNo, u.ItemCd, u.Yoho.IsDeleted, u.Yoho.CreateDate, u.Yoho.CreateId, u.Yoho.CreateMachine, u.Yoho.UpdateDate, u.Yoho.UpdateId, u.Yoho.UpdateMachine, u.ItemName, false)).OrderBy(y => y.SortNo).ToList();
             return result;
+        }
+
+        public bool UpdateYohoSetMst(int hpId, int userId, List<YohoSetMstModel> listYohoSetMstModels)
+        {
+            List<YohoSetMstModel> listInsert = listYohoSetMstModels.Where(u => u.HpId == 0).ToList();
+            List<YohoSetMstModel> listUpdate = listYohoSetMstModels.Where(u => u.IsModified).ToList();
+            List<YohoSetMst> yohoSetInsert = new List<YohoSetMst>();
+            List<YohoSetMst> yohoSetUpdate = new List<YohoSetMst>();
+            foreach (YohoSetMstModel yohoSetMstModel in listInsert)
+            {
+                var yohoSetMst = new YohoSetMst();
+                yohoSetMst.HpId = hpId;
+                yohoSetMst.SortNo = yohoSetMstModel.SortNo;
+                yohoSetMst.ItemCd = yohoSetMstModel.ItemCd;
+                yohoSetMst.UserId = userId;
+                _CreateYohoSetMst(userId, yohoSetMst);
+                yohoSetInsert.Add(yohoSetMst);
+            }
+            foreach (YohoSetMstModel yohoSetMstModel in listUpdate)
+            {
+                var yohoSetMst = TrackingDataContext.YohoSetMsts.FirstOrDefault(i => i.SetId == yohoSetMstModel.SetId);
+                if (yohoSetMst != null)
+                {
+                    yohoSetMst.SortNo = yohoSetMstModel.SortNo;
+                    yohoSetMst.ItemCd = yohoSetMstModel.ItemCd;
+                    yohoSetMst.UserId = userId;
+                    yohoSetMst.IsDeleted = yohoSetMstModel.IsDeleted;
+                    _UpdateYohoSetMst(userId, yohoSetMst);
+                }
+            }
+            TrackingDataContext.YohoSetMsts.AddRange(yohoSetInsert);
+            TrackingDataContext.YohoSetMsts.UpdateRange(yohoSetUpdate);
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+        private void _UpdateYohoSetMst(int userId, YohoSetMst yohoSetMst)
+        {
+            yohoSetMst.CreateDate = TimeZoneInfo.ConvertTimeToUtc(yohoSetMst.CreateDate);
+            yohoSetMst.UpdateId = userId;
+            yohoSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        }
+        private void _CreateYohoSetMst(int userId, YohoSetMst yohoSetMst)
+        {
+            yohoSetMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+            yohoSetMst.CreateId = userId;
+            yohoSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            yohoSetMst.UpdateId = userId;
         }
     }
 }

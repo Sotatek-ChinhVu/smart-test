@@ -736,6 +736,7 @@ using UseCase.MstItem.GetListSetGenerationMst;
 using UseCase.MstItem.GetListKensaIjiSetting;
 using UseCase.MstItem.CompareTenMst;
 using UseCase.MstItem.SaveCompareTenMst;
+using UseCase.MstItem.UpdateYohoSetMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1428,6 +1429,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListYohoSetMstModelByUserIDInputData, GetListYohoSetMstModelByUserIDInteractor>();
             busBuilder.RegisterUseCase<GetListKensaIjiSettingInputData, GetListKensaIjiSettingInteractor>();
             busBuilder.RegisterUseCase<GetSetNameMntInputData, GetSetNameMntInteractor>();
+            busBuilder.RegisterUseCase<UpdateYohoSetMstInputData, UpdateYohoSetMstInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();

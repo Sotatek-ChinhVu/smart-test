@@ -72,6 +72,7 @@
         public const string GetTreeByomeiSet = "GetTreeByomeiSet";
         public const string GetListSetGeneration = "GetListSetGeneration";
         public const string GetListByomeiSetGeneration = "GetListByomeiSetGeneration";
+        public const string UpdateYohoSetMst = "UpdateYohoSetMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

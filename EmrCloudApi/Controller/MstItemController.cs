@@ -82,6 +82,8 @@ using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
 using UseCase.MstItem.UpdateJihiSbtMst;
+using Domain.Models.OrdInfDetails;
+using UseCase.MstItem.UpdateYohoSetMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -930,5 +932,37 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<GetListYohoSetMstModelByUserIDResponse>>(presenter.Result);
         }
+
+        [HttpPost(ApiPath.UpdateYohoSetMst)]
+        public ActionResult<Response<UpdateYohoSetMstResponse>> UpdateYohoSetMst(UpdateYohoSetMstRequest request)
+        {
+            var input = new UpdateYohoSetMstInputData(HpId, UserId, request.YohoSetMsts.Select(i=> YohoSetMstRequestToModel(i)).ToList());
+            var output = _bus.Handle(input);
+            var presenter = new UpdateYohoSetMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateYohoSetMstResponse>>(presenter.Result);
+        }
+        private static YohoSetMstModel YohoSetMstRequestToModel(YohoSetMstRequest yohoSetMst)
+        {
+            return
+                new YohoSetMstModel
+                (
+                    yohoSetMst.HpId,
+                    yohoSetMst.SetId,
+                    yohoSetMst.UserId,
+                    yohoSetMst.SortNo,
+                    yohoSetMst.ItemCd,
+                    yohoSetMst.IsDeleted,
+                    yohoSetMst.CreateDate,
+                    yohoSetMst.CreateId,
+                    yohoSetMst.CreateMachine,
+                    yohoSetMst.UpdateDate,
+                    yohoSetMst.UpdateId,
+                    yohoSetMst.UpdateMachine,
+                    yohoSetMst.Itemname,
+                    yohoSetMst.IsModified
+                );
+        }
+
     }
 }
