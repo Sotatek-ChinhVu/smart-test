@@ -105,7 +105,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(hpId, sinYmList, ptIdList, hokenIdList);
             allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(hpId, kantokuCdValidList);
         }
-        int successCount = 1;
+        int successCount = 0;
         foreach (var recalculationItem in receRecalculationList)
         {
             if (isCheckErrorCheckBox)
@@ -143,6 +143,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                 errorTextRosai = GetErrorRosai(errorTextRosai, recalculationItem, sinKouiCountList);
             }
 
+            successCount++;
             if (allCheckCount == successCount)
             {
                 break;
@@ -152,7 +153,6 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             {
                 SendMessager(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, successCount, string.Empty, string.Empty));
             }
-            successCount++;
         }
         errorText.Append(errorTextRosai);
         errorText.Append(errorTextSinKouiCount);
