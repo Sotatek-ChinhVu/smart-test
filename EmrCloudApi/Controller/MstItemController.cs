@@ -802,6 +802,16 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetTreeListSetMstResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.UpdateJihiSbtMst)]
+        public ActionResult<Response<UpdateJihiSbtMstResponse>> UpdateJihiSbtMst(UpdateJihiMstRequest request)
+        {
+            var input = new UpdateJihiSbtMstInputData(HpId, UserId, request.JihiSbtMsts);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateJihiSbtMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateJihiSbtMstResponse>>(presenter.Result);
+        }
+        
         [HttpGet(ApiPath.GetTreeByomeiSet)]
         public ActionResult<Response<GetTreeByomeiSetResponse>> GetTreeByomeiSet([FromQuery] GetTreeByomeiSetRequest request)
         {
