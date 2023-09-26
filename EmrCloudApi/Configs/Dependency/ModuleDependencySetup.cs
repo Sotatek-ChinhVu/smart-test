@@ -536,7 +536,9 @@ using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
-using UseCase.PatientManagement;
+using UseCase.PatientManagement.GetStaConf;
+using UseCase.PatientManagement.SaveStaConf;
+using UseCase.PatientManagement.SearchPtInfs;
 using UseCase.PtGroupMst.CheckAllowDelete;
 using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
@@ -637,6 +639,7 @@ using UseCase.SetMst.SaveSetMst;
 using UseCase.SetSendaiGeneration.Add;
 using UseCase.SetSendaiGeneration.Delete;
 using UseCase.SetSendaiGeneration.GetList;
+using UseCase.SetSendaiGeneration.Restore;
 using UseCase.SinKoui.GetSinKoui;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
@@ -715,6 +718,7 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using Infrastructure.Logger;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -755,6 +759,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
 
             services.AddScoped<IMessenger, Messenger>();
+            services.AddScoped<ILoggingHandler, LoggingHandler>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
@@ -1701,6 +1706,8 @@ namespace EmrCloudApi.Configs.Dependency
             //PatientManagement
             busBuilder.RegisterUseCase<SearchPtInfsInputData, SearchPtInfsInteractor>();
             busBuilder.RegisterUseCase<GetHokenMstInputData, GetHokenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveStaConfMenuInputData, SaveStaConfMenuInteractor>();
+            busBuilder.RegisterUseCase<GetStaConfMenuInputData, GetStaConfMenuInteractor>();
 
             //ListSetMst
             busBuilder.RegisterUseCase<GetTreeListSetInputData, GetTreeListSetInteractor>();
@@ -1709,6 +1716,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SetSendaiGenerationInputData, SetSendaiGenerationGetListInteractor>();
             busBuilder.RegisterUseCase<DeleteSendaiGenerationInputData, DeleteSetSendaiGenerationInteractor>();
             busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
+            busBuilder.RegisterUseCase<RestoreSetSendaiGenerationInputData, RestoreSetSendaiGenerationInteractor>();
+
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

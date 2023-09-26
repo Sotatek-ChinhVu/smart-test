@@ -17,7 +17,6 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -2101,7 +2100,7 @@ namespace Infrastructure.Repositories
                     mst.NanbyoCd
                 );
         }
-        
+
         private static ByomeiMstModel ConvertToByomeiMstModelInDeseaseNameMst(ByomeiMst mst)
         {
             return new ByomeiMstModel(
@@ -6602,6 +6601,24 @@ namespace Infrastructure.Repositories
                                                           )).ToList();
 
             return result;
+        }
+
+        public string GetNameByItemCd(int hpId, string itemCd)
+        {
+            var sindate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
+
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId &&
+                                                                   x.ItemCd == itemCd &&
+                                                                   x.IsDeleted == DeleteTypes.None)
+                                                        .ToList();
+
+
+            var tenMst = tenMsts.FirstOrDefault(x =>
+                                                    x.StartDate <= sindate &&
+                                                    sindate <= x.EndDate)
+                      ?? tenMsts.OrderByDescending(x => x.StartDate).FirstOrDefault();
+
+            return tenMst != null ? tenMst.Name ?? string.Empty : string.Empty;
         }
     }
 }

@@ -30,6 +30,7 @@ using Reporting.OrderLabel.Model;
 using Reporting.OrderLabel.Service;
 using Reporting.OutDrug.Model.Output;
 using Reporting.OutDrug.Service;
+using Reporting.PatientManagement.Models;
 using Reporting.PatientManagement.Service;
 using Reporting.Receipt.Service;
 using Reporting.ReceiptCheck.Service;
@@ -474,9 +475,9 @@ public class ReportService : IReportService
         return _statisticService.PrintExecute(hpId, formName, menuId, monthFrom, monthTo, dateFrom, dateTo, timeFrom, timeTo, coFileType, isPutTotalRow, tenkiDateFrom, tenkiDateTo, enableRangeFrom, enableRangeTo, ptNumFrom, ptNumTo);
     }
 
-    public CommonReportingRequestModel GetPatientManagement(int hpId, int menuId)
+    public CommonReportingRequestModel GetPatientManagement(int hpId, PatientManagementModel patientManagementModel)
     {
-        return _patientManagementService.PrintData(hpId, menuId);
+        return _patientManagementService.PrintData(hpId, patientManagementModel);
     }
 
     //Receipt Preview

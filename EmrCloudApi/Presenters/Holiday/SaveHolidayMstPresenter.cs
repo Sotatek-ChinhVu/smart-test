@@ -20,6 +20,7 @@ namespace EmrCloudApi.Presenters.Holiday
             SaveHolidayMstStatus.Successful => ResponseMessage.Success,
             SaveHolidayMstStatus.Failed => ResponseMessage.Failed,
             SaveHolidayMstStatus.InvalidUserId => ResponseMessage.InvalidUserId,
+            SaveHolidayMstStatus.NoPermission => ResponseMessage.NoPermission,
             _ => string.Empty
         };
     }

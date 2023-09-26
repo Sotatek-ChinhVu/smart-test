@@ -7,5 +7,6 @@
         InvalidPtId = 2,
         InvalidSinDate = 3,
         Failed = 4,
+        NoPermissionSaveSummary = 5,
     }
 }

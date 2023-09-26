@@ -55,9 +55,16 @@
         public const string UpdateSingleDoseMst = "UpdateSingleDoseMst";
         public const string UpdateKensaMst = "UpdateKensaMst";
         public const string UpdateByomeiMst = "UpdateByomeiMst";
+        public const string IsUsingKensa = "IsUsingKensa";
+        public const string UpdateKensaStdMst = "UpdateKensaStdMst";
+        public const string GetKensaStdMst = "GetKensaStdMst";
+        public const string GetUsedKensaItemCds = "GetUsedKensaItemCds";
+        public const string GetTenItemCds = "GetTenItemCds";
+        public const string GetMaterialMsts = "GetMaterialMsts";
+        public const string GetContainerMsts = "GetContainerMsts";
+        public const string GetKensaCenterMsts = "GetKensaCenterMsts";
+        public const string GetTenOfHRTItem = "GetTenOfHRTItem";
         public const string f_17_Common = "f_17_Common";
-        public const string UpdateKensaStdMst = "UpdateKensaStdMst"; 
-        public const string IsUsingKensa = "IsUsingKensa"; 
         public const string IsKensaItemOrdering = "IsKensaItemOrdering";
 
         //Schema
@@ -464,5 +471,10 @@
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";
+        public const string SaveStaConfMenu = "SaveStaConfMenu";
+        public const string GetStaConfMenu = "GetStaConfMenu";
+
+        //SetSendaiGeneration
+        public const string Restore = "Restore";
     }
 }
