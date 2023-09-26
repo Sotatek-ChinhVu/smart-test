@@ -6652,6 +6652,287 @@ namespace Infrastructure.Repositories
             return tenMst != null ? tenMst.Name ?? string.Empty : string.Empty;
         }
 
+        public List<SetNameMntModel> GetSetNameMnt(SetCheckBoxStatusModel checkBoxStatus, int generationId, int hpId)
+        {
+            int dateNow = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
+            var listSetKbn = GetListSetKbn(checkBoxStatus);
+
+            if (listSetKbn.Count <= 0 || CheckTargetSetOdrInfDetail(checkBoxStatus) == false)
+                return new List<SetNameMntModel>();
+
+            var setMstRepo = TrackingDataContext.SetMsts
+                .Where(item => item.HpId == hpId && item.IsDeleted == 0 &&
+                item.GenerationId == generationId && listSetKbn.Contains(item.SetKbn));
+
+            var setOdrInfRepo = TrackingDataContext.SetOdrInf
+                .Where(item => item.HpId == hpId && item.IsDeleted == 0);
+
+            var setOdrInfDetailRepoAll = TrackingDataContext.SetOdrInfDetail
+                .Where(item => item.HpId == hpId);
+
+            IQueryable<SetOdrInfDetail> setOdrInfDetailRepo = null;
+
+            if (checkBoxStatus.JihiChecked == true)
+            {
+                var jihi = setOdrInfDetailRepoAll.Where(item => item.ItemCd.StartsWith("J"));
+                setOdrInfDetailRepo = jihi;
+            }
+            if (checkBoxStatus.KihonChecked == true)
+            {
+                var Kihon = setOdrInfDetailRepoAll.Where(item => !item.ItemCd.StartsWith("J") &&
+                !item.ItemCd.StartsWith("Z") && !item.ItemCd.StartsWith("Y"));
+                setOdrInfDetailRepo = setOdrInfDetailRepo == null ? Kihon : setOdrInfDetailRepo.Union(Kihon);
+            }
+            if (checkBoxStatus.TokuChecked == true)
+            {
+                var toku = setOdrInfDetailRepoAll.Where(item => item.ItemCd.StartsWith("Z"));
+                setOdrInfDetailRepo = setOdrInfDetailRepo == null ? toku : setOdrInfDetailRepo.Union(toku);
+            }
+            if (checkBoxStatus.YohoChecked == true)
+            {
+                var yoho = setOdrInfDetailRepoAll.Where(item => item.ItemCd.StartsWith("Y"));
+                setOdrInfDetailRepo = setOdrInfDetailRepo == null ? yoho : setOdrInfDetailRepo.Union(yoho);
+            }
+
+            var tenMstRepo = TrackingDataContext.TenMsts
+                .Where(item => item.HpId == hpId && item.StartDate <= dateNow && item.EndDate >= dateNow && item.IsDeleted == DeleteTypes.None);
+
+            if (setOdrInfDetailRepo == null)
+            {
+                return new List<SetNameMntModel>();
+            }
+            else
+            {
+                if (checkBoxStatus.DiffChecked == true)
+                {
+                    var setOdrInfDetailCmt =
+                        setOdrInfDetailRepo.Where(item =>
+                            item.ItemCd.StartsWith(ItemCdConst.Comment830Pattern) ||
+                            item.ItemCd.StartsWith(ItemCdConst.Comment831Pattern) ||
+                            (item.ItemCd.StartsWith(ItemCdConst.Comment840Pattern) && item.ItemCd != ItemCdConst.GazoDensibaitaiHozon) ||
+                            item.ItemCd.StartsWith(ItemCdConst.Comment842Pattern) ||
+                            item.ItemCd.StartsWith(ItemCdConst.Comment850Pattern) ||
+                            item.ItemCd.StartsWith(ItemCdConst.Comment851Pattern) ||
+                            item.ItemCd.StartsWith(ItemCdConst.Comment852Pattern) ||
+                            item.ItemCd.StartsWith(ItemCdConst.Comment853Pattern) ||
+                            item.ItemCd.StartsWith(ItemCdConst.Comment880Pattern));
+
+                    var setOdrInfDetailNotCmt =
+                        setOdrInfDetailRepo.Where(item =>
+                            !item.ItemCd.StartsWith(ItemCdConst.Comment830Pattern) &&
+                            !item.ItemCd.StartsWith(ItemCdConst.Comment831Pattern) &&
+                            !(item.ItemCd.StartsWith(ItemCdConst.Comment840Pattern) && item.ItemCd != ItemCdConst.GazoDensibaitaiHozon) &&
+                            !item.ItemCd.StartsWith(ItemCdConst.Comment842Pattern) &&
+                            !item.ItemCd.StartsWith(ItemCdConst.Comment850Pattern) &&
+                            !item.ItemCd.StartsWith(ItemCdConst.Comment851Pattern) &&
+                            !item.ItemCd.StartsWith(ItemCdConst.Comment852Pattern) &&
+                            !item.ItemCd.StartsWith(ItemCdConst.Comment853Pattern) &&
+                            !item.ItemCd.StartsWith(ItemCdConst.Comment880Pattern));
+
+                    var queryDetailCmt = from setMst in setMstRepo
+                                         join setOdrInfDetail in setOdrInfDetailCmt on
+                                             setMst.SetCd equals setOdrInfDetail.SetCd
+                                         join setOdrInf in setOdrInfRepo on
+                                             new { setOdrInfDetail.SetCd, setOdrInfDetail.RpNo, setOdrInfDetail.RpEdaNo } equals
+                                             new { setOdrInf.SetCd, setOdrInf.RpNo, setOdrInf.RpEdaNo }
+                                         join tenMst in tenMstRepo on
+                                             setOdrInfDetail.ItemCd equals tenMst.ItemCd
+                                         where setOdrInfDetail.CmtName
+                                                   .Replace("　", "")
+                                                   .Replace(" ", "")
+                                               != tenMst.Name
+                                                   .Replace("　", "")
+                                                   .Replace(" ", "")
+                                         select new
+                                         {
+                                             SetMst = setMst,
+                                             SetOdrInfDetail = setOdrInfDetail,
+                                             ItemNameTenMst = tenMst.Name,
+                                             CmtCol1 = tenMst.CmtCol1,
+                                             CmtColKeta1 = tenMst.CmtColKeta1,
+                                             CmtCol2 = tenMst.CmtCol2,
+                                             CmtColKeta2 = tenMst.CmtColKeta2,
+                                             CmtCol3 = tenMst.CmtCol3,
+                                             CmtColKeta3 = tenMst.CmtColKeta3,
+                                             CmtCol4 = tenMst.CmtCol4,
+                                             CmtColKeta4 = tenMst.CmtColKeta4
+                                         };
+
+                    var queryDetailNotCmt = from setMst in setMstRepo
+                                            join setOdrInfDetail in setOdrInfDetailNotCmt on
+                                                setMst.SetCd equals setOdrInfDetail.SetCd
+                                            join setOdrInf in setOdrInfRepo on
+                                                new { setOdrInfDetail.SetCd, setOdrInfDetail.RpNo, setOdrInfDetail.RpEdaNo } equals
+                                                new { setOdrInf.SetCd, setOdrInf.RpNo, setOdrInf.RpEdaNo }
+                                            join tenMst in tenMstRepo on
+                                                setOdrInfDetail.ItemCd equals tenMst.ItemCd
+                                            where setOdrInfDetail.ItemName
+                                                      .Replace("　", "")
+                                                      .Replace(" ", "")
+                                                  != tenMst.Name
+                                                      .Replace("　", "")
+                                                      .Replace(" ", "")
+                                            select new
+                                            {
+                                                SetMst = setMst,
+                                                SetOdrInfDetail = setOdrInfDetail,
+                                                ItemNameTenMst = tenMst.Name,
+                                                CmtCol1 = tenMst.CmtCol1,
+                                                CmtColKeta1 = tenMst.CmtColKeta1,
+                                                CmtCol2 = tenMst.CmtCol2,
+                                                CmtColKeta2 = tenMst.CmtColKeta2,
+                                                CmtCol3 = tenMst.CmtCol3,
+                                                CmtColKeta3 = tenMst.CmtColKeta3,
+                                                CmtCol4 = tenMst.CmtCol4,
+                                                CmtColKeta4 = tenMst.CmtColKeta4
+                                            };
+
+                    var queryDetail = queryDetailCmt.Union(queryDetailNotCmt);
+
+                    var querySet = from detail in queryDetail
+                                   from setMst in setMstRepo.Where(item =>
+                                   (item.SetKbn == detail.SetMst.SetKbn && item.SetKbnEdaNo == detail.SetMst.SetKbnEdaNo && item.Level1 == detail.SetMst.Level1 && item.Level2 == 0 && item.Level3 == 0) ||
+                                   (item.SetKbn == detail.SetMst.SetKbn && item.SetKbnEdaNo == detail.SetMst.SetKbnEdaNo && item.Level1 == detail.SetMst.Level1 && item.Level2 == detail.SetMst.Level2 && item.Level3 == 0) ||
+                                   (item.SetKbn == detail.SetMst.SetKbn && item.SetKbnEdaNo == detail.SetMst.SetKbnEdaNo && item.Level1 == detail.SetMst.Level1 && item.Level2 == detail.SetMst.Level2 && item.Level3 == detail.SetMst.Level3))
+                                   select setMst;
+
+                    var listSetNameMntOdrDetail = queryDetail.AsEnumerable()
+                        .Select(item => new SetNameMntModel(true, item.ItemNameTenMst, item.CmtCol1, item.CmtColKeta1, item.CmtCol2, item.CmtColKeta2, item.CmtCol3, item.CmtColKeta3, item.CmtCol4, item.CmtColKeta4,
+                        item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName,
+                        item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd, item.SetOdrInfDetail.ItemName, item.SetOdrInfDetail.CmtName, item.SetOdrInfDetail.CmtOpt, item.SetMst.CreateDate, item.SetMst.CreateId,
+                        item.SetMst.CreateMachine, item.SetMst.UpdateDate, item.SetMst.UpdateId, item.SetMst.UpdateMachine));
+
+                    var listSetNameMntSetMst = querySet.AsEnumerable()
+                        .Distinct()
+                        .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName, item.CreateDate, item.CreateId,
+                        item.CreateMachine, item.UpdateDate, item.UpdateId, item.UpdateMachine, "", 0, 0, 0, 0, 0, 0, 0, 0));
+
+                    return listSetNameMntSetMst
+                        .Union(listSetNameMntOdrDetail)
+                        .OrderBy(item => item.SetKbn)
+                        .ThenBy(item => item.SetKbnEdaNo)
+                        .ThenBy(item => item.Level1)
+                        .ThenBy(item => item.Level2)
+                        .ThenBy(item => item.Level3)
+                        .ThenBy(item => item.SetCd)
+                        .ThenBy(item => item.RowNo)
+                        .ToList();
+                }
+                else
+                {
+                    var queryDetail = from setMst in setMstRepo
+                                      join setOdrInfDetail in setOdrInfDetailRepo on
+                                         setMst.SetCd equals setOdrInfDetail.SetCd
+                                      join setOdrInf in setOdrInfRepo on
+                                          new { setOdrInfDetail.SetCd, setOdrInfDetail.RpNo, setOdrInfDetail.RpEdaNo } equals
+                                          new { setOdrInf.SetCd, setOdrInf.RpNo, setOdrInf.RpEdaNo }
+                                      join tenMst in tenMstRepo on
+                                          setOdrInfDetail.ItemCd equals tenMst.ItemCd
+                                      select new
+                                      {
+                                          SetMst = setMst,
+                                          SetOdrInfDetail = setOdrInfDetail,
+                                          ItemNameTenMst = tenMst.Name,
+                                          CmtCol1 = tenMst.CmtCol1,
+                                          CmtColKeta1 = tenMst.CmtColKeta1,
+                                          CmtCol2 = tenMst.CmtCol2,
+                                          CmtColKeta2 = tenMst.CmtColKeta2,
+                                          CmtCol3 = tenMst.CmtCol3,
+                                          CmtColKeta3 = tenMst.CmtColKeta3,
+                                          CmtCol4 = tenMst.CmtCol4,
+                                          CmtColKeta4 = tenMst.CmtColKeta4
+                                      };
+
+                    var querySet = from detail in queryDetail
+                                   from setMst in setMstRepo.Where(item =>
+                                   (item.SetKbn == detail.SetMst.SetKbn && item.Level1 == detail.SetMst.Level1 && item.Level2 == 0 && item.Level3 == 0) ||
+                                   (item.SetKbn == detail.SetMst.SetKbn && item.Level1 == detail.SetMst.Level1 && item.Level2 == detail.SetMst.Level2 && item.Level3 == 0) ||
+                                   (item.SetKbn == detail.SetMst.SetKbn && item.Level1 == detail.SetMst.Level1 && item.Level2 == detail.SetMst.Level2 && item.Level3 == detail.SetMst.Level3))
+                                   select setMst;
+
+                    var listSetNameMntOdrDetail = queryDetail.AsEnumerable()
+                        .Select(item => new SetNameMntModel(true, item.ItemNameTenMst, item.CmtCol1, item.CmtColKeta1, item.CmtCol2, item.CmtColKeta2, item.CmtCol3, item.CmtColKeta3, item.CmtCol4, item.CmtColKeta4,
+                        item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName,
+                        item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd, item.SetOdrInfDetail.ItemName, item.SetOdrInfDetail.CmtName, item.SetOdrInfDetail.CmtOpt, item.SetMst.CreateDate, item.SetMst.CreateId,
+                        item.SetMst.CreateMachine, item.SetMst.UpdateDate, item.SetMst.UpdateId, item.SetMst.UpdateMachine));
+
+                    var listSetNameMntSetMst = querySet.AsEnumerable()
+                        .Distinct()
+                        .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName, item.CreateDate, item.CreateId,
+                        item.CreateMachine, item.UpdateDate, item.UpdateId, item.UpdateMachine, "", 0, 0, 0, 0, 0, 0, 0, 0));
+
+                    return listSetNameMntSetMst
+                        .Union(listSetNameMntOdrDetail)
+                        .OrderBy(item => item.SetKbn)
+                        .ThenBy(item => item.SetKbnEdaNo)
+                        .ThenBy(item => item.Level1)
+                        .ThenBy(item => item.Level2)
+                        .ThenBy(item => item.Level3)
+                        .ThenBy(item => item.SetCd)
+                        .ThenBy(item => item.RowNo)
+                        .ToList();
+                }
+            }
+        }
+        public List<SetKbnMstModel> GetListSetKbnMst(int generationId, int hpId)
+        {
+            var listSetKbnMst = TrackingDataContext.SetKbnMsts
+                .Where(item => item.HpId == hpId && item.IsDeleted == 0 && item.GenerationId == generationId &&
+                (item.SetKbn >= SetNameConst.SetKbn1 && item.SetKbn <= SetNameConst.SetKbn9 || item.SetKbn == SetNameConst.SetKbn10));
+
+            return listSetKbnMst.AsEnumerable().Select(item => new SetKbnMstModel(item.HpId, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.SetKbnName, item.KaCd, item.DocCd)).ToList();
+        }
+        public int GetGenerationId(int hpId)
+        {
+            var generation = TrackingDataContext.SetGenerationMsts
+                .Where(item => item.HpId == hpId && item.IsDeleted == 0)
+                .OrderByDescending(item => item.StartDate)
+                .FirstOrDefault();
+
+            return generation?.GenerationId ?? 0;
+        }
+        private List<int> GetListSetKbn(SetCheckBoxStatusModel checkBoxStatus)
+        {
+            var listSetKbn = new List<int>();
+
+            if (checkBoxStatus.SetKbnChecked1 == true)
+                listSetKbn.Add(SetNameConst.SetKbn1);
+            if (checkBoxStatus.SetKbnChecked2 == true)
+                listSetKbn.Add(SetNameConst.SetKbn2);
+            if (checkBoxStatus.SetKbnChecked3 == true)
+                listSetKbn.Add(SetNameConst.SetKbn3);
+            if (checkBoxStatus.SetKbnChecked4 == true)
+                listSetKbn.Add(SetNameConst.SetKbn4);
+            if (checkBoxStatus.SetKbnChecked5 == true)
+                listSetKbn.Add(SetNameConst.SetKbn5);
+            if (checkBoxStatus.SetKbnChecked6 == true)
+                listSetKbn.Add(SetNameConst.SetKbn6);
+            if (checkBoxStatus.SetKbnChecked7 == true)
+                listSetKbn.Add(SetNameConst.SetKbn7);
+            if (checkBoxStatus.SetKbnChecked8 == true)
+                listSetKbn.Add(SetNameConst.SetKbn8);
+            if (checkBoxStatus.SetKbnChecked9 == true)
+                listSetKbn.Add(SetNameConst.SetKbn9);
+            if (checkBoxStatus.SetKbnChecked10 == true)
+                listSetKbn.Add(SetNameConst.SetKbn10);
+
+            return listSetKbn;
+        }
+
+        private bool CheckTargetSetOdrInfDetail(SetCheckBoxStatusModel checkBoxStatus)
+        {
+            if (checkBoxStatus.JihiChecked == true)
+                return true;
+            if (checkBoxStatus.KihonChecked == true)
+                return true;
+            if (checkBoxStatus.TokuChecked == true)
+                return true;
+            if (checkBoxStatus.YohoChecked == true)
+                return true;
+
+            return false;
+        }
+
         public List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison)
         {
             var result = new List<CompareTenMstModel>();

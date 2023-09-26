@@ -190,6 +190,11 @@ namespace Domain.Models.MstItem
 
         string GetNameByItemCd(int hpId, string itemCd);
 
+        List<SetNameMntModel> GetSetNameMnt(SetCheckBoxStatusModel checkBoxStatus,int generationId, int hpId);
+        List<SetKbnMstModel> GetListSetKbnMst(int generationId, int hpId);
+        int GetGenerationId(int hpId);
+        
+
         List<UserMstModel> GetListUser(int hpId, int userId, int sinDate);
         
         List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison);
