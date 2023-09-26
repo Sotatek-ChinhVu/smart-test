@@ -27,6 +27,7 @@ using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseNameMstSearch;
 using UseCase.MstItem.DiseaseSearch;
+using UseCase.MstItem.ExistUsedKensaItemCd;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetAllCmtCheckMst;
@@ -761,6 +762,16 @@ namespace EmrCloudApi.Controller
             var presenter = new IsKensaItemOrderingPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<IsKensaItemOrderingResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.ExistUsedKensaItemCd)]
+        public ActionResult<Response<ExistUsedKensaItemCdResponse>> ExistUsedKensaItemCd([FromQuery] ExistUsedKensaItemCdRequest request)
+        {
+            var input = new ExistUsedKensaItemCdInputData(HpId, request.KensaItemCd, request.KensaSeqNo);
+            var output = _bus.Handle(input);
+            var presenter = new ExistUsedKensaItemCdPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<ExistUsedKensaItemCdResponse>>(presenter.Result);
         }
     }
 }

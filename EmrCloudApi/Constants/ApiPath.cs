@@ -65,7 +65,8 @@
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
         public const string f_17_Common = "f_17_Common";
-        public const string IsKensaItemOrdering = "IsKensaItemOrdering";
+        public const string IsKensaItemOrdering = "IsKensaItemOrdering"; 
+        public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

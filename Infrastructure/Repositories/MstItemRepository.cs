@@ -6620,5 +6620,12 @@ namespace Infrastructure.Repositories
 
             return tenMst != null ? tenMst.Name ?? string.Empty : string.Empty;
         }
+
+        public bool ExistUsedKensaItemCd(int hpId, string kensaItemCd, int kensaSeqNo)
+        {
+            var result = NoTrackingDataContext.KensaMsts.Where(p => p.HpId == hpId).Any(p => p.KensaItemCd == kensaItemCd && p.KensaItemSeqNo == kensaSeqNo) ||
+                NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None).Any(p => p.KensaItemCd == kensaItemCd && p.KensaItemSeqNo == kensaSeqNo);
+            return result;
+        }
     }
 }
