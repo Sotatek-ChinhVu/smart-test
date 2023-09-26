@@ -731,6 +731,7 @@ using UseCase.MstItem.GetTreeListSet;
 using UseCase.MstItem.GetTreeByomeiSet;
 using UseCase.UpsertMaterialMaster;
 using Infrastructure.Logger;
+using UseCase.MstItem.GetListUser;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1416,6 +1417,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
             busBuilder.RegisterUseCase<GetKensaCenterMstsInputData, GetKensaCenterMstsInteractor>();
             busBuilder.RegisterUseCase<GetTenOfItemInputData, GetTenOfItemInteractor>();
+            busBuilder.RegisterUseCase<GetListUserInputData, GetListUserInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();

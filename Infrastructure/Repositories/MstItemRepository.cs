@@ -6563,7 +6563,7 @@ namespace Infrastructure.Repositories
                         {
                             User = user
                         };
-            List<UserMstModel> userMstModels = query.AsEnumerable().Where(u => u.User != null).Select(u => new UserMstModel(u.User.HpId, u.User.UserId, u.User.KanaName, u.User.Name, u.User.StartDate, u.User.EndDate, u.User.IsDeleted, u.User.Id)).ToList();
+            List<UserMstModel> userMstModels = query.AsEnumerable().Where(u => u.User != null).Select(u => new UserMstModel(u.User.HpId, u.User.UserId, u.User.Sname, u.User.KanaName, u.User.Name, u.User.StartDate, u.User.EndDate, u.User.IsDeleted, u.User.Id)).ToList();
             result = userMstModels.Where(u => u.UserId != userId).ToList().GroupBy(u => u.UserId).Select(p => p.First()).ToList();
             return result;
         }

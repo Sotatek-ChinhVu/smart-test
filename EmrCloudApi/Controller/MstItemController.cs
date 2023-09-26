@@ -43,6 +43,7 @@ using UseCase.MstItem.GetKensaCenterMsts;
 using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetListUser;
 using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
@@ -843,6 +844,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTreeByomeiSetPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTreeByomeiSetResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListUser)]
+        public ActionResult<Response<GetListUserResponse>> GetListUser([FromQuery] GetListUserRequest request)
+        {
+            var input = new GetListUserInputData(HpId, UserId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetListUserPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListUserResponse>>(presenter.Result);
         }
     }
 }

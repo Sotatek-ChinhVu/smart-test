@@ -127,10 +127,11 @@ namespace Domain.Models.User
             Permissions = new();
             FunctionMstModels = functionMstModels;
         }
-        public UserMstModel(int hpId, int userId, string kanaName, string name, int startDate, int endDate, int isDeleted, long id)
+        public UserMstModel(int hpId, int userId, string sname, string kanaName, string name, int startDate, int endDate, int isDeleted, long id)
         {
             HpId = hpId;
             UserId = userId;
+            Sname = sname;
             KanaName = kanaName;
             Name = name;
             StartDate = startDate;

@@ -66,6 +66,7 @@
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
         public const string GetTreeListSet = "GetTreeListSet";
         public const string GetTreeByomeiSet = "GetTreeByomeiSet";
+        public const string GetListUser = "GetListUser";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
