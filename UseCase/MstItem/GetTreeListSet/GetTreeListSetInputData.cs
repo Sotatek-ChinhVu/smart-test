@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.ListSetMst.GetTreeListSet
+namespace UseCase.MstItem.GetTreeListSet
 {
     public sealed class GetTreeListSetInputData : IInputData<GetTreeListSetOutputData>
     {
