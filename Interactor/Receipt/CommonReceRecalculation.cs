@@ -1243,7 +1243,10 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                 foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
                 {
                     string itemCd = sinKouiDetailModel.ItemCd;
-                    if (!string.IsNullOrEmpty(itemCd) && sinKouiDetailModel.TenMstIsNotNull && !checkedItemCds.Contains(itemCd))
+
+                    //Fix https://jira.sotatek.com/browse/SMAR-4734 (uncheck TenMst != null)
+                    // if (!string.IsNullOrEmpty(itemCd) && sinKouiDetailModel.TenMstIsNotNull && !checkedItemCds.Contains(itemCd))
+                    if (!string.IsNullOrEmpty(itemCd) && !checkedItemCds.Contains(itemCd))
                     {
                         var lastTenMst = tenMstModelList.Where(item => item.ItemCd == itemCd).OrderByDescending(item => item.EndDate).FirstOrDefault();
                         if (lastTenMst != null && sinKouiCount.SinDate > lastTenMst.EndDate)
