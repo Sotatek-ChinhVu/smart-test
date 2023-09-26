@@ -721,14 +721,16 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+
 using Domain.Models.ListSetMst;
-using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.UpsertMaterialMaster;
-using UseCase.UpdateKensaMst;
+using Interactor.ListSetGenerationMst;
+using Domain.Models.ListSetGenerationMst;
 using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.SetSendaiGeneration.Add;
 using UseCase.MstItem.GetTreeListSet;
 using UseCase.MstItem.GetTreeByomeiSet;
+using UseCase.MstItem.GetListSetGenerationMst;
 using UseCase.UpsertMaterialMaster;
 using Infrastructure.Logger;
 
@@ -1132,6 +1134,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IStaticsticExportCsvService, StaticsticExportCsvService>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
+            services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1736,6 +1739,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
             busBuilder.RegisterUseCase<RestoreSetSendaiGenerationInputData, RestoreSetSendaiGenerationInteractor>();
 
+
+            //ListSetGeneration
+            busBuilder.RegisterUseCase<GetListSetGenerationMstInputData, ListSetGenerationMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
