@@ -19,7 +19,7 @@ namespace Domain.Models.HistoryOrder
 
         long GetHistoryIndex(int hpId, long ptId, long raiinNo, int userId, int filterId, int isDeleted, List<Tuple<long, bool>> raiinNos);
 
-        List<HistoryOrderModel> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiinNo, byte isKarteInf, List<Tuple<long, bool>> raiinNos);
+        List<HistoryOrderModel> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiinNo, byte isKarteInf, List<Tuple<long, bool>> raiinNos, int isShowApproval);
 
         (int totalCount, List<HistoryOrderModel> historyOrderModels) GetOrdersForOneOrderSheetGroup(int hpId, long ptId, int odrKouiKbn, int grpKouiKbn, int sinDate, int offset, int limit);
 
