@@ -141,6 +141,8 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetDataPrintDrugInfoResponse>>(presenter.Result);
-        }       
+        }
+
+        
     }
 }

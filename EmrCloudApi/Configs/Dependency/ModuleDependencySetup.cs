@@ -84,6 +84,7 @@ using EventProcessor.Service;
 using Helper.Messaging;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
 using Infrastructure.Services;
@@ -490,6 +491,7 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
+using UseCase.MstItem.UpdateJihiSbtMst;
 using UseCase.MstItem.UpdateKensaStdMst;
 using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
@@ -722,16 +724,16 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using Domain.Models.ListSetMst;
-using UseCase.MstItem.GetParrentKensaMst;
-using UseCase.UpsertMaterialMaster;
-using UseCase.UpdateKensaMst;
-using UseCase.MainMenu.GetKensaIraiLog;
-using UseCase.SetSendaiGeneration.Add;
+using Interactor.ListSetGenerationMst;
+using Domain.Models.ListSetGenerationMst;
+using Domain.Models.ByomeiSetGenerationMst;
+using UseCase.MstItem.GetListByomeiSetGenerationMst;
 using UseCase.MstItem.GetTreeListSet;
 using UseCase.MstItem.GetTreeByomeiSet;
-using UseCase.UpsertMaterialMaster;
-using Infrastructure.Logger;
+using UseCase.MstItem.GetListSetGenerationMst;
+using UseCase.MstItem.GetListKensaIjiSetting;
+using UseCase.MstItem.CompareTenMst;
+using UseCase.MstItem.SaveCompareTenMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1133,6 +1135,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IStaticsticExportCsvService, StaticsticExportCsvService>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
+            services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
+            services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1413,10 +1417,13 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetUsedKensaItemCdsInputData, GetUsedKensaItemCdsInteractor>();
             busBuilder.RegisterUseCase<UpsertMaterialMasterInputData, UpsertMaterialMasterInteractor>();
             busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
+            busBuilder.RegisterUseCase<UpdateJihiSbtMstInputData, UpdateJihiSbtMstInteractor>();
+
             busBuilder.RegisterUseCase<GetMaterialMstsInputData, GetMaterialMstsInteractor>();
             busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
             busBuilder.RegisterUseCase<GetKensaCenterMstsInputData, GetKensaCenterMstsInteractor>();
             busBuilder.RegisterUseCase<GetTenOfItemInputData, GetTenOfItemInteractor>();
+            busBuilder.RegisterUseCase<GetListKensaIjiSettingInputData, GetListKensaIjiSettingInteractor>();
             busBuilder.RegisterUseCase<GetSetNameMntInputData, GetSetNameMntInteractor>();
 
             // Disease
@@ -1424,6 +1431,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DiseaseSearchInputData, DiseaseSearchInteractor>();
             busBuilder.RegisterUseCase<GetSetByomeiTreeInputData, GetSetByomeiTreeInteractor>();
             busBuilder.RegisterUseCase<GetTreeByomeiSetInputData, GetTreeByomeiSetInteractor>();
+            busBuilder.RegisterUseCase<GetListByomeiSetGenerationMstInputData, GetListByomeiSetGenerationMstInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
@@ -1738,6 +1746,13 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
             busBuilder.RegisterUseCase<RestoreSetSendaiGenerationInputData, RestoreSetSendaiGenerationInteractor>();
 
+
+            //ListSetGeneration
+            busBuilder.RegisterUseCase<GetListSetGenerationMstInputData, ListSetGenerationMstInteractor>();
+
+            //Compare TenMst CompareTenMstInputData
+            busBuilder.RegisterUseCase<CompareTenMstInputData, CompareTenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveCompareTenMstInputData, SaveCompareTenMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
