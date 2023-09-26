@@ -30,7 +30,7 @@ namespace Domain.Models.MstItem
 
         bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts);
 
-        List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord);
+        List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord, string itemCd);
 
         bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters);
 
