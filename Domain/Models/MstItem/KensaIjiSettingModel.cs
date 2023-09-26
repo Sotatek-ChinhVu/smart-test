@@ -21,17 +21,17 @@ namespace Domain.Models.MstItem
             StartDate = startDate;
             EndDate = endDate;
         }
-        public string ItemCd { get; set; }
+        public string ItemCd { get; private set; }
 
-        public string KensaItemCd { get; set; }
+        public string KensaItemCd { get; private set; }
 
-        public string Name { get;set; }
+        public string Name { get; private set; }
 
-        public string SanteiItemCd { get;set; }
+        public string SanteiItemCd { get; private set; }
 
-        public string ReceName { get;set; }
+        public string ReceName { get; private set; }
 
-        public double Ten {  get;set; }
+        public double Ten { get; private set; }
         public string TenDisplay
         {
             get
@@ -41,7 +41,7 @@ namespace Domain.Models.MstItem
             }
         }
 
-        public int StartDate { get; set; }
+        public int StartDate { get; private set; }
 
         public string StartDateDisplay
         {
@@ -66,7 +66,7 @@ namespace Domain.Models.MstItem
                 }
             }
         }
-        public int EndDate {  get; set; }
+        public int EndDate { get; private set; }
 
         public string EndDateDisplay
         {
