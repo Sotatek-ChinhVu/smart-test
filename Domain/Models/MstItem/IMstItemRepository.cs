@@ -188,6 +188,10 @@ namespace Domain.Models.MstItem
         bool UpdateJihiSbtMst(int hpId, int userId, List<JihiSbtMstModel> jihiSbtMsts);
 
         string GetNameByItemCd(int hpId, string itemCd);
+
+        List<SetNameMntModel> GetSetNameMnt(SetCheckBoxStatusModel checkBoxStatus,int generationId, int hpId);
+        List<SetKbnMstModel> GetListSetKbnMst(int generationId, int hpId);
+        int GetGenerationId(int hpId);
         
         List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison);
 
