@@ -480,5 +480,7 @@
 
         //SetSendaiGeneration
         public const string Restore = "Restore";
+        //Search Compare Tenmst
+        public const string SearchCompareTenMst = "SearchCompareTenMst";
     }
 }

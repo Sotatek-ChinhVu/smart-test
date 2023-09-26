@@ -723,10 +723,6 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using Domain.Models.ListSetMst;
-using UseCase.MainMenu.GetKensaIraiLog;
-using UseCase.SetSendaiGeneration.Add;
-using UseCase.UpsertMaterialMaster;
 using Interactor.ListSetGenerationMst;
 using Domain.Models.ListSetGenerationMst;
 using Domain.Models.ByomeiSetGenerationMst;
@@ -734,10 +730,8 @@ using UseCase.MstItem.GetListByomeiSetGenerationMst;
 using UseCase.MstItem.GetTreeListSet;
 using UseCase.MstItem.GetTreeByomeiSet;
 using UseCase.MstItem.GetListSetGenerationMst;
-using UseCase.UpsertMaterialMaster;
-using UseCase.SetSendaiGeneration.Restore;
 using UseCase.MstItem.GetListKensaIjiSetting;
-using Infrastructure.Logger;
+using UseCase.MstItem.CompareTenMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1752,6 +1746,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //ListSetGeneration
             busBuilder.RegisterUseCase<GetListSetGenerationMstInputData, ListSetGenerationMstInteractor>();
+
+            //Compare TenMst CompareTenMstInputData
+            busBuilder.RegisterUseCase<CompareTenMstInputData, CompareTenMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

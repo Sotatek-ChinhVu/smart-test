@@ -20,6 +20,7 @@ using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
+using System;
 using System.Linq;
 using System.Text;
 using KensaCenterMstModel = Domain.Models.MstItem.KensaCenterMstModel;
@@ -6648,6 +6649,228 @@ namespace Infrastructure.Repositories
                       ?? tenMsts.OrderByDescending(x => x.StartDate).FirstOrDefault();
 
             return tenMst != null ? tenMst.Name ?? string.Empty : string.Empty;
+        }
+
+        public List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison)
+        {
+            var result = new List<CompareTenMstModel>();
+
+            IQueryable<TenMst> tenMstRepos = GetTenMstActionCondition(actions, sinDate, hpId);
+            IQueryable<TenMstMother> tenMstMotherRepos = GetTenMstMotherActionCondition(actions, sinDate, hpId);
+            try
+            {
+                var tenMstCommparsons = from tenMstMother in tenMstMotherRepos
+                                        join tenMst in tenMstRepos
+                                        on new { tenMstMother.ItemCd, tenMstMother.StartDate } equals new { tenMst.ItemCd, tenMst.StartDate }
+                                        select new
+                                        {
+                                            TenMstMother = tenMstMother,
+                                            TenMst = tenMst
+                                        };
+                switch (comparison)
+                {
+                    case ComparisonSearchModel.Name:
+                        tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                            where (tenMstCompar.TenMstMother.Name == null && tenMstCompar.TenMst.Name != null) ||
+                                                   (tenMstCompar.TenMstMother.Name != null && tenMstCompar.TenMst.Name == null) ||
+                                                   (tenMstCompar.TenMstMother.Name != null && tenMstCompar.TenMst.Name != null && tenMstCompar.TenMstMother.Name.Trim() != tenMstCompar.TenMst.Name.Trim())
+                                            select tenMstCompar;
+
+                        break;
+                    case ComparisonSearchModel.ReceName:
+                        tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                            where (tenMstCompar.TenMstMother.ReceName == null && tenMstCompar.TenMst.ReceName != null) ||
+                                                   (tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName == null) ||
+                                                   (tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName != null && tenMstCompar.TenMstMother.ReceName.Trim() != tenMstCompar.TenMst.ReceName.Trim())
+                                            select tenMstCompar;
+                        break;
+                    case ComparisonSearchModel.OdrUnitName:
+                        tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                            where (tenMstCompar.TenMstMother.OdrUnitName == null && tenMstCompar.TenMst.OdrUnitName != null && tenMstCompar.TenMst.OdrUnitName.Trim() != "") ||
+                                                   (tenMstCompar.TenMstMother.OdrUnitName != null && tenMstCompar.TenMst.OdrUnitName == null && tenMstCompar.TenMstMother.OdrUnitName.Trim() != "") ||
+                                                   (tenMstCompar.TenMstMother.OdrUnitName != null && tenMstCompar.TenMst.OdrUnitName != null && tenMstCompar.TenMstMother.OdrUnitName.Trim() != tenMstCompar.TenMst.OdrUnitName.Trim())
+                                            select tenMstCompar;
+                        break;
+                    case ComparisonSearchModel.ReceUnitName:
+                        tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                            where (tenMstCompar.TenMstMother.ReceUnitName == null && tenMstCompar.TenMst.ReceUnitName != null && tenMstCompar.TenMst.ReceUnitName.Trim() != "") ||
+                                                   (tenMstCompar.TenMstMother.ReceUnitName != null && tenMstCompar.TenMst.ReceUnitName == null && tenMstCompar.TenMstMother.ReceUnitName.Trim() != "") ||
+                                                   (tenMstCompar.TenMstMother.ReceUnitName != null && tenMstCompar.TenMst.ReceUnitName != null && tenMstCompar.TenMstMother.ReceUnitName.Trim() != tenMstCompar.TenMst.ReceUnitName.Trim())
+                                            select tenMstCompar;
+                        break;
+                    case ComparisonSearchModel.SaiketuKbn:
+                        tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                            where tenMstCompar.TenMstMother.SaiketuKbn != tenMstCompar.TenMst.SaiketuKbn
+                                            select tenMstCompar;
+                        break;
+                    case ComparisonSearchModel.CmtKbn:
+                        tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                            where tenMstCompar.TenMstMother.CmtKbn != tenMstCompar.TenMst.CmtKbn
+                                            select tenMstCompar;
+                        break;
+                }
+
+                result = tenMstCommparsons.AsEnumerable().Select(u => 
+                                    new CompareTenMstModel(
+                                        u != null && u.TenMst != null ? u.TenMst.ItemCd : string.Empty, hpId, 
+                                        u != null && u.TenMst != null ? u.TenMst.StartDate : 0,
+                                        u?.TenMst?.Name ?? string.Empty,
+                                        u?.TenMst?.ReceName ?? string.Empty,
+                                        u?.TenMst?.OdrUnitName ?? string.Empty,
+                                        u?.TenMst?.ReceUnitName ?? string.Empty,
+                                        u?.TenMst?.SaiketuKbn ?? 0,
+                                        u?.TenMstMother?.Name ?? string.Empty,
+                                        u?.TenMstMother?.ReceName ?? string.Empty,
+                                        u?.TenMstMother?.OdrUnitName ?? string.Empty,
+                                        u?.TenMstMother?.ReceUnitName ?? string.Empty,
+                                        u?.TenMstMother?.SaiketuKbn ?? 0
+                                        )
+                                    )
+                         .OrderBy(u => u.ItemCd).ToList();
+            }
+            catch
+            {
+                throw;
+            }
+
+            return result;
+        }
+        private IQueryable<TenMst> GetTenMstActionCondition(List<ActionCompareSearchModel> actions, int sinDate, int hpId)
+        {
+            var tenMstRepos = NoTrackingDataContext.TenMsts.Where(u => u.HpId == hpId &&
+                                                                                u.StartDate <= sinDate &&
+                                                                                u.EndDate >= sinDate &&
+                                                                                u.IsDeleted == DeleteTypes.None);
+            tenMstRepos = from tenMst in tenMstRepos
+                          where tenMst.SinKouiKbn >= 13 && tenMst.SinKouiKbn <= 89
+                          select tenMst;
+            if (actions.Contains(ActionCompareSearchModel.All))
+            {
+                return tenMstRepos;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Instruction))
+            {
+                tenMstRepos = from tenMst in tenMstRepos
+                              where tenMst.SinKouiKbn != 13
+                              select tenMst;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Prescription))
+            {
+                tenMstRepos = from tenMst in tenMstRepos
+                              where tenMst.SinKouiKbn != 14
+                              select tenMst;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Treatment))
+            {
+                tenMstRepos = from tenMst in tenMstRepos
+                              where tenMst.SinKouiKbn < 20 && tenMst.SinKouiKbn > 29
+                              select tenMst;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Inspection))
+            {
+                tenMstRepos = from tenMst in tenMstRepos
+                              where tenMst.SinKouiKbn < 30 && tenMst.SinKouiKbn > 39
+                              select tenMst;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Other))
+            {
+                tenMstRepos = from tenMst in tenMstRepos
+                              where tenMst.SinKouiKbn < 40 && tenMst.SinKouiKbn > 49
+                              select tenMst;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.AtHome))
+            {
+                tenMstRepos = from tenMst in tenMstRepos
+                              where tenMst.SinKouiKbn < 50 && tenMst.SinKouiKbn > 59
+                              select tenMst;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Injection))
+            {
+                tenMstRepos = from tenMst in tenMstRepos
+                              where tenMst.SinKouiKbn < 60 && tenMst.SinKouiKbn > 69
+                              select tenMst;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Surgery))
+            {
+                tenMstRepos = from tenMst in tenMstRepos
+                              where tenMst.SinKouiKbn < 70 && tenMst.SinKouiKbn > 79
+                              select tenMst;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Image))
+            {
+                tenMstRepos = from tenMst in tenMstRepos
+                              where tenMst.SinKouiKbn < 80 && tenMst.SinKouiKbn > 89
+                              select tenMst;
+            }
+            return tenMstRepos;
+        }
+        private IQueryable<TenMstMother> GetTenMstMotherActionCondition(List<ActionCompareSearchModel> actions, int sinDate, int hpId)
+        {
+            var tenMstMotherRepos = NoTrackingDataContext.TenMstMothers.Where(u => u.HpId == hpId &&
+                                                                                            u.StartDate <= sinDate &&
+                                                                                            u.EndDate >= sinDate);
+            tenMstMotherRepos = from tenMstMother in tenMstMotherRepos
+                                where tenMstMother.SinKouiKbn >= 13 && tenMstMother.SinKouiKbn <= 89
+                                select tenMstMother;
+            if (actions.Contains(ActionCompareSearchModel.All))
+            {
+                return tenMstMotherRepos;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Instruction))
+            {
+                tenMstMotherRepos = from tenMstMother in tenMstMotherRepos
+                                    where tenMstMother.SinKouiKbn != 13
+                                    select tenMstMother;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Prescription))
+            {
+                tenMstMotherRepos = from tenMstMother in tenMstMotherRepos
+                                    where tenMstMother.SinKouiKbn != 14
+                                    select tenMstMother;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Treatment))
+            {
+                tenMstMotherRepos = from tenMstMother in tenMstMotherRepos
+                                    where tenMstMother.SinKouiKbn < 20 && tenMstMother.SinKouiKbn > 29
+                                    select tenMstMother;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Inspection))
+            {
+                tenMstMotherRepos = from tenMstMother in tenMstMotherRepos
+                                    where tenMstMother.SinKouiKbn < 30 && tenMstMother.SinKouiKbn > 39
+                                    select tenMstMother;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Other))
+            {
+                tenMstMotherRepos = from tenMstMother in tenMstMotherRepos
+                                    where tenMstMother.SinKouiKbn < 40 && tenMstMother.SinKouiKbn > 49
+                                    select tenMstMother;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.AtHome))
+            {
+                tenMstMotherRepos = from tenMstMother in tenMstMotherRepos
+                                    where tenMstMother.SinKouiKbn < 50 && tenMstMother.SinKouiKbn > 59
+                                    select tenMstMother;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Injection))
+            {
+                tenMstMotherRepos = from tenMstMother in tenMstMotherRepos
+                                    where tenMstMother.SinKouiKbn < 60 && tenMstMother.SinKouiKbn > 69
+                                    select tenMstMother;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Surgery))
+            {
+                tenMstMotherRepos = from tenMstMother in tenMstMotherRepos
+                                    where tenMstMother.SinKouiKbn < 70 && tenMstMother.SinKouiKbn > 79
+                                    select tenMstMother;
+            }
+            if (!actions.Contains(ActionCompareSearchModel.Image))
+            {
+                tenMstMotherRepos = from tenMstMother in tenMstMotherRepos
+                                    where tenMstMother.SinKouiKbn < 80 && tenMstMother.SinKouiKbn > 89
+                                    select tenMstMother;
+            }
+            return tenMstMotherRepos;
         }
     }
 }
