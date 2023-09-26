@@ -1,6 +1,6 @@
 ﻿using Domain.Models.ListSetMst;
 
-namespace EmrCloudApi.Responses.ListSetMst
+namespace EmrCloudApi.Responses.MstItem
 {
     public class GetTreeListSetMstResponse
     {
