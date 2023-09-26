@@ -10,7 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PostgreDataContext;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Unicode;
 
 namespace Infrastructure.CommonDB
 {
@@ -76,26 +78,36 @@ namespace Infrastructure.CommonDB
             string body = await GetRawBodyAsync(request);
             string query = request.QueryString.ToString();
 
-            RequestInfo requestInfo = new RequestInfo(method, path, body, query);
+            RequestInfo requestInfo = new RequestInfo(method, path, "body-data-key", query);
 
-            return JsonSerializer.Serialize<RequestInfo>(requestInfo);
+            var options = new JsonSerializerOptions
+            {
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+                WriteIndented = true
+            };
+
+            _requestInfo = JsonSerializer.Serialize<RequestInfo>(requestInfo, options);
+            _requestInfo = _requestInfo.Replace("body-data-key", body);
+            return _requestInfo;
         }
 
         private async Task<string> GetRawBodyAsync(HttpRequest request, Encoding encoding = null)
         {
-            if (!request.Body.CanSeek)
+            string body = string.Empty;
+
+            // Leave the body open so the next middleware can read it.
+            using (var reader = new StreamReader(
+                request.Body,
+                encoding: Encoding.UTF8,
+                detectEncodingFromByteOrderMarks: false,
+                leaveOpen: true))
             {
-                return string.Empty;
+                body = await reader.ReadToEndAsync();
+                // Do some processing with body…
+
+                // Reset the request body stream position so the next middleware can read it
+                request.Body.Position = 0;
             }
-
-            request.Body.Position = 0;
-
-            var reader = new StreamReader(request.Body, encoding ?? Encoding.UTF8);
-
-            var body = await reader.ReadToEndAsync().ConfigureAwait(false);
-
-            request.Body.Position = 0;
-
             return body;
         }
 
