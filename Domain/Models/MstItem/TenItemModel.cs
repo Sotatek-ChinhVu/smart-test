@@ -404,6 +404,47 @@ namespace Domain.Models.MstItem
             ListGenDate = new();
         }
 
+        public TenItemModel(int sinKouiKbn, string masterSbt, string itemCd, string kensaItemCd, int kensaItemSeqNo, double ten, string name, string receName, string kanaName1
+                          , string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, int startDate, int endDate, double defaultValue
+                          , string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch, int isDeleted)
+        {
+            SinKouiKbn = sinKouiKbn;
+            MasterSbt = masterSbt;
+            ItemCd = itemCd;
+            KensaItemCd = kensaItemCd;
+            KensaItemSeqNo = kensaItemSeqNo;
+            Ten = ten;
+            Name = name;
+            ReceName = receName;
+            KanaName1 = kanaName1;
+            KanaName2 = kanaName2;
+            KanaName3 = kanaName3;
+            KanaName4 = kanaName4;
+            KanaName5 = kanaName5;
+            KanaName6 = kanaName6;
+            KanaName7 = kanaName7;
+            StartDate = startDate;
+            EndDate = endDate;
+            DefaultValue = defaultValue;
+            OdrUnitName = odrUnitName;
+            SanteiItemCd = santeiItemCd;
+            SanteigaiKbn = santeigaiKbn;
+            IsNoSearch = isNoSearch;
+            KensaMstCenterItemCd1 = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            IpnNameCd = string.Empty;
+            YjCd = string.Empty;
+            CnvUnitName = string.Empty;
+            IpnCD = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            MinAge = string.Empty;
+            MaxAge = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = new();
+            IsDeleted = isDeleted;
+        }
+
         public TenItemModel(string itemCd, int sinKouiKbn, string name, string odrUnitName, string cnvUnitName, int isNodspRece, int yohoKbn, double odrTermVal, double cnvTermVal, string yjCd, string kensaItemCd, int kensaItemSeqNo
                           , int kohatuKbn, double ten, int handanGrpKbn, string ipnNameCd, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, string minAge
                           , string maxAge, int startDate, int endDate, string masterSbt, int buiKbn, string cdKbn, int cdKbnNo, int cdEdano, string kokuji1, string kokuji2, int drugKbn, string receName, string santeiItemCd, int jihiSbt, int isDeleted)

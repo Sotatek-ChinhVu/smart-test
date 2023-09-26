@@ -386,7 +386,8 @@ namespace EmrCloudApi.Controller
                     tenMstItemModel.OdrUnitName,
                     tenMstItemModel.SanteiItemCd,
                     tenMstItemModel.SanteigaiKbn,
-                    tenMstItemModel.IsNoSearch
+                    tenMstItemModel.IsNoSearch,
+                    tenMstItemModel.IsDeleted
                 );
         }
 
@@ -415,7 +416,8 @@ namespace EmrCloudApi.Controller
                     kensaMstItem.OyaItemSeqNo,
                     kensaMstItem.SortNo,
                     kensaMstItem.CenterItemCd1,
-                    kensaMstItem.CenterItemCd2
+                    kensaMstItem.CenterItemCd2,
+                    kensaMstItem.IsDeleted
                 );
         }
 

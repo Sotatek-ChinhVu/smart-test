@@ -4,7 +4,7 @@
     {
         public TenMstInputItem(int sinKouiKbn, string masterSbt, string itemCd, string kensaItemCd, int kensaItemSeqNo, double ten, string name, string receName, string kanaName1,
                                string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, int startDate, int endDate, double defaultValue,
-                               string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch)
+                               string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch, int isDeleted)
         {
 
             SinKouiKbn = sinKouiKbn;
@@ -29,6 +29,7 @@
             SanteiItemCd = santeiItemCd;
             SanteigaiKbn = santeigaiKbn;
             IsNoSearch = isNoSearch;
+            IsDeleted = isDeleted;
         }
 
         public int SinKouiKbn { get; private set; }
@@ -74,5 +75,7 @@
         public int SanteigaiKbn { get; private set; }
 
         public int IsNoSearch { get; private set; }
+
+        public int IsDeleted { get; private set; }
     }
 }
