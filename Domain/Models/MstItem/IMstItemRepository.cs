@@ -185,6 +185,8 @@ namespace Domain.Models.MstItem
 
         List<KensaIjiSettingModel> GetListKensaIjiSettingModel(int hpId, string keyWords, bool isValid, bool isExpired, bool? isPayment);
 
+        bool UpdateJihiSbtMst(int hpId, int userId, List<JihiSbtMstModel> jihiSbtMsts);
+
         string GetNameByItemCd(int hpId, string itemCd);
     }
 

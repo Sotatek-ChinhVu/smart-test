@@ -5,7 +5,6 @@ using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
-using EmrCloudApi.Presenters.Diseases;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Requests.MedicalExamination;
@@ -41,8 +40,10 @@ using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetKensaCenterMsts;
 using UseCase.MstItem.GetKensaStdMst;
+using UseCase.MstItem.GetListByomeiSetGenerationMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListKensaIjiSetting;
+using UseCase.MstItem.GetListSetGenerationMst;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
@@ -76,6 +77,7 @@ using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
+using UseCase.MstItem.UpdateJihiSbtMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -804,6 +806,16 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetTenItemCdsResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.UpdateJihiSbtMst)]
+        public ActionResult<Response<UpdateJihiSbtMstResponse>> UpdateJihiSbtMst(UpdateJihiMstRequest request)
+        {
+            var input = new UpdateJihiSbtMstInputData(HpId, UserId, request.JihiSbtMsts);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateJihiSbtMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateJihiSbtMstResponse>>(presenter.Result);
+        }
+
         [HttpGet(ApiPath.GetKensaCenterMsts)]
         public ActionResult<Response<GetKensaCenterMstsResponse>> GetKensaCenterMsts()
         {
@@ -853,6 +865,26 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTreeByomeiSetPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTreeByomeiSetResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListSetGeneration)]
+        public ActionResult<Response<GetListSetGenerationMstResponse>> GetListSetGeneration()
+        {
+            var input = new GetListSetGenerationMstInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetListSetGenerationMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListSetGenerationMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListByomeiSetGeneration)]
+        public ActionResult<Response<GetListByomeiSetGenerationMstResponse>> GetListByomeiSetGeneration()
+        {
+            var input = new GetListByomeiSetGenerationMstInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetListByomeiSetGenerationMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListByomeiSetGenerationMstResponse>>(presenter.Result);
         }
     }
 }
