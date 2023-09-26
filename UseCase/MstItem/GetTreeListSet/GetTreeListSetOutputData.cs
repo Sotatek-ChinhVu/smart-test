@@ -2,7 +2,7 @@
 using Domain.Models.ListSetMst;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.ListSetMst.GetTreeListSet
+namespace UseCase.MstItem.GetTreeListSet
 {
     public sealed class GetTreeListSetOutputData : IOutputData
     {

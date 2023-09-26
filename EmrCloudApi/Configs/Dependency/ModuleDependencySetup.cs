@@ -118,7 +118,6 @@ using Interactor.KarteFilter;
 using Interactor.KarteInf;
 using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
-using Interactor.ListSetMst;
 using Interactor.Lock;
 using Interactor.MainMenu;
 using Interactor.MaxMoney;
@@ -390,7 +389,6 @@ using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInf.ConvertTextToRichText;
 using UseCase.KarteInf.GetList;
 using UseCase.KohiHokenMst.Get;
-using UseCase.ListSetMst.GetTreeListSet;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
@@ -723,6 +721,15 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using Domain.Models.ListSetMst;
+using UseCase.MstItem.GetParrentKensaMst;
+using UseCase.UpsertMaterialMaster;
+using UseCase.UpdateKensaMst;
+using UseCase.MainMenu.GetKensaIraiLog;
+using UseCase.SetSendaiGeneration.Add;
+using UseCase.MstItem.GetTreeListSet;
+using UseCase.MstItem.GetTreeByomeiSet;
+using UseCase.UpsertMaterialMaster;
 using Infrastructure.Logger;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -1414,6 +1421,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
             busBuilder.RegisterUseCase<DiseaseSearchInputData, DiseaseSearchInteractor>();
             busBuilder.RegisterUseCase<GetSetByomeiTreeInputData, GetSetByomeiTreeInteractor>();
+            busBuilder.RegisterUseCase<GetTreeByomeiSetInputData, GetTreeByomeiSetInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();

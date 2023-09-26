@@ -1,9 +1,8 @@
 ﻿using Domain.Models.ListSetMst;
 using Entity.Tenant;
-using UseCase.ListSetMst.GetTreeListSet;
+using UseCase.MstItem.GetTreeListSet;
 
-
-namespace Interactor.ListSetMst
+namespace Interactor.MstItem
 {
     public class GetTreeListSetInteractor : IGetTreeListSetInputPort
     {
@@ -32,7 +31,7 @@ namespace Interactor.ListSetMst
                 rootSubs.AddRange(GetListTreeSet(inputData.SetKbn, generationId, inputData));
                 if (!rootSubs.Any())
                     return new GetTreeListSetOutputData(new List<ListSetMstModel>(), GetTreeListSetStatus.DataNotFound);
-                ListSetMstModel rootLevel = new ListSetMstModel(0, "共通",0);
+                ListSetMstModel rootLevel = new ListSetMstModel(0, "共通", 0);
                 rootLevel.Childrens = rootSubs;
                 result.Add(rootLevel);
                 return new GetTreeListSetOutputData(result, GetTreeListSetStatus.Successed);
