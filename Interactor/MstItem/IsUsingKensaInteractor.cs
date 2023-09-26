@@ -1,5 +1,5 @@
 ﻿using Domain.Models.MstItem;
-using UseCase.MstItem.IsUsingKensa;
+using UseCase.IsUsingKensa;
 
 namespace Interactor.MstItem
 {

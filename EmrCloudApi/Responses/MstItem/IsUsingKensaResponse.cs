@@ -1,4 +1,4 @@
-﻿using UseCase.MstItem.IsUsingKensa;
+﻿using UseCase.IsUsingKensa;
 
 namespace EmrCloudApi.Responses.MstItem
 {
