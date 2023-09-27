@@ -173,7 +173,8 @@ namespace Interactor.MedicalExamination
                         i.StartDate,
                         i.TenkiKbn,
                         i.TenkiDate,
-                        i.SyubyoKbn
+                        i.SyubyoKbn,
+                        i.NanoNanByoCd
                     )).ToList();
 
                 var checkedOrderModelList = new List<CheckedOrderModel>();
