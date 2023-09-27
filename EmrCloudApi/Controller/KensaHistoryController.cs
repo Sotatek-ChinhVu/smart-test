@@ -10,6 +10,7 @@ using UseCase.KensaHistory.UpdateKensaSet;
 using EmrCloudApi.Presenters.KensaHistory;
 using EmrCloudApi.Responses.KensaHistory;
 using EmrCloudApi.Requests.KensaHistory;
+using UseCase.KensaHistory.GetListKensaSet;
 
 namespace EmrCloudApi.Controller
 {
@@ -31,6 +32,16 @@ namespace EmrCloudApi.Controller
             var presenter = new UpdateKensaSetPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UpdateKensaSetResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListKensaSet)]
+        public ActionResult<Response<GetListKensaSetResponse>> GetListKensaSet()
+        {
+            var input = new GetListKensaSetInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaSetPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaSetResponse>>(presenter.Result);
         }
     }
 }

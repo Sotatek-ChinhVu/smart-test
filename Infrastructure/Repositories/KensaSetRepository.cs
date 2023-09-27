@@ -112,6 +112,23 @@ namespace Infrastructure.Repositories
             return successed;
         }
 
+        public List<KensaSetModel> GetListKensaSet(int hpId)
+        {
+            return NoTrackingDataContext.KensaSets.Where(x => x.HpId == hpId).Select(x => new KensaSetModel(
+                x.HpId,
+                x.SetId,
+                x.SetName,
+                x.SortNo,
+                x.IsDeleted,
+                x.CreateDate,
+                x.CreateId,
+                x.CreateMachine,
+                x.UpdateDate,
+                x.UpdateId,
+                x.UpdateMachine
+                )).ToList();
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();

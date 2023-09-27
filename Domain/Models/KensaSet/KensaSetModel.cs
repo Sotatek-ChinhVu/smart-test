@@ -1,16 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.KensaSet
+﻿namespace Domain.Models.KensaSet
 {
     public class KensaSetModel
     {
+        public KensaSetModel(int hpId, int setId, string setName, int sortNo, int isDeleted, DateTime createDate, int createId, string? createMachine, DateTime updateDate, int updateId, string? updateMachine)
+        {
+            HpId = hpId;
+            SetId = setId;
+            SetName = setName;
+            SortNo = sortNo;
+            IsDeleted = isDeleted;
+            CreateDate = createDate;
+            CreateId = createId;
+            CreateMachine = createMachine;
+            UpdateDate = updateDate;
+            UpdateId = updateId;
+            UpdateMachine = updateMachine;
+        }
 
         public int HpId { get; private set; }
 
