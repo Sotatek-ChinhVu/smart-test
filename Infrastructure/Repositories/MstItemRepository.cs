@@ -17,6 +17,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -6176,11 +6177,11 @@ namespace Infrastructure.Repositories
             List<KensaMst> newKensaMsts = new List<KensaMst>();
             List<TenMst> newTenMsts = new List<TenMst>();
 
-            foreach (var item in kensaMstModels)
+            foreach (var itemKensa in kensaMstModels)
             {
-                if (item.IsDeleted == 1)
+                if (itemKensa.IsDeleted == 1)
                 {
-                    var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
+                    var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == itemKensa.KensaItemCd && x.KensaItemSeqNo == itemKensa.KensaItemSeqNo);
                     if (listKensaMst != null)
                     {
                         listKensaMst.IsDelete = 1;
@@ -6188,34 +6189,34 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
+                    var listKensaMst = TrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == itemKensa.KensaItemCd && x.KensaItemSeqNo == itemKensa.KensaItemSeqNo);
                     if (listKensaMst != null)
                     {
-                        listKensaMst.CenterCd = item.CenterCd;
-                        listKensaMst.KensaName = item.KensaName;
-                        listKensaMst.KensaKana = item.KensaKana;
-                        listKensaMst.Unit = item.Unit;
-                        listKensaMst.MaterialCd = item.MaterialCd;
-                        listKensaMst.MaleStd = item.MaleStd;
-                        listKensaMst.MaleStdLow = item.MaleStdLow;
-                        listKensaMst.MaleStdHigh = item.MaleStdHigh;
-                        listKensaMst.FemaleStd = item.FemaleStd;
-                        listKensaMst.FemaleStdLow = item.FemaleStdLow;
-                        listKensaMst.FemaleStdHigh = item.FemaleStdHigh;
-                        listKensaMst.Formula = item.Formula;
-                        listKensaMst.OyaItemCd = item.OyaItemCd;
-                        listKensaMst.OyaItemSeqNo = item.OyaItemSeqNo;
-                        listKensaMst.SortNo = item.SortNo;
-                        listKensaMst.CenterItemCd1 = item.CenterItemCd1;
-                        listKensaMst.CenterItemCd2 = item.CenterItemCd2;
-                        listKensaMst.Digit = item.Digit;
+                        listKensaMst.CenterCd = itemKensa.CenterCd;
+                        listKensaMst.KensaName = itemKensa.KensaName;
+                        listKensaMst.KensaKana = itemKensa.KensaKana;
+                        listKensaMst.Unit = itemKensa.Unit;
+                        listKensaMst.MaterialCd = itemKensa.MaterialCd;
+                        listKensaMst.MaleStd = itemKensa.MaleStd;
+                        listKensaMst.MaleStdLow = itemKensa.MaleStdLow;
+                        listKensaMst.MaleStdHigh = itemKensa.MaleStdHigh;
+                        listKensaMst.FemaleStd = itemKensa.FemaleStd;
+                        listKensaMst.FemaleStdLow = itemKensa.FemaleStdLow;
+                        listKensaMst.FemaleStdHigh = itemKensa.FemaleStdHigh;
+                        listKensaMst.Formula = itemKensa.Formula;
+                        listKensaMst.OyaItemCd = itemKensa.OyaItemCd;
+                        listKensaMst.OyaItemSeqNo = itemKensa.OyaItemSeqNo;
+                        listKensaMst.SortNo = itemKensa.SortNo;
+                        listKensaMst.CenterItemCd1 = itemKensa.CenterItemCd1;
+                        listKensaMst.CenterItemCd2 = itemKensa.CenterItemCd2;
+                        listKensaMst.Digit = itemKensa.Digit;
                         listKensaMst.UpdateId = userId;
                         listKensaMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
                     else
                     {
-                        KensaMst itemtest = ConvertKensaMasterList(item, userId, hpId);
-                        TrackingDataContext.KensaMsts.AddRange(itemtest);
+                        KensaMst kensaMaster = ConvertKensaMasterList(itemKensa, userId, hpId);
+                        TrackingDataContext.KensaMsts.AddRange(kensaMaster);
                     }
                 }
             }
@@ -6227,8 +6228,43 @@ namespace Infrastructure.Repositories
                 if(item.IsDeleted == 1)
                 {
                     var childKensaMst = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
-
+                    if(childKensaMst != null)
+                    {
+                        childKensaMst.IsDelete = 1;
+                    }
                 }
+                else
+                {
+                    var childKensaMst = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
+                    if (childKensaMst != null)
+                    {
+                        childKensaMst.CenterCd = item.CenterCd;
+                        childKensaMst.KensaName = item.KensaName;
+                        childKensaMst.KensaKana = item.KensaKana;
+                        childKensaMst.Unit = item.Unit;
+                        childKensaMst.MaterialCd = item.MaterialCd;
+                        childKensaMst.MaleStd = item.MaleStd;
+                        childKensaMst.MaleStdLow = item.MaleStdLow;
+                        childKensaMst.MaleStdHigh = item.MaleStdHigh;
+                        childKensaMst.FemaleStd = item.FemaleStd;
+                        childKensaMst.FemaleStdLow = item.FemaleStdLow;
+                        childKensaMst.FemaleStdHigh = item.FemaleStdHigh;
+                        childKensaMst.Formula = item.Formula;
+                        childKensaMst.OyaItemCd = item.OyaItemCd;
+                        childKensaMst.OyaItemSeqNo = item.OyaItemSeqNo;
+                        childKensaMst.SortNo = item.SortNo;
+                        childKensaMst.CenterItemCd1 = item.CenterItemCd1;
+                        childKensaMst.CenterItemCd2 = item.CenterItemCd2;
+                        childKensaMst.Digit = item.Digit;
+                        childKensaMst.UpdateId = userId;
+                        childKensaMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        KensaMst childs = ConvertKensaMasterList(item, userId, hpId);
+                        TrackingDataContext.KensaMsts.AddRange(childs);
+                    }
+                } 
             }
 
             foreach (var item in tenMstModels)
@@ -6282,6 +6318,39 @@ namespace Infrastructure.Repositories
             }
 
             return TrackingDataContext.SaveChanges() >= 1;
+        }
+
+        private KensaMst ConvertChildKensaMstList(KensaMstModel u, int userId, int hpId)
+        {
+            return new KensaMst
+            {
+                HpId = hpId,
+                KensaItemCd = u.KensaItemCd,
+                KensaItemSeqNo = u.KensaItemSeqNo,
+                CenterCd = u.CenterCd,
+                KensaName = u.KensaName,
+                KensaKana = u.KensaKana,
+                Unit = u.Unit,
+                MaterialCd = u.MaterialCd,
+                MaleStd = u.MaleStd,
+                MaleStdLow = u.MaleStdLow,
+                MaleStdHigh = u.MaleStdHigh,
+                FemaleStd = u.FemaleStd,
+                FemaleStdLow = u.FemaleStdLow,
+                FemaleStdHigh = u.FemaleStdHigh,
+                Formula = u.Formula,
+                OyaItemCd = u.OyaItemCd,
+                OyaItemSeqNo = u.OyaItemSeqNo,
+                SortNo = u.SortNo,
+                CenterItemCd1 = u.CenterItemCd1,
+                CenterItemCd2 = u.CenterItemCd2,
+                Digit = u.Digit,
+                IsDelete = u.IsDeleted,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
+            };
         }
 
         private TenMst ConvertTenMasterList(TenItemModel u, int userId, int hpId)
@@ -6367,6 +6436,12 @@ namespace Infrastructure.Repositories
                 CreateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateDate = CIUtil.GetJapanDateTimeNow()
             };
+        }
+
+        public bool IsUsingKensaItem(int hpId, string kensaItemCd, string tenItemCd)
+        {
+            return NoTrackingDataContext.KensaInfDetails.Where(p => p.HpId == hpId && p.KensaItemCd == kensaItemCd).Any() ||
+                IsKensaItemOrdering(hpId, tenItemCd);
         }
 
         public bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds)

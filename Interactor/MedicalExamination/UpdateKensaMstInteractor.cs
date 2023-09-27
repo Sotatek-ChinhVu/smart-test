@@ -39,7 +39,7 @@ namespace Interactor.MedicalExamination
             }
             finally
             {
-                _mstItemRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource(); 
             }
         }
         private static UpdateKensaMstStatus ConvertStatusTenMst(ValidationStatus status)

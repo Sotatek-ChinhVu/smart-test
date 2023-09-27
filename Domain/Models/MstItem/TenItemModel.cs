@@ -1,6 +1,8 @@
-﻿using Helper.Common;
+﻿using Domain.Models.SetMst;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using static Helper.Constants.TenMstConst;
 
@@ -8,6 +10,7 @@ namespace Domain.Models.MstItem
 {
     public class TenItemModel
     {
+
         [JsonConstructor]
         public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted, int handanGrpKbn, bool isKensaMstEmpty)
         {

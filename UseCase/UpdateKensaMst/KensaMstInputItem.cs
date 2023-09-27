@@ -2,12 +2,12 @@
 {
     public class KensaMstInputItem
     {
-        public KensaMstInputItem(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, int isDeleted)
+        public KensaMstInputItem(string kensaItemCd, int kensaItemSeqNo, string centerCd, string itemName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, int isDeleted)
         {
             KensaItemCd = kensaItemCd;
             KensaItemSeqNo = kensaItemSeqNo;
             CenterCd = centerCd;
-            KensaName = kensaName;
+            KensaName = itemName;
             KensaKana = kensaKana;
             Unit = unit;
             MaterialCd = materialCd;
