@@ -1414,6 +1414,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateJihiSbtMstInputData, UpdateJihiSbtMstInteractor>();
             busBuilder.RegisterUseCase<GetListKensaIjiSettingInputData, GetListKensaIjiSettingInteractor>();
             busBuilder.RegisterUseCase<GetSetNameMntInputData, GetSetNameMntInteractor>();
+            busBuilder.RegisterUseCase<GetListYohoSetMstModelByUserIDInputData, GetListYohoSetMstModelByUserIDInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
