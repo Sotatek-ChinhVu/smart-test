@@ -77,7 +77,7 @@ builder.Services.AddSignalR()
                 var connection = await ConnectionMultiplexer.ConnectAsync(config, writer);
                 connection.ConnectionFailed += (_, e) =>
                 {
-                    Console.WriteLine("Connection to Redis failed.");
+                    Console.WriteLine("Connection to Redis failed." + Environment.NewLine + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
                 };
 
                 if (!connection.IsConnected)
