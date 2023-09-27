@@ -93,24 +93,24 @@ namespace Infrastructure.CommonDB
         private async Task<string> GetRawBodyAsync(HttpRequest request)
         {
             string body = string.Empty;
-            if (request.ContentType.StartsWith("text/") || request.ContentType == "application/json")
+            if (request.ContentType != null)
             {
-                // Leave the body open so the next middleware can read it.
-                using (var reader = new StreamReader(
-                    request.Body,
-                    encoding: Encoding.UTF8,
-                    detectEncodingFromByteOrderMarks: false,
-                    leaveOpen: true))
+                if (request.ContentType.StartsWith("text/") || request.ContentType == "application/json")
                 {
-                    body = await reader.ReadToEndAsync();
+                    // Leave the body open so the next middleware can read it.
+                    using (var reader = new StreamReader(
+                                            request.Body,
+                                            encoding: Encoding.UTF8,
+                                            detectEncodingFromByteOrderMarks: false,
+                                            leaveOpen: true))
+                    {
+                        body = await reader.ReadToEndAsync();
 
-                    // Reset the request body stream position so the next middleware can read it
-                    request.Body.Position = 0;
+                        // Reset the request body stream position so the next middleware can read it
+                        request.Body.Position = 0;
+                    }
                 }
-            }
-            else
-            {
-                if (request.ContentType != null)
+                else
                 {
                     body = request.ContentType;
                 }
