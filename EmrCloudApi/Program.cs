@@ -226,6 +226,8 @@ app.Use(async (context, next) =>
     }
     else
     {
+        context.Request.EnableBuffering();
+
         using (var loggingHandler = context.RequestServices.GetService<ILoggingHandler>())
         {
             try

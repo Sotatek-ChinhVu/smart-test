@@ -1140,6 +1140,7 @@ namespace Infrastructure.Repositories
 
             checkedOrderModelList.Add(checkedOrderModel);
 
+            santei = false;
             if (yakkuzaiJoho == 2)
             {
                 santei = true;
