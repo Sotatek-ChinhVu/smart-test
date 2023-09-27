@@ -200,6 +200,7 @@ public class PdfCreatorController : ControllerBase
     {
         var request = JsonSerializer.Deserialize<PatientManagementRequest>(requestString.StringJson) ?? new();
         PatientManagementModel patientManagementModel = ConvertToPatientManagementModel(request.PatientManagement);
+        patientManagementModel.ReportType = request.ReportType;
         var data = _reportService.GetPatientManagement(request.HpId, patientManagementModel);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
