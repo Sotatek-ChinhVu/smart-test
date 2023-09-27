@@ -1,7 +1,7 @@
 ﻿using Domain.Models.KensaSet;
 using Domain.Models.KensaSetDetail;
 
-namespace EmrCloudApi.Requests.MstItem
+namespace EmrCloudApi.Requests.KensaHistory
 {
     public class UpdateKensaSetRequest
     {

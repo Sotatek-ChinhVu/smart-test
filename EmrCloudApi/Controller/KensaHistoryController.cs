@@ -1,6 +1,5 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
-using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Services;
@@ -10,6 +9,7 @@ using UseCase.MstItem.GetListResultKensaMst;
 using UseCase.KensaHistory.UpdateKensaSet;
 using EmrCloudApi.Presenters.KensaHistory;
 using EmrCloudApi.Responses.KensaHistory;
+using EmrCloudApi.Requests.KensaHistory;
 
 namespace EmrCloudApi.Controller
 {
@@ -24,7 +24,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.UpdateKensaSet)]
-        public ActionResult<Response<UpdateKensaSetResponse>> UpdateKensaSet([FromBody] UpdateKensaSetRequest request)
+        public ActionResult<Response<UpdateKensaSetResponse>> UpdateKensaSet([FromQuery] UpdateKensaSetRequest request)
         {
             var input = new UpdateKensaSetInputData(HpId, UserId, request.SetId, request.SetName, request.SortNo, request.IsDeleted, request.KensaSetDetails);
             var output = _bus.Handle(input);
