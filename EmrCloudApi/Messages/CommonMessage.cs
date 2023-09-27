@@ -1,6 +1,7 @@
 ﻿using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using UseCase.SetMst.GetList;
+using UseCase.Todo.GetTodoInfFinder;
 
 namespace EmrCloudApi.Messages;
 
@@ -30,4 +31,14 @@ public class PatientInforMessage
     }
 
     public PatientInforModel PatientInforModel { get; set; }
+}
+
+public class TodoInfMessage
+{
+    public TodoInfMessage(List<GetListTodoInfFinderOutputItem> todoInfOutputItem)
+    {
+        TodoInfOutputItem = todoInfOutputItem;
+    }
+
+    public List<GetListTodoInfFinderOutputItem> TodoInfOutputItem { get; set; }
 }
