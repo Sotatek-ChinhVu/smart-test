@@ -20,9 +20,6 @@ using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using KensaCenterMstModel = Domain.Models.MstItem.KensaCenterMstModel;
 
@@ -1759,15 +1756,19 @@ namespace Infrastructure.Repositories
         {
             var entities = NoTrackingDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
-            if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
+            if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2) && postCode1.Length == 3)
+            {
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1 + postCode2));
+            }
+            else if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
             }
-            if (!string.IsNullOrEmpty(postCode1))
+            else if (!string.IsNullOrEmpty(postCode1))
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
             }
-            if (!string.IsNullOrEmpty(postCode2))
+            else if (!string.IsNullOrEmpty(postCode2))
             {
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.EndsWith(postCode2));
             }
@@ -4867,7 +4868,7 @@ namespace Infrastructure.Repositories
                 .Where(item => item.IsDeleted == 0
                                                 && item.HpId == hpId)
                 .OrderBy(i => i.SortNo)
-                .AsEnumerable().Select(i => new JihiSbtMstModel(i.HpId, i.JihiSbt, i.SortNo, i.Name ?? string.Empty,i.IsYobo, i.IsDeleted, ModelStatus.None)).ToList();
+                .AsEnumerable().Select(i => new JihiSbtMstModel(i.HpId, i.JihiSbt, i.SortNo, i.Name ?? string.Empty, i.IsYobo, i.IsDeleted, ModelStatus.None)).ToList();
             return result;
         }
 
@@ -5365,7 +5366,7 @@ namespace Infrastructure.Repositories
                                                            item.TenMst.HpId,
                                                            item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,
-                                                           item.TenMst.KanaName1 ?? string.Empty, 
+                                                           item.TenMst.KanaName1 ?? string.Empty,
                                                            item.TenMst.KanaName2 ?? string.Empty,
                                                            item.TenMst.KanaName3 ?? string.Empty,
                                                            item.TenMst.KanaName4 ?? string.Empty,
