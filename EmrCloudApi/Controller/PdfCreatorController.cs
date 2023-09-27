@@ -610,6 +610,7 @@ public class PdfCreatorController : ControllerBase
         result.HokensyaNoFrom = requestItem.HokensyaNoFrom.AsString();
         result.HokensyaNoTo = requestItem.HokensyaNoTo.AsString();
         result.Kigo = requestItem.Kigo.AsString();
+        result.EdaNo = requestItem.EdaNo.AsString();
         result.Bango = requestItem.Bango.AsString();
         result.HokenKbn = requestItem.HokenKbn;
         result.KohiFutansyaNoFrom = requestItem.KohiFutansyaNoFrom.AsString();
