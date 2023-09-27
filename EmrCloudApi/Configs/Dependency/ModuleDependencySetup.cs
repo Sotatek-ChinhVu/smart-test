@@ -719,6 +719,16 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using Domain.Models.ListSetMst;
+using UseCase.ListSetMst.GetTreeListSet;
+using Interactor.ListSetMst;
+using UseCase.MainMenu.GetKensaIraiLog;
+using UseCase.SetSendaiGeneration.Add;
+using UseCase.MainMenu.KensaIraiReport;
+using UseCase.UpsertMaterialMaster;
+using UseCase.SetSendaiGeneration.Restore;
+using UseCase.MainMenu.GetStaCsvMstModel;
+using UseCase.MainMenu.SaveStaCsvMst;
 using Interactor.ListSetGenerationMst;
 using Domain.Models.ListSetGenerationMst;
 using Domain.Models.ByomeiSetGenerationMst;
@@ -1670,6 +1680,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteKensaInfInputData, DeleteKensaInfInteractor>();
             busBuilder.RegisterUseCase<GetKensaIraiLogInputData, GetKensaIraiLogInteractor>();
             busBuilder.RegisterUseCase<KensaIraiReportInputData, KensaIraiReportInteractor>();
+            busBuilder.RegisterUseCase<GetStaCsvMstInputData, GetStaCsvMstInteractor>();
+            busBuilder.RegisterUseCase<SaveStaCsvMstInputData, SaveStaCsvMstInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
