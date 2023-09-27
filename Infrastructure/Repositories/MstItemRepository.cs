@@ -6220,6 +6220,17 @@ namespace Infrastructure.Repositories
                 }
             }
 
+            foreach (var item in childKensaMsts)
+            {
+                if (childKensaMsts.Count == 0) continue;
+
+                if(item.IsDeleted == 1)
+                {
+                    var childKensaMst = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == item.KensaItemCd && x.KensaItemSeqNo == item.KensaItemSeqNo);
+
+                }
+            }
+
             foreach (var item in tenMstModels)
             {
                 if (item.IsDeleted == 1)
