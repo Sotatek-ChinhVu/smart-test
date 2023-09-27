@@ -84,6 +84,7 @@ using EventProcessor.Service;
 using Helper.Messaging;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
 using Infrastructure.Services;
@@ -118,7 +119,6 @@ using Interactor.KarteFilter;
 using Interactor.KarteInf;
 using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
-using Interactor.ListSetMst;
 using Interactor.Lock;
 using Interactor.MainMenu;
 using Interactor.MaxMoney;
@@ -390,7 +390,6 @@ using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInf.ConvertTextToRichText;
 using UseCase.KarteInf.GetList;
 using UseCase.KohiHokenMst.Get;
-using UseCase.ListSetMst.GetTreeListSet;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
@@ -455,30 +454,26 @@ using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.GetCmtCheckMstList;
-using UseCase.MstItem.GetContainerMsts;
 using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDiseaseList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
-using UseCase.MstItem.GetKensaCenterMsts;
-using UseCase.MstItem.GetKensaStdMst;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
-using UseCase.MstItem.GetMaterialMsts;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
+using UseCase.MstItem.GetSetNameMnt;
 using UseCase.MstItem.GetSingleDoseMstAndMedicineUnitList;
 using UseCase.MstItem.GetTeikyoByomei;
-using UseCase.MstItem.GetTenItemCds;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
-using UseCase.MstItem.GetTenOfItem;
-using UseCase.MstItem.GetUsedKensaItemCds;
+using UseCase.MstItem.IsKensaItemOrdering;
+using UseCase.MstItem.IsUsingKensa;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
@@ -491,6 +486,7 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.MstItem.UpdateCmtCheckMst;
+using UseCase.MstItem.UpdateJihiSbtMst;
 using UseCase.MstItem.UpdateKensaStdMst;
 using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
@@ -723,7 +719,26 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using Infrastructure.Logger;
+using Domain.Models.ListSetMst;
+using UseCase.ListSetMst.GetTreeListSet;
+using Interactor.ListSetMst;
+using UseCase.MainMenu.GetKensaIraiLog;
+using UseCase.SetSendaiGeneration.Add;
+using UseCase.MainMenu.KensaIraiReport;
+using UseCase.UpsertMaterialMaster;
+using UseCase.SetSendaiGeneration.Restore;
+using UseCase.MainMenu.GetStaCsvMstModel;
+using UseCase.MainMenu.SaveStaCsvMst;
+using Interactor.ListSetGenerationMst;
+using Domain.Models.ListSetGenerationMst;
+using Domain.Models.ByomeiSetGenerationMst;
+using UseCase.MstItem.GetListByomeiSetGenerationMst;
+using UseCase.MstItem.GetTreeListSet;
+using UseCase.MstItem.GetTreeByomeiSet;
+using UseCase.MstItem.GetListSetGenerationMst;
+using UseCase.MstItem.GetListKensaIjiSetting;
+using UseCase.MstItem.CompareTenMst;
+using UseCase.MstItem.SaveCompareTenMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1125,6 +1140,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IStaticsticExportCsvService, StaticsticExportCsvService>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
+            services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
+            services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1399,21 +1416,19 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateSingleDoseMstInputData, UpdateSingleDoseMstInteractor>();
             busBuilder.RegisterUseCase<UpdateKensaMstInputData, UpdateKensaMstInteractor>();
             busBuilder.RegisterUseCase<UpdateByomeiMstInputData, UpdateByomeiMstInteractor>();
-            busBuilder.RegisterUseCase<IsUsingKensaInputData, IsUsingKensaInteractor>();
+            busBuilder.RegisterUseCase<F17CommonInputData, F17CommonInteractor>();
             busBuilder.RegisterUseCase<UpdateKensaStdMstInputData, UpdateKensaStdMstInteractor>();
-            busBuilder.RegisterUseCase<GetKensaStdMstInputData, GetKensaStdMstModelsInteractor>();
-            busBuilder.RegisterUseCase<GetUsedKensaItemCdsInputData, GetUsedKensaItemCdsInteractor>();
             busBuilder.RegisterUseCase<UpsertMaterialMasterInputData, UpsertMaterialMasterInteractor>();
-            busBuilder.RegisterUseCase<GetTenItemCdsInputData, GetTenItemCdsInteractor>();
-            busBuilder.RegisterUseCase<GetMaterialMstsInputData, GetMaterialMstsInteractor>();
-            busBuilder.RegisterUseCase<GetContainerMstsInputData, GetContainerMstsInteractor>();
-            busBuilder.RegisterUseCase<GetKensaCenterMstsInputData, GetKensaCenterMstsInteractor>();
-            busBuilder.RegisterUseCase<GetTenOfItemInputData, GetTenOfItemInteractor>();
+            busBuilder.RegisterUseCase<UpdateJihiSbtMstInputData, UpdateJihiSbtMstInteractor>();
+            busBuilder.RegisterUseCase<GetListKensaIjiSettingInputData, GetListKensaIjiSettingInteractor>();
+            busBuilder.RegisterUseCase<GetSetNameMntInputData, GetSetNameMntInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
             busBuilder.RegisterUseCase<DiseaseSearchInputData, DiseaseSearchInteractor>();
             busBuilder.RegisterUseCase<GetSetByomeiTreeInputData, GetSetByomeiTreeInteractor>();
+            busBuilder.RegisterUseCase<GetTreeByomeiSetInputData, GetTreeByomeiSetInteractor>();
+            busBuilder.RegisterUseCase<GetListByomeiSetGenerationMstInputData, GetListByomeiSetGenerationMstInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
@@ -1665,6 +1680,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteKensaInfInputData, DeleteKensaInfInteractor>();
             busBuilder.RegisterUseCase<GetKensaIraiLogInputData, GetKensaIraiLogInteractor>();
             busBuilder.RegisterUseCase<KensaIraiReportInputData, KensaIraiReportInteractor>();
+            busBuilder.RegisterUseCase<GetStaCsvMstInputData, GetStaCsvMstInteractor>();
+            busBuilder.RegisterUseCase<SaveStaCsvMstInputData, SaveStaCsvMstInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
@@ -1728,6 +1745,13 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
             busBuilder.RegisterUseCase<RestoreSetSendaiGenerationInputData, RestoreSetSendaiGenerationInteractor>();
 
+
+            //ListSetGeneration
+            busBuilder.RegisterUseCase<GetListSetGenerationMstInputData, ListSetGenerationMstInteractor>();
+
+            //Compare TenMst CompareTenMstInputData
+            busBuilder.RegisterUseCase<CompareTenMstInputData, CompareTenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveCompareTenMstInputData, SaveCompareTenMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

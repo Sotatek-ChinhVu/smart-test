@@ -16,7 +16,7 @@ namespace Interactor.MstItem
         {
             try
             {
-                var data = _mstItemRepository.GetParrentKensaMstModels(inputData.HpId, inputData.KeyWord);
+                var data = _mstItemRepository.GetParrentKensaMstModels(inputData.HpId, inputData.KeyWord, inputData.ItemCd);
                 if (data.Count == 0)
                 {
                     return new GetParrentKensaMstOutputData(new(), GetParrentKensaMstStatus.NoData);

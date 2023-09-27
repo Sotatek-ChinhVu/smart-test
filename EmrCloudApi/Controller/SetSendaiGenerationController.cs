@@ -5,7 +5,11 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.GetSendaiGeneration;
 using EmrCloudApi.Responses.SetSendaiGeneration;
 using EmrCloudApi.Services;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.Threading;
 using UseCase.Core.Sync;
 using UseCase.SetSendaiGeneration.Add;
 using UseCase.SetSendaiGeneration.Delete;
@@ -18,9 +22,12 @@ namespace EmrCloudApi.Controller
     public class SetSendaiGenerationController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        public SetSendaiGenerationController(UseCaseBus bus, IUserService userService) : base(userService)
+        private readonly IMessenger _messenger;
+        private CancellationToken? _cancellationToken;
+        public SetSendaiGenerationController(UseCaseBus bus, IUserService userService, IMessenger messenger) : base(userService)
         {
             _bus = bus;
+            _messenger = messenger;
         }
 
         [HttpGet(ApiPath.GetList)]
@@ -35,7 +42,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.Delete)]
-        public ActionResult<Response<DeleteSetSendaiGenerationResponse>> Delete([FromBody]  DeleteSetSendaiGenerationRequest request)
+        public ActionResult<Response<DeleteSetSendaiGenerationResponse>> Delete([FromBody] DeleteSetSendaiGenerationRequest request)
         {
             var input = new DeleteSendaiGenerationInputData(request.GenerationId, request.RowIndex, UserId);
             var output = _bus.Handle(input);
@@ -46,23 +53,90 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.Insert)]
-        public ActionResult<Response<AddSetSendaiGenerationResponse>> AddSetSensaiGeneration([FromBody]  AddSetSendaiGenerationRequest request)
+        public void AddSetSensaiGeneration([FromBody] AddSetSendaiGenerationRequest request, CancellationToken cancellationToken)
         {
-            var input = new AddSetSendaiGenerationInputData(request.StartDate, HpId, UserId);
-            var output = _bus.Handle(input);
-            var presenter = new AddSetSendaiGenerationPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<AddSetSendaiGenerationResponse>>(presenter.Result);
+            _cancellationToken = cancellationToken;
+            try
+            {
+                _messenger.Register<ProcessSetSendaiGenerationStatus>(this, UpdateProcessSave);
+                _messenger.Register<ProcessSetSendaiGenerationStop>(this, StopProcess);
+                HttpContext.Response.ContentType = "application/json";
+                HttpResponse response = HttpContext.Response;
+                var input = new AddSetSendaiGenerationInputData(request.StartDate, HpId, UserId, _messenger);
+                var output = _bus.Handle(input);
+                var presenter = new AddSetSendaiGenerationPresenter();
+                if (output.Status == AddSetSendaiGenerationStatus.Success)
+                {
+                    UpdateProcessSave(new ProcessSetSendaiGenerationStatus(string.Empty, 100, true, true));
+                }
+                else
+                {
+                    UpdateProcessSave(new ProcessSetSendaiGenerationStatus(string.Empty, 100, true, false));
+                }    
+            }
+            finally
+            {
+                _messenger.Deregister<ProcessSetSendaiGenerationStatus>(this, UpdateProcessSave);
+                _messenger.Deregister<ProcessSetSendaiGenerationStop>(this, StopProcess);
+            }
+        }
+
+
+        private void StopProcess(ProcessSetSendaiGenerationStop stopCalcStatus)
+        {
+            if (!_cancellationToken.HasValue)
+            {
+                stopCalcStatus.CallFailCallback(false);
+            }
+            else
+            {
+                stopCalcStatus.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+            }
+        }
+
+        private void UpdateProcessSave(ProcessSetSendaiGenerationStatus status)
+        {
+            StringBuilder titleProgressbar = new();
+            titleProgressbar.Append("\n{ displayText: \"");
+            titleProgressbar.Append(status.DisplayText);
+            titleProgressbar.Append("\", percent: ");
+            titleProgressbar.Append(status.Percent);
+            titleProgressbar.Append(", complete: ");
+            titleProgressbar.Append(status.Complete.ToString().ToLower());
+            titleProgressbar.Append(", completeSuccess: ");
+            titleProgressbar.Append(status.CompleteSuccess.ToString().ToLower());
+            titleProgressbar.Append(" }");
+            var resultForFrontEnd = Encoding.UTF8.GetBytes(titleProgressbar.ToString());
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
         }
 
         [HttpPost(ApiPath.Restore)]
-        public ActionResult<Response<RestoreSetSendaiGenerationResponse>> Restore([FromBody]  RestoreSetSendaiGenerationRequest request)
+        public void Restore([FromBody] RestoreSetSendaiGenerationRequest request, CancellationToken cancellationToken)
         {
-            var input = new RestoreSetSendaiGenerationInputData(request.RestoreGenerationId, HpId, UserId);
-            var output = _bus.Handle(input);
-            var presenter = new RestoreSetSendaiGenerationPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<RestoreSetSendaiGenerationResponse>>(presenter.Result);
+            _cancellationToken = cancellationToken;
+            try
+            {
+                _messenger.Register<ProcessSetSendaiGenerationStatus>(this, UpdateProcessSave);
+                _messenger.Register<ProcessSetSendaiGenerationStop>(this, StopProcess);
+                HttpContext.Response.ContentType = "application/json";
+                HttpResponse response = HttpContext.Response;
+                var input = new RestoreSetSendaiGenerationInputData(request.RestoreGenerationId, HpId, UserId, _messenger);
+                var output = _bus.Handle(input);
+                if (output.Status == RestoreSetSendaiGenerationStatus.Success)
+                {
+                    UpdateProcessSave(new ProcessSetSendaiGenerationStatus(string.Empty, 100, true, true));
+                }
+                else
+                {
+                    UpdateProcessSave(new ProcessSetSendaiGenerationStatus(string.Empty, 100, true, false));
+                }
+            }
+            finally
+            {
+                _messenger.Deregister<ProcessSetSendaiGenerationStatus>(this, UpdateProcessSave);
+                _messenger.Deregister<ProcessSetSendaiGenerationStop>(this, StopProcess);
+            }
         }
     }
 }
