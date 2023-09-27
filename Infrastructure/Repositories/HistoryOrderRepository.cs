@@ -15,6 +15,7 @@ using Infrastructure.Converter;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
@@ -337,10 +338,11 @@ namespace Infrastructure.Repositories
                 RaiinListTagModel tagModel = tagModelList.FirstOrDefault(t => t.RaiinNo == raiinNo) ?? new RaiinListTagModel();
                 List<FileInfModel> listKarteFileModel = listKarteFile.Where(item => item.RaiinNo == raiinNo).ToList();
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
+                string tantoFullName = _userInfoService.GetFullNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
                 var approveInf = approveInfs?.Count() > 0 ? approveInfs.FirstOrDefault(a => a.RaiinNo == raiinNo) : new();
 
-                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tagModel.TagNo, approveInf?.DisplayApprovalInfo ?? string.Empty, listKarteFileModel));
+                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tantoFullName, tagModel.TagNo, approveInf?.DisplayApprovalInfo ?? string.Empty, listKarteFileModel));
             }
 
             return (totalCount, historyOrderModelList);
@@ -382,9 +384,10 @@ namespace Infrastructure.Repositories
                 InsuranceModel insuranceModel = insuranceModelList.FirstOrDefault(i => i.HokenPid == raiinInf.HokenPid) ?? new InsuranceModel();
 
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
+                string tantoFullName = _userInfoService.GetFullNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
 
-                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, new(), kaName, tantoName, 0, string.Empty, new()));
+                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, new(), kaName, tantoName, tantoFullName, 0, string.Empty, new()));
             }
 
             return (totalCount, historyOrderModelList);
@@ -420,7 +423,7 @@ namespace Infrastructure.Repositories
             List<InsuranceModel> insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
             List<RaiinListTagModel> tagModelList = _raiinListTagRepository.GetList(hpId, ptId, raiinNoList);
             List<FileInfModel> listKarteFile = _karteInfRepository.GetListKarteFile(hpId, ptId, raiinNoList, isDeleted != 0);
-
+            var json = JsonSerializer.Serialize(insuranceModelList);
             List<HistoryOrderModel> historyOrderModelList = new List<HistoryOrderModel>();
             var approveInfs = (isShowApproval == 1 || isShowApproval == 2) ? GetApproveInf(hpId, ptId, isShowApproval == 2, raiinNoList) : new List<ApproveInfModel>();
             foreach (long raiinNo in raiinNoList)
@@ -441,6 +444,7 @@ namespace Infrastructure.Repositories
                 RaiinListTagModel tagModel = tagModelList.FirstOrDefault(t => t.RaiinNo == raiinNo) ?? new RaiinListTagModel();
                 List<FileInfModel> listKarteFileModel = listKarteFile.Where(item => item.RaiinNo == raiinNo).ToList();
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
+                string tantoFullName = _userInfoService.GetFullNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
                 var approveInf = approveInfs?.Count() > 0 ? approveInfs.FirstOrDefault(a => a.RaiinNo == raiinNo) : new();
 
@@ -457,7 +461,7 @@ namespace Infrastructure.Repositories
                     headerOrderModels.Add(headerOrderModel);
                 }
 
-                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tagModel.TagNo, approveInf?.DisplayApprovalInfo ?? string.Empty, listKarteFileModel, headerOrderModels));
+                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tantoFullName, tagModel.TagNo, approveInf?.DisplayApprovalInfo ?? string.Empty, listKarteFileModel, headerOrderModels));
             }
 
             return historyOrderModelList;

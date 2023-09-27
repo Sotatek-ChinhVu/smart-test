@@ -11,6 +11,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
@@ -1216,7 +1217,8 @@ namespace Infrastructure.Repositories
                     sinDate,
                     GetConfirmDateList(HokenGroupConstant.HokenGroupKohi, ptKohi.HokenId));
             }
-
+            var json = JsonSerializer.Serialize(itemList);
+            //itemList = itemList.Where(item => item.HokenPid == 45).ToList();
             foreach (var item in itemList)
             {
                 HokenMst? hokenMst = hokenMstList.FirstOrDefault(h => h.HokenNo == item.ptHokenInf.HokenNo && h.HokenEdaNo == item.ptHokenInf.HokenEdaNo);
