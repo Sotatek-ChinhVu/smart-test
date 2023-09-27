@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public bool UpdateKensaSet(int userId, int hpId, int setId, string setName, int sortNo, int isDeleted, List<KensaSetDetailModel> kensaSetDetails)
+        public bool UpdateKensaSet(int hpId, int userId, int setId, string setName, int sortNo, int isDeleted, List<KensaSetDetailModel> kensaSetDetails)
         {
             bool successed = false;
             var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
