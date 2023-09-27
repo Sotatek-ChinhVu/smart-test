@@ -486,5 +486,8 @@
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";
         public const string SaveCompareTenMst = "SaveCompareTenMst";
+
+        //other
+        public const string WriteLog = "WriteLog";
     }
 }
