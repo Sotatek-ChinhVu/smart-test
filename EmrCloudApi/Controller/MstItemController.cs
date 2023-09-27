@@ -865,7 +865,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetListYohoSetMstModelByUserID)]
-        public ActionResult<Response<GetListYohoSetMstModelByUserIDResponse>> GetListYohoSetMstModelByUserID(GetListYohoSetMstModelByUserIDRequest request)
+        public ActionResult<Response<GetListYohoSetMstModelByUserIDResponse>> GetListYohoSetMstModelByUserID([FromQuery] GetListYohoSetMstModelByUserIDRequest request)
         {
             var input = new GetListYohoSetMstModelByUserIDInputData(HpId, UserId, request.SinDate, request.UserId);
             var output = _bus.Handle(input);
