@@ -351,7 +351,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.UpdateKensaMst)]
         public ActionResult<Response<UpdateKensaMstResponse>> UpdateKensaMst(UpdateKensaMstRequest request)
         {
-            var input = new UpdateKensaMstInputData(HpId, UserId, request.KensaMstItems.Select(x => kensaMstItemsRequestToModel(x)).ToList(), request.TenMstItems.Select(x => TenMstItemsRequestToModel(x)).ToList());
+            var input = new UpdateKensaMstInputData(HpId, UserId, request.KensaMstItems.Select(x => KensaMstItemsRequestToModel(x)).ToList(), request.TenMstItems.Select(x => TenMstItemsRequestToModel(x)).ToList(), request.ChildKensaMstItems.Select(x => ChildKensaMstItemsRequestToModel(x)).ToList()).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new UpdateKensaMstPresenter();
@@ -391,7 +391,37 @@ namespace EmrCloudApi.Controller
                 );
         }
 
-        private static KensaMstModel kensaMstItemsRequestToModel(KensaMstInputItem kensaMstItem)
+        private static KensaMstModel KensaMstItemsRequestToModel(KensaMstInputItem kensaMstItem)
+        {
+            return
+                new KensaMstModel
+                (
+                    kensaMstItem.KensaItemCd,
+                    kensaMstItem.KensaItemSeqNo,
+                    kensaMstItem.CenterCd,
+                    kensaMstItem.KensaName,
+                    kensaMstItem.KensaKana,
+                    kensaMstItem.Unit,
+                    kensaMstItem.MaterialCd,
+                    kensaMstItem.ContainerCd,
+                    kensaMstItem.MaleStd,
+                    kensaMstItem.MaleStdLow,
+                    kensaMstItem.MaleStdHigh,
+                    kensaMstItem.FemaleStd,
+                    kensaMstItem.FemaleStdLow,
+                    kensaMstItem.FemaleStdHigh,
+                    kensaMstItem.Formula,
+                    kensaMstItem.Digit,
+                    kensaMstItem.OyaItemCd,
+                    kensaMstItem.OyaItemSeqNo,
+                    kensaMstItem.SortNo,
+                    kensaMstItem.CenterItemCd1,
+                    kensaMstItem.CenterItemCd2,
+                    kensaMstItem.IsDeleted
+                );
+        }
+
+        private static KensaMstModel ChildKensaMstItemsRequestToModel(ChildKensaMstInputItem kensaMstItem)
         {
             return
                 new KensaMstModel

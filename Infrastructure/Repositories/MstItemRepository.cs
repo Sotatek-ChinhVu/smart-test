@@ -6171,7 +6171,7 @@ namespace Infrastructure.Repositories
             };
         }
 
-        public bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels)
+        public bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels, List<KensaMstModel> childKensaMsts)
         {
             List<KensaMst> newKensaMsts = new List<KensaMst>();
             List<TenMst> newTenMsts = new List<TenMst>();
