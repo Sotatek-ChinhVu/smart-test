@@ -60,11 +60,20 @@
         public const string GetKensaStdMst = "GetKensaStdMst";
         public const string GetUsedKensaItemCds = "GetUsedKensaItemCds";
         public const string GetTenItemCds = "GetTenItemCds";
+        public const string UpdateJihiSbtMst = "UpdateJihiSbtMst";
         public const string GetMaterialMsts = "GetMaterialMsts";
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
         public const string GetListKensaMst = "GetListKensaMst";
+        public const string GetSetNameMnt = "GetSetNameMnt";
+        public const string GetListKensaIjiSetting = "GetListKensaIjiSetting";
+        public const string GetTreeListSet = "GetTreeListSet";
+        public const string GetTreeByomeiSet = "GetTreeByomeiSet";
+        public const string GetListSetGeneration = "GetListSetGeneration";
+        public const string GetListByomeiSetGeneration = "GetListByomeiSetGeneration";
+        public const string F17Common = "F17Common";
+        public const string IsKensaItemOrdering = "IsKensaItemOrdering";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -478,5 +487,8 @@
 
         //KensaHistory
         public const string UpdateKensaSet = "UpdateKensaSet";
+        //Search Compare Tenmst
+        public const string SearchCompareTenMst = "SearchCompareTenMst";
+        public const string SaveCompareTenMst = "SaveCompareTenMst";
     }
 }

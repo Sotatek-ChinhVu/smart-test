@@ -36,6 +36,9 @@ namespace EmrCloudApi.Presenters.SpecialNote
                 case SaveSpecialNoteStatus.Successed:
                     Result.Message = ResponseMessage.Success;
                     break;
+                case SaveSpecialNoteStatus.NoPermissionSaveSummary:
+                    Result.Message = ResponseMessage.NoPermissionSaveSummary;
+                    break;
             }
         }
     }

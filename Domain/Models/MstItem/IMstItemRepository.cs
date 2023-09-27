@@ -12,6 +12,12 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        List<TenItemModel> GetTenMstsWithStartDate(int hpId, string itemCd);
+
+        bool IsKensaItemOrdering(int hpId, string tenItemCd);
+
+        double GetTenOfKNItem(int hpId, string itemCd);
+
         Dictionary<string, double> GetTenOfItem(int hpId);
 
         Dictionary<string, string> GetKensaCenterMsts(int hpId);
@@ -30,7 +36,7 @@ namespace Domain.Models.MstItem
 
         bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts);
 
-        List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord);
+        List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord, string itemCd);
 
         bool ContainerMasterUpdate(int hpId, int userId, List<ContainerMasterModel> containerMasters);
 
@@ -185,6 +191,19 @@ namespace Domain.Models.MstItem
 
         List<ByomeiMstModel> DiseaseNameMstSearch(int hpId, string keyword, bool chkByoKbn0, bool chkByoKbn1, bool chkSaiKbn, bool chkMiSaiKbn, bool chkSidoKbn, bool chkToku, bool chkHiToku1, bool chkHiToku2, bool chkTenkan, bool chkTokuTenkan, bool chkNanbyo, int pageIndex, int pageSize, bool isCheckPage);
 
+        List<KensaIjiSettingModel> GetListKensaIjiSettingModel(int hpId, string keyWords, bool isValid, bool isExpired, bool? isPayment);
+
+        bool UpdateJihiSbtMst(int hpId, int userId, List<JihiSbtMstModel> jihiSbtMsts);
+
         string GetNameByItemCd(int hpId, string itemCd);
+
+        List<SetNameMntModel> GetSetNameMnt(SetCheckBoxStatusModel checkBoxStatus,int generationId, int hpId);
+        List<SetKbnMstModel> GetListSetKbnMst(int generationId, int hpId);
+        int GetGenerationId(int hpId);
+        
+        List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison);
+
+        bool SaveCompareTenMst(List<SaveCompareTenMstModel> ListData, ComparisonSearchModel comparison, int userId);
     }
+
 }
