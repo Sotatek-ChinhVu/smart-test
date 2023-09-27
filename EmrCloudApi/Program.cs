@@ -2,10 +2,15 @@ using EmrCloudApi.Configs.Dependency;
 using EmrCloudApi.Configs.Options;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Security;
+using Infrastructure.Logger;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Org.BouncyCastle.Asn1.Ocsp;
+using PostgreDataContext;
 using Serilog;
 using Serilog.Events;
 using StackExchange.Redis;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -147,7 +152,24 @@ builder.Host.UseSerilog((ctx, lc) => lc
 var dependencySetup = new ModuleDependencySetup();
 dependencySetup.Run(builder.Services);
 
+// Migration for AdminDBContext
+// This config is needed for EF Core Migrations to find the DbContext
+builder.Services.AddDbContext<AdminDataContext>(options =>
+{
+    var connectionStr = builder.Configuration["AdminDatabase"];
+    options.UseNpgsql(connectionStr, b => b.MigrationsAssembly("EmrCloudApi"));
+});
+
 var app = builder.Build();
+
+// Migrate latest database changes during startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AdminDataContext>();
+
+    // Here is the migration executed
+    dbContext.Database.Migrate();
+}
 
 //Add config from json file
 string enviroment = "Development";
@@ -200,8 +222,30 @@ app.Use(async (context, next) =>
         context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
         context.Response.Headers.Add("Access-Control-Max-Age", "7200");
         context.Response.StatusCode = 200;
+        await next(context);
     }
-    await next(context);
+    else
+    {
+        context.Request.EnableBuffering();
+
+        using (var loggingHandler = context.RequestServices.GetService<ILoggingHandler>())
+        {
+            try
+            {
+                await loggingHandler!.WriteLogStartAsync("Start request");
+
+                await next(context);
+            }
+            catch (Exception ex)
+            {
+                await loggingHandler!.WriteLogExceptionAsync(ex);
+            }
+            finally
+            {
+                await loggingHandler!.WriteLogEndAsync("End request");
+            }
+        }
+    }
 });
 
 app.UseCors();
