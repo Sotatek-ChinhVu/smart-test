@@ -6047,7 +6047,7 @@ namespace Infrastructure.Repositories
 
             foreach (var entity in query)
             {
-                var ChildKensaMsts = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == entity.ParrentKensaMst.KensaItemCd);
+               /* var ChildKensaMsts = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == entity.ParrentKensaMst.KensaItemCd);*/
                 var tenmst = entity.TenMsts.GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault());
                 var tenmstModel = entity.TenMsts;
                 result.Add(new KensaMstModel(
