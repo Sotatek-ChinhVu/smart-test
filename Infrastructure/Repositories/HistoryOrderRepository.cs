@@ -423,7 +423,6 @@ namespace Infrastructure.Repositories
             List<InsuranceModel> insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
             List<RaiinListTagModel> tagModelList = _raiinListTagRepository.GetList(hpId, ptId, raiinNoList);
             List<FileInfModel> listKarteFile = _karteInfRepository.GetListKarteFile(hpId, ptId, raiinNoList, isDeleted != 0);
-            var json = JsonSerializer.Serialize(insuranceModelList);
             List<HistoryOrderModel> historyOrderModelList = new List<HistoryOrderModel>();
             var approveInfs = (isShowApproval == 1 || isShowApproval == 2) ? GetApproveInf(hpId, ptId, isShowApproval == 2, raiinNoList) : new List<ApproveInfModel>();
             foreach (long raiinNo in raiinNoList)

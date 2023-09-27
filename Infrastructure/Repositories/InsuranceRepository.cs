@@ -1162,7 +1162,15 @@ namespace Infrastructure.Repositories
             hokenEdaNoList.AddRange(itemList.Select(i => i.ptKohi4 != null ? i.ptKohi4.HokenEdaNo : 0).ToList());
             hokenEdaNoList = hokenEdaNoList.Distinct().ToList();
 
-            List<HokenMst> hokenMstList = NoTrackingDataContext.HokenMsts.Where(h => (h.PrefNo == prefCd || h.PrefNo == 0 || h.IsOtherPrefValid == 1) && h.HpId == hpId && hokenNoList.Contains(h.HokenNo) && hokenEdaNoList.Contains(h.HokenEdaNo)).ToList();
+            List<HokenMst> hokenMstList = NoTrackingDataContext.HokenMsts.Where(h => (h.PrefNo == prefCd || h.PrefNo == 0 || h.IsOtherPrefValid == 1) && h.HpId == hpId && hokenNoList.Contains(h.HokenNo) && hokenEdaNoList.Contains(h.HokenEdaNo))
+                                                                         .OrderBy(e => e.HpId)
+                                                                         .ThenBy(e => e.HokenNo)
+                                                                         .ThenBy(e => e.HokenEdaNo)
+                                                                         .ThenByDescending(e => e.StartDate)
+                                                                         .ThenBy(e => e.HokenSbtKbn)
+                                                                         .ThenBy(e => e.SortNo)
+                                                                         .ToList();
+
             List<PtHokenCheck> ptHokenCheckList = NoTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None).ToList();
 
             List<InsuranceModel> listInsurance = new List<InsuranceModel>();
@@ -1217,8 +1225,6 @@ namespace Infrastructure.Repositories
                     sinDate,
                     GetConfirmDateList(HokenGroupConstant.HokenGroupKohi, ptKohi.HokenId));
             }
-            var json = JsonSerializer.Serialize(itemList);
-            //itemList = itemList.Where(item => item.HokenPid == 45).ToList();
             foreach (var item in itemList)
             {
                 HokenMst? hokenMst = hokenMstList.FirstOrDefault(h => h.HokenNo == item.ptHokenInf.HokenNo && h.HokenEdaNo == item.ptHokenInf.HokenEdaNo);
