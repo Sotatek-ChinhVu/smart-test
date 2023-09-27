@@ -487,7 +487,7 @@
         public const string SearchCompareTenMst = "SearchCompareTenMst";
         public const string SaveCompareTenMst = "SaveCompareTenMst";
 
-        //other
+        //log
         public const string WriteLog = "WriteLog";
     }
 }
