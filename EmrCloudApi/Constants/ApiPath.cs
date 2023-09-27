@@ -73,6 +73,8 @@
         public const string GetListSetGeneration = "GetListSetGeneration";
         public const string GetListByomeiSetGeneration = "GetListByomeiSetGeneration";
         public const string UpdateYohoSetMst = "UpdateYohoSetMst";
+        public const string F17Common = "F17Common";
+        public const string IsKensaItemOrdering = "IsKensaItemOrdering";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

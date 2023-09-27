@@ -22,6 +22,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KensaCenterMstModel = Domain.Models.MstItem.KensaCenterMstModel;
@@ -1234,7 +1235,14 @@ namespace Infrastructure.Repositories
                                                            item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,
                                                            item.TenMst.KanaName1 ?? string.Empty,
+                                                           item.TenMst.KanaName2 ?? string.Empty,
+                                                           item.TenMst.KanaName3 ?? string.Empty,
+                                                           item.TenMst.KanaName4 ?? string.Empty,
+                                                           item.TenMst.KanaName5 ?? string.Empty,
+                                                           item.TenMst.KanaName6 ?? string.Empty,
+                                                           item.TenMst.KanaName7 ?? string.Empty,
                                                            item.TenMst?.Name ?? string.Empty,
+                                                           item.TenMst?.ReceName ?? string.Empty,
                                                            item.TenMst?.KohatuKbn ?? 0,
                                                            item.TenMst?.MadokuKbn ?? 0,
                                                            item.TenMst?.KouseisinKbn ?? 0,
@@ -1297,10 +1305,24 @@ namespace Infrastructure.Repositories
                 (FilterTenMstEnum.RousaiKbn, SortType.Desc) => tenMstModels.OrderByDescending(item => item.RousaiKbnDisplay),
                 (FilterTenMstEnum.KanaName1, SortType.Asc) => tenMstModels.OrderBy(item => item.KanaName1),
                 (FilterTenMstEnum.KanaName1, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KanaName1),
+                (FilterTenMstEnum.KanaName2, SortType.Asc) => tenMstModels.OrderBy(item => item.KanaName2),
+                (FilterTenMstEnum.KanaName2, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KanaName2),
+                (FilterTenMstEnum.KanaName3, SortType.Asc) => tenMstModels.OrderBy(item => item.KanaName3),
+                (FilterTenMstEnum.KanaName3, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KanaName3),
+                (FilterTenMstEnum.KanaName4, SortType.Asc) => tenMstModels.OrderBy(item => item.KanaName4),
+                (FilterTenMstEnum.KanaName4, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KanaName4),
+                (FilterTenMstEnum.KanaName5, SortType.Asc) => tenMstModels.OrderBy(item => item.KanaName5),
+                (FilterTenMstEnum.KanaName5, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KanaName5),
+                (FilterTenMstEnum.KanaName6, SortType.Asc) => tenMstModels.OrderBy(item => item.KanaName6),
+                (FilterTenMstEnum.KanaName6, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KanaName6),
+                (FilterTenMstEnum.KanaName7, SortType.Asc) => tenMstModels.OrderBy(item => item.KanaName7),
+                (FilterTenMstEnum.KanaName7, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KanaName7),
                 (FilterTenMstEnum.KouiName, SortType.Asc) => tenMstModels.OrderBy(item => item.KouiName),
                 (FilterTenMstEnum.KouiName, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KouiName),
                 (FilterTenMstEnum.Name, SortType.Asc) => tenMstModels.OrderBy(item => item.Name),
                 (FilterTenMstEnum.Name, SortType.Desc) => tenMstModels.OrderByDescending(item => item.Name),
+                (FilterTenMstEnum.ReceName, SortType.Asc) => tenMstModels.OrderBy(item => item.ReceName),
+                (FilterTenMstEnum.ReceName, SortType.Desc) => tenMstModels.OrderByDescending(item => item.ReceName),
                 (FilterTenMstEnum.KohatuKbn, SortType.Asc) => tenMstModels.OrderBy(item => item.KohatuKbnDisplay),
                 (FilterTenMstEnum.KohatuKbn, SortType.Desc) => tenMstModels.OrderByDescending(item => item.KohatuKbnDisplay),
                 (FilterTenMstEnum.KubunTo, SortType.Asc) => tenMstModels.OrderBy(item => item.KubunToDisplay),
@@ -5344,8 +5366,15 @@ namespace Infrastructure.Repositories
                                                            item.TenMst.HpId,
                                                            item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,
-                                                           item.TenMst.KanaName1 ?? string.Empty,
+                                                           item.TenMst.KanaName1 ?? string.Empty, 
+                                                           item.TenMst.KanaName2 ?? string.Empty,
+                                                           item.TenMst.KanaName3 ?? string.Empty,
+                                                           item.TenMst.KanaName4 ?? string.Empty,
+                                                           item.TenMst.KanaName5 ?? string.Empty,
+                                                           item.TenMst.KanaName6 ?? string.Empty,
+                                                           item.TenMst.KanaName7 ?? string.Empty,
                                                            item.TenMst?.Name ?? string.Empty,
+                                                           item.TenMst?.ReceName ?? string.Empty,
                                                            item.TenMst?.KohatuKbn ?? 0,
                                                            item.TenMst?.MadokuKbn ?? 0,
                                                            item.TenMst?.KouseisinKbn ?? 0,
@@ -6515,17 +6544,62 @@ namespace Infrastructure.Repositories
         {
             Dictionary<string, double> result = new Dictionary<string, double>();
             var tenOfHRTItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160162950" && p.IsDeleted == DeleteTypes.None)
-                                                        .OrderByDescending(p => p.StartDate).FirstOrDefault();
-
-            var a = tenOfHRTItem != null ? tenOfHRTItem.Ten : 0;
+                                                            .OrderByDescending(p => p.StartDate)
+                                                            .FirstOrDefault();
 
             var tenOfIGEItem = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == "160056110" && p.IsDeleted == DeleteTypes.None)
+                                                            .OrderByDescending(p => p.StartDate)
+                                                            .FirstOrDefault();
+
+            result.Add("TenOfHRTItem", tenOfHRTItem != null ? tenOfHRTItem.Ten : 0);
+            result.Add("TenOfIGEItem", tenOfIGEItem != null ? tenOfIGEItem.Ten : 0);
+
+            return result;
+        }
+
+        public bool IsKensaItemOrdering(int hpId, string tenItemCd)
+        {
+            return NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && p.ItemCd == tenItemCd).Any();
+        }
+
+        public double GetTenOfKNItem(int hpId, string itemCd)
+        {
+            var latestSedai = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == itemCd && p.IsDeleted == DeleteTypes.None)
                                                         .OrderByDescending(p => p.StartDate).FirstOrDefault();
+            return latestSedai != null ? latestSedai.Ten : 0;
+        }
 
-            var b = tenOfIGEItem != null ? tenOfIGEItem.Ten : 0;
+        public List<TenItemModel> GetTenMstsWithStartDate(int hpId, string itemCd)
+        {
+            List<TenItemModel> result = new();
 
-            result.Add("TenOfHRTItem", a);
-            result.Add("TenOfIGEItem", b);
+            var tenmsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.ItemCd == itemCd && p.IsDeleted == DeleteTypes.None)
+                                                       .OrderByDescending(p => p.StartDate)
+                                                       .ToList();
+            result = tenmsts.Select(x => new TenItemModel(x.SinKouiKbn,
+                                                          x.MasterSbt ?? string.Empty,
+                                                          x.ItemCd,
+                                                          x.KensaItemCd ?? string.Empty,
+                                                          x.KensaItemSeqNo,
+                                                          x.Ten,
+                                                          x.Name ?? string.Empty,
+                                                          x.ReceName ?? string.Empty,
+                                                          x.KanaName1 ?? string.Empty,
+                                                          x.KanaName2 ?? string.Empty,
+                                                          x.KanaName3 ?? string.Empty,
+                                                          x.KanaName4 ?? string.Empty,
+                                                          x.KanaName5 ?? string.Empty,
+                                                          x.KanaName6 ?? string.Empty,
+                                                          x.KanaName7 ?? string.Empty,
+                                                          x.StartDate,
+                                                          x.EndDate,
+                                                          x.DefaultVal,
+                                                          x.OdrUnitName ?? string.Empty,
+                                                          x.SanteiItemCd ?? string.Empty,
+                                                          x.SanteigaiKbn,
+                                                          x.IsNosearch,
+                                                          new List<string>()
+                                                          )).ToList();
 
             return result;
         }
