@@ -24,6 +24,17 @@ builder.Services.AddResponseCompression(options =>
     options.EnableForHttps = true;
 });
 
+int minWorker, minIOC;
+ThreadPool.GetMinThreads(out minWorker, out minIOC);
+if (ThreadPool.SetMinThreads(1000, minIOC))
+{
+    Console.WriteLine("Set Min thread");    
+}
+else
+{
+    Console.WriteLine("Not set min thread");
+}
+
 #if DEBUG
 //Temp drop to customer test
 builder.Services.AddSignalR().AddMessagePackProtocol()
