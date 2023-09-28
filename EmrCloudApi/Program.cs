@@ -26,7 +26,7 @@ builder.Services.AddResponseCompression(options =>
 
 int minWorker, minIOC;
 ThreadPool.GetMinThreads(out minWorker, out minIOC);
-if (ThreadPool.SetMinThreads(1000, minIOC))
+if (ThreadPool.SetMinThreads(2000, minIOC))
 {
     Console.WriteLine("Set Min thread");    
 }
