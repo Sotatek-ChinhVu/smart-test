@@ -1100,9 +1100,10 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 }
             }
         }
+
         #endregion
         #region 保険情報
-        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf ?? new());
+        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
 
         var ptHokens = (
             from hokenPattern in ptHokenPatterns
@@ -1166,13 +1167,13 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         #endregion
 
         #region 病名情報
-        (var ptByomeis, bool isByomeiConf) = GetPtByomeis(byomeiConf ?? new());
+        (var ptByomeis, bool isByomeiConf) = GetPtByomeis(byomeiConf);
         #endregion
 
         #region 来院情報
         bool isVisitConf = false;
 
-        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(raiinConf ?? new());
+        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(raiinConf);
         IQueryable<PtLastVisitDate> ptLastVisits = NoTrackingDataContext.PtLastVisitDates;
 
         if (raiinConf != null && (raiinConf.StartLastVisitDate > 0 || raiinConf.EndLastVisitDate > 0))
@@ -1484,9 +1485,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 ItemCds.AddRange(sinConf.ItemCds);
             }
             int count = sinConf?.ItemCmts?.Count ?? 0;
-            for (int i = 0; i < sinConf.ItemCmts?.Count; i++)
+            for (int i = 0; i < count; i++)
             {
-                ItemCds.Add(sinConf.ItemCmts[i]);
+                ItemCds.Add(sinConf?.ItemCmts[i] ?? string.Empty);
                 ItemCds.Add("");
                 ItemCds.Add("");
             }
@@ -1516,7 +1517,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     }
                     else
                     {
-                        if (sinConf.ItemCdOpt == 0)
+                        if (sinConf?.ItemCdOpt == 0)
                         {
                             //or条件
                             wrkItems = wrkItems.Union(curItems);
@@ -1585,9 +1586,10 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 //and条件
                 var wrkKartes = karteInfs;
 
-                for (int i = 0; i < karteConf.SearchWords.Count; i++)
+                int count = karteConf?.SearchWords.Count ?? 0;
+                for (int i = 0; i < count; i++)
                 {
-                    var wrkWord = karteConf.SearchWords[i];
+                    var wrkWord = karteConf?.SearchWords[i] ?? string.Empty;
                     var curKartes = karteInfs.Where(p => (p.Text ?? string.Empty).Contains(wrkWord));
 
                     wrkKartes = (
@@ -1758,7 +1760,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     }
 
     private (IQueryable<PtHokenPattern> ptHokenPatterns, IQueryable<PtHokenInf> ptHokenInfs, IQueryable<PtKohi> ptKohis, bool isHokenConf, bool isKohiConf)
-        GetPtHokenPatterns(CoSta9000HokenConf hokenConf)
+        GetPtHokenPatterns(CoSta9000HokenConf? hokenConf)
     {
         var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(p => p.IsDeleted == DeleteStatus.None);
         var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.IsDeleted == DeleteStatus.None);
@@ -1888,7 +1890,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// </summary>
     /// <param name="byomeiConf"></param>
     /// <returns></returns>
-    private (IQueryable<PtByomei> ptByomeis, bool isByomeiConf) GetPtByomeis(CoSta9000ByomeiConf byomeiConf)
+    private (IQueryable<PtByomei> ptByomeis, bool isByomeiConf) GetPtByomeis(CoSta9000ByomeiConf? byomeiConf)
     {
         var ptByomeis = NoTrackingDataContext.PtByomeis.Where(p => p.IsDeleted == DeleteStatus.None);
 
@@ -2028,7 +2030,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// </summary>
     /// <param name="raiinConf"></param>
     /// <returns></returns>
-    private (IQueryable<RaiinInf> raiinInfs, bool isRaiinConf) GetRaiinInfs(CoSta9000RaiinConf raiinConf)
+    private (IQueryable<RaiinInf> raiinInfs, bool isRaiinConf) GetRaiinInfs(CoSta9000RaiinConf? raiinConf)
     {
         var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p => p.IsDeleted == DeleteStatus.None);
         var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
