@@ -60,12 +60,19 @@
         public const string GetKensaStdMst = "GetKensaStdMst";
         public const string GetUsedKensaItemCds = "GetUsedKensaItemCds";
         public const string GetTenItemCds = "GetTenItemCds";
+        public const string UpdateJihiSbtMst = "UpdateJihiSbtMst";
         public const string GetMaterialMsts = "GetMaterialMsts";
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
-        public const string f_17_Common = "f_17_Common";
-        public const string IsKensaItemOrdering = "IsKensaItemOrdering"; 
+        public const string GetSetNameMnt = "GetSetNameMnt";
+        public const string GetListKensaIjiSetting = "GetListKensaIjiSetting";
+        public const string GetTreeListSet = "GetTreeListSet";
+        public const string GetTreeByomeiSet = "GetTreeByomeiSet";
+        public const string GetListSetGeneration = "GetListSetGeneration";
+        public const string GetListByomeiSetGeneration = "GetListByomeiSetGeneration";
+        public const string F17Common = "F17Common";
+        public const string IsKensaItemOrdering = "IsKensaItemOrdering";
         public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
 
         //Schema
@@ -431,7 +438,9 @@
         public const string GetKensaInf = "GetKensaInf";
         public const string DeleteKensaInf = "DeleteKensaInf";
         public const string GetKensaIraiLog = "GetKensaIraiLog";
+        public const string GetStaCsvMst = "GetStaCsvMst";
         public const string KensaIraiReport = "KensaIraiReport";
+        public const string SaveStaCsvMst = "SaveStaCsvMst";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
@@ -477,5 +486,8 @@
 
         //SetSendaiGeneration
         public const string Restore = "Restore";
+        //Search Compare Tenmst
+        public const string SearchCompareTenMst = "SearchCompareTenMst";
+        public const string SaveCompareTenMst = "SaveCompareTenMst";
     }
 }
