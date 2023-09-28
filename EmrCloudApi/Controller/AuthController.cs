@@ -6,6 +6,7 @@ using EmrCloudApi.Responses.Auth;
 using EmrCloudApi.Responses.UserToken;
 using EmrCloudApi.Security;
 using Helper.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -69,6 +70,7 @@ public class AuthController : ControllerBase
         }
 
         #region Helper methods
+
         Response<ExchangeTokenResponse> GetErrorResult(string errorMessage)
         {
             return new Response<ExchangeTokenResponse>
@@ -88,7 +90,8 @@ public class AuthController : ControllerBase
                 Message = ResponseMessage.Success
             };
         }
-        #endregion
+
+        #endregion Helper methods
     }
 
     [HttpPost("RefreshToken")]
@@ -129,6 +132,79 @@ public class AuthController : ControllerBase
         }
     }
 
+    [Authorize]
+    [HttpGet("Authentication")]
+    public ActionResult ValidateToken()
+    {
+        return Ok("Token is valid");
+    }
+
+    [HttpPost("AppToken"), Produces("application/json")]
+    public ActionResult<Response<AppTokenResponse>> AppToken([FromBody] AppTokenRequest req)
+    {
+        var getUserInput = new GetUserByLoginIdInputData(req.LoginId);
+        var getUserOutput = _bus.Handle(getUserInput);
+        var user = getUserOutput.User;
+        if (user is null)
+        {
+            var errorResult = GetErrorResult("The loginId is invalid.");
+            return BadRequest(errorResult);
+        }
+
+        if (req.Password != user.LoginPass)
+        {
+            var errorResult = GetErrorResult("The password is invalid.");
+            return BadRequest(errorResult);
+        }
+
+        // The claims that will be persisted in the tokens.
+        var claims = new Claim[]
+        {
+            new(ParamConstant.UserId, user.UserId.ToString()),
+            new(ParamConstant.HpId, user.HpId.ToString()),
+            new(ParamConstant.DepartmentId, user.KaId.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        (string token, DateTime tokenExpiryTime) = AuthProvider.GenerateAppToken(claims);
+        //var isSignInAppToken = SignInAppToken(user.UserId, token, tokenExpiryTime);
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            var successResult = GetSuccessResult(token, user.UserId, user.LoginId);
+            return Ok(successResult);
+        }
+        else
+        {
+            var errorResult = GetErrorResult("An error occurred while verification token");
+            return BadRequest(errorResult);
+        }
+
+        #region Helper methods
+
+        Response<AppTokenResponse> GetErrorResult(string errorMessage)
+        {
+            return new Response<AppTokenResponse>
+            {
+                Data = new AppTokenResponse(string.Empty, 0, string.Empty),
+                Status = 0,
+                Message = errorMessage
+            };
+        }
+
+        Response<AppTokenResponse> GetSuccessResult(string token, int userId, string loginId)
+        {
+            return new Response<AppTokenResponse>
+            {
+                Data = new AppTokenResponse(token, userId, loginId),
+                Status = 1,
+                Message = ResponseMessage.Success
+            };
+        }
+
+        #endregion Helper methods
+    }
+
     private (string refreshToken, DateTime refreshTokenExpiryTime) SigInRefreshToken(int userId)
     {
         string refreshToken = AuthProvider.GeneratorRefreshToken();
@@ -140,4 +216,14 @@ public class AuthController : ControllerBase
         else
             return new(string.Empty, DateTime.MinValue);
     }
+
+    //private bool SignInAppToken(int userId, string token, DateTime expiryTime)
+    //{
+    //    var input = new SigninRefreshTokenInputData(userId, token, expiryTime);
+    //    var output = _bus.Handle(input);
+    //    if (output.Status == SigninRefreshTokenStatus.Successful)
+    //        return true;
+    //    else
+    //        return false;
+    //}
 }
