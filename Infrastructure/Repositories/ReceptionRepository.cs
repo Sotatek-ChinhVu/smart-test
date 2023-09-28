@@ -1840,7 +1840,7 @@ namespace Infrastructure.Repositories
 
             if (raiinInfList.Any(item => item.Status == RaiinState.Reservation))
             {
-                raiinInf = raiinInfList.OrderBy(item => item.YoyakuTime).ThenBy(item => item.RaiinNo).First();
+                raiinInf = raiinInfList.OrderByDescending(item => item.IsYoyaku).ThenBy(item => item.YoyakuTime).ThenBy(item => item.RaiinNo).First();
             }
             else
             {

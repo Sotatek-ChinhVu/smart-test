@@ -175,7 +175,7 @@ namespace Domain.Models.Diseases
             UpdateDate = string.Empty;
         }
 
-        public PtDiseaseModel(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn)
+        public PtDiseaseModel(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, int nanbyoCd)
         {
             HpId = 0;
             PtId = 0;
@@ -190,7 +190,7 @@ namespace Domain.Models.Diseases
             TenkiDate = tenkiDate;
             SyubyoKbn = syubyoKbn;
             SikkanKbn = sikkanKbn;
-            NanbyoCd = 0;
+            NanbyoCd = nanbyoCd;
             IsNodspRece = 0;
             IsNodspKarte = 0;
             IsDeleted = 0;

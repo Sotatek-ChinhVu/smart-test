@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal;
-using Helper.Constants;
+﻿using Helper.Constants;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
@@ -10,7 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PostgreDataContext;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Unicode;
 
 namespace Infrastructure.CommonDB
 {
@@ -26,7 +27,7 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-            string dbSample = _configuration["TenantDbSample"] ?? string.Empty;
+            string dbSample = _configuration["TenantDb"] ?? string.Empty;
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
@@ -76,26 +77,44 @@ namespace Infrastructure.CommonDB
             string body = await GetRawBodyAsync(request);
             string query = request.QueryString.ToString();
 
-            RequestInfo requestInfo = new RequestInfo(method, path, body, query);
+            RequestInfo requestInfo = new RequestInfo(method, path, "body-data-key", query);
 
-            return JsonSerializer.Serialize<RequestInfo>(requestInfo);
+            var options = new JsonSerializerOptions
+            {
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+                WriteIndented = true
+            };
+
+            _requestInfo = JsonSerializer.Serialize<RequestInfo>(requestInfo, options);
+            _requestInfo = _requestInfo.Replace("body-data-key", body);
+            return _requestInfo;
         }
 
-        private async Task<string> GetRawBodyAsync(HttpRequest request, Encoding encoding = null)
+        private async Task<string> GetRawBodyAsync(HttpRequest request)
         {
-            if (!request.Body.CanSeek)
+            string body = string.Empty;
+            if (request.ContentType != null)
             {
-                return string.Empty;
+                if (request.ContentType.StartsWith("text/") || request.ContentType == "application/json")
+                {
+                    // Leave the body open so the next middleware can read it.
+                    using (var reader = new StreamReader(
+                                            request.Body,
+                                            encoding: Encoding.UTF8,
+                                            detectEncodingFromByteOrderMarks: false,
+                                            leaveOpen: true))
+                    {
+                        body = await reader.ReadToEndAsync();
+
+                        // Reset the request body stream position so the next middleware can read it
+                        request.Body.Position = 0;
+                    }
+                }
+                else
+                {
+                    body = request.ContentType;
+                }
             }
-
-            request.Body.Position = 0;
-
-            var reader = new StreamReader(request.Body, encoding ?? Encoding.UTF8);
-
-            var body = await reader.ReadToEndAsync().ConfigureAwait(false);
-
-            request.Body.Position = 0;
-
             return body;
         }
 
@@ -143,7 +162,7 @@ namespace Infrastructure.CommonDB
             }
             return int.TryParse(departmentId, out _departmentId) ? _departmentId : 0;
         }
-        
+
         public string GetClientIp()
         {
             if (!string.IsNullOrEmpty(_clientIp))
@@ -154,7 +173,7 @@ namespace Infrastructure.CommonDB
             _clientIp = clientIp.ToString();
             return _clientIp;
         }
-        
+
         public string GetDomain()
         {
             if (!string.IsNullOrEmpty(_domain))
@@ -173,7 +192,7 @@ namespace Infrastructure.CommonDB
         #endregion
 
         #region Domain handler
-        
+
 
         public string GetDomainFromHeader()
         {
