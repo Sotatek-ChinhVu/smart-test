@@ -655,8 +655,15 @@ namespace Domain.Models.MstItem
         {
             get
             {
-                if (RousaiKbn == 1) return "〇";
-                return "";
+                switch (RousaiKbn)
+                {
+                    case 1:
+                        return "〇";
+                    case 3:
+                        return "ア";
+                    default:
+                        return "";
+                }
             }
         }
 
