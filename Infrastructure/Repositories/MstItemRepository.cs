@@ -1289,13 +1289,13 @@ namespace Infrastructure.Repositories
             if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
             {
                 tenMstModels = tenMstModels.Where(t => (t.ItemCd.Length >= 2 && t.ItemCd.StartsWith("K") && Char.IsDigit(t.ItemCd, 1)) || t.ItemCd.StartsWith("KN") || !t.ItemCd.StartsWith("K")).ToList();
-                totalCount = tenMstModels.Count();
+                totalCount = tenMstModels.Count;
             }
             // Get Master search result
             if (isMasterSearch || isExpiredSearchIfNoData)
             {
                 tenMstModels = tenMstModels.GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate)?.FirstOrDefault() ?? new()).ToList();
-                totalCount = tenMstModels.Count();
+                totalCount = tenMstModels.Count;
             }
 
             var orderedQuery = (sortCol, sortType) switch
@@ -1344,8 +1344,8 @@ namespace Infrastructure.Repositories
             };
 
             tenMstModels = orderedQuery.Skip((pageIndex - 1) * pageCount)
-                                           .Take(pageCount).ToList();
-
+                                       .Take(pageCount)
+                                       .ToList();
             return (tenMstModels, totalCount);
         }
 
@@ -3412,7 +3412,7 @@ namespace Infrastructure.Repositories
                                                                            x.Hokatu.HoukatuGrpNo ?? string.Empty,
                                                                            x.Hokatu.UserSetting,
                                                                            x.Hokatu.IsInvalid,
-                                                                           x.Hokatu.IsInvalid == 1 ? true : false,
+                                                                           x.Hokatu.IsInvalid == 1,
                                                                            x.ItemName,
                                                                            x.HokatuGbp.ItemCd,
                                                                            x.HokatuGbp.SpJyoken,
@@ -4867,7 +4867,7 @@ namespace Infrastructure.Repositories
                 .Where(item => item.IsDeleted == 0
                                                 && item.HpId == hpId)
                 .OrderBy(i => i.SortNo)
-                .AsEnumerable().Select(i => new JihiSbtMstModel(i.HpId, i.JihiSbt, i.SortNo, i.Name ?? string.Empty,i.IsYobo, i.IsDeleted, ModelStatus.None)).ToList();
+                .AsEnumerable().Select(i => new JihiSbtMstModel(i.HpId, i.JihiSbt, i.SortNo, i.Name ?? string.Empty, i.IsYobo, i.IsDeleted, ModelStatus.None)).ToList();
             return result;
         }
 
@@ -5365,7 +5365,7 @@ namespace Infrastructure.Repositories
                                                            item.TenMst.HpId,
                                                            item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,
-                                                           item.TenMst.KanaName1 ?? string.Empty, 
+                                                           item.TenMst.KanaName1 ?? string.Empty,
                                                            item.TenMst.KanaName2 ?? string.Empty,
                                                            item.TenMst.KanaName3 ?? string.Empty,
                                                            item.TenMst.KanaName4 ?? string.Empty,
