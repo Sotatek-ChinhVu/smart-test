@@ -12,6 +12,8 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        bool ExistUsedKensaItemCd(int hpId, string kensaItemCd, int kensaSeqNo);
+
         List<TenItemModel> GetTenMstsWithStartDate(int hpId, string itemCd);
 
         bool IsKensaItemOrdering(int hpId, string tenItemCd);
@@ -195,8 +197,16 @@ namespace Domain.Models.MstItem
 
         string GetNameByItemCd(int hpId, string itemCd);
 
+        List<RenkeiConfModel> GetRenkeiConfModels(int hpId, int renkeiSbt);
+
+        List<RenkeiMstModel> GetRenkeiMstModels(int hpId);
+
+        List<RenkeiTemplateMstModel> GetRenkeiTemplateMstModels(int hpId);
+
         List<SetNameMntModel> GetSetNameMnt(SetCheckBoxStatusModel checkBoxStatus,int generationId, int hpId);
+
         List<SetKbnMstModel> GetListSetKbnMst(int generationId, int hpId);
+
         int GetGenerationId(int hpId);
         
         List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison);
