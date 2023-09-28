@@ -739,6 +739,7 @@ using UseCase.MstItem.GetListKensaIjiSetting;
 using UseCase.MstItem.CompareTenMst;
 using UseCase.MstItem.SaveCompareTenMst;
 using UseCase.KensaHistory.GetListKensaSet;
+using UseCase.KensaHistory.GetListKensaSetDetail;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1748,6 +1749,7 @@ namespace EmrCloudApi.Configs.Dependency
             // KensaHistory
             busBuilder.RegisterUseCase<UpdateKensaSetInputData, UpdateKensaSetInteractor>();
             busBuilder.RegisterUseCase<GetListKensaSetInputData, GetListKensaSetInteractor>();
+            busBuilder.RegisterUseCase<GetListKensaSetDetailInputData, GetListKensaSetDetailInteractor>();
 
 
             //ListSetGeneration

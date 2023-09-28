@@ -2,6 +2,7 @@
 using Domain.Models.KensaSetDetail;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -126,6 +127,19 @@ namespace Infrastructure.Repositories
                 x.UpdateDate,
                 x.UpdateId,
                 x.UpdateMachine
+                )).ToList();
+        }
+
+        public List<KensaSetDetailModel> GetListKensaSetDetail(int hpId, int setId)
+        {
+            return NoTrackingDataContext.KensaSetDetails.Where(x => x.HpId == hpId && x.SetId == setId && x.IsDeleted == DeleteTypes.None).Select(x => new KensaSetDetailModel(
+                x.HpId,
+                x.SetId,
+                x.SetEdaNo,
+                x.KensaItemCd,
+                x.KensaItemSeqNo,
+                x.SortNo,
+                x.IsDeleted
                 )).ToList();
         }
 
