@@ -65,6 +65,7 @@
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
+        public const string GetRenkeiConf = "GetRenkeiConf";
         public const string GetSetNameMnt = "GetSetNameMnt";
         public const string GetListKensaIjiSetting = "GetListKensaIjiSetting";
         public const string GetTreeListSet = "GetTreeListSet";
@@ -438,7 +439,9 @@
         public const string GetKensaInf = "GetKensaInf";
         public const string DeleteKensaInf = "DeleteKensaInf";
         public const string GetKensaIraiLog = "GetKensaIraiLog";
+        public const string GetStaCsvMst = "GetStaCsvMst";
         public const string KensaIraiReport = "KensaIraiReport";
+        public const string SaveStaCsvMst = "SaveStaCsvMst";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
