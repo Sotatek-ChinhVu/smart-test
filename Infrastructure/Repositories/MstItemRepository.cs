@@ -1286,13 +1286,13 @@ namespace Infrastructure.Repositories
             if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
             {
                 tenMstModels = tenMstModels.Where(t => (t.ItemCd.Length >= 2 && t.ItemCd.StartsWith("K") && Char.IsDigit(t.ItemCd, 1)) || t.ItemCd.StartsWith("KN") || !t.ItemCd.StartsWith("K")).ToList();
-                totalCount = tenMstModels.Count();
+                totalCount = tenMstModels.Count;
             }
             // Get Master search result
             if (isMasterSearch || isExpiredSearchIfNoData)
             {
                 tenMstModels = tenMstModels.GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate)?.FirstOrDefault() ?? new()).ToList();
-                totalCount = tenMstModels.Count();
+                totalCount = tenMstModels.Count;
             }
 
             var orderedQuery = (sortCol, sortType) switch
@@ -1341,8 +1341,8 @@ namespace Infrastructure.Repositories
             };
 
             tenMstModels = orderedQuery.Skip((pageIndex - 1) * pageCount)
-                                           .Take(pageCount).ToList();
-
+                                       .Take(pageCount)
+                                       .ToList();
             return (tenMstModels, totalCount);
         }
 
@@ -3413,7 +3413,7 @@ namespace Infrastructure.Repositories
                                                                            x.Hokatu.HoukatuGrpNo ?? string.Empty,
                                                                            x.Hokatu.UserSetting,
                                                                            x.Hokatu.IsInvalid,
-                                                                           x.Hokatu.IsInvalid == 1 ? true : false,
+                                                                           x.Hokatu.IsInvalid == 1,
                                                                            x.ItemName,
                                                                            x.HokatuGbp.ItemCd,
                                                                            x.HokatuGbp.SpJyoken,
