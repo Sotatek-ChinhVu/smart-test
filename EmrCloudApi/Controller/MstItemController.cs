@@ -45,6 +45,7 @@ using UseCase.MstItem.GetListSetGenerationMst;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetListYohoSetMstModelByUserID;
 using UseCase.MstItem.GetParrentKensaMst;
+using UseCase.MstItem.GetRenkeiConf;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
@@ -901,5 +902,15 @@ namespace EmrCloudApi.Controller
                 );
         }
 
+
+        [HttpGet(ApiPath.GetRenkeiConf)]
+        public ActionResult<Response<GetRenkeiConfResponse>> GetRenkeiConf([FromQuery] GetRenkeiConfRequest request)
+        {
+            var input = new GetRenkeiConfInputData(HpId, request.RenkeiSbt, request.NotLoadMst);
+            var output = _bus.Handle(input);
+            var presenter = new GetRenkeiConfPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetRenkeiConfResponse>>(presenter.Result);
+        }
     }
 }
