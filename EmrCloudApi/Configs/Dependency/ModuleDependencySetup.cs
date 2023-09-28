@@ -731,6 +731,8 @@ using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
 using Infrastructure.Logger;
 using UseCase.MstItem.ExistUsedKensaItemCd;
+using UseCase.MstItem.IsKensaItemOrdering;
+using UseCase.MstItem.IsUsingKensa;
 
 namespace EmrCloudApi.Configs.Dependency
 {
