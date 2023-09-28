@@ -335,7 +335,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                                                              .Select(item => item.CenterCd ?? string.Empty)
                                                              .Distinct()
                                                              .ToList();
-        if (centerCds.Any())
+        if (!centerCds.Any())
         {
             return new();
         }
