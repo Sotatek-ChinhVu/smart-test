@@ -167,7 +167,6 @@ public class AuthController : ControllerBase
         };
 
         (string token, DateTime tokenExpiryTime) = AuthProvider.GenerateAppToken(claims);
-        //var isSignInAppToken = SignInAppToken(user.UserId, token, tokenExpiryTime);
 
         if (!string.IsNullOrEmpty(token))
         {
@@ -216,14 +215,4 @@ public class AuthController : ControllerBase
         else
             return new(string.Empty, DateTime.MinValue);
     }
-
-    //private bool SignInAppToken(int userId, string token, DateTime expiryTime)
-    //{
-    //    var input = new SigninRefreshTokenInputData(userId, token, expiryTime);
-    //    var output = _bus.Handle(input);
-    //    if (output.Status == SigninRefreshTokenStatus.Successful)
-    //        return true;
-    //    else
-    //        return false;
-    //}
 }
