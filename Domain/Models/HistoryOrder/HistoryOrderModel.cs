@@ -34,6 +34,8 @@ namespace Domain.Models.HistoryOrder
 
         public string TantoName { get; private set; }
 
+        public string TantoFullName { get; private set; }
+
         public int SanteiKbn { get; private set; }
 
         public int TagNo { get; private set; }
@@ -71,7 +73,7 @@ namespace Domain.Models.HistoryOrder
         public List<HeaderOrderModel> HeaderOrderModels { get; private set; }
 
         [JsonConstructor]
-        public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, List<KarteInfModel> karteInfModels, string kaName, string tantoName, int tagNo, string sinryoTitle, List<FileInfModel> listKarteFile)
+        public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, List<KarteInfModel> karteInfModels, string kaName, string tantoName, string tantoFullName, int tagNo, string sinryoTitle, List<FileInfModel> listKarteFile)
         {
             RaiinNo = receptionModel.RaiinNo;
             SinDate = receptionModel.SinDate;
@@ -85,6 +87,7 @@ namespace Domain.Models.HistoryOrder
             HokenType = insuranceModel.GetHokenPatternType();
             KaName = kaName;
             TantoName = tantoName;
+            TantoFullName = tantoFullName;
             TagNo = tagNo;
             SinryoTitle = sinryoTitle;
             OrderInfList = orderList;
@@ -99,7 +102,7 @@ namespace Domain.Models.HistoryOrder
             HeaderOrderModels = new();
         }
 
-        public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, List<KarteInfModel> karteInfModels, string kaName, string tantoName, int tagNo, string sinryoTitle, List<FileInfModel> listKarteFile, List<HeaderOrderModel> headerOrderModels)
+        public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, List<KarteInfModel> karteInfModels, string kaName, string tantoName, string tantoFullName, int tagNo, string sinryoTitle, List<FileInfModel> listKarteFile, List<HeaderOrderModel> headerOrderModels)
         {
             RaiinNo = receptionModel.RaiinNo;
             SinDate = receptionModel.SinDate;
@@ -125,6 +128,7 @@ namespace Domain.Models.HistoryOrder
             SinEndTime = receptionModel.SinEndTime;
             SanteiKbn = receptionModel.SanteiKbn;
             HeaderOrderModels = headerOrderModels;
+            TantoFullName = tantoFullName;
         }
     }
 

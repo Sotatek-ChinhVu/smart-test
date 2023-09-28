@@ -30,6 +30,16 @@ namespace Infrastructure.Services
             return userInfo.Sname ?? string.Empty;
         }
 
+        public string GetFullNameById(int id)
+        {
+            var userInfo = _userInfoList.FirstOrDefault(u => u.UserId == id);
+            if (userInfo == null)
+            {
+                return string.Empty;
+            }
+            return userInfo.Name ?? string.Empty;
+        }
+
         public void Reload()
         {
             _userInfoList = _tenantProvider.GetNoTrackingDataContext().UserMsts.ToList();
