@@ -14,6 +14,7 @@ public class StatisticMenuModel
         IsPrint = isPrint;
         IsDeleted = false;
         StaConfigList = staConfigList;
+        PatientManagement = new();
     }
 
     public StatisticMenuModel(int menuId, int grpId, int reportId, int sortNo, string menuName, int isPrint, List<StaConfModel> staConfigList, bool isDeleted, bool isSaveTemp)
@@ -27,6 +28,7 @@ public class StatisticMenuModel
         StaConfigList = staConfigList;
         IsDeleted = isDeleted;
         IsSaveTemp = isSaveTemp;
+        PatientManagement = new();
     }
 
     public StatisticMenuModel(int menuId, int grpId, int reportId, string menuName, int sortNo, bool isDeleted, bool isModified, PatientManagementModel patientManagement)
@@ -38,6 +40,7 @@ public class StatisticMenuModel
         SortNo = sortNo;
         IsDeleted = isDeleted;
         IsModified = isModified;
+        StaConfigList = new();
         PatientManagement = patientManagement;
     }
 

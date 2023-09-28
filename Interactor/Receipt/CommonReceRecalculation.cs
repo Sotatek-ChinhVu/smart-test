@@ -105,7 +105,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(hpId, sinYmList, ptIdList, hokenIdList);
             allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(hpId, kantokuCdValidList);
         }
-        int successCount = 1;
+        int successCount = 0;
         foreach (var recalculationItem in receRecalculationList)
         {
             if (isCheckErrorCheckBox)
@@ -143,6 +143,7 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                 errorTextRosai = GetErrorRosai(errorTextRosai, recalculationItem, sinKouiCountList);
             }
 
+            successCount++;
             if (allCheckCount == successCount)
             {
                 break;
@@ -152,7 +153,6 @@ public class CommonReceRecalculation : ICommonReceRecalculation
             {
                 SendMessager(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, allCheckCount, successCount, string.Empty, string.Empty));
             }
-            successCount++;
         }
         errorText.Append(errorTextRosai);
         errorText.Append(errorTextSinKouiCount);
@@ -1243,7 +1243,10 @@ public class CommonReceRecalculation : ICommonReceRecalculation
                 foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
                 {
                     string itemCd = sinKouiDetailModel.ItemCd;
-                    if (!string.IsNullOrEmpty(itemCd) && sinKouiDetailModel.TenMstIsNotNull && !checkedItemCds.Contains(itemCd))
+
+                    //Fix https://jira.sotatek.com/browse/SMAR-4734 (uncheck TenMst != null)
+                    // if (!string.IsNullOrEmpty(itemCd) && sinKouiDetailModel.TenMstIsNotNull && !checkedItemCds.Contains(itemCd))
+                    if (!string.IsNullOrEmpty(itemCd) && !checkedItemCds.Contains(itemCd))
                     {
                         var lastTenMst = tenMstModelList.Where(item => item.ItemCd == itemCd).OrderByDescending(item => item.EndDate).FirstOrDefault();
                         if (lastTenMst != null && sinKouiCount.SinDate > lastTenMst.EndDate)

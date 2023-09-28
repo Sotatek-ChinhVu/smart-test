@@ -83,11 +83,5 @@ namespace Infrastructure.Logger
                     return string.Empty;
             }
         }
-
-        public override void Dispose()
-        {
-            this.SaveChanges();
-            base.Dispose();
-        }
     }
 }
