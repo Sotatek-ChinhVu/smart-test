@@ -27,6 +27,17 @@
             Itemname = itemName;
             IsModified = isModified;
         }
+        public YohoSetMstModel(int hpId, int setId, int userId, int sortNo, string itemCd, int isDeleted, string itemName, bool isModified)
+        {
+            HpId = hpId;
+            SetId = setId;
+            UserId = userId;
+            SortNo = sortNo;
+            ItemCd = itemCd;
+            IsDeleted = isDeleted;
+            Itemname = itemName;
+            IsModified = isModified;
+        }
         public string Itemname { get; private set; }
         public int YohoKbn { get; private set; }
         public int SetId { get; private set; }

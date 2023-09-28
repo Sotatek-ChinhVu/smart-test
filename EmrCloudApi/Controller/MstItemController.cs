@@ -896,12 +896,6 @@ namespace EmrCloudApi.Controller
                     yohoSetMst.SortNo,
                     yohoSetMst.ItemCd,
                     yohoSetMst.IsDeleted,
-                    yohoSetMst.CreateDate,
-                    yohoSetMst.CreateId,
-                    yohoSetMst.CreateMachine,
-                    yohoSetMst.UpdateDate,
-                    yohoSetMst.UpdateId,
-                    yohoSetMst.UpdateMachine,
                     yohoSetMst.Itemname,
                     yohoSetMst.IsModified
                 );
