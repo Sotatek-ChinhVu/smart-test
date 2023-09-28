@@ -4,7 +4,9 @@ using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.DrugInfor;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
+using EmrCloudApi.Requests.PatientManagement;
 using Helper.Enum;
+using Helper.Extension;
 using Interactor.DrugInfor.CommonDrugInf;
 using Interactor.MedicalExamination.HistoryCommon;
 using iText.Kernel.Pdf;
@@ -16,6 +18,7 @@ using Reporting.GrowthCurve.Model;
 using Reporting.KensaLabel.Model;
 using Reporting.Mappers.Common;
 using Reporting.OutDrug.Model.Output;
+using Reporting.PatientManagement.Models;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
 using System.Net.Mime;
@@ -192,10 +195,12 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
-    [HttpGet(ApiPath.PatientManagement)]
-    public async Task<IActionResult> GeneratePatientManagement([FromQuery] PatientManagementRequest request)
+    [HttpPost(ApiPath.PatientManagement)]
+    public async Task<IActionResult> GeneratePatientManagement([FromForm] StringObjectRequest requestString)
     {
-        var data = _reportService.GetPatientManagement(request.HpId, request.MenuId);
+        var request = JsonSerializer.Deserialize<PatientManagementRequest>(requestString.StringJson) ?? new();
+        PatientManagementModel patientManagementModel = ConvertToPatientManagementModel(request.PatientManagement);
+        var data = _reportService.GetPatientManagement(request.HpId, patientManagementModel);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -438,6 +443,7 @@ public class PdfCreatorController : ControllerBase
         }
     }
 
+    #region private function
     private byte[] SetTitleMetadata(byte[] pdf, string title)
     {
         using var inputStream = new MemoryStream(pdf);
@@ -568,4 +574,102 @@ public class PdfCreatorController : ControllerBase
         var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray();
         return File(result, contentType, dataModel.FileName);
     }
+
+    private PatientManagementModel ConvertToPatientManagementModel(PatientManagementItem requestItem)
+    {
+        PatientManagementModel result = new();
+        result.OutputOrder = requestItem.OutputOrder1;
+        result.OutputOrder2 = requestItem.OutputOrder2;
+        result.OutputOrder3 = requestItem.OutputOrder3;
+        result.ReportType = requestItem.ReportType;
+        result.PtNumFrom = requestItem.PtNumFrom;
+        result.PtNumTo = requestItem.PtNumTo;
+        result.KanaName = requestItem.KanaName;
+        result.Name = requestItem.Name;
+        result.BirthDayFrom = requestItem.BirthDayFrom;
+        result.BirthDayTo = requestItem.BirthDayTo;
+        result.AgeFrom = requestItem.AgeFrom;
+        result.AgeTo = requestItem.AgeTo;
+        result.AgeRefDate = requestItem.AgeRefDate.AsInteger();
+        result.Sex = requestItem.Sex;
+        if (!string.IsNullOrEmpty(requestItem.HomePost))
+        {
+            var homePost = requestItem.HomePost.Replace("-", string.Empty);
+            if (homePost.Length > 3)
+            {
+                result.ZipCD1 = homePost.Substring(0, 3);
+                result.ZipCD2 = homePost.Substring(3);
+            }
+        }
+        result.Address = requestItem.Address.AsString();
+        result.PhoneNumber = requestItem.PhoneNumber.AsString();
+        result.RegistrationDateFrom = requestItem.RegistrationDateFrom;
+        result.RegistrationDateTo = requestItem.RegistrationDateTo;
+        result.IncludeTestPt = requestItem.IncludeTestPt;
+        result.GroupSelected = requestItem.GroupSelected.AsString();
+        result.HokensyaNoFrom = requestItem.HokensyaNoFrom.AsString();
+        result.HokensyaNoTo = requestItem.HokensyaNoTo.AsString();
+        result.Kigo = requestItem.Kigo.AsString();
+        result.EdaNo = requestItem.EdaNo.AsString();
+        result.Bango = requestItem.Bango.AsString();
+        result.HokenKbn = requestItem.HokenKbn;
+        result.KohiFutansyaNoFrom = requestItem.KohiFutansyaNoFrom.AsString();
+        result.KohiFutansyaNoTo = requestItem.KohiFutansyaNoTo.AsString();
+        result.KohiTokusyuNoFrom = requestItem.KohiTokusyuNoFrom.AsString();
+        result.KohiTokusyuNoTo = requestItem.KohiTokusyuNoTo.AsString();
+        result.ExpireDateFrom = requestItem.ExpireDateFrom;
+        result.ExpireDateTo = requestItem.ExpireDateTo;
+        result.HokenSbt = requestItem.HokenSbt;
+        result.Houbetu1 = requestItem.Houbetu1;
+        result.Houbetu2 = requestItem.Houbetu2;
+        result.Houbetu3 = requestItem.Houbetu3;
+        result.Houbetu4 = requestItem.Houbetu4;
+        result.Houbetu5 = requestItem.Houbetu5;
+        result.Kogaku = requestItem.Kogaku.AsString();
+        result.KohiHokenNoFrom = requestItem.KohiHokenNoFrom;
+        result.KohiHokenEdaNoFrom = requestItem.KohiHokenEdaNoFrom;
+        result.KohiHokenNoTo = requestItem.KohiHokenNoTo;
+        result.KohiHokenEdaNoTo = requestItem.KohiHokenEdaNoTo;
+        result.StartDateFrom = requestItem.StartDateFrom;
+        result.StartDateTo = requestItem.StartDateTo;
+        result.TenkiDateFrom = requestItem.TenkiDateFrom;
+        result.TenkiDateTo = requestItem.TenkiDateTo;
+        result.TenkiKbns = requestItem.TenkiKbns;
+        result.SikkanKbns = requestItem.SikkanKbns;
+        result.NanbyoCds = requestItem.NanbyoCds;
+        result.IsDoubt = requestItem.IsDoubt;
+        result.SearchWord = requestItem.SearchWord.AsString();
+        result.SearchWordMode = requestItem.SearchWordMode;
+        result.ByomeiCds = requestItem.ByomeiCds;
+        result.ByomeiCdOpt = requestItem.ByomeiCdOpt;
+        result.FreeByomeis = requestItem.FreeByomeis;
+        result.SindateFrom = requestItem.SindateFrom;
+        result.SindateTo = requestItem.SindateTo;
+        result.LastVisitDateFrom = requestItem.LastVisitDateFrom;
+        result.LastVisitDateTo = requestItem.LastVisitDateTo;
+        result.Statuses = requestItem.Statuses;
+        result.UketukeSbtId = requestItem.UketukeSbtId;
+        result.KaMstId = requestItem.KaMstId;
+        result.UserMstId = requestItem.UserMstId;
+        result.IsSinkan = requestItem.IsSinkan;
+        result.RaiinAgeFrom = requestItem.RaiinAgeFrom;
+        result.RaiinAgeTo = requestItem.RaiinAgeTo;
+        result.JikanKbns = requestItem.JikanKbns;
+        result.DataKind = requestItem.DataKind;
+        result.ItemCds = requestItem.ItemCds;
+        result.ItemCdOpt = requestItem.ItemCdOpt;
+        result.ItemCmts = requestItem.ItemCmts;
+        result.MedicalSearchWord = requestItem.MedicalSearchWord;
+        result.WordOpt = requestItem.WordOpt;
+        result.KarteKbns = requestItem.KarteKbns;
+        result.KarteSearchWords = requestItem.KarteSearchWords;
+        result.KarteWordOpt = requestItem.KarteWordOpt;
+        result.StartIraiDate = requestItem.StartIraiDate;
+        result.EndIraiDate = requestItem.EndIraiDate;
+        result.KensaItemCds = requestItem.KensaItemCds;
+        result.KensaItemCdOpt = requestItem.KensaItemCdOpt;
+        result.ListPtNums = requestItem.ListPtNums;
+        return result;
+    }
+    #endregion
 }

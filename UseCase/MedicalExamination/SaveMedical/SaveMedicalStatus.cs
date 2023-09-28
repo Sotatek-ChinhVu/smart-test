@@ -3,6 +3,7 @@
 public enum SaveMedicalStatus : byte
 {
     Successed = 1,
-    Failed,
-    MedicalScreenLocked
+    Failed = 2,
+    MedicalScreenLocked = 3,
+    NoPermissionSaveSummary = 4,
 }
