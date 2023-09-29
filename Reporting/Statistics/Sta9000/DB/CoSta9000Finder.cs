@@ -1201,28 +1201,26 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             //患者番号
             ptInfs = ptConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum >= ptConf.StartPtNum) : ptInfs;
             ptInfs = ptConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum <= ptConf.EndPtNum) : ptInfs;
-            ptInfs = ptConf.PtNums?.Count > 0 ? ptInfs.Where(p => ptConf.PtNums.Contains(p.PtNum)) : ptInfs;
-
+            ptInfs = ptConf.PtNums?.Count > 0 ? ptInfs.Where(p => (ptConf.PtNums.Count == 0 || ptConf.PtNums.Contains(p.PtNum))) : ptInfs;
             //カナ氏名
-            ptInfs = ptConf.KanaName != string.Empty ? ptInfs.Where(p => p.KanaName.Contains(ptConf.KanaName)) : ptInfs;
-            //氏名
-            ptInfs = ptConf.Name != string.Empty ? ptInfs.Where(p => p.Name.Contains(ptConf.Name)) : ptInfs;
+            ptInfs = ptConf.KanaName != string.Empty ? ptInfs.Where(p => p.KanaName != null && p.KanaName.Contains(ptConf.KanaName) == true) : ptInfs;
+            ptInfs = ptConf.Name != string.Empty ? ptInfs.Where(p => p.Name != null && p.Name.Contains(ptConf.Name)) : ptInfs;
             //生年月日
             ptInfs = ptConf.StartBirthday > 0 ? ptInfs.Where(p => p.Birthday >= ptConf.StartBirthday) : ptInfs;
             ptInfs = ptConf.EndBirthday > 0 ? ptInfs.Where(p => p.Birthday <= ptConf.EndBirthday) : ptInfs;
             //年齢 .. (基準の日付 – 誕生日) / 10000
             int baseDate = ptConf.AgeBaseDate > 0 ? ptConf.AgeBaseDate : CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
-            ptInfs = ptConf.StartAge != null ? ptInfs.Where(p => (baseDate - p.Birthday) / 10000 >= ptConf.StartAge) : ptInfs;
-            ptInfs = ptConf.EndAge != null ? ptInfs.Where(p => (baseDate - p.Birthday) / 10000 <= ptConf.EndAge) : ptInfs;
+            ptInfs = (ptConf.StartAge != null && ptConf.StartAge > 0) ? ptInfs.Where(p => (baseDate - p.Birthday) / 10000 >= ptConf.StartAge) : ptInfs;
+            ptInfs = (ptConf.EndAge != null && ptConf.EndAge > 0) ? ptInfs.Where(p => (baseDate - p.Birthday) / 10000 <= ptConf.EndAge) : ptInfs;
             //性別
             ptInfs = ptConf.Sex > 0 ? ptInfs.Where(p => p.Sex == ptConf.Sex) : ptInfs;
             //郵便番号
-            ptInfs = ptConf.HomePost != string.Empty ? ptInfs.Where(p => p.HomePost.StartsWith(ptConf.HomePost)) : ptInfs;
+            ptInfs = ptConf.HomePost != string.Empty ? ptInfs.Where(p => p.HomePost != null && p.HomePost.StartsWith(ptConf.HomePost)) : ptInfs;
             //住所
             ptInfs = ptConf.HomeAddress != string.Empty ? ptInfs.Where(p => (p.HomeAddress1 + p.HomeAddress2).Contains(ptConf.HomeAddress)) : ptInfs;
             //電話
             ptInfs = ptConf.Tel != string.Empty ? ptInfs.Where(p =>
-                p.Tel1.Replace("-", "").Contains(ptConf.Tel) || p.Tel2.Replace("-", "").Contains(ptConf.Tel) || p.RenrakuTel.Replace("-", "").Contains(ptConf.Tel)
+                (p.Tel1 != null && p.Tel1.Replace("-", "").Contains(ptConf.Tel)) || (p.Tel2 != null && p.Tel2.Replace("-", "").Contains(ptConf.Tel)) || (p.RenrakuTel != null && p.RenrakuTel.Replace("-", "").Contains(ptConf.Tel))
             ) : ptInfs;
             //登録日
             DateTime startRegDate;
@@ -1261,8 +1259,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 }
             }
         }
-        #endregion
 
+        #endregion
         #region 保険情報
         (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
 
@@ -1439,14 +1437,17 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         if (isSinConf)
         {
             //検索ワード
-            if (sinConf.SearchWord != string.Empty)
+            if (sinConf?.SearchWord != string.Empty)
             {
                 //スペース区切りでキーワードを分解
-                string[] values = sinConf.SearchWord.Replace("　", " ").Split(' ');
+                string[]? values = sinConf?.SearchWord.Replace("　", " ").Split(' ');
                 List<string> searchWords = new List<string>();
-                searchWords.AddRange(values);
+                if (values != null)
+                {
+                    searchWords.AddRange(values);
+                }
 
-                if (sinConf.WordOpt == 0)
+                if (sinConf?.WordOpt == 0)
                 {
                     //or条件
                     sinJoins = sinJoins.Where(p => searchWords.Any(key => p.ItemName.Contains(key)));
@@ -1459,13 +1460,14 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             }
             //検索項目
             var itemCds = new List<string>();
-            if (sinConf.ItemCds?.Count >= 1)
+            if (sinConf?.ItemCds?.Count >= 1)
             {
                 itemCds.AddRange(sinConf.ItemCds);
             }
-            for (int i = 0; i < sinConf.ItemCmts?.Count; i++)
+            int count = sinConf?.ItemCmts?.Count ?? 0;
+            for (int i = 0; i < count; i++)
             {
-                itemCds.Add(sinConf.ItemCmts[i]);
+                itemCds.Add(sinConf?.ItemCmts[i] ?? string.Empty);
                 itemCds.Add("");
                 itemCds.Add("");
             }
@@ -1495,7 +1497,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     }
                     else
                     {
-                        if (sinConf.ItemCdOpt == 0)
+                        if (sinConf?.ItemCdOpt == 0)
                         {
                             //or条件
                             wrkItems = wrkItems.Union(curItems);
@@ -1614,14 +1616,17 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         if (isOdrConf)
         {
             //検索ワード
-            if (sinConf.SearchWord != string.Empty)
+            if (sinConf?.SearchWord != string.Empty)
             {
                 //スペース区切りでキーワードを分解
-                string[] values = sinConf.SearchWord.Replace("　", " ").Split(' ');
+                string[]? values = sinConf?.SearchWord.Replace("　", " ").Split(' ');
                 List<string> searchWords = new List<string>();
-                searchWords.AddRange(values);
+                if (values != null)
+                {
+                    searchWords.AddRange(values);
+                }
 
-                if (sinConf.WordOpt == 0)
+                if (sinConf?.WordOpt == 0)
                 {
                     //or条件
                     odrJoins = odrJoins.Where(p => searchWords.Any(key => p.ItemName.Contains(key)));
@@ -1634,13 +1639,14 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             }
             //検索項目
             var ItemCds = new List<string>();
-            if (sinConf.ItemCds?.Count >= 1)
+            if (sinConf?.ItemCds?.Count >= 1)
             {
                 ItemCds.AddRange(sinConf.ItemCds);
             }
-            for (int i = 0; i < sinConf.ItemCmts?.Count; i++)
+            int count = sinConf?.ItemCmts?.Count ?? 0;
+            for (int i = 0; i < count; i++)
             {
-                ItemCds.Add(sinConf.ItemCmts[i]);
+                ItemCds.Add(sinConf?.ItemCmts[i] ?? string.Empty);
                 ItemCds.Add("");
                 ItemCds.Add("");
             }
@@ -1670,7 +1676,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     }
                     else
                     {
-                        if (sinConf.ItemCdOpt == 0)
+                        if (sinConf?.ItemCdOpt == 0)
                         {
                             //or条件
                             wrkItems = wrkItems.Union(curItems);
@@ -1729,7 +1735,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             karteInfs = karteConf?.KarteKbns?.Count > 0 ? karteInfs.Where(k => karteConf.KarteKbns.Contains(k.KarteKbn)) : karteInfs;
 
             //文字列検索
-            if (karteConf.WordOpt == 0)
+            if (karteConf?.WordOpt == 0)
             {
                 //or条件
                 karteInfs = karteConf.SearchWords?.Count >= 1 ? karteInfs.Where(r => karteConf.SearchWords.Any(key => (r.Text ?? string.Empty).Contains(key))) : karteInfs;
@@ -1739,9 +1745,10 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 //and条件
                 var wrkKartes = karteInfs;
 
-                for (int i = 0; i < karteConf.SearchWords.Count; i++)
+                int count = karteConf?.SearchWords.Count ?? 0;
+                for (int i = 0; i < count; i++)
                 {
-                    var wrkWord = karteConf.SearchWords[i];
+                    var wrkWord = karteConf?.SearchWords[i] ?? string.Empty;
                     var curKartes = karteInfs.Where(p => (p.Text ?? string.Empty).Contains(wrkWord));
 
                     wrkKartes = (
@@ -1912,7 +1919,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     }
 
     private (IQueryable<PtHokenPattern> ptHokenPatterns, IQueryable<PtHokenInf> ptHokenInfs, IQueryable<PtKohi> ptKohis, bool isHokenConf, bool isKohiConf)
-        GetPtHokenPatterns(CoSta9000HokenConf hokenConf)
+        GetPtHokenPatterns(CoSta9000HokenConf? hokenConf)
     {
         var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(p => p.IsDeleted == DeleteStatus.None);
         var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.IsDeleted == DeleteStatus.None);
@@ -2042,7 +2049,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// </summary>
     /// <param name="byomeiConf"></param>
     /// <returns></returns>
-    private (IQueryable<PtByomei> ptByomeis, bool isByomeiConf) GetPtByomeis(CoSta9000ByomeiConf byomeiConf)
+    private (IQueryable<PtByomei> ptByomeis, bool isByomeiConf) GetPtByomeis(CoSta9000ByomeiConf? byomeiConf)
     {
         var ptByomeis = NoTrackingDataContext.PtByomeis.Where(p => p.IsDeleted == DeleteStatus.None);
 
@@ -2182,7 +2189,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// </summary>
     /// <param name="raiinConf"></param>
     /// <returns></returns>
-    private (IQueryable<RaiinInf> raiinInfs, bool isRaiinConf) GetRaiinInfs(CoSta9000RaiinConf raiinConf)
+    private (IQueryable<RaiinInf> raiinInfs, bool isRaiinConf) GetRaiinInfs(CoSta9000RaiinConf? raiinConf)
     {
         var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p => p.IsDeleted == DeleteStatus.None);
         var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
