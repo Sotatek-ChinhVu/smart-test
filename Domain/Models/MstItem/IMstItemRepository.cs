@@ -14,6 +14,8 @@ namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        bool ExistUsedKensaItemCd(int hpId, string kensaItemCd, int kensaSeqNo);
+
         List<TenItemModel> GetTenMstsWithStartDate(int hpId, string itemCd);
 
         bool IsKensaItemOrdering(int hpId, string tenItemCd);
@@ -36,7 +38,7 @@ namespace Domain.Models.MstItem
 
         bool UpdateKensaStdMst(int hpId, int userId, List<KensaStdMstModel> kensaStdMstModels);
 
-        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts);
+        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts, List<KensaMstModel> childKensaMsts);
 
         List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord, string itemCd);
 

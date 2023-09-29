@@ -28,10 +28,13 @@ namespace Interactor.MstItem
 
                 List<ListSetMstModel> result = new List<ListSetMstModel>();
                 List<ListSetMstModel> rootSubs = new List<ListSetMstModel>();
+                ListSetMstModel rootLevel = new ListSetMstModel(0, "共通", 0);
                 rootSubs.AddRange(GetListTreeSet(inputData.SetKbn, generationId, inputData));
                 if (!rootSubs.Any())
-                    return new GetTreeListSetOutputData(new List<ListSetMstModel>(), GetTreeListSetStatus.DataNotFound);
-                ListSetMstModel rootLevel = new ListSetMstModel(0, "共通", 0);
+                {
+                    result.Add(rootLevel);
+                    return new GetTreeListSetOutputData(result, GetTreeListSetStatus.DataNotFound);
+                }                                   
                 rootLevel.Childrens = rootSubs;
                 result.Add(rootLevel);
                 return new GetTreeListSetOutputData(result, GetTreeListSetStatus.Successed);

@@ -28,6 +28,7 @@ using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseNameMstSearch;
 using UseCase.MstItem.DiseaseSearch;
+using UseCase.MstItem.ExistUsedKensaItemCd;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetAllCmtCheckMst;
@@ -357,7 +358,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.UpdateKensaMst)]
         public ActionResult<Response<UpdateKensaMstResponse>> UpdateKensaMst(UpdateKensaMstRequest request)
         {
-            var input = new UpdateKensaMstInputData(HpId, UserId, request.KensaMstItems.Select(x => kensaMstItemsRequestToModel(x)).ToList(), request.TenMstItems.Select(x => TenMstItemsRequestToModel(x)).ToList());
+            var input = new UpdateKensaMstInputData(HpId, UserId, request.KensaMstItems.Select(x => KensaMstItemsRequestToModel(x)).ToList(), request.ChildKensaMstItems.Select(x => ChildKensaMstItemsRequestToModel(x)).ToList(), request.TenMstItems.Select(x => TenMstItemsRequestToModel(x)).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new UpdateKensaMstPresenter();
@@ -371,50 +372,33 @@ namespace EmrCloudApi.Controller
             return
                 new TenItemModel
                 (
-                    tenMstItemModel.ItemCd,
                     tenMstItemModel.SinKouiKbn,
-                    tenMstItemModel.Name,
-                    tenMstItemModel.OdrUnitName,
-                    tenMstItemModel.CnvUnitName,
-                    tenMstItemModel.IsNodspRece,
-                    tenMstItemModel.YohoKbn,
-                    tenMstItemModel.OdrTermVal,
-                    tenMstItemModel.CnvTermVal,
-                    tenMstItemModel.YjCd,
+                    tenMstItemModel.MasterSbt,
+                    tenMstItemModel.ItemCd,
                     tenMstItemModel.KensaItemCd,
                     tenMstItemModel.KensaItemSeqNo,
-                    tenMstItemModel.KohatuKbn,
                     tenMstItemModel.Ten,
-                    tenMstItemModel.HandanGrpKbn,
-                    tenMstItemModel.IpnNameCd,
-                    tenMstItemModel.CmtCol1,
-                    tenMstItemModel.CmtCol2,
-                    tenMstItemModel.CmtCol3,
-                    tenMstItemModel.CmtCol4,
-                    tenMstItemModel.CmtColKeta1,
-                    tenMstItemModel.CmtColKeta2,
-                    tenMstItemModel.CmtColKeta3,
-                    tenMstItemModel.CmtColKeta4,
-                    tenMstItemModel.MinAge,
-                    tenMstItemModel.MaxAge,
+                    tenMstItemModel.Name,
+                    tenMstItemModel.ReceName,
+                    tenMstItemModel.KanaName1,
+                    tenMstItemModel.KanaName2,
+                    tenMstItemModel.KanaName3,
+                    tenMstItemModel.KanaName4,
+                    tenMstItemModel.KanaName5,
+                    tenMstItemModel.KanaName6,
+                    tenMstItemModel.KanaName7,
                     tenMstItemModel.StartDate,
                     tenMstItemModel.EndDate,
-                    tenMstItemModel.MasterSbt,
-                    tenMstItemModel.BuiKbn,
-                    tenMstItemModel.CdKbn,
-                    tenMstItemModel.CdKbnno,
-                    tenMstItemModel.CdEdano,
-                    tenMstItemModel.Kokuji1,
-                    tenMstItemModel.Kokuji2,
-                    tenMstItemModel.DrugKbn,
-                    tenMstItemModel.ReceName,
+                    tenMstItemModel.DefaultValue,
+                    tenMstItemModel.OdrUnitName,
                     tenMstItemModel.SanteiItemCd,
-                    tenMstItemModel.JihiSbt,
+                    tenMstItemModel.SanteigaiKbn,
+                    tenMstItemModel.IsNoSearch,
                     tenMstItemModel.IsDeleted
                 );
         }
 
-        private static KensaMstModel kensaMstItemsRequestToModel(KensaMstInputItem kensaMstItem)
+        private static KensaMstModel KensaMstItemsRequestToModel(KensaMstInputItem kensaMstItem)
         {
             return
                 new KensaMstModel
@@ -439,7 +423,38 @@ namespace EmrCloudApi.Controller
                     kensaMstItem.OyaItemSeqNo,
                     kensaMstItem.SortNo,
                     kensaMstItem.CenterItemCd1,
-                    kensaMstItem.CenterItemCd2
+                    kensaMstItem.CenterItemCd2,
+                    kensaMstItem.IsDeleted
+                );
+        }
+
+        private static KensaMstModel ChildKensaMstItemsRequestToModel(ChildKensaMstInputItem kensaMstItem)
+        {
+            return
+                new KensaMstModel
+                (
+                    kensaMstItem.KensaItemCd,
+                    kensaMstItem.KensaItemSeqNo,
+                    kensaMstItem.CenterCd,
+                    kensaMstItem.KensaName,
+                    kensaMstItem.KensaKana,
+                    kensaMstItem.Unit,
+                    kensaMstItem.MaterialCd,
+                    kensaMstItem.ContainerCd,
+                    kensaMstItem.MaleStd,
+                    kensaMstItem.MaleStdLow,
+                    kensaMstItem.MaleStdHigh,
+                    kensaMstItem.FemaleStd,
+                    kensaMstItem.FemaleStdLow,
+                    kensaMstItem.FemaleStdHigh,
+                    kensaMstItem.Formula,
+                    kensaMstItem.Digit,
+                    kensaMstItem.OyaItemCd,
+                    kensaMstItem.OyaItemSeqNo,
+                    kensaMstItem.SortNo,
+                    kensaMstItem.CenterItemCd1,
+                    kensaMstItem.CenterItemCd2,
+                    kensaMstItem.IsDeleted
                 );
         }
 
@@ -921,6 +936,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetRenkeiConfPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetRenkeiConfResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.ExistUsedKensaItemCd)]
+        public ActionResult<Response<ExistUsedKensaItemCdResponse>> ExistUsedKensaItemCd([FromQuery] ExistUsedKensaItemCdRequest request)
+        {
+            var input = new ExistUsedKensaItemCdInputData(HpId, request.KensaItemCd, request.KensaSeqNo);
+            var output = _bus.Handle(input);
+            var presenter = new ExistUsedKensaItemCdPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<ExistUsedKensaItemCdResponse>>(presenter.Result);
         }
     }
 }

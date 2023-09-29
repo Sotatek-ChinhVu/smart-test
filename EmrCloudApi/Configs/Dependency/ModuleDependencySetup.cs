@@ -743,6 +743,10 @@ using UseCase.MstItem.GetListKensaIjiSetting;
 using UseCase.MstItem.CompareTenMst;
 using UseCase.MstItem.SaveCompareTenMst;
 using UseCase.MstItem.UpdateYohoSetMst;
+using Infrastructure.Logger;
+using UseCase.MstItem.ExistUsedKensaItemCd;
+using UseCase.MstItem.IsKensaItemOrdering;
+using UseCase.MstItem.IsUsingKensa;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1428,6 +1432,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSetNameMntInputData, GetSetNameMntInteractor>();
             busBuilder.RegisterUseCase<UpdateYohoSetMstInputData, UpdateYohoSetMstInteractor>();
             busBuilder.RegisterUseCase<GetListYohoSetMstModelByUserIDInputData, GetListYohoSetMstModelByUserIDInteractor>();
+            busBuilder.RegisterUseCase<IsUsingKensaInputData, IsUsingKensaInteractor>();
+            busBuilder.RegisterUseCase<IsKensaItemOrderingInputData, IsKensaItemOrderingInteractor>();
+            busBuilder.RegisterUseCase<ExistUsedKensaItemCdInputData, ExistUsedKensaItemCdInteractor>();
             busBuilder.RegisterUseCase<GetListUserInputData, GetListUserInteractor>();
 
             // Disease
