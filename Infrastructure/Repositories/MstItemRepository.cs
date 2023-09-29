@@ -6041,15 +6041,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                         x.OyaItemSeqNo,
                                                                         x.SortNo,
                                                                         x.CenterItemCd1 ?? string.Empty,
-                                                                        x.CenterItemCd2 ?? string.Empty)),
-                        TenMsts = tempTenMsts.OrderByDescending(x => x.StartDate)
+                                                                        x.CenterItemCd2 ?? string.Empty)).OrderByDescending(x => x.KensaItemCd),
+                        TenMsts = tempTenMsts/*.OrderByDescending(x => x.StartDate)*/
                     };
 
             foreach (var entity in query)
             {
                /* var ChildKensaMsts = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == entity.ParrentKensaMst.KensaItemCd);*/
-                var tenmst = entity.TenMsts.GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault());
-                var tenmstModel = entity.TenMsts;
+                var tenmst = entity.TenMsts.GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault()).OrderByDescending(x => x.StartDate);
                 result.Add(new KensaMstModel(
                     entity.ParrentKensaMst.KensaItemCd,
                     entity.ParrentKensaMst.KensaItemSeqNo,
@@ -6096,7 +6095,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                   x.SanteigaiKbn,
                                   x.IsNosearch,
                                   entity.TenMsts.Select(x => CIUtil.SDateToShowSDate(x.StartDate)).Distinct().ToList())).ToList(),
-                    tenmstModel.Select(y => new TenItemModel(
+                    entity.TenMsts.Select(y => new TenItemModel(
                                                                 y.SinKouiKbn,
                                                                 y.MasterSbt ?? string.Empty,
                                                                 y.ItemCd,
@@ -6118,8 +6117,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                 y.OdrUnitName ?? string.Empty,
                                                                 y.SanteiItemCd ?? string.Empty,
                                                                 y.SanteigaiKbn,
-                                                                y.IsNosearch)).ToList(),
-                    entity.ChildKensaMsts.ToList()
+                                                                y.IsNosearch)).OrderByDescending(x => x.StartDate).ToList(),
+                    entity.ChildKensaMsts.OrderBy(x => x.MaterialCd).ToList()
                     ));
             }
 
@@ -6459,8 +6458,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
         foreach (var item in kensaStdMstModels)
         {
-            if (item.IsDefault) continue;
-
             if (item.IsDeleted)
             {
                 var kensaStdMaster = TrackingDataContext.KensaStdMsts.Where(x => x.KensaItemCd == item.KensaItemcd && x.StartDate == item.StartDate);
