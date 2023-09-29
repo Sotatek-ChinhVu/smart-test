@@ -30,7 +30,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SearchPtInfs)]
         public ActionResult<Response<SearchPtInfsResponse>> SearchPtInfs([FromBody] SearchPtInfsRequest request)
         {
-            var input = new SearchPtInfsInputData(HpId, request.OutputOrder, request.PageIndex, request.PageCount, request.CoSta9000PtConf, request.CoSta9000HokenConf,
+            var input = new SearchPtInfsInputData(HpId, request.OutputOrder, request.CoSta9000PtConf, request.CoSta9000HokenConf,
                                                    request.CoSta9000ByomeiConf, request.CoSta9000RaiinConf, request.CoSta9000SinConf, request.CoSta9000KarteConf, request.CoSta9000KensaConf);
             var output = _bus.Handle(input);
 
