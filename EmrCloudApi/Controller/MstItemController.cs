@@ -44,6 +44,7 @@ using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListKensaIjiSetting;
 using UseCase.MstItem.GetListSetGenerationMst;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetListYohoSetMstModelByUserID;
 using UseCase.MstItem.GetListUser;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiConf;
@@ -79,6 +80,8 @@ using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
+using Domain.Models.OrdInfDetails;
+using UseCase.MstItem.UpdateYohoSetMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -878,6 +881,41 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveCompareTenMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveCompareTenMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListYohoSetMstModelByUserID)]
+        public ActionResult<Response<GetListYohoSetMstModelByUserIDResponse>> GetListYohoSetMstModelByUserID([FromQuery] GetListYohoSetMstModelByUserIDRequest request)
+        {
+            var input = new GetListYohoSetMstModelByUserIDInputData(HpId, UserId, request.SinDate, request.UserId);
+            var output = _bus.Handle(input);
+            var presenter = new GetListYohoSetMstModelByUserIDPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListYohoSetMstModelByUserIDResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateYohoSetMst)]
+        public ActionResult<Response<UpdateYohoSetMstResponse>> UpdateYohoSetMst(UpdateYohoSetMstRequest request)
+        {
+            var input = new UpdateYohoSetMstInputData(HpId, UserId, request.YohoSetMsts.Select(i=> YohoSetMstRequestToModel(i)).ToList());
+            var output = _bus.Handle(input);
+            var presenter = new UpdateYohoSetMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateYohoSetMstResponse>>(presenter.Result);
+        }
+        private static YohoSetMstModel YohoSetMstRequestToModel(YohoSetMstRequest yohoSetMst)
+        {
+            return
+                new YohoSetMstModel
+                (
+                    yohoSetMst.HpId,
+                    yohoSetMst.SetId,
+                    yohoSetMst.UserId,
+                    yohoSetMst.SortNo,
+                    yohoSetMst.ItemCd,
+                    yohoSetMst.IsDeleted,
+                    yohoSetMst.Itemname,
+                    yohoSetMst.IsModified
+                );
         }
 
         [HttpGet(ApiPath.GetListUser)]

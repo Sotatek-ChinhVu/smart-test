@@ -65,6 +65,7 @@
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
+        public const string GetListYohoSetMstModelByUserID = "GetListYohoSetMstModelByUserID";
         public const string GetRenkeiConf = "GetRenkeiConf";
         public const string GetSetNameMnt = "GetSetNameMnt";
         public const string GetListKensaIjiSetting = "GetListKensaIjiSetting";
@@ -73,6 +74,7 @@
         public const string GetListUser = "GetListUser";
         public const string GetListSetGeneration = "GetListSetGeneration";
         public const string GetListByomeiSetGeneration = "GetListByomeiSetGeneration";
+        public const string UpdateYohoSetMst = "UpdateYohoSetMst";
         public const string F17Common = "F17Common";
         public const string IsKensaItemOrdering = "IsKensaItemOrdering";
         public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";

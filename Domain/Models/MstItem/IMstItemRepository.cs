@@ -5,6 +5,7 @@ using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
 using Domain.Models.MaterialMaster;
 using Domain.Models.OrdInf;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
 using Helper.Enum;
@@ -197,6 +198,7 @@ namespace Domain.Models.MstItem
         bool UpdateJihiSbtMst(int hpId, int userId, List<JihiSbtMstModel> jihiSbtMsts);
 
         string GetNameByItemCd(int hpId, string itemCd);
+        List<YohoSetMstModel> GetListYohoSetMstModelByUserID(int hpId, int userIdLogin, int sinDate, int userId = 0);
 
         List<RenkeiConfModel> GetRenkeiConfModels(int hpId, int renkeiSbt);
 
@@ -216,6 +218,8 @@ namespace Domain.Models.MstItem
         List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison);
 
         bool SaveCompareTenMst(List<SaveCompareTenMstModel> ListData, ComparisonSearchModel comparison, int userId);
+
+        bool UpdateYohoSetMst(int hpId, int userId, List<YohoSetMstModel> listYohoSetMstModels);
     }
 
 }

@@ -7,6 +7,7 @@ using Domain.Models.KensaIrai;
 using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
 using Entity.Tenant;
@@ -7017,6 +7018,28 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
         }       
     }
+    public List<YohoSetMstModel> GetListYohoSetMstModelByUserID(int hpId, int userIdLogin, int sinDate, int userId = 0)
+    {
+        List<YohoSetMstModel> result = new List<YohoSetMstModel>();
+        var listYohoSetMst = TrackingDataContext.YohoSetMsts.Where(u => u.HpId == hpId &&
+                                                                                   u.IsDeleted == 0 &&
+                                                                                   (userId == 0 ? u.UserId == userIdLogin : u.UserId == userId));
+        var listTenMst = TrackingDataContext.TenMsts.Where(u => u.HpId == hpId &&
+                                                                           u.IsNosearch == 0 &&
+                                                                           u.StartDate <= sinDate &&
+                                                                           u.EndDate >= sinDate &&
+                                                                           u.IsDeleted == DeleteTypes.None);
+        var query = from yoho in listYohoSetMst
+                    join ten in listTenMst on yoho.ItemCd.Trim() equals ten.ItemCd.Trim()
+                    select new
+                    {
+                        Yoho = yoho,
+                        ItemName = ten.Name,
+                        ItemCd = ten.ItemCd,
+                    };
+        result = query.AsEnumerable().Select(u => new YohoSetMstModel(u.Yoho.HpId, u.Yoho.SetId, u.Yoho.UserId, u.Yoho.SortNo, u.ItemCd, u.Yoho.IsDeleted, u.Yoho.CreateDate, u.Yoho.CreateId, u.Yoho.CreateMachine, u.Yoho.UpdateDate, u.Yoho.UpdateId, u.Yoho.UpdateMachine, u.ItemName, false)).OrderBy(y => y.SortNo).ToList();
+        return result;
+    }
 
     public bool ExistUsedKensaItemCd(int hpId, string kensaItemCd, int kensaSeqNo)
     {
@@ -7456,6 +7479,51 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result.OrderBy(x => x.RenkeiId).ThenBy(x => x.Biko).ToList();
     }
 
+    public bool UpdateYohoSetMst(int hpId, int userId, List<YohoSetMstModel> listYohoSetMstModels)
+    {
+        List<YohoSetMstModel> listInsert = listYohoSetMstModels.Where(u => u.HpId == 0).ToList();
+        List<YohoSetMstModel> listUpdate = listYohoSetMstModels.Where(u => u.IsModified).ToList();
+        List<YohoSetMst> yohoSetInsert = new List<YohoSetMst>();
+        List<YohoSetMst> yohoSetUpdate = new List<YohoSetMst>();
+        foreach (YohoSetMstModel yohoSetMstModel in listInsert)
+        {
+            var yohoSetMst = new YohoSetMst();
+            yohoSetMst.HpId = hpId;
+            yohoSetMst.SortNo = yohoSetMstModel.SortNo;
+            yohoSetMst.ItemCd = yohoSetMstModel.ItemCd;
+            yohoSetMst.UserId = userId;
+            _CreateYohoSetMst(userId, yohoSetMst);
+            yohoSetInsert.Add(yohoSetMst);
+        }
+        foreach (YohoSetMstModel yohoSetMstModel in listUpdate)
+        {
+            var yohoSetMst = TrackingDataContext.YohoSetMsts.FirstOrDefault(i => i.SetId == yohoSetMstModel.SetId);
+            if (yohoSetMst != null)
+            {
+                yohoSetMst.SortNo = yohoSetMstModel.SortNo;
+                yohoSetMst.ItemCd = yohoSetMstModel.ItemCd;
+                yohoSetMst.UserId = userId;
+                yohoSetMst.IsDeleted = yohoSetMstModel.IsDeleted;
+                _UpdateYohoSetMst(userId, yohoSetMst);
+            }
+        }
+        TrackingDataContext.YohoSetMsts.AddRange(yohoSetInsert);
+        TrackingDataContext.YohoSetMsts.UpdateRange(yohoSetUpdate);
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+    private void _UpdateYohoSetMst(int userId, YohoSetMst yohoSetMst)
+    {
+        yohoSetMst.CreateDate = TimeZoneInfo.ConvertTimeToUtc(yohoSetMst.CreateDate);
+        yohoSetMst.UpdateId = userId;
+        yohoSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+    }
+    private void _CreateYohoSetMst(int userId, YohoSetMst yohoSetMst)
+    {
+        yohoSetMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+        yohoSetMst.CreateId = userId;
+        yohoSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        yohoSetMst.UpdateId = userId;
+    }
     public List<RenkeiMstModel> GetRenkeiMstModels(int hpId)
     {
         var result = NoTrackingDataContext.RenkeiMsts.Where(item => item.HpId == hpId
