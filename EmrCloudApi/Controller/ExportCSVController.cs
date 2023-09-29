@@ -77,7 +77,7 @@ public class ExportCSVController : AuthorizeControllerBase
             return Ok("EndInvalidArg");
         }
 
-        return RenderCsv(data.data, request.OutputFileName);
+        return RenderCsv(data.data, request.OutputFileName + ".csv");
     }
 
     private IActionResult RenderCsv(List<string> dataList, string fileName)
