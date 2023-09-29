@@ -75,6 +75,7 @@
         public const string GetListByomeiSetGeneration = "GetListByomeiSetGeneration";
         public const string F17Common = "F17Common";
         public const string IsKensaItemOrdering = "IsKensaItemOrdering";
+        public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
