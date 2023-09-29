@@ -5986,7 +5986,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             kensaInKensaMst = kensaInKensaMst.Where(u => u.KensaItemCd == itemCd);
         }
-        var kensaMsts = NoTrackingDataContext.KensaMsts.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
+        var kensaMsts = NoTrackingDataContext.KensaMsts.Where(p => p.HpId == hpId /*&& !(string.IsNullOrEmpty(p.OyaItemCd))*/ && p.IsDelete == DeleteTypes.None);
 
         var tenMstJoinKensaMstQuery = from kensaTenMst in kensaInTenMst
                                       join kensaMst in kensaMsts.Where(p => string.IsNullOrEmpty(p.OyaItemCd) || p.KensaItemCd == p.OyaItemCd)
@@ -6011,7 +6011,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var KensaItemCd = kensaMsts.Select(x => x.KensaItemCd);
         var KensaItemSeqNo = kensaMsts.Select(x => x.KensaItemSeqNo);
 
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && KensaItemCd.Contains(p.KensaItemCd ?? string.Empty) && KensaItemSeqNo.Contains(p.KensaItemSeqNo));
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && !string.IsNullOrEmpty(p.KensaItemCd) && KensaItemCd.Contains(p.KensaItemCd ?? string.Empty) && KensaItemSeqNo.Contains(p.KensaItemSeqNo));
 
         var query = from kensaMst in allKensaMsts
                     join tenMst in tenMsts
