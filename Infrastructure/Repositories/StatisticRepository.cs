@@ -395,6 +395,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         if (statisticMenu.IsDeleted)
         {
             staMenu.MenuId = statisticMenu.MenuId;
+            staMenu.MenuName = staMenu.MenuName;
             staMenu.IsDeleted = 1;
             staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
             staMenu.UpdateId = userId;
@@ -424,8 +425,9 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
             if (staMenuUpdate != null)
             {
                 staMenu.MenuId = statisticMenu.MenuId;
-                staMenuUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                staMenuUpdate.UpdateId = userId;
+                staMenu.MenuName = statisticMenu.MenuName;
+                staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                staMenu.UpdateId = userId;
                 TrackingDataContext.UpdateRange(staMenu);
             }
         }
