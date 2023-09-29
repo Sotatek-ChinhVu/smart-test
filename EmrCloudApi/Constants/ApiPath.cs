@@ -71,6 +71,7 @@
         public const string GetListKensaIjiSetting = "GetListKensaIjiSetting";
         public const string GetTreeListSet = "GetTreeListSet";
         public const string GetTreeByomeiSet = "GetTreeByomeiSet";
+        public const string GetListUser = "GetListUser";
         public const string GetListSetGeneration = "GetListSetGeneration";
         public const string GetListByomeiSetGeneration = "GetListByomeiSetGeneration";
         public const string F17Common = "F17Common";
