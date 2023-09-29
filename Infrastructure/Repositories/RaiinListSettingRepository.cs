@@ -231,6 +231,7 @@ namespace Infrastructure.Repositories
                 raiinListKoui = new RaiinListKoui()
                 {
                     KouiKbnId = kouiKbnId,
+                    GrpId = grpId,
                     KbnCd = KbnCd,
                     HpId = hpId,
                     IsDeleted = DeleteTypes.Deleted
@@ -1144,18 +1145,65 @@ namespace Infrastructure.Repositories
                     {
                         var kouiList = NoTrackingDataContext.KouiKbnMsts.Where(item => koui.ListKoui.Contains(item.KouiKbnId)).Select(item => item.KouiKbn1).ToList();
                         if (kouiList == null || !kouiList.Any()) continue;
-                        string kouiInCondition = string.Join(",", kouiList);
-                        string addByKouiQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
-                                           + " ("
-                                           + " SELECT \"HP_ID\", \"PT_ID\", \"SIN_DATE\", \"RAIIN_NO\""
-                                           + $" , {koui.GrpId}, {koui.KbnCd}, current_timestamp, {userId}, '',{RaiinListKbnConstants.KOUI_KBN}"
-                                           + " FROM \"public\".\"ODR_INF\""
-                                           + " WHERE \"HP_ID\" = 1 AND \"IS_DELETED\" = 0"
-                                           + $" AND \"ODR_KOUI_KBN\" IN ({kouiInCondition})"
-                                           + " GROUP BY \"HP_ID\", \"SIN_DATE\", \"RAIIN_NO\", \"PT_ID\" "
-                                           + " )  ON CONFLICT DO NOTHING;";
-                        TrackingDataContext.Database.ExecuteSqlRaw(addByKouiQuery);
+
+                        var odrInfList = TrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
+                                                                                   && item.IsDeleted == 0
+                                                                                   && kouiList.Contains(item.OdrKouiKbn))
+                                                                    .Select(item => new OdrInfTemp(item.PtId, item.RaiinNo, item.SinDate))
+                                                                    .Distinct()
+                                                                    .ToList();
+
+                        var updateDate = CIUtil.GetJapanDateTimeNow();
+                        var raiinListInfList = odrInfList.Select(item => new RaiinListInf()
+                        {
+                            HpId = hpId,
+                            PtId = item.PtId,
+                            SinDate = item.SinDate,
+                            RaiinNo = item.RaiinNo,
+                            GrpId = koui.GrpId,
+                            KbnCd = koui.KbnCd,
+                            RaiinListKbn = RaiinListKbnConstants.KOUI_KBN,
+                            UpdateDate = updateDate,
+                            UpdateId = userId
+                        }).ToList();
+
+                        var raiinListInfDBList = NoTrackingDataContext.RaiinListInfs.Where(item => item.HpId == hpId
+                                                                                                   && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN
+                                                                                                   && item.GrpId == koui.GrpId)
+                                                                                    .ToList();
+
+                        object obj = new object();
+                        Parallel.ForEach(raiinListInfList, raiinListInf =>
+                        {
+                            if (!raiinListInfDBList.Any(item => item.RaiinNo == raiinListInf.RaiinNo
+                                                                && item.SinDate == raiinListInf.SinDate
+                                                                && item.PtId == raiinListInf.PtId
+                                                                && item.HpId == hpId
+                                                                && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN
+                                                                && item.GrpId == koui.GrpId))
+                            {
+                                lock (obj)
+                                {
+                                    TrackingDataContext.RaiinListInfs.Add(raiinListInf);
+                                }
+                            }
+                        });
                         TrackingDataContext.SaveChanges();
+
+                        //TrackingDataContext.RaiinListInfs.AddRange(raiinListInfList);
+                        //string kouiInCondition = string.Join(",", kouiList);
+                        //string addByKouiQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
+                        //                   + " ("
+                        //                   + " SELECT \"HP_ID\", \"PT_ID\", \"SIN_DATE\", \"RAIIN_NO\""
+                        //                   + $" , {koui.GrpId}, {koui.KbnCd}, current_timestamp, {userId}, '',{RaiinListKbnConstants.KOUI_KBN}"
+                        //                   + " FROM \"public\".\"ODR_INF\""
+                        //                   + " WHERE \"HP_ID\" = 1 AND \"IS_DELETED\" = 0"
+                        //                   + $" AND \"ODR_KOUI_KBN\" IN ({kouiInCondition})"
+                        //                   + " GROUP BY \"HP_ID\", \"SIN_DATE\", \"RAIIN_NO\", \"PT_ID\" "
+                        //                   + " )  ON CONFLICT DO NOTHING;";
+                        //TrackingDataContext.Database.ExecuteSqlRaw(addByKouiQuery);
+                        //TrackingDataContext.Database.SetCommandTimeout(600);
+                        //TrackingDataContext.SaveChanges();
                     }
                 }
 
@@ -1788,6 +1836,20 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        private class OdrInfTemp
+        {
+            public OdrInfTemp(long ptId, long raiinNo, int sinDate)
+            {
+                PtId = ptId;
+                RaiinNo = raiinNo;
+                SinDate = sinDate;
+            }
+
+            public long PtId { get; private set; }
+            public long RaiinNo { get; private set; }
+            public int SinDate { get; private set; }
         }
     }
 }
