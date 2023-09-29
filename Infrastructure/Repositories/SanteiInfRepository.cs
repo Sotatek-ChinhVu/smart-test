@@ -240,12 +240,10 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
 
     public bool CheckExistItemCd(int hpId, List<string> listItemCds)
     {
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(item =>
-                                                                    item.HpId == hpId
-                                                                    && item.IsDeleted == 0
-                                                                    && listItemCds.Contains(item.ItemCd)
-                                                              ).Select(item => item.ItemCd)
-                                                               .ToList();
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                  && listItemCds.Contains(item.ItemCd)
+                                                    ).Select(item => item.ItemCd)
+                                                     .ToList();
         if (listItemCds.Any() && tenMsts.Any())
         {
             foreach (var item in listItemCds)
