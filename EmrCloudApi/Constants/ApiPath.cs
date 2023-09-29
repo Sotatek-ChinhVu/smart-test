@@ -65,15 +65,19 @@
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
+        public const string GetListYohoSetMstModelByUserID = "GetListYohoSetMstModelByUserID";
         public const string GetRenkeiConf = "GetRenkeiConf";
         public const string GetSetNameMnt = "GetSetNameMnt";
         public const string GetListKensaIjiSetting = "GetListKensaIjiSetting";
         public const string GetTreeListSet = "GetTreeListSet";
         public const string GetTreeByomeiSet = "GetTreeByomeiSet";
+        public const string GetListUser = "GetListUser";
         public const string GetListSetGeneration = "GetListSetGeneration";
         public const string GetListByomeiSetGeneration = "GetListByomeiSetGeneration";
+        public const string UpdateYohoSetMst = "UpdateYohoSetMst";
         public const string F17Common = "F17Common";
         public const string IsKensaItemOrdering = "IsKensaItemOrdering";
+        public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -150,6 +154,7 @@
         public const string ExportPeriodReceipt = "ExportPeriodReceipt";
         public const string CheckExistTemplateAccounting = "CheckExistTemplateAccounting";
         public const string ExportStatics = "ExportStatics";
+        public const string ExportSta9000Csv = "ExportSta9000Csv";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
