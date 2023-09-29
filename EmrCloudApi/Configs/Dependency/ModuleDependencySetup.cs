@@ -394,6 +394,7 @@ using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInf.ConvertTextToRichText;
 using UseCase.KarteInf.GetList;
+using UseCase.KensaHistory.GetListKensaCmtMst;
 using UseCase.KensaHistory.GetListKensaSet;
 using UseCase.KensaHistory.GetListKensaSetDetail;
 using UseCase.KensaHistory.UpdateKensaSet;
@@ -1749,6 +1750,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateKensaSetInputData, UpdateKensaSetInteractor>();
             busBuilder.RegisterUseCase<GetListKensaSetInputData, GetListKensaSetInteractor>();
             busBuilder.RegisterUseCase<GetListKensaSetDetailInputData, GetListKensaSetDetailInteractor>();
+            busBuilder.RegisterUseCase<GetListKensaCmtMstInputData, GetListKensaCmtMstInteractor>();
 
 
             //ListSetGeneration

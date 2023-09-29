@@ -1,17 +1,15 @@
 ﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Presenters.MstItem;
-using EmrCloudApi.Responses.MstItem;
+using EmrCloudApi.Presenters.KensaHistory;
+using EmrCloudApi.Requests.KensaHistory;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.KensaHistory;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.MstItem.GetListResultKensaMst;
-using UseCase.KensaHistory.UpdateKensaSet;
-using EmrCloudApi.Presenters.KensaHistory;
-using EmrCloudApi.Responses.KensaHistory;
-using EmrCloudApi.Requests.KensaHistory;
+using UseCase.KensaHistory.GetListKensaCmtMst;
 using UseCase.KensaHistory.GetListKensaSet;
 using UseCase.KensaHistory.GetListKensaSetDetail;
+using UseCase.KensaHistory.UpdateKensaSet;
 
 namespace EmrCloudApi.Controller
 {
@@ -53,6 +51,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetListKensaSetDetailPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetListKensaSetDetailResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListKensaCmtMst)]
+        public ActionResult<Response<GetListKensaCmtMstResponse>> GetListKensaCmtMst([FromQuery] GetListKensaCmtMstRequest request)
+        {
+            var input = new GetListKensaCmtMstInputData(HpId, request.Keyword);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaCmtMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaCmtMstResponse>>(presenter.Result);
         }
     }
 }

@@ -492,6 +492,7 @@
         public const string UpdateKensaSet = "UpdateKensaSet";
         public const string GetListKensaSet = "GetListKensaSet";
         public const string GetListKensaSetDetail = "GetListKensaSetDetail";
+        public const string GetListKensaCmtMst = "GetListKensaCmtMst";
 
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";
