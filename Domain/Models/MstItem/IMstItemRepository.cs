@@ -6,6 +6,7 @@ using Domain.Models.KensaIrai;
 using Domain.Models.MaterialMaster;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
+using Domain.Models.User;
 using Helper.Enum;
 
 namespace Domain.Models.MstItem
@@ -208,6 +209,9 @@ namespace Domain.Models.MstItem
         List<SetKbnMstModel> GetListSetKbnMst(int generationId, int hpId);
 
         int GetGenerationId(int hpId);
+        
+
+        List<UserMstModel> GetListUser(int hpId, int userId, int sinDate);
         
         List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison);
 

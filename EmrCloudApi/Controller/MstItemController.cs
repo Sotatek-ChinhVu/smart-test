@@ -44,6 +44,7 @@ using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListKensaIjiSetting;
 using UseCase.MstItem.GetListSetGenerationMst;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetListUser;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiConf;
 using UseCase.MstItem.GetRenkeiMst;
@@ -877,6 +878,16 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveCompareTenMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveCompareTenMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListUser)]
+        public ActionResult<Response<GetListUserResponse>> GetListUser([FromQuery] GetListUserRequest request)
+        {
+            var input = new GetListUserInputData(HpId, UserId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetListUserPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListUserResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetRenkeiConf)]

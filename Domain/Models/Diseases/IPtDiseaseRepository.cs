@@ -20,5 +20,7 @@ namespace Domain.Models.Diseases
         List<PtDiseaseModel> GetTekiouByomeiByOrder(int hpId, List<string> itemCds);
 
         List<PtDiseaseModel> GetAllByomeiByPtId(int hpId, long ptId, int pageIndex, int pageSize);
+
+        Dictionary<string, string> GetByomeiMst(int hpId, List<string> byomeiCds);
     }
 }

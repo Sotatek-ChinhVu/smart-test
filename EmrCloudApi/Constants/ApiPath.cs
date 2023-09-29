@@ -70,6 +70,7 @@
         public const string GetListKensaIjiSetting = "GetListKensaIjiSetting";
         public const string GetTreeListSet = "GetTreeListSet";
         public const string GetTreeByomeiSet = "GetTreeByomeiSet";
+        public const string GetListUser = "GetListUser";
         public const string GetListSetGeneration = "GetListSetGeneration";
         public const string GetListByomeiSetGeneration = "GetListByomeiSetGeneration";
         public const string F17Common = "F17Common";
@@ -151,6 +152,7 @@
         public const string ExportPeriodReceipt = "ExportPeriodReceipt";
         public const string CheckExistTemplateAccounting = "CheckExistTemplateAccounting";
         public const string ExportStatics = "ExportStatics";
+        public const string ExportSta9000Csv = "ExportSta9000Csv";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
