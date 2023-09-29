@@ -6949,30 +6949,29 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     .ThenBy(item => item.RowNo)
                     .ToList();
             }
-        }
-
-        public List<YohoSetMstModel> GetListYohoSetMstModelByUserID(int hpId, int userIdLogin, int sinDate, int userId = 0)
-        {
-            List<YohoSetMstModel> result = new List<YohoSetMstModel>();
-            var listYohoSetMst = TrackingDataContext.YohoSetMsts.Where(u => u.HpId == hpId &&
-                                                                                       u.IsDeleted == 0 &&
-                                                                                       (userId == 0 ? u.UserId == userIdLogin : u.UserId == userId));
-            var listTenMst = TrackingDataContext.TenMsts.Where(u => u.HpId == hpId &&
-                                                                               u.IsNosearch == 0 &&
-                                                                               u.StartDate <= sinDate &&
-                                                                               u.EndDate >= sinDate &&
-                                                                               u.IsDeleted == DeleteTypes.None);
-            var query = from yoho in listYohoSetMst
-                        join ten in listTenMst on yoho.ItemCd.Trim() equals ten.ItemCd.Trim()
-                        select new
-                        {
-                            Yoho = yoho,
-                            ItemName = ten.Name,
-                            ItemCd = ten.ItemCd,
-                        };
-            result = query.AsEnumerable().Select(u => new YohoSetMstModel(u.Yoho.HpId, u.Yoho.SetId, u.Yoho.UserId, u.Yoho.SortNo, u.ItemCd, u.Yoho.IsDeleted, u.Yoho.CreateDate, u.Yoho.CreateId, u.Yoho.CreateMachine, u.Yoho.UpdateDate, u.Yoho.UpdateId, u.Yoho.UpdateMachine, u.ItemName, false)).OrderBy(y => y.SortNo).ToList();
-            return result;
-        }
+        }       
+    }
+    public List<YohoSetMstModel> GetListYohoSetMstModelByUserID(int hpId, int userIdLogin, int sinDate, int userId = 0)
+    {
+        List<YohoSetMstModel> result = new List<YohoSetMstModel>();
+        var listYohoSetMst = TrackingDataContext.YohoSetMsts.Where(u => u.HpId == hpId &&
+                                                                                   u.IsDeleted == 0 &&
+                                                                                   (userId == 0 ? u.UserId == userIdLogin : u.UserId == userId));
+        var listTenMst = TrackingDataContext.TenMsts.Where(u => u.HpId == hpId &&
+                                                                           u.IsNosearch == 0 &&
+                                                                           u.StartDate <= sinDate &&
+                                                                           u.EndDate >= sinDate &&
+                                                                           u.IsDeleted == DeleteTypes.None);
+        var query = from yoho in listYohoSetMst
+                    join ten in listTenMst on yoho.ItemCd.Trim() equals ten.ItemCd.Trim()
+                    select new
+                    {
+                        Yoho = yoho,
+                        ItemName = ten.Name,
+                        ItemCd = ten.ItemCd,
+                    };
+        result = query.AsEnumerable().Select(u => new YohoSetMstModel(u.Yoho.HpId, u.Yoho.SetId, u.Yoho.UserId, u.Yoho.SortNo, u.ItemCd, u.Yoho.IsDeleted, u.Yoho.CreateDate, u.Yoho.CreateId, u.Yoho.CreateMachine, u.Yoho.UpdateDate, u.Yoho.UpdateId, u.Yoho.UpdateMachine, u.ItemName, false)).OrderBy(y => y.SortNo).ToList();
+        return result;
     }
 
     public List<SetKbnMstModel> GetListSetKbnMst(int generationId, int hpId)
