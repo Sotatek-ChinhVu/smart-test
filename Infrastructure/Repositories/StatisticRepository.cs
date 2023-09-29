@@ -395,6 +395,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         if (statisticMenu.IsDeleted)
         {
             staMenu.MenuId = statisticMenu.MenuId;
+            staMenu.MenuName = staMenu.MenuName;
             staMenu.IsDeleted = 1;
             staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
             staMenu.UpdateId = userId;
@@ -417,20 +418,21 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
             staMenu.UpdateId = userId;
 
             TrackingDataContext.StaMenus.AddRange(staMenu);
+            TrackingDataContext.SaveChanges();
         }
         else if (!statisticMenu.IsDeleted && statisticMenu.IsModified)
         {
-            var staMenuUpdate = TrackingDataContext.StaMenus.FirstOrDefault(x => x.HpId == hpId && x.MenuId == statisticMenu.MenuId);
-            if (staMenuUpdate != null)
+             staMenu = TrackingDataContext.StaMenus.FirstOrDefault(x => x.HpId == hpId && x.MenuId == statisticMenu.MenuId);
+            if (staMenu != null)
             {
                 staMenu.MenuId = statisticMenu.MenuId;
-                staMenuUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                staMenuUpdate.UpdateId = userId;
-                TrackingDataContext.UpdateRange(staMenu);
+                staMenu.MenuName = statisticMenu.MenuName;
+                staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                staMenu.UpdateId = userId;
             }
+            TrackingDataContext.SaveChanges();
         }
 
-        TrackingDataContext.SaveChanges();
 
         return SavePtManagementConf(hpId, userId, staMenu.MenuId, statisticMenu.PatientManagement, statisticMenu.IsDeleted);
     }
