@@ -563,7 +563,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         {
             if (model.Id <= 0 && !model.IsDeleted)
             {
-                TrackingDataContext.SanteiInfDetails.Add(ConvertToNewSanteiInfDetailEntity(hpId, userId, model));
+                TrackingDataContext.SanteiInfDetails.Add(ConvertToNewSanteiInfDetailEntity(hpId, userId, ptId, model));
             }
             else if (model.Id > 0)
             {
@@ -578,7 +578,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                     }
                     else
                     {
-                        santeiInfDetail.PtId = ptId;
+                        santeiInfDetail.PtId = model.PtId;
                         santeiInfDetail.KisanSbt = model.KisanSbt;
                         santeiInfDetail.KisanDate = model.KisanDate;
                         santeiInfDetail.Byomei = model.Byomei;
@@ -611,12 +611,12 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         };
     }
 
-    private SanteiInfDetail ConvertToNewSanteiInfDetailEntity(int hpId, int userId, SanteiInfDetailModel model)
+    private SanteiInfDetail ConvertToNewSanteiInfDetailEntity(int hpId, int userId, long ptId, SanteiInfDetailModel model)
     {
         return new SanteiInfDetail()
         {
             Id = 0,
-            PtId = model.PtId,
+            PtId = ptId,
             HpId = hpId,
             ItemCd = model.ItemCd,
             EndDate = model.EndDate,
