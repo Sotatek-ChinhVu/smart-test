@@ -6008,10 +6008,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                ChildKensaMsts = childKensaMsts,
                            };
 
-        var KensaItemCd = kensaMsts.Select(x => x.KensaItemCd);
-        var KensaItemSeqNo = kensaMsts.Select(x => x.KensaItemSeqNo);
+        var kensaItemCd = kensaMsts.Select(x => x.KensaItemCd).Distinct();
+        var kensaItemSeqNo = kensaMsts.Select(x => x.KensaItemSeqNo).Distinct();
 
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && !string.IsNullOrEmpty(p.KensaItemCd) && KensaItemCd.Contains(p.KensaItemCd ?? string.Empty) && KensaItemSeqNo.Contains(p.KensaItemSeqNo));
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && !string.IsNullOrEmpty(p.KensaItemCd) && kensaItemCd.Contains(p.KensaItemCd ?? string.Empty) && kensaItemSeqNo.Contains(p.KensaItemSeqNo));
 
         var query = from kensaMst in allKensaMsts
                     join tenMst in tenMsts
@@ -6042,12 +6042,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                         x.SortNo,
                                                                         x.CenterItemCd1 ?? string.Empty,
                                                                         x.CenterItemCd2 ?? string.Empty)).OrderByDescending(x => x.KensaItemCd),
-                        TenMsts = tempTenMsts/*.OrderByDescending(x => x.StartDate)*/
+                        TenMsts = tempTenMsts
                     };
 
             foreach (var entity in query)
             {
-               /* var ChildKensaMsts = NoTrackingDataContext.KensaMsts.FirstOrDefault(x => x.KensaItemCd == entity.ParrentKensaMst.KensaItemCd);*/
                 var tenmst = entity.TenMsts.GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault()).OrderByDescending(x => x.StartDate);
                 result.Add(new KensaMstModel(
                     entity.ParrentKensaMst.KensaItemCd,
