@@ -795,7 +795,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<IsKensaItemOrderingResponse>>(presenter.Result);
         }
         [HttpGet(ApiPath.GetSetNameMnt)]
-        public ActionResult<Response<GetSetNameMntResponse>> GetSetNameMnt(GetSetNameMntRequest request)
+        public ActionResult<Response<GetSetNameMntResponse>> GetSetNameMnt([FromQuery] GetSetNameMntRequest request)
         {
             var input = new GetSetNameMntInputData(HpId, request.SetKbnChecked1, request.SetKbnChecked2, request.SetKbnChecked3, request.SetKbnChecked4, request.SetKbnChecked5, request.SetKbnChecked6, request.SetKbnChecked7,
                     request.SetKbnChecked8, request.SetKbnChecked9, request.SetKbnChecked10, request.JihiChecked, request.KihonChecked, request.TokuChecked, request.YohoChecked, request.DiffChecked);
