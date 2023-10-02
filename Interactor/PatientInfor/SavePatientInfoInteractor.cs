@@ -90,28 +90,17 @@ namespace Interactor.PatientInfor
                 (bool resultSave, long ptId) result = new();
                 if (inputData.Patient.PtId == 0)
                 {
-                    bool retry = true;
                     var count = 0;
-                    while (retry == true && count < retryNumber) {
-                        try
+                    while (count < retryNumber)
+                    {
+
+                        result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                        if (result.resultSave)
                         {
-                            result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
-                        } catch (Exception ex)
-                        {
-                            if (HandleException(ex) == "23505" && ex.InnerException?.Message.Contains("PT_INF_UKEY02") == true)
-                            {
-                                Thread.Sleep(1000);
-                                count++;
-                                continue;
-                            }
-                            else
-                            {
-                                throw ex ?? new();
-                            }
+                            break;
                         }
-                        retry = false;
                         count++;
-                    } 
+                    }
                 }
                 else
                     result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId, inputData.HokenIdList);
