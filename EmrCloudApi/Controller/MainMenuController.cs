@@ -1,28 +1,31 @@
-﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Responses;
-using Microsoft.AspNetCore.Mvc;
-using UseCase.Core.Sync;
-using EmrCloudApi.Services;
-using EmrCloudApi.Responses.MainMenu;
-using EmrCloudApi.Requests.MainMenu;
-using UseCase.MainMenu.GetStatisticMenu;
+﻿using Domain.Models.KensaIrai;
+using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.Insurance;
 using EmrCloudApi.Presenters.MainMenu;
-using UseCase.MainMenu.SaveStatisticMenu;
-using UseCase.MainMenu;
+using EmrCloudApi.Requests.Insurance;
+using EmrCloudApi.Requests.MainMenu;
+using EmrCloudApi.Requests.MainMenu.RequestItem;
+using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.Insurance;
+using EmrCloudApi.Responses.MainMenu;
+using EmrCloudApi.Services;
+using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.Json;
-using EmrCloudApi.Responses.Insurance;
+using UseCase.Core.Sync;
 using UseCase.Insurance.FindPtHokenList;
-using EmrCloudApi.Requests.Insurance;
-using EmrCloudApi.Presenters.Insurance;
-using UseCase.Insurance.FindHokenInfByPtId;
-using UseCase.MainMenu.GetKensaIrai;
-using UseCase.MainMenu.GetKensaCenterMstList;
+using UseCase.MainMenu;
 using UseCase.MainMenu.CreateDataKensaIraiRenkei;
-using Domain.Models.KensaIrai;
-using EmrCloudApi.Requests.MainMenu.RequestItem;
-using UseCase.MainMenu.GetKensaInf;
 using UseCase.MainMenu.DeleteKensaInf;
+using UseCase.MainMenu.GetKensaCenterMstList;
+using UseCase.MainMenu.GetKensaInf;
+using UseCase.MainMenu.GetKensaIrai;
+using UseCase.MainMenu.GetKensaIraiLog;
+using UseCase.MainMenu.GetStaCsvMstModel;
+using UseCase.MainMenu.GetStatisticMenu;
+using UseCase.MainMenu.KensaIraiReport;
+using UseCase.MainMenu.SaveStaCsvMst;
+using UseCase.MainMenu.SaveStatisticMenu;
 
 namespace EmrCloudApi.Controller;
 
@@ -161,11 +164,11 @@ public class MainMenuController : AuthorizeControllerBase
         var kensaInfList = request.KensaInfList
             .Select(item => new KensaInfModel(
                                 item.PtId,
-                                item.RaiinNo, 
-                                item.IraiCd, 
+                                item.RaiinNo,
+                                item.IraiCd,
                                 item.KensaInfDetailList.Select(item => new KensaInfDetailModel(
-                                                                           item.SeqNo, 
-                                                                           item.PtId, 
+                                                                           item.SeqNo,
+                                                                           item.PtId,
                                                                            item.IraiCd))
                                                        .ToList()))
             .ToList();
@@ -174,6 +177,47 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new DeleteKensaInfPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<DeleteKensaInfResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKensaIraiLog)]
+    public ActionResult<Response<GetKensaIraiLogResponse>> GetKensaIraiLog([FromQuery] GetKensaIraiLogRequest request)
+    {
+        var input = new GetKensaIraiLogInputData(HpId, request.StartDate, request.EndDate);
+        var output = _bus.Handle(input);
+        var presenter = new GetKensaIraiLogLogPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKensaIraiLogResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.KensaIraiReport)]
+    public ActionResult<Response<KensaIraiReportResponse>> KensaIraiReport([FromBody] KensaIraiReportRequest request)
+    {
+
+        var input = new KensaIraiReportInputData(HpId, UserId, request.CenterCd, request.SystemDate, request.FromDate, request.ToDate, ConvertToListKensaIraiModel(request.KensaIraiList));
+        var output = _bus.Handle(input);
+        var presenter = new KensaIraiReportPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<KensaIraiReportResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetStaCsvMst)]
+    public ActionResult<Response<GetStaCsvMstResponse>> GetStaCsvMst()
+    {
+        var input = new GetStaCsvMstInputData(HpId);
+        var output = _bus.Handle(input);
+        var presenter = new GetStaCsvMstPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetStaCsvMstResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveStaCsvMst)]
+    public ActionResult<Response<SaveStaCsvMstResponse>> SaveStaCsvMst([FromBody] SaveStaCsvMstRequest request)
+    {
+        var input = new SaveStaCsvMstInputData(HpId, UserId, request.StaCsvMstModels);
+        var output = _bus.Handle(input);
+        var presenter = new SaveStaCsvMstPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<SaveStaCsvMstResponse>>(presenter.Result);
     }
 
     #region private function
@@ -237,6 +281,35 @@ public class MainMenuController : AuthorizeControllerBase
                                                                   menu.IsDeleted,
                                                                   menu.IsSaveTemp
                                               )).ToList();
+        return result;
+    }
+
+    private List<KensaIraiModel> ConvertToListKensaIraiModel(List<KensaIraiReportRequestItem> requestItemList)
+    {
+        var result = requestItemList.Select(item => new KensaIraiModel(
+                                                        item.SinDate,
+                                                        item.RaiinNo,
+                                                        item.IraiCd,
+                                                        item.PtId,
+                                                        item.PtNum,
+                                                        item.Name,
+                                                        item.KanaName,
+                                                        item.Sex,
+                                                        item.Birthday,
+                                                        item.TosekiKbn,
+                                                        item.SikyuKbn,
+                                                        item.KensaIraiDetailList.Select(detail => new KensaIraiDetailModel(
+                                                                                                      detail.RpNo,
+                                                                                                      detail.RpEdaNo,
+                                                                                                      detail.RowNo,
+                                                                                                      detail.SeqNo,
+                                                                                                      detail.KensaItemCd,
+                                                                                                      detail.CenterItemCd,
+                                                                                                      detail.KensaKana,
+                                                                                                      detail.KensaName,
+                                                                                                      detail.ContainerCd
+                                                                                )).ToList()
+                                    )).ToList();
         return result;
     }
 

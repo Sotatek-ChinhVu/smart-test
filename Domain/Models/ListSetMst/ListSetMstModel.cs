@@ -2,6 +2,12 @@
 {
     public class ListSetMstModel
     {
+        public ListSetMstModel(int setKbn, string setName, int level) 
+        {
+            SetKbn = setKbn;
+            SetName = setName;
+            Level = level;
+        }
         public ListSetMstModel(int hpId, int generationId,int setId, string setName, string itemCd, int isTitle, int setKbn, int selectType, double suryo, int level1, int level2, int level3, int level4, int level5, string cmtName, string cmtOpt)
         {
             HpId = hpId;

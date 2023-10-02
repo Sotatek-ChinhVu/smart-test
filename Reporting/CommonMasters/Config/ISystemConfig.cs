@@ -78,4 +78,5 @@ public interface ISystemConfig
     int PrintDetail();
     int P13WelfareGreenSeikyuType();
     int P13WelfareBlueSeikyuType();
+    int OdrKensaIraiKaCode();
 }

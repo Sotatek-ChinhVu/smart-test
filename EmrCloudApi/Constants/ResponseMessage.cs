@@ -519,6 +519,7 @@
         public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
         public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
         public static readonly string TodayOrdInvalidAddedAutoItem = "Invalid Added Auto Item List";
+        public static readonly string NoPermissionSaveSummary = "No Permission Save Summary.";
 
         // SuperSetDetail
         public static readonly string InvalidSetByomeiId = "Invalid SetByomeiId, SetByomeiId > 0.";
@@ -910,6 +911,7 @@
         public static readonly string DocInfNotFound = "DocInf Not Found!";
         public static readonly string TemplateLinkIsNotExists = "TemplateLink is not exists!";
         public static readonly string InvalidExtentionFile = "Extention file is must .docx or .xlsx!";
+        public static readonly string InvalidGetDate = "Invalid GetDate!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";
@@ -1025,8 +1027,33 @@
         public static readonly string InvalidConfirmationResult = "Invalid ConfirmationResult.";
         public static readonly string InvalidOnlineId = "Invalid OnlineId.";
         public static readonly string InvalidUketukeStatus = "Invalid UketukeStatus.";
+        public static readonly string InvalidOnlineConfirmationDate = "Invalid OnlineConfirmationDate.";
 
         // KensaIrai
         public static readonly string IsDeleteFile = "IsDeleteFile.";
+
+        // Set Sendai Generation
+        public static readonly string DeleteRowIndex0 = "Cannot delete row have index 0.";
+        public static readonly string InvalidRowIndex = "Invalid row index.";
+        public static readonly string InvalidGenerationId = "Invalid GenerationId.";
+
+        // Renkei
+        public static readonly string InvalidTemplateId = "Invalid TemplateId.";
+        public static readonly string InvalidIsInvalid = "Invalid IsInvalid.";
+        public static readonly string InvalidBiko = "Invalid Biko, max length is 300 characters.";
+        public static readonly string InvalidPath = "Invalid Path, max length is 300 characters.";
+        public static readonly string InvalidMachine = "Invalid Machine, max length is 60 characters.";
+        public static readonly string InvalidParamRenki = "Invalid Machine, max length is 1000 characters.";
+        public static readonly string InvalidWorkPath = "Invalid WorkPath, max length is 300 characters.";
+        public static readonly string InvalidUser = "Invalid User, max length is 100 characters.";
+        public static readonly string InvalidPassWord = "Invalid PassWord, max length is 100 characters.";
+        public static readonly string InvalidEventCd = "Invalid EventCd.";
+        public static readonly string InvalidRenkeiSbt = "Invalid RenkeiSbt.";
+        public static readonly string InvalidRenkeiTimingModelList = "Invalid RenkeiTimingModelList.";
+
+
+        //Main Menu
+        public static readonly string InvalidConFName = "Invalid ConfName.";
+        public static readonly string InvalidColumnName = "Invalid ColumnName.";
     }
 }

@@ -949,7 +949,10 @@ namespace Infrastructure.Repositories
                 r.relatedRaiinCmtInfComment?.Text ?? string.Empty,
                 r.ptCmtInf?.Text ?? string.Empty,
                 r.relatedTanto?.UserId ?? CommonConstants.InvalidId,
+                string.IsNullOrEmpty(r.relatedTanto?.DrName) ? r.relatedTanto?.Name ?? string.Empty : r.relatedTanto?.DrName ?? string.Empty,
+                r.relatedTanto?.KanaName ?? string.Empty,
                 r.relatedKaMst?.KaId ?? CommonConstants.InvalidId,
+                r.relatedKaMst?.KaName ?? string.Empty,
                 r.lastVisitDate,
                 r.firstVisitDate,
                 r.primaryDoctorName ?? string.Empty,
@@ -1837,7 +1840,7 @@ namespace Infrastructure.Repositories
 
             if (raiinInfList.Any(item => item.Status == RaiinState.Reservation))
             {
-                raiinInf = raiinInfList.OrderBy(item => item.YoyakuTime).ThenBy(item => item.RaiinNo).First();
+                raiinInf = raiinInfList.OrderByDescending(item => item.IsYoyaku).ThenBy(item => item.YoyakuTime).ThenBy(item => item.RaiinNo).First();
             }
             else
             {

@@ -9,9 +9,8 @@ public class DocInfDto
     {
         HpId = model.HpId;
         PtId = model.PtId;
-        SinDate = CIUtil.SDateToShowSDate(model.SinDate);
-        RaiinNo = model.RaiinNo;
-        SeqNo = model.SeqNo;
+        GetDate = CIUtil.SDateToShowSDate(model.GetDate);
+        FileId = model.FileId;
         CategoryCd = model.CategoryCd;
         CategoryName = model.CategoryName;
         FileName = model.FileName;
@@ -24,11 +23,9 @@ public class DocInfDto
 
     public long PtId { get; private set; }
 
-    public string SinDate { get; private set; }
+    public string GetDate { get; private set; }
 
-    public long RaiinNo { get; private set; }
-
-    public int SeqNo { get; private set; }
+    public long FileId { get; private set; }
 
     public int CategoryCd { get; private set; }
 
