@@ -85,6 +85,7 @@ using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
 using Domain.Models.OrdInfDetails;
 using UseCase.MstItem.UpdateYohoSetMst;
+using UseCase.MstItem.GetTenMstByCode;
 
 namespace EmrCloudApi.Controller
 {
@@ -1010,6 +1011,16 @@ namespace EmrCloudApi.Controller
             var presenter = new ExistUsedKensaItemCdPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<ExistUsedKensaItemCdResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTenMstByCode)]
+        public ActionResult<Response<GetTenMstByCodeResponse>> GetTenMstByCode([FromQuery] GetTenMstByCodeRequest request)
+        {
+            var input = new GetTenMstByCodeInputData(request.ItemCd, request.SetKbn, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenMstByCodePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenMstByCodeResponse>>(presenter.Result);
         }
     }
 }

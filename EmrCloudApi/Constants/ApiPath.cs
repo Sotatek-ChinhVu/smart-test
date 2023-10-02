@@ -79,6 +79,7 @@
         public const string F17Common = "F17Common";
         public const string IsKensaItemOrdering = "IsKensaItemOrdering";
         public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
+        public const string GetTenMstByCode = "GetTenMstByCode";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
