@@ -137,6 +137,7 @@ namespace Infrastructure.Repositories
                 if (ListDataUpdate.Count > 0)
                 {
                     TrackingDataContext.SetGenerationMsts.UpdateRange(ListDataUpdate);
+                    _memoryCache.Remove(GetCacheKey());
                     return TrackingDataContext.SaveChanges() > 0;
                 }
                 return false;
@@ -164,6 +165,7 @@ namespace Infrastructure.Repositories
             itemAdd.UpdateMachine = "SmartKarte";
             TrackingDataContext.SetGenerationMsts.Add(itemAdd);
             var checkAdd = TrackingDataContext.SaveChanges();
+            _memoryCache.Remove(GetCacheKey());
             if (checkAdd == 0)
             {
                 return null;
@@ -174,7 +176,7 @@ namespace Infrastructure.Repositories
                 var itemAddGet = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.StartDate == startDate).OrderByDescending(x => x.StartDate).FirstOrDefault();
                 if (itemNewest != null && itemAddGet != null)
                 {
-                    return new AddSetSendaiModel(itemAddGet.GenerationId, itemNewest.GenerationId); ;
+                    return new AddSetSendaiModel(itemAddGet.GenerationId, itemNewest.GenerationId);
                 }
             }
             return null;
@@ -661,7 +663,7 @@ namespace Infrastructure.Repositories
                     TrackingDataContext.SetKarteImgInf.RemoveRange(targetSetKarteImgInfs);
                     TrackingDataContext.SetOdrInfDetail.RemoveRange(targetSetOdrInfDetails);
                     TrackingDataContext.SaveChanges();
-
+                    _memoryCache.Remove(GetCacheKey());
                     // clone data from newest to restore item
                     return new AddSetSendaiModel(itemNewest.GenerationId, restoreGenerationId);
                 }
