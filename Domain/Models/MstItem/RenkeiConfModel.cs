@@ -19,6 +19,22 @@ public class RenkeiConfModel
         RenkeiTimingModelList = renkeiTimingModelList;
     }
 
+    public RenkeiConfModel(long id, int renkeiId, string param, int ptNumLength, int templateId, int isInvalid, string biko, int sortNo, bool isDeleted, List<RenkeiPathConfModel> renkeiPathConfModelList, List<RenkeiTimingModel> renkeiTimingModelList)
+    {
+        Id = id;
+        RenkeiId = renkeiId;
+        RenkeiMstName = string.Empty;
+        Param = param;
+        PtNumLength = ptNumLength;
+        TemplateId = templateId;
+        IsInvalid = isInvalid;
+        Biko = biko;
+        SortNo = sortNo;
+        IsDeleted = isDeleted;
+        RenkeiPathConfModelList = renkeiPathConfModelList;
+        RenkeiTimingModelList = renkeiTimingModelList;
+    }
+
     public long Id { get; private set; }
 
     public int RenkeiId { get; private set; }

@@ -2,91 +2,80 @@
 {
     public class TenMstInputItem
     {
-        public TenMstInputItem(string itemCd, int sinKouiKbn, string name, string odrUnitName, string cnvUnitName, int isNodspRece, int yohoKbn, double odrTermVal, double cnvTermVal, string yjCd, string kensaItemCd, int kensaItemSeqNo
-                              , int kohatuKbn, double ten, int handanGrpKbn, string ipnNameCd, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, string minAge
-                              , string maxAge, int startDate, int endDate, string masterSbt, int buiKbn, string cdKbn, int cdKbnNo, int cdEdano, string kokuji1, string kokuji2, int drugKbn, string receName, string santeiItemCd, int jihiSbt, int isDeleted)
+        public TenMstInputItem(int sinKouiKbn, string masterSbt, string itemCd, string kensaItemCd, int kensaItemSeqNo, double ten, string name, string receName, string kanaName1,
+                               string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, int startDate, int endDate, double defaultValue,
+                               string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch, int isDeleted)
         {
-            ItemCd = itemCd;
+
             SinKouiKbn = sinKouiKbn;
-            Name = name;
-            OdrUnitName = odrUnitName;
-            CnvUnitName = cnvUnitName;
-            IsNodspRece = isNodspRece;
-            YohoKbn = yohoKbn;
-            OdrTermVal = odrTermVal;
-            CnvTermVal = cnvTermVal;
-            YjCd = yjCd;
+            MasterSbt = masterSbt;
+            ItemCd = itemCd;
             KensaItemCd = kensaItemCd;
             KensaItemSeqNo = kensaItemSeqNo;
-            KohatuKbn = kohatuKbn;
             Ten = ten;
-            HandanGrpKbn = handanGrpKbn;
-            IpnNameCd = ipnNameCd;
-            CmtCol1 = cmtCol1;
-            CmtCol2 = cmtCol2;
-            CmtCol3 = cmtCol3;
-            CmtCol4 = cmtCol4;
-            CmtColKeta1 = cmtColKeta1;
-            CmtColKeta2 = cmtColKeta2;
-            CmtColKeta3 = cmtColKeta3;
-            CmtColKeta4 = cmtColKeta4;
-            MinAge = minAge;
-            MaxAge = maxAge;
+            Name = name;
+            ReceName = receName;
+            KanaName1 = kanaName1;
+            KanaName2 = kanaName2;
+            KanaName3 = kanaName3;
+            KanaName4 = kanaName4;
+            KanaName5 = kanaName5;
+            KanaName6 = kanaName6;
+            KanaName7 = kanaName7;
             StartDate = startDate;
             EndDate = endDate;
-            MasterSbt = masterSbt;
-            BuiKbn = buiKbn;
-            CdKbn = cdKbn;
-            CdKbnno = cdKbnNo;
-            CdEdano = cdEdano;
-            Kokuji1 = kokuji1;
-            Kokuji2 = kokuji2;
-            DrugKbn = drugKbn;
-            ReceName = receName;
+            DefaultValue = defaultValue;
+            OdrUnitName = odrUnitName;
             SanteiItemCd = santeiItemCd;
-            JihiSbt = jihiSbt;
+            SanteigaiKbn = santeigaiKbn;
+            IsNoSearch = isNoSearch;
             IsDeleted = isDeleted;
         }
 
-        public string ItemCd { get; private set; }
         public int SinKouiKbn { get; private set; }
-        public string Name { get; private set; } = string.Empty;
-        public string OdrUnitName { get; private set; } = string.Empty;
-        public string CnvUnitName { get; private set; } = string.Empty;
-        public int IsNodspRece { get; private set; }
-        public int YohoKbn { get; private set; }
-        public double OdrTermVal { get; private set; }
-        public double CnvTermVal { get; private set; }
-        public string YjCd { get; private set; } = string.Empty;
-        public string KensaItemCd { get; private set; } = string.Empty;
-        public int KensaItemSeqNo { get; private set; }
-        public int KohatuKbn { get; private set; }
-        public double Ten { get; private set; }
-        public int HandanGrpKbn { get; private set; }
-        public string IpnNameCd { get; private set; } = string.Empty;
-        public int CmtCol1 { get; private set; }
-        public int CmtCol2 { get; private set; }
-        public int CmtCol3 { get; private set; }
-        public int CmtCol4 { get; private set; }
-        public int CmtColKeta1 { get; private set; }
-        public int CmtColKeta2 { get; private set; }
-        public int CmtColKeta3 { get; private set; }
-        public int CmtColKeta4 { get; private set; }
-        public string MinAge { get; private set; } = string.Empty;
-        public string MaxAge { get; private set; } = string.Empty;
-        public int StartDate { get; private set; }
-        public int EndDate { get; private set; }
+
         public string MasterSbt { get; private set; } = string.Empty;
-        public int BuiKbn { get; private set; }
-        public string CdKbn { get; private set; } = string.Empty;
-        public int CdKbnno { get; private set; }
-        public int CdEdano { get; private set; }
-        public string Kokuji1 { get; private set; } = string.Empty;
-        public string Kokuji2 { get; private set; } = string.Empty;
-        public int DrugKbn { get; private set; }
+
+        public string ItemCd { get; private set; } = string.Empty;
+
+        public string KensaItemCd { get; private set; } = string.Empty;
+
+        public int KensaItemSeqNo { get; private set; }
+
+        public double Ten { get; private set; }
+
+        public string Name { get; private set; } = string.Empty;
+
         public string ReceName { get; private set; } = string.Empty;
+
+        public string KanaName1 { get; private set; } = string.Empty;
+
+        public string KanaName2 { get; private set; } = string.Empty;
+
+        public string KanaName3 { get; private set; } = string.Empty;
+
+        public string KanaName4 { get; private set; } = string.Empty;
+
+        public string KanaName5 { get; private set; } = string.Empty;
+
+        public string KanaName6 { get; private set; } = string.Empty;
+
+        public string KanaName7 { get; private set; } = string.Empty;
+
+        public int StartDate { get; private set; }
+
+        public int EndDate { get; private set; }
+
+        public double DefaultValue { get; private set; }
+
+        public string OdrUnitName { get; private set; } = string.Empty;
+
         public string SanteiItemCd { get; private set; } = string.Empty;
-        public int JihiSbt { get; private set; }
+
+        public int SanteigaiKbn { get; private set; }
+
+        public int IsNoSearch { get; private set; }
+
         public int IsDeleted { get; private set; }
     }
 }

@@ -14848,6 +14848,8 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "GrpId", "RaiinListKbn");
 
+                    b.HasIndex(new[] { "GrpId", "KbnCd", "RaiinListKbn" }, "RAIIN_LIST_INF_IDX01");
+
                     b.ToTable("RAIIN_LIST_INF");
                 });
 

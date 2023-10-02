@@ -191,6 +191,8 @@ namespace Infrastructure.Repositories
                                     KensaItemCd = item.KensaItemCd,
                                     ResultVal = item.ResultVal,
                                     ResultType = item.ResultType,
+                                    AbnormalKbn = item.AbnormalKbn,
+                                    
                                     CmtCd1 = item.CmtCd1,
                                     CmtCd2 = item.CmtCd2,
                                     CreateId = userId,
