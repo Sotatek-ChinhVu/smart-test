@@ -842,6 +842,7 @@ using Infrastructure.Logger;
 using UseCase.MstItem.ExistUsedKensaItemCd;
 using UseCase.MstItem.IsKensaItemOrdering;
 using UseCase.MstItem.IsUsingKensa;
+using UseCase.KensaHistory.UpdateKensaInfDetail;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1866,6 +1867,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListKensaSetInputData, GetListKensaSetInteractor>();
             busBuilder.RegisterUseCase<GetListKensaSetDetailInputData, GetListKensaSetDetailInteractor>();
             busBuilder.RegisterUseCase<GetListKensaCmtMstInputData, GetListKensaCmtMstInteractor>();
+            busBuilder.RegisterUseCase<UpdateKensaInfDetailInputData, UpdateKensaInfDetailInteractor>();
 
 
             //ListSetGeneration
