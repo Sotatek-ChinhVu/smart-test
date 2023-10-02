@@ -391,6 +391,19 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
     public bool SaveStaConfMenu(int hpId, int userId, StatisticMenuModel statisticMenu)
     {
         var staMenu = new StaMenu();
+
+        if (statisticMenu.IsDeleted)
+        {
+            staMenu.MenuId = statisticMenu.MenuId;
+            staMenu.MenuName = staMenu.MenuName;
+            staMenu.IsDeleted = 1;
+            staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            staMenu.UpdateId = userId;
+
+            TrackingDataContext.StaMenus.UpdateRange(staMenu);
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
         if (!statisticMenu.IsDeleted && statisticMenu.IsModified && statisticMenu.MenuId == 0)
         {
             staMenu.HpId = hpId;
@@ -403,20 +416,23 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
             staMenu.CreateId = userId;
             staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
             staMenu.UpdateId = userId;
+
+            TrackingDataContext.StaMenus.AddRange(staMenu);
+            TrackingDataContext.SaveChanges();
         }
-        else if (statisticMenu.IsModified)
+        else if (!statisticMenu.IsDeleted && statisticMenu.IsModified)
         {
-            var staMenuUpdate = TrackingDataContext.StaMenus.FirstOrDefault(x => x.HpId == hpId && x.MenuId == statisticMenu.MenuId);
-            if (staMenuUpdate != null)
+             staMenu = TrackingDataContext.StaMenus.FirstOrDefault(x => x.HpId == hpId && x.MenuId == statisticMenu.MenuId);
+            if (staMenu != null)
             {
                 staMenu.MenuId = statisticMenu.MenuId;
-                staMenuUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                staMenuUpdate.UpdateId = userId;
+                staMenu.MenuName = statisticMenu.MenuName;
+                staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                staMenu.UpdateId = userId;
             }
+            TrackingDataContext.SaveChanges();
         }
 
-        TrackingDataContext.StaMenus.AddRange(staMenu);
-        TrackingDataContext.SaveChanges();
 
         return SavePtManagementConf(hpId, userId, staMenu.MenuId, statisticMenu.PatientManagement, statisticMenu.IsDeleted);
     }

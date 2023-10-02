@@ -1,10 +1,13 @@
 ﻿using Domain.Models.MstItem;
+using Domain.Models.SetMst;
 using Helper.Extension;
+using System.Collections.ObjectModel;
 
 namespace Domain.Models.KensaIrai;
 
 public class KensaMstModel
 {
+
     public KensaMstModel(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2)
     {
         KensaItemCd = kensaItemCd;
