@@ -65,7 +65,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.UpdateKensaInfDetail)]
-        public ActionResult<Response<UpdateKensaInfDetailResponse>> UpdateKensaInfDetail([FromBody ] UpdateKensaInfDetailRequest request)
+        public ActionResult<Response<UpdateKensaInfDetailResponse>> UpdateKensaInfDetail([FromBody] UpdateKensaInfDetailRequest request)
         {
             var input = new UpdateKensaInfDetailInputData(HpId, UserId, request.kensaInfDetails);
             var output = _bus.Handle(input);

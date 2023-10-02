@@ -170,97 +170,67 @@ namespace Infrastructure.Repositories
         {
             bool successed = false;
             var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
-            //executionStrategy.Execute(
-            //    () =>
-            //    {
-            //        using var transaction = TrackingDataContext.Database.BeginTransaction();
-            //        try
-            //        {
-            //            int kensaSetId = setId;
-            //            // Create kensaSet
-            //            if (setId == 0)
-            //            {
-            //                var kensaSet = TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
-            //                {
-            //                    HpId = hpId,
-            //                    CreateId = userId,
-            //                    UpdateId = userId,
-            //                    SetName = setName,
-            //                    SortNo = sortNo,
-            //                    CreateMachine = CIUtil.GetComputerName(),
-            //                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-            //                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-            //                    IsDeleted = 0,
-            //                });
+            executionStrategy.Execute(
+                () =>
+                {
+                    using var transaction = TrackingDataContext.Database.BeginTransaction();
+                    try
+                    {
+                        foreach (var item in kensaInfDetails)
+                        {
+                            // Create kensaInfDetail
+                            if (item.SeqNo == 0)
+                            {
+                                TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
+                                {
+                                    HpId = hpId,
+                                    PtId = item.PtId,
+                                    IraiCd = item.IraiCd,
+                                    IraiDate = item.IraiDate,
+                                    RaiinNo = item.RaiinNo,
+                                    KensaItemCd = item.KensaItemCd,
+                                    ResultVal = item.ResultVal,
+                                    ResultType = item.ResultType,
+                                    CmtCd1 = item.CmtCd1,
+                                    CmtCd2 = item.CmtCd2,
+                                    CreateId = userId,
+                                    UpdateId = userId,
+                                    CreateMachine = CIUtil.GetComputerName(),
+                                    UpdateMachine = CIUtil.GetComputerName(),
+                                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                    IsDeleted = 0,
+                                });
+                            }
 
-            //                TrackingDataContext.SaveChanges();
-            //                kensaSetId = kensaSet.Entity.SetId;
-            //            }
+                            // Update kensaInfDetail
+                            else
+                            {
+                                var kensaInfDetail = TrackingDataContext.KensaInfDetails.FirstOrDefault(x => x.HpId == hpId && x.PtId == item.PtId && x.IraiCd == item.IraiCd && x.SeqNo == item.SeqNo);
+                                if (kensaInfDetail == null)
+                                {
+                                    transaction.Rollback();
+                                }
 
-            //            // Update kensaSet
-            //            else
-            //            {
-            //                var KensaSet = TrackingDataContext.KensaSets.FirstOrDefault(x => x.HpId == hpId && x.SetId == setId);
-            //                if (KensaSet == null)
-            //                {
-            //                    transaction.Rollback();
-            //                }
+                                kensaInfDetail.ResultVal = item.ResultVal;
+                                kensaInfDetail.ResultType = item.ResultType;
+                                kensaInfDetail.IsDeleted = item.IsDeleted;
+                                kensaInfDetail.UpdateId = userId;
+                                kensaInfDetail.UpdateMachine = CIUtil.GetComputerName();
+                                kensaInfDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
 
-            //                KensaSet.SetName = setName;
-            //                KensaSet.SortNo = sortNo;
-            //                KensaSet.IsDeleted = isDeleted;
-            //                KensaSet.UpdateId = userId;
-            //                KensaSet.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            //            }
+                            }
+                        }
 
-            //            foreach (var item in kensaSetDetails)
-            //            {
-            //                // Create kensaSetDetail
-            //                if (item.SetId == 0 && item.SetEdaNo == 0)
-            //                {
-            //                    TrackingDataContext.KensaSetDetails.Add(new KensaSetDetail()
-            //                    {
-            //                        HpId = hpId,
-            //                        SetId = kensaSetId,
-            //                        KensaItemCd = item.KensaItemCd,
-            //                        KensaItemSeqNo = item.KensaItemSeqNo,
-            //                        SortNo = item.SortNo,
-            //                        CreateId = userId,
-            //                        UpdateId = userId,
-            //                        CreateMachine = CIUtil.GetComputerName(),
-            //                        UpdateMachine = CIUtil.GetComputerName(),
-            //                        CreateDate = CIUtil.GetJapanDateTimeNow(),
-            //                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-            //                        IsDeleted = 0,
-            //                    });
-            //                }
-
-            //                // Update kensaSetDetail
-            //                else
-            //                {
-            //                    var kensaSetDetail = TrackingDataContext.KensaSetDetails.FirstOrDefault(x => x.HpId == item.HpId && x.SetId == item.SetId && x.SetEdaNo == item.SetEdaNo);
-            //                    if (kensaSetDetail == null)
-            //                    {
-            //                        transaction.Rollback();
-            //                    }
-            //                    kensaSetDetail.SortNo = item.SortNo;
-            //                    kensaSetDetail.IsDeleted = item.IsDeleted;
-            //                    kensaSetDetail.UpdateId = userId;
-            //                    kensaSetDetail.UpdateMachine = CIUtil.GetComputerName();
-            //                    kensaSetDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
-
-            //                }
-            //            }
-
-            //            TrackingDataContext.SaveChanges();
-            //            transaction.Commit();
-            //            successed = true;
-            //        }
-            //        catch
-            //        {
-            //            transaction.Rollback();
-            //        }
-            //    });
+                        TrackingDataContext.SaveChanges();
+                        transaction.Commit();
+                        successed = true;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                    }
+                });
             return successed;
         }
 
