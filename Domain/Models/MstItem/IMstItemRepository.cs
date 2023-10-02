@@ -206,6 +206,10 @@ namespace Domain.Models.MstItem
 
         List<RenkeiTemplateMstModel> GetRenkeiTemplateMstModels(int hpId);
 
+        List<EventMstModel> GetEventMstModelList();
+
+        bool SaveRenkei(int hpId, int userId, List<(int renkeiSbt, List<RenkeiConfModel> renkeiConfList)> renkeiTabList);
+
         List<SetNameMntModel> GetSetNameMnt(SetCheckBoxStatusModel checkBoxStatus,int generationId, int hpId);
 
         List<SetKbnMstModel> GetListSetKbnMst(int generationId, int hpId);

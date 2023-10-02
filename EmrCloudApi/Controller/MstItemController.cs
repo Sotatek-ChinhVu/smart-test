@@ -62,6 +62,7 @@ using UseCase.MstItem.GetTreeListSet;
 using UseCase.MstItem.IsKensaItemOrdering;
 using UseCase.MstItem.IsUsingKensa;
 using UseCase.MstItem.SaveAddressMst;
+using UseCase.MstItem.SaveRenkei;
 using UseCase.MstItem.SaveCompareTenMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
@@ -936,6 +937,67 @@ namespace EmrCloudApi.Controller
             var presenter = new GetRenkeiConfPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetRenkeiConfResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveRenkei)]
+        public ActionResult<Response<SaveRenkeiResponse>> SaveRenkei([FromBody] SaveRenkeiRequest request)
+        {
+            var renkeiTabList = GetRenkeiTabList(request);
+            var input = new SaveRenkeiInputData(HpId, UserId, renkeiTabList);
+            var output = _bus.Handle(input);
+            var presenter = new SaveRenkeiPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveRenkeiResponse>>(presenter.Result);
+        }
+
+        private List<(int renkeiSbt, List<RenkeiConfModel> renkeiConfList)> GetRenkeiTabList(SaveRenkeiRequest request)
+        {
+            List<(int renkeiSbt, List<RenkeiConfModel> renkeiConfList)> result = new();
+            foreach (var item in request.RenkeiTabList)
+            {
+                var renkeiConfList = item.RenkeiConfList.Select(conf =>
+                    new RenkeiConfModel(
+                        conf.Id,
+                        conf.RenkeiId,
+                        conf.Param,
+                        conf.PtNumLength,
+                        conf.TemplateId,
+                        conf.IsInvalid,
+                        conf.Biko,
+                        conf.SortNo,
+                        conf.IsDeleted,
+                        conf.RenkeiPathConfList.Select(path =>
+                            new RenkeiPathConfModel(
+                                path.Id,
+                                conf.RenkeiId,
+                                0,
+                                path.EdaNo,
+                                path.Path,
+                                path.Machine,
+                                path.CharCd,
+                                path.WorkPath,
+                                path.Interval,
+                                path.Param,
+                                path.User,
+                                path.PassWord,
+                                path.IsInvalid,
+                                path.Biko,
+                                path.IsDeleted
+                            )).ToList(),
+                        conf.RenkeiTimingModelList.Select(timming =>
+                            new RenkeiTimingModel(
+                                timming.Id,
+                                string.Empty,
+                                conf.RenkeiId,
+                                0,
+                                timming.EventCd,
+                                timming.IsInvalid,
+                                timming.IsDeleted
+                            )).ToList()
+                    )).ToList();
+                result.Add(new(item.RenkeiSbt, renkeiConfList));
+            }
+            return result;
         }
 
         [HttpGet(ApiPath.ExistUsedKensaItemCd)]

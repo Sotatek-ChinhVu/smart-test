@@ -731,6 +731,8 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using Infrastructure.Logger;
+using UseCase.MstItem.SaveRenkei;
 using UseCase.MstItem.GetListYohoSetMstModelByUserID;
 using Interactor.ListSetGenerationMst;
 using Domain.Models.ListSetGenerationMst;
@@ -1705,6 +1707,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetJihiSbtMstListInputData, GetJihiMstsInteractor>();
             busBuilder.RegisterUseCase<SaveAddressMstInputData, SaveAddressMstInteractor>();
             busBuilder.RegisterUseCase<GetRenkeiConfInputData, GetRenkeiConfInteractor>();
+            busBuilder.RegisterUseCase<SaveRenkeiInputData, SaveRenkeiInteractor>();
 
             //HolidayMst
             busBuilder.RegisterUseCase<SaveHolidayMstInputData, SaveHolidayMstInteractor>();

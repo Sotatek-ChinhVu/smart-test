@@ -67,6 +67,7 @@
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
         public const string GetListYohoSetMstModelByUserID = "GetListYohoSetMstModelByUserID";
         public const string GetRenkeiConf = "GetRenkeiConf";
+        public const string SaveRenkei = "SaveRenkei";
         public const string GetSetNameMnt = "GetSetNameMnt";
         public const string GetListKensaIjiSetting = "GetListKensaIjiSetting";
         public const string GetTreeListSet = "GetTreeListSet";
