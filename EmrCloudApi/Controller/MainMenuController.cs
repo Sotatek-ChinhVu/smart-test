@@ -21,8 +21,10 @@ using UseCase.MainMenu.GetKensaCenterMstList;
 using UseCase.MainMenu.GetKensaInf;
 using UseCase.MainMenu.GetKensaIrai;
 using UseCase.MainMenu.GetKensaIraiLog;
-using UseCase.MainMenu.KensaIraiReport;
+using UseCase.MainMenu.GetStaCsvMstModel;
 using UseCase.MainMenu.GetStatisticMenu;
+using UseCase.MainMenu.KensaIraiReport;
+using UseCase.MainMenu.SaveStaCsvMst;
 using UseCase.MainMenu.SaveStatisticMenu;
 
 namespace EmrCloudApi.Controller;
@@ -178,7 +180,7 @@ public class MainMenuController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetKensaIraiLog)]
-    public ActionResult<Response<GetKensaIraiLogResponse>> GetKensaIraiLogLog([FromQuery] GetKensaIraiLogRequest request)
+    public ActionResult<Response<GetKensaIraiLogResponse>> GetKensaIraiLog([FromQuery] GetKensaIraiLogRequest request)
     {
         var input = new GetKensaIraiLogInputData(HpId, request.StartDate, request.EndDate);
         var output = _bus.Handle(input);
@@ -196,6 +198,26 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new KensaIraiReportPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<KensaIraiReportResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetStaCsvMst)]
+    public ActionResult<Response<GetStaCsvMstResponse>> GetStaCsvMst()
+    {
+        var input = new GetStaCsvMstInputData(HpId);
+        var output = _bus.Handle(input);
+        var presenter = new GetStaCsvMstPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetStaCsvMstResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveStaCsvMst)]
+    public ActionResult<Response<SaveStaCsvMstResponse>> SaveStaCsvMst([FromBody] SaveStaCsvMstRequest request)
+    {
+        var input = new SaveStaCsvMstInputData(HpId, UserId, request.StaCsvMstModels);
+        var output = _bus.Handle(input);
+        var presenter = new SaveStaCsvMstPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<SaveStaCsvMstResponse>>(presenter.Result);
     }
 
     #region private function
