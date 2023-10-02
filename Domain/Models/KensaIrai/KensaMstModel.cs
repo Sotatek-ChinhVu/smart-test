@@ -171,7 +171,7 @@ public class KensaMstModel
     public List<TenItemModel> TenItemModels { get; private set; }
 
     public List<KensaMstModel> ChildKensaMsts { get; private set; }
-    public KensaMstModel ParentKensaMst { get; private set; }
+    public Object ParentKensaMst { get; private set; }
 
     public int SeqNo
     {
