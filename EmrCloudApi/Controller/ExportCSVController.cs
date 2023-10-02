@@ -4,6 +4,7 @@ using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Services;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReportServices;
 using System.Text;
@@ -48,6 +49,35 @@ public class ExportCSVController : AuthorizeControllerBase
             return Ok("EndNoData");
         }
         return RenderCsvStatics(data);
+    }
+
+    [HttpPost(ApiPath.ExportSta9000Csv)]
+    public IActionResult ExportSta9000Csv([FromBody] ExportCsvSta9000Request request)
+    {
+        var data = _reportService.OutPutFileSta900(HpId, request.OutputColumns, request.IsPutColName, request.PtConf, request.HokenConf, request.ByomeiConf, request.RaiinConf, request.SinConf, request.KarteConf, request.KensaConf, request.PtIds, request.SortOrder, request.SortOrder2, request.SortOrder3);
+        if (data.code == CoPrintExitCode.EndNoData && !string.IsNullOrEmpty(data.message))
+        {
+            return Ok("EndNoData");
+        }
+        else if (data.code == CoPrintExitCode.EndError)
+        {
+            return Ok("EndError");
+        }
+        else if (data.code == CoPrintExitCode.EndFormFileNotFound)
+        {
+            return Ok("EndFormFileNotFound");
+        }
+        else if (data.code == CoPrintExitCode.EndTemplateNotFound)
+        {
+            return Ok("EndTemplateNotFound");
+
+        }
+        else if (data.code == CoPrintExitCode.EndInvalidArg)
+        {
+            return Ok("EndInvalidArg");
+        }
+
+        return RenderCsv(data.data, request.OutputFileName + ".csv");
     }
 
     private IActionResult RenderCsv(List<string> dataList, string fileName)

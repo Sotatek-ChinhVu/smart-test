@@ -27,7 +27,7 @@ namespace Interactor.MedicalExamination
                     }
                 }
 
-                if(_mstItemRepository.UpdateKensaMst(inputData.HpId, inputData.UserId, inputData.KensaMsts, inputData.TenMsts))
+                if(_mstItemRepository.UpdateKensaMst(inputData.HpId, inputData.UserId, inputData.KensaMsts, inputData.TenMsts, inputData.ChildKensaMsts))
                 {
                     return new UpdateKensaMstOutputData(UpdateKensaMstStatus.Success);
                 }
@@ -39,7 +39,7 @@ namespace Interactor.MedicalExamination
             }
             finally
             {
-                _mstItemRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource(); 
             }
         }
         private static UpdateKensaMstStatus ConvertStatusTenMst(ValidationStatus status)

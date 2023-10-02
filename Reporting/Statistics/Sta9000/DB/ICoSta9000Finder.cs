@@ -17,6 +17,16 @@ public interface ICoSta9000Finder : IRepositoryBase
     );
 
     /// <summary>
+    /// 患者情報
+    /// </summary>
+    List<CoPtInfModel> GetPtInfs(
+        int hpId,
+        CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
+        CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf,
+        CoSta9000KensaConf? kensaConf, List<long> ptIds
+    );
+
+    /// <summary>
     /// 処方一覧
     /// </summary>
     List<CoDrugOdrModel> GetDrugOrders(

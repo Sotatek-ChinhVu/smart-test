@@ -20,16 +20,6 @@ namespace EmrCloudApi.Controller
             return Ok();
         }
 
-        [HttpGet("GetEnviroment")]
-        public ActionResult<string> GetEnviroment()
-        {
-            string connectionString = _configuration["TenantDbSample"] ?? "Empty";
-            string enviroment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Empty";
-            string version = "20221212-1";
-            return Ok("ConnectionString: " + connectionString + " Enviroment: " + enviroment + "Version: " + version);
-        }
-        
-        
         [HttpGet("GetJapaneseCharacters")]
         public ActionResult<string> GetJapaneseCharacters()
         {

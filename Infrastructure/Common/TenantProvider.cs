@@ -27,7 +27,7 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-            string dbSample = _configuration["TenantDbSample"] ?? string.Empty;
+            string dbSample = _configuration["TenantDb"] ?? string.Empty;
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
