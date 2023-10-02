@@ -484,6 +484,8 @@
 
         public const string Test = "Test";
 
+        //ListSetMst
+        public const string UpdateListSetMst = "UpdateListSetMst";
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";
