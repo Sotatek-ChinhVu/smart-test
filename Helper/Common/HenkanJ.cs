@@ -81,5 +81,43 @@ namespace Helper.Common
 
             return result;
         }
+
+        public static string ZenToHank(string s)
+        {
+            int _LCID = new System.Globalization.CultureInfo("ja-JP", true).LCID;
+            string result;
+            try
+            {
+                result = Strings.StrConv(s, VbStrConv.Narrow, _LCID) ?? string.Empty;
+            }
+            catch
+            {
+                result = s;
+            }
+            return result;
+        }
+
+        public static string HankToZen(string s)
+        {
+            int _LCID = new System.Globalization.CultureInfo("ja-JP", true).LCID;
+            string result;
+            try
+            {
+                result = Strings.StrConv(s, VbStrConv.Wide, _LCID);
+                //This function does not convert \ → ￥
+                //Replace by hand
+                result = result.Replace("\\", "￥");
+                //Win7の仕様変更（結合できない濁点[゛]が[?]に変換される）
+                result = result.Replace("゛", "?");
+                //Win7の仕様変更（結合できない半濁点[゜]が[?]に変換される）
+                result = result.Replace("゜", "?");
+            }
+            catch
+            {
+                result = s;
+            }
+
+            return result;
+        }
     }
 }

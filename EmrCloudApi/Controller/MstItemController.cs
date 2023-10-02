@@ -60,6 +60,7 @@ using UseCase.MstItem.IsUsingKensa;
 using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveCompareTenMst;
 using UseCase.MstItem.SaveSetDataTenMst;
+using UseCase.MstItem.SaveSetNameMnt;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
@@ -861,6 +862,16 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveCompareTenMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveCompareTenMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveSetNameMnt)]
+        public ActionResult<Response<SaveSetNameMntResponse>> SaveSetNameMnt([FromBody] SaveSetNameMntRequest request)
+        {
+            var input = new SaveSetNameMntInputData(request.ListData, HpId, UserId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new SaveSetNameMntPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveSetNameMntResponse>>(presenter.Result);
         }
     }
 }

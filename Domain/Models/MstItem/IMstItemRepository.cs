@@ -202,6 +202,8 @@ namespace Domain.Models.MstItem
         List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison);
 
         bool SaveCompareTenMst(List<SaveCompareTenMstModel> ListData, ComparisonSearchModel comparison, int userId);
+
+        bool SaveSetNameMnt(List<SaveSetNameMntModel> lstModel, int userId, int hpId, int sinDate);
     }
 
 }
