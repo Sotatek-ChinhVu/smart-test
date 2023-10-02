@@ -6,4 +6,5 @@ public enum InsertOnlineConfirmHistoryStatus : byte
     Successed = 1,
     Failed = 2,
     InvalidConfirmationResult = 3,
+    InvalidOnlineConfirmationDate = 4,
 }

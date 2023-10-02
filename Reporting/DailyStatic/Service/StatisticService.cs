@@ -178,7 +178,7 @@ public class StatisticService : IStatisticService
                 result = PrintSta3061(hpId, configDaily, dateFrom, dateTo);
                 break;
         }
-        result.JobName = formName;
+        result.JobName = configDaily.MenuName;
         return result;
     }
 

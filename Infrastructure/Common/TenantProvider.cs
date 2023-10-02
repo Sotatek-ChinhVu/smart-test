@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PostgreDataContext;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 
 namespace Infrastructure.CommonDB
 {
@@ -23,7 +27,7 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-            string dbSample = _configuration["TenantDbSample"] ?? string.Empty;
+            string dbSample = _configuration["TenantDb"] ?? string.Empty;
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
@@ -51,6 +55,144 @@ namespace Infrastructure.CommonDB
             domain = string.IsNullOrEmpty(domain) ? GetDomainFromQueryString() : domain;
             return string.IsNullOrEmpty(domain) ? TempIdentity.ClinicID : domain;
         }
+
+        #region Expose data
+        private string _clientIp = string.Empty;
+        private string _domain = string.Empty;
+        private string _requestInfo = string.Empty;
+        private int _hpId;
+        private int _userId;
+        private int _departmentId;
+
+        public async Task<string> GetRequestInfoAsync()
+        {
+            if (!string.IsNullOrEmpty(_requestInfo))
+            {
+                return _requestInfo;
+            }
+
+            var request = _httpContextAccessor.HttpContext.Request;
+            string method = request.Method;
+            string path = request.Path;
+            string body = await GetRawBodyAsync(request);
+            string query = request.QueryString.ToString();
+
+            RequestInfo requestInfo = new RequestInfo(method, path, "body-data-key", query);
+
+            var options = new JsonSerializerOptions
+            {
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+                WriteIndented = true
+            };
+
+            _requestInfo = JsonSerializer.Serialize<RequestInfo>(requestInfo, options);
+            _requestInfo = _requestInfo.Replace("body-data-key", body);
+            return _requestInfo;
+        }
+
+        private async Task<string> GetRawBodyAsync(HttpRequest request)
+        {
+            string body = string.Empty;
+            if (request.ContentType != null)
+            {
+                if (request.ContentType.StartsWith("text/") || request.ContentType == "application/json")
+                {
+                    // Leave the body open so the next middleware can read it.
+                    using (var reader = new StreamReader(
+                                            request.Body,
+                                            encoding: Encoding.UTF8,
+                                            detectEncodingFromByteOrderMarks: false,
+                                            leaveOpen: true))
+                    {
+                        body = await reader.ReadToEndAsync();
+
+                        // Reset the request body stream position so the next middleware can read it
+                        request.Body.Position = 0;
+                    }
+                }
+                else
+                {
+                    body = request.ContentType;
+                }
+            }
+            return body;
+        }
+
+        public int GetHpId()
+        {
+            if (_hpId != 0)
+            {
+                return _hpId;
+            }
+            string hpId = string.Empty;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                var user = _httpContextAccessor.HttpContext.User;
+                hpId = user.Claims.Where(c => c.Type == ParamConstant.HpId).Select(c => c.Value).SingleOrDefault() ?? string.Empty;
+            }
+            return int.TryParse(hpId, out _hpId) ? _hpId : 0;
+        }
+
+        public int GetUserId()
+        {
+            if (_userId != 0)
+            {
+                return _userId;
+            }
+            string userId = string.Empty;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                var user = _httpContextAccessor.HttpContext.User;
+                userId = user.Claims.Where(c => c.Type == ParamConstant.UserId).Select(c => c.Value).SingleOrDefault() ?? string.Empty;
+            }
+            return int.TryParse(userId, out _userId) ? _userId : 0;
+        }
+
+        public int GetDepartmentId()
+        {
+            if (_departmentId != 0)
+            {
+                return _departmentId;
+            }
+            string departmentId = string.Empty;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                var user = _httpContextAccessor.HttpContext.User;
+                departmentId = user.Claims.Where(c => c.Type == ParamConstant.DepartmentId).Select(c => c.Value).SingleOrDefault() ?? string.Empty;
+            }
+            return int.TryParse(departmentId, out _departmentId) ? _departmentId : 0;
+        }
+
+        public string GetClientIp()
+        {
+            if (!string.IsNullOrEmpty(_clientIp))
+            {
+                return _clientIp;
+            }
+            var clientIp = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+            _clientIp = clientIp.ToString();
+            return _clientIp;
+        }
+
+        public string GetDomain()
+        {
+            if (!string.IsNullOrEmpty(_domain))
+            {
+                return _domain;
+            }
+            _domain = GetDomainFromHeader();
+            if (!string.IsNullOrEmpty(_domain))
+            {
+                return _domain;
+            }
+            _domain = GetDomainFromQueryString();
+            return _domain;
+        }
+
+        #endregion
+
+        #region Domain handler
+
 
         public string GetDomainFromHeader()
         {
@@ -93,6 +235,8 @@ namespace Infrastructure.CommonDB
                 return string.Empty;
             }
         }
+
+        #endregion
 
         public string GetTenantInfo()
         {

@@ -132,5 +132,6 @@ namespace EmrCloudApi.Controller
 
             return new ActionResult<Response<ValidationPtDiseaseListResponse>>(presenter.Result);
         }
+        
     }
 }

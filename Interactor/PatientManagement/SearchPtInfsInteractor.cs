@@ -1,6 +1,6 @@
 ﻿using Domain.Models.PatientInfor;
 using Reporting.Statistics.Sta9000.DB;
-using UseCase.PatientManagement;
+using UseCase.PatientManagement.SearchPtInfs;
 
 namespace Interactor.PatientManagement
 {
@@ -17,17 +17,7 @@ namespace Interactor.PatientManagement
         {
             try
             {
-                var pageCount = inputData.PageCount;
-                var pageIndex = inputData.PageIndex;
                 var hpId = inputData.HpId;
-                if (pageIndex <= 0)
-                {
-                    return new SearchPtInfsOutputData(0, new(), SearchPtInfsStatus.InvalidPageIndex);
-                }
-                else if (pageCount < 0)
-                {
-                    return new SearchPtInfsOutputData(0, new(), SearchPtInfsStatus.InvalidPageCount);
-                }
 
                 var coPtInfs = _coSta9000Finder.GetPtInfs(inputData.HpId, inputData.CoSta9000PtConf, inputData.CoSta9000HokenConf, inputData.CoSta9000ByomeiConf,
                                                              inputData.CoSta9000RaiinConf, inputData.CoSta9000SinConf, inputData.CoSta9000KarteConf, inputData.CoSta9000KensaConf);
@@ -35,11 +25,11 @@ namespace Interactor.PatientManagement
                 var totalCount = coPtInfs.Count();
                 if (inputData.OutputOrder == 0)
                 {
-                    coPtInfs = coPtInfs.OrderBy(u => u.PtNum).Skip((pageIndex - 1) * pageCount).Take(pageCount).ToList();
+                    coPtInfs = coPtInfs.OrderBy(u => u.PtNum).ToList();
                 }
                 else
                 {
-                    coPtInfs = coPtInfs.OrderBy(u => u.KanaName).ThenBy(u => u.PtNum).Skip((pageIndex - 1) * pageCount).Take(pageCount).ToList();
+                    coPtInfs = coPtInfs.OrderBy(u => u.KanaName).ThenBy(u => u.PtNum).ToList();
                 }
 
                 var result = coPtInfs.Select(x => new PatientInforModel(hpId,

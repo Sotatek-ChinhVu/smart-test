@@ -10,11 +10,14 @@ namespace UseCase.SystemConf.GetXmlPath
 
         public string Machine { get; private set; }
 
-        public GetSystemConfListXmlPathInputData(int hpId, int grpCd, string machine)
+        public bool IsKensaIrai { get; private set; }
+
+        public GetSystemConfListXmlPathInputData(int hpId, int grpCd, string machine, bool isKensaIrai)
         {
             HpId = hpId;
             GrpCd = grpCd;
             Machine = machine;
+            IsKensaIrai = isKensaIrai;
         }
     }
 }
