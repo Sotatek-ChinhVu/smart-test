@@ -66,7 +66,10 @@ public class ByomeiMstModel
         KanaName7 = kanaName7;
         Byomei = string.Empty;
     }
-
+    public ByomeiMstModel(string byomei)
+    {
+        Byomei = byomei;
+    }
     public string ByomeiCd { get; private set; }
 
     public string Byomei { get; private set; }
