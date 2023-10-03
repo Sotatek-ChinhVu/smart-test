@@ -192,7 +192,6 @@ namespace Infrastructure.Repositories
                                     ResultVal = item.ResultVal,
                                     ResultType = item.ResultType,
                                     AbnormalKbn = item.AbnormalKbn,
-
                                     CmtCd1 = item.CmtCd1,
                                     CmtCd2 = item.CmtCd2,
                                     CreateId = userId,
@@ -216,6 +215,9 @@ namespace Infrastructure.Repositories
 
                                 kensaInfDetail.ResultVal = item.ResultVal;
                                 kensaInfDetail.ResultType = item.ResultType;
+                                kensaInfDetail.AbnormalKbn = item.AbnormalKbn;
+                                kensaInfDetail.CmtCd1 = item.CmtCd1;
+                                kensaInfDetail.CmtCd2 = item.CmtCd2;
                                 kensaInfDetail.IsDeleted = item.IsDeleted;
                                 kensaInfDetail.UpdateId = userId;
                                 kensaInfDetail.UpdateMachine = CIUtil.GetComputerName();
