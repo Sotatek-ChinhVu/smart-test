@@ -189,7 +189,7 @@ namespace Infrastructure.Repositories
                                     IraiDate = item.IraiDate,
                                     RaiinNo = item.RaiinNo,
                                     KensaItemCd = item.KensaItemCd,
-                                    ResultVal = item.ResultVal,
+                                    ResultVal = CIUtil.ToHalfsize(item.ResultVal),
                                     ResultType = item.ResultType,
                                     AbnormalKbn = item.AbnormalKbn,
                                     CmtCd1 = item.CmtCd1,
