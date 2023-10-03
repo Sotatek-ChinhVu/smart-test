@@ -7782,4 +7782,12 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 ).FirstOrDefault();
         return item;
     }
+
+    public ByomeiMstModel GetByomeiByCode(string byomeiCd)
+    {
+        var byomeiMst = NoTrackingDataContext.ByomeiMsts.Where(b => b.ByomeiCd == byomeiCd).FirstOrDefault();
+        if (byomeiMst == null)
+            return new ByomeiMstModel(string.Empty);
+        return new ByomeiMstModel(byomeiMst.Byomei ?? string.Empty);
+    }
 }
