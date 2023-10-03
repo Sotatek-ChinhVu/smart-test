@@ -542,10 +542,10 @@ namespace EmrCalculateApi.Ika.DB.Finder
             return results;
         }
 
-        public int GetCountCalcInMonth(string prefix)
+        public int GetCountCalcInMonth(string calcKeyId)
         {
             return _tenantDataContext.CalcStatus
-                            .FindListQueryableNoTrack(p => p.CreateMachine == (prefix + Hardcode.ComputerName).ToUpper() &&
+                            .FindListQueryableNoTrack(p => p.CreateMachine == calcKeyId &&
                                                            p.Status == 0).Count();
         }
     }

@@ -542,7 +542,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             //要求登録
             AddCalcStatusMonth(hpId, seikyuYm, ptIds, preFix);
 
-            AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(preFix);
+            AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(CalcKeyID);
             if (AllowSendProgress)
             {
                 SendMessager(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, AllCalcCount, 0, string.Empty, UniqueKey));
