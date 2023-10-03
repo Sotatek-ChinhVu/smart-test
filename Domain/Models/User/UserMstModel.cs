@@ -1,4 +1,5 @@
-﻿using static Helper.Constants.UserConst;
+﻿using Helper.Extension;
+using static Helper.Constants.UserConst;
 
 namespace Domain.Models.User
 {
@@ -32,7 +33,7 @@ namespace Domain.Models.User
             FunctionMstModels = new();
         }
 
-     
+
 
         public UserMstModel(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId,
             string kaSName, string kanaName, string name, string sname, string drName, string loginId,
@@ -126,6 +127,19 @@ namespace Domain.Models.User
             Permissions = new();
             FunctionMstModels = functionMstModels;
         }
+        public UserMstModel(int hpId, int userId, string sname, string kanaName, string name, int startDate, int endDate, int isDeleted, long id)
+        {
+            HpId = hpId;
+            UserId = userId;
+            Sname = sname;
+            KanaName = kanaName;
+            Name = name;
+            StartDate = startDate;
+            EndDate = endDate;
+            IsDeleted = isDeleted;
+            Id = id;
+
+        }
 
         public long Id { get; private set; }
 
@@ -164,6 +178,23 @@ namespace Domain.Models.User
         public string DrName { get; private set; }
 
         public int HpId { get; private set; }
+
+        public string SNameBinding
+        {
+            get
+            {
+                string sUserId;
+                if (UserId / 10000 == 0)
+                {
+                    sUserId = UserId.AsString().PadLeft(5, '0');
+                }
+                else
+                {
+                    sUserId = UserId.AsString();
+                }
+                return "[" + sUserId + "] " + Sname;
+            }
+        }
 
         public List<UserPermissionModel> Permissions { get; private set; }
 

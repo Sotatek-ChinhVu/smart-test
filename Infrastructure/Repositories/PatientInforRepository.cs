@@ -17,6 +17,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Infrastructure.Repositories
@@ -1184,11 +1185,19 @@ namespace Infrastructure.Repositories
             patientInsert.UpdateId = userId;
             patientInsert.UpdateDate = CIUtil.GetJapanDateTimeNow();
             patientInsert.HpId = hpId;
-            TrackingDataContext.PtInfs.Add(patientInsert);
-            bool resultCreatePatient = TrackingDataContext.SaveChanges() > 0;
 
-            if (!resultCreatePatient)
+            string querySql = $"INSERT INTO public.\"PT_INF\"\r\n(\"HP_ID\", \"PT_NUM\", \"KANA_NAME\", \"NAME\", \"SEX\", \"BIRTHDAY\", \"IS_DEAD\", \"DEATH_DATE\", \"HOME_POST\", \"HOME_ADDRESS1\", \"HOME_ADDRESS2\", \"TEL1\", \"TEL2\", \"MAIL\", \"SETAINUSI\", \"ZOKUGARA\", \"JOB\", \"RENRAKU_NAME\", \"RENRAKU_POST\", \"RENRAKU_ADDRESS1\", \"RENRAKU_ADDRESS2\", \"RENRAKU_TEL\", \"RENRAKU_MEMO\", \"OFFICE_NAME\", \"OFFICE_POST\", \"OFFICE_ADDRESS1\", \"OFFICE_ADDRESS2\", \"OFFICE_TEL\", \"OFFICE_MEMO\", \"IS_RYOSYO_DETAIL\", \"PRIMARY_DOCTOR\", \"IS_TESTER\", \"IS_DELETE\", \"CREATE_DATE\", \"CREATE_ID\", \"CREATE_MACHINE\", \"UPDATE_DATE\", \"UPDATE_ID\", \"UPDATE_MACHINE\", \"MAIN_HOKEN_PID\", \"LIMIT_CONS_FLG\") VALUES({patientInsert.HpId}, {patientInsert.PtNum}, '{patientInsert.KanaName}', '{patientInsert.Name}', {patientInsert.Sex}, {patientInsert.Birthday}, {patientInsert.IsDead}, {patientInsert.DeathDate}, '{patientInsert.HomePost}', '{patientInsert.HomeAddress1}', '{patientInsert.HomeAddress2}', '{patientInsert.Tel1}', '{patientInsert.Tel2}', '{patientInsert.Mail}', '{patientInsert.Setanusi}', '{patientInsert.Zokugara}', '{patientInsert.Job}', '{patientInsert.RenrakuName}', '{patientInsert.RenrakuPost}', '{patientInsert.RenrakuAddress1}', '{patientInsert.RenrakuAddress2}', '{patientInsert.RenrakuTel}', '{patientInsert.RenrakuMemo}', '{patientInsert.OfficeName}', '{patientInsert.OfficePost}', '{patientInsert.OfficeAddress1}', '{patientInsert.OfficeAddress2}', '{patientInsert.OfficeTel}', '{patientInsert.OfficeMemo}', {patientInsert.IsRyosyoDetail}, {patientInsert.PrimaryDoctor}, {patientInsert.IsTester}, {patientInsert.IsDelete}, '{patientInsert.CreateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.CreateId}, '', '{patientInsert.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.UpdateId}, '', {patientInsert.MainHokenPid}, {patientInsert.LimitConsFlg}) ON CONFLICT DO NOTHING;";
+            //TrackingDataContext.PtInfs.Add(patientInsert);
+            TrackingDataContext.Database.SetCommandTimeout(1200);
+            bool resultCreatePatient = TrackingDataContext.Database.ExecuteSqlRaw(querySql) > 0;
+
+            if (!resultCreatePatient) {
                 return (false, 0);
+            }
+            else
+            {
+                patientInsert.PtId = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == patientInsert.PtNum)?.PtId ?? 0;
+            }
 
             if (ptSanteis != null && ptSanteis.Any())
             {
