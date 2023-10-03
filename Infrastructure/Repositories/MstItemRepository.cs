@@ -37,6 +37,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     }
 
     private readonly List<int> _HoukatuTermExclude = new List<int> { 0, 5, 6 };
+    private readonly List<int> usageDrugs = new List<int>() { 21, 22, 23 };
+    private readonly List<int> usageInjects = new List<int>() { 31, 32, 33, 34 };
+    private readonly List<int> inspections = new List<int>() { 60, 61, 62, 63, 64 };
 
     public List<DosageDrugModel> GetDosages(List<string> yjCds)
     {
@@ -7773,6 +7776,37 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
         }
         return 1;
+    }
+
+    public TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate)
+    {
+        List<int> setKbns = new List<int>();
+        // Alway search comment master
+        setKbns.Add(99);
+        if (usageDrugs.Contains(setKbn))
+        {
+            setKbns.AddRange(usageDrugs);
+        }
+        else if (usageInjects.Contains(setKbn))
+        {
+            setKbns.AddRange(usageInjects);
+        }
+        else if (inspections.Contains(setKbn))
+        {
+            setKbns.AddRange(inspections);
+        }
+        else
+        {
+            setKbns.Add(setKbn);
+        }
+        var item = NoTrackingDataContext.TenMsts.Where(tenMst => tenMst.ItemCd == itemCd && setKbns.Contains(tenMst.SinKouiKbn) && tenMst.StartDate <= sinDate && tenMst.EndDate >= sinDate && tenMst.IsDeleted == DeleteTypes.None)
+            .AsEnumerable().Select(tenMst => new TenItemModel
+            (
+                tenMst.HpId, tenMst.ItemCd, tenMst.Kokuji1, tenMst.Kokuji2, tenMst.SinKouiKbn, tenMst.Name, tenMst.KanaName1, tenMst.KanaName2, tenMst.KanaName3, tenMst.KanaName4, tenMst.KanaName5, tenMst.KanaName6, tenMst.KanaName7,
+                tenMst.OdrUnitName, tenMst.CnvUnitName, tenMst.IsNodspRece, tenMst.YohoKbn, tenMst.OdrTermVal, tenMst.CnvTermVal, tenMst.YjCd, tenMst.KensaItemCd, tenMst.KensaItemSeqNo, tenMst.KohatuKbn, tenMst.Ten, tenMst.HandanGrpKbn, tenMst.IpnNameCd, tenMst.IsAdopted,
+                tenMst.DrugKbn, tenMst.CmtCol1, tenMst.CmtCol2, tenMst.CmtCol3, tenMst.CmtCol4, tenMst.CmtColKeta1, tenMst.CmtColKeta2, tenMst.CmtColKeta3, tenMst.CmtColKeta4, tenMst.MasterSbt, tenMst.DefaultVal)
+                ).FirstOrDefault();
+        return item;
     }
 
     public ByomeiMstModel GetByomeiByCode(string byomeiCd)

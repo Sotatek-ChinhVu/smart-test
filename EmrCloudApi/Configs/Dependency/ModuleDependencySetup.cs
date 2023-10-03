@@ -835,6 +835,7 @@ using Infrastructure.Logger;
 using UseCase.MstItem.ExistUsedKensaItemCd;
 using UseCase.MstItem.IsKensaItemOrdering;
 using UseCase.MstItem.IsUsingKensa;
+using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -1525,6 +1526,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<IsKensaItemOrderingInputData, IsKensaItemOrderingInteractor>();
             busBuilder.RegisterUseCase<ExistUsedKensaItemCdInputData, ExistUsedKensaItemCdInteractor>();
             busBuilder.RegisterUseCase<GetListUserInputData, GetListUserInteractor>();
+            busBuilder.RegisterUseCase<GetTenMstByCodeInputData, GetTenMstByCodeInteractor>();
             busBuilder.RegisterUseCase<GetByomeiByCodeInputData, GetByomeiByCodeInteractor>();
 
             // Disease
