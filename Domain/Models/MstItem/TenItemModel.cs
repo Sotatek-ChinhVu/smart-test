@@ -566,6 +566,56 @@ namespace Domain.Models.MstItem
             ListGenDate = new();
         }
 
+        public TenItemModel(int hpId, string itemCd, string kokuji1, string kokuji2, int sinKouiKbn, string name, string kanaName1, string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, string odrUnitName, string cnvUnitName, int isNodspRece, int yohoKbn, double odrTermVal, double cnvTermVal, string yjCd, string kensaItemCd, int kensaItemSeqNo, int kohatuKbn, double ten, int handanGrpKbn, string ipnNameCd, int isAdopted, int drugKbn, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, string masterSbt, double defaultValue)
+        {
+            HpId = hpId;
+            ItemCd = itemCd;
+            Kokuji1 = kokuji1;
+            Kokuji2 = kokuji2;
+            SinKouiKbn = sinKouiKbn;
+            Name = name;
+            KanaName1 = kanaName1;
+            KanaName2 = kanaName2;
+            KanaName3 = kanaName3;
+            KanaName4 = kanaName4;
+            KanaName5 = kanaName5;
+            KanaName6 = kanaName6;
+            KanaName7 = kanaName7;
+            OdrUnitName = odrUnitName;
+            CnvUnitName = cnvUnitName;
+            IsNodspRece = isNodspRece;
+            YohoKbn = yohoKbn;
+            OdrTermVal = odrTermVal;
+            CnvTermVal = cnvTermVal;
+            YjCd = yjCd;
+            KensaItemCd = kensaItemCd;
+            KensaItemSeqNo = kensaItemSeqNo;
+            KohatuKbn = kohatuKbn;
+            Ten = ten;
+            HandanGrpKbn = handanGrpKbn;
+            IpnNameCd = ipnNameCd;
+            IsAdopted = isAdopted;
+            DrugKbn = drugKbn;
+            CmtCol1 = cmtCol1;
+            CmtCol2 = cmtCol2;
+            CmtCol3 = cmtCol3;
+            CmtCol4 = cmtCol4;
+            CmtColKeta1 = cmtColKeta1;
+            CmtColKeta2 = cmtColKeta2;
+            CmtColKeta3 = cmtColKeta3;
+            CmtColKeta4 = cmtColKeta4;
+            MasterSbt = masterSbt;
+            DefaultValue = defaultValue;
+            ReceName = string.Empty;
+            KensaMstCenterItemCd1 = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            IpnCD = string.Empty;
+            MaxAge = string.Empty;
+            MinAge = string.Empty;
+            SanteiItemCd = string.Empty;
+            ListGenDate = new();
+            CdKbn = string.Empty;
+        }
 
         public int HpId { get; private set; }
 
