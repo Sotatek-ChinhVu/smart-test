@@ -1,5 +1,4 @@
 ﻿using Domain.Models.FlowSheet;
-using Domain.Models.RaiinListMst;
 using UseCase.FlowSheet.GetList;
 
 namespace Interactor.FlowSheet
@@ -24,7 +23,8 @@ namespace Interactor.FlowSheet
                 else
                 {
                     long totalFlowSheet = 0;
-                    var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, ref totalFlowSheet);
+                    var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, ref totalFlowSheet)
+                                                            .Skip(inputData.PageIndex - 1).Take(inputData.PageSize).ToList();
                     var raiinListMst = _flowsheetRepository.GetRaiinListMsts(inputData.HpId);
                     var raiinListInfList = _flowsheetRepository.GetRaiinListInf(inputData.HpId, inputData.PtId);
                     var raiinListInfForNextOrderList = _flowsheetRepository.GetRaiinListInfForNextOrder(inputData.HpId, inputData.PtId);
