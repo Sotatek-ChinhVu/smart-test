@@ -24,6 +24,7 @@ using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.MainMenu.GetStaCsvMstModel;
 using UseCase.MainMenu.GetStatisticMenu;
 using UseCase.MainMenu.KensaIraiReport;
+using UseCase.MainMenu.RsvInfToConfirm;
 using UseCase.MainMenu.SaveStaCsvMst;
 using UseCase.MainMenu.SaveStatisticMenu;
 
@@ -218,6 +219,16 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new SaveStaCsvMstPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<SaveStaCsvMstResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetRsvInfToConfirm)]
+    public ActionResult<Response<GetRsvInfToConfirmResponse>> GetRsvInfToConfirm([FromQuery] GetRsvInfToConfirmRequest request)
+    {
+        var input = new GetRsvInfToConfirmInputData(HpId, request.SinDate);
+        var output = _bus.Handle(input);
+        var presenter = new GetRsvInfToConfirmPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetRsvInfToConfirmResponse>>(presenter.Result);
     }
 
     #region private function

@@ -1,4 +1,6 @@
-﻿using Domain.Models.RsvInf;
+﻿using Domain.Constant;
+using Domain.Models.RsvInf;
+using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
@@ -93,5 +95,41 @@ public class RsvInfRepository : RepositoryBase, IRsvInfRepository
     public void ReleaseResource()
     {
         DisposeDataContext();
+    }
+
+    public List<RsvInfToConfirmModel> GetListRsvInfToConfirmModel(int hpId, int sinDate)
+    {
+        var listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(u => u.HpId == hpId && u.SinDate == sinDate && u.IsDeleted == DeleteStatus.None && u.Status == RaiinState.Reservation);
+        var listPtInf = NoTrackingDataContext.PtInfs.Where(u => u.HpId == hpId && u.IsDelete == DeleteStatus.None && u.IsTester == 0);
+        var listPtHokenInf = NoTrackingDataContext.PtHokenInfs.Where(u => u.HpId == hpId && (u.HokenKbn == 1 || u.HokenKbn == 2) && u.StartDate <= sinDate && u.EndDate >= sinDate && u.IsDeleted == DeleteStatus.None);
+        var query = from raiinInf in listRaiinInf
+                    join ptInf in listPtInf on raiinInf.PtId equals ptInf.PtId
+                    join ptHokenInf in listPtHokenInf on ptInf.PtId equals ptHokenInf.PtId into listPtHoken
+                    select new
+                    {
+                        RaiinInf = raiinInf,
+                        PtInf = ptInf,
+                        ListPtHokenInf = listPtHoken
+                    };
+        return query.AsEnumerable().Where(u => u.ListPtHokenInf != null && u.ListPtHokenInf?.Count() > 0)
+                                   .Select(data => ConvertToModel(data.RaiinInf ?? new RaiinInf(),
+                                                                  data.PtInf ?? new PtInf(),
+                                                                  data.ListPtHokenInf.ToList()))
+                                   .ToList();
+    }
+
+    private static RsvInfToConfirmModel ConvertToModel(RaiinInf raiinInf, PtInf ptInf, List<PtHokenInf> ptHokenInfs)
+    {
+        return new RsvInfToConfirmModel(
+                                        ptInf.Name ?? string.Empty,
+                                        raiinInf.HpId,
+                                        raiinInf.SinDate,
+                                        raiinInf.RaiinNo,
+                                        raiinInf.PtId,
+                                        ptInf.PtNum,
+                                        ptInf.Birthday,
+                                        raiinInf.TantoId,
+                                        raiinInf.KaId
+            );
     }
 }
