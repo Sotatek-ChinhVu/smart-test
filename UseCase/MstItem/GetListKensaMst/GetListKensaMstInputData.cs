@@ -6,10 +6,14 @@ namespace UseCase.MstItem.GetListResultKensaMst
     {
         public int HpId { get; set; }
         public string Keyword { get; set; }
-        public GetListKensaMstInputData(int hpId, string keyword)
+        public int PageIndex { get; set; }
+        public int PageSize { get; set; }
+        public GetListKensaMstInputData(int hpId, string keyword, int pageIndex, int pageSize)
         {
             HpId = hpId;
             Keyword = keyword;
+            PageIndex = pageIndex;
+            PageSize = pageSize;
         }
     }
 }
