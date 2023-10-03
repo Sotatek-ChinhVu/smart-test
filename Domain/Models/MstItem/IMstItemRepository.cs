@@ -224,6 +224,7 @@ namespace Domain.Models.MstItem
         bool SaveCompareTenMst(List<SaveCompareTenMstModel> ListData, ComparisonSearchModel comparison, int userId);
 
         bool UpdateYohoSetMst(int hpId, int userId, List<YohoSetMstModel> listYohoSetMstModels);
+        ByomeiMstModel GetByomeiByCode(string byomeiCd);
     }
 
 }
