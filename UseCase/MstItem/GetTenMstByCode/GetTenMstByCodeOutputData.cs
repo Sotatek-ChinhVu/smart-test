@@ -5,13 +5,13 @@ namespace UseCase.MstItem.GetTenMstByCode
 {
     public sealed class GetTenMstByCodeOutputData : IOutputData
     {
-        public GetTenMstByCodeOutputData(TenMstModel tenMst, GetTenMstByCodeStatus status)
+        public GetTenMstByCodeOutputData(TenItemModel? tenMst, GetTenMstByCodeStatus status)
         {
             TenMst = tenMst;
             Status = status;
         }
 
-        public TenMstModel TenMst { get; private set; }
+        public TenItemModel? TenMst { get; private set; }
         public GetTenMstByCodeStatus Status { get; private set; }
     }
 }

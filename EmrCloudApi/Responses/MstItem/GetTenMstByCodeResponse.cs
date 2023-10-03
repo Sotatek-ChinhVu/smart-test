@@ -4,11 +4,11 @@ namespace EmrCloudApi.Responses.MstItem
 {
     public class GetTenMstByCodeResponse
     {
-        public GetTenMstByCodeResponse(TenMstModel data)
+        public GetTenMstByCodeResponse(TenItemModel? data)
         {
             Data = data;
         }
 
-        public TenMstModel Data { get; private set; }
+        public TenItemModel? Data { get; private set; }
     }
 }

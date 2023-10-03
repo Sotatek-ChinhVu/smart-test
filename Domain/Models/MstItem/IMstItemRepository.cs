@@ -225,7 +225,7 @@ namespace Domain.Models.MstItem
 
         bool UpdateYohoSetMst(int hpId, int userId, List<YohoSetMstModel> listYohoSetMstModels);
 
-        TenMstModel GetTenMstByCode(string ItemCd, int setKbn, int sinDate);
+        TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate);
         ByomeiMstModel GetByomeiByCode(string byomeiCd);
     }
 
