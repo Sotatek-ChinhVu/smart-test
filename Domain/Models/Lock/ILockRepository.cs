@@ -1,9 +1,12 @@
 ﻿using Domain.Common;
+using Domain.Models.Document;
 
 namespace Domain.Models.Lock
 {
     public interface ILockRepository : IRepositoryBase
     {
+        bool Unlock(int hpId, int userId, List<LockModel> lockInfModels);
+
         bool ExistLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo);
 
         bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string tabKey, string loginKey);

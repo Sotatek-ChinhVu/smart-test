@@ -1,4 +1,7 @@
-﻿using Domain.Models.Lock;
+﻿using Domain.Models.CalcStatus;
+using Domain.Models.Document;
+using Domain.Models.Lock;
+using Domain.Models.SpecialNote.PatientInfo;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -482,6 +485,63 @@ namespace Infrastructure.Repositories
                 result.Add(lockModel);
             }
             return result;
+        }
+
+        public bool Unlock(int hpId, int userId, List<LockModel> lockInfModels)
+        {
+            bool result = true;
+            List<string> listMachineLock = lockInfModels.Where(u => !string.IsNullOrEmpty(u.)).Select(u => u.Machine).GroupBy(u => u).Select(u => u.First()).ToList();
+            List<PatientInfoModel> listLockPtInfModel = lockInfModels.Where(u => u.LockPtInfModel != null && !u.CheckDefaultValue()).Select(u => u.LockPtInfModel).ToList();
+            List<CalcStatusModel> listLockCalcStatusModel = lockInfModels.Where(u => u.LockCalcStatusModel != null && !u.CheckDefaultValue()).Select(u => u.LockCalcStatusModel).ToList();
+            List<DocInfModel> listLockDocInfModel = lockInfModels.Where(u => u.LockDocInfModel != null && !u.CheckDefaultValue()).Select(u => u.LockDocInfModel).ToList();
+            UnlockSessionInf(listFunctionCdLock, listPtIdLock, listSinDateLock, listRaiinNoLock, listOyaRaiinNoLock);
+            UnlockPtInf(listLockPtInfModel);
+            UnlockCalcStatusInf(listLockCalcStatusModel);
+            UnlockDocInf(listLockDocInfModel);
+            return result;
+        }
+
+        public void UnlockSessionInf(List<string> listFunctionCdLock, List<long> listPtIdLock, List<long> listSinDateLock, List<long> listRaiinNoLock, List<long> listOyaRaiinNoLock)
+        {
+                var listSessionToUnlock = NoTrackingDataContext.SessionInfs.Where(u => listMachineToUnlock.Contains(u.));
+                TrackingDataContext.SessionInfs.RemoveRange(listSessionToUnlock);
+        }
+
+
+        private void UnlockPtInf(List<PatientInfoModel> listLockPtInfModel)
+        {
+
+                TrackingDataContext.LockInfs.RemoveRange(listLockPtInfModel.Select(u => u.LockInf));
+        }
+
+        private void UnlockCalcStatusInf(List<CalcStatusModel> listLockCalcStatusModel)
+        {
+                foreach (var calcStatus in listLockCalcStatusModel)
+                {
+                    calcStatus.Machine = null;
+                    calcStatus.CalcStatus.Status = 8;
+                    calcStatus.CalcStatus.UpdateId = Session.UserID;
+                    calcStatus.CalcStatus.UpdateMachine = CIUtil.GetComputerName();
+                    calcStatus.CalcStatus.UpdateDate = DateTime.Now;
+                }
+        }
+        private void UnlockDocInf(List<DocInfModel> listLockDocInfModel)
+        {
+            {
+                foreach (var docInfModel in listLockDocInfModel)
+                {
+                    docInfModel.Machine = null;
+                    docInfModel.IsLocked = 0;
+                    docInfModel.UpdateId = Session.UserID;
+                    docInfModel.UpdateMachine = CIUtil.GetComputerName();
+                    docInfModel.UpdateDate = DateTime.Now;
+                }
+            }
+        }
+
+        public bool CheckDefaultValue()
+        {
+            return SinDate == 0;
         }
     }
 }
