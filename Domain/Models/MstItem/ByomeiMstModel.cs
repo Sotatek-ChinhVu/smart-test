@@ -66,10 +66,26 @@ public class ByomeiMstModel
         KanaName7 = kanaName7;
         Byomei = string.Empty;
     }
+
     public ByomeiMstModel(string byomei)
     {
         Byomei = byomei;
+        ByomeiCd = string.Empty;
+        ByomeiType = string.Empty;
+        Sbyomei = string.Empty;
+        KanaName1 = string.Empty;
+        KanaName2 = string.Empty;
+        KanaName3 = string.Empty;
+        KanaName4 = string.Empty;
+        KanaName5 = string.Empty;
+        KanaName6 = string.Empty;
+        KanaName7 = string.Empty;
+        Sikkan = string.Empty;
+        NanByo = string.Empty;
+        Icd10 = string.Empty;
+        Icd102013 = string.Empty;
     }
+
     public string ByomeiCd { get; private set; }
 
     public string Byomei { get; private set; }

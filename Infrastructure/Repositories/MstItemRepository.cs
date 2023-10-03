@@ -7753,7 +7753,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
         var byomeiMst = NoTrackingDataContext.ByomeiMsts.Where(b => b.ByomeiCd == byomeiCd).FirstOrDefault();
         if (byomeiMst == null)
-            return null;
-        return new ByomeiMstModel(byomeiMst.Byomei);
+            return new ByomeiMstModel(string.Empty);
+        return new ByomeiMstModel(byomeiMst.Byomei ?? string.Empty);
     }
 }

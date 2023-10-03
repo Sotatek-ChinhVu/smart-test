@@ -18,14 +18,12 @@ namespace Interactor.MstItem
             {
                 if (string.IsNullOrEmpty(inputData.ByomeiCd))
                 {
-                    return new GetByomeiByCodeOutputData(null, GetByomeiByCodeStatus.InvalidItemCd);
+                    return new GetByomeiByCodeOutputData(new(), GetByomeiByCodeStatus.InvalidItemCd);
                 }
                 var data = _inputItemRepository.GetByomeiByCode(inputData.ByomeiCd);
-                if(data == null)
-                {
-                    return new GetByomeiByCodeOutputData(null, GetByomeiByCodeStatus.NoData);
-                }
-                var item = new ByomeiMstItem(data?.Byomei);
+
+                var item = new ByomeiMstItem(data?.Byomei ?? string.Empty);
+
                 return new GetByomeiByCodeOutputData(item, GetByomeiByCodeStatus.Successed);
             }
             finally
