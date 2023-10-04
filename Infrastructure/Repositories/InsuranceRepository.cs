@@ -916,7 +916,7 @@ namespace Infrastructure.Repositories
                 else
                 {
                     var sameKohiPattern = hokenPatternModels
-                        .Where(p => p.HokenSbtCd >= 500 && !historyHokenPattern.IsExpirated && _isSameKohiHoubetu(historyHokenPattern, p))
+                        .Where(p => p.HokenSbtCd >= 500 && !p.IsExpirated && _isSameKohiHoubetu(historyHokenPattern, p))
                         .OrderBy(p => p.IsExpirated)
                         .ThenBy(p => p.HokenPid)
                         .FirstOrDefault();
