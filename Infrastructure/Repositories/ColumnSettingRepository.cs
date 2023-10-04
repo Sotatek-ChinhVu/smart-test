@@ -18,6 +18,25 @@ public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
             .AsEnumerable().Select(c => ToModel(c)).ToList();
     }
 
+    public Dictionary<string, List<ColumnSettingModel>> GetList(int userId, List<string> tableNameList)
+    {
+        Dictionary<string, List<ColumnSettingModel>> result = new();
+        tableNameList = tableNameList.Distinct().ToList();
+
+        var columnSettingList = NoTrackingDataContext.ColumnSettings.Where(item => item.UserId == userId && tableNameList.Contains(item.TableName))
+                                                                    .ToList();
+
+        foreach (var tableName in tableNameList)
+        {
+            var settingList = columnSettingList.Where(item => item.TableName == tableName)
+                                               .Select(item => ToModel(item))
+                                               .ToList();
+            result.Add(tableName, settingList);
+        }
+
+        return result;
+    }
+
     public bool SaveList(List<ColumnSettingModel> settingModels)
     {
         if (settingModels.Count == 0)
