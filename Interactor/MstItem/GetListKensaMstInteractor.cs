@@ -19,13 +19,17 @@ namespace Interactor.MstItem
 
             if (inputData.HpId < 0)
             {
-                return new GetListKensaMstOuputData(new List<KensaMstModel>(), SearchTenMstItemStatus.InValidHpId);
+                return new GetListKensaMstOuputData(new List<KensaMstModel>(), SearchPostCodeStatus.InvalidHpId, 0);
             }
             try
             {
-                var result = new List<KensaMstModel>();
-                result = _mstItemRepository.GetListKensaMst(inputData.HpId, inputData.Keyword);
-                return new GetListKensaMstOuputData(result, SearchTenMstItemStatus.Successed);
+                var result = _mstItemRepository.GetListKensaMst(inputData.HpId, inputData.Keyword, inputData.PageIndex, inputData.PageSize);
+                if (result.Item2 == 0)
+                {
+                    return new GetListKensaMstOuputData(new List<KensaMstModel>(), SearchPostCodeStatus.NoData, 0);
+                }
+
+                return new GetListKensaMstOuputData(result.Item1, SearchPostCodeStatus.Success, result.Item2);
             }
             finally
             {
