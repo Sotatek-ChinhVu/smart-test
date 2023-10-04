@@ -158,15 +158,20 @@ namespace Infrastructure.Repositories
 
         public List<KensaSetDetailModel> GetListKensaSetDetail(int hpId, int setId)
         {
-            return NoTrackingDataContext.KensaSetDetails.Where(x => x.HpId == hpId && x.SetId == setId && x.IsDeleted == DeleteTypes.None).Select(x => new KensaSetDetailModel(
-                x.HpId,
-                x.SetId,
-                x.SetEdaNo,
-                x.KensaItemCd,
-                x.KensaItemSeqNo,
-                x.SortNo,
-                x.IsDeleted
-                )).ToList();
+            var result = (from t1 in NoTrackingDataContext.KensaSetDetails
+                          join t2 in NoTrackingDataContext.KensaMsts on t1.KensaItemCd equals t2.KensaItemCd
+                          where t1.HpId == hpId && t1.SetId == setId && t1.IsDeleted == DeleteTypes.None
+                          select new KensaSetDetailModel(
+                          t1.HpId,
+                          t1.SetId,
+                          t1.SetEdaNo,
+                          t1.KensaItemCd,
+                          t2.KensaName,
+                          t1.KensaItemSeqNo,
+                          t1.SortNo,
+                          t1.IsDeleted
+                          )).ToList();
+            return result;
         }
 
         public List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, string keyWord)
