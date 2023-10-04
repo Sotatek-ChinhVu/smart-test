@@ -1,5 +1,4 @@
 ﻿using Domain.Models.AuditLog;
-using Domain.Models.MstItem;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
 using Helper.Constants;
@@ -16,17 +15,17 @@ public class RecalculationInteractor : IRecalculationInputPort
     private readonly IReceiptRepository _receiptRepository;
     private readonly ICalculateService _calculateService;
     private readonly ICommonReceRecalculation _commonReceRecalculation;
-    private readonly IMstItemRepository _mstItemRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
     private IMessenger? _messenger;
 
     bool isStopCalc = false;
 
-    public RecalculationInteractor(IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation, ICalculateService calculateRepository, IMstItemRepository mstItemRepository)
+    public RecalculationInteractor(IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation, ICalculateService calculateRepository, IAuditLogRepository auditLogRepository)
     {
         _receiptRepository = receiptRepository;
         _commonReceRecalculation = commonReceRecalculation;
         _calculateService = calculateRepository;
-        _mstItemRepository = mstItemRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
@@ -99,6 +98,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         {
             _commonReceRecalculation.ReleaseResource();
             _receiptRepository.ReleaseResource();
+            _auditLogRepository.ReleaseResource();
         }
     }
 
@@ -146,7 +146,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         return allowNextStep.Result.Result;
     }
 
-    private void AddAuditLog(int hpId, int userId,  int sinDate, bool recalculation, bool receiptAggregation, bool isCheckError, bool isSpecifiedPt)
+    private void AddAuditLog(int hpId, int userId, int sinDate, bool recalculation, bool receiptAggregation, bool isCheckError, bool isSpecifiedPt)
     {
         var hosoku = string.Format("CALC:{0},SUMRECE:{1},CHECK:{2},PT:{3}",
                                                    recalculation ? 1 : 0,
@@ -162,9 +162,9 @@ public class RecalculationInteractor : IRecalculationInputPort
                         0,
                         0,
                         0,
-                        hosoku
-            );
+        hosoku
+        );
 
-        _mstItemRepository.AddAuditTrailLog(hpId, userId, arg);
+        _auditLogRepository.AddAuditTrailLog(hpId, userId, arg);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Domain.Models.AuditLog;
-using Domain.Models.MstItem;
 using Domain.Models.SetMst;
 using Domain.Models.User;
 using Helper.Constants;
@@ -13,14 +12,14 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
     private readonly ISetMstRepository _setMstRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICommonSuperSet _commonSuperSet;
-    private readonly IMstItemRepository _mstItemRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
 
-    public SaveSetMstInteractor(ISetMstRepository setMstRepository, IUserRepository userRepository, ICommonSuperSet commonSuperSet, IMstItemRepository mstItemRepository)
+    public SaveSetMstInteractor(ISetMstRepository setMstRepository, IUserRepository userRepository, ICommonSuperSet commonSuperSet, IAuditLogRepository auditLogRepository)
     {
         _setMstRepository = setMstRepository;
         _userRepository = userRepository;
         _commonSuperSet = commonSuperSet;
-        _mstItemRepository = mstItemRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     public SaveSetMstOutputData Handle(SaveSetMstInputData inputData)
@@ -92,7 +91,7 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
         finally
         {
             _setMstRepository.ReleaseResource();
-            _mstItemRepository.ReleaseResource();
+            _auditLogRepository.ReleaseResource();
             _userRepository.ReleaseResource();
         }
     }
@@ -109,9 +108,9 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
             0,
             0,
             0,
-            hosoku
-            );
+        hosoku
+        );
 
-        _mstItemRepository.AddAuditTrailLog(hpId, userId, arg);
+        _auditLogRepository.AddAuditTrailLog(hpId, userId, arg);
     }
 }

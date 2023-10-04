@@ -1,7 +1,6 @@
 ﻿using Domain.Models.Accounting;
 using Domain.Models.AuditLog;
 using Domain.Models.HpInf;
-using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Domain.Models.SystemConf;
@@ -19,9 +18,9 @@ namespace Interactor.Accounting
         private readonly IHpInfRepository _hpInfRepository;
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IReceptionRepository _receptionRepository;
-        private readonly IMstItemRepository _mstItemRepository;
+        private readonly IAuditLogRepository _auditLogRepository;
 
-        public SaveAccountingInteractor(IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IMstItemRepository mstItemRepository)
+        public SaveAccountingInteractor(IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IAuditLogRepository auditLogRepository)
         {
             _accountingRepository = accountingRepository;
             _systemConfRepository = systemConfRepository;
@@ -29,7 +28,7 @@ namespace Interactor.Accounting
             _hpInfRepository = hpInfRepository;
             _patientInforRepository = patientInforRepository;
             _receptionRepository = receptionRepository;
-            _mstItemRepository = mstItemRepository;
+            _auditLogRepository = auditLogRepository;
         }
 
         public SaveAccountingOutputData Handle(SaveAccountingInputData inputData)
@@ -148,7 +147,7 @@ namespace Interactor.Accounting
                                 string.Empty
                 );
 
-                _mstItemRepository.AddAuditTrailLog(hpId, userId, arg);
+                _auditLogRepository.AddAuditTrailLog(hpId, userId, arg);
             }
             else
             {
@@ -164,7 +163,7 @@ namespace Interactor.Accounting
                                 string.Empty
                 );
 
-                _mstItemRepository.AddAuditTrailLog(hpId, userId, arg);
+                _auditLogRepository.AddAuditTrailLog(hpId, userId, arg);
             }
         }
         #endregion

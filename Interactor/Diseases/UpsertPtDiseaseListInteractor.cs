@@ -1,7 +1,6 @@
 ﻿using Domain.Models.AuditLog;
 using Domain.Models.Diseases;
 using Domain.Models.Insurance;
-using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Helper.Constants;
 using UseCase.Diseases.Upsert;
@@ -13,14 +12,14 @@ namespace Interactor.Diseases
         private readonly IPtDiseaseRepository _diseaseRepository;
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IInsuranceRepository _insuranceInforRepository;
-        private readonly IMstItemRepository _mstItemRepository;
+        private readonly IAuditLogRepository _auditLogRepository;
 
-        public UpsertPtDiseaseListInteractor(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IMstItemRepository mstItemRepository)
+        public UpsertPtDiseaseListInteractor(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IAuditLogRepository auditLogRepository)
         {
             _diseaseRepository = diseaseRepository;
             _patientInforRepository = patientInforRepository;
             _insuranceInforRepository = insuranceInforRepository;
-            _mstItemRepository = mstItemRepository;
+            _auditLogRepository = auditLogRepository;
         }
 
         public UpsertPtDiseaseListOutputData Handle(UpsertPtDiseaseListInputData inputData)
@@ -90,6 +89,7 @@ namespace Interactor.Diseases
                 _diseaseRepository.ReleaseResource();
                 _insuranceInforRepository.ReleaseResource();
                 _patientInforRepository.ReleaseResource();
+                _auditLogRepository.ReleaseResource();
             }
         }
 
@@ -159,7 +159,7 @@ namespace Interactor.Diseases
                             string.Empty
                 );
 
-            _mstItemRepository.AddAuditTrailLog(hpId, userId, arg);
+            _auditLogRepository.AddAuditTrailLog(hpId, userId, arg);
         }
     }
 }

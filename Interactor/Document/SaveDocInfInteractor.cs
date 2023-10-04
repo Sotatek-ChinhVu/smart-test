@@ -1,6 +1,5 @@
 ﻿using Domain.Models.AuditLog;
 using Domain.Models.Document;
-using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Helper.Common;
@@ -17,15 +16,15 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IReceptionRepository _receptionRepository;
-    private readonly IMstItemRepository _mstItemRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
 
-    public SaveDocInfInteractor(IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IMstItemRepository mstItemRepository)
+    public SaveDocInfInteractor(IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IAuditLogRepository auditLogRepository)
     {
         _documentRepository = documentRepository;
         _amazonS3Service = amazonS3Service;
         _patientInforRepository = patientInforRepository;
         _receptionRepository = receptionRepository;
-        _mstItemRepository = mstItemRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     public SaveDocInfOutputData Handle(SaveDocInfInputData inputData)
@@ -85,6 +84,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             _documentRepository.ReleaseResource();
             _receptionRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
+            _auditLogRepository.ReleaseResource();
         }
     }
 
@@ -145,7 +145,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
                         0,
                         0,
                         hosoku
-            );
-        _mstItemRepository.AddAuditTrailLog(hpId, userId, arg);
+                  );
+        _auditLogRepository.AddAuditTrailLog(hpId, userId, arg);
     }
 }
