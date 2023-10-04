@@ -1,4 +1,5 @@
-﻿using Domain.Models.Lock;
+﻿using Domain.Constant;
+using Domain.Models.Lock;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -481,6 +482,86 @@ namespace Infrastructure.Repositories
                                     lockInf.Machine ?? string.Empty);
                 result.Add(lockModel);
             }
+            return result;
+        }
+
+        public List<LockInfModel> GetLockInfModels(int hpId)
+        {
+            List<LockInfModel> result = new List<LockInfModel>();
+            var listLock = NoTrackingDataContext.LockInfs.Where(u => u.HpId == hpId && !string.IsNullOrEmpty(u.Machine));
+            var listFunctMst = NoTrackingDataContext.FunctionMsts.Select(f => new { f.FunctionCd, f.FunctionName });
+            var listPtInf = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None).Select(pt => new { pt.PtId, pt.PtNum });
+            var listCalcStatus = NoTrackingDataContext.CalcStatus.Where(cal => cal.HpId == hpId && !string.IsNullOrEmpty(cal.CreateMachine) && (cal.Status == 0 || cal.Status == 1));
+            var listDocInf = NoTrackingDataContext.DocInfs.Where(d => d.HpId == hpId && d.IsLocked == 1 && !string.IsNullOrEmpty(d.LockMachine) && d.IsDeleted == DeleteStatus.None);
+
+            var lockInfQuerry = (from lockInf in listLock
+                                 join functMst in listFunctMst on lockInf.FunctionCd equals functMst.FunctionCd
+                                 join ptInf in listPtInf on lockInf.PtId equals ptInf.PtId
+                                 select new
+                                 {
+                                     LockInf = lockInf,
+                                     FunctName = functMst.FunctionName,
+                                     PtNum = ptInf.PtNum,
+                                 }).ToList();
+
+            var docInfQuerry = (from docInf in listDocInf
+                                join ptInf in listPtInf on docInf.PtId equals ptInf.PtId
+                                select new
+                                {
+                                    DocInf = docInf,
+                                    PtNum = ptInf.PtNum,
+                                }).ToList();
+
+            var calcStatusQuerry = (from calcStatus in listCalcStatus
+                                    join ptInf in listPtInf on calcStatus.PtId equals ptInf.PtId
+                                    select new
+                                    {
+                                        CalcStatus = calcStatus,
+                                        PtNum = ptInf.PtNum,
+                                    }).ToList();
+
+            var listModel = lockInfQuerry.Select(l => new LockPtInfModel(l.LockInf.PtId, l.FunctName, l.PtNum, l.LockInf.SinDate, l.LockInf.LockDate, l.LockInf.Machine ?? string.Empty, l.LockInf.FunctionCd, l.LockInf.RaiinNo, l.LockInf.OyaRaiinNo)).ToList();
+
+            result.AddRange(lockInfQuerry.AsEnumerable().Select(l => new LockInfModel(
+                new LockPtInfModel(l.LockInf.PtId, l.FunctName, l.PtNum, l.LockInf.SinDate, l.LockInf.LockDate, l.LockInf.Machine ?? string.Empty, l.LockInf.FunctionCd, l.LockInf.RaiinNo, l.LockInf.OyaRaiinNo)
+            )).ToList());
+
+            result.AddRange(docInfQuerry.AsEnumerable().Select(doc => new LockInfModel(
+                new LockDocInfModel(doc.DocInf.PtId, doc.PtNum, doc.DocInf.SinDate, doc.DocInf.RaiinNo, doc.DocInf.SeqNo, doc.DocInf.CategoryCd, doc.DocInf.FileName ?? string.Empty, doc.DocInf.DspFileName ?? string.Empty, doc.DocInf.IsLocked, (DateTime)doc.DocInf.LockDate, doc.DocInf.LockId, doc.DocInf.LockMachine ?? string.Empty, doc.DocInf.IsDeleted)
+            )).ToList());
+
+            result.AddRange(calcStatusQuerry.AsEnumerable().Select(cal => new LockInfModel(
+                new LockCalcStatusModel(cal.CalcStatus.PtId, cal.PtNum, cal.CalcStatus.SinDate, cal.CalcStatus.CreateDate)
+            )));
+            return result;
+        }
+
+        public Dictionary<int, Dictionary<int, string>> GetLockInf(int hpId)
+        {
+            Dictionary<int, Dictionary<int, string>> result = new();
+            var lockInfs = NoTrackingDataContext.LockInfs.Where(x => x.HpId == hpId).ToList();
+            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
+            var count = 0;
+
+            var query = from lockInf in lockInfs
+                        join userMst in userMsts
+                        on lockInf.UserId equals userMst.UserId
+                        select new
+                        {
+                            lockInf.UserId,
+                            userMst.Name
+                        };
+
+            foreach (var item in query.AsEnumerable().ToList())
+            {
+                Dictionary<int, string> data = new()
+                {
+                    { item.UserId, item.Name }
+                };
+                result.Add(count, data);
+                count++;
+            }
+
             return result;
         }
     }

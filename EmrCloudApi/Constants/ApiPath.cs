@@ -423,7 +423,8 @@
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
         public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
-        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut";
+        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut"; 
+        public const string GetLockInf = "GetLockInf";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";

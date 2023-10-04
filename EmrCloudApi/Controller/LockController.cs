@@ -13,6 +13,7 @@ using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
 using UseCase.Lock.Get;
+using UseCase.Lock.GetLockInf;
 using UseCase.Lock.Remove;
 
 namespace EmrCloudApi.Controller
@@ -188,6 +189,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<CheckLockVisitingResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetLockInf)]
+        public ActionResult<Response<GetLockInfResponse>> GetLockInf()
+        {
+            var input = new GetLockInfInputData(HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetLockInfPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetLockInfResponse>>(presenter.Result);
         }
     }
 
