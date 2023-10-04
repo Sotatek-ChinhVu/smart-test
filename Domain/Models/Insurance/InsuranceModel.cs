@@ -27,6 +27,7 @@ namespace Domain.Models.InsuranceInfor
             StartDate = startDate;
             EndDate = endDate;
             IsAddNew = isAddNew;
+            HokenId = hokenInf.HokenId;
         }
 
         public InsuranceModel() // new model

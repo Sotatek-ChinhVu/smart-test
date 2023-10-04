@@ -950,7 +950,7 @@ namespace Infrastructure.Repositories
                     if (!hokenPatternModels.Any(p => p.HokenSbtCd < 500 && p.HokenSbtCd > 0
                                                 && !p.IsEmptyHoken
                                                 && !p.IsExpirated
-                                                && p.HokenId == syosaisinHokenPattern?.HokenId))
+                                                && p.HokenInf.HokenId == syosaisinHokenPattern?.HokenInf.HokenId))
                     {
                         //② 初再診と同じ主保険を持つ有効な保険パターンがない場合は、履歴と同じPID
                         return historyPid;
@@ -960,7 +960,7 @@ namespace Infrastructure.Repositories
                             .Where(p => p.HokenSbtCd < 500 && p.HokenSbtCd > 0
                                    && !p.IsEmptyHoken
                                    && !p.IsExpirated
-                                   && p.HokenId == syosaisinHokenPattern?.HokenId
+                                   && p.HokenInf.HokenId == syosaisinHokenPattern?.HokenInf.HokenId
                                    && p.BuntenKohis.Count > 0)
                             .OrderBy(p => p.IsExpirated)
                             .ThenBy(p => p.HokenPid)
@@ -994,7 +994,7 @@ namespace Infrastructure.Repositories
                                                     .Where(p => p.HokenSbtCd < 500 && p.HokenSbtCd > 0
                                                            && !p.IsEmptyHoken
                                                            && !p.IsExpirated
-                                                           && p.HokenId == syosaisinHokenPattern?.HokenId)
+                                                           && p.HokenInf.HokenId == syosaisinHokenPattern?.HokenInf.HokenId)
                                                     .OrderBy(p => p.IsExpirated)
                                                     .ThenBy(p => p.HokenPid)
                                                     .ToList();
