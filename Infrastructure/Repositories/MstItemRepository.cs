@@ -7848,7 +7848,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
         else if (setNameMnt.Is831Cmt)
         {
-            var itemCd = HenkanJ.ZenToHank(setNameMnt.CmtOpt);
+            var itemCd = HenkanJ.Instance.ToHalfsize(setNameMnt.CmtOpt);
             var itemCmt = TrackingDataContext.TenMsts.FirstOrDefault(p =>
                p.HpId == hpId &&
                p.StartDate <= sinDate &&

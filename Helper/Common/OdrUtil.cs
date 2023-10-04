@@ -703,7 +703,7 @@ namespace Helper.Common
 
             if (cmtOpt.Length == 7)
             {
-                string tempCmtOpt = HenkanJ.ZenToHank(cmtOpt);
+                string tempCmtOpt = HenkanJ.Instance.ToHalfsize(cmtOpt);
                 string formatDate = string.Format("{0}.{1}.{2}.{3}",
                     CIUtil.Copy(tempCmtOpt, 1, 1),
                     CIUtil.Copy(tempCmtOpt, 2, 2),
@@ -716,11 +716,11 @@ namespace Helper.Common
                 }
 
                 var warekiYmd = CIUtil.SDateToShowWDate3(tempConvertDate);
-                return HenkanJ.HankToZen(warekiYmd.Ymd.Replace(" ", ""));
+                return HenkanJ.Instance.ToFullsize(warekiYmd.Ymd.Replace(" ", ""));
             }
             else
             {
-                string tempCmtOpt = HenkanJ.ZenToHank(cmtOpt);
+                string tempCmtOpt = HenkanJ.Instance.ToHalfsize(cmtOpt);
                 string formatDate = string.Format("{0}.{1}.{2}.{3}",
                     CIUtil.Copy(tempCmtOpt, 1, 1),
                     CIUtil.Copy(tempCmtOpt, 2, 2),
@@ -734,7 +734,7 @@ namespace Helper.Common
 
                 var warekiYmd = CIUtil.SDateToShowWDate3(tempConvertDate);
                 string strWarekiYmn = warekiYmd.Ymd.Replace(" ", "");
-                return HenkanJ.HankToZen(CIUtil.Copy(strWarekiYmn, 1, strWarekiYmn.Length - 3));
+                return HenkanJ.Instance.ToFullsize(CIUtil.Copy(strWarekiYmn, 1, strWarekiYmn.Length - 3));
             }
         }
 
@@ -758,9 +758,9 @@ namespace Helper.Common
                 return string.Empty;
             }
 
-            var value = HenkanJ.ZenToHank(cmtOpt).AsInteger().AsString();
+            var value = HenkanJ.Instance.ToHalfsize(cmtOpt).AsInteger().AsString();
 
-            return string.Format("{0}分", HenkanJ.HankToZen(value));
+            return string.Format("{0}分", HenkanJ.Instance.ToFullsize(value));
         }
 
         public static string GetCmtOptDisplay853(string cmtOpt)
@@ -785,7 +785,7 @@ namespace Helper.Common
                 return string.Empty;
             }
 
-            cmtOpt = HenkanJ.ZenToHank(cmtOpt).PadLeft(15, '0');
+            cmtOpt = HenkanJ.Instance.ToHalfsize(cmtOpt).PadLeft(15, '0');
 
             string cmtOptDate = CIUtil.Copy(cmtOpt, 1, 7);
             string cmtOptValue = CIUtil.Copy(cmtOpt, 8, 8);
@@ -802,7 +802,7 @@ namespace Helper.Common
             }
 
             var warekiYmd = CIUtil.SDateToShowWDate3(tempConvertDate);
-            var date = HenkanJ.HankToZen(warekiYmd.Ymd.Replace(" ", ""));
+            var date = HenkanJ.Instance.ToFullsize(warekiYmd.Ymd.Replace(" ", ""));
 
             string value = "0";
             if (cmtOptValue != "00000000")
@@ -814,7 +814,7 @@ namespace Helper.Common
                 }
             }
 
-            return $"{date}　検査値：{HenkanJ.HankToZen(value)}";
+            return $"{date}　検査値：{HenkanJ.Instance.ToFullsize(value)}";
         }
     }
 
