@@ -3,6 +3,7 @@ using Domain.Models.Lock;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -520,10 +521,8 @@ namespace Infrastructure.Repositories
                                         PtNum = ptInf.PtNum,
                                     }).ToList();
 
-            var listModel = lockInfQuerry.Select(l => new LockPtInfModel(l.LockInf.PtId, l.FunctName, l.PtNum, l.LockInf.SinDate, l.LockInf.LockDate, l.LockInf.Machine ?? string.Empty, l.LockInf.FunctionCd, l.LockInf.RaiinNo, l.LockInf.OyaRaiinNo)).ToList();
-
             result.AddRange(lockInfQuerry.AsEnumerable().Select(l => new LockInfModel(
-                new LockPtInfModel(l.LockInf.PtId, l.FunctName, l.PtNum, l.LockInf.SinDate, l.LockInf.LockDate, l.LockInf.Machine ?? string.Empty, l.LockInf.FunctionCd, l.LockInf.RaiinNo, l.LockInf.OyaRaiinNo)
+                new LockPtInfModel(l.LockInf.PtId, l.FunctName, l.PtNum, l.LockInf.SinDate, l.LockInf.LockDate, l.LockInf.Machine ?? string.Empty, l.LockInf.FunctionCd, l.LockInf.RaiinNo, l.LockInf.OyaRaiinNo, l.LockInf.UserId)
             )).ToList());
 
             result.AddRange(docInfQuerry.AsEnumerable().Select(doc => new LockInfModel(
@@ -533,22 +532,22 @@ namespace Infrastructure.Repositories
             result.AddRange(calcStatusQuerry.AsEnumerable().Select(cal => new LockInfModel(
                 new LockCalcStatusModel(cal.CalcStatus.PtId, cal.PtNum, cal.CalcStatus.SinDate, cal.CalcStatus.CreateDate)
             )));
+
             return result;
         }
 
         public Dictionary<int, Dictionary<int, string>> GetLockInf(int hpId)
         {
             Dictionary<int, Dictionary<int, string>> result = new();
-            var lockInfs = NoTrackingDataContext.LockInfs.Where(x => x.HpId == hpId).ToList();
-            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
-            var count = 0;
-
-            var query = from lockInf in lockInfs
+            var userIdLockInfs = NoTrackingDataContext.LockInfs.Where(x => x.HpId == hpId).Select(x => x.UserId).Distinct().ToList();
+            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId).ToList();
+            var index = 0;
+            var query = from userIdLockInf in userIdLockInfs
                         join userMst in userMsts
-                        on lockInf.UserId equals userMst.UserId
+                        on userIdLockInf equals userMst.UserId
                         select new
                         {
-                            lockInf.UserId,
+                            userIdLockInf,
                             userMst.Name
                         };
 
@@ -556,10 +555,10 @@ namespace Infrastructure.Repositories
             {
                 Dictionary<int, string> data = new()
                 {
-                    { item.UserId, item.Name }
+                    { item.userIdLockInf, item.Name }
                 };
-                result.Add(count, data);
-                count++;
+                result.Add(index, data);
+                index++;
             }
 
             return result;

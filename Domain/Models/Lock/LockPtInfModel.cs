@@ -4,7 +4,7 @@ namespace Domain.Models.Lock
 {
     public class LockPtInfModel
     {
-        public LockPtInfModel(long ptId, string functionName, long ptNum, long sinDate, DateTime lockDate, string machine, string functionCd, long raiinNo, long oyaRaiinNo)
+        public LockPtInfModel(long ptId, string functionName, long ptNum, long sinDate, DateTime lockDate, string machine, string functionCd, long raiinNo, long oyaRaiinNo, int userId)
         {
             PtId = ptId;
             FunctionName = functionName;
@@ -15,6 +15,7 @@ namespace Domain.Models.Lock
             Machine = machine;
             RaiinNo = raiinNo;
             OyaRaiinNo = oyaRaiinNo;
+            UserId = userId;
         }
 
         public long PtId { get; private set; }
@@ -42,5 +43,7 @@ namespace Domain.Models.Lock
                 return SinDate.AsInteger();
             }
         }
+
+        public int UserId {  get; private set; }
     }
 }
