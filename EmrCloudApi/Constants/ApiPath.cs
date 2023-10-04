@@ -500,6 +500,7 @@
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";
         public const string SaveCompareTenMst = "SaveCompareTenMst";
+        public const string SaveSetNameMnt = "SaveSetNameMnt";
         public const string GetColumnSettingByTableNameList = "GetColumnSettingByTableNameList";
 
         //log

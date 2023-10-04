@@ -840,6 +840,7 @@ using UseCase.MstItem.IsUsingKensa;
 using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
 using UseCase.ColumnSetting.GetColumnSettingByTableNameList;
+using UseCase.MstItem.SaveSetNameMnt;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1868,6 +1869,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Compare TenMst CompareTenMstInputData
             busBuilder.RegisterUseCase<CompareTenMstInputData, CompareTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveCompareTenMstInputData, SaveCompareTenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveSetNameMntInputData, SaveSetNameMntInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

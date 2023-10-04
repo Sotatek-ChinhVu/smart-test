@@ -24,6 +24,8 @@ using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
+using System;
 using System.Text;
 using KensaCenterMstModel = Domain.Models.MstItem.KensaCenterMstModel;
 
@@ -7778,6 +7780,148 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
         }
         return 1;
+    }
+
+    public bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate)
+    {
+        try
+        {
+            var computerName = "SmartKarte";
+            foreach (var setNameMnt in lstModel)
+            {
+                if (setNameMnt.SetFlag == "●")
+                {
+                    if (setNameMnt.IsSet == false)
+                    {
+                        var getItem = TrackingDataContext.SetOdrInfDetail.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == setNameMnt.ItemCd && x.SetCd == setNameMnt.SetCd);
+                        if (getItem != null)
+                        {
+                            if (setNameMnt.IsCommentMaster)
+                            {
+                                getItem.ItemName = GetNewItemName(setNameMnt, sinDate, hpId);
+                                getItem.CmtName = setNameMnt.ItemNameTenMst;
+                            }
+                            else
+                            {
+                                getItem.ItemName = setNameMnt.ItemNameTenMst;
+                            }
+                            TrackingDataContext.SetOdrInfDetail.Update(getItem);
+                            TrackingDataContext.SaveChanges();
+                        }
+                    }
+                    else if (!string.IsNullOrWhiteSpace(setNameMnt.ItemNameTenMstBinding) == true)
+                    {
+                        var setItem = TrackingDataContext.SetMsts.FirstOrDefault(x => x.HpId == hpId && x.SetCd == setNameMnt.SetCd && x.SetKbn == setNameMnt.SetKbn && x.SetKbnEdaNo == setNameMnt.SetKbnEdaNo);
+                        if (setItem != null)
+                        {
+                            setItem.SetName = setNameMnt.ItemNameTenMstBinding;
+                            setItem.CreateDate = TimeZoneInfo.ConvertTimeToUtc(setItem.CreateDate);
+                            setItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            setItem.UpdateId = userId;
+                            setItem.UpdateMachine = computerName;
+                            TrackingDataContext.SetMsts.Update(setItem);
+                            TrackingDataContext.SaveChanges();
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public string GetNewItemName(SetNameMntModel setNameMnt, int sinDate, int hpId)
+    {
+        string cmtOptTemp = string.Empty;
+        string itemName = setNameMnt.ItemNameTenMst;
+
+        if (!string.IsNullOrWhiteSpace(setNameMnt.ItemName) && !string.IsNullOrWhiteSpace(setNameMnt.CmtName))
+        {
+            if (setNameMnt.ItemName.StartsWith(setNameMnt.CmtName))
+            {
+                cmtOptTemp = setNameMnt.ItemName.Replace(setNameMnt.CmtName, "");
+            }
+            else if (setNameMnt.ItemName.Contains("；"))
+            {
+                var nameArray = setNameMnt.ItemName.Split('；');
+                if (nameArray.Count() > 1)
+                {
+                    cmtOptTemp = nameArray[nameArray.Count() - 1];
+                }
+            }
+            else if (setNameMnt.ItemName.Contains("："))
+            {
+                var nameArray = setNameMnt.ItemName.Split('：');
+                if (nameArray.Count() > 1)
+                {
+                    cmtOptTemp = nameArray[nameArray.Count() - 1];
+                }
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(cmtOptTemp))
+        {
+            itemName += cmtOptTemp;
+            return itemName;
+        }
+
+        if (string.IsNullOrWhiteSpace(setNameMnt.CmtOpt))
+        {
+            return itemName;
+        }
+
+        if (setNameMnt.Is830Cmt)
+        {
+            itemName += setNameMnt.CmtOpt;
+        }
+        else if (setNameMnt.Is831Cmt)
+        {
+            var itemCd = HenkanJ.Instance.ToHalfsize(setNameMnt.CmtOpt);
+            var itemCmt = TrackingDataContext.TenMsts.FirstOrDefault(p =>
+               p.HpId == hpId &&
+               p.StartDate <= sinDate &&
+               p.EndDate >= sinDate &&
+               p.ItemCd == itemCd &&
+               p.IsDeleted == DeleteTypes.None);
+            itemName += itemCmt?.Name ?? "";
+        }
+        else if (setNameMnt.Is840Cmt)
+        {
+            itemName = OdrUtil.GetItemNameComment(itemName, setNameMnt.CmtOpt,
+                                                  setNameMnt.CmtCol1, setNameMnt.CmtColKeta1,
+                                                  setNameMnt.CmtCol2, setNameMnt.CmtColKeta2,
+                                                  setNameMnt.CmtCol3, setNameMnt.CmtColKeta3,
+                                                  setNameMnt.CmtCol4, setNameMnt.CmtColKeta4);
+        }
+        else if (setNameMnt.Is842Cmt)
+        {
+            itemName += setNameMnt.CmtOpt;
+        }
+        else if (setNameMnt.Is850Cmt)
+        {
+            itemName += OdrUtil.GetCmtOptDisplay850(setNameMnt.CmtOpt, setNameMnt.ItemNameTenMst);
+        }
+        else if (setNameMnt.Is851Cmt)
+        {
+            itemName += OdrUtil.GetCmtOptDisplay851(setNameMnt.CmtOpt);
+        }
+        else if (setNameMnt.Is852Cmt)
+        {
+            itemName += OdrUtil.GetCmtOptDisplay852(setNameMnt.CmtOpt);
+        }
+        else if (setNameMnt.Is853Cmt)
+        {
+            itemName += OdrUtil.GetCmtOptDisplay853(setNameMnt.CmtOpt);
+        }
+        else if (setNameMnt.Is880Cmt)
+        {
+            itemName += OdrUtil.GetCmtOptDisplay880(setNameMnt.CmtOpt);
+        }
+
+        return itemName;
     }
 
     public TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate)
