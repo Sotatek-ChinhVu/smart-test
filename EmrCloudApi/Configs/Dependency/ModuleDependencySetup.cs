@@ -123,6 +123,7 @@ using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
 using Interactor.ListSetGenerationMst;
 using Interactor.Lock;
+using Interactor.Logger;
 using Interactor.MainMenu;
 using Interactor.MaxMoney;
 using Interactor.MedicalExamination;
@@ -399,6 +400,7 @@ using UseCase.Lock.CheckExistFunctionCode;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
+using UseCase.Logger;
 using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using UseCase.MainMenu.DeleteKensaInf;
 using UseCase.MainMenu.GetKensaCenterMstList;
@@ -1839,6 +1841,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Audit Log
             busBuilder.RegisterUseCase<SaveAuditTrailLogInputData, SaveAuditTrailLogInteractor>();
+            busBuilder.RegisterUseCase<WriteLogInputData, WriteLogInteractor>();
 
             // Disease Name Mst Seach
             busBuilder.RegisterUseCase<DiseaseNameMstSearchInputData, DiseaseNameMstSearchInteractor>();

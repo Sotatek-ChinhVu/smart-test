@@ -501,5 +501,8 @@
         public const string SearchCompareTenMst = "SearchCompareTenMst";
         public const string SaveCompareTenMst = "SaveCompareTenMst";
         public const string GetColumnSettingByTableNameList = "GetColumnSettingByTableNameList";
+
+        //log
+        public const string WriteLog = "WriteLog";
     }
 }

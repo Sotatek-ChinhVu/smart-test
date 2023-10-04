@@ -7589,7 +7589,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
     public List<EventMstModel> GetEventMstModelList()
     {
-        var result = NoTrackingDataContext.EventMsts.Select(item => new EventMstModel(item.EventCd, item.EventName, item.AuditTrailing)).ToList();
+        var result = NoTrackingDataContext.EventMsts.Select(item => new EventMstModel(item.EventCd, item.EventName ?? string.Empty, item.AuditTrailing, item.CreateDate)).ToList();
         return result;
     }
 
