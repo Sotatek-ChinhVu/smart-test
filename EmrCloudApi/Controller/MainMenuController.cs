@@ -21,6 +21,7 @@ using UseCase.MainMenu.GetKensaCenterMstList;
 using UseCase.MainMenu.GetKensaInf;
 using UseCase.MainMenu.GetKensaIrai;
 using UseCase.MainMenu.GetKensaIraiLog;
+using UseCase.MainMenu.GetListQualification;
 using UseCase.MainMenu.GetStaCsvMstModel;
 using UseCase.MainMenu.GetStatisticMenu;
 using UseCase.MainMenu.KensaIraiReport;
@@ -229,6 +230,16 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new GetRsvInfToConfirmPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetRsvInfToConfirmResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListQualificationInf)]
+    public ActionResult<Response<GetListQualificationInfResponse>> GetListQualificationInf()
+    {
+        var input = new GetListQualificationInfInputData();
+        var output = _bus.Handle(input);
+        var presenter = new GetListQualificationInfPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetListQualificationInfResponse>>(presenter.Result);
     }
 
     #region private function

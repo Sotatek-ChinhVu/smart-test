@@ -1,4 +1,5 @@
 ﻿using Domain.Constant;
+using Domain.Models.MainMenu;
 using Domain.Models.RsvInf;
 using Entity.Tenant;
 using Helper.Common;
@@ -131,5 +132,21 @@ public class RsvInfRepository : RepositoryBase, IRsvInfRepository
                                         raiinInf.TantoId,
                                         raiinInf.KaId
             );
+    }
+
+    public List<QualificationInfModel> GetListQualificationInf()
+    {
+        var listOnlineConfirmation = NoTrackingDataContext.OnlineConfirmations
+                                        .OrderByDescending(u => u.CreateDate)
+                                        .Select(x => new QualificationInfModel(
+                                                        x.ReceptionNo,
+                                                        x.ReceptionDateTime,
+                                                        x.YoyakuDate,
+                                                        x.SegmentOfResult ?? string.Empty,
+                                                        x.ErrorMessage ?? string.Empty
+                                            ))
+                                        .Take(50)
+                                        .ToList();
+        return listOnlineConfirmation;
     }
 }

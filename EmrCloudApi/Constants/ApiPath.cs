@@ -450,6 +450,7 @@
         public const string KensaIraiReport = "KensaIraiReport";
         public const string SaveStaCsvMst = "SaveStaCsvMst";
         public const string GetRsvInfToConfirm = "GetRsvInfToConfirm";
+        public const string GetListQualificationInf = "GetListQualificationInf";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
