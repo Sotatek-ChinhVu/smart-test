@@ -3613,21 +3613,6 @@ namespace TenantMigration.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("FileId"));
 
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("PT_ID")
-                        .HasColumnOrder(3);
-
-                    b.Property<int>("GetDate")
-                        .HasColumnType("integer")
-                        .HasColumnName("GET_DATE")
-                        .HasColumnOrder(4);
-
-                    b.Property<int>("FileNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("FILE_NO")
-                        .HasColumnOrder(5);
-
                     b.Property<int>("CategoryCd")
                         .HasColumnType("integer")
                         .HasColumnName("CATEGORY_CD");
@@ -3655,9 +3640,24 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(300)")
                         .HasColumnName("FILE_NAME");
 
+                    b.Property<int>("FileNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("FILE_NO")
+                        .HasColumnOrder(5);
+
+                    b.Property<int>("GetDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("GET_DATE")
+                        .HasColumnOrder(4);
+
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
@@ -3672,7 +3672,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId", "FileId", "PtId", "GetDate", "FileNo");
+                    b.HasKey("HpId", "FileId");
 
                     b.HasIndex(new[] { "PtId", "GetDate", "FileNo", "CategoryCd" }, "FILING_INF_IDX01");
 
@@ -14627,6 +14627,8 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "GrpId", "RaiinListKbn");
+
+                    b.HasIndex(new[] { "GrpId", "KbnCd", "RaiinListKbn" }, "RAIIN_LIST_INF_IDX01");
 
                     b.ToTable("RAIIN_LIST_INF");
                 });
