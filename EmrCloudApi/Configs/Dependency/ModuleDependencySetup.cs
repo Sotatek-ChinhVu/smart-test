@@ -837,6 +837,7 @@ using UseCase.MstItem.IsKensaItemOrdering;
 using UseCase.MstItem.IsUsingKensa;
 using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
+using UseCase.ColumnSetting.GetColumnSettingByTableNameList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1464,6 +1465,7 @@ namespace EmrCloudApi.Configs.Dependency
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
             busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
+            busBuilder.RegisterUseCase<GetColumnSettingByTableNameListInputData, GetColumnSettingByTableNameListInteractor>();
 
             // JsonSetting
             busBuilder.RegisterUseCase<GetJsonSettingInputData, GetJsonSettingInteractor>();
