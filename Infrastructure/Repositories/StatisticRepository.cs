@@ -4,8 +4,10 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Helper.Util;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -72,6 +74,177 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                                )).ToList();
         return result;
     }
+
+    public List<StaCsvMstModel> GetStaCsvMstModels(int hpId)
+    {
+        string getDisplayColumnName(List<StaCsvModel> staCsvTemplateModels, string columns)
+        {
+            var staCsvModel = staCsvTemplateModels.FirstOrDefault(x => x.Columns == columns);
+            if (staCsvModel != null)
+            {
+                return staCsvModel.ColumnsDisplay;
+            }
+            return columns;
+        }
+
+        string revertJpNameToSaveName(List<StaCsvModel> staCsvTemplateModels, string dataColumn)
+        {
+            var staCsvModel = staCsvTemplateModels.FirstOrDefault(x => x.ColumnsDisplay == dataColumn);
+            if (staCsvModel != null)
+            {
+                return staCsvModel.Columns;
+            }
+            return dataColumn;
+        }
+
+        List<PtGrpNameMst> _ptGrpNameMsts = NoTrackingDataContext.PtGrpNameMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+        List<RaiinKbnMst> _raiinKbnMsts = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+
+        var result = new List<StaCsvMstModel>();
+        for (int i = 1; i <= 8; i++)
+        {
+            List<(bool isSelected, string outputColumnName, string saveName)> template = PtManagementUtil.GetStaCsvTemplate(i);
+            List<StaCsvModel> staCsvTemplateModels = template.Select(
+                    (x, idx) => new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, idx, 9000, i, x.saveName, x.isSelected, x.outputColumnName)
+                ).ToList();
+            if (i == 4)
+            {
+                foreach (var raiinKbn in _raiinKbnMsts)
+                {
+                    staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, i, string.Format("RaiinKbn_{0}", raiinKbn.GrpCd), false, string.Format("来院区分({0})", raiinKbn.GrpName)));
+                }
+            }
+
+            if (i != 1)
+            {
+                List<StaCsvModel> staCsvSubTemplateModels = StaCsvConfigTemplate.PtInfSubConfig.Select(
+                   (x, idx) => new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, idx, 9000, i, x.saveName, x.isSelected, x.outputColumnName)
+               ).ToList();
+                staCsvTemplateModels.AddRange(staCsvSubTemplateModels);
+            }
+
+            foreach (var ptGrpName in _ptGrpNameMsts)
+            {
+                staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, i, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
+                staCsvTemplateModels.Add(new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, i, string.Format("PtGrpCdName_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分名称", ptGrpName.GrpId, ptGrpName.GrpName)));
+            }
+
+            result.Add(new StaCsvMstModel(
+                PtManagementUtil.GetConfName(i),
+                i,
+                staCsvTemplateModels,
+                staCsvTemplateModels.Where(x => x.IsSelected).Select(
+                    (x, idx) => new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, idx, 9000, i, x.Columns ,
+                            x.IsSelected,
+                            x.ColumnsDisplay)).ToList(),
+                i - 1,
+                true));
+        }
+
+        var staCsvModels = NoTrackingDataContext.StaCsvs.Where(x => x.HpId == hpId && x.ReportId == 9000);
+        var groupStaCsvModels = staCsvModels.GroupBy(x => new { x.DataSbt, x.ConfName, x.RowNo });
+        foreach (var group in groupStaCsvModels)
+        {
+            List<(bool isSelected, string outputColumnName, string saveName)> template = PtManagementUtil.GetStaCsvTemplate(group.Key.DataSbt);
+            List<StaCsvModel> staCsvTemplateModels = template.Select(
+                    (x, idx) => new StaCsvModel( hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, idx, 9000, group.Key.DataSbt, x.saveName,
+                        x.isSelected,
+                        x.outputColumnName)
+                ).ToList();
+            if (group.Key.DataSbt == 4)
+            {
+                foreach (var raiinKbn in _raiinKbnMsts)
+                {
+                    staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("RaiinKbn_{0}", raiinKbn.GrpCd), false, string.Format("来院区分({0})", raiinKbn.GrpName)));
+                }
+            }
+
+            if (group.Key.DataSbt != 1)
+            {
+                List<StaCsvModel> staCsvSubTemplateModels = StaCsvConfigTemplate.PtInfSubConfig.Select(
+                    (x, idx) => new StaCsvModel( hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(u => u.SortKbn) + 1, 9000, group.Key.DataSbt, x.saveName, x.isSelected, x.outputColumnName)
+                ).ToList();
+                staCsvTemplateModels.AddRange(staCsvSubTemplateModels);
+            }
+
+            foreach (var ptGrpName in _ptGrpNameMsts)
+            {
+                staCsvTemplateModels.Add(new StaCsvModel( hpId,  group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
+                staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCdName_{0}", ptGrpName.GrpId), false,
+                 string.Format("グループ{0}({1}) 区分名称", ptGrpName.GrpId, ptGrpName.GrpName)));
+            }
+
+            result.Add(new StaCsvMstModel(
+                group.Key.ConfName ?? string.Empty,
+                group.Key.DataSbt,
+                staCsvTemplateModels,
+                group.ToList().Select(x => new StaCsvModel(x.Id, x.HpId, x.ConfName ?? string.Empty, x.RowNo, x.SortKbn, x.ReportId, x.DataSbt, revertJpNameToSaveName(staCsvTemplateModels, x.Columns ?? string.Empty), true, getDisplayColumnName(staCsvTemplateModels, x.Columns ?? string.Empty))).ToList(),
+                group.Key.RowNo,
+                false
+                ));
+        }
+
+        foreach (var item in result)
+        {
+            foreach (var staCsv in item.StaCsvModels)
+            {
+                staCsv.ChangeIsModified(false);
+            }
+        }
+
+        return result;
+    }
+
+    public void SaveStaCsvMst(int hpId, int userId, List<StaCsvMstModel> staCsvMstModels)
+    {
+        var addStaCsvMsts = new List<StaCsv>();
+        var deleteStaCsvMsts = new List<StaCsv>();
+
+        foreach (var staCsvMstModel in staCsvMstModels)
+        {
+            var ids = staCsvMstModel.StaCsvModelsSelected.Select(s => s.Id).ToList();
+            var staCsvs = TrackingDataContext.StaCsvs.Where(s => s.HpId == hpId).AsEnumerable().Where(s => ids.Contains(s.Id)).ToList();
+            foreach (var item in staCsvMstModel.StaCsvModelsSelected)
+            {
+                if (item.IsModified)
+                {
+                    var staCsv = staCsvs.FirstOrDefault(s => s.Id == item.Id);
+                    if (staCsv != null)
+                    {
+                        staCsv.ReportId = item.ReportId;
+                        staCsv.RowNo = item.RowNo;
+                        staCsv.ConfName = item.ConfName;
+                        staCsv.DataSbt = item.DataSbt;
+                        staCsv.Columns = item.Columns;
+                        staCsv.SortKbn = item.SortKbn;
+                        staCsv.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        staCsv.UpdateId = userId;
+                    }
+
+                    if (item.Id > 0 && item.IsDeleted && staCsv != null)
+                    {
+                        deleteStaCsvMsts.Add(staCsv);
+                    }
+                    else if (item.Id == 0 && !item.IsDeleted && item.IsSelected)
+                    {
+                        var newStaCsv = ConvertStaCsvModelToStaCsv(hpId, userId, item);
+                        addStaCsvMsts.Add(newStaCsv);
+                    }
+                    else if (item.Id > 0 && !item.IsSelected && staCsv != null)
+                    {
+                        deleteStaCsvMsts.Add(staCsv);
+                    }
+                }
+            }
+        }
+
+        TrackingDataContext.StaCsvs.AddRange(addStaCsvMsts);
+        TrackingDataContext.StaCsvs.RemoveRange(deleteStaCsvMsts);
+        TrackingDataContext.SaveChanges();
+
+    }
+
+
 
     public void ReleaseResource()
     {
@@ -218,6 +391,19 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
     public bool SaveStaConfMenu(int hpId, int userId, StatisticMenuModel statisticMenu)
     {
         var staMenu = new StaMenu();
+
+        if (statisticMenu.IsDeleted)
+        {
+            staMenu.MenuId = statisticMenu.MenuId;
+            staMenu.MenuName = staMenu.MenuName;
+            staMenu.IsDeleted = 1;
+            staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            staMenu.UpdateId = userId;
+
+            TrackingDataContext.StaMenus.UpdateRange(staMenu);
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
         if (!statisticMenu.IsDeleted && statisticMenu.IsModified && statisticMenu.MenuId == 0)
         {
             staMenu.HpId = hpId;
@@ -230,20 +416,23 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
             staMenu.CreateId = userId;
             staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
             staMenu.UpdateId = userId;
+
+            TrackingDataContext.StaMenus.AddRange(staMenu);
+            TrackingDataContext.SaveChanges();
         }
-        else if (statisticMenu.IsModified)
+        else if (!statisticMenu.IsDeleted && statisticMenu.IsModified)
         {
-            var staMenuUpdate = TrackingDataContext.StaMenus.FirstOrDefault(x => x.HpId == hpId && x.MenuId == statisticMenu.MenuId);
-            if (staMenuUpdate != null)
+             staMenu = TrackingDataContext.StaMenus.FirstOrDefault(x => x.HpId == hpId && x.MenuId == statisticMenu.MenuId);
+            if (staMenu != null)
             {
                 staMenu.MenuId = statisticMenu.MenuId;
-                staMenuUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                staMenuUpdate.UpdateId = userId;
+                staMenu.MenuName = statisticMenu.MenuName;
+                staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                staMenu.UpdateId = userId;
             }
+            TrackingDataContext.SaveChanges();
         }
 
-        TrackingDataContext.StaMenus.AddRange(staMenu);
-        TrackingDataContext.SaveChanges();
 
         return SavePtManagementConf(hpId, userId, staMenu.MenuId, statisticMenu.PatientManagement, statisticMenu.IsDeleted);
     }
@@ -594,5 +783,24 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                                               );
 
         return result;
+    }
+
+    private StaCsv ConvertStaCsvModelToStaCsv(int hpId, int userId, StaCsvModel staCsv)
+    {
+        return new StaCsv
+        {
+            HpId = hpId,
+            Id = staCsv.Id,
+            ReportId = staCsv.ReportId,
+            RowNo = staCsv.RowNo,
+            ConfName = staCsv.ConfName,
+            DataSbt = staCsv.DataSbt,
+            Columns = staCsv.Columns,
+            SortKbn = staCsv.SortKbn,
+            CreateDate = CIUtil.GetJapanDateTimeNow(),
+            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+            CreateId = userId,
+            UpdateId = userId
+        };
     }
 }

@@ -229,7 +229,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
                 var prePrintData = printDatas[ptIndex];
 
                 //患者毎に区切り線を引く
-                if (printData.PtNum != prePrintData.PtNum && prePrintData.PtNum != null && (rowNo + 1) % maxRow != 0)
+                if (!string.IsNullOrEmpty(prePrintData.PtNum) && printData.PtNum != prePrintData.PtNum && (rowNo + 1) % maxRow != 0)
                 {
                     if (!_extralData.ContainsKey("headerLine"))
                     {

@@ -35,7 +35,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
                 return new SaveListSanteiInfOutputData(resultValidate);
             }
             var listSanteiInfs = ConvertToSanteiInfModel(inputData.PtId, inputData.ListSanteiInfs);
-            if (_santeiInfRepository.SaveSantei(inputData.HpId, inputData.UserId, listSanteiInfs))
+            if (_santeiInfRepository.SaveSantei(inputData.HpId, inputData.UserId, inputData.PtId, listSanteiInfs))
             {
                 return new SaveListSanteiInfOutputData(SaveListSanteiInfStatus.Successed);
             }

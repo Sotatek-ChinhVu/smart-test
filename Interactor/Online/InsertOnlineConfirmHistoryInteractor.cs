@@ -34,9 +34,18 @@ public class InsertOnlineConfirmHistoryInteractor : IInsertOnlineConfirmHistoryI
                 if (xmlObject != null)
                 {
                     var onlineConfirmationDate = xmlObject.MessageHeader.ProcessExecutionTime;
+                    DateTime confirmDateInsert;
+                    try
+                    {
+                        confirmDateInsert = TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(onlineConfirmationDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture));
+                    }
+                    catch
+                    {
+                        return new InsertOnlineConfirmHistoryOutputData(new(), InsertOnlineConfirmHistoryStatus.InvalidOnlineConfirmationDate);
+                    }
                     onlineModelList.Add(new OnlineConfirmationHistoryModel(0,
                                                                            item.PtId,
-                                                                           TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(onlineConfirmationDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)),
+                                                                           confirmDateInsert,
                                                                            item.ConfirmationType,
                                                                            item.InfoConsFlg,
                                                                            item.ConfirmationResult,
