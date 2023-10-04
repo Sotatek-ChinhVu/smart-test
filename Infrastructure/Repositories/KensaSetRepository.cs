@@ -62,44 +62,68 @@ namespace Infrastructure.Repositories
                             KensaSet.IsDeleted = isDeleted;
                             KensaSet.UpdateId = userId;
                             KensaSet.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        }
 
-                        foreach (var item in kensaSetDetails)
-                        {
-                            // Create kensaSetDetail
-                            if (item.SetId == 0 && item.SetEdaNo == 0)
+                            // Delete kensaSetDetail
+                            if (isDeleted == DeleteTypes.Deleted)
                             {
-                                TrackingDataContext.KensaSetDetails.Add(new KensaSetDetail()
+                                var kensaSetDetails = TrackingDataContext.KensaSetDetails.Where(x => x.IsDeleted == DeleteTypes.None && x.SetId == setId && x.HpId == hpId).ToList();
+                                foreach (var item in kensaSetDetails)
                                 {
-                                    HpId = hpId,
-                                    SetId = kensaSetId,
-                                    KensaItemCd = item.KensaItemCd,
-                                    KensaItemSeqNo = item.KensaItemSeqNo,
-                                    SortNo = item.SortNo,
-                                    CreateId = userId,
-                                    UpdateId = userId,
-                                    CreateMachine = CIUtil.GetComputerName(),
-                                    UpdateMachine = CIUtil.GetComputerName(),
-                                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                                    IsDeleted = 0,
-                                });
-                            }
-
-                            // Update kensaSetDetail
-                            else
-                            {
-                                var kensaSetDetail = TrackingDataContext.KensaSetDetails.FirstOrDefault(x => x.HpId == item.HpId && x.SetId == item.SetId && x.SetEdaNo == item.SetEdaNo);
-                                if (kensaSetDetail == null)
-                                {
-                                    transaction.Rollback();
+                                    item.IsDeleted = DeleteTypes.Deleted;
                                 }
-                                kensaSetDetail.SortNo = item.SortNo;
-                                kensaSetDetail.IsDeleted = item.IsDeleted;
-                                kensaSetDetail.UpdateId = userId;
-                                kensaSetDetail.UpdateMachine = CIUtil.GetComputerName();
-                                kensaSetDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            }
+                        }
+                        if (isDeleted == DeleteTypes.None)
+                        {
+                            foreach (var item in kensaSetDetails)
+                            {
+                                // Create kensaSetDetail
+                                if (item.SetEdaNo == 0)
+                                {
+                                    TrackingDataContext.KensaSetDetails.Add(new KensaSetDetail()
+                                    {
+                                        HpId = hpId,
+                                        SetId = kensaSetId,
+                                        KensaItemCd = item.KensaItemCd,
+                                        KensaItemSeqNo = item.KensaItemSeqNo,
+                                        SortNo = item.SortNo,
+                                        CreateId = userId,
+                                        UpdateId = userId,
+                                        CreateMachine = CIUtil.GetComputerName(),
+                                        UpdateMachine = CIUtil.GetComputerName(),
+                                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                        IsDeleted = DeleteTypes.None,
+                                    });
+                                }
 
+                                // Update kensaSetDetail
+                                else
+                                {
+                                    var kensaSetDetail = TrackingDataContext.KensaSetDetails.FirstOrDefault(x => x.HpId == hpId && x.SetId == item.SetId && x.SetEdaNo == item.SetEdaNo);
+                                    if (kensaSetDetail == null)
+                                    {
+                                        transaction.Rollback();
+                                    }
+                                    kensaSetDetail.SortNo = item.SortNo;
+                                    kensaSetDetail.IsDeleted = item.IsDeleted;
+                                    kensaSetDetail.UpdateId = userId;
+                                    kensaSetDetail.UpdateMachine = CIUtil.GetComputerName();
+                                    kensaSetDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
+
+                                    // Delete kensaSetDetail childrens
+                                    if (item.IsDeleted == DeleteTypes.Deleted)
+                                    {
+                                        var itemCdChildrens = NoTrackingDataContext.KensaMsts.Where(x => x.OyaItemCd == item.KensaItemCd).Select(x => x.KensaItemCd).ToList();
+                                        var kensaSetDetailChildrens = TrackingDataContext.KensaSetDetails.Where(x => x.IsDeleted == DeleteTypes.None && x.SetId == setId && x.HpId == hpId
+                                        && itemCdChildrens.Contains(x.KensaItemCd)).ToList();
+
+                                        foreach (var setDetail in kensaSetDetailChildrens)
+                                        {
+                                            setDetail.IsDeleted = DeleteTypes.Deleted;
+                                        }
+                                    }
+                                }
                             }
                         }
 
