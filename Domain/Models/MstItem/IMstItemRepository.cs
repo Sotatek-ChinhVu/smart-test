@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Enum;
+using Domain.Models.AuditLog;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
@@ -224,6 +225,10 @@ namespace Domain.Models.MstItem
         bool SaveCompareTenMst(List<SaveCompareTenMstModel> ListData, ComparisonSearchModel comparison, int userId);
 
         bool UpdateYohoSetMst(int hpId, int userId, List<YohoSetMstModel> listYohoSetMstModels);
+
+        TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate);
+
+        ByomeiMstModel GetByomeiByCode(string byomeiCd);
 
         bool SaveSetNameMnt(List<SaveSetNameMntModel> lstModel, int userId, int hpId, int sinDate);
     }

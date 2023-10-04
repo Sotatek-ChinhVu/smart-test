@@ -7,6 +7,7 @@ using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Presenters.MstItem;
+using EmrCloudApi.Requests.ListSetMst;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
@@ -21,6 +22,7 @@ using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
+using UseCase.ListSetMst.UpdateListSetMst;
 using UseCase.IsUsingKensa;
 using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.CompareTenMst;
@@ -84,6 +86,8 @@ using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
 using Domain.Models.OrdInfDetails;
 using UseCase.MstItem.UpdateYohoSetMst;
+using UseCase.MstItem.GetTenMstByCode;
+using UseCase.MstItem.GetByomeiByCode;
 
 namespace EmrCloudApi.Controller
 {
@@ -794,7 +798,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<IsKensaItemOrderingResponse>>(presenter.Result);
         }
         [HttpGet(ApiPath.GetSetNameMnt)]
-        public ActionResult<Response<GetSetNameMntResponse>> GetSetNameMnt(GetSetNameMntRequest request)
+        public ActionResult<Response<GetSetNameMntResponse>> GetSetNameMnt([FromQuery] GetSetNameMntRequest request)
         {
             var input = new GetSetNameMntInputData(HpId, request.SetKbnChecked1, request.SetKbnChecked2, request.SetKbnChecked3, request.SetKbnChecked4, request.SetKbnChecked5, request.SetKbnChecked6, request.SetKbnChecked7,
                     request.SetKbnChecked8, request.SetKbnChecked9, request.SetKbnChecked10, request.JihiChecked, request.KihonChecked, request.TokuChecked, request.YohoChecked, request.DiffChecked);
@@ -1009,6 +1013,26 @@ namespace EmrCloudApi.Controller
             var presenter = new ExistUsedKensaItemCdPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<ExistUsedKensaItemCdResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTenMstByCode)]
+        public ActionResult<Response<GetTenMstByCodeResponse>> GetTenMstByCode([FromQuery] GetTenMstByCodeRequest request)
+        {
+            var input = new GetTenMstByCodeInputData(request.ItemCd, request.SetKbn, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenMstByCodePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenMstByCodeResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetByomeiByCode)]
+        public ActionResult<Response<GetByomeiByCodeResponse>> GetByomeiByCode([FromQuery] GetByomeiByCodeRequest request)
+        {
+            var input = new GetByomeiByCodeInputData(request.ByomeiCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetByomeiByCodePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetByomeiByCodeResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.SaveSetNameMnt)]

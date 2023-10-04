@@ -79,6 +79,8 @@
         public const string F17Common = "F17Common";
         public const string IsKensaItemOrdering = "IsKensaItemOrdering";
         public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
+        public const string GetTenMstByCode = "GetTenMstByCode";
+        public const string GetByomeiByCode = "GetByomeiByCode";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -484,6 +486,8 @@
 
         public const string Test = "Test";
 
+        //ListSetMst
+        public const string UpdateListSetMst = "UpdateListSetMst";
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";
@@ -492,9 +496,14 @@
 
         //SetSendaiGeneration
         public const string Restore = "Restore";
+
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";
         public const string SaveCompareTenMst = "SaveCompareTenMst";
         public const string SaveSetNameMnt = "SaveSetNameMnt";
+        public const string GetColumnSettingByTableNameList = "GetColumnSettingByTableNameList";
+
+        //log
+        public const string WriteLog = "WriteLog";
     }
 }

@@ -9,5 +9,7 @@
         Task WriteLogEndAsync(string message = "");
 
         Task WriteLogMessageAsync(string message);
+
+        bool WriteAuditLog(string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType);
     }
 }
