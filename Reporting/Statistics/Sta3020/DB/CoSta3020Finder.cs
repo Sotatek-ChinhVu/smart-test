@@ -151,7 +151,7 @@ namespace Reporting.Statistics.Sta3020.DB
                             //検索項目
                             if (printConf.ItemSearchOpt == 0 && ((printConf.ItemCds?.Count ?? 0) > 0))
                             {
-                                joinDetails = joinDetails.Where(x => printConf.ItemCds.Any(key => x.ItemCd.Contains(key)));
+                                joinDetails = joinDetails.Where(x => x.ItemCd != null && printConf.ItemCds.Any(key => x.ItemCd.Contains(key)));
                             }
                             break;
                         }
