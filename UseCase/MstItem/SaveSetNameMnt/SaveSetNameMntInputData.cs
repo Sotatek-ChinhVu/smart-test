@@ -10,7 +10,7 @@ namespace UseCase.MstItem.SaveSetNameMnt
 {
     public class SaveSetNameMntInputData: IInputData<SaveSetNameMntOutputData>
     {
-        public SaveSetNameMntInputData(List<SaveSetNameMntModel> listData, int hpId, int userId, int sindate)
+        public SaveSetNameMntInputData(List<SetNameMntModel> listData, int hpId, int userId, int sindate)
         {
             ListData = listData;
             HpId = hpId;
@@ -18,7 +18,7 @@ namespace UseCase.MstItem.SaveSetNameMnt
             Sindate = sindate;
         }
 
-        public List<SaveSetNameMntModel> ListData { get; private set; }
+        public List<SetNameMntModel> ListData { get; private set; }
         public int HpId { get; private set; }
         public int UserId { get; private set; }
         public int Sindate { get; private set; }

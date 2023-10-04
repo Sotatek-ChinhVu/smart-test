@@ -7782,7 +7782,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return 1;
     }
 
-    public bool SaveSetNameMnt(List<SaveSetNameMntModel> lstModel, int userId, int hpId, int sinDate)
+    public bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate)
     {
         try
         {
@@ -7833,7 +7833,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
     }
 
-    public string GetNewItemName(SaveSetNameMntModel setNameMnt, int sinDate, int hpId)
+    public string GetNewItemName(SetNameMntModel setNameMnt, int sinDate, int hpId)
     {
         string cmtOptTemp = string.Empty;
         string itemName = setNameMnt.ItemNameTenMst;

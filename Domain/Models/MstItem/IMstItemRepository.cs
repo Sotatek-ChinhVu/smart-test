@@ -230,7 +230,7 @@ namespace Domain.Models.MstItem
 
         ByomeiMstModel GetByomeiByCode(string byomeiCd);
 
-        bool SaveSetNameMnt(List<SaveSetNameMntModel> lstModel, int userId, int hpId, int sinDate);
+        bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate);
     }
 
 }
