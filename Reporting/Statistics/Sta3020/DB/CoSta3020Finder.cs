@@ -119,7 +119,7 @@ namespace Reporting.Statistics.Sta3020.DB
                         CenterItemCd2 = kensaMstJoin.CenterItemCd2 == null ? string.Empty : kensaMstJoin.CenterItemCd2,
                         MaxEndDate = maxTenMstJoin.MaxEndDate == null ? 0 : maxTenMstJoin.MaxEndDate
                     }
-                );
+                ).AsEnumerable();
 
                 //条件２-対象データ
                 switch (printConf.TgtData)
