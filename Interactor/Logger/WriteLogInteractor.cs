@@ -1,4 +1,6 @@
-﻿using Infrastructure.Logger;
+﻿using Infrastructure.Interfaces;
+using Infrastructure.Logger;
+using Microsoft.AspNetCore.Http;
 using UseCase.Logger;
 
 namespace Interactor.Logger
@@ -6,10 +8,12 @@ namespace Interactor.Logger
     public class WriteLogInteractor : IWriteLogInputPort
     {
         private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public WriteLogInteractor(ILoggingHandler loggingHandler)
+        public WriteLogInteractor(ITenantProvider tenantProvider)
         {
-            _loggingHandler = loggingHandler;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public WriteLogOutputData Handle(WriteLogInputData inputData)
