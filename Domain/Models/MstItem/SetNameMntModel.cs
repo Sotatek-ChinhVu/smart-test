@@ -1,4 +1,5 @@
 ﻿using Helper.Constants;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.MstItem
 {
@@ -38,8 +39,55 @@ namespace Domain.Models.MstItem
             UpdateDate = updateDate;
             UpdateId = updateId;
             UpdateMachine = updateMachine;
-
+            SetCategory = string.Empty;
+            SetKbnEdaNoBinding = string.Empty;
+            Level1Binding = string.Empty;
+            Level2Binding = string.Empty;
+            Level3Binding = string.Empty;
+            IsSetString = string.Empty;
+            ItemNameBinding = string.Empty;
+            ItemNameTenMstBinding = string.Empty;
+            SetFlag = string.Empty;
         }
+
+        [JsonConstructor]
+        public SetNameMntModel(string itemNameTenMst, int cmtCol1, int cmtColKeta1, int cmtCol2, int cmtColKeta2, int cmtCol3, int cmtColKeta3, int cmtCol4, int cmtColKeta4, int setCd, int setKbn, int setKbnEdaNo, int generationId, string setName, int rowNo, string itemCd, string itemName, string cmtName, string cmtOpt, bool isSet, string itemNameTenMstBinding, string setFlag)
+        {
+            ItemNameTenMst = itemNameTenMst;
+            CmtCol1 = cmtCol1;
+            CmtColKeta1 = cmtColKeta1;
+            CmtCol2 = cmtCol2;
+            CmtColKeta2 = cmtColKeta2;
+            CmtCol3 = cmtCol3;
+            CmtColKeta3 = cmtColKeta3;
+            CmtCol4 = cmtCol4;
+            CmtColKeta4 = cmtColKeta4;
+            SetCd = setCd;
+            SetKbn = setKbn;
+            SetKbnEdaNo = setKbnEdaNo;
+            GenerationId = generationId;
+            SetName = setName;
+            RowNo = rowNo;
+            ItemCd = itemCd;
+            ItemName = itemName;
+            CmtName = cmtName;
+            CmtOpt = cmtOpt;
+            IsSet = isSet;
+            ItemNameTenMstBinding = itemNameTenMstBinding;
+            SetFlag = setFlag;
+            CreateMachine = string.Empty;
+            UpdateMachine = string.Empty;
+            SetCategory = string.Empty;
+            SetKbnEdaNoBinding = string.Empty;
+            Level1Binding = string.Empty;
+            Level2Binding = string.Empty;
+            Level3Binding = string.Empty;
+            IsSetString = string.Empty;
+            ItemNameBinding = string.Empty;
+            ItemNameTenMstBinding = string.Empty;
+            SetFlag = string.Empty;
+        }
+
         public SetNameMntModel(bool isSetOdrInfDetail, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3,
         string setName, DateTime createDate, int createId,
         string createMachine, DateTime updateDate, int updateId, string updateMachine, string itemNameTenMst, int cmtCol1, int cmtColKeta1, int cmtCol2, int cmtColKeta2, int cmtCol3, int cmtColKeta3,
@@ -69,6 +117,15 @@ namespace Domain.Models.MstItem
             CmtColKeta3 = cmtColKeta3;
             CmtCol4 = cmtCol4;
             CmtColKeta4 = cmtColKeta4;
+            SetCategory = string.Empty;
+            SetKbnEdaNoBinding = string.Empty;
+            Level1Binding = string.Empty;
+            Level2Binding = string.Empty;
+            Level3Binding = string.Empty;
+            IsSetString = string.Empty;
+            ItemNameBinding = string.Empty;
+            ItemNameTenMstBinding = string.Empty;
+            SetFlag = string.Empty;
         }
         public bool IsSetOdrInfDetail { get; private set; }
         public string ItemNameTenMst { get; private set; }
