@@ -22,5 +22,7 @@ namespace Domain.Models.Diseases
 
         List<PtDiseaseModel> GetAllByomeiByPtId(int hpId, long ptId, int pageIndex, int pageSize);
         bool UpdateByomeiSetMst(int userId, int hpId, List<ByomeiSetMstUpdateModel> listData);
+
+        Dictionary<string, string> GetByomeiMst(int hpId, List<string> byomeiCds);
     }
 }

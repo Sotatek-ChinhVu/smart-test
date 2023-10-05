@@ -147,5 +147,6 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
+        
     }
 }

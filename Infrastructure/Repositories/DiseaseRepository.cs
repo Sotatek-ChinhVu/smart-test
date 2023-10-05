@@ -936,5 +936,24 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
             return true;
         }
+        
+        public Dictionary<string, string> GetByomeiMst(int hpId, List<string> byomeiCds)
+        {
+            var result = new Dictionary<string, string>();
+
+            foreach (var item in byomeiCds)
+            {
+                if (!string.IsNullOrEmpty(item))
+                {
+                    var byomei = NoTrackingDataContext.ByomeiMsts.FirstOrDefault(x => x.HpId == hpId && x.ByomeiCd == item);
+                    if (byomei != null && !result.ContainsKey(byomei.ByomeiCd))
+                    {
+                        result.Add(byomei.ByomeiCd, byomei.Sbyomei ?? string.Empty);
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 }

@@ -6,6 +6,7 @@ using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
 using Domain.Models.AuditLog;
+using Domain.Models.ByomeiSetGenerationMst;
 using Domain.Models.ChartApproval;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
@@ -26,6 +27,8 @@ using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.KensaIrai;
+using Domain.Models.ListSetGenerationMst;
+using Domain.Models.ListSetMst;
 using Domain.Models.Lock;
 using Domain.Models.MainMenu;
 using Domain.Models.MaxMoney;
@@ -83,6 +86,7 @@ using EventProcessor.Service;
 using Helper.Messaging;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
 using Infrastructure.Services;
@@ -117,7 +121,9 @@ using Interactor.KarteFilter;
 using Interactor.KarteInf;
 using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
+using Interactor.ListSetGenerationMst;
 using Interactor.Lock;
+using Interactor.Logger;
 using Interactor.MainMenu;
 using Interactor.MaxMoney;
 using Interactor.MedicalExamination;
@@ -131,6 +137,7 @@ using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
 using Interactor.PatientInfor.PtKyuseiInf;
 using Interactor.PatientInfor.SortPatientCommon;
+using Interactor.PatientManagement;
 using Interactor.PtGroupMst;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
@@ -147,6 +154,7 @@ using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SetMst.CommonSuperSet;
+using Interactor.SetSendaiGeneration;
 using Interactor.SinKoui;
 using Interactor.SpecialNote;
 using Interactor.StickyNote;
@@ -348,6 +356,7 @@ using UseCase.FlowSheet.GetTooltip;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
+using UseCase.HokenMst.GetHokenMst;
 using UseCase.Holiday.SaveHoliday;
 using UseCase.Insurance.FindHokenInfByPtId;
 using UseCase.Insurance.FindPtHokenList;
@@ -372,9 +381,12 @@ using UseCase.InsuranceMst.GetSelectMaintenance;
 using UseCase.InsuranceMst.SaveHokenMaster;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.InsuranceMst.SaveOrdInsuranceMst;
+using UseCase.IsUsingKensa;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
 using UseCase.Ka.GetKaCodeList;
+using UseCase.Ka.GetKacodeMstYossi;
+using UseCase.Ka.GetKacodeYousikiMst;
 using UseCase.Ka.GetList;
 using UseCase.Ka.SaveList;
 using UseCase.KarteFilter.GetListKarteFilter;
@@ -388,7 +400,17 @@ using UseCase.Lock.CheckExistFunctionCode;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Get;
 using UseCase.Lock.Remove;
+using UseCase.Logger;
+using UseCase.MainMenu.CreateDataKensaIraiRenkei;
+using UseCase.MainMenu.DeleteKensaInf;
+using UseCase.MainMenu.GetKensaCenterMstList;
+using UseCase.MainMenu.GetKensaInf;
+using UseCase.MainMenu.GetKensaIrai;
+using UseCase.MainMenu.GetKensaIraiLog;
+using UseCase.MainMenu.GetStaCsvMstModel;
 using UseCase.MainMenu.GetStatisticMenu;
+using UseCase.MainMenu.KensaIraiReport;
+using UseCase.MainMenu.SaveStaCsvMst;
 using UseCase.MainMenu.SaveStatisticMenu;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
@@ -431,11 +453,14 @@ using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using UseCase.MstItem.CompareTenMst;
 using UseCase.MstItem.ConvertStringChkJISKj;
 using UseCase.MstItem.DeleteOrRecoverTenMst;
+using UseCase.MstItem.DiseaseNameMstSearch;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
+using UseCase.MstItem.GetAllCmtCheckMst;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDefaultPrecautions;
 using UseCase.MstItem.GetDiseaseList;
@@ -443,16 +468,27 @@ using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetDrugAction;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
+using UseCase.MstItem.GetListByomeiSetGenerationMst;
 using UseCase.MstItem.GetListDrugImage;
+using UseCase.MstItem.GetListKensaIjiSetting;
+using UseCase.MstItem.GetListSetGenerationMst;
 using UseCase.MstItem.GetListTenMstOrigin;
+using UseCase.MstItem.GetListUser;
+using UseCase.MstItem.GetParrentKensaMst;
+using UseCase.MstItem.GetRenkeiConf;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
+using UseCase.MstItem.GetSetNameMnt;
+using UseCase.MstItem.GetSingleDoseMstAndMedicineUnitList;
 using UseCase.MstItem.GetTeikyoByomei;
 using UseCase.MstItem.GetTenMstList;
 using UseCase.MstItem.GetTenMstListByItemType;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.GetTreeByomeiSet;
+using UseCase.MstItem.GetTreeListSet;
 using UseCase.MstItem.SaveAddressMst;
+using UseCase.MstItem.SaveCompareTenMst;
 using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
@@ -462,6 +498,11 @@ using UseCase.MstItem.SearchTenMstItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
+using UseCase.MstItem.UpdateByomeiMst;
+using UseCase.MstItem.UpdateCmtCheckMst;
+using UseCase.MstItem.UpdateJihiSbtMst;
+using UseCase.MstItem.UpdateKensaStdMst;
+using UseCase.MstItem.UpdateSingleDoseMst;
 using UseCase.MstItem.UploadImageDrugInf;
 using UseCase.NextOrder.Check;
 using UseCase.NextOrder.CheckNextOrdHaveOdr;
@@ -510,6 +551,9 @@ using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
+using UseCase.PatientManagement.GetStaConf;
+using UseCase.PatientManagement.SaveStaConf;
+using UseCase.PatientManagement.SearchPtInfs;
 using UseCase.PtGroupMst.CheckAllowDelete;
 using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
@@ -607,6 +651,10 @@ using UseCase.SetMst.GetList;
 using UseCase.SetMst.GetToolTip;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
+using UseCase.SetSendaiGeneration.Add;
+using UseCase.SetSendaiGeneration.Delete;
+using UseCase.SetSendaiGeneration.GetList;
+using UseCase.SetSendaiGeneration.Restore;
 using UseCase.SinKoui.GetSinKoui;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
@@ -643,6 +691,8 @@ using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.UketukeSbtMst.Upsert;
+using UseCase.UpdateKensaMst;
+using UseCase.UpsertMaterialMaster;
 using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.GetAllPermission;
@@ -770,6 +820,28 @@ using UseCase.UpsertMaterialMaster;
 using UseCase.UpdateKensaMst;
 using UseCase.MstItem.UpdateByomeiMst;
 using UseCase.IsUsingKensa;
+using Infrastructure.Logger;
+using UseCase.MstItem.SaveRenkei;
+using UseCase.MstItem.GetListYohoSetMstModelByUserID;
+using Interactor.ListSetGenerationMst;
+using Domain.Models.ListSetGenerationMst;
+using Domain.Models.ByomeiSetGenerationMst;
+using UseCase.MstItem.GetListByomeiSetGenerationMst;
+using UseCase.MstItem.GetTreeListSet;
+using UseCase.MstItem.GetTreeByomeiSet;
+using UseCase.MstItem.GetListSetGenerationMst;
+using UseCase.MstItem.GetListKensaIjiSetting;
+using UseCase.MstItem.CompareTenMst;
+using UseCase.MstItem.SaveCompareTenMst;
+using UseCase.MstItem.UpdateYohoSetMst;
+using Infrastructure.Logger;
+using UseCase.MstItem.ExistUsedKensaItemCd;
+using UseCase.MstItem.IsKensaItemOrdering;
+using UseCase.MstItem.IsUsingKensa;
+using UseCase.MstItem.GetTenMstByCode;
+using UseCase.MstItem.GetByomeiByCode;
+using UseCase.ColumnSetting.GetColumnSettingByTableNameList;
+using UseCase.MstItem.SaveSetNameMnt;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -810,6 +882,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
 
             services.AddScoped<IMessenger, Messenger>();
+            services.AddScoped<ILoggingHandler, LoggingHandler>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
@@ -1170,6 +1243,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IStaticsticExportCsvService, StaticsticExportCsvService>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
+            services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
+            services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1395,6 +1470,7 @@ namespace EmrCloudApi.Configs.Dependency
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
             busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
+            busBuilder.RegisterUseCase<GetColumnSettingByTableNameListInputData, GetColumnSettingByTableNameListInteractor>();
 
             // JsonSetting
             busBuilder.RegisterUseCase<GetJsonSettingInputData, GetJsonSettingInteractor>();
@@ -1442,14 +1518,30 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSingleDoseMstAndMedicineUnitListInputData, GetSingleDoseMstAndMedicineUnitListInteractor>();
             busBuilder.RegisterUseCase<UpdateCmtCheckMstInputData, UpdateCmtCheckMstInteractor>();
             busBuilder.RegisterUseCase<GetParrentKensaMstInputData, GetParrentKensaMstListInteractor>();
+            busBuilder.RegisterUseCase<UpdateSingleDoseMstInputData, UpdateSingleDoseMstInteractor>();
             busBuilder.RegisterUseCase<UpdateKensaMstInputData, UpdateKensaMstInteractor>();
             busBuilder.RegisterUseCase<UpdateByomeiMstInputData, UpdateByomeiMstInteractor>();
+            busBuilder.RegisterUseCase<F17CommonInputData, F17CommonInteractor>();
+            busBuilder.RegisterUseCase<UpdateKensaStdMstInputData, UpdateKensaStdMstInteractor>();
+            busBuilder.RegisterUseCase<UpsertMaterialMasterInputData, UpsertMaterialMasterInteractor>();
+            busBuilder.RegisterUseCase<UpdateJihiSbtMstInputData, UpdateJihiSbtMstInteractor>();
+            busBuilder.RegisterUseCase<GetListKensaIjiSettingInputData, GetListKensaIjiSettingInteractor>();
+            busBuilder.RegisterUseCase<GetSetNameMntInputData, GetSetNameMntInteractor>();
+            busBuilder.RegisterUseCase<UpdateYohoSetMstInputData, UpdateYohoSetMstInteractor>();
+            busBuilder.RegisterUseCase<GetListYohoSetMstModelByUserIDInputData, GetListYohoSetMstModelByUserIDInteractor>();
             busBuilder.RegisterUseCase<IsUsingKensaInputData, IsUsingKensaInteractor>();
+            busBuilder.RegisterUseCase<IsKensaItemOrderingInputData, IsKensaItemOrderingInteractor>();
+            busBuilder.RegisterUseCase<ExistUsedKensaItemCdInputData, ExistUsedKensaItemCdInteractor>();
+            busBuilder.RegisterUseCase<GetListUserInputData, GetListUserInteractor>();
+            busBuilder.RegisterUseCase<GetTenMstByCodeInputData, GetTenMstByCodeInteractor>();
+            busBuilder.RegisterUseCase<GetByomeiByCodeInputData, GetByomeiByCodeInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
             busBuilder.RegisterUseCase<DiseaseSearchInputData, DiseaseSearchInteractor>();
             busBuilder.RegisterUseCase<GetSetByomeiTreeInputData, GetSetByomeiTreeInteractor>();
+            busBuilder.RegisterUseCase<GetTreeByomeiSetInputData, GetTreeByomeiSetInteractor>();
+            busBuilder.RegisterUseCase<GetListByomeiSetGenerationMstInputData, GetListByomeiSetGenerationMstInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
@@ -1699,6 +1791,10 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CreateDataKensaIraiRenkeiInputData, CreateDataKensaIraiRenkeiInteractor>();
             busBuilder.RegisterUseCase<GetKensaInfInputData, GetKensaInfInteractor>();
             busBuilder.RegisterUseCase<DeleteKensaInfInputData, DeleteKensaInfInteractor>();
+            busBuilder.RegisterUseCase<GetKensaIraiLogInputData, GetKensaIraiLogInteractor>();
+            busBuilder.RegisterUseCase<KensaIraiReportInputData, KensaIraiReportInteractor>();
+            busBuilder.RegisterUseCase<GetStaCsvMstInputData, GetStaCsvMstInteractor>();
+            busBuilder.RegisterUseCase<SaveStaCsvMstInputData, SaveStaCsvMstInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
@@ -1707,6 +1803,8 @@ namespace EmrCloudApi.Configs.Dependency
             //MstItem
             busBuilder.RegisterUseCase<GetJihiSbtMstListInputData, GetJihiMstsInteractor>();
             busBuilder.RegisterUseCase<SaveAddressMstInputData, SaveAddressMstInteractor>();
+            busBuilder.RegisterUseCase<GetRenkeiConfInputData, GetRenkeiConfInteractor>();
+            busBuilder.RegisterUseCase<SaveRenkeiInputData, SaveRenkeiInteractor>();
 
             //ListSetMst
             busBuilder.RegisterUseCase<UpdateListSetMstInputData, UpdateListSetMstInteractor>();
@@ -1746,9 +1844,34 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Audit Log
             busBuilder.RegisterUseCase<SaveAuditTrailLogInputData, SaveAuditTrailLogInteractor>();
+            busBuilder.RegisterUseCase<WriteLogInputData, WriteLogInteractor>();
 
             // Disease Name Mst Seach
             busBuilder.RegisterUseCase<DiseaseNameMstSearchInputData, DiseaseNameMstSearchInteractor>();
+
+            //PatientManagement
+            busBuilder.RegisterUseCase<SearchPtInfsInputData, SearchPtInfsInteractor>();
+            busBuilder.RegisterUseCase<GetHokenMstInputData, GetHokenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveStaConfMenuInputData, SaveStaConfMenuInteractor>();
+            busBuilder.RegisterUseCase<GetStaConfMenuInputData, GetStaConfMenuInteractor>();
+
+            //ListSetMst
+            busBuilder.RegisterUseCase<GetTreeListSetInputData, GetTreeListSetInteractor>();
+
+            //Get List Set Senkai Generation
+            busBuilder.RegisterUseCase<SetSendaiGenerationInputData, SetSendaiGenerationGetListInteractor>();
+            busBuilder.RegisterUseCase<DeleteSendaiGenerationInputData, DeleteSetSendaiGenerationInteractor>();
+            busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
+            busBuilder.RegisterUseCase<RestoreSetSendaiGenerationInputData, RestoreSetSendaiGenerationInteractor>();
+
+
+            //ListSetGeneration
+            busBuilder.RegisterUseCase<GetListSetGenerationMstInputData, ListSetGenerationMstInteractor>();
+
+            //Compare TenMst CompareTenMstInputData
+            busBuilder.RegisterUseCase<CompareTenMstInputData, CompareTenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveCompareTenMstInputData, SaveCompareTenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveSetNameMntInputData, SaveSetNameMntInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

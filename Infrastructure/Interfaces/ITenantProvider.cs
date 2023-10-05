@@ -1,4 +1,5 @@
-﻿using PostgreDataContext;
+﻿using Microsoft.EntityFrameworkCore;
+using PostgreDataContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,5 +33,21 @@ namespace Infrastructure.Interfaces
         string GetDomainFromQueryString();
 
         string GetDomainFromHeader();
+
+        string GetDomain();
+
+        string GetClientIp();
+
+        int GetHpId();
+
+        int GetUserId();
+
+        int GetDepartmentId();
+
+        Task<string> GetRequestInfoAsync();
+
+        string GetAdminConnectionString();
+
+        DbContextOptions CreateNewTrackingAdminDbContextOption();
     }
 }

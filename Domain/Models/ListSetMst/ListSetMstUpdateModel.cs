@@ -15,10 +15,10 @@ namespace Domain.Models.ListSetMst
         public int Level3 { get; private set; }
         public int Level4 { get; private set; }
         public int Level5 { get; private set; }
-        public int IsDeleted { get; private set; }
         public int IsTitle { get; private set; }
+        public int IsDeleted { get; private set; }
 
-        public ListSetMstUpdateModel(int hpId, int generationId, int setId, int setKbn, string setName, string itemCd, int level1, int level2, int level3, int level4, int level5, int isTitle)
+        public ListSetMstUpdateModel(int hpId, int generationId, int setId, int setKbn, string setName, string itemCd, int level1, int level2, int level3, int level4, int level5, int isTitle, int isDeleted)
         {
             HpId = hpId;
             GenerationId = generationId;
@@ -32,6 +32,7 @@ namespace Domain.Models.ListSetMst
             Level4 = level4;
             Level5 = level5;
             IsTitle = isTitle;
+            IsDeleted = isDeleted;
         }
     }
 }
