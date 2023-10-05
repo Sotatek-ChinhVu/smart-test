@@ -1,9 +1,11 @@
 ﻿using Helper.Common;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.MainMenu
 {
     public class QualificationInfModel
     {
+        [JsonConstructor]
         public QualificationInfModel(string receptionNo, DateTime receptionDateTime, int yoyakuDate, string segmentOfResult, string errorMessage)
         {
             ReceptionNo = receptionNo;
@@ -11,6 +13,13 @@ namespace Domain.Models.MainMenu
             YoyakuDate = yoyakuDate;
             SegmentOfResult = segmentOfResult;
             ErrorMessage = errorMessage;
+        }
+
+        public QualificationInfModel()
+        {
+            ReceptionNo = string.Empty;
+            SegmentOfResult = string.Empty;
+            ErrorMessage = string.Empty;
         }
 
         public string ReceptionNo { get; private set; }

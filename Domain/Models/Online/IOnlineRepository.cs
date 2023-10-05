@@ -1,4 +1,6 @@
 ﻿using Domain.Common;
+using Domain.Models.MainMenu;
+using Helper.Constants;
 
 namespace Domain.Models.Online;
 
@@ -29,4 +31,8 @@ public interface IOnlineRepository : IRepositoryBase
     List<OnlineConfirmationHistoryModel> GetListOnlineConfirmationHistoryModel(long ptId);
 
     List<OnlineConfirmationHistoryModel> GetListOnlineConfirmationHistoryModel(Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict);
+
+    List<QualificationInfModel> GetListQualificationInf();
+
+    bool SaveOnlineConfirmation(int userId, QualificationInfModel qualificationInf, ModelStatus status);
 }

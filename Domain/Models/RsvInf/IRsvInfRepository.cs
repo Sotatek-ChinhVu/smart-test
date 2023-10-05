@@ -8,7 +8,5 @@ namespace Domain.Models.RsvInf
         public List<RsvInfModel> GetList(int hpId, long ptId, int sinDate);
 
         List<RsvInfToConfirmModel> GetListRsvInfToConfirmModel(int hpId, int sinDate);
-
-        List<QualificationInfModel> GetListQualificationInf();
     }
 }

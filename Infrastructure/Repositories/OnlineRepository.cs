@@ -1,4 +1,5 @@
-﻿using Domain.Models.Online;
+﻿using Domain.Models.MainMenu;
+using Domain.Models.Online;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -458,6 +459,61 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                                                   .OrderByDescending(item => item.OnlineConfirmationDate)
                                                   .ToList();
         return result;
+    }
+
+
+    public List<QualificationInfModel> GetListQualificationInf()
+    {
+        var listOnlineConfirmation = NoTrackingDataContext.OnlineConfirmations
+                                        .OrderByDescending(u => u.CreateDate)
+                                        .Select(x => new QualificationInfModel(
+                                                        x.ReceptionNo,
+                                                        x.ReceptionDateTime,
+                                                        x.YoyakuDate,
+                                                        x.SegmentOfResult ?? string.Empty,
+                                                        x.ErrorMessage ?? string.Empty
+                                            ))
+                                        .Take(50)
+                                        .ToList();
+        return listOnlineConfirmation;
+    }
+
+    public bool SaveOnlineConfirmation(int userId, QualificationInfModel qualificationInf, ModelStatus status)
+    {
+        if (status == ModelStatus.Added)
+        {
+            var onlConfirm = new OnlineConfirmation();
+            onlConfirm.ReceptionNo = qualificationInf.ReceptionNo;
+            onlConfirm.ReceptionDateTime = qualificationInf.ReceptionDateTime;
+            onlConfirm.YoyakuDate = qualificationInf.YoyakuDate;
+            onlConfirm.SegmentOfResult = qualificationInf.SegmentOfResult;
+            onlConfirm.ErrorMessage = qualificationInf.ErrorMessage;
+            onlConfirm.CreateDate = CIUtil.GetJapanDateTimeNow();
+            onlConfirm.CreateId = userId;
+            onlConfirm.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            onlConfirm.UpdateId = userId;
+
+            TrackingDataContext.OnlineConfirmations.Add(onlConfirm);
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+        else if (status == ModelStatus.Modified)
+        {
+            var onlConfirm = TrackingDataContext.OnlineConfirmations.FirstOrDefault(x => x.ReceptionNo == qualificationInf.ReceptionNo);
+
+            if (onlConfirm != null)
+            {
+                onlConfirm.ReceptionDateTime = qualificationInf.ReceptionDateTime;
+                onlConfirm.YoyakuDate = qualificationInf.YoyakuDate;
+                onlConfirm.SegmentOfResult = qualificationInf.SegmentOfResult;
+                onlConfirm.ErrorMessage = qualificationInf.ErrorMessage;
+                onlConfirm.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                onlConfirm.UpdateId = userId;
+
+                return TrackingDataContext.SaveChanges() > 0;
+            }
+        }
+
+        return true;
     }
 
     #region private function

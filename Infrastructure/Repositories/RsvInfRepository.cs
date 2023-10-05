@@ -133,20 +133,4 @@ public class RsvInfRepository : RepositoryBase, IRsvInfRepository
                                         raiinInf.KaId
             );
     }
-
-    public List<QualificationInfModel> GetListQualificationInf()
-    {
-        var listOnlineConfirmation = NoTrackingDataContext.OnlineConfirmations
-                                        .OrderByDescending(u => u.CreateDate)
-                                        .Select(x => new QualificationInfModel(
-                                                        x.ReceptionNo,
-                                                        x.ReceptionDateTime,
-                                                        x.YoyakuDate,
-                                                        x.SegmentOfResult ?? string.Empty,
-                                                        x.ErrorMessage ?? string.Empty
-                                            ))
-                                        .Take(50)
-                                        .ToList();
-        return listOnlineConfirmation;
-    }
 }

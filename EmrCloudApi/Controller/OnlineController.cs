@@ -7,16 +7,14 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Online;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
 using System.Xml;
-using System.Xml.Serialization;
 using UseCase.Core.Sync;
 using UseCase.Online;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.Online.InsertOnlineConfirmHistory;
-using UseCase.Online.QualificationConfirmation;
 using UseCase.Online.SaveAllOQConfirmation;
+using UseCase.Online.SaveOnlineConfirmation;
 using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineHistoryById;
@@ -232,5 +230,17 @@ public class OnlineController : AuthorizeControllerBase
             response.Status = 2;
         }
         return new ActionResult<Response<ConvertXmlToQCXmlMsgResponse>>(response);
+    }
+
+    [HttpPost(ApiPath.SaveOnlineConfirmation)]
+    public ActionResult<Response<SaveOnlineConfirmationResponse>> SaveOnlineConfirmation([FromBody] SaveOnlineConfirmationRequest request)
+    {
+        var input = new SaveOnlineConfirmationInputData(UserId, request.QualificationInf, request.ModelStatus);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveOnlineConfirmationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveOnlineConfirmationResponse>>(presenter.Result);
     }
 }
