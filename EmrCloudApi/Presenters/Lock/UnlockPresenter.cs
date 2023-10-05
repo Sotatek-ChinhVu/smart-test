@@ -22,7 +22,7 @@ namespace EmrCloudApi.Presenters.Lock
         private static string GetMessage(UnlockStatus status) => status switch
         {
             UnlockStatus.Success => ResponseMessage.Success,
-
+            UnlockStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
     }

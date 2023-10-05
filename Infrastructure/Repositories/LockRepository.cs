@@ -566,16 +566,33 @@ namespace Infrastructure.Repositories
 
         public bool Unlock(int hpId, int userId, List<LockInfModel> lockInfModels)
         {
-            List<string> listMachineLock = lockInfModels.Where(u => !string.IsNullOrEmpty(u.Machine)).Select(u => u.Machine).GroupBy(u => u).Select(u => u.First()).ToList();
-            List<LockPtInfModel> listLockPtInfModel = lockInfModels.Where(u => u.PatientInfoModels != null && !u.CheckDefaultValue()).Select(u => u.PatientInfoModels).ToList();
-            List<LockCalcStatusModel> listLockCalcStatusModel = lockInfModels.Where(u => u.CalcStatusModels != null && !u.CheckDefaultValue()).Select(u => u.CalcStatusModels).ToList();
-            List<LockDocInfModel> listLockDocInfModel = lockInfModels.Where(u => u.DocInfModels != null && !u.CheckDefaultValue()).Select(u => u.DocInfModels).ToList();
-            UnlockSessionInf(hpId, listMachineLock);
-            UnlockPtInf(hpId, userId, listLockPtInfModel);
-            UnlockCalcStatusInf(hpId, userId, listLockCalcStatusModel);
-            UnlockDocInf(hpId, userId, listLockDocInfModel);
+            bool result = true;
+            try
+            {
+                List<string> listMachineLock = lockInfModels.Where(u => !string.IsNullOrEmpty(u.Machine)).Select(u => u.Machine).GroupBy(u => u).Select(u => u.First()).ToList();
+                List<LockPtInfModel> listLockPtInfModel = lockInfModels.Where(u => u.PatientInfoModels != null && !u.CheckDefaultValue()).Select(u => u.PatientInfoModels).ToList();
+                List<LockCalcStatusModel> listLockCalcStatusModel = lockInfModels.Where(u => u.CalcStatusModels != null && !u.CheckDefaultValue()).Select(u => u.CalcStatusModels).ToList();
+                List<LockDocInfModel> listLockDocInfModel = lockInfModels.Where(u => u.DocInfModels != null && !u.CheckDefaultValue()).Select(u => u.DocInfModels).ToList();
+                UnlockSessionInf(hpId, listMachineLock);
+                UnlockPtInf(hpId, userId, listLockPtInfModel);
+                UnlockCalcStatusInf(hpId, userId, listLockCalcStatusModel);
+                UnlockDocInf(hpId, userId, listLockDocInfModel);
+                
+                if(TrackingDataContext.SaveChanges() >= 1)
+                {
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
 
-            return TrackingDataContext.SaveChanges() >= 1;
+            return result;
         }
 
         public void UnlockSessionInf(int hpId, List<string> listMachineToUnlock)
@@ -610,7 +627,7 @@ namespace Infrastructure.Repositories
             foreach (var listLockCalcStatusModel in listLockCalcStatusModels)
             {
                 var calcStatus = NoTrackingDataContext.CalcStatus.FirstOrDefault(x => x.HpId == hpId && x.PtId == listLockCalcStatusModel.PtId);
-                if (calcStatus != null) 
+                if (calcStatus != null)
                 {
                     calcStatus.CreateMachine = string.Empty;
                     calcStatus.Status = 8;
@@ -627,7 +644,7 @@ namespace Infrastructure.Repositories
             foreach (var docInfModel in listLockDocInfModel)
             {
                 var docInf = TrackingDataContext.DocInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == docInfModel.PtId && x.SinDate == docInfModel.SinDate && x.RaiinNo == docInfModel.RaiinNo && x.SeqNo == docInfModel.SeqNo);
-                if(docInf != null)
+                if (docInf != null)
                 {
                     docInf.LockMachine = string.Empty;
                     docInf.IsLocked = 0;
