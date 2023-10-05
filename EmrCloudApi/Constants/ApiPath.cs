@@ -475,6 +475,7 @@
         public const string GetListOnlineConfirmationHistoryByPtId = "GetListOnlineConfirmationHistoryByPtId";
         public const string GetListOnlineConfirmationHistoryModel = "GetListOnlineConfirmationHistoryModel";
         public const string ConvertXmlToQCXmlMsg = "ConvertXmlToQCXmlMsg";
+        public const string GetOnlineConsent = "GetOnlineConsent";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";

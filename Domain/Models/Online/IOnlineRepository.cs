@@ -29,4 +29,6 @@ public interface IOnlineRepository : IRepositoryBase
     List<OnlineConfirmationHistoryModel> GetListOnlineConfirmationHistoryModel(long ptId);
 
     List<OnlineConfirmationHistoryModel> GetListOnlineConfirmationHistoryModel(Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict);
+
+    List<OnlineConsentModel> GetOnlineConsentModel(long ptId);
 }
