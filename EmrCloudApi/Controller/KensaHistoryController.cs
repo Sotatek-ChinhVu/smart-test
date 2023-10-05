@@ -73,5 +73,15 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<UpdateKensaInfDetailResponse>>(presenter.Result);
         }
+
+        [HttpGet(ApiPath.GetListKensaInfDetail)]
+        public ActionResult<Response<GetListKensaCmtMstResponse>> GetListKensaInfDetail([FromQuery] GetListKensaCmtMstRequest request)
+        {
+            var input = new GetListKensaCmtMstInputData(HpId, request.Keyword);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaCmtMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaCmtMstResponse>>(presenter.Result);
+        }
     }
 }

@@ -7785,14 +7785,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     public (List<KensaMstModel>, int) GetListKensaMst(int hpId, string keyWord, int pageIndex, int pageSize)
     {
         var result = new List<KensaMstModel>();
-        // var allkensaKensaMst = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId && x.IsDelete == DeleteTypes.None).ToList();
         var allkensaKensaMst = (
             from kensaMst in NoTrackingDataContext.KensaMsts
             where kensaMst.HpId == hpId && kensaMst.IsDelete == DeleteTypes.None
             join centerMst in NoTrackingDataContext.KensaCenterMsts
             on new { kensaMst.CenterCd, kensaMst.HpId } equals new { centerMst.CenterCd, centerMst.HpId }
             into joinedData
-            from res in joinedData.DefaultIfEmpty() // Left Join
+            from res in joinedData.DefaultIfEmpty()
             select new KensaMstModel(
                kensaMst.KensaItemCd,
                kensaMst.KensaItemSeqNo,
@@ -7822,10 +7821,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 res.CenterName ?? string.Empty
             )
         ).ToList();
-        //{
-        //    KensaMst = kensaMst,
-        //        CenterMst = res
-        //    }
+
         if (allkensaKensaMst == null)
         {
             return (result, 0);
