@@ -838,6 +838,7 @@ using UseCase.MstItem.IsUsingKensa;
 using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
 using UseCase.Lock.GetLockInf;
+using UseCase.Lock.Unlock;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1775,6 +1776,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckLockVisitingInputData, CheckLockVisitingInteractor>();
             busBuilder.RegisterUseCase<CheckExistFunctionCodeInputData, CheckExistFunctionCodeInteractor>();
             busBuilder.RegisterUseCase<GetLockInfInputData, GetLockInfInteractor>();
+            busBuilder.RegisterUseCase<UnlockInputData, UnlockInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();

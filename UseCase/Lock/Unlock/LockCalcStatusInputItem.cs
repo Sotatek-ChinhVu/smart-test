@@ -1,8 +1,8 @@
-﻿namespace Domain.Models.Lock
+﻿namespace UseCase.Lock.Unlock
 {
-    public class LockCalcStatusModel
+    public class LockCalcStatusInputItem
     {
-        public LockCalcStatusModel(long calcId, long ptId, long ptNum, int sinDate, DateTime createDate, string createMachine)
+        public LockCalcStatusInputItem(long calcId, long ptId, long ptNum, int sinDate, DateTime createDate, string createMachine)
         {
             CalcId = calcId;
             PtId = ptId;

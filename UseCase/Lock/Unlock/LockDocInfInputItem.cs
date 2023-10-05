@@ -1,8 +1,8 @@
-﻿namespace Domain.Models.Lock
+﻿namespace UseCase.Lock.Unlock
 {
-    public class LockDocInfModel
+    public class LockDocInfInputItem
     {
-        public LockDocInfModel(long ptId, long ptNum, int sinDate, long raiinNo, int seqNo, int categoryCd, string fileName, string dspFileName, int isLocked, DateTime lockDate, int lockId, string lockMachine, int isDeleted)
+        public LockDocInfInputItem(long ptId, long ptNum, int sinDate, long raiinNo, int seqNo, int categoryCd, string fileName, string dspFileName, int isLocked, DateTime lockDate, int lockId, string lockMachine, int isDeleted)
         {
             PtId = ptId;
             PtNum = ptNum;

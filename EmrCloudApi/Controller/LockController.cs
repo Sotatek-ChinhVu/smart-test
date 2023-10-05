@@ -1,12 +1,11 @@
-﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Messages;
+﻿using Domain.Models.Lock;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Lock;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
 using EmrCloudApi.Services;
-using Helper.Constants;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
@@ -15,6 +14,7 @@ using UseCase.Lock.CheckExistFunctionCode;
 using UseCase.Lock.Get;
 using UseCase.Lock.GetLockInf;
 using UseCase.Lock.Remove;
+using UseCase.Lock.Unlock;
 
 namespace EmrCloudApi.Controller
 {
@@ -201,6 +201,78 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetLockInfResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Unlock)]
+        public ActionResult<Response<UnlockResponse>> Unlock(UnlockRequest request)
+        {
+            var input = new UnlockInputData(HpId, UserId, request.LockInfModels.Select(x => LockInfInputItemRequestToModel(x)).ToList());
+            var output = _bus.Handle(input);
+
+            var presenter = new UnlockPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UnlockResponse>>(presenter.Result);
+        }
+
+        private LockInfModel LockInfInputItemRequestToModel(LockInfInputItem lockInfInputItem)
+        {
+            return
+                new LockInfModel
+                (
+                    new LockPtInfModel(lockInfInputItem.PatientInfoModels.PtId,
+                                       lockInfInputItem.PatientInfoModels.FunctionName,
+                                       lockInfInputItem.PatientInfoModels.PtNum,
+                                       lockInfInputItem.PatientInfoModels.SinDate,
+                                       lockInfInputItem.PatientInfoModels.LockDate,
+                                       lockInfInputItem.PatientInfoModels.Machine,
+                                       lockInfInputItem.PatientInfoModels.FunctionCd,
+                                       lockInfInputItem.PatientInfoModels.RaiinNo,
+                                       lockInfInputItem.PatientInfoModels.OyaRaiinNo,
+                                       lockInfInputItem.PatientInfoModels.UserId),
+                    new LockCalcStatusModel(lockInfInputItem.CalcStatusModels.CalcId,
+                                            lockInfInputItem.CalcStatusModels.PtId,
+                                            lockInfInputItem.CalcStatusModels.PtNum,
+                                            lockInfInputItem.CalcStatusModels.SinDate,
+                                            lockInfInputItem.CalcStatusModels.CreateDate,
+                                            lockInfInputItem.CalcStatusModels.CreateMachine), 
+                    new LockDocInfModel(lockInfInputItem.DocInfModels.PtId,
+                                        lockInfInputItem.DocInfModels.PtNum,
+                                        lockInfInputItem.DocInfModels.SinDate,
+                                        lockInfInputItem.DocInfModels.RaiinNo,
+                                        lockInfInputItem.DocInfModels.SeqNo,
+                                        lockInfInputItem.DocInfModels.CategoryCd,
+                                        lockInfInputItem.DocInfModels.FileName,
+                                        lockInfInputItem.DocInfModels.DspFileName,
+                                        lockInfInputItem.DocInfModels.IsLocked,
+                                        lockInfInputItem.DocInfModels.LockDate,
+                                        lockInfInputItem.DocInfModels.LockId,
+                                        lockInfInputItem.DocInfModels.LockMachine,
+                                        lockInfInputItem.DocInfModels.IsDeleted) 
+                /*tenMstItemModel.SinKouiKbn,   
+                tenMstItemModel.MasterSbt,
+                tenMstItemModel.ItemCd,
+                tenMstItemModel.KensaItemCd,
+                tenMstItemModel.KensaItemSeqNo,
+                tenMstItemModel.Ten,
+                tenMstItemModel.Name,
+                tenMstItemModel.ReceName,
+                tenMstItemModel.KanaName1,
+                tenMstItemModel.KanaName2,
+                tenMstItemModel.KanaName3,
+                tenMstItemModel.KanaName4,
+                tenMstItemModel.KanaName5,
+                tenMstItemModel.KanaName6,
+                tenMstItemModel.KanaName7,
+                tenMstItemModel.StartDate,
+                tenMstItemModel.EndDate,
+                tenMstItemModel.DefaultValue,
+                tenMstItemModel.OdrUnitName,
+                tenMstItemModel.SanteiItemCd,
+                tenMstItemModel.SanteigaiKbn,
+                tenMstItemModel.IsNoSearch,
+                tenMstItemModel.IsDeleted*/
+                );
         }
     }
 

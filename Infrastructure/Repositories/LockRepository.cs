@@ -1,9 +1,9 @@
 ﻿using Domain.Constant;
+using Domain.Models.AuditLog;
 using Domain.Models.Lock;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -530,7 +530,7 @@ namespace Infrastructure.Repositories
             )).ToList());
 
             result.AddRange(calcStatusQuerry.AsEnumerable().Select(cal => new LockInfModel(
-                new LockCalcStatusModel(cal.CalcStatus.PtId, cal.PtNum, cal.CalcStatus.SinDate, cal.CalcStatus.CreateDate)
+                new LockCalcStatusModel(cal.CalcStatus.CalcId, cal.CalcStatus.PtId, cal.PtNum, cal.CalcStatus.SinDate, cal.CalcStatus.CreateDate, cal.CalcStatus.CreateMachine ?? string.Empty)
             )));
 
             return result;
@@ -562,6 +562,107 @@ namespace Infrastructure.Repositories
             }
 
             return result;
+        }
+
+        public bool Unlock(int hpId, int userId, List<LockInfModel> lockInfModels)
+        {
+            List<string> listMachineLock = lockInfModels.Where(u => !string.IsNullOrEmpty(u.Machine)).Select(u => u.Machine).GroupBy(u => u).Select(u => u.First()).ToList();
+            List<LockPtInfModel> listLockPtInfModel = lockInfModels.Where(u => u.PatientInfoModels != null && !u.CheckDefaultValue()).Select(u => u.PatientInfoModels).ToList();
+            List<LockCalcStatusModel> listLockCalcStatusModel = lockInfModels.Where(u => u.CalcStatusModels != null && !u.CheckDefaultValue()).Select(u => u.CalcStatusModels).ToList();
+            List<LockDocInfModel> listLockDocInfModel = lockInfModels.Where(u => u.DocInfModels != null && !u.CheckDefaultValue()).Select(u => u.DocInfModels).ToList();
+            UnlockSessionInf(hpId, listMachineLock);
+            UnlockPtInf(hpId, userId, listLockPtInfModel);
+            UnlockCalcStatusInf(hpId, userId, listLockCalcStatusModel);
+            UnlockDocInf(hpId, userId, listLockDocInfModel);
+
+            return TrackingDataContext.SaveChanges() >= 1;
+        }
+
+        public void UnlockSessionInf(int hpId, List<string> listMachineToUnlock)
+        {
+            var listSessionToUnlock = TrackingDataContext.SessionInfs.Where(u => u.HpId == hpId && listMachineToUnlock.Contains(u.Machine)).ToList();
+            TrackingDataContext.SessionInfs.RemoveRange(listSessionToUnlock);
+        }
+
+        private void UnlockPtInf(int hpId, int userId, List<LockPtInfModel> listLockPtInfModel)
+        {
+            foreach (var item in listLockPtInfModel)
+            {
+
+
+                SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", item.PtId, item.SinDateInt, item.RaiinNo, "", "LOCK_INF:" + item.FunctionName));
+
+                var lockInf = TrackingDataContext.LockInfs.Where(x =>
+                                                                   x.HpId == hpId &&
+                                                                   x.PtId == item.PtId &&
+                                                                   x.FunctionCd == item.FunctionCd &&
+                                                                   x.SinDate == item.SinDate &&
+                                                                   x.RaiinNo == item.RaiinNo &&
+                                                                   x.OyaRaiinNo == item.OyaRaiinNo
+                                                                   ).ToList();
+
+                TrackingDataContext.LockInfs.RemoveRange(lockInf);
+            }
+        }
+
+        private void UnlockCalcStatusInf(int hpId, int userId, List<LockCalcStatusModel> listLockCalcStatusModels)
+        {
+            foreach (var listLockCalcStatusModel in listLockCalcStatusModels)
+            {
+                var calcStatus = NoTrackingDataContext.CalcStatus.FirstOrDefault(x => x.HpId == hpId && x.PtId == listLockCalcStatusModel.PtId);
+                if (calcStatus != null) 
+                {
+                    calcStatus.CreateMachine = string.Empty;
+                    calcStatus.Status = 8;
+                    calcStatus.UpdateId = userId;
+                    calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                }
+
+                SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", listLockCalcStatusModel.PtId, listLockCalcStatusModel.SinDate, 0, "", "CALC_STATUS:" + listLockCalcStatusModel.CalcId));
+            }
+        }
+
+        private void UnlockDocInf(int hpId, int userId, List<LockDocInfModel> listLockDocInfModel)
+        {
+            foreach (var docInfModel in listLockDocInfModel)
+            {
+                var docInf = TrackingDataContext.DocInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == docInfModel.PtId && x.SinDate == docInfModel.SinDate && x.RaiinNo == docInfModel.RaiinNo && x.SeqNo == docInfModel.SeqNo);
+                if(docInf != null)
+                {
+                    docInf.LockMachine = string.Empty;
+                    docInf.IsLocked = 0;
+                    docInf.UpdateId = userId;
+                    docInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                }
+
+                SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", docInfModel.PtId, docInfModel.SinDate, 0, "", "DOC_INF:" + docInfModel.DspFileName));
+            }
+        }
+
+        public bool SaveAuditLog(int hpId, int userId, AuditTrailLogModel auditTrailLogModel)
+        {
+            AuditTrailLog auditTrailLog = new AuditTrailLog();
+            auditTrailLog.HpId = hpId;
+            auditTrailLog.PtId = auditTrailLogModel.PtId;
+            auditTrailLog.SinDay = auditTrailLogModel.SinDate;
+            auditTrailLog.UserId = userId;
+            auditTrailLog.RaiinNo = auditTrailLogModel.RaiinNo;
+            auditTrailLog.EventCd = auditTrailLogModel.EventCd;
+            auditTrailLog.LogDate = CIUtil.GetJapanDateTimeNow();
+            TrackingDataContext.AuditTrailLogs.Add(auditTrailLog);
+            var saveAuditLog = TrackingDataContext.SaveChanges();
+            string hosoku = auditTrailLogModel.AuditTrailLogDetailModel.Hosoku;
+
+            if (string.IsNullOrEmpty(hosoku) == false)
+            {
+                // 補足が必要な場合は、AUDIT_TRAIL_LOG_DETAILに保存
+                AuditTrailLogDetail auditTrailLogDetailMode = new AuditTrailLogDetail();
+                auditTrailLogDetailMode.LogId = auditTrailLog.LogId;
+                auditTrailLogDetailMode.Hosoku = hosoku;
+                TrackingDataContext.AuditTrailLogDetails.Add(auditTrailLogDetailMode);
+            }
+
+            return saveAuditLog > 0 || TrackingDataContext.SaveChanges() > 0;
         }
     }
 }

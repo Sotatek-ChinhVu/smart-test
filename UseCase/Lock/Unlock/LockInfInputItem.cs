@@ -1,40 +1,23 @@
-﻿using Helper.Common;
+﻿using Domain.Models.Lock;
+using Helper.Common;
 using Helper.Extension;
-using System.Text.Json.Serialization;
 
-namespace Domain.Models.Lock
+namespace UseCase.Lock.Unlock
 {
-    public class LockInfModel
+    public class LockInfInputItem
     {
-        [JsonConstructor]
-
-        public LockInfModel(LockPtInfModel patientInfoModels)
-        {
-            PatientInfoModels = patientInfoModels;
-        }
-
-        public LockInfModel(LockCalcStatusModel calcStatusModels)
-        {
-            CalcStatusModels = calcStatusModels;
-        }
-
-        public LockInfModel(LockDocInfModel docInfModels)
-        {
-            DocInfModels = docInfModels;
-        }
-
-        public LockInfModel(LockPtInfModel patientInfoModels, LockCalcStatusModel calcStatusModels, LockDocInfModel docInfModels)
+        public LockInfInputItem(LockPtInfInputItem patientInfoModels, LockCalcStatusInputItem calcStatusModels, LockDocInfInputItem docInfModels)
         {
             PatientInfoModels = patientInfoModels;
             CalcStatusModels = calcStatusModels;
             DocInfModels = docInfModels;
         }
 
-        public LockPtInfModel PatientInfoModels { get; private set; } 
+        public LockPtInfInputItem PatientInfoModels { get; private set; }
 
-        public LockCalcStatusModel CalcStatusModels { get; private set; }
+        public LockCalcStatusInputItem CalcStatusModels { get; private set; }
 
-        public LockDocInfModel DocInfModels { get; private set; } 
+        public LockDocInfInputItem DocInfModels { get; private set; }
 
         public long PtNum
         {
