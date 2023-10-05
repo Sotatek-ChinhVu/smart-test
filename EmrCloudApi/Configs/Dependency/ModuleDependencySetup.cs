@@ -842,6 +842,7 @@ using UseCase.MstItem.GetByomeiByCode;
 using UseCase.ColumnSetting.GetColumnSettingByTableNameList;
 using UseCase.MstItem.SaveSetNameMnt;
 using UseCase.Online.GetOnlineConsent;
+using UseCase.Online.UpdateOnlineConsents;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1833,6 +1834,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdatePtInfOnlineQualifyInputData, UpdatePtInfOnlineQualifyInteractor>();
             busBuilder.RegisterUseCase<GetListOnlineConfirmationHistoryModelInputData, GetListOnlineConfirmationHistoryModelInteractor>();
             busBuilder.RegisterUseCase<GetOnlineConsentInputData, GetOnlineConsentInteractor>();
+            busBuilder.RegisterUseCase<UpdateOnlineConsentsInputData, UpdateOnlineConsentsInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
