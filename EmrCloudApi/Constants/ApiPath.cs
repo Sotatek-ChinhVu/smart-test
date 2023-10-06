@@ -489,6 +489,9 @@
 
         //ListSetMst
         public const string UpdateListSetMst = "UpdateListSetMst";
+
+        //ByomeiSetMst
+        public const string UpdateByomeiSetMst = "UpdateByomeiSetMst";
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";
