@@ -16,14 +16,13 @@ namespace Interactor.Lock
             try
             {
                 var data = _lockRepository.GetLockInfModels(inputData.HpId);
-                var result = _lockRepository.GetLockInf(inputData.HpId);
                 if (data.Count == 0)
                 {
-                    return new GetLockInfOutputData(new(), GetLockInfStatus.NoData, new());
+                    return new GetLockInfOutputData(new(), GetLockInfStatus.NoData);
                 }
                 else
                 {
-                    return new GetLockInfOutputData(data, GetLockInfStatus.Successful, result);
+                    return new GetLockInfOutputData(data, GetLockInfStatus.Successful);
                 }
             }
             finally

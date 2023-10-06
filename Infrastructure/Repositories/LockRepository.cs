@@ -536,34 +536,6 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public Dictionary<int, Dictionary<int, string>> GetLockInf(int hpId)
-        {
-            Dictionary<int, Dictionary<int, string>> result = new();
-            var userIdLockInfs = NoTrackingDataContext.LockInfs.Where(x => x.HpId == hpId).Select(x => x.UserId).Distinct().ToList();
-            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId).ToList();
-            var index = 0;
-            var query = from userIdLockInf in userIdLockInfs
-                        join userMst in userMsts
-                        on userIdLockInf equals userMst.UserId
-                        select new
-                        {
-                            userIdLockInf,
-                            userMst.Name
-                        };
-
-            foreach (var item in query.AsEnumerable().ToList())
-            {
-                Dictionary<int, string> data = new()
-                {
-                    { item.userIdLockInf, item.Name }
-                };
-                result.Add(index, data);
-                index++;
-            }
-
-            return result;
-        }
-
         public bool Unlock(int hpId, int userId, List<LockInfModel> lockInfModels)
         {
             bool result = true;

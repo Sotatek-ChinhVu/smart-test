@@ -6,8 +6,6 @@ namespace Domain.Models.Lock
     {
         bool Unlock(int hpId, int userId, List<LockInfModel> lockInfModels);
 
-        Dictionary<int, Dictionary<int, string>> GetLockInf(int hpId);
-
         List<LockInfModel> GetLockInfModels(int hpId);
 
         bool ExistLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo);
