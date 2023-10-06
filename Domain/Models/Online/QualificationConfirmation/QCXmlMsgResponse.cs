@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace UseCase.Online.QualificationConfirmation;
+namespace Domain.Models.Online.QualificationConfirmation;
 
 /// <summary>
 /// 資格確認結果
