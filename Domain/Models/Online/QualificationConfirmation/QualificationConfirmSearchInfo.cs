@@ -26,4 +26,7 @@ public class QualificationConfirmSearchInfo
 
     [XmlElement(ElementName = "ArbitraryIdentifier")]
     public string ArbitraryIdentifier { get; set; } = string.Empty;
+
+    [XmlElement(ElementName = "LimitApplicationCertificateRelatedConsFlg")]
+    public string LimitApplicationCertificateRelatedConsFlg { get; set; } = string.Empty;
 }
