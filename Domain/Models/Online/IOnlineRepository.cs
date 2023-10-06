@@ -35,4 +35,6 @@ public interface IOnlineRepository : IRepositoryBase
     List<QualificationInfModel> GetListQualificationInf();
 
     bool SaveOnlineConfirmation(int userId, QualificationInfModel qualificationInf, ModelStatus status);
+
+    bool InsertListOnlConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> listOnlineConfirmationHistoryModel);
 }

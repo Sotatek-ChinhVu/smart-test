@@ -3,6 +3,7 @@
     public enum SaveOnlineConfirmationStatus
     {
         Successed = 1,
-        Failed = 2
+        Failed = 2,
+        InvalidReceptionNumber = 3,
     }
 }

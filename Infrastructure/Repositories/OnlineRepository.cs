@@ -516,6 +516,30 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return true;
     }
 
+    public bool InsertListOnlConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> listOnlineConfirmationHistoryModel)
+    {
+        foreach (var item in listOnlineConfirmationHistoryModel)
+        {
+            TrackingDataContext.Add(new OnlineConfirmationHistory()
+            {
+                PtId = item.PtId,
+                OnlineConfirmationDate = item.OnlineConfirmationDate,
+                InfoConsFlg = item.InfoConsFlg,
+                ConfirmationType = item.ConfirmationType,
+                PrescriptionIssueType = item.PrescriptionIssueType,
+                ConfirmationResult = item.ConfirmationResult,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                CreateId = userId,
+                UketukeStatus = item.UketukeStatus,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId,
+            });
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
+
+    }
+
     #region private function
     private OnlineConfirmationHistoryModel ConvertToModel(OnlineConfirmationHistory entity)
     {

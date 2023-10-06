@@ -5,7 +5,6 @@ namespace Domain.Models.MainMenu
 {
     public class QualificationInfModel
     {
-        [JsonConstructor]
         public QualificationInfModel(string receptionNo, DateTime receptionDateTime, int yoyakuDate, string segmentOfResult, string errorMessage)
         {
             ReceptionNo = receptionNo;
