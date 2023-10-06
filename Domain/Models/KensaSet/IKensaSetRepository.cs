@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Models.KensaCmtMst.cs;
 using Domain.Models.KensaInfDetail;
+using Domain.Models.KensaIrai;
 using Domain.Models.KensaSetDetail;
 
 namespace Domain.Models.KensaSet
@@ -12,5 +13,6 @@ namespace Domain.Models.KensaSet
         public List<KensaSetDetailModel> GetListKensaSetDetail(int hpId, int setId);
         public List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, string keyword);
         public bool UpdateKensaInfDetail(int hpId, int userId, List<KensaInfDetailUpdateModel> kensaInfDetails);
+        public (List<ListKensaInfDetailModel>, int) GetListKensaInfDetail(int hpId, int userId, int ptId, int setId, int pageIndex, int pageSize);
     }
 }
