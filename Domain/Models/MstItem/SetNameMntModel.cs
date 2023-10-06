@@ -8,7 +8,7 @@ namespace Domain.Models.MstItem
         public SetNameMntModel(bool isSetOdrInfDetail, string itemNameTenMst, int cmtCol1, int cmtColKeta1, int cmtCol2, int cmtColKeta2, int cmtCol3, int cmtColKeta3,
         int cmtCol4, int cmtColKeta4, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3,
         string setName, int rowNo, string itemCd, string itemName, string cmtName, string cmtOpt, DateTime createDate, int createId,
-        string createMachine, DateTime updateDate, int updateId, string updateMachine)
+        string createMachine, DateTime updateDate, int updateId, string updateMachine, long rpNo, long rpEdaNo)
         {
             IsSetOdrInfDetail = isSetOdrInfDetail;
             ItemNameTenMst = itemNameTenMst;
@@ -39,6 +39,8 @@ namespace Domain.Models.MstItem
             UpdateDate = updateDate;
             UpdateId = updateId;
             UpdateMachine = updateMachine;
+            RpNo = rpNo;
+            RpEdaNo = rpEdaNo;
             SetCategory = string.Empty;
             SetKbnEdaNoBinding = string.Empty;
             Level1Binding = string.Empty;
@@ -51,7 +53,7 @@ namespace Domain.Models.MstItem
         }
 
         [JsonConstructor]
-        public SetNameMntModel(string itemNameTenMst, int cmtCol1, int cmtColKeta1, int cmtCol2, int cmtColKeta2, int cmtCol3, int cmtColKeta3, int cmtCol4, int cmtColKeta4, int setCd, int setKbn, int setKbnEdaNo, int generationId, string setName, int rowNo, string itemCd, string itemName, string cmtName, string cmtOpt, bool isSet, string itemNameTenMstBinding, string setFlag)
+        public SetNameMntModel(string itemNameTenMst, int cmtCol1, int cmtColKeta1, int cmtCol2, int cmtColKeta2, int cmtCol3, int cmtColKeta3, int cmtCol4, int cmtColKeta4, int setCd, int setKbn, int setKbnEdaNo, int generationId, string setName, int rowNo, string itemCd, string itemName, string cmtName, string cmtOpt, bool isSet, string itemNameTenMstBinding, string setFlag, long rpNo, long rpEdaNo)
         {
             ItemNameTenMst = itemNameTenMst;
             CmtCol1 = cmtCol1;
@@ -75,6 +77,8 @@ namespace Domain.Models.MstItem
             IsSet = isSet;
             ItemNameTenMstBinding = itemNameTenMstBinding;
             SetFlag = setFlag;
+            RpNo = rpNo;
+            RpEdaNo = rpEdaNo;
             CreateMachine = string.Empty;
             UpdateMachine = string.Empty;
             SetCategory = string.Empty;
@@ -84,8 +88,6 @@ namespace Domain.Models.MstItem
             Level3Binding = string.Empty;
             IsSetString = string.Empty;
             ItemNameBinding = string.Empty;
-            ItemNameTenMstBinding = string.Empty;
-            SetFlag = string.Empty;
         }
 
         public SetNameMntModel(bool isSetOdrInfDetail, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3,
@@ -107,7 +109,7 @@ namespace Domain.Models.MstItem
             CreateMachine = createMachine;
             UpdateDate = updateDate;
             UpdateId = updateId;
-            UpdateMachine = updateMachine;           
+            UpdateMachine = updateMachine;
             ItemNameTenMst = itemNameTenMst;
             CmtCol1 = cmtCol1;
             CmtColKeta1 = cmtColKeta1;
@@ -245,6 +247,10 @@ namespace Domain.Models.MstItem
         /// 更新端末 
         /// </summary>
         public string UpdateMachine { get; private set; }
+
+        public long RpNo { get; private set; }
+
+        public long RpEdaNo { get; private set; }
 
         public bool IsSet { get; set; }
 
