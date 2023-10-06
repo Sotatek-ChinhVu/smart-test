@@ -820,7 +820,6 @@ namespace Infrastructure.Repositories
             {
                 filteredRaiinInfs = filteredRaiinInfs.Where(item => item.Status >= 3);
             }
-
             // 3. Perform the join operation
             var raiinQuery =
                 from raiinInf in filteredRaiinInfs
