@@ -6976,14 +6976,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 var listSetNameMntOdrDetail = queryDetail.AsEnumerable()
                     .Select(item => new SetNameMntModel(true, item.ItemNameTenMst, item.CmtCol1, item.CmtColKeta1, item.CmtCol2, item.CmtColKeta2, item.CmtCol3, item.CmtColKeta3, item.CmtCol4, item.CmtColKeta4,
                     item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName ?? string.Empty,
-                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd ?? string.Empty, item.SetOdrInfDetail.ItemName ?? string.Empty, item.SetOdrInfDetail.CmtName ?? string.Empty, item.SetOdrInfDetail.CmtOpt ?? string.Empty, item.SetMst.CreateDate, item.SetMst.CreateId,
-                    item.SetMst.CreateMachine ?? string.Empty, item.SetMst.UpdateDate, item.SetMst.UpdateId, item.SetMst.UpdateMachine ?? string.Empty,
+                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd ?? string.Empty, item.SetOdrInfDetail.ItemName ?? string.Empty, item.SetOdrInfDetail.CmtName ?? string.Empty, item.SetOdrInfDetail.CmtOpt ?? string.Empty,
                     item.SetOdrInfDetail.RpNo, item.SetOdrInfDetail.RpEdaNo));
 
                 var listSetNameMntSetMst = querySet.AsEnumerable()
                     .Distinct()
-                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName ?? string.Empty, item.CreateDate, item.CreateId,
-                    item.CreateMachine ?? string.Empty, item.UpdateDate, item.UpdateId, item.UpdateMachine ?? string.Empty, string.Empty, 0, 0, 0, 0, 0, 0, 0, 0));
+                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName ?? string.Empty,
+                    string.Empty, 0, 0, 0, 0, 0, 0, 0, 0));
 
                 return listSetNameMntSetMst
                     .Union(listSetNameMntOdrDetail)
@@ -7031,14 +7030,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 var listSetNameMntOdrDetail = queryDetail.AsEnumerable()
                     .Select(item => new SetNameMntModel(true, item.ItemNameTenMst, item.CmtCol1, item.CmtColKeta1, item.CmtCol2, item.CmtColKeta2, item.CmtCol3, item.CmtColKeta3, item.CmtCol4, item.CmtColKeta4,
                     item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName ?? string.Empty,
-                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd ?? string.Empty, item.SetOdrInfDetail.ItemName ?? string.Empty, item.SetOdrInfDetail.CmtName ?? string.Empty, item.SetOdrInfDetail.CmtOpt ?? string.Empty, item.SetMst.CreateDate, item.SetMst.CreateId,
-                    item.SetMst.CreateMachine ?? string.Empty, item.SetMst.UpdateDate, item.SetMst.UpdateId, item.SetMst.UpdateMachine ?? string.Empty,
+                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd ?? string.Empty, item.SetOdrInfDetail.ItemName ?? string.Empty, item.SetOdrInfDetail.CmtName ?? string.Empty, item.SetOdrInfDetail.CmtOpt ?? string.Empty,
                     item.SetOdrInfDetail.RpNo, item.SetOdrInfDetail.RpEdaNo));
 
                 var listSetNameMntSetMst = querySet.AsEnumerable()
                     .Distinct()
-                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName, item.CreateDate, item.CreateId,
-                    item.CreateMachine ?? string.Empty, item.UpdateDate, item.UpdateId, item.UpdateMachine ?? string.Empty, string.Empty, 0, 0, 0, 0, 0, 0, 0, 0));
+                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName,
+                    string.Empty, 0, 0, 0, 0, 0, 0, 0, 0));
 
                 return listSetNameMntSetMst
                     .Union(listSetNameMntOdrDetail)
@@ -7792,14 +7790,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
         try
         {
-            var computerName = "SmartKarte";
             foreach (var setNameMnt in lstModel)
             {
                 if (setNameMnt.SetFlag == "●")
                 {
                     if (!setNameMnt.IsSet)
                     {
-                        var getItem = TrackingDataContext.SetOdrInfDetail.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == setNameMnt.ItemCd && x.SetCd == setNameMnt.SetCd && x.RpNo == setNameMnt.RpNo && x.RpEdaNo == setNameMnt.RpEdaNo);
+                        var getItem = TrackingDataContext.SetOdrInfDetail.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == setNameMnt.ItemCd && x.SetCd == setNameMnt.SetCd && x.RpNo == setNameMnt.RpNo && x.RpEdaNo == setNameMnt.RpEdaNo && x.RowNo == setNameMnt.RowNo);
                         if (getItem != null)
                         {
                             if (setNameMnt.IsCommentMaster)
@@ -7811,7 +7808,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                             {
                                 getItem.ItemName = setNameMnt.ItemNameTenMst;
                             }
-                            TrackingDataContext.SaveChanges();
                         }
                     }
                     else if (!string.IsNullOrWhiteSpace(setNameMnt.ItemNameTenMstBinding))
@@ -7820,16 +7816,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                         if (setItem != null)
                         {
                             setItem.SetName = setNameMnt.ItemNameTenMstBinding;
-                            setItem.CreateDate = TimeZoneInfo.ConvertTimeToUtc(setItem.CreateDate);
                             setItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             setItem.UpdateId = userId;
-                            setItem.UpdateMachine = computerName;
-                            TrackingDataContext.SaveChanges();
                         }
                     }
                 }
             }
-            return true;
+            return TrackingDataContext.SaveChanges() > 0;
         }
         catch
         {
