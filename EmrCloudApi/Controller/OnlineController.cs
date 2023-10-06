@@ -13,6 +13,7 @@ using System.Xml.Serialization;
 using UseCase.Core.Sync;
 using UseCase.Online;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
+using UseCase.Online.GetOnlineConsent;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.Online.InsertOnlineConfirmHistory;
 using UseCase.Online.QualificationConfirmation;
@@ -194,6 +195,18 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetOnlineConsent)]
+    public ActionResult<Response<GetOnlineConsentResponse>> GetOnlineConsent([FromQuery] GetOnlineConsentRequest request)
+    {
+        var input = new GetOnlineConsentInputData(request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetOnlineConsentPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetOnlineConsentResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.GetListOnlineConfirmationHistoryModel)]

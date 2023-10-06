@@ -460,6 +460,16 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return result;
     }
 
+    public List<OnlineConsentModel> GetOnlineConsentModel(long ptId)
+    {
+        var systemDate = CIUtil.GetJapanDateTimeNow();
+        var onlineConsentList = NoTrackingDataContext.OnlineConsents.Where(item => item.PtId == ptId
+                                                                                   && new List<int>() { 1, 2, 3}.Contains(item.ConsKbn)
+                                                                                   && item.LimitDate >= systemDate)
+                                                                    .ToList();
+        return onlineConsentList.Select(item => new OnlineConsentModel(item.PtId, item.ConsKbn, item.ConsDate, item.LimitDate)).ToList();
+    }
+
     #region private function
     private OnlineConfirmationHistoryModel ConvertToModel(OnlineConfirmationHistory entity)
     {
