@@ -1,10 +1,12 @@
 ﻿using Domain.Models.MstItem;
+using EmrCloudApi.Requests.MstItem.RequestItem;
 
 namespace EmrCloudApi.Requests.MstItem
 {
     public class SaveSetNameMntRequest
     {
-        public List<SetNameMntModel> ListData { get; set; } = new List<SetNameMntModel>();
+        public List<SetNameMntRequestItem> ListData { get; set; } = new();
+
         public int SinDate { get; set; } = 0;
     }
 }
