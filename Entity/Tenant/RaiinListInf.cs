@@ -7,7 +7,7 @@ namespace Entity.Tenant
     [Table(name: "RAIIN_LIST_INF")]
     [Serializable]
     [Index(nameof(GrpId), nameof(KbnCd), nameof(RaiinListKbn), Name = "RAIIN_LIST_INF_IDX01")]
-    [Index(nameof(HpId), nameof(PtId), Name = "RAIIN_LIST_INF_IDX02")]
+    [Index(nameof(HpId), nameof(PtId), nameof(RaiinNo), Name = "RAIIN_LIST_INF_IDX02")]
 
     public class RaiinListInf : EmrCloneable<RaiinListInf>
     {
