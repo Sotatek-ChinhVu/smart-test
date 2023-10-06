@@ -7,6 +7,7 @@ using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System.Collections;
 using System.Text.Json;
@@ -17,11 +18,23 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 {
     private readonly IDatabase _cache;
     private readonly string key;
+    private readonly IConfiguration _configuration;
 
-    public SystemConfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    public SystemConfRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
         key = GetCacheKey() + "SystemConf";
+        _configuration = configuration;
+        GetRedis();
         _cache = RedisConnectorHelper.Connection.GetDatabase();
+    }
+
+    public void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
     }
 
     private List<SystemConf> ReloadCache(int hpId)

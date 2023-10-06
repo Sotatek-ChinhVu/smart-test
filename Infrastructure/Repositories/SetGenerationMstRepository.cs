@@ -14,20 +14,30 @@ using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Repositories
 {
     public class SetGenerationMstRepository : RepositoryBase, ISetGenerationMstRepository
     {
-        private readonly IMemoryCache _memoryCache;
         private readonly StackExchange.Redis.IDatabase _cache;
         private readonly string key;
-        public SetGenerationMstRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
+        private readonly IConfiguration _configuration;
+        public SetGenerationMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
-        
-            _memoryCache = memoryCache;
             key = GetCacheKey() + "SetGenerationMst";
+            _configuration = configuration;
+            GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         private IEnumerable<SetGenerationMstModel> ReloadCache()
@@ -159,7 +169,7 @@ Enumerable.Empty<SetGenerationMstModel>();
                 if (ListDataUpdate.Count > 0)
                 {
                     TrackingDataContext.SetGenerationMsts.UpdateRange(ListDataUpdate);
-                    _memoryCache.Remove(GetCacheKey());
+                    ReloadCache();
                     return TrackingDataContext.SaveChanges() > 0;
                 }
                 return false;
@@ -187,7 +197,7 @@ Enumerable.Empty<SetGenerationMstModel>();
             itemAdd.UpdateMachine = "SmartKarte";
             TrackingDataContext.SetGenerationMsts.Add(itemAdd);
             var checkAdd = TrackingDataContext.SaveChanges();
-            _memoryCache.Remove(GetCacheKey());
+            ReloadCache();
             if (checkAdd == 0)
             {
                 return null;
@@ -265,10 +275,8 @@ Enumerable.Empty<SetGenerationMstModel>();
                     x.GenerationId = targetGenerationId;
                     x.CreateDate = CIUtil.GetJapanDateTimeNow();
                     x.CreateId = userId;
-                    x.CreateMachine = _computerName;
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     x.UpdateId = userId;
-                    x.UpdateMachine = _computerName;
                 });
                 if (setMstsBackuped.Any())
                 {
@@ -305,10 +313,8 @@ Enumerable.Empty<SetGenerationMstModel>();
                     x.GenerationId = targetGenerationId;
                     x.CreateDate = CIUtil.GetJapanDateTimeNow();
                     x.CreateId = userId;
-                    x.CreateMachine = _computerName;
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     x.UpdateId = userId;
-                    x.UpdateMachine = _computerName;
                 });
                 if (setMstsBackuped.Any())
                 {
@@ -336,10 +342,8 @@ Enumerable.Empty<SetGenerationMstModel>();
                 setKbnMst.GenerationId = targetGenerationId;
                 setKbnMst.CreateDate = CIUtil.GetJapanDateTimeNow();
                 setKbnMst.CreateId = userId;
-                setKbnMst.CreateMachine = _computerName;
                 setKbnMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 setKbnMst.UpdateId = userId;
-                setKbnMst.UpdateMachine = _computerName;
             });
 
             if (setKbnMstSource.Any())
@@ -373,10 +377,8 @@ Enumerable.Empty<SetGenerationMstModel>();
                     x.SetCd = setMstDict[x.SetCd].SetCd;
                     x.CreateDate = CIUtil.GetJapanDateTimeNow();
                     x.CreateId = userId;
-                    x.CreateMachine = _computerName;
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     x.UpdateId = userId;
-                    x.UpdateMachine = _computerName;
                 });
                 if (setByomeisSource.Any())
                 {
@@ -388,6 +390,7 @@ Enumerable.Empty<SetGenerationMstModel>();
                     }
                     catch {
                         TrackingDataContext.SetByomei.RemoveRange(setByomeisSource);
+                        TrackingDataContext.SaveChanges();
                         return false;
                     }
                 }
@@ -414,10 +417,8 @@ Enumerable.Empty<SetGenerationMstModel>();
                     x.SetCd = setMstDict[x.SetCd].SetCd;
                     x.CreateDate = CIUtil.GetJapanDateTimeNow();
                     x.CreateId = userId;
-                    x.CreateMachine = _computerName;
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     x.UpdateId = userId;
-                    x.UpdateMachine = _computerName;
                 });
                 if (setKarteInfsSource.Any())
                 {
@@ -430,6 +431,7 @@ Enumerable.Empty<SetGenerationMstModel>();
                     catch
                     {
                         TrackingDataContext.SetKarteInf.RemoveRange(setKarteInfsSource);
+                        TrackingDataContext.SaveChanges();
                         return false;
                     }
                 }
@@ -466,6 +468,7 @@ Enumerable.Empty<SetGenerationMstModel>();
                     catch
                     {
                         TrackingDataContext.SetKarteImgInf.RemoveRange(setKarteImgInfsSource);
+                        TrackingDataContext.SaveChanges();
                         return false;
                     }
                 }
@@ -493,10 +496,8 @@ Enumerable.Empty<SetGenerationMstModel>();
                     x.Id = 0;
                     x.CreateDate = CIUtil.GetJapanDateTimeNow();
                     x.CreateId = userId;
-                    x.CreateMachine = _computerName;
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     x.UpdateId = userId;
-                    x.UpdateMachine = _computerName;
                 });
                 if (setOdrInfsSource.Any())
                 {
@@ -509,6 +510,7 @@ Enumerable.Empty<SetGenerationMstModel>();
                     catch
                     {
                         TrackingDataContext.SetOdrInf.RemoveRange(setOdrInfsSource);
+                        TrackingDataContext.SaveChanges();
                         return false;
                     }
                 }
@@ -545,6 +547,7 @@ Enumerable.Empty<SetGenerationMstModel>();
                     catch
                     {
                         TrackingDataContext.SetOdrInfDetail.RemoveRange(setOdrInfDetailsSource);
+                        TrackingDataContext.SaveChanges();
                         return false;
                     }
                 }
@@ -581,6 +584,7 @@ Enumerable.Empty<SetGenerationMstModel>();
                     catch
                     {
                         TrackingDataContext.SetOdrInfCmt.RemoveRange(setOdrInfCmtSource);
+                        TrackingDataContext.SaveChanges();
                         return false;
                     }
                 }
@@ -685,7 +689,7 @@ Enumerable.Empty<SetGenerationMstModel>();
                     TrackingDataContext.SetKarteImgInf.RemoveRange(targetSetKarteImgInfs);
                     TrackingDataContext.SetOdrInfDetail.RemoveRange(targetSetOdrInfDetails);
                     TrackingDataContext.SaveChanges();
-                    _memoryCache.Remove(GetCacheKey());
+                    ReloadCache();
                     // clone data from newest to restore item
                     return new AddSetSendaiModel(itemNewest.GenerationId, restoreGenerationId);
                 }

@@ -17,12 +17,23 @@ namespace Infrastructure.Repositories
     {
         private readonly string key;
         private readonly IDatabase _cache;
-        public SetKbnMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IConfiguration _configuration;
+        public SetKbnMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
             key = GetCacheKey() + "SetKbn";
+            _configuration = configuration;
+            GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
 
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
+        }
         private IEnumerable<SetKbnMstModel> ReloadCache()
         {
             var setKbnMstList = NoTrackingDataContext.SetKbnMsts.Where(s => s.HpId == 1 && s.IsDeleted == 0).Select(s =>

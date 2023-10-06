@@ -7,6 +7,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using System.Text.Json;
 using StackExchange.Redis;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Repositories;
 
@@ -28,12 +29,24 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     private const int noteScreenDisplayGrpCd = 919;
     private const int saveCheckGrpCd = 921;
     private readonly string key;
+    private readonly IConfiguration _configuration;
 
-    public UserConfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    public UserConfRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
         key = GetCacheKey() + "UserMst";
         InitConfigDefaultValue();
+        _configuration = configuration;
+        GetRedis();
         _cache = RedisConnectorHelper.Connection.GetDatabase();
+    }
+
+    public void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
     }
 
     public List<UserConfModel> GetList(int userId, int fromGrpCd, int toGrpCd)

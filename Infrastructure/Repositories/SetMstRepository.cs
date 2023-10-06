@@ -24,11 +24,23 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     private readonly int tryCountSave = 10;
     private readonly string key;
     private readonly IDatabase _cache;
+    private readonly IConfiguration _configuration;
 
     public SetMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
         key = GetCacheKey() + "SetMst";
+        _configuration = configuration;
+        GetRedis();
         _cache = RedisConnectorHelper.Connection.GetDatabase();
+    }
+
+    public void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
     }
 
     private IEnumerable<SetMstModel> ReloadCache(int hpId, int generationId)

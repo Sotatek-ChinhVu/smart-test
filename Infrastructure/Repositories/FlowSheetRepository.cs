@@ -17,6 +17,8 @@ using PostgreDataContext;
 using System.Diagnostics;
 using System.Linq.Dynamic.Core;
 using System.Text.Json;
+using Infrastructure.CommonDB;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Repositories
 {
@@ -39,7 +41,6 @@ namespace Infrastructure.Repositories
             get => $"{key}-RaiinListMstCacheKey";
         }
 
-        private readonly IMemoryCache _memoryCache;
         private readonly TenantDataContext _tenantHistory;
         private readonly TenantDataContext _tenantNextOrder;
         private readonly TenantDataContext _tenantKarteInf;
@@ -47,18 +48,29 @@ namespace Infrastructure.Repositories
         private readonly TenantDataContext _tenantTagInf;
         private readonly TenantDataContext _tenantCmtInf;
         private readonly StackExchange.Redis.IDatabase _cache;
+        private readonly IConfiguration _configuration;
         private string key;
-        public FlowSheetRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache, ITenantProvider tenantRaiinInf, ITenantProvider tenantNextOrder, ITenantProvider tenantNextKarteInf, ITenantProvider tenantKarteInf, ITenantProvider tenantTagInf, ITenantProvider tenantCmtInf) : base(tenantProvider)
+        public FlowSheetRepository(ITenantProvider tenantProvider, ITenantProvider tenantRaiinInf, ITenantProvider tenantNextOrder, ITenantProvider tenantNextKarteInf, ITenantProvider tenantKarteInf, ITenantProvider tenantTagInf, ITenantProvider tenantCmtInf, IConfiguration configuration) : base(tenantProvider)
         {
-            _memoryCache = memoryCache;
             _tenantHistory = tenantRaiinInf.GetNoTrackingDataContext();
             _tenantNextOrder = tenantNextOrder.GetNoTrackingDataContext();
             _tenantKarteInf = tenantKarteInf.GetNoTrackingDataContext();
             _tenantNextKarteInf = tenantNextKarteInf.GetTrackingTenantDataContext();
             _tenantTagInf = tenantTagInf.GetTrackingTenantDataContext();
             _tenantCmtInf = tenantCmtInf.GetTrackingTenantDataContext();
+            _configuration = configuration;
             key = GetCacheKey();
+            GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, ref long totalCount)
