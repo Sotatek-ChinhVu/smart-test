@@ -1,16 +1,24 @@
 ﻿using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
 using Domain.Models.SpecialNote.ImportantNote;
+using Domain.Models.SetMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Caching.Memory;
 using PostgreDataContext;
 using System.Diagnostics;
 using System.Linq.Dynamic.Core;
+using System.Text.Json;
+using Infrastructure.CommonDB;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Repositories
 {
@@ -25,30 +33,44 @@ namespace Infrastructure.Repositories
 
         private string HolidayMstCacheKey
         {
-            get => $"{GetCacheKey()}-HolidayMstCacheKey";
+            get => $"{key}-HolidayMstCacheKey";
         }
 
         private string RaiinListMstCacheKey
         {
-            get => $"{GetCacheKey()}-RaiinListMstCacheKey";
+            get => $"{key}-RaiinListMstCacheKey";
         }
 
-        private readonly IMemoryCache _memoryCache;
         private readonly TenantDataContext _tenantHistory;
         private readonly TenantDataContext _tenantNextOrder;
         private readonly TenantDataContext _tenantKarteInf;
         private readonly TenantDataContext _tenantNextKarteInf;
         private readonly TenantDataContext _tenantTagInf;
         private readonly TenantDataContext _tenantCmtInf;
-        public FlowSheetRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache, ITenantProvider tenantRaiinInf, ITenantProvider tenantNextOrder, ITenantProvider tenantNextKarteInf, ITenantProvider tenantKarteInf, ITenantProvider tenantTagInf, ITenantProvider tenantCmtInf) : base(tenantProvider)
+        private readonly StackExchange.Redis.IDatabase _cache;
+        private readonly IConfiguration _configuration;
+        private string key;
+        public FlowSheetRepository(ITenantProvider tenantProvider, ITenantProvider tenantRaiinInf, ITenantProvider tenantNextOrder, ITenantProvider tenantNextKarteInf, ITenantProvider tenantKarteInf, ITenantProvider tenantTagInf, ITenantProvider tenantCmtInf, IConfiguration configuration) : base(tenantProvider)
         {
-            _memoryCache = memoryCache;
             _tenantHistory = tenantRaiinInf.GetNoTrackingDataContext();
             _tenantNextOrder = tenantNextOrder.GetNoTrackingDataContext();
             _tenantKarteInf = tenantKarteInf.GetNoTrackingDataContext();
             _tenantNextKarteInf = tenantNextKarteInf.GetTrackingTenantDataContext();
             _tenantTagInf = tenantTagInf.GetTrackingTenantDataContext();
             _tenantCmtInf = tenantCmtInf.GetTrackingTenantDataContext();
+            _configuration = configuration;
+            key = GetCacheKey();
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, ref long totalCount)
@@ -216,24 +238,35 @@ namespace Infrastructure.Repositories
                             Detail = raiinListDetail.Where(c => c.HpId == mst.HpId && c.GrpId == mst.GrpId).ToList()
                         };
             var raiinListMstModelList = query
-                .Select(data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName ?? string.Empty, data.Mst.SortNo, data.Mst.IsDeleted , data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName ?? string.Empty, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()))
+                .Select(data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName ?? string.Empty, data.Mst.SortNo, data.Mst.IsDeleted, data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName ?? string.Empty, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()))
                 .ToList();
-
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetPriority(CacheItemPriority.Normal);
-            _memoryCache.Set(RaiinListMstCacheKey, raiinListMstModelList, cacheEntryOptions);
+            var json = JsonSerializer.Serialize(raiinListMstModelList);
+            _cache.StringSet(RaiinListMstCacheKey, json);
 
             return raiinListMstModelList;
         }
 
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
         {
-            if (!_memoryCache.TryGetValue(RaiinListMstCacheKey, out List<RaiinListMstModel>? setKbnMstList))
+            var setKbnMstList = new List<RaiinListMstModel>();
+            if (!_cache.KeyExists(RaiinListMstCacheKey))
             {
                 setKbnMstList = ReloadRaiinListMstCache(hpId);
             }
+            else
+            {
+                setKbnMstList = ReadCacheRaiinListMst();
+            }
 
             return setKbnMstList!;
+        }
+
+        private List<RaiinListMstModel> ReadCacheRaiinListMst()
+        {
+            var results = _cache.StringGet(RaiinListMstCacheKey);
+            var json = results.AsString();
+            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<RaiinListMstModel>>(json) : new();
+            return datas ?? new();
         }
 
         #endregion
@@ -245,12 +278,17 @@ namespace Infrastructure.Repositories
                 .Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None)
                 .Select(h => new HolidayDto(h.SeqNo, h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
                 .ToList();
-
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetPriority(CacheItemPriority.Normal);
-            _memoryCache.Set(HolidayMstCacheKey, holidayModelList, cacheEntryOptions);
-
+            var json = JsonSerializer.Serialize(holidayModelList);
+            _cache.StringSet(HolidayMstCacheKey, json);
             return holidayModelList;
+        }
+
+        private List<HolidayDto> ReadCacheHolidayMst()
+        {
+            var results = _cache.StringGet(HolidayMstCacheKey);
+            var json = results.AsString();
+            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<HolidayDto>>(json) : new();
+            return datas ?? new();
         }
 
         public bool SaveHolidayMst(HolidayModel holiday, int userId)
@@ -283,16 +321,24 @@ namespace Infrastructure.Repositories
                 if (holidayUpdate.HolidayKbn == 0)
                     holidayUpdate.HolidayName = string.Empty;
             }
-            _memoryCache.Remove(HolidayMstCacheKey);
-            return TrackingDataContext.SaveChanges() > 0;
+            var result =  TrackingDataContext.SaveChanges() > 0;
+            if (result)
+            {
+                ReloadHolidayCache(holiday.HpId);
+            }
+            return result;
         }
 
         public List<HolidayDto> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
         {
-
-            if (!_memoryCache.TryGetValue(HolidayMstCacheKey, out IEnumerable<HolidayDto>? holidayMstList))
+            var holidayMstList = new List<HolidayDto>();
+            if (!_cache.KeyExists(HolidayMstCacheKey))
             {
                 holidayMstList = ReloadHolidayCache(hpId);
+            }
+            else
+            {
+                holidayMstList = ReadCacheHolidayMst();
             }
             return holidayMstList!.Where(h => holidayFrom <= h.SinDate && h.SinDate <= holidayTo).ToList();
         }

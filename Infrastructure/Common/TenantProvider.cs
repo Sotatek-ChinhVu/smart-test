@@ -1,5 +1,6 @@
 ﻿using Helper.Constants;
 using Infrastructure.Common;
+using Helper.Redis;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Microsoft.AspNetCore.Http;

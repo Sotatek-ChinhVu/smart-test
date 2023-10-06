@@ -812,6 +812,7 @@ using UseCase.MstItem.UpdateCmtCheckMst;
 using Domain.Models.ListSetMst;
 using UseCase.ListSetMst.UpdateListSetMst;
 using Interactor.ListSetMst;
+using UseCase.ByomeiSetMst.UpdateByomeiSetMst;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MainMenu.GetKensaInf;
 using UseCase.MainMenu.DeleteKensaInf;
@@ -841,6 +842,8 @@ using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
 using UseCase.ColumnSetting.GetColumnSettingByTableNameList;
 using UseCase.MstItem.SaveSetNameMnt;
+using UseCase.Online.GetOnlineConsent;
+using UseCase.Online.UpdateOnlineConsents;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1276,6 +1279,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
             busBuilder.RegisterUseCase<ValidationPtDiseaseListInputData, ValidationPtDiseaseListInteractor>();
             busBuilder.RegisterUseCase<GetAllByomeiByPtIdInputData, GetAllByomeiByPtIdInteractor>();
+            busBuilder.RegisterUseCase<UpdateByomeiSetMstInputData, UpdateByomeiSetMstInteractor>();
 
             //Order Info
             busBuilder.RegisterUseCase<GetOrdInfListTreeInputData, GetOrdInfListTreeInteractor>();
@@ -1806,7 +1810,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //ListSetMst
             busBuilder.RegisterUseCase<UpdateListSetMstInputData, UpdateListSetMstInteractor>();
-            
+
             //HolidayMst
             busBuilder.RegisterUseCase<SaveHolidayMstInputData, SaveHolidayMstInteractor>();
 
@@ -1831,6 +1835,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateOnlineInRaiinInfInputData, UpdateOnlineInRaiinInfInteractor>();
             busBuilder.RegisterUseCase<UpdatePtInfOnlineQualifyInputData, UpdatePtInfOnlineQualifyInteractor>();
             busBuilder.RegisterUseCase<GetListOnlineConfirmationHistoryModelInputData, GetListOnlineConfirmationHistoryModelInteractor>();
+            busBuilder.RegisterUseCase<GetOnlineConsentInputData, GetOnlineConsentInteractor>();
+            busBuilder.RegisterUseCase<UpdateOnlineConsentsInputData, UpdateOnlineConsentsInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();

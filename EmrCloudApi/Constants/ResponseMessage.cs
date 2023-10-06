@@ -1028,6 +1028,7 @@
         public static readonly string InvalidOnlineId = "Invalid OnlineId.";
         public static readonly string InvalidUketukeStatus = "Invalid UketukeStatus.";
         public static readonly string InvalidOnlineConfirmationDate = "Invalid OnlineConfirmationDate.";
+        public static readonly string InvalidXmlFile = "Invalid XmlFile.";
 
         // KensaIrai
         public static readonly string IsDeleteFile = "IsDeleteFile.";

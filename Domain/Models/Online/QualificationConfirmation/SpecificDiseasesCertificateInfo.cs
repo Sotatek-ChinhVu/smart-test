@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace UseCase.Online.QualificationConfirmation;
+namespace Domain.Models.Online.QualificationConfirmation;
 
 [Serializable]
 [XmlRoot(ElementName = "SpecificDiseasesCertificateInfo")]
