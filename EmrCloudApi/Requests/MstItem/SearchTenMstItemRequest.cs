@@ -30,5 +30,8 @@ namespace EmrCloudApi.Requests.MstItem
         public List<ItemTypeEnums> ItemFilter { get; set; } = new();
         public bool IsSearch831SuffixOnly { get; set; } = false;
         public bool IsSearchSuggestion { get; set; } = false;
+        public bool IsSearchGazoDensibaitaiHozon { get; set; } = true;
+        public FilterTenMstEnum SortCol { get; set; } = 0;
+        public SortType SortType { get; set; } = 0;
     }
 }

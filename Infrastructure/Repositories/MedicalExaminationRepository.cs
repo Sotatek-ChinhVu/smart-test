@@ -1,4 +1,5 @@
 ﻿using Domain.Constant;
+using Domain.Models.AuditLog;
 using Domain.Models.Diseases;
 using Domain.Models.Ka;
 using Domain.Models.Medical;
@@ -6,6 +7,7 @@ using Domain.Models.MedicalExamination;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.SystemConf;
+using Domain.Models.TodayOdr;
 using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
@@ -20,6 +22,7 @@ namespace Infrastructure.Repositories
     public class MedicalExaminationRepository : RepositoryBase, IMedicalExaminationRepository
     {
         private readonly ISystemConfRepository _systemConf;
+        private readonly ITodayOdrRepository _todayOdrRepository;
 
         public MedicalExaminationRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf) : base(tenantProvider)
         {
@@ -292,10 +295,8 @@ namespace Infrastructure.Repositories
         {
             var raiinInfQuery = NoTrackingDataContext.RaiinInfs
                .Where(s => s.HpId == hpId && s.PtId == ptId && s.SinDate == sinDate && s.OyaRaiinNo == oyaRaiinNo && s.RaiinNo != raiinNo);
-            var count = raiinInfQuery.Count();
             var odrInfQuery = NoTrackingDataContext.OdrInfs
                 .Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.IsDeleted == 0);
-            count = odrInfQuery.Count();
             var odrInfDetailQuery = NoTrackingDataContext.OdrInfDetails
                 .Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && itemCd.Contains(o.ItemCd));
             var resultQuery = from raiinInf in raiinInfQuery.AsEnumerable()
@@ -609,7 +610,7 @@ namespace Infrastructure.Repositories
 
             entities?.ForEach(entity =>
             {
-                results.Add(new KaMstModel(entity.Id, entity.KaId, entity.SortNo, entity.ReceKaCd ?? string.Empty, entity.KaSname ?? string.Empty, entity.KaName ?? string.Empty));
+                results.Add(new KaMstModel(entity.Id, entity.KaId, entity.SortNo, entity.ReceKaCd ?? string.Empty, entity.KaSname ?? string.Empty, entity.KaName ?? string.Empty, entity.YousikiKaCd ?? string.Empty));
             });
 
             return results;
@@ -1139,6 +1140,7 @@ namespace Infrastructure.Repositories
 
             checkedOrderModelList.Add(checkedOrderModel);
 
+            santei = false;
             if (yakkuzaiJoho == 2)
             {
                 santei = true;
@@ -1300,6 +1302,137 @@ namespace Infrastructure.Repositories
             }
 
             return checkedOrderModelList;
+        }
+
+        public List<CheckedOrderModel> TrialIryoJyohoKibanCalculation(int hpId, long ptId, int sinDate, long raiinNo, List<OrdInfDetailModel> allOdrInfDetail)
+        {
+            List<CheckedOrderModel> checkingOrderModelList = new List<CheckedOrderModel>();
+            var autoSanteiItem = FindAutoSanteiMst(hpId, ItemCdConst.SyosinIryoJyohoKiban1, sinDate);
+            if (!autoSanteiItem)
+            {
+                return checkingOrderModelList;
+            }
+
+            var existAutoItem = allOdrInfDetail.Any(detail => ItemCdConst.IryoJyohoKibanList.Contains(detail.ItemCd));
+            if (existAutoItem)
+            {
+                return checkingOrderModelList;
+            }
+
+            bool isExistFirstVisit = allOdrInfDetail.Any(x => x.ItemCd == ItemCdConst.SyosaiKihon && x.Suryo == 1);
+            bool isExistReturnVisit = allOdrInfDetail.Any(x => x.ItemCd == ItemCdConst.SyosaiKihon && x.Suryo == 3);
+            bool isGairaiRiha = CheckGairaiRiha(hpId, ptId, sinDate, raiinNo, allOdrInfDetail);
+            if (isExistFirstVisit)
+            {
+                var FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.SyosinIryoJyohoKiban1, sinDate);
+                if (FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel != null)
+                {
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
+                        CheckingType.MissingCalculate,
+                        santei: true,
+                        checkingContent: FormatSanteiMessage(FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty),
+                        itemCd: FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.ItemCd,
+                        sinKouiKbn: FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.SinKouiKbn,
+                        itemName: FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty,
+                        inOutKbn: 0
+                        );
+
+                    checkingOrderModelList.Add(checkingOrderModel);
+                }
+
+                var MedicalDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban1, sinDate);
+                if (MedicalDevelopmentSystemEnhanceAdd1TenMstModel != null)
+                {
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
+                        CheckingType.MissingCalculate,
+                        santei: true,
+                        checkingContent: FormatSanteiMessage(MedicalDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty),
+                        itemCd: MedicalDevelopmentSystemEnhanceAdd1TenMstModel.ItemCd,
+                        sinKouiKbn: MedicalDevelopmentSystemEnhanceAdd1TenMstModel.SinKouiKbn,
+                        itemName: MedicalDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty,
+                        inOutKbn: 0
+                        );
+
+                    checkingOrderModelList.Add(checkingOrderModel);
+                }
+            }
+            else if (isExistReturnVisit || isGairaiRiha)
+            {
+                var VisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.SaisinIryoJyohoKiban3, sinDate);
+                if (VisitDevelopmentSystemEnhanceAdd3TenMstModel != null)
+                {
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
+                        CheckingType.MissingCalculate,
+                        santei: true,
+                        checkingContent: FormatSanteiMessage(VisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty),
+                        itemCd: VisitDevelopmentSystemEnhanceAdd3TenMstModel.ItemCd,
+                        sinKouiKbn: VisitDevelopmentSystemEnhanceAdd3TenMstModel.SinKouiKbn,
+                        itemName: VisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty,
+                        inOutKbn: 0
+                        );
+
+                    checkingOrderModelList.Add(checkingOrderModel);
+                }
+
+                var ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban3, sinDate);
+                if (ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel != null)
+                {
+                    CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
+                        CheckingType.MissingCalculate,
+                        santei: true,
+                        checkingContent: FormatSanteiMessage(ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty),
+                        itemCd: ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.ItemCd,
+                        sinKouiKbn: ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.SinKouiKbn,
+                        itemName: ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty,
+                        inOutKbn: 0
+                        );
+
+                    checkingOrderModelList.Add(checkingOrderModel);
+                }
+            }
+            return checkingOrderModelList;
+        }
+
+        private bool CheckGairaiRiha(int hpId, long ptId, int sinDate, long raiinNo, List<OrdInfDetailModel> allOdrInfDetail)
+        {
+            if (_systemConf.GetSettingValue(2016, 0, hpId) == 0)
+            {
+                return false;
+            }
+
+            if (allOdrInfDetail.Any(x => x.ItemCd == ItemCdConst.SyosaiKihon && x.Suryo == 0))
+            {
+                // 既に存在
+                if (allOdrInfDetail.Any(detail => detail.ItemCd == ItemCdConst.IgakuGairaiRiha1
+                                                || detail.ItemCd == ItemCdConst.IgakuGairaiRiha2))
+                {
+                    return true;
+                }
+
+                // 外来リハビリテーション診療料１
+                int lastDaySanteiRiha1 = _todayOdrRepository.GetLastDaySantei(hpId, ptId, sinDate, raiinNo, ItemCdConst.IgakuGairaiRiha1);
+                if (lastDaySanteiRiha1 != 0)
+                {
+                    int tgtDay = CIUtil.SDateInc(lastDaySanteiRiha1, 6);
+                    if (lastDaySanteiRiha1 <= sinDate && tgtDay >= sinDate)
+                    {
+                        return true;
+                    }
+                }
+
+                // 外来リハビリテーション診療料２
+                int lastDaySanteiRiha2 = _todayOdrRepository.GetLastDaySantei(hpId, ptId, sinDate, raiinNo, ItemCdConst.IgakuGairaiRiha2);
+                if (lastDaySanteiRiha2 != 0)
+                {
+                    int tgtDay = CIUtil.SDateInc(lastDaySanteiRiha2, 13);
+                    if (lastDaySanteiRiha2 <= sinDate && tgtDay >= sinDate)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public (List<string>, List<SinKouiCountModel>) GetCheckedAfter327Screen(int hpId, long ptId, int sinDate, List<CheckedOrderModel> checkedTenMstResult, bool isTokysyoOrder, bool isTokysyosenOrder)

@@ -59,11 +59,27 @@ namespace Infrastructure.Repositories
                         startDate = CIUtil.IntToDate(ptPregnancy.PeriodDueDate).AddDays(-280).ToString("yyyyMMdd").AsInteger();
                     }
                     string periodWeek = GetPeriodWeek(sinDate, startDate, 0, endDate);
-                    if (ptPregnancy != null && !string.IsNullOrEmpty(periodWeek))
+                    if (ptPregnancy != null)
                     {
-                        return new() {
-                                         new KarteInfModel(hpId, rainNo, ptId, sinDate, periodWeek),
-                                     };
+                        if (!string.IsNullOrEmpty(periodWeek))
+                        {
+                            return new() {
+                                         new KarteInfModel(hpId, rainNo, ptId, sinDate, periodWeek, true),
+                                         };
+                        }
+                        else
+                        {
+                            startDate = ptPregnancy.OvulationDate;
+                            endDate = ptPregnancy.EndDate;
+                            if (!CIUtil.SDateToDateTime(ptPregnancy.PeriodDate).HasValue && CIUtil.SDateToDateTime(ptPregnancy.PeriodDueDate).HasValue)
+                            {
+                                startDate = CIUtil.IntToDate(ptPregnancy.PeriodDueDate).AddDays(-266).ToString("yyyyMMdd").AsInteger();
+                            }
+                            string ovulationWeek = GetPeriodWeek(sinDate, startDate, 1, endDate);
+                            return new() {
+                                         new KarteInfModel(hpId, rainNo, ptId, sinDate, ovulationWeek, true),
+                                         };
+                        }
                     }
                 }
             }
@@ -256,7 +272,7 @@ namespace Infrastructure.Repositories
                 position++;
             }
 
-            if (fileInfModelList.Any(item => item.LinkFile == string.Empty))
+            if (!fileInfModelList.Any())
             {
                 KarteImgInf newFile = new();
                 newFile.FileName = string.Empty;
@@ -357,10 +373,10 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public Dictionary<string, bool> ListCheckIsSchema(int hpId, long ptId, Dictionary<string, string> fileInfUpdateTemp)
+        public Dictionary<string, bool> ListCheckIsSchema(int hpId, long ptId, List<FileMapCopyItem> fileInfUpdateTemp)
         {
             Dictionary<string, bool> result = new();
-            var fileNameKeyList = fileInfUpdateTemp.Select(item => item.Key).Distinct().ToList();
+            var fileNameKeyList = fileInfUpdateTemp.Select(item => item.OldFileName).Distinct().ToList();
             var nextOrderFileList = NoTrackingDataContext.RsvkrtKarteImgInfs.Where(item => item.HpId == hpId
                                                                                            && item.PtId == ptId
                                                                                            && !string.IsNullOrEmpty(item.FileName)
@@ -373,21 +389,21 @@ namespace Infrastructure.Repositories
             foreach (var fileInf in fileInfUpdateTemp)
             {
                 bool isSchema = false;
-                var nextOrderItem = nextOrderFileList.FirstOrDefault(item => item.FileName == fileInf.Key);
+                var nextOrderItem = nextOrderFileList.FirstOrDefault(item => item.FileName == fileInf.OldFileName);
                 if (nextOrderItem != null)
                 {
                     isSchema = nextOrderItem.KarteKbn == 1;
                 }
                 else
                 {
-                    var setItem = setFileList.FirstOrDefault(item => item.FileName == fileInf.Key);
+                    var setItem = setFileList.FirstOrDefault(item => item.FileName == fileInf.OldFileName);
                     if (setItem != null)
                     {
                         isSchema = setItem.KarteKbn == 1;
                     }
                 }
 
-                result.Add(fileInf.Value, isSchema);
+                result.Add(fileInf.NewFileName, isSchema);
             }
             return result;
         }

@@ -40,9 +40,13 @@ namespace Domain.Common
                 var checkDrugOfDetail = odrInf.OrdInfDetails.Any(o => o.IsDrug);
                 var checkUsageOfDetail = odrInf.OrdInfDetails.Any(o => o.IsDrugUsage);
                 var checkBunkatu = odrInf.OrdInfDetails.Any(o => o.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu);
-                if (checkRefill && !checkDrugOfDetail)
+                var checkZan = odrInf.OrdInfDetails.Any(o => o.ItemCd.Contains("@ZAN"));
+                if (checkRefill)
                 {
-                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
+                    if (!checkZan && !checkDrugOfDetail)
+                    {
+                        return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
+                    }
                 }
                 if (checkOther && checkDrugOfDetail && !checkRefill && !checkBunkatu)
                 {
@@ -189,10 +193,12 @@ namespace Domain.Common
             {
                 return OrdInfValidationStatus.InvalidSuryo;
             }
+
             if (!string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && odrInfDetail.Suryo == 0)
             {
                 return (flag != 1 && flag != 0) ? OrdInfValidationStatus.InvalidSuryo : OrdInfValidationStatus.NoFillSuryo;
             }
+       
             if (!KohatuKbns.ContainsValue(odrInfDetail.KohatuKbn))
             {
                 return OrdInfValidationStatus.InvalidKohatuKbn;
@@ -556,6 +562,10 @@ namespace Domain.Common
             if (odrInfDetail.ItemName.Length > 240)
             {
                 return OrdInfValidationStatus.InvalidItemName;
+            }
+            if (!odrInfDetail.ItemCd.StartsWith("J") && !string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && odrInfDetail.Suryo == -1)
+            {
+                return OrdInfValidationStatus.InvalidPrice;
             }
             if ((odrInfDetail.Suryo < 0 && !odrInfDetail.ItemCd.StartsWith("J")) || odrInfDetail.ItemCd == ItemCdConst.JikanKihon && !(odrInfDetail.Suryo >= 0 && odrInfDetail.Suryo <= 7) || odrInfDetail.ItemCd == ItemCdConst.SyosaiKihon && !(odrInfDetail.Suryo >= 0 && odrInfDetail.Suryo <= 8))
             {

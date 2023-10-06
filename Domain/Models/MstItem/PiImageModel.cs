@@ -2,7 +2,7 @@
 {
     public class PiImageModel
     {
-        public PiImageModel(int hpId, int imageType, string itemCd, string fileName, bool isModified, bool isDeleted)
+        public PiImageModel(int hpId, int imageType, string itemCd, string fileName, bool isModified, bool isDeleted, string imagePath)
         {
             HpId = hpId;
             ImageType = imageType;
@@ -11,6 +11,7 @@
             ImagePath = string.Empty;
             IsModified = isModified;
             IsDeleted = isDeleted;
+            ImagePath = imagePath;
         }
 
         public PiImageModel(int hpId , string itemCd, int imageType)

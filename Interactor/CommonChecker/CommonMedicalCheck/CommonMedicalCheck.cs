@@ -224,6 +224,20 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return listUnitCheckErrorInfo;
     }
 
+    public List<DayLimitResultModel> CheckOnlyDayLimit(OrdInfoModel checkingOrder)
+    {
+        UnitChecker<OrdInfoModel, OrdInfoDetailModel> dayLimitChecker =
+            new DayLimitChecker<OrdInfoModel, OrdInfoDetailModel>()
+            {
+                CheckType = RealtimeCheckerType.Days
+            };
+        InitUnitCheck(dayLimitChecker);
+
+        UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> checkedResult = dayLimitChecker.CheckOrderList(new List<OrdInfoModel>() { checkingOrder }, new(new(), new(), new()), new(), new(), true);
+        List<DayLimitResultModel>? result = checkedResult.ErrorInfo as List<DayLimitResultModel>;
+        return result ?? new List<DayLimitResultModel>();
+    }
+
     private List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromOrder(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
     {
         List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listError = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
@@ -254,7 +268,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return listError;
     }
 
-    private List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromListOrder(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromListOrder(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>> listError = new List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>>();
 
@@ -361,7 +375,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckAge(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckAge(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> ageChecker =
            new AgeChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -756,9 +770,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<ErrorInfoModel> result = new List<ErrorInfoModel>();
 
         var errorGroup = (from a in allergyInfo
-                          group a by new { a.YjCd, a.AllergyYjCd , a.Id}
+                          group a by new { a.YjCd, a.AllergyYjCd, a.Id }
                           into gcs
-                          select new { gcs.Key.YjCd, gcs.Key.AllergyYjCd , gcs.Key.Id}
+                          select new { gcs.Key.YjCd, gcs.Key.AllergyYjCd, gcs.Key.Id }
                           ).ToList();
 
         foreach (var error in errorGroup)
@@ -1323,7 +1337,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<ErrorInfoModel> result = new();
         foreach (DayLimitResultModel dayLimit in dayLimitError)
         {
-            string itemName = _itemNameDictionary.ContainsKey(dayLimit.YjCd) ? _itemNameDictionary[dayLimit.YjCd] : string.Empty;
+            string itemName = _realtimeOrderErrorFinder.FindItemName(dayLimit.YjCd, _sinday);
             ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
             errorInfoModel.ErrorType = CommonCheckerType.DayLimitChecker;
@@ -1583,8 +1597,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 pregnancies,
                 specialNoteItem.PatientInfoTab.PtCmtInfItems,
                 specialNoteItem.PatientInfoTab.SeikatureInfItems,
-                new List<PhysicalInfoModel> { physicalModel },
-                new()
+                new List<PhysicalInfoModel> { physicalModel }
             );
 
         var specialNoteModel = new SpecialNoteFull(

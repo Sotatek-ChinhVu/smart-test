@@ -14,6 +14,10 @@ using Helper.Messaging.Data;
 using Helper.Messaging;
 using Domain.Models.ReceSeikyu;
 using UseCase.ReceSeikyu.ImportFile;
+using UseCase.ReceSeikyu.CancelSeikyu;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Linq.Dynamic.Core.Tokenizer;
+using UseCase.ReceSeikyu.GetReceSeikyModelByPtNum;
 
 namespace EmrCloudApi.Controller
 {
@@ -22,16 +26,18 @@ namespace EmrCloudApi.Controller
     {
         private readonly UseCaseBus _bus;
         private CancellationToken? _cancellationToken;
+        private readonly IMessenger _messenger;
 
-        public ReceSeikyuController(UseCaseBus bus, IUserService userService) : base(userService)
+        public ReceSeikyuController(UseCaseBus bus, IUserService userService, IMessenger messenger) : base(userService)
         {
             _bus = bus;
+            _messenger = messenger;
         }
 
         [HttpGet(ApiPath.GetListReceSeikyu)]
         public ActionResult<Response<GetListReceSeikyuResponse>> GetListReceSeikyu([FromQuery] GetListReceSeikyuRequest request)
         {
-            var input = new GetListReceSeikyuInputData(HpId, 
+            var input = new GetListReceSeikyuInputData(HpId,
                                                        request.SinDate,
                                                        request.SinYm,
                                                        request.IsIncludingUnConfirmed,
@@ -39,7 +45,9 @@ namespace EmrCloudApi.Controller
                                                        request.NoFilter,
                                                        request.IsFilterMonthlyDelay,
                                                        request.IsFilterReturn,
-                                                       request.IsFilterOnlineReturn);
+                                                       request.IsFilterOnlineReturn,
+                                                       request.IsGetDataPending
+                                                       );
             var output = _bus.Handle(input);
             var presenter = new GetListReceSeikyuPresenter();
             presenter.Complete(output);
@@ -56,6 +64,16 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SearchReceInfResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.CancelSeikyu)]
+        public ActionResult<Response<CancelSeikyuResponse>> CancelSeikyu([FromBody] CancelSeikyuRequest request)
+        {
+            var input = new CancelSeikyuInputData(HpId, request.SeikyuYm, request.SeikyuKbn, request.PtId, request.SinYm, request.HokenId, UserId);
+            var output = _bus.Handle(input);
+            var presenter = new CancelSeikyuPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CancelSeikyuResponse>>(presenter.Result);
+        }
+
         /// <summary>
         /// Only pass records have IsModified = true;
         /// </summary>
@@ -67,8 +85,8 @@ namespace EmrCloudApi.Controller
             _cancellationToken = cancellationToken;
             try
             {
-                Messenger.Instance.Register<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
-                Messenger.Instance.Register<RecalculateInSeikyuPendingStop>(this, StopCalculation);
+                _messenger.Register<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
+                _messenger.Register<RecalculateInSeikyuPendingStop>(this, StopCalculation);
 
                 HttpContext.Response.ContentType = "application/json";
                 //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
@@ -99,18 +117,18 @@ namespace EmrCloudApi.Controller
                                                                                                 x.IsAddNew,
                                                                                                 x.IsDeleted,
                                                                                                 x.IsChecked,
-                                                                                                new())).ToList(), request.SinYm, HpId, UserId);
+                                                                                                new())).ToList(), request.SinYm, HpId, UserId, _messenger);
 
                 var output = _bus.Handle(input);
-                if(output.Status == SaveReceSeiKyuStatus.Successful)
+                if (output.Status == SaveReceSeiKyuStatus.Successful)
                     UpdateRecalculationSaveReceSeikyu(new RecalculateInSeikyuPendingStatus(string.Empty, 100, true, true));
                 else
                     UpdateRecalculationSaveReceSeikyu(new RecalculateInSeikyuPendingStatus(string.Empty, 100, true, false));
             }
             finally
             {
-                Messenger.Instance.Deregister<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
-                Messenger.Instance.Deregister<RecalculateInSeikyuPendingStop>(this, StopCalculation);
+                _messenger.Deregister<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
+                _messenger.Deregister<RecalculateInSeikyuPendingStop>(this, StopCalculation);
             }
         }
 
@@ -122,6 +140,20 @@ namespace EmrCloudApi.Controller
             var presenter = new ImportFileReceSeikyuPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<ImportFileReceSeikyuResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetReceSeikyModelByPtNum)]
+        public ActionResult<Response<GetReceSeikyModelByPtNumResponse>> GetReceSeikyModelByPtNum([FromQuery] GetReceSeikyModelByPtNumRequest request)
+        {
+            var input = new GetReceSeikyModelByPtNumInputData(HpId,
+                                                       request.SinDate,
+                                                       request.SinYm,
+                                                       request.PtNum
+                                                       );
+            var output = _bus.Handle(input);
+            var presenter = new GetReceSeikyModelByPtNumPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetReceSeikyModelByPtNumResponse>>(presenter.Result);
         }
 
         private void StopCalculation(RecalculateInSeikyuPendingStop stopCalcStatus)

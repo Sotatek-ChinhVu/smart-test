@@ -26,19 +26,19 @@ namespace Reporting.Sokatu.Common.Models
         {
             get
             {
-                string wrkCd = HpInf == null ? "" : HpInf.HpCd ?? string.Empty.PadLeft(7, '0');
+                string wrkCd = (HpInf?.HpCd == null) ? "" : HpInf.HpCd.PadLeft(7, '0');
 
-                if (new int[] { 2, 12, 13, 17, 18, 25, 32, 35, 41, 43, 44, 46 }.Contains(HpInf.PrefNo))
+                if (new int[] { 2, 12, 13, 17, 18, 25, 32, 35, 41, 43, 44, 46 }.Contains(HpInf?.PrefNo ?? 0))
                 {
                     //xx,xxxx,x タイプ
                     return string.Format("{0},{1},{2}", wrkCd.Substring(0, 2), wrkCd.Substring(2, 4), wrkCd.Substring(6, 1));
                 }
-                else if (new int[] { 3, 22, 34 }.Contains(HpInf.PrefNo))
+                else if (new int[] { 3, 22, 34 }.Contains(HpInf?.PrefNo ?? 0))
                 {
                     //フォーマットなし
                     return wrkCd;
                 }
-                else if (new int[] { 27 }.Contains(HpInf.PrefNo))
+                else if (new int[] { 27 }.Contains(HpInf?.PrefNo ?? 0))
                 {
                     //xx-x,xxx,x タイプ
                     return string.Format("{0}-{1},{2},{3}", wrkCd.Substring(0, 2), wrkCd.Substring(2, 1), wrkCd.Substring(3, 3), wrkCd.Substring(6, 1));

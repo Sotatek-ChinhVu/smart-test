@@ -1,9 +1,10 @@
-﻿using Reporting.Statistics.Model;
+﻿using Domain.Common;
+using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta9000.Models;
 
 namespace Reporting.Statistics.Sta9000.DB;
 
-public interface ICoSta9000Finder
+public interface ICoSta9000Finder : IRepositoryBase
 {
     /// <summary>
     /// 患者情報
@@ -13,6 +14,16 @@ public interface ICoSta9000Finder
         CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
         CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf,
         CoSta9000KensaConf? kensaConf
+    );
+
+    /// <summary>
+    /// 患者情報
+    /// </summary>
+    List<CoPtInfModel> GetPtInfs(
+        int hpId,
+        CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
+        CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf,
+        CoSta9000KensaConf? kensaConf, List<long> ptIds
     );
 
     /// <summary>

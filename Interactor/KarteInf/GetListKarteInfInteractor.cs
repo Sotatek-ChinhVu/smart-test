@@ -1,5 +1,6 @@
 ﻿using Domain.Models.KarteInfs;
 using Domain.Models.PatientInfor;
+using Domain.Models.Reception;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
@@ -15,12 +16,14 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
     private readonly IKarteInfRepository _karteInfRepository;
     private readonly AmazonS3Options _options;
     private readonly IPatientInforRepository _patientInforRepository;
-    public GetListKarteInfInteractor(IOptions<AmazonS3Options> optionsAccessor, IKarteInfRepository karteInfRepository, IPatientInforRepository patientInforRepository, IAmazonS3Service amazonS3Service)
+    private readonly IReceptionRepository _receptionRepository;
+    public GetListKarteInfInteractor(IOptions<AmazonS3Options> optionsAccessor, IKarteInfRepository karteInfRepository, IPatientInforRepository patientInforRepository, IAmazonS3Service amazonS3Service, IReceptionRepository receptionRepository)
     {
         _karteInfRepository = karteInfRepository;
         _options = optionsAccessor.Value;
         _patientInforRepository = patientInforRepository;
         _amazonS3Service = amazonS3Service;
+        _receptionRepository = receptionRepository;
     }
 
     public GetListKarteInfOutputData Handle(GetListKarteInfInputData inputData)
@@ -62,6 +65,8 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
                     listFile.Add(new KarteFileOutputItem(file.IsSchema, fileLink.ToString()));
                 }
             }
+            var raiinStatus = _receptionRepository.GetStatusRaiinInf(inputData.HpId, inputData.RaiinNo, inputData.PtId);
+            var isKarteExisted = !string.IsNullOrEmpty(karteInfModel.FirstOrDefault()?.Text) || listFile.Any();
 
             return new GetListKarteInfOutputData(karteInfModel.Select(k =>
                                                         new GetListKarteInfOuputItem(
@@ -73,9 +78,11 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
                                                             k.SinDate,
                                                             k.Text,
                                                             k.IsDeleted,
-                                                            k.RichText
+                                                            k.RichText,
+                                                            k.IsAutoFill
                                                         )).ToList(),
                                                         listFile,
+                                                        isKarteExisted && raiinStatus >= 3,
                                                         GetListKarteInfStatus.Successed);
         }
         finally

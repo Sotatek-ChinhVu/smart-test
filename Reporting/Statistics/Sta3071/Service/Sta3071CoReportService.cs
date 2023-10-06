@@ -1,5 +1,4 @@
 ﻿using Helper.Common;
-using Reporting.Calculate.Receipt.DB.Finder;
 using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
@@ -118,6 +117,7 @@ public class Sta3071CoReportService : ISta3071CoReportService
     private CoSta3071PrintConf printConf;
     private CoFileType outputFileType;
     private bool isPutTotalRow;
+    private CoFileType? coFileType;
 
     public Sta3071CoReportService(ICoSta3071Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -144,15 +144,18 @@ public class Sta3071CoReportService : ISta3071CoReportService
         // get data to print
         GetFieldNameList(formFileName);
         GetRowCount(formFileName);
-        GetData(hpId);
-        hasNextPage = true;
-        currentPage = 1;
 
-        //印刷
-        while (hasNextPage)
+        if (GetData(hpId))
         {
-            UpdateDrawForm(hpId);
-            currentPage++;
+            hasNextPage = true;
+            currentPage = 1;
+
+            //印刷
+            while (hasNextPage)
+            {
+                UpdateDrawForm(hpId);
+                currentPage++;
+            }
         }
 
         return new Sta3071Mapper(_singleFieldData, _tableFieldData, _extralData, rowCountFieldName, formFileName).GetData();
@@ -315,7 +318,7 @@ public class Sta3071CoReportService : ISta3071CoReportService
         }
     }
 
-    private void GetData(int hpId)
+    private bool GetData(int hpId)
     {
 
         /// <summary>
@@ -434,7 +437,7 @@ public class Sta3071CoReportService : ISta3071CoReportService
                 });
             };
 
-            if (outputFileType != CoFileType.Csv || isPutTotalRow)
+            if (outputFileType != CoFileType.Csv || coFileType == CoFileType.Csv || isPutTotalRow)
             {
                 titles.Add(new MidasiTitle { TitleA2Name = "合計", TitleBName = "合計" });
             }
@@ -455,7 +458,7 @@ public class Sta3071CoReportService : ISta3071CoReportService
                 };
 
                 #region 見出し             
-                if (i == 0 || outputFileType == CoFileType.Csv)
+                if (i == 0 || outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv)
                 {
                     //行タイトル
                     printData.RowTitle = isTotal ? "合計" : GetTitle(syukeiData.FirstOrDefault(), 0, 2);
@@ -473,7 +476,7 @@ public class Sta3071CoReportService : ISta3071CoReportService
                 for (int j = 0; j < colTitles.Count; j++)
                 {
 
-                    var wrkData = (j < colTitles.Count - 1) || (outputFileType == CoFileType.Csv && !(isPutTotalRow && j == colTitles.Count - 1)) ?
+                    var wrkData = (j < colTitles.Count - 1) || (outputFileType == CoFileType.Csv && coFileType == CoFileType.Csv && !(isPutTotalRow && j == colTitles.Count - 1)) ?
                         syukeiData.Where(s => s.ReportKbnHValue == colTitles[j].TitleValue) :
                         syukeiData; //合計列
 
@@ -537,12 +540,14 @@ public class Sta3071CoReportService : ISta3071CoReportService
 
         //データ取得
         raiinInfs = _finder.GetRaiinInfs(hpId, printConf);
-        if ((raiinInfs?.Count ?? 0) == 0) return;
+        if ((raiinInfs?.Count ?? 0) == 0) return false;
 
         hpInf = _finder.GetHpInf(hpId, raiinInfs?.FirstOrDefault()?.SinDate ?? 0);
 
         //印刷用データの作成
         MakePrintData();
+
+        return printDatas.Count > 0;
     }
 
     private void SetFieldData(string field, string value)
@@ -585,5 +590,64 @@ public class Sta3071CoReportService : ISta3071CoReportService
         maxRow = i * syosaiMidasi.Count();
         maxCol = javaOutputData.responses?.FirstOrDefault(item => item.listName == "MainVals" && item.typeInt == (int)CalculateTypeEnum.GetListColCount)?.result ?? maxCol;
         _extralData.Add("maxCol", maxCol.ToString());
+    }
+
+    public CommonExcelReportingModel ExportCsv(CoSta3071PrintConf printConf, int hpId, bool isPutTotalRow, bool isPutColName, int monthFrom, int monthTo, string menuName, CoFileType? coFileType)
+    {
+        this.printConf = printConf;
+        this.coFileType = coFileType;
+        string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+        List<string> retDatas = new List<string>();
+        if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+        if (csvDatas.Count == 0) new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        //出力フィールド
+        List<string> wrkTitles = new List<string> { "見出し", "初再診見出し" }; //列タイトルは、見出し分を2列ずらす
+        wrkTitles.AddRange(colTitles.Select(c => c.TitleBName).ToList());
+        List<string> wrkColumns = putColumns.Select(p => p.ColName).ToList();
+
+        //タイトル行
+        retDatas.Add("\"" + string.Join("\",\"", wrkTitles) + "\"");
+        if (isPutColName)
+        {
+            retDatas.Add("\"" + string.Join("\",\"", wrkColumns) + "\"");
+        }
+
+        //データ
+        int totalRow = csvDatas.Count;
+        int rowOutputed = 0;
+        foreach (var csvData in csvDatas)
+        {
+            retDatas.Add(RecordData(csvData));
+            rowOutputed++;
+        }
+
+        string RecordData(CoSta3071PrintData csvData)
+        {
+            List<string> colDatas = new List<string>();
+
+            foreach (var column in putColumns)
+            {
+                if (column.ColName == "MainVals")
+                {
+                    foreach (var val in csvData.MainVals)
+                    {
+                        colDatas.Add("\"" + (val == null ? "" : val.ToString()) + "\"");
+                    }
+                }
+                else
+                {
+                    var value = typeof(CoSta3071PrintData).GetProperty(column.ColName).GetValue(csvData);
+                    colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+                }
+
+            }
+
+            return string.Join(",", colDatas);
+        }
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
 }

@@ -6,6 +6,21 @@ namespace Helper.Extension
 {
     public static class ObjectExtension
     {
+        public static TValue GetPropertyValueOrDefault<TObject, TValue>(this TObject obj, string propertyName, TValue defaultValue = default)
+        {
+            var propertyInfo = obj.GetType().GetProperty(propertyName);
+            if (propertyInfo != null)
+            {
+                var value = propertyInfo.GetValue(obj);
+                if (value is TValue result)
+                {
+                    return result;
+                }
+            }
+
+            return defaultValue;
+        }
+
         public static long AsLong(this object inputObject)
         {
             if (Int64.TryParse(inputObject.AsString(), out long result))
@@ -255,6 +270,12 @@ namespace Helper.Extension
         public static T CreateInstance<T>()
         {
             return (T)FormatterServices.GetUninitializedObject(typeof(T));
+        }
+
+        public static string AsString(this String inputString)
+        {
+            if (string.IsNullOrEmpty(inputString)) return "";
+            return inputString;
         }
     }
 

@@ -33,7 +33,5 @@ namespace Domain.Models.InsuranceMst
         bool SaveOrdInsuranceMst(List<HokenMstModel> insuranceChangeOdrs, int hpId, int userId);
 
         HokenMstModel GetHokenMasterReadOnly(int hpId, int hokenNo, int hokenEdaNo, int prefNo, int sinDate);
-
-        List<string> GetNameKeys(int hpId, int prefNo);
     }
 }

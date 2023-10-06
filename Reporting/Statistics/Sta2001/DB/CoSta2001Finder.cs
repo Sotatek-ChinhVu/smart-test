@@ -30,6 +30,7 @@ public class CoSta2001Finder : RepositoryBase, ICoSta2001Finder
 
         //免除分をすべて当日精算扱いにする
         wrkSyunoInfs.FindAll(s => s.NyukinKbn == 2 && s.NyukinDate != s.SinDate).ForEach(s => s.NyukinDate = s.SinDate);
+        wrkSyunoInfs.RemoveAll(s => s.NyukinKbn == 2 && (s.NyukinDate < wrkPrintConf.StartNyukinDate || wrkPrintConf.EndNyukinDate < s.NyukinDate));
 
         return wrkSyunoInfs;
     }

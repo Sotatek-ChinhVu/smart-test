@@ -28,6 +28,14 @@ public class SetMstModel
         IsAddNew = false;
     }
 
+    public SetMstModel(int hpId, int setCd)
+    {
+        SetName = string.Empty;
+        IsAddNew = false;
+        HpId = hpId;
+        SetCd = setCd;
+    }
+
     public int HpId { get; private set; }
 
     public int SetCd { get; private set; }

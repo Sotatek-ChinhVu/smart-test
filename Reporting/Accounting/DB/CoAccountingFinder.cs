@@ -49,7 +49,8 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             (!raiinNos.Any() || raiinNos.Contains(p.RaiinNo)) &&
             (!hokenSeikyu || p.PtFutan > 0) &&
             (!jihiSeikyu || p.JihiFutan > 0)
-        ).ToList();
+        );
+
         // 来院情報の取得
         var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r =>
             r.HpId == hpId &&
@@ -100,7 +101,6 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
         );
 
-
         var join = (
             from kaikeiInf in kaikeiInfs
             join raiinInf in raiinInfs on
@@ -131,7 +131,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
             ).ToList();
 
-        var entities = join.AsEnumerable().Select(
+        var entities = join.Select(
             data =>
                 new CoKaikeiInfModel(
                     data.kaikeiInf,
@@ -310,7 +310,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
             ).ToList();
 
-        var entities = join.AsEnumerable().Select(
+        var entities = join.Select(
             data =>
                 new CoKaikeiInfModel(
                     data.kaikeiInf,
@@ -581,7 +581,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
             ).ToList();
 
-        var entities = join.AsEnumerable().Select(
+        var entities = join.Select(
             data =>
                 new CoKaikeiInfListModel(
                     data.HpId,
@@ -822,8 +822,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                 from syunoNyukinJoin in syunoNyukinJoins.DefaultIfEmpty()
                 select new
                 {
-                    syunoSeikyu,
-                    syunoNyukinJoin
+                    syunoSeikyu
                 }
             );
 
@@ -1033,7 +1032,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
         ).ToList();
 
-        var entities = ptKohiQuery.AsEnumerable().Select(
+        var entities = ptKohiQuery.Select(
             data =>
                 new CoPtKohiModel(
                     data.ptKohi,
@@ -1905,5 +1904,25 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                               )
                               .ToList();
         return accountDueList;
+    }
+
+    public List<PtGrpNameMstModel> GetPtGrpNameMstModels(int hpId)
+    {
+        var ptgrpNameMsts = NoTrackingDataContext.PtGrpNameMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0).ToList();
+        var grpIdList = ptgrpNameMsts.Select(item => item.GrpId).Distinct().ToList();
+        var ptGrpItems = NoTrackingDataContext.PtGrpItems.Where(x => x.HpId == hpId && x.IsDeleted == 0 && grpIdList.Contains(x.GrpId)).ToList();
+        var query = from ptGrpName in ptgrpNameMsts
+                    select new
+                    {
+                        PtGrpName = ptGrpName,
+                        PtGrpItems = from ptGrpItem in ptGrpItems
+                                     where ptGrpItem.GrpId == ptGrpName.GrpId
+                                     select ptGrpItem
+                    };
+        var result = query.Select(x => new PtGrpNameMstModel(
+                           x.PtGrpName,
+                           x.PtGrpItems.AsEnumerable().Select(grpItem => new PtGrpItemModel(grpItem)).OrderBy(gi => gi.SortNo)
+                       )).OrderBy(gr => gr.SortNo).ToList();
+        return result;
     }
 }

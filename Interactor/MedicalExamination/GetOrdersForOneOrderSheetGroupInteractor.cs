@@ -73,6 +73,7 @@ namespace Interactor.MedicalExamination
                             history.KaName,
                             history.TantoId,
                             history.TantoName,
+                            history.TantoFullName,
                             history.SanteiKbn,
                             history.TagNo,
                             history.SinryoTitle,
@@ -96,6 +97,7 @@ namespace Interactor.MedicalExamination
             finally
             {
                 _historyRepository.ReleaseResource();
+                _historyRepository.Dispose();
             }
         }
 

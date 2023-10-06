@@ -86,5 +86,16 @@
 
         public bool IsNotSaved { get; private set; }
 
+        public FlowSheetModel ChangeFlowSheet(int tagNo, string karteContent, string comment, long ptId)
+        {
+            TagNo = tagNo;
+            FullLineOfKarte = karteContent;
+            Comment = comment;
+            PtId = ptId;
+            IsNotSaved = false;
+            RaiinListInfs = new();
+            return this;
+        }
+
     }
 }

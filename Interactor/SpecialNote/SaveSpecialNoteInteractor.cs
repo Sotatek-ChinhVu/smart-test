@@ -1,18 +1,25 @@
 ﻿using Domain.Models.SpecialNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Domain.Models.User;
 using Helper.Common;
+using Helper.Constants;
 using UseCase.SpecialNote.Save;
+using static Helper.Constants.UserConst;
 
 namespace Interactor.SpecialNote
 {
     public class SaveSpecialNoteInteractor : ISaveSpecialNoteInputPort
     {
         private readonly ISpecialNoteRepository _specialNoteRepository;
+        private readonly ISummaryInfRepository _summaryInfRepository;
+        private readonly IUserRepository _userRepository;
 
-        public SaveSpecialNoteInteractor(ISpecialNoteRepository specialNoteRepository)
+        public SaveSpecialNoteInteractor(ISpecialNoteRepository specialNoteRepository, ISummaryInfRepository summaryInfRepository, IUserRepository userRepository)
         {
             _specialNoteRepository = specialNoteRepository;
+            _summaryInfRepository = summaryInfRepository;
+            _userRepository = userRepository;
         }
 
         public SaveSpecialNoteOutputData Handle(SaveSpecialNoteInputData inputData)
@@ -31,6 +38,12 @@ namespace Interactor.SpecialNote
                 {
                     return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.InvalidSinDate);
                 }
+                var sumaryInf = _summaryInfRepository.Get(inputData.HpId, inputData.PtId);
+                if ((sumaryInf.Text != inputData.SummaryTab.Text || sumaryInf.Rtext != inputData.SummaryTab.Rtext) && _userRepository.GetPermissionByScreenCode(inputData.HpId, inputData.UserId, FunctionCode.EditSummary) != PermissionType.Unlimited)
+                {
+                    return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.NoPermissionSaveSummary);
+                }
+
                 var result = _specialNoteRepository.SaveSpecialNote(inputData.HpId, inputData.PtId, inputData.SinDate, new SummaryInfModel(inputData.SummaryTab.Id, inputData.SummaryTab.HpId, inputData.SummaryTab.PtId, inputData.SummaryTab.SeqNo, inputData.SummaryTab.Text, inputData.SummaryTab.Rtext, CIUtil.GetJapanDateTimeNow(), CIUtil.GetJapanDateTimeNow()), inputData.ImportantNoteTab, new PatientInfoModel(inputData.PatientInfoTab.PregnancyItems.Select(p => new PtPregnancyModel(
                         p.Id,
                         p.HpId,
@@ -47,9 +60,8 @@ namespace Interactor.SpecialNote
                         inputData.UserId,
                         string.Empty,
                         p.SinDate
-
                     )
-                    ).ToList(), inputData.PatientInfoTab.PtCmtInfItems, inputData.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputData.PatientInfoTab.KensaInfDetailItems.Select(k => new KensaInfDetailModel(k.HpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2, DateTime.MinValue, string.Empty, string.Empty, 0)).ToList()) }, new()), inputData.UserId);
+                    ).ToList(), inputData.PatientInfoTab.PtCmtInfItems, inputData.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputData.PatientInfoTab.KensaInfDetailItems.Select(k => new KensaInfDetailModel(k.HpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2, DateTime.MinValue, string.Empty, string.Empty, 0)).ToList()) }), inputData.UserId);
 
                 if (!result) return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.Failed);
 
@@ -57,7 +69,9 @@ namespace Interactor.SpecialNote
             }
             finally
             {
+                _userRepository.ReleaseResource();
                 _specialNoteRepository.ReleaseResource();
+                _summaryInfRepository.ReleaseResource();
             }
         }
     }

@@ -1,11 +1,14 @@
-﻿namespace EmrCloudApi.Responses.Receipt;
+﻿using EmrCloudApi.Responses.Receipt.Dto;
+using UseCase.Receipt;
+
+namespace EmrCloudApi.Responses.Receipt;
 
 public class SaveReceCheckCmtListResponse
 {
-    public SaveReceCheckCmtListResponse(bool status)
+    public SaveReceCheckCmtListResponse(List<ReceiptCheckCmtErrListItem> receiptCheckCmtErrList)
     {
-        Status = status;
+        ReceiptCheckCmtErrList = receiptCheckCmtErrList.Select(item => new ReceiptCheckCmtErrDto(item)).ToList();
     }
 
-    public bool Status { get; private set; }
+    public List<ReceiptCheckCmtErrDto> ReceiptCheckCmtErrList { get; private set; }
 }

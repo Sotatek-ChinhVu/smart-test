@@ -12,13 +12,13 @@ public interface IReceiptRepository : IRepositoryBase
 {
     List<ReceiptListModel> GetReceiptList(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel);
 
-    List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId, int sinDate);
+    List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId, int sinDate, bool isGetAll = false);
 
     List<ReceCmtModel> GetLastMonthReceCmt(int hpId, int sinDate, long ptId);
 
     bool SaveReceCmtList(int hpId, int userId, List<ReceCmtModel> receCmtList);
 
-    List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId);
+    List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId, bool isGetAll = false);
 
     List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId);
 
@@ -34,13 +34,17 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int sinYm);
 
+    bool CheckExisReceInfEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    List<SokatuMstModel> GetSokatuMstModels(int hpId, int SeikyuYm);
+
     bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
 
     bool SaveSyoukiInfList(int hpId, int userId, List<SyoukiInfModel> syoukiInfList);
 
     bool SaveSyobyoKeikaList(int hpId, int userId, List<SyobyoKeikaModel> syoukiInfList);
 
-    bool SaveReceCheckCmtList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckCmtModel> receCheckCmtList);
+    List<ReceCheckCmtModel> SaveReceCheckCmtList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckCmtModel> receCheckCmtList);
 
     bool CheckExistSeqNoReceCheckCmtList(int hpId, int hokenId, int sinYm, long ptId, List<int> seqNoList);
 
@@ -102,6 +106,10 @@ public interface IReceiptRepository : IRepositoryBase
     List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByStartDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
 
     List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByEndDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
+
+    bool ResetStatusAfterReCalc(int hpId, List<long> ptIds, int seikyuYm);
+
+    bool ResetStatusAfterCheckErr(int hpId, int userId, int seikyuYm, List<ReceRecalculationModel> receRecalculationList);
     #endregion
 
     int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm);
@@ -123,4 +131,20 @@ public interface IReceiptRepository : IRepositoryBase
     bool SaveReceStatusCalc(List<ReceStatusModel> newReceStatus, List<ReceStatusModel> updateList, int userId, int hpId);
 
     List<int> GetListKaikeiInf(int hpId, long ptId);
+
+    List<PtHokenInfKaikeiModel> GetListKaikeiInf(int hpId, int sinYm, long ptId);
+
+    bool CheckExistSeqNoReceCheckErrorList(int hpId, int hokenId, int sinYm, long ptId, List<ReceCheckErrModel> receCheckErrorList);
+
+    bool SaveReceCheckErrList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckErrModel> receCheckErrorList);
+
+    void UpdateReceStatus(ReceStatusModel receStatusUpdate, int hpId, int userId);
+
+    void ClearReceCmtErr(int hpId, List<ReceRecalculationModel> receRecalculationList);
+
+    List<RaiinInfModel> GetListRaiinInf(int hpId, long ptId, int sinYm, int dayInMonth, int rpNo, int seqNo);
+
+    bool CheckExistsReceInf(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    bool CheckExistSyobyoKeikaSinDay(int hpId, int sinYm, long ptId, int hokenId, int sinDay);
 }

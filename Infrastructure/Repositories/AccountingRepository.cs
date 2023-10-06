@@ -12,7 +12,9 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using System.Linq.Expressions;
+using System.Net.WebSockets;
 
 namespace Infrastructure.Repositories
 {
@@ -722,7 +724,7 @@ namespace Infrastructure.Repositories
             if (listPtByoMei == null || listPtByoMei.Count == 0)
                 return new List<PtDiseaseModel>();
 
-            return listPtByoMei.Select(data => new PtDiseaseModel(data.PtId, data.ByomeiCd, data.SeqNo, data.SortNo, data.SyubyoKbn, data.SikkanKbn, data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei, new List<PrefixSuffixModel>()))
+            return listPtByoMei.Select(data => new PtDiseaseModel(data.PtId, data.ByomeiCd, data.SeqNo, data.SortNo, data.SyubyoKbn, data.SikkanKbn, data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei, new List<PrefixSuffixModel>(), data.TenkiKbn))
                 .OrderBy(data => data.TenkiKbn)
                 .ThenBy(data => data.SortNo)
                 .ThenByDescending(data => data.StartDate)
@@ -1247,14 +1249,14 @@ namespace Infrastructure.Repositories
                                                                 x.Status > RaiinState.TempSave &&
                                                                 x.IsDeleted == DeleteTypes.None);
                 if (oyaRaiinNo == null) return new();
-                return raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+                return NoTrackingDataContext.RaiinInfs.Where(x =>
                                                                    x.HpId == hpId &&
                                                                    x.PtId == ptId &&
                                                                    x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo &&
                                                                    x.IsDeleted == DeleteTypes.None
                                                                    ).Select(x => x.RaiinNo).ToList();
             }
-            return raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+            return NoTrackingDataContext.RaiinInfs.Where(x =>
                                                                 x.HpId == hpId &&
                                                                 x.PtId == ptId &&
                                                                 x.IsDeleted == DeleteTypes.None
@@ -1796,6 +1798,102 @@ namespace Infrastructure.Repositories
 
             return ptHokenPatternList;
 
+        }
+
+        public List<AccountingFormMstModel> GetAccountingFormMstModels(int hpId)
+        {
+            var result = new List<AccountingFormMstModel>();
+            result = NoTrackingDataContext.AccountingFormMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0)
+                        .AsEnumerable()
+                        .Select(x => new AccountingFormMstModel(x.HpId, x.FormNo, x.FormName ?? string.Empty, x.FormType, x.PrintSort, x.MiseisanKbn, x.SaiKbn, x.MisyuKbn, x.SeikyuKbn, x.HokenKbn, x.Form ?? string.Empty, x.Base, x.SortNo, x.IsDeleted, x.CreateDate, x.UpdateDate, x.CreateId, x.UpdateId, false))
+                        .ToList();
+            return result;
+        }
+
+        public void UpdateAccountingFormMst(int userId, List<AccountingFormMstModel> models)
+        {
+            List<AccountingFormMst> addEntities = new();
+            List<AccountingFormMst> updateEntities = new();
+            foreach (var model in models)
+            {
+                if (!model.CheckDefaultValue() && model.ModelModified)
+                {
+                    var accountingFormMst = ConvertAccountingFormMstModelToAccountingFormMst(model);
+                    accountingFormMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    accountingFormMst.UpdateId = userId;
+                    if (model.FormNo == 0 && model.IsDeleted == 0)
+                    {
+                        accountingFormMst.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        accountingFormMst.CreateId = userId;
+
+                        addEntities.Add(accountingFormMst);
+                    }
+                    else
+                    {
+                        updateEntities.Add(accountingFormMst);
+                    }
+                }
+            }
+            TrackingDataContext.AccountingFormMsts.AddRange(addEntities);
+            TrackingDataContext.AccountingFormMsts.UpdateRange(updateEntities);
+            TrackingDataContext.SaveChanges();
+        }
+
+        public AccountingFormMst ConvertAccountingFormMstModelToAccountingFormMst(AccountingFormMstModel accountingFormMstModel)
+        {
+            var accountingFormMst = new AccountingFormMst();
+            accountingFormMst.HpId = accountingFormMstModel.HpId;
+            accountingFormMst.FormNo = accountingFormMstModel.FormNo;
+            accountingFormMst.FormName = accountingFormMstModel.FormName;
+            accountingFormMst.FormType = accountingFormMstModel.FormType;
+            accountingFormMst.PrintSort = accountingFormMstModel.PrintSort;
+            accountingFormMst.MiseisanKbn = accountingFormMstModel.MiseisanKbn;
+            accountingFormMst.SaiKbn = accountingFormMstModel.SaiKbn;
+            accountingFormMst.HokenKbn = accountingFormMstModel.HokenKbn;
+            accountingFormMst.Form = accountingFormMstModel.Form;
+            accountingFormMst.Base = accountingFormMstModel.Base;
+            accountingFormMst.SortNo = accountingFormMstModel.SortNo;
+            accountingFormMst.IsDeleted = accountingFormMstModel.IsDeleted;
+            accountingFormMst.CreateId = accountingFormMstModel.CreateId;
+            accountingFormMst.CreateDate = (accountingFormMstModel.FormNo > 0) ? TimeZoneInfo.ConvertTimeToUtc(accountingFormMstModel.CreateDate) : accountingFormMstModel.CreateDate;
+            accountingFormMst.UpdateId = accountingFormMstModel.UpdateId;
+            accountingFormMst.UpdateDate = accountingFormMstModel.UpdateDate;
+            accountingFormMst.MisyuKbn = accountingFormMstModel.MisyuKbn;
+            accountingFormMst.SeikyuKbn = accountingFormMstModel.SeikyuKbn;
+
+            return accountingFormMst;
+        }
+
+        public List<HokenInfModel> GetListHokenSelect(int hpId, List<KaikeiInfModel> listKaikeiInf, long ptId)
+        {
+            if (listKaikeiInf == null || listKaikeiInf.Count <= 0)
+                return new();
+
+            var listHokenId = listKaikeiInf.Select(item => item.HokenId).Distinct().ToList();
+
+            var listHokenInf = NoTrackingDataContext.PtHokenInfs.Where(item =>
+                item.HpId == hpId && item.PtId == ptId && item.IsDeleted == 0 && listHokenId.Contains(item.HokenId) && item.HokenId > 0);
+
+            var listHokenSeleted = from kaikeiInf in listKaikeiInf
+                                   join ptHokenInf in listHokenInf on
+                                       kaikeiInf.HokenId equals ptHokenInf.HokenId
+                                   select new
+                                   {
+                                       KaikeiInf = kaikeiInf,
+                                       PtHokenInf = ptHokenInf
+                                   };
+
+            return listHokenSeleted.Select(item => new HokenInfModel(item.PtHokenInf.PtId,
+                                                                     item.KaikeiInf.HokenId,
+                                                                     item.KaikeiInf.HokenKbn,
+                                                                     item.PtHokenInf.HokensyaNo ?? string.Empty,
+                                                                     item.PtHokenInf.HonkeKbn,
+                                                                     item.PtHokenInf.StartDate,
+                                                                     item.PtHokenInf.EndDate,
+                                                                     item.PtHokenInf.Houbetu ?? string.Empty
+                                                                     ))
+                                                                     .OrderBy(item => item.HokenId)
+                                                                     .ToList();
         }
     }
 }

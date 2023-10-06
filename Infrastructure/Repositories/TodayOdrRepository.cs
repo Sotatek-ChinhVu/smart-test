@@ -6,6 +6,7 @@ using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKubunMst;
+using Domain.Models.ReceptionSameVisit;
 using Domain.Models.SystemConf;
 using Domain.Models.TodayOdr;
 using Entity.Tenant;
@@ -41,6 +42,10 @@ namespace Infrastructure.Repositories
         {
             _systemConf = systemConf;
             _approvalInfRepository = approvalInfRepository;
+        }
+
+        public TodayOdrRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        {
         }
 
         public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, byte status)
@@ -1851,7 +1856,7 @@ namespace Infrastructure.Repositories
                 itemCd.StartsWith(ItemCdConst.Comment842Pattern) || itemCd.StartsWith(ItemCdConst.Comment880Pattern));
         }
 
-        private int GetLastDaySantei(int hpId, long ptId, int sinDate, long raiinNo, string itemCd)
+        public int GetLastDaySantei(int hpId, long ptId, int sinDate, long raiinNo, string itemCd)
         {
             int result = 0;
             var sinKouiCountDiffDayQuery = NoTrackingDataContext.SinKouiCounts.Where(s => s.HpId == hpId && s.PtId == ptId && (s.SinYm * 100 + s.SinDay) < sinDate);
@@ -2080,6 +2085,16 @@ namespace Infrastructure.Repositories
             foreach (var historyOdrInfModel in historyOdrInfModels)
             {
                 List<OrdInfDetailModel> odrInfDetails = new();
+
+                int newSanteiKbn = 0;
+                if (_systemConf.GetSettingValue(2008, 1, hpId) == 1 || historyOdrInfModel.SanteiKbn == 1)
+                {
+                    newSanteiKbn = historyOdrInfModel.SanteiKbn;
+                }
+                else
+                {
+                    newSanteiKbn = sainteiKbn;
+                }
 
                 foreach (var detail in historyOdrInfModel.OrdInfDetails)
                 {
@@ -2311,7 +2326,7 @@ namespace Infrastructure.Repositories
                    historyOdrInfModel.InoutKbn,
                    historyOdrInfModel.SikyuKbn,
                    historyOdrInfModel.SyohoSbt,
-                   historyOdrInfModel.SanteiKbn == 1 ? 1 : sainteiKbn,
+                   newSanteiKbn,
                    historyOdrInfModel.TosekiKbn,
                    historyOdrInfModel.DaysCnt,
                    historyOdrInfModel.SortNo,

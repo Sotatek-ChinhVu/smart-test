@@ -9,6 +9,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Repositories;
 using Microsoft.Extensions.Options;
 using System.Text;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
@@ -80,6 +81,7 @@ public class HistoryCommon : IHistoryCommon
                     history.KaName,
                     history.TantoId,
                     history.TantoName,
+                    history.TantoFullName,
                     history.SanteiKbn,
                     history.TagNo,
                     history.SinryoTitle,
@@ -559,6 +561,7 @@ public class HistoryCommon : IHistoryCommon
     public void ReleaseResources()
     {
         _historyOrderRepository.ReleaseResource();
+        _historyOrderRepository.Dispose();
         _insuranceRepository.ReleaseResource();
         _patientInforRepository.ReleaseResource();
         _userRepository.ReleaseResource();

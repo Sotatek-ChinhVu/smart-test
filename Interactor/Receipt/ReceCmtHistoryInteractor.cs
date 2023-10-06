@@ -1,4 +1,5 @@
-﻿using Domain.Models.Insurance;
+﻿using Amazon.Runtime.Internal.Transform;
+using Domain.Models.Insurance;
 using Domain.Models.Receipt;
 using Helper.Common;
 using UseCase.Receipt.ReceCmtHistory;
@@ -18,13 +19,28 @@ public class ReceCmtHistoryInteractor : IReceCmtHistoryInputPort
 
     public ReceCmtHistoryOutputData Handle(ReceCmtHistoryInputData inputData)
     {
+        List<(int sinYm, int hokenId, string hokenSentaku)> hokenFollowSinYm = new List<(int, int, string)>();
         try
         {
-            var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, 0);
+            var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, 0, false, true);
             var hokenInfList = insuranceData.ListHokenInf;
             var receCmtList = _receiptRepository.GetReceCmtList(inputData.HpId, 0, inputData.PtId, 0, 0);
 
-            var result = ConvertToResult(hokenInfList, receCmtList);
+            foreach (var cmt in receCmtList)
+            {
+                if (hokenFollowSinYm.Any(h => h.sinYm == cmt.SinYm && h.hokenId == cmt.HokenId))
+                {
+                    continue;
+                }
+                var ptHokenInfModel = hokenInfList.FirstOrDefault(p => p.HokenId == cmt.HokenId);
+                if (ptHokenInfModel != null)
+                {
+                    var hoken = ptHokenInfModel.ChangeSinDate(cmt.SinYm * 100 + 1);
+                    hokenFollowSinYm.Add(new(cmt.SinYm, cmt.HokenId, hoken.HokenSentaku));
+                }
+            }
+
+            var result = ConvertToResult(hokenFollowSinYm, receCmtList);
             return new ReceCmtHistoryOutputData(result, ReceCmtHistoryStatus.Successed);
         }
         finally
@@ -34,27 +50,26 @@ public class ReceCmtHistoryInteractor : IReceCmtHistoryInputPort
         }
     }
 
-    private List<ReceCmtHistoryOutputItem> ConvertToResult(List<HokenInfModel> hokenInfList, List<ReceCmtModel> receCmtList)
+    private List<ReceCmtHistoryOutputItem> ConvertToResult(List<(int sinYm, int hokenId, string hokenSentaku)> hokenFollowSinYm, List<ReceCmtModel> receCmtList)
     {
         List<ReceCmtHistoryOutputItem> result = new();
         var sinYmList = receCmtList.Select(item => item.SinYm).Distinct().OrderByDescending(item => item).ToList();
         foreach (var sinYm in sinYmList)
         {
-            var hokenId = receCmtList.FirstOrDefault(item => item.SinYm == sinYm)?.HokenId ?? 0;
-            var outputItem = new ReceCmtHistoryOutputItem(
-                    sinYm,
-                    CIUtil.SMonthToShowSWMonth(sinYm, 1),
-                    hokenId,
-                    GetHokenName(hokenId, hokenInfList),
-                    receCmtList.Where(item => item.SinYm == sinYm).ToList()
-                );
-            result.Add(outputItem);
+            var hokenIdList = receCmtList.Where(item => item.SinYm == sinYm).Select(item => item.HokenId).OrderByDescending(item => item).Distinct().ToList();
+            foreach (var hokenId in hokenIdList)
+            {
+                var hokenName = hokenFollowSinYm.FirstOrDefault(h => h.sinYm == sinYm && h.hokenId == hokenId).hokenSentaku;
+                var outputItem = new ReceCmtHistoryOutputItem(
+                        sinYm,
+                        CIUtil.SMonthToShowSWMonth(sinYm, 1),
+                        hokenId,
+                        hokenName,
+                        receCmtList.Where(item => item.SinYm == sinYm && item.HokenId == hokenId).ToList()
+                    );
+                result.Add(outputItem);
+            }
         }
         return result;
-    }
-
-    private string GetHokenName(int hokenId, List<HokenInfModel> hokenInfList)
-    {
-        return hokenInfList.FirstOrDefault(p => p.HokenId == hokenId)?.HokenSentaku ?? string.Empty;
     }
 }

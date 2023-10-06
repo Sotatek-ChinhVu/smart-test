@@ -15,6 +15,8 @@ namespace Domain.Models.Reception
 
         IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
 
+        ReceptionModel GetYoyakuRaiinInf(int hpId, long ptId, int sinDate);
+
         ReceptionModel GetReceptionComments(int hpId, long raiinNo);
 
         ReceptionModel GetReceptionVisiting(int hpId, long raiinNo);
@@ -49,7 +51,9 @@ namespace Domain.Models.Reception
 
         bool CheckExistRaiinNo(int hpId, long ptId, long raiinNo);
 
-        List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted);
+        List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted, bool isAll = false);
+
+        ReceptionModel? GetLastKarute(int hpId, long ptNum);
 
         List<Tuple<int, long, long>> Delete(bool flag, int hpId, long ptId, int userId, int sinDate, List<Tuple<long, long, int>> receptions);
 
@@ -60,5 +64,13 @@ namespace Domain.Models.Reception
         ReceptionModel GetLastVisit(int hpId, long ptId, int sinDate);
 
         List<SameVisitModel> GetListSameVisit(int hpId, long ptId, int sinDate);
+
+        bool UpdateIsDeleted(int hpId, long raiinNo);
+
+        List<RaiinInfToPrintModel> GetOutDrugOrderList(int hpId, int fromDate, int toDate);
+
+        int GetStatusRaiinInf(int hpId, long raiinNo, long ptId);
+
+        ReceptionModel GetRaiinInfBySinDate(int hpId, long ptId, int sinDate);
     }
 }

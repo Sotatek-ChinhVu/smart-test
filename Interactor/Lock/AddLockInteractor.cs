@@ -25,10 +25,10 @@ namespace Interactor.Lock
                 int hpId = inputData.HpId;
                 int userId = inputData.UserId;
 
-                bool result = _lockRepository.AddLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, inputData.Token);
+                bool result = _lockRepository.AddLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, inputData.TabKey, inputData.LoginKey);
                 if (result)
                 {
-                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate);
+                    var responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate, raiinNo);
                     return new AddLockOutputData(AddLockStatus.Successed, new LockModel(), responseLockList);
                 }
                 else

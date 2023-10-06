@@ -5,7 +5,7 @@ namespace Domain.Models.Insurance
 {
     public interface IInsuranceRepository : IRepositoryBase
     {
-        InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate);
+        InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate, bool flag = true, bool isDeletedPtHokenInf = false);
 
         InsuranceModel GetPtHokenInf(int hpId, int hokenPid, long ptId, int sinDate);
 
@@ -35,6 +35,8 @@ namespace Domain.Models.Insurance
 
         int GetHokenKbnByHokenId(int hpId, int hokenId, long ptId);
 
-        List<string> GetNameKeys(int hpId, int prefNo);
+        List<HokenInfModel> FindPtHokenList(int hpId, long ptId, int sinDay);
+
+        List<HokenInfModel> FindHokenInfByPtId(int hpId, long ptId);
     }
 }

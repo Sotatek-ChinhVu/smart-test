@@ -6,6 +6,8 @@ using EmrCalculateApi.ReceFutan.Models;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Messaging.Data;
+using Helper.Messaging;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -58,8 +60,9 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
         private readonly TenantDataContext _tenantDataContext;
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
+        private readonly IMessenger _messenger;
 
-        public ReceFutanViewModel(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
+        public ReceFutanViewModel(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger)
         {
             _systemConfigProvider = systemConfigProvider;
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
@@ -77,6 +80,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                 receKyufuKisai2: _systemConfigProvider.GetReceKyufuKisai2(),
                 jibaiRousaiRate: _systemConfigProvider.GetJibaiRousaiRate()
             );
+            _messenger = messenger;
         }
 
         /// <summary>
@@ -85,10 +89,11 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
         /// <param name="ptIds">患者ID(null:未指定)</param>
         /// <param name="seikyuYm">請求年月</param>
         public void ReceFutanCalculateMain(
-            List<long> ptIds, int seikyuYm
+            List<long> ptIds, int seikyuYm, string uniqueKey
         )
         {
             const string conFncName = nameof(ReceFutanCalculateMain);
+            UniqueKey = uniqueKey;
             try
             {
                 _emrLogger.WriteLogStart(this, conFncName, $"ptIds.Count:{ptIds?.Count ?? 0} seikyuYm:{seikyuYm}");
@@ -128,12 +133,21 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                 }
 
                 _emrLogger.WriteLogEnd(this, conFncName, $"ptIds.Count:{ptIds?.Count ?? 0} seikyuYm:{seikyuYm}");
+                if (AllowSendProgress)
+                {
+                    SendMessager(new RecalculationStatus(true, CalculateStatusConstant.ReceiptAggregationCheckBox, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                }
             }
             catch (Exception E)
             {
                 _emrLogger.WriteLogError(this, conFncName, E);
                 throw;
             }
+        }
+
+        private void SendMessager(RecalculationStatus status)
+        {
+            _messenger.Send(status);
         }
 
         /// <summary>
@@ -185,6 +199,10 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
 
         public bool IsStopCalc { get; set; }
 
+        public string UniqueKey { get; set; } = string.Empty;
+
+        public bool AllowSendProgress { get => !string.IsNullOrEmpty(UniqueKey); }
+
         public AfterCalcItem AfterCalcItemEvent { get; set; }
 
         public CancellationToken CancellationToken { get; set; }
@@ -234,10 +252,22 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
             }
 
             AllCalcCount = ReceInfs.Count;
+            if (AllowSendProgress)
+            {
+                SendMessager(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, AllCalcCount, 0, string.Empty, UniqueKey));
+            }
             CalculatedCount = 0;
-
             for (int rCnt = ReceInfs.Count - 1; rCnt >= 0 && !IsStopCalc; rCnt--)
             {
+                //if (AllowSendProgress)
+                //{
+                //    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                //    IsStopCalc = statusCallBack.Result.Result;
+                //}
+                if (IsStopCalc)
+                {
+                    return;
+                }
                 if (CancellationToken.IsCancellationRequested) return;
                 ReceInfModel receInf = ReceInfs[rCnt];
 
@@ -342,6 +372,15 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                     SetReceInfJd(receInf);
 
                     CalculatedCount++;
+
+                    if (AllCalcCount == CalculatedCount)
+                    {
+                        break;
+                    }
+                    if (AllowSendProgress)
+                    {
+                        SendMessager(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                    }
                 }
                 catch (Exception E)
                 {

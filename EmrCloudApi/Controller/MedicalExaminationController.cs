@@ -29,6 +29,7 @@ using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
 using UseCase.MedicalExamination.GetOrderSheetGroup;
 using UseCase.MedicalExamination.GetSinkouCountInMonth;
 using UseCase.MedicalExamination.InitKbnSetting;
+using UseCase.MedicalExamination.SaveKensaIrai;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.SummaryInf;
 using UseCase.MedicalExamination.TrailAccounting;
@@ -495,8 +496,7 @@ namespace EmrCloudApi.Controllers
 
             if (output.Status == SaveMedicalStatus.Successed)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.MedicalChanged,
-                    new CommonMessage { PtId = output.PtId, SinDate = output.SinDate, RaiinNo = output.RaiinNo });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.ReceptionInfos, output.SameVisitList));
             }
 
             var presenter = new SaveMedicalPresenter();
@@ -539,7 +539,7 @@ namespace EmrCloudApi.Controllers
         [HttpGet(ApiPath.GetHistoryFollowSinDate)]
         public ActionResult<Response<GetHistoryFollowSindateResponse>> GetHistoryFollowSinDate([FromQuery] GetHistoryFollowSindateRequest request)
         {
-            var input = new GetHistoryFollowSindateInputData(request.PtId, HpId, UserId, request.SinDate, request.DeleteConditon, request.RaiinNo, request.Flag);
+            var input = new GetHistoryFollowSindateInputData(request.PtId, HpId, UserId, request.SinDate, request.DeleteConditon, request.RaiinNo, request.Flag, request.IsShowApproval);
             var output = _bus.Handle(input);
 
             var presenter = new GetHistoryFollowSindatePresenter();
@@ -626,6 +626,16 @@ namespace EmrCloudApi.Controllers
             var presenter = new GetHeaderVistitDatePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetHeaderVistitDateResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveKensaIrai)]
+        public ActionResult<Response<SaveKensaIraiResponse>> SaveKensaIrai([FromBody] SaveKensaIraiRequest request)
+        {
+            var input = new SaveKensaIraiInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+            var presenter = new SaveKensaIraiPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveKensaIraiResponse>>(presenter.Result);
         }
     }
 }

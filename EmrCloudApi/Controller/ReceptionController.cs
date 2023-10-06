@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.Reception;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.MaxMoney;
 using EmrCloudApi.Presenters.RaiinKubun;
@@ -30,13 +31,19 @@ using UseCase.RaiinKbn.GetPatientRaiinKubunList;
 using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
+using UseCase.Reception.GetHpInf;
+using UseCase.Reception.GetLastKarute;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetListRaiinInf;
+using UseCase.Reception.GetOutDrugOrderList;
+using UseCase.Reception.GetRaiinInfBySinDate;
 using UseCase.Reception.GetRaiinListWithKanInf;
 using UseCase.Reception.GetReceptionDefault;
+using UseCase.Reception.GetYoyakuRaiinInf;
 using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
+using UseCase.Reception.RevertDeleteNoRecept;
 using UseCase.Reception.Update;
 using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
@@ -87,6 +94,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetLastRaiinInfsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetOutDrugOrderList)]
+        public ActionResult<Response<GetOutDrugOrderListResponse>> GetOutDrugOrderList([FromQuery] GetOutDrugOrderListRequest request)
+        {
+            var input = new GetOutDrugOrderListInputData(HpId, request.IsPrintPrescription, request.IsPrintAccountingCard, request.FromDate, request.ToDate, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetOutDrugOrderListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetOutDrugOrderListResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.Insert)]
@@ -250,7 +269,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetListRaiinInfResponse>> GetList([FromQuery] GetListRaiinInfRequest req)
         {
-            var input = new GetListRaiinInfInputData(HpId, req.PtId, req.PageIndex, req.PageSize, req.IsDeleted);
+            var input = new GetListRaiinInfInputData(HpId, req.PtId, req.PageIndex, req.PageSize, req.IsDeleted, req.IsAll);
             var output = _bus.Handle(input);
             var presenter = new GetListRaiinInfPresenter();
             presenter.Complete(output);
@@ -284,11 +303,60 @@ namespace EmrCloudApi.Controller
             return Ok(presenter.Result);
         }
 
-        [HttpGet(ApiPath.Test)]
-        public ActionResult<Response<DeleteReceptionResponse>> Test(DeleteReceptionRequest request)
+        [HttpGet(ApiPath.GetLastKarute)]
+        public ActionResult<Response<GetLastKaruteResponse>> GetLastKarute([FromQuery] GetLastKaruteRequest request)
         {
-            return Ok();
+            var input = new GetLastKaruteInputData(HpId, request.PtNum);
+            var output = _bus.Handle(input);
+            var presenter = new GetLastKarutePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetLastKaruteResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.GetYoyakuRaiinInf)]
+        public ActionResult<Response<GetYoyakuRaiinInfResponse>> GetYoyakuRaiinInf([FromQuery] GetYoyakuRaiinInfRequest request)
+        {
+            var input = new GetYoyakuRaiinInfInputData(HpId, request.SinDate, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetYoyakuRaiinInfPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetYoyakuRaiinInfResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetRaiinInfBySinDate)]
+        public ActionResult<Response<GetRaiinInfBySinDateResponse>> GetRaiinInfBySinDate([FromQuery] GetRaiinInfBySinDateRequest request)
+        {
+            var input = new GetRaiinInfBySinDateInputData(HpId, request.SinDate, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetRaiinInfBySinDatePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetRaiinInfBySinDateResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetHpInf)]
+        public ActionResult<Response<GetHpInfResponse>> GetHpInf([FromQuery] GetHpInfRequest request)
+        {
+            var input = new GetHpInfInputData(HpId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetHpInfPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetHpInfResponse>>(presenter.Result);
+        }
+
+        [HttpPut(ApiPath.RevertDeleteNoRecept)]
+        public async Task<ActionResult<Response<RevertDeleteNoReceptResponse>>> RevertDeleteNoRecept(RevertDeleteNoReceptRequest request)
+        {
+            var input = new RevertDeleteNoReceptInputData(HpId, request.RaiinNo, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            if (output.Status == RevertDeleteNoReceptStatus.Success)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.receptionModel, new()));
+            }
+
+            var presenter = new RevertDeleteNoReceptPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<RevertDeleteNoReceptResponse>>(presenter.Result);
+        }
     }
 }

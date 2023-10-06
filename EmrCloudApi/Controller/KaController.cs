@@ -7,6 +7,8 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Ka.GetKaCodeList;
+using UseCase.Ka.GetKacodeMstYossi;
+using UseCase.Ka.GetKacodeYousikiMst;
 using UseCase.Ka.GetList;
 using UseCase.Ka.SaveList;
 
@@ -23,9 +25,9 @@ public class KaController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
-    public ActionResult<Response<GetKaMstListResponse>> GetListMst()
+    public ActionResult<Response<GetKaMstListResponse>> GetListMst(int isDeleted)
     {
-        var input = new GetKaMstListInputData();
+        var input = new GetKaMstListInputData(isDeleted);
         var output = _bus.Handle(input);
         var presenter = new GetKaMstListPresenter();
         presenter.Complete(output);
@@ -45,10 +47,30 @@ public class KaController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveListKaMst)]
     public ActionResult<Response<SaveListKaMstResponse>> Save([FromBody] SaveListKaMstRequest request)
     {
-        var input = new SaveKaMstInputData(HpId, UserId, request.KaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName)).ToList());
+        var input = new SaveKaMstInputData(HpId, UserId, request.KaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName, input.YousikiKaCd)).ToList());
         var output = _bus.Handle(input);
         var presenter = new SaveListKaMstPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<SaveListKaMstResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKaCodeMstYossi)]
+    public ActionResult<Response<GetKaCodeMstListResponse>> GetKaCodeMstYossi()
+    {
+        var input = new GetKacodeMstYossiInputData();
+        var output = _bus.Handle(input);
+        var presenter = new GetKaCodeMstYossiPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKaCodeYousikiMst)]
+    public ActionResult<Response<GetKaCodeYousikiMstResponse>> GetKaCodeYousikiMst()
+    {
+        var input = new GetKaCodeYousikiMstInputData();
+        var output = _bus.Handle(input);
+        var presenter = new GetKaCodeYousikiMstPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
     }
 }

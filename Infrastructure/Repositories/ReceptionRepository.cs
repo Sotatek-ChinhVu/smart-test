@@ -1,13 +1,20 @@
 ﻿using Domain.Constant;
+using Domain.Models.Family;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Enum;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Globalization;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Infrastructure.Repositories
 {
@@ -60,6 +67,7 @@ namespace Infrastructure.Repositories
 
                 // Insert RaiinInf
                 var raiinInf = CreateNewRaiinInf(new ReceptionModel(dto.Reception), hpId, userId);
+                UpdateConfirmationInfo(hpId, raiinInf.SinDate, raiinInf.PtId, ref raiinInf);
                 TrackingDataContext.RaiinInfs.Add(raiinInf);
                 TrackingDataContext.SaveChanges();
 
@@ -159,6 +167,114 @@ namespace Infrastructure.Repositories
                 };
             }
 
+            void UpdateConfirmationInfo(int hpId, int sinDate, long ptId, ref RaiinInf raiinInf)
+            {
+                int confirmationType = 0;
+                var raiinInfsInSameday = TrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                                     && item.SinDate == sinDate
+                                                                                     && item.PtId == ptId)
+                                                                      .ToList();
+
+                var onlineConfirmationHistoryInSameday = TrackingDataContext.OnlineConfirmationHistories.Where(item => item.PtId == ptId)
+                                                                                                        .AsEnumerable()
+                                                                                                        .Where(item => CIUtil.DateTimeToInt(item.OnlineConfirmationDate) == sinDate)
+                                                                                                        .ToList();
+
+                #region update ConfirmationType
+                if (raiinInfsInSameday.Any())
+                {
+                    var confirmedRaiinInfs = raiinInfsInSameday.Where(x => x.ConfirmationType > 0);
+                    confirmationType = confirmedRaiinInfs.Any() ? confirmedRaiinInfs.Min(x => x.ConfirmationType) : 0;
+                    raiinInf.ConfirmationType = confirmationType;
+                }
+                if (onlineConfirmationHistoryInSameday.Any())
+                {
+                    var confirmedOnlineConfirmationHistorys = onlineConfirmationHistoryInSameday.Where(x => x.ConfirmationType > 0);
+                    confirmationType = confirmedOnlineConfirmationHistorys.Any() ? confirmedOnlineConfirmationHistorys.Min(x => x.ConfirmationType) : 0;
+                    raiinInf.ConfirmationType = confirmationType;
+                }
+                #endregion
+
+                #region update InfConsFlg
+                string infoConsFlg = "    ";
+                if (raiinInfsInSameday.Any())
+                {
+                    void UpdateFlgValue(int flgIdx)
+                    {
+                        char flgToChar(int flg)
+                        {
+                            if (flg == 1)
+                            {
+                                return '1';
+                            }
+                            else if (flg == 2)
+                            {
+                                return '2';
+                            }
+                            return ' ';
+                        }
+
+                        var confirmedFlgRaiinInfs = raiinInfsInSameday.Where(x => !string.IsNullOrEmpty(x.InfoConsFlg) && x.InfoConsFlg.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
+                        int infConsFlg = confirmedFlgRaiinInfs.Count() == 0 ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg[flgIdx].AsInteger());
+                        infoConsFlg = ReplaceAt(infoConsFlg, flgIdx, flgToChar(infConsFlg));
+                    }
+                    //Update PharmacistsInfoConsFlg
+                    UpdateFlgValue(0);
+                    //Update SpecificHealthCheckupsInfoConsFlg
+                    UpdateFlgValue(1);
+                    //Update DiagnosisInfoConsFlg
+                    UpdateFlgValue(2);
+                    //Update OperationInfoConsFlg
+                    UpdateFlgValue(3);
+                }
+                if (onlineConfirmationHistoryInSameday.Any())
+                {
+                    void UpdateFlgValue(int flgIdx)
+                    {
+                        char flgToChar(int flg)
+                        {
+                            if (flg == 1)
+                            {
+                                return '1';
+                            }
+                            else if (flg == 2)
+                            {
+                                return '2';
+                            }
+                            return ' ';
+                        }
+
+                        var confirmedFlgRaiinInfs = onlineConfirmationHistoryInSameday.Where(x => !string.IsNullOrEmpty(x.InfoConsFlg) && x.InfoConsFlg.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
+                        int infConsFlg = confirmedFlgRaiinInfs.Count() == 0 ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg[flgIdx].AsInteger());
+                        infoConsFlg = ReplaceAt(infoConsFlg, flgIdx, flgToChar(infConsFlg));
+                    }
+                    //Update PharmacistsInfoConsFlg
+                    UpdateFlgValue(0);
+                    //Update SpecificHealthCheckupsInfoConsFlg
+                    UpdateFlgValue(1);
+                    //Update DiagnosisInfoConsFlg
+                    UpdateFlgValue(2);
+                    //Update OperationInfoConsFlg
+                    UpdateFlgValue(3);
+                }
+                if (string.IsNullOrWhiteSpace(infoConsFlg))
+                {
+                    infoConsFlg = "";
+                }
+                raiinInf.InfoConsFlg = infoConsFlg;
+                #endregion
+            }
+
+            string ReplaceAt(string input, int index, char newChar)
+            {
+                if (input == null)
+                {
+                    return string.Empty;
+                }
+                StringBuilder builder = new StringBuilder(input);
+                builder[index] = newChar;
+                return builder.ToString();
+            }
             #endregion
         }
 
@@ -503,6 +619,47 @@ namespace Infrastructure.Repositories
 
         }
 
+        public ReceptionModel GetYoyakuRaiinInf(int hpId, long ptId, int sinDate)
+        {
+            var entity = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                       && item.SinDate == sinDate
+                                                                       && item.PtId == ptId
+                                                                       && item.IsDeleted == DeleteTypes.None
+                                                                       && item.Status == RaiinState.Reservation)
+                                                        .OrderByDescending(p => p.RaiinNo)
+                                                        .FirstOrDefault();
+            if (entity == null)
+            {
+                return new();
+            }
+            return new ReceptionModel(
+                        entity.HpId,
+                        entity.PtId,
+                        entity.SinDate,
+                        entity.RaiinNo,
+                        entity.OyaRaiinNo,
+                        entity.HokenPid,
+                        entity.SanteiKbn,
+                        entity.Status,
+                        entity.IsYoyaku,
+                        entity.YoyakuTime ?? string.Empty,
+                        entity.YoyakuId,
+                        entity.UketukeSbt,
+                        entity.UketukeTime ?? string.Empty,
+                        entity.UketukeId,
+                        entity.UketukeNo,
+                        entity.SinStartTime ?? string.Empty,
+                        entity.SinEndTime ?? string.Empty,
+                        entity.KaikeiTime ?? string.Empty,
+                        entity.KaikeiId,
+                        entity.KaId,
+                        entity.TantoId,
+                        entity.SyosaisinKbn,
+                        entity.JikanKbn,
+                        string.Empty
+                   );
+        }
+
         public List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate)
         {
             var result = NoTrackingDataContext.RaiinInfs.Where(p =>
@@ -587,7 +744,7 @@ namespace Infrastructure.Repositories
             List<SameVisitModel> result = new();
             var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
                                                                              && item.PtId == ptId
-                                                                             && item.SinDate == sinDate
+                                                                             && (sinDate == 0 || item.SinDate == sinDate)
                                                                              && item.IsDeleted == 0)
                                                               .ToList();
 
@@ -781,6 +938,7 @@ namespace Infrastructure.Repositories
                 r.ptInf.Sex,
                 r.ptInf.Birthday,
                 r.raiinInf.YoyakuTime ?? string.Empty,
+                r.raiinInf.ConfirmationType,
                 r.relatedRsvFrameMst?.RsvFrameName ?? string.Empty,
                 r.relatedUketukeSbtMst?.KbnId ?? CommonConstants.InvalidId,
                 r.raiinInf.UketukeTime ?? string.Empty,
@@ -790,7 +948,10 @@ namespace Infrastructure.Repositories
                 r.relatedRaiinCmtInfComment?.Text ?? string.Empty,
                 r.ptCmtInf?.Text ?? string.Empty,
                 r.relatedTanto?.UserId ?? CommonConstants.InvalidId,
+                string.IsNullOrEmpty(r.relatedTanto?.DrName) ? r.relatedTanto?.Name ?? string.Empty : r.relatedTanto?.DrName ?? string.Empty,
+                r.relatedTanto?.KanaName ?? string.Empty,
                 r.relatedKaMst?.KaId ?? CommonConstants.InvalidId,
+                r.relatedKaMst?.KaName ?? string.Empty,
                 r.lastVisitDate,
                 r.firstVisitDate,
                 r.primaryDoctorName ?? string.Empty,
@@ -799,7 +960,7 @@ namespace Infrastructure.Repositories
                 r.raiinInf.ConfirmationResult ?? string.Empty,
                 grpIds,
                 dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName ?? string.Empty, d.ColorCd?.Length > 0 ? "#" + d.ColorCd : string.Empty)).ToList(),
-                sinDate,
+                r.raiinInf.SinDate,
                 // Fields needed to create Hoken name
                 r.relatedPtHokenPattern?.HokenPid ?? CommonConstants.InvalidId,
                 r.relatedPtHokenPattern?.StartDate ?? 0,
@@ -883,6 +1044,26 @@ namespace Infrastructure.Repositories
             updateEntity(raiinInf);
             raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
             raiinInf.UpdateId = userId;
+            NoTrackingDataContext.SaveChanges();
+            return true;
+        }
+
+        public bool UpdateIsDeleted(int hpId, long raiinNo)
+        {
+            return Update(hpId, raiinNo, r => r.IsDeleted = 0);
+        }
+
+        private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
+                r.HpId == hpId
+                && r.RaiinNo == raiinNo).FirstOrDefault();
+            if (raiinInf is null)
+            {
+                return false;
+            }
+
+            updateEntity(raiinInf);
             NoTrackingDataContext.SaveChanges();
             return true;
         }
@@ -1143,7 +1324,7 @@ namespace Infrastructure.Repositories
             }
 
             //delete raiinInf
-            var raiinInf = TrackingDataContext.RaiinInfs.FirstOrDefault(r => r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
+            var raiinInf = TrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
             if (raiinInf == null) return new(0, 0, 0);
 
             raiinInf.UpdateId = userId;
@@ -1151,7 +1332,7 @@ namespace Infrastructure.Repositories
             raiinInf.IsDeleted = deleteFlag;
 
             // Update oyaRaiinNo of other raiinInf
-            var listRaiinInf = TrackingDataContext.RaiinInfs.Where(r => r.OyaRaiinNo == raiinNo && r.RaiinNo != raiinNo && r.IsDeleted == DeleteTypes.None).ToList();
+            var listRaiinInf = TrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.OyaRaiinNo == raiinNo && r.RaiinNo != raiinNo && r.IsDeleted == DeleteTypes.None).ToList();
             if (listRaiinInf.Count > 0)
             {
                 long minRaiinNo = listRaiinInf.Min(r => r.RaiinNo);
@@ -1164,16 +1345,17 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
 
             // Delete reservation info
-            var rsvInf = TrackingDataContext.RsvInfs.FirstOrDefault(r => r.RaiinNo == raiinNo && r.SinDate == sinDate && r.PtId == ptId);
+            var rsvInf = TrackingDataContext.RsvInfs.FirstOrDefault(r => r.HpId == hpId && r.RaiinNo == raiinNo && r.SinDate == sinDate && r.PtId == ptId);
             if (rsvInf != null) TrackingDataContext.RsvInfs.Remove(rsvInf);
 
             var rsvFrameInf = TrackingDataContext.RsvFrameInfs.FirstOrDefault(r => r.Number == raiinNo);
             if (rsvFrameInf != null) TrackingDataContext.RsvFrameInfs.Remove(rsvFrameInf);
 
             //delete order
-            var odrInfs = TrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId
-                                                                           && odr.RaiinNo == raiinNo
-                                                                           && odr.SinDate == sinDate);
+            var odrInfs = TrackingDataContext.OdrInfs.Where(odr => odr.HpId == hpId
+                                                                   && odr.PtId == ptId
+                                                                   && odr.RaiinNo == raiinNo
+                                                                   && odr.SinDate == sinDate);
             if (odrInfs != null)
             {
                 var updateId = userId;
@@ -1182,7 +1364,6 @@ namespace Infrastructure.Repositories
                 foreach (var odrInf in odrInfs)
                 {
                     odrInf.IsDeleted = deleteFlag;
-
                     odrInf.UpdateId = updateId;
                     odrInf.UpdateDate = updateDate;
                 }
@@ -1190,9 +1371,9 @@ namespace Infrastructure.Repositories
 
             //delete karte
             var karteInfs = NoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId
-                                                                             && k.PtId == ptId
-                                                                             && k.RaiinNo == raiinNo
-                                                                             && k.SinDate == sinDate);
+                                                                       && k.PtId == ptId
+                                                                       && k.RaiinNo == raiinNo
+                                                                       && k.SinDate == sinDate);
             if (karteInfs != null)
             {
                 var updateId = userId;
@@ -1201,47 +1382,68 @@ namespace Infrastructure.Repositories
                 foreach (var karteInf in karteInfs)
                 {
                     karteInf.IsDeleted = deleteFlag;
-
                     karteInf.UpdateId = updateId;
                     karteInf.UpdateDate = updateDate;
                 }
             }
 
             // Delete KENSA_INF,KENSA_INF_DETAIL
-            var listKendaInf = TrackingDataContext.KensaInfs.Where(k => k.PtId == ptId &&
-                                                                                   k.RaiinNo == raiinNo).ToList();
+            var listKendaInf = TrackingDataContext.KensaInfs.Where(k => k.HpId == hpId
+                                                                        && k.PtId == ptId
+                                                                        && k.RaiinNo == raiinNo)
+                                                            .ToList();
             listKendaInf.ForEach((k) =>
             {
                 k.IsDeleted = DeleteTypes.Deleted;
+                k.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                k.UpdateId = userId;
             });
 
-            var listKendaInfDetail = TrackingDataContext.KensaInfs.Where(k => k.PtId == ptId &&
-                                                                                               k.RaiinNo == raiinNo).ToList();
+            var listKendaInfDetail = TrackingDataContext.KensaInfs.Where(k => k.HpId == hpId
+                                                                              && k.PtId == ptId
+                                                                              && k.RaiinNo == raiinNo)
+                                                                  .ToList();
             listKendaInfDetail.ForEach((k) =>
             {
                 k.IsDeleted = DeleteTypes.Deleted;
+                k.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                k.UpdateId = userId;
             });
 
             // Delete LIMIT_LIST_INF、LIMIT_CNT_LIST_INF
-            var listLimitListInf = TrackingDataContext.LimitListInfs.Where(k => k.PtId == ptId &&
-                                                                                       k.RaiinNo == raiinNo).ToList();
+            var listLimitListInf = TrackingDataContext.LimitListInfs.Where(k => k.HpId == hpId
+                                                                                && k.PtId == ptId
+                                                                                && k.RaiinNo == raiinNo)
+                                                                    .ToList();
             listLimitListInf.ForEach((k) =>
             {
                 k.IsDeleted = DeleteTypes.Deleted;
+                k.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                k.UpdateId = userId;
             });
 
-            var listLimitCntListInf = TrackingDataContext.LimitCntListInfs.Where(k => k.PtId == ptId &&
-                                                                                                 k.OyaRaiinNo == oyaRaiinNo).ToList();
+            var listLimitCntListInf = TrackingDataContext.LimitCntListInfs.Where(k => k.HpId == hpId
+                                                                                      && k.PtId == ptId
+                                                                                      && k.OyaRaiinNo == oyaRaiinNo)
+                                                                          .ToList();
             listLimitCntListInf.ForEach((k) =>
             {
                 k.IsDeleted = DeleteTypes.Deleted;
+                k.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                k.UpdateId = userId;
             });
 
             // Delete Monshin
-            var listMonshinInf = TrackingDataContext.MonshinInfo.Where(m => m.PtId == ptId && m.RaiinNo == raiinNo && m.SinDate == sinDate).ToList();
+            var listMonshinInf = TrackingDataContext.MonshinInfo.Where(m => m.HpId == hpId
+                                                                            && m.PtId == ptId
+                                                                            && m.RaiinNo == raiinNo
+                                                                            && m.SinDate == sinDate)
+                                                                .ToList();
             listMonshinInf.ForEach((m) =>
             {
                 m.IsDeleted = DeleteTypes.Deleted;
+                m.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                m.UpdateId = userId;
             });
             var result = new Tuple<int, long, long>(raiinInf.SinDate, raiinInf.RaiinNo, raiinInf.PtId);
 
@@ -1250,21 +1452,51 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public ReceptionModel? GetLastKarute(int hpId, long ptNum)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == ptNum && p.IsDelete == DeleteTypes.None);
+
+            if (ptInf != null)
+            {
+                var raiinInf = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptInf.PtId && r.IsDeleted == DeleteTypes.None
+                                                                                    && r.Status >= RaiinState.TempSave).OrderByDescending(r => r.SinDate).FirstOrDefault();
+                if (raiinInf != null)
+                {
+                    return new ReceptionModel(raiinInf.HpId,
+                                              raiinInf.PtId,
+                                              raiinInf.RaiinNo,
+                                              raiinInf.SinDate);
+                }
+            }
+
+            return null;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();
         }
 
-        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted)
+        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted, bool isAll)
         {
             List<ReceptionModel> result = new();
-
-            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId &&
-                                                                       x.PtId == ptId && (x.IsDeleted == DeleteTypes.None || isDeleted == 1 || (x.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)))
-                                                           .OrderByDescending(x => x.SinDate)
-                                                           .Skip((pageIndex - 1) * pageSize)
-                                                           .Take(pageSize)
-                                                           .ToList();
+            var raiinInfs = new List<RaiinInf>();
+            if (isAll)
+            {
+                raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId &&
+                                                        x.PtId == ptId && (x.IsDeleted == DeleteTypes.None || isDeleted == 1 || (x.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)))
+                                            .OrderByDescending(x => x.SinDate)
+                                            .ToList();
+            }
+            else
+            {
+                raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId &&
+                                                           x.PtId == ptId && (x.IsDeleted == DeleteTypes.None || isDeleted == 1 || (x.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)))
+                                               .OrderByDescending(x => x.SinDate)
+                                               .Skip((pageIndex - 1) * pageSize)
+                                               .Take(pageSize)
+                                               .ToList();
+            }
 
             var tantoIdList = raiinInfs.Select(item => item.TantoId).Distinct().ToList();
             var kaIdIdList = raiinInfs.Select(item => item.KaId).Distinct().ToList();
@@ -1427,6 +1659,218 @@ namespace Infrastructure.Repositories
                     break;
             }
             return result;
+        }
+
+        public List<RaiinInfToPrintModel> GetOutDrugOrderList(int hpId, int fromDate, int toDate)
+        {
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                             && item.IsDeleted == DeleteTypes.None
+                                                                             && item.SinDate >= fromDate
+                                                                             && item.SinDate <= toDate
+                                                                             && item.Status >= RaiinState.TempSave)
+                                                              .ToList();
+
+            var raiinNoList = raiinInfList.Select(item => item.RaiinNo).Distinct().ToList();
+            var ptIdList = raiinInfList.Select(item => item.PtId).Distinct().ToList();
+            var kaIdList = raiinInfList.Select(item => item.KaId).Distinct().ToList();
+            var tantoIdList = raiinInfList.Select(item => item.TantoId).Distinct().ToList();
+            var uketukeSbtList = raiinInfList.Select(item => item.UketukeSbt).Distinct().ToList();
+            var hokenPidList = raiinInfList.Select(item => item.HokenPid).Distinct().ToList();
+
+            var ordInfList = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
+                                                                         && item.SinDate >= fromDate
+                                                                         && item.SinDate <= toDate
+                                                                         && item.IsDeleted == 0
+                                                                         && raiinNoList.Contains(item.RaiinNo)
+                                                                         && item.InoutKbn == 1// コメント（処方箋備考）
+                                                                         && ((item.OdrKouiKbn >= 20 && item.OdrKouiKbn <= 29) // 処方
+                                                                              || item.OdrKouiKbn == 100 // コメント（処方箋）
+                                                                              || item.OdrKouiKbn == 101))
+                                                          .GroupBy(item => new { item.RaiinNo })
+                                                          .Select(item => item.FirstOrDefault())
+                                                          .ToList();
+
+            var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                       && item.IsDelete == 0
+                                                                       && ptIdList.Contains(item.PtId))
+                                                        .ToList();
+
+            var kaMstList = NoTrackingDataContext.KaMsts.Where(item => item.HpId == hpId
+                                                                       && item.IsDeleted == 0
+                                                                       && kaIdList.Contains(item.KaId))
+                                                        .ToList();
+
+            var userMstList = NoTrackingDataContext.UserMsts.Where(item => item.HpId == hpId
+                                                                           && item.IsDeleted == 0
+                                                                           && item.StartDate <= fromDate
+                                                                           && toDate <= item.EndDate
+                                                                           && tantoIdList.Contains(item.UserId))
+                                                            .ToList();
+
+            var uketsukeSbtMstList = NoTrackingDataContext.UketukeSbtMsts.Where(item => item.HpId == hpId
+                                                                                        && item.IsDeleted == 0
+                                                                                        && uketukeSbtList.Contains(item.KbnId));
+
+            #region Get HokenPatternName
+            var ptHokenPatternList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
+                                                                                         && item.IsDeleted == 0
+                                                                                         && hokenPidList.Contains(item.HokenPid)
+                                                                                         && ptIdList.Contains(item.PtId))
+                                                                          .ToList();
+
+            var hokenIdList = ptHokenPatternList.Select(item => item.HokenId).Distinct().ToList();
+
+            var ptHokenInfList = NoTrackingDataContext.PtHokenInfs.Where(item => item.HpId == hpId
+                                                                                 && item.IsDeleted == 0
+                                                                                 && ptIdList.Contains(item.PtId)
+                                                                                 && hokenIdList.Contains(item.HokenId))
+                                                                  .ToList();
+
+            var ptHokenPatternResult = (from ptHokenPattern in ptHokenPatternList
+                                        join ptHokenInf in ptHokenInfList on
+                                            new { ptHokenPattern.PtId, ptHokenPattern.HokenId } equals
+                                            new { ptHokenInf.PtId, ptHokenInf.HokenId } into ptHokenInf1List
+                                        from ptHokenInfItem in ptHokenInf1List.DefaultIfEmpty()
+                                        select new
+                                        {
+                                            ptHokenPattern.HokenPid,
+                                            ptHokenPattern.PtId,
+                                            HokenHobetu = ptHokenInfItem == null ? "" : ptHokenInfItem.Houbetu,
+                                            HokensyaNo = ptHokenInfItem == null ? "" : ptHokenInfItem.HokensyaNo,
+                                            PtHokenPattern = ptHokenPattern,
+                                            HokenInfHokenId = ptHokenInfItem == null ? 0 : ptHokenInfItem.HokenId,
+                                            HokenInfStartDate = ptHokenInfItem == null ? 0 : ptHokenInfItem.StartDate,
+                                            HokenInfEndDate = ptHokenInfItem == null ? 0 : ptHokenInfItem.EndDate,
+                                        }).ToList();
+
+            #endregion
+
+            var query = from odr in ordInfList
+                        join raiin in raiinInfList
+                            on new { odr.HpId, odr.PtId, odr.SinDate, odr.RaiinNo }
+                            equals new { raiin.HpId, raiin.PtId, raiin.SinDate, raiin.RaiinNo }
+                        join pt in ptInfList
+                            on new { raiin.PtId }
+                            equals new { pt.PtId } into ptLeft
+                        from pt in ptLeft
+                        join ka in kaMstList
+                            on new { raiin.KaId }
+                            equals new { ka.KaId } into kaLeft
+                        from ka in kaLeft
+                        join user in userMstList
+                             on new { raiin.TantoId }
+                             equals new { TantoId = user.UserId } into userLeft
+                        from user in userLeft.DefaultIfEmpty()
+                        join uketsuke in uketsukeSbtMstList
+                            on new { raiin.UketukeSbt }
+                            equals new { UketukeSbt = uketsuke.KbnId } into uketsukeLeft
+                        from uketsuke in uketsukeLeft.DefaultIfEmpty()
+                        join hokenPattern in ptHokenPatternResult
+                            on new { raiin.PtId, raiin.HokenPid, }
+                            equals new { hokenPattern.PtId, hokenPattern.HokenPid } into PtHokenPatternLeft
+                        from hokenPattern in PtHokenPatternLeft.DefaultIfEmpty()
+                        select new
+                        {
+                            Raiin = raiin,
+                            Pt = pt,
+                            Ka = ka,
+                            User = user,
+                            Uketsuke = uketsuke,
+                            PtHokenPatternItem = hokenPattern
+                        };
+            var result = query.Select(data => new RaiinInfToPrintModel(PrintMode.PrintPrescription,
+                                                                       data.Pt?.Name ?? string.Empty,
+                                                                       data.User?.Name ?? string.Empty,
+                                                                       0,
+                                                                       data.Raiin?.KaId ?? 0,
+                                                                       data.Pt?.PtId ?? 0,
+                                                                       data.Pt?.PtNum ?? 0,
+                                                                       data.PtHokenPatternItem?.HokenHobetu ?? string.Empty,
+                                                                       data.PtHokenPatternItem?.PtHokenPattern.HokenKbn ?? 0,
+                                                                       string.Empty,
+                                                                       data.PtHokenPatternItem?.HokensyaNo ?? string.Empty,
+                                                                       data.Raiin?.UketukeNo ?? 0,
+                                                                       0,
+                                                                        data.Raiin?.SinDate ?? 0,
+                                                                       0,
+                                                                       data.Raiin?.TantoId ?? 0,
+                                                                       data.Ka?.KaName ?? string.Empty,
+                                                                       data.Raiin?.UketukeSbt ?? 0,
+                                                                       data.Uketsuke?.KbnName ?? string.Empty,
+                                                                       0,
+                                                                       data.Raiin?.HokenPid ?? 0,
+                                                                       0,
+                                                                       -1,
+                                                                       -1,
+                                                                       string.Empty,
+                                                                       string.Empty,
+                                                                       0, 0, 0, 0, 0, 0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty,
+                                                                       data.Raiin?.Status ?? 0, data.Raiin?.RaiinNo ?? 0))
+                          .ToList();
+
+            return result;
+        }
+
+        public int GetStatusRaiinInf(int hpId, long raiinNo, long ptId)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                  && item.PtId == ptId
+                                                                                  && item.RaiinNo == raiinNo);
+            if (raiinInf == null)
+            {
+                return 0;
+            }
+            return raiinInf.Status;
+        }
+
+        public ReceptionModel GetRaiinInfBySinDate(int hpId, long ptId, int sinDate)
+        {
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                             && item.SinDate == sinDate
+                                                                             && item.PtId == ptId
+                                                                             && item.IsDeleted == DeleteTypes.None)
+                                                              .ToList();
+            if (!raiinInfList.Any())
+            {
+                return new();
+            }
+
+            RaiinInf raiinInf;
+
+            if (raiinInfList.Any(item => item.Status == RaiinState.Reservation))
+            {
+                raiinInf = raiinInfList.OrderByDescending(item => item.IsYoyaku).ThenBy(item => item.YoyakuTime).ThenBy(item => item.RaiinNo).First();
+            }
+            else
+            {
+                raiinInf = raiinInfList.OrderBy(item => item.UketukeTime).ThenBy(item => item.RaiinNo).First();
+            }
+
+            return new ReceptionModel(raiinInf.HpId,
+                                      raiinInf.PtId,
+                                      raiinInf.SinDate,
+                                      raiinInf.RaiinNo,
+                                      raiinInf.OyaRaiinNo,
+                                      raiinInf.HokenPid,
+                                      raiinInf.SanteiKbn,
+                                      raiinInf.Status,
+                                      raiinInf.IsYoyaku,
+                                      raiinInf.YoyakuTime ?? string.Empty,
+                                      raiinInf.YoyakuId,
+                                      raiinInf.UketukeSbt,
+                                      raiinInf.UketukeTime ?? string.Empty,
+                                      raiinInf.UketukeId,
+                                      raiinInf.UketukeNo,
+                                      raiinInf.SinStartTime ?? string.Empty,
+                                      raiinInf.SinEndTime ?? string.Empty,
+                                      raiinInf.KaikeiTime ?? string.Empty,
+                                      raiinInf.KaikeiId,
+                                      raiinInf.KaId,
+                                      raiinInf.TantoId,
+                                      raiinInf.SyosaisinKbn,
+                                      raiinInf.JikanKbn,
+                                      string.Empty
+                               );
         }
     }
 }

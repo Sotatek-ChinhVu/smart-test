@@ -1,17 +1,31 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.DrugInfor;
 using EmrCloudApi.Presenters.MedicalExamination;
+using EmrCloudApi.Requests.DrugInfor;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
+using EmrCloudApi.Requests.PatientManagement;
 using Helper.Enum;
+using Helper.Extension;
+using Interactor.DrugInfor.CommonDrugInf;
 using Interactor.MedicalExamination.HistoryCommon;
 using iText.Kernel.Pdf;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
+using Reporting.Accounting.Model.Output;
+using Reporting.DrugInfo.Model;
+using Reporting.GrowthCurve.Model;
+using Reporting.KensaLabel.Model;
+using Reporting.Mappers.Common;
+using Reporting.OutDrug.Model.Output;
+using Reporting.PatientManagement.Models;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
+using System.Web;
+using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 
 namespace EmrCloudApi.Controller;
@@ -24,12 +38,14 @@ public class PdfCreatorController : ControllerBase
     private readonly IReportService _reportService;
     private readonly IConfiguration _configuration;
     private readonly IHistoryCommon _historyCommon;
+    private readonly IGetCommonDrugInf _commonDrugInf;
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf)
     {
         _reportService = reportService;
         _configuration = configuration;
         _historyCommon = historyCommon;
+        _commonDrugInf = commonDrugInf;
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
@@ -121,17 +137,17 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
-    [HttpGet(ApiPath.PeriodReceiptReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromQuery] PeriodReceiptRequest request)
+    [HttpPost(ApiPath.PeriodReceiptReport)]
+    public async Task<IActionResult> PeriodReceiptReport([FromForm] AccountingReportRequest requestStringJson)
     {
-        List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
-                                                                                           item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
-                                                                                           request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, item.HokenKbn,
-                                                                                           request.HokenSeikyu, request.JihiSeikyu, request.NyukinBase,
-                                                                                           request.HakkoDay, request.Memo,
-                                                                                           request.PrintType, request.FormFileName))
-                                                                       .ToList();
-        var data = _reportService.GetAccountingReportingData(request.HpId, requestConvert);
+        var stringJson = requestStringJson.JsonAccounting;
+        var request = JsonSerializer.Deserialize<PeriodReceiptListRequest>(stringJson) ?? new();
+        List<(int grpId, string grpCd)> grpConditions = new();
+        foreach (var item in request.GrpConditions)
+        {
+            grpConditions.Add(new(item.GrpId, item.GrpCd));
+        }
+        var data = _reportService.GetPeriodPrintData(request.HpId, request.StartDate, request.EndDate, request.SourcePt, grpConditions, request.PrintSort, request.IsPrintList, request.PrintByMonth, request.PrintByGroup, request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn, request.HakkoDay, request.Memo, request.FormFileName, request.NyukinBase);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
@@ -157,6 +173,21 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
+    [HttpGet(ApiPath.GrowthCurve)]
+    public async Task<IActionResult> GetGrowthCurvePrintData([FromQuery] GrowthCurvePrintDataRequest request)
+    {
+        CommonReportingRequestModel data;
+        if (request.Type == 0)
+        {
+            data = _reportService.GetGrowthCurveA5PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        }
+        else
+        {
+            data = _reportService.GetGrowthCurveA4PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+        }
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
     [HttpGet(ApiPath.StaticReport)]
     public async Task<IActionResult> GenerateStatisticReport([FromQuery] StatisticExportRequest request)
     {
@@ -164,18 +195,21 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
-    [HttpGet(ApiPath.PatientManagement)]
-    public async Task<IActionResult> GeneratePatientManagement([FromQuery] PatientManagementRequest request)
+    [HttpPost(ApiPath.PatientManagement)]
+    public async Task<IActionResult> GeneratePatientManagement([FromForm] StringObjectRequest requestString)
     {
-        var data = _reportService.GetPatientManagement(request.HpId, request.MenuId);
+        var request = JsonSerializer.Deserialize<PatientManagementRequest>(requestString.StringJson) ?? new();
+        PatientManagementModel patientManagementModel = ConvertToPatientManagementModel(request.PatientManagement);
+        var data = _reportService.GetPatientManagement(request.HpId, patientManagementModel);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.ReceiptPreview)]
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
-        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
-        return await RenderPdf(data, ReportType.Common, data.JobName);
+        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.SeiKyuYm, request.HokenKbn, request.IsIncludeOutDrug, request.IsModePrint, request.isOpenedFromAccounting);
+        var result = await RenderPdf(data, ReportType.Common, data.JobName);
+        return result;
     }
 
     [HttpGet(ApiPath.SyojyoSyoki)]
@@ -195,15 +229,24 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPrint)]
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
-        var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType);
-        return await RenderPdf(data, ReportType.Common, data.JobName);
+        if (request.PrintType == 0)
+        {
+            var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos, request.HokenKbn, request.SelectedReseputoShubeusu, request.DepartmentId, request.DoctorId, request.PrintNoFrom, request.PrintNoTo, request.IncludeTester, request.IsIncludeOutDrug, request.Sort, request.PrintPtIds);
+            return await RenderPdf(data, ReportType.Common, data.JobName);
+        }
+        else
+        {
+            var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
+            return RenderCsv(data);
+        }
     }
 
     [HttpPost(ApiPath.MemoMsgPrint)]
-    public async Task<IActionResult> MemoMsgPrint([FromBody] MemoMsgPrintRequest request)
+    public async Task<IActionResult> MemoMsgPrint([FromForm] StringObjectRequest requestString)
     {
+        var request = JsonSerializer.Deserialize<MemoMsgPrintRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
-        return await RenderPdf(data, ReportType.Common, data.JobName);
+        return await RenderPdf(data, ReportType.Common, request.FileName);
     }
 
     [HttpGet(ApiPath.ReceTarget)]
@@ -220,6 +263,13 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
+    [HttpGet(ApiPath.InDrug)]
+    public async Task<IActionResult> GetInDrugPrintData([FromQuery] InDrugPrintDataRequest request)
+    {
+        var data = _reportService.GetInDrugPrintData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
     [HttpGet(ApiPath.Yakutai)]
     public async Task<IActionResult> Yakutai([FromQuery] YakutaiRequest request)
     {
@@ -227,10 +277,18 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
+    [HttpGet(ApiPath.KensaLabel)]
+    public async Task<IActionResult> KensaLabel([FromQuery] KensaLabelRequest request)
+    {
+        var data = _reportService.GetKensaLabelPrintData(request.HpId, request.PtId, request.RaiinNo, request.SinDate, new KensaPrinterModel(request.ItemCd, request.ContainerName, request.ContainerCd, request.Count, request.InoutKbn, request.OdrKouiKbn));
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
     [HttpGet(ApiPath.AccountingCard)]
     public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
     {
         var data = _reportService.GetAccountingCardReportingData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.IncludeOutDrug);
+
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -238,6 +296,14 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GetKarte3ReportingData([FromQuery] Karte3ReportingRequest request)
     {
         var data = _reportService.GetKarte3ReportingData(request.HpId, request.PtId, request.StartSinYm, request.EndSinYm, request.IncludeHoken, request.IncludeJihi);
+        return await RenderPdf(data, ReportType.Common, data.JobName);
+    }
+
+    [HttpPost(ApiPath.AccountingCardList)]
+    public async Task<IActionResult> GetAccountingCardListReportingData([FromForm] StringObjectRequest requestString)
+    {
+        var request = JsonSerializer.Deserialize<AccountingCardListRequest>(requestString.StringJson) ?? new();
+        var data = _reportService.GetAccountingCardListReportingData(request.HpId, request.Targets, request.IncludeOutDrug, request.KaName, request.TantoName, request.UketukeSbt, request.Hoken);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -302,6 +368,82 @@ public class PdfCreatorController : ControllerBase
         }
     }
 
+    [HttpGet(ApiPath.GetDataPrintDrugInfo)]
+    public async Task<IActionResult> GetDataPrintDrugInfo([FromQuery] GetDataPrintDrugInfoRequest request)
+    {
+        var inputData = new GetDataPrintDrugInfoInputData(request.HpId, request.SinDate, request.ItemCd, request.Level, string.Empty, request.YJCode, request.Type);
+
+        var drugInfo = _commonDrugInf.GetDrugInforModel(inputData.HpId, inputData.SinDate, inputData.ItemCd);
+        string htmlData = string.Empty;
+        switch (inputData.Type)
+        {
+            case TypeHTMLEnum.ShowProductInf:
+                htmlData = _commonDrugInf.ShowProductInf(inputData.HpId, inputData.SinDate, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                break;
+            case TypeHTMLEnum.ShowKanjaMuke:
+                htmlData = _commonDrugInf.ShowKanjaMuke(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                break;
+            case TypeHTMLEnum.ShowMdbByomei:
+                htmlData = _commonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                break;
+        }
+        var outputData = new GetDataPrintDrugInfoOutputData(drugInfo, htmlData, (int)inputData.Type);
+
+        var present = new GetDataPrintDrugInfoPresenter();
+        present.Complete(outputData);
+
+        var stringPrintDrugInfoResult = JsonSerializer.Serialize(present.Result);
+
+        string baseUrl = _configuration.GetSection("DrugInfoTemplateDefault").Value!;
+
+        using (var clientResponse = await _httpClient.GetAsync(baseUrl))
+        {
+            byte[] bytes = await clientResponse.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+
+            using (var memoryStream = new MemoryStream())
+            {
+                string decoded = Encoding.UTF8.GetString(bytes);
+
+                decoded = decoded.Replace("__DATA_DRUG_INFORMATION__", stringPrintDrugInfoResult);
+
+                bytes = Encoding.UTF8.GetBytes(decoded);
+            }
+
+            MultipartFormDataContent form = new MultipartFormDataContent();
+
+            form.Add(new StringContent("0.7"), "marginTop");
+            form.Add(new StringContent("0.7".ToString()), "marginBottom");
+            form.Add(new StringContent("0.7".ToString()), "marginLeft");
+            form.Add(new StringContent("0.7".ToString()), "marginRight");
+            form.Add(new StringContent("8.27"), "paperWidth");
+            form.Add(new StringContent("11.7"), "paperHeight");
+            form.Add(new StringContent("window.status === 'ready'"), "waitForExpression");
+            form.Add(new ByteArrayContent(bytes, 0, bytes.Length), "files", "index.html");
+
+            string basePath = _configuration.GetSection("RenderKarte2ReportApi")["BasePath"]!;
+
+            using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}", form))
+            {
+                response.EnsureSuccessStatusCode();
+
+                using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
+                {
+                    PdfReader pdfReader = new PdfReader(streamingData);
+                    var byteData = streamingData.ToArray();
+                    var result = SetTitleMetadata(byteData, "医薬品情報.pdf");
+                    ContentDisposition cd = new ContentDisposition
+                    {
+                        FileName = "医薬品情報.pdf",
+                        Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
+                    };
+                    Response.Headers.Add("Content-Disposition", cd.ToString());
+                    return File(result, "application/pdf");
+                }
+            }
+        }
+    }
+
+    #region private function
     private byte[] SetTitleMetadata(byte[] pdf, string title)
     {
         using var inputStream = new MemoryStream(pdf);
@@ -319,20 +461,60 @@ public class PdfCreatorController : ControllerBase
         return outputStream.ToArray();
     }
 
-    private async Task<IActionResult> RenderPdf(object data, ReportType reportType, string fileName)
+    private async Task<IActionResult> RenderPdf(CommonReportingRequestModel data, ReportType reportType, string fileName)
     {
-        StringContent jsonContent = (reportType ==
-          ReportType.Karte1
-          || reportType == ReportType.DrugInfo)
+        bool returnNoData = false;
+        if (data.ReportType <= 0
+            || (!data.TableFieldData.Any()
+                && !data.ListTextData.Any()
+                && !data.SingleFieldList.Any()
+                && !data.SetFieldData.Any()
+                && data.ReportType != (int)CoReportType.MemoMsg))
+        {
+            returnNoData = true;
+        }
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> RenderPdf(DrugInfoData data, ReportType reportType, string fileName)
+    {
+        bool returnNoData = !data.drugInfoList.Any();
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> RenderPdf(CoOutDrugReportingOutputData data, ReportType reportType, string fileName)
+    {
+        bool returnNoData = !data.Data.Any();
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> RenderPdf(AccountingResponse data, ReportType reportType, string fileName)
+    {
+        bool returnNoData = !data.AccountingReportingRequestItems.Any();
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> ActionReturnPDF(bool returnNoData, object data, ReportType reportType, string fileName)
+    {
+        var json = JsonSerializer.Serialize(data);
+        //Console.WriteLine("DataJsonTestPdfString: " + json);
+        if (returnNoData)
+        {
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
+        }
+
+        StringContent jsonContent = (reportType == ReportType.DrugInfo)
           ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
           new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
-        var json = JsonSerializer.Serialize(data);
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
         string functionName = reportType switch
         {
-            ReportType.Karte1 => "reporting-fm-karte1",
             ReportType.DrugInfo => "reporting-fm-drugInfo",
             ReportType.Common => "common-reporting",
             ReportType.OutDug => "reporting-out-drug",
@@ -346,7 +528,7 @@ public class PdfCreatorController : ControllerBase
             fileName = fileName.Replace(".rse", "").Replace(".pdf", "") + ".pdf";
             ContentDisposition cd = new ContentDisposition
             {
-                FileName = fileName,
+                FileName = HttpUtility.UrlEncode(fileName),
                 Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
@@ -368,4 +550,126 @@ public class PdfCreatorController : ControllerBase
                    request.OyaRaiinNo
                );
     }
+
+    private IActionResult RenderCsv(CommonExcelReportingModel dataModel)
+    {
+        var dataList = dataModel.Data;
+        if (!dataList.Any())
+        {
+            return Content(@"
+            <meta charset=""utf-8"">
+            <title>印刷対象が見つかりません。</title>
+            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+            ", "text/html");
+        }
+        var csv = new StringBuilder();
+
+        string contentType = "text/csv";
+
+        foreach (var row in dataList)
+        {
+            csv.AppendLine(row);
+        }
+        var content = Encoding.UTF8.GetBytes(csv.ToString());
+        var result = Encoding.UTF8.GetPreamble().Concat(content).ToArray();
+        return File(result, contentType, dataModel.FileName);
+    }
+
+    private PatientManagementModel ConvertToPatientManagementModel(PatientManagementItem requestItem)
+    {
+        PatientManagementModel result = new();
+        result.OutputOrder = requestItem.OutputOrder1;
+        result.OutputOrder2 = requestItem.OutputOrder2;
+        result.OutputOrder3 = requestItem.OutputOrder3;
+        result.ReportType = requestItem.ReportType;
+        result.PtNumFrom = requestItem.PtNumFrom;
+        result.PtNumTo = requestItem.PtNumTo;
+        result.KanaName = requestItem.KanaName;
+        result.Name = requestItem.Name;
+        result.BirthDayFrom = requestItem.BirthDayFrom;
+        result.BirthDayTo = requestItem.BirthDayTo;
+        result.AgeFrom = requestItem.AgeFrom;
+        result.AgeTo = requestItem.AgeTo;
+        result.AgeRefDate = requestItem.AgeRefDate.AsInteger();
+        result.Sex = requestItem.Sex;
+        if (!string.IsNullOrEmpty(requestItem.HomePost))
+        {
+            var homePost = requestItem.HomePost.Replace("-", string.Empty);
+            if (homePost.Length > 3)
+            {
+                result.ZipCD1 = homePost.Substring(0, 3);
+                result.ZipCD2 = homePost.Substring(3);
+            }
+        }
+        result.Address = requestItem.Address.AsString();
+        result.PhoneNumber = requestItem.PhoneNumber.AsString();
+        result.RegistrationDateFrom = requestItem.RegistrationDateFrom;
+        result.RegistrationDateTo = requestItem.RegistrationDateTo;
+        result.IncludeTestPt = requestItem.IncludeTestPt;
+        result.GroupSelected = requestItem.GroupSelected.AsString();
+        result.HokensyaNoFrom = requestItem.HokensyaNoFrom.AsString();
+        result.HokensyaNoTo = requestItem.HokensyaNoTo.AsString();
+        result.Kigo = requestItem.Kigo.AsString();
+        result.EdaNo = requestItem.EdaNo.AsString();
+        result.Bango = requestItem.Bango.AsString();
+        result.HokenKbn = requestItem.HokenKbn;
+        result.KohiFutansyaNoFrom = requestItem.KohiFutansyaNoFrom.AsString();
+        result.KohiFutansyaNoTo = requestItem.KohiFutansyaNoTo.AsString();
+        result.KohiTokusyuNoFrom = requestItem.KohiTokusyuNoFrom.AsString();
+        result.KohiTokusyuNoTo = requestItem.KohiTokusyuNoTo.AsString();
+        result.ExpireDateFrom = requestItem.ExpireDateFrom;
+        result.ExpireDateTo = requestItem.ExpireDateTo;
+        result.HokenSbt = requestItem.HokenSbt;
+        result.Houbetu1 = requestItem.Houbetu1;
+        result.Houbetu2 = requestItem.Houbetu2;
+        result.Houbetu3 = requestItem.Houbetu3;
+        result.Houbetu4 = requestItem.Houbetu4;
+        result.Houbetu5 = requestItem.Houbetu5;
+        result.Kogaku = requestItem.Kogaku.AsString();
+        result.KohiHokenNoFrom = requestItem.KohiHokenNoFrom;
+        result.KohiHokenEdaNoFrom = requestItem.KohiHokenEdaNoFrom;
+        result.KohiHokenNoTo = requestItem.KohiHokenNoTo;
+        result.KohiHokenEdaNoTo = requestItem.KohiHokenEdaNoTo;
+        result.StartDateFrom = requestItem.StartDateFrom;
+        result.StartDateTo = requestItem.StartDateTo;
+        result.TenkiDateFrom = requestItem.TenkiDateFrom;
+        result.TenkiDateTo = requestItem.TenkiDateTo;
+        result.TenkiKbns = requestItem.TenkiKbns;
+        result.SikkanKbns = requestItem.SikkanKbns;
+        result.NanbyoCds = requestItem.NanbyoCds;
+        result.IsDoubt = requestItem.IsDoubt;
+        result.SearchWord = requestItem.SearchWord.AsString();
+        result.SearchWordMode = requestItem.SearchWordMode;
+        result.ByomeiCds = requestItem.ByomeiCds;
+        result.ByomeiCdOpt = requestItem.ByomeiCdOpt;
+        result.FreeByomeis = requestItem.FreeByomeis;
+        result.SindateFrom = requestItem.SindateFrom;
+        result.SindateTo = requestItem.SindateTo;
+        result.LastVisitDateFrom = requestItem.LastVisitDateFrom;
+        result.LastVisitDateTo = requestItem.LastVisitDateTo;
+        result.Statuses = requestItem.Statuses;
+        result.UketukeSbtId = requestItem.UketukeSbtId;
+        result.KaMstId = requestItem.KaMstId;
+        result.UserMstId = requestItem.UserMstId;
+        result.IsSinkan = requestItem.IsSinkan;
+        result.RaiinAgeFrom = requestItem.RaiinAgeFrom;
+        result.RaiinAgeTo = requestItem.RaiinAgeTo;
+        result.JikanKbns = requestItem.JikanKbns;
+        result.DataKind = requestItem.DataKind;
+        result.ItemCds = requestItem.ItemCds;
+        result.ItemCdOpt = requestItem.ItemCdOpt;
+        result.ItemCmts = requestItem.ItemCmts;
+        result.MedicalSearchWord = requestItem.MedicalSearchWord;
+        result.WordOpt = requestItem.WordOpt;
+        result.KarteKbns = requestItem.KarteKbns;
+        result.KarteSearchWords = requestItem.KarteSearchWords;
+        result.KarteWordOpt = requestItem.KarteWordOpt;
+        result.StartIraiDate = requestItem.StartIraiDate;
+        result.EndIraiDate = requestItem.EndIraiDate;
+        result.KensaItemCds = requestItem.KensaItemCds;
+        result.KensaItemCdOpt = requestItem.KensaItemCdOpt;
+        result.ListPtNums = requestItem.ListPtNums;
+        return result;
+    }
+    #endregion
 }

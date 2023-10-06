@@ -11,6 +11,8 @@ namespace Domain.Models.Diseases
 
         List<PtDiseaseModel> GetByomeiInThisMonth(int hpId, int sinYm, long ptId, int hokenId);
 
+        List<PtDiseaseModel> GetPtByomeisByHokenId(int hpId, long ptId, int hokenId);
+
         List<long> Upsert(List<PtDiseaseModel> inputDatas, int hpId, int userId);
 
         List<ByomeiSetMstModel> GetDataTreeSetByomei(int hpId, int sinDate);
@@ -18,5 +20,7 @@ namespace Domain.Models.Diseases
         List<PtDiseaseModel> GetTekiouByomeiByOrder(int hpId, List<string> itemCds);
 
         List<PtDiseaseModel> GetAllByomeiByPtId(int hpId, long ptId, int pageIndex, int pageSize);
+
+        Dictionary<string, string> GetByomeiMst(int hpId, List<string> byomeiCds);
     }
 }

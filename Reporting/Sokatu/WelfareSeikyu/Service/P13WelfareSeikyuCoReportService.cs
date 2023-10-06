@@ -92,11 +92,14 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
         currentPage = 1;
         hasNextPage = true;
 
-        while (getData && hasNextPage)
+        if(getData)
         {
-            if (_formFileName == "") continue;
-            UpdateDrawForm();
-            currentPage++;
+            while (getData && hasNextPage)
+            {
+                if (_formFileName == "") continue;
+                UpdateDrawForm();
+                currentPage++;
+            }
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
@@ -252,7 +255,7 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
         List<string> prefIn = new List<string> { "13", "63" };
         receInfs = wrkReces.Where(r => !prefIn.Contains(r.HokensyaNo.Substring(r.HokensyaNo.Length - 6, 2))).ToList();
 
-        return (receInfs?.Count ?? 0) == 0;
+        return (receInfs?.Count ?? 0) > 0;
     }
 
     private void SetFieldData(string field, string value)

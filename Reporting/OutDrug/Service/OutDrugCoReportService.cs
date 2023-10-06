@@ -122,7 +122,6 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
             if (_coModels.Count == 0)
             {
-                result.Add(new CoOutDrugReportingOutputItem());
                 return new CoOutDrugReportingOutputData()
                 {
                     Data = result,
@@ -132,7 +131,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 };
             }
 
-            for (_repeatKai = 0; _repeatKai < repeatMax; _repeatKai++)
+            if (_coModels != null && _coModels.Count != 0)
             {
                 foreach (CoOutDrugModel coModelData in _coModels)
                 {
@@ -194,6 +193,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                     result.Add(outputItem);
                 }
             }
+
             return new CoOutDrugReportingOutputData()
             {
                 Data = result,
@@ -446,11 +446,11 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                         filteredOdrInfs = odrInfs.FindAll(p => _isRefillRp(p.RpNo, p.RpEdaNo));
 
-                        if (!filteredOdrInfs.Any(p => !(new int[] { 100, 101 }.Contains(p.OdrKouiKbn))))
-                        {
-                            // 処方コメント、備考しかない場合は出力しない
-                            continue;
-                        }
+                        //if (!filteredOdrInfs.Any(p => !(new int[] { 100, 101 }.Contains(p.OdrKouiKbn))))
+                        //{
+                        //    // 処方コメント、備考しかない場合は出力しない
+                        //    continue;
+                        //}
 
                         filteredOdrInfDtls = odrInfDtls.FindAll(p => _isRefillRp(p.RpNo, p.RpEdaNo));
 

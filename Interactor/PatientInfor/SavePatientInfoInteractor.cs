@@ -1,7 +1,8 @@
-﻿using Domain.Constant;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using Domain.Constant;
+using Domain.Models.Diseases;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
-using Domain.Models.Lock;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper;
@@ -9,7 +10,8 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
-using UseCase.PatientInfor.CheckValidSamePatient;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using UseCase.PatientInfor.Save;
 
 namespace Interactor.PatientInfor
@@ -18,21 +20,27 @@ namespace Interactor.PatientInfor
     {
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly ISystemConfRepository _systemConfRepository;
+        private readonly IPtDiseaseRepository _ptDiseaseRepository;
         private readonly IAmazonS3Service _amazonS3Service;
+        private const byte retryNumber = 50;
 
-        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service)
+        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service, IPtDiseaseRepository ptDiseaseRepository)
         {
             _patientInforRepository = patientInforRepository;
             _systemConfRepository = systemConfRepository;
             _amazonS3Service = amazonS3Service;
+            _ptDiseaseRepository = ptDiseaseRepository;
         }
 
+        [Obsolete]
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
         {
+            PatientInforModel patientInforModel = new();
+            bool cloneByomei = CloneByomei(inputData);
             var validations = Validation(inputData);
-            if (validations.Any())
+            if (validations.Any() || (!inputData.ReactSave.ConfirmCloneByomei && cloneByomei))
             {
-                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0);
+                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0, patientInforModel, cloneByomei);
             }
             try
             {
@@ -74,39 +82,67 @@ namespace Interactor.PatientInfor
                                     _amazonS3Service.DeleteObjectAsync(item.FileName);
                                 }
                             }
-                            else
-                            {
-                                continue;
-                            }
                         }
                     }
                     return listReturn;
                 }
 
-                (bool resultSave, long ptId) result;
+                (bool resultSave, long ptId) result = new();
                 if (inputData.Patient.PtId == 0)
                 {
-                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                    var count = 0;
+                    while (count < retryNumber)
+                    {
+
+                        result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                        if (result.resultSave)
+                        {
+                            break;
+                        }
+                        count++;
+                    }
                 }
                 else
-                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId, inputData.HokenIdList);
 
                 if (result.resultSave)
                 {
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId);
+                    patientInforModel = _patientInforRepository.GetById(inputData.HpId, result.ptId, 0, 0) ?? new();
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId, patientInforModel, false);
                 }
                 else
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
-            }
-            catch
-            {
-                return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0, patientInforModel, false);
             }
             finally
             {
                 _patientInforRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
             }
+        }
+
+        private bool CloneByomei(SavePatientInfoInputData inputData)
+        {
+            if (!inputData.ReactSave.ConfirmCloneByomei)
+            {
+                //if add new hoken => confirm clone byomei
+                var newHokenInfs = inputData.HokenInfs.OrderBy(p => p.HokenId)
+                                                      .Where(p => p.IsDeleted == DeleteTypes.None && p.IsAddNew && !p.IsEmptyModel);
+                if (newHokenInfs.Any())
+                {
+                    var hokenInf = inputData.HokenInfs.OrderByDescending(p => p.EndDateSort)
+                                                      .ThenByDescending(p => p.HokenId)
+                                                      .FirstOrDefault(p => p.IsDeleted == DeleteTypes.None && !p.IsAddNew);
+                    if (hokenInf != null)
+                    {
+                        var ptByomeis = _ptDiseaseRepository.GetPtByomeisByHokenId(inputData.HpId, inputData.Patient.PtId, hokenInf.HokenId);
+                        if (ptByomeis.Count > 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         private IEnumerable<SavePatientInfoValidationResult> Validation(SavePatientInfoInputData model)
@@ -825,5 +861,28 @@ namespace Interactor.PatientInfor
             }
             return true;
         }
+
+        #region Catch Exception
+        [Obsolete]
+        private static string HandleException(Exception exception)
+        {
+            if (exception is DbUpdateConcurrencyException concurrencyEx)
+            {
+                return "0";
+            }
+            else if (exception is DbUpdateException dbUpdateEx)
+            {
+                if (dbUpdateEx.InnerException != null)
+                {
+                    if (dbUpdateEx.InnerException is PostgresException postgreException)
+                    {
+                        return postgreException.Code ?? string.Empty;
+                    }
+                }
+            }
+
+            return "0";
+        }
+        #endregion
     }
 }

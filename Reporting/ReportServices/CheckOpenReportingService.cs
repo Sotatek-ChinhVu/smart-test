@@ -2,6 +2,7 @@
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Service;
 using Reporting.CommonMasters.Enums;
+using Reporting.OrderLabel.Service;
 
 namespace Reporting.ReportServices;
 
@@ -21,6 +22,11 @@ public class CheckOpenReportingService : ICheckOpenReportingService
     public bool CheckOpenAccountingForm(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false)
     {
         return _accountingCoReportService.CheckOpenReportingForm(hpId, ptId, printTypeInput, raiinNoList, raiinNoPayList, isCalculateProcess);
+    }
+
+    public bool CheckExistTemplate(string templateName, int printType)
+    {
+        return _accountingCoReportService.CheckExistTemplate(templateName, printType);
     }
 
     public bool CheckOpenAccountingForm(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> multiAccountDueListModels, bool isPrintMonth, bool ryoshusho, bool meisai)
@@ -50,5 +56,4 @@ public class CheckOpenReportingService : ICheckOpenReportingService
         }
         return _accountingCoReportService.CheckOpenReportingForm(hpId, requestAccountting);
     }
-
 }

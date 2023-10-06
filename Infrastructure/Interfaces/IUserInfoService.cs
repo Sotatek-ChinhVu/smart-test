@@ -5,5 +5,9 @@
         void Reload();
 
         string GetNameById(int id);
+
+        string GetFullNameById(int id);
+
+        void Dispose();
     }
 }

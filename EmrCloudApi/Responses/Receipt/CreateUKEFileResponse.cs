@@ -18,6 +18,6 @@ namespace EmrCloudApi.Responses.Receipt
 
         public int TypeMessage { get; private set; }
 
-        public FileContentResult? File { get; set; } = null;
+        public List<FileContentResult> File { get; set; } = new();
     }
 }

@@ -11,7 +11,7 @@ public class SaveReceCheckCmtListPresenter : ISaveReceCheckCmtListOutputPort
 
     public void Complete(SaveReceCheckCmtListOutputData outputData)
     {
-        Result.Data = new SaveReceCheckCmtListResponse(outputData.Status == SaveReceCheckCmtListStatus.Successed);
+        Result.Data = new SaveReceCheckCmtListResponse(outputData.ReceiptCheckCmtErrList);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }
@@ -26,6 +26,7 @@ public class SaveReceCheckCmtListPresenter : ISaveReceCheckCmtListOutputPort
         SaveReceCheckCmtListStatus.InvalidHokenId => ResponseMessage.InvalidHokenId,
         SaveReceCheckCmtListStatus.InvalidSeqNo => ResponseMessage.InvalidSeqNo,
         SaveReceCheckCmtListStatus.InvalidStatusColor => ResponseMessage.InvalidStatusColor,
+        SaveReceCheckCmtListStatus.InvalidReceCheckErrorItem => ResponseMessage.InvalidReceCheckErrorItem,
         _ => string.Empty
     };
 }

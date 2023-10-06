@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Ka;
+using Domain.Models.PatientInfor;
 using Domain.Models.PtCmtInf;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.Reception;
@@ -7,7 +8,6 @@ using Domain.Models.User;
 using Helper.Constants;
 using Interactor.CalculateService;
 using UseCase.Accounting.Recaculate;
-using UseCase.MedicalExamination.TrailAccounting;
 using UseCase.Reception.UpdateStaticCell;
 
 namespace Interactor.Reception;
@@ -21,6 +21,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
     private readonly IKaRepository _kaMstRepository;
     private readonly IPtCmtInfRepository _ptCmtInfRepository;
     private readonly ICalculateService _calculateRepository;
+    private readonly IPatientInforRepository _patientInforRepository;
 
     public UpdateReceptionStaticCellInteractor(IReceptionRepository receptionRepository,
         IRaiinCmtInfRepository raiinCmtInfRepository,
@@ -28,7 +29,8 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
         IUketukeSbtMstRepository uketukeSbtMstRepository,
         IKaRepository kaMstRepository,
         IPtCmtInfRepository ptCmtInfRepository,
-        ICalculateService calculateRepository
+        ICalculateService calculateRepository,
+        IPatientInforRepository patientInforRepository
         )
     {
         _receptionRepository = receptionRepository;
@@ -38,6 +40,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
         _kaMstRepository = kaMstRepository;
         _ptCmtInfRepository = ptCmtInfRepository;
         _calculateRepository = calculateRepository;
+        _patientInforRepository = patientInforRepository;
     }
 
     public UpdateReceptionStaticCellOutputData Handle(UpdateReceptionStaticCellInputData input)
@@ -62,20 +65,26 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
         try
         {
             var status = UpdateStaticCell(input);
+            List<ReceptionRowModel> receptionInfos = new();
+            List<SameVisitModel> sameVisitList = new();
+            PatientInforModel patientInforModel = new();
 
-            if (status == UpdateReceptionStaticCellStatus.RaiinInfUpdated)
+            if (status == UpdateReceptionStaticCellStatus.RaiinInfUpdated && input.CellName.ToLower() == "status")
             {
-                //Run Calculate with cell status
-                if (input.CellName.ToLower() == "status")
+                Task.Run(() =>
                 {
-                    Task.Run(() =>
-                    {
-                        _calculateRepository.RunCalculate(new RecaculationInputDto(input.HpId, input.PtId, input.SinDate, 0, ""));
-                    });
-                }
+                    _calculateRepository.RunCalculate(new RecaculationInputDto(input.HpId, input.PtId, input.SinDate, 0, ""));
+                });
             }
-
-            return new UpdateReceptionStaticCellOutputData(status);
+            if (status == UpdateReceptionStaticCellStatus.RaiinInfUpdated || status == UpdateReceptionStaticCellStatus.RaiinCmtUpdated)
+            {
+                receptionInfos = _receptionRepository.GetList(input.HpId, input.SinDate, input.RaiinNo, input.PtId, isDeleted: 0);
+            }
+            if (status == UpdateReceptionStaticCellStatus.PatientCmtUpdated)
+            {
+                patientInforModel = _patientInforRepository.GetById(input.HpId, input.PtId, input.SinDate, 0) ?? new();
+            }
+            return new UpdateReceptionStaticCellOutputData(status, receptionInfos, sameVisitList, patientInforModel);
         }
         finally
         {

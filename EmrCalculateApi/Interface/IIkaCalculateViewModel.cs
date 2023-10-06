@@ -10,7 +10,7 @@ namespace EmrCalculateApi.Interface
 
         void RunCalculate(int hpId, long ptId, int sinDate, int seikyuUp, string preFix);
 
-        void RunCalculateMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix);
+        void RunCalculateMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix, string uniqueKey);
 
         (List<SinMeiDataModel> sinMeis, List<Futan.Models.KaikeiInfModel> kaikeis, List<CalcLogModel> calcLogs) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true);
     }
