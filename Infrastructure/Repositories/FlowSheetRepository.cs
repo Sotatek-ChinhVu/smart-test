@@ -258,7 +258,7 @@ namespace Infrastructure.Repositories
             {
                 setKbnMstList = ReadCacheRaiinListMst();
             }
-            Console.WriteLine("End RaiinListMst - {stopwatch.ElapsedMilliseconds}"));
+            Console.WriteLine("End RaiinListMst - {stopwatch.ElapsedMilliseconds}");
             return setKbnMstList!;
         }
 
