@@ -248,6 +248,7 @@ namespace Infrastructure.Repositories
 
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
         {
+            var stopwatch = Stopwatch.StartNew();
             var setKbnMstList = new List<RaiinListMstModel>();
             if (!_cache.KeyExists(RaiinListMstCacheKey))
             {
@@ -257,7 +258,7 @@ namespace Infrastructure.Repositories
             {
                 setKbnMstList = ReadCacheRaiinListMst();
             }
-            Console.WriteLine("End RaiinListMst");
+            Console.WriteLine("End RaiinListMst - {stopwatch.ElapsedMilliseconds}"));
             return setKbnMstList!;
         }
 
@@ -539,6 +540,7 @@ namespace Infrastructure.Repositories
 
         public Dictionary<long, List<RaiinListInfModel>> GetRaiinListInf(int hpId, long ptId)
         {
+            var stopwatch = Stopwatch.StartNew();
             var raiinListInfs =
                      (
                         from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo != 0)
@@ -550,12 +552,13 @@ namespace Infrastructure.Repositories
             var result = raiinListInfs
                 .GroupBy(r => r.RaiinNo)
                 .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
-            Console.WriteLine("End RaiinListInf Today");
+            Console.WriteLine("End RaiinListInf Today - {ptId} - {stopwatch.ElapsedMilliseconds}");
             return result;
         }
 
         public Dictionary<int, List<RaiinListInfModel>> GetRaiinListInfForNextOrder(int hpId, long ptId)
         {
+            var stopwatch = Stopwatch.StartNew();
             var raiinListInfs =
                      (
                         from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == 0)
@@ -567,7 +570,7 @@ namespace Infrastructure.Repositories
             var result = raiinListInfs
                 .GroupBy(r => r.SinDate)
                 .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
-            Console.WriteLine("End RaiinListInf NextOrder");
+            Console.WriteLine("End RaiinListInf NextOrder - {ptId} - {stopwatch.ElapsedMilliseconds}");
             return result;
         }
 
