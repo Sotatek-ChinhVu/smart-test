@@ -258,7 +258,7 @@ namespace Infrastructure.Repositories
             {
                 setKbnMstList = ReadCacheRaiinListMst();
             }
-            Console.WriteLine("End RaiinListMst - {stopwatch.ElapsedMilliseconds}");
+            Console.WriteLine($"End RaiinListMst - {stopwatch.ElapsedMilliseconds}");
             return setKbnMstList!;
         }
 
@@ -552,7 +552,7 @@ namespace Infrastructure.Repositories
             var result = raiinListInfs
                 .GroupBy(r => r.RaiinNo)
                 .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
-            Console.WriteLine("End RaiinListInf Today - {ptId} - {stopwatch.ElapsedMilliseconds}");
+            Console.WriteLine($"End RaiinListInf Today - {ptId} - {stopwatch.ElapsedMilliseconds}");
             return result;
         }
 
@@ -570,7 +570,7 @@ namespace Infrastructure.Repositories
             var result = raiinListInfs
                 .GroupBy(r => r.SinDate)
                 .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
-            Console.WriteLine("End RaiinListInf NextOrder - {ptId} - {stopwatch.ElapsedMilliseconds}");
+            Console.WriteLine($"End RaiinListInf NextOrder - {ptId} - {stopwatch.ElapsedMilliseconds}");
             return result;
         }
 
