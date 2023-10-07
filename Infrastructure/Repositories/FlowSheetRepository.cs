@@ -1,4 +1,4 @@
-﻿using Domain.Models.FlowSheet;
+using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SetMst;
@@ -257,7 +257,7 @@ namespace Infrastructure.Repositories
             {
                 setKbnMstList = ReadCacheRaiinListMst();
             }
-
+            Console.WriteLine("End RaiinListMst");
             return setKbnMstList!;
         }
 
@@ -541,17 +541,16 @@ namespace Infrastructure.Repositories
         {
             var raiinListInfs =
                      (
-                        from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId)
+                        from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo != 0)
                         join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
                         on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
-                        where raiinListInf.RaiinNo != 0
                         select new { raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
                      );
 
             var result = raiinListInfs
                 .GroupBy(r => r.RaiinNo)
                 .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
-
+            Console.WriteLine("End RaiinListInf Today");
             return result;
         }
 
@@ -559,17 +558,16 @@ namespace Infrastructure.Repositories
         {
             var raiinListInfs =
                      (
-                        from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId)
+                        from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == 0)
                         join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
                         on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
-                        where raiinListInf.RaiinNo == 0
                         select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
                      );
 
             var result = raiinListInfs
                 .GroupBy(r => r.SinDate)
                 .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
-
+            Console.WriteLine("End RaiinListInf NextOrder");
             return result;
         }
 
