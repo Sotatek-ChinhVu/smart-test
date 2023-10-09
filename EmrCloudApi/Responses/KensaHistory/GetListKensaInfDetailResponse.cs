@@ -5,11 +5,11 @@ namespace EmrCloudApi.Responses.KensaHistory
 {
     public class GetListKensaInfDetailResponse
     {
-        public GetListKensaInfDetailResponse(List<ListKensaInfDetailModel> data)
+        public GetListKensaInfDetailResponse(ListKensaInfDetailModel data)
         {
             Data = data;
         }
 
-        public List<ListKensaInfDetailModel> Data { get; private set; }
+        public ListKensaInfDetailModel Data { get; private set; }
     }
 }

@@ -13,6 +13,6 @@ namespace Domain.Models.KensaSet
         public List<KensaSetDetailModel> GetListKensaSetDetail(int hpId, int setId);
         public List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, string keyword);
         public bool UpdateKensaInfDetail(int hpId, int userId, List<KensaInfDetailUpdateModel> kensaInfDetails);
-        public (List<ListKensaInfDetailModel>, int) GetListKensaInfDetail(int hpId, int userId, int ptId, int setId, int pageIndex, int pageSize);
+        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, int ptId, int setId, int iraiDate, int startDate, bool showAbnormalKbn, int itemQuantity);
     }
 }

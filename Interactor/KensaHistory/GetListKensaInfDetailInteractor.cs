@@ -15,20 +15,20 @@ namespace Interactor.KensaHistory
         }
         public GetListKensaInfDetailOutputData Handle(GetListKensaInfDetailInputData inputData)
         {
-
             if (inputData.HpId < 0)
             {
-                return new GetListKensaInfDetailOutputData(new List<ListKensaInfDetailModel>(), SearchPostCodeStatus.InvalidHpId, 0);
+                return new GetListKensaInfDetailOutputData(new ListKensaInfDetailModel(), SearchPostCodeStatus.InvalidHpId);
             }
+
             try
             {
-                var result = _kensaSetRepository.GetListKensaInfDetail(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SetId, inputData.PageIndex, inputData.PageSize);
-                if (result.Item2 == 0)
+                var result = _kensaSetRepository.GetListKensaInfDetail(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SetId, inputData.IraiDate, inputData.StartDate, inputData.ShowAbnormalKbn, inputData.ItemQuantity);
+                if (result == null)
                 {
-                    return new GetListKensaInfDetailOutputData(new List<ListKensaInfDetailModel>(), SearchPostCodeStatus.NoData, 0);
+                    return new GetListKensaInfDetailOutputData(new ListKensaInfDetailModel(), SearchPostCodeStatus.NoData);
                 }
 
-                return new GetListKensaInfDetailOutputData(result.Item1, SearchPostCodeStatus.Success, result.Item2);
+                return new GetListKensaInfDetailOutputData(result, SearchPostCodeStatus.Success);
             }
             finally
             {

@@ -7,15 +7,13 @@ namespace UseCase.KensaHistory.GetListKensaInfDetail
 {
     public class GetListKensaInfDetailOutputData : IOutputData
     {
-        public GetListKensaInfDetailOutputData(List<ListKensaInfDetailModel> listKensaInfDetails, SearchPostCodeStatus status, int totalCount)
+        public GetListKensaInfDetailOutputData(ListKensaInfDetailModel listKensaInfDetails, SearchPostCodeStatus status)
         {
             ListKensaInfDetails = listKensaInfDetails;
             Status = status;
-            TotalCount = totalCount;
         }
 
-        public List<ListKensaInfDetailModel>  ListKensaInfDetails{ get; private set; }
+        public ListKensaInfDetailModel ListKensaInfDetails { get; private set; }
         public SearchPostCodeStatus Status { get; private set; }
-        public int TotalCount { get; private set; }
     }
 }

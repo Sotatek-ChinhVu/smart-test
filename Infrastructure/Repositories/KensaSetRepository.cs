@@ -9,6 +9,7 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static Domain.Models.KensaIrai.ListKensaInfDetailModel;
 
 namespace Infrastructure.Repositories
 {
@@ -219,7 +220,7 @@ namespace Infrastructure.Repositories
                                    .Replace("ｮ", "ﾖ")
                                    .Replace("ｯ", "ﾂ");
 
-            //get kensa in KensaMst
+            // Get kensa in KensaMst
             var kensaInKensaMst = from t1 in NoTrackingDataContext.KensaCmtMsts
                                   join t2 in NoTrackingDataContext.KensaCenterMsts on t1.CenterCd equals t2.CenterCd
                                   where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CMT ?? "").ToUpper().Contains(bigKeyWord)
@@ -321,9 +322,8 @@ namespace Infrastructure.Repositories
             return successed;
         }
 
-        public (List<ListKensaInfDetailModel>, int) GetListKensaInfDetail(int hpId, int userId, int ptId, int setId, int pageIndex, int pageSize)
+        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, int ptId, int setId, int iraiDate, int startDate, bool showAbnormalKbn, int itemQuantity)
         {
-            var result = new List<ListKensaInfDetailModel>();
             IQueryable<KensaInfDetail> kensaInfDetails;
 
             var userConf = NoTrackingDataContext.UserConfs.Where(x => x.UserId == userId && x.HpId == hpId && x.GrpCd == 1002);
@@ -352,6 +352,11 @@ namespace Infrastructure.Repositories
                                        SortNo = t2.SortNo,
                                    }
                             ).OrderBy(x => x.SortNo).Select(x => x.Result);
+            }
+
+            if (iraiDate != 0)
+            {
+                kensaInfDetails = kensaInfDetails.Where(x => x.IraiDate == iraiDate);
             }
 
             var data = from t1 in kensaInfDetails
@@ -394,6 +399,11 @@ namespace Infrastructure.Repositories
                            TosekiKbn = t3.TosekiKbn
                        };
 
+            if (showAbnormalKbn)
+            {
+                data = data.Where(x => x.AbnormalKbn.Equals(AbnormalKbnType.High) || x.AbnormalKbn.Equals(AbnormalKbnType.Low));
+            }
+
             // Sort data by user setting
             if (setId == 0)
             {
@@ -404,7 +414,7 @@ namespace Infrastructure.Repositories
 
                 switch (sortCoulum)
                 {
-                    case SortKensaMstColumn.KensaItemCd :
+                    case SortKensaMstColumn.KensaItemCd:
                         if (sortType == 1)
                         {
                             data = data.OrderByDescending(x => x.KensaItemCd);
@@ -414,7 +424,7 @@ namespace Infrastructure.Repositories
                             data = data.OrderBy(x => x.KensaItemCd);
                         }
                         break;
-                    case SortKensaMstColumn.KensaKna :
+                    case SortKensaMstColumn.KensaKna:
                         if (sortType == 1)
                         {
                             data = data.OrderByDescending(x => x.KensaKana);
@@ -439,19 +449,23 @@ namespace Infrastructure.Repositories
             }
 
             // Get list iraiCd
-            var iraiCds = SortIraiDateAsc ? data.OrderBy(x => x.IraiDate)
-                                .GroupBy(x => x.IraiCd)
-                                .Select(group => group.Key)
+            var kensaInfDetailCol = SortIraiDateAsc ? data
+                                .OrderBy(x => x.IraiDate)
+                                .GroupBy(x => new { x.IraiCd, x.IraiDate })
+                                .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate)).Where(x => (startDate == 0 || x.IraiDate >= startDate))
+
                             : data.OrderByDescending(x => x.IraiDate)
-                                .GroupBy(x => x.IraiCd)
-                                .Select(group => group.Key);
+                                .GroupBy(x => new { x.IraiCd, x.IraiDate })
+                                .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate)).Where(x => (startDate == 0 || x.IraiDate <= startDate));
 
-            var total = data.Count();
+            kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
 
-            iraiCds = iraiCds.Skip((pageIndex - 1) * pageSize).Take(pageSize);
-            foreach (var iraiCd in iraiCds)
+            var kensaInfDetailData = new List<Dictionary<long, List<ListKensaInfDetailItem>>>();
+
+            foreach (var item in kensaInfDetailCol)
             {
-                var kensaInfDetailByIraiCds = data.Where(x => x.IraiCd == iraiCd)
+                Dictionary<long, List<ListKensaInfDetailItem>> kensaInfDetailDataItem = new Dictionary<long, List<ListKensaInfDetailItem>>();
+                var kensaInfDetailByIraiCds = data.Where(x => x.IraiCd == item.IraiCd)
                                                .Select(x => new ListKensaInfDetailItem(
                                                    x.SeqNo,
                                                    x.KensaName,
@@ -473,18 +487,12 @@ namespace Infrastructure.Repositories
                                                    x.SikyuKbn,
                                                    x.TosekiKbn
                                                )).ToList();
-
-                var firstItem = kensaInfDetails.Where(x => x.IraiCd == iraiCd).FirstOrDefault();
-
-                result.Add(new ListKensaInfDetailModel(
-                        ptId,
-                        iraiCd,
-                        firstItem?.RaiinNo ?? 0,
-                        firstItem?.IraiDate ?? 0,
-                        kensaInfDetailByIraiCds
-                    ));
+                kensaInfDetailDataItem.Add(item.IraiCd, kensaInfDetailByIraiCds);
+                kensaInfDetailData.Add(kensaInfDetailDataItem);
             }
-            return (result, total);
+            var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData);
+
+            return result;
         }
         public void ReleaseResource()
         {

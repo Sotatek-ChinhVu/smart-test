@@ -78,7 +78,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetListKensaInfDetail)]
         public ActionResult<Response<GetListKensaInfDetailResponse>> GetListKensaInfDetail([FromQuery] GetListKensaInfDetailRequest request)
         {
-            var input = new GetListKensaInfDetailInputData(HpId, UserId, request.PtId, request.SetId, request.PageIndex, request.PageSize);
+            var input = new GetListKensaInfDetailInputData(HpId, UserId, request.PtId, request.SetId, request.IraiDate, request.StartDate, request.ShowAbnormalKbn, request.ItemQuantity);
             var output = _bus.Handle(input);
             var presenter = new GetListKensaInfDetailPresenter();
             presenter.Complete(output);

@@ -4,7 +4,9 @@
     {
         public int PtId { get; set; }
         public int SetId { get; set; } = 0;
-        public int PageIndex { get; set; }
-        public int PageSize { get; set; }
+        public int IraiDate { get; set; } = 0;
+        public int StartDate { get; set; } = 0;
+        public bool ShowAbnormalKbn { get; set; } = false;
+        public int ItemQuantity { get; set; } = 0;
     }
 }

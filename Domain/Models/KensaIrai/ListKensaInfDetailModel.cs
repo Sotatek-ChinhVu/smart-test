@@ -2,23 +2,29 @@
 {
     public class ListKensaInfDetailModel
     {
-        public ListKensaInfDetailModel(long ptId, long iraiCd, long raiinNo, int iraiDate, List<ListKensaInfDetailItem> kensaInfDetailItem)
+        public ListKensaInfDetailModel(List<KensaInfDetailColModel> kensaInfDetailCol, List<Dictionary<long, List<ListKensaInfDetailItem>>> kensaInfDetailData)
         {
-            PtId = ptId;
-            IraiCd = iraiCd;
-            RaiinNo = raiinNo;
-            IraiDate = iraiDate;
-            KensaInfDetailItem = kensaInfDetailItem;
+            KensaInfDetailCol = kensaInfDetailCol;
+            KensaInfDetailData = kensaInfDetailData;
         }
 
-        public long PtId { get; private set; }
+        public ListKensaInfDetailModel()
+        {
+        }
 
-        public long IraiCd { get; private set; }
+        public List<KensaInfDetailColModel> KensaInfDetailCol { get; private set; }
 
-        public long RaiinNo { get; private set; }
+        public List<Dictionary<long, List<ListKensaInfDetailItem>>> KensaInfDetailData { get; private set; }
 
-        public int IraiDate { get; private set; }
-
-        public List<ListKensaInfDetailItem> KensaInfDetailItem { get; private set; }
+        public class KensaInfDetailColModel
+        {
+            public KensaInfDetailColModel(long iraiCd, int iraiDate)
+            {
+                IraiCd = iraiCd;
+                IraiDate = iraiDate;
+            }
+            public long IraiCd { get; private set; }
+            public int IraiDate { get; private set; }
+        }
     }
 }
