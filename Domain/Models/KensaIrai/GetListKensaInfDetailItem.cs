@@ -11,6 +11,8 @@
         string abnormalKbn,
         string cmtCd1,
         string cmtCd2,
+        string cmt1,
+        string cmt2,
         string std,
         string stdLow,
         string stdHig,
@@ -30,6 +32,8 @@
             AbnormalKbn = abnormalKbn;
             CmtCd1 = cmtCd1;
             CmtCd2 = cmtCd2;
+            Cmt1 = cmt1;
+            Cmt2 = cmt2;
             Std = std;
             StdLow = stdLow;
             StdHig = stdHig;
@@ -56,6 +60,10 @@
         public string CmtCd1 { get; private set; }
 
         public string CmtCd2 { get; private set; }
+
+        public string Cmt1 { get; private set; }
+
+        public string Cmt2 { get; private set; }
 
         public string Std { get; private set; }
 
