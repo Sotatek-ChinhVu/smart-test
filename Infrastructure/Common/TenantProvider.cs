@@ -220,7 +220,7 @@ namespace Infrastructure.CommonDB
 
         public string GetDomainFromHeader()
         {
-            var headers = _httpContextAccessor.HttpContext.Request.Headers;
+            var headers = _httpContextAccessor.HttpContext?.Request?.Headers;
             if (headers == null || !headers.ContainsKey(ParamConstant.Domain))
             {
                 return string.Empty;
@@ -232,7 +232,7 @@ namespace Infrastructure.CommonDB
 
         public string GetDomainFromQueryString()
         {
-            var queryString = _httpContextAccessor.HttpContext.Request.QueryString.Value;
+            var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value;
             if (string.IsNullOrEmpty(queryString) || !queryString.Contains(ParamConstant.Domain))
             {
                 return string.Empty;

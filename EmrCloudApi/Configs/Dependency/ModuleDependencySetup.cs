@@ -844,6 +844,10 @@ using UseCase.ColumnSetting.GetColumnSettingByTableNameList;
 using UseCase.MstItem.SaveSetNameMnt;
 using UseCase.Online.GetOnlineConsent;
 using UseCase.Online.UpdateOnlineConsents;
+using Interactor.SystemStartDbs;
+using UseCase.SystemStartDbs;
+using Domain.Models.SystemStartDb;
+using AspNetCoreSchedulerDemo.ScheduleTask;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -885,6 +889,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             services.AddScoped<IMessenger, Messenger>();
             services.AddScoped<ILoggingHandler, LoggingHandler>();
+
+            services.AddScoped<ISystemStartDbService, SystemStartDbService>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
@@ -1247,6 +1253,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
             services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
+            services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
+            services.AddSingleton<IHostedService, TaskScheduleDeleteGarbage>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1876,6 +1884,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CompareTenMstInputData, CompareTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveCompareTenMstInputData, SaveCompareTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveSetNameMntInputData, SaveSetNameMntInteractor>();
+
+            //SystemStartDb 
+            busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

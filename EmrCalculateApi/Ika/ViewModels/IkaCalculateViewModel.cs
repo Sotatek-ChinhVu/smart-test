@@ -15,6 +15,8 @@ using Helper.Constants;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using PostgreDataContext;
 using System.Diagnostics;
 
@@ -940,6 +942,27 @@ namespace EmrCalculateApi.Ika.ViewModels
             }
             catch (Exception e)
             {
+                // Update Calculate Status when has exception
+                void UpdateCalulateStatus()
+                {
+                    try
+                    {
+                        string sql = "UPDATE \"public\".\"CALC_STATUS\"  SET  \"STATUS\" = 8"
+                                                              + " WHERE  \"HP_ID\" = @hpId"
+                                                              + "        AND  \"STATUS\" in (0, 1)"
+                                                              + "        AND \"CREATE_MACHINE\" = @createMachine";
+                        _tenantDataContext.Database.SetCommandTimeout(1800);
+                        _tenantDataContext.Database.ExecuteSqlRaw(sql,
+                                new NpgsqlParameter("@hpId", _hpId),
+                                new NpgsqlParameter("@createMachine", UniqueKey));
+                    }
+                    catch (Exception e)
+                    {
+                        _emrLogger.WriteLogError(this, conFncName, e);
+                    }
+                }
+
+                UpdateCalulateStatus();
                 _emrLogger.WriteLogError(this, conFncName, e);
 
                 // 変更取り消し
