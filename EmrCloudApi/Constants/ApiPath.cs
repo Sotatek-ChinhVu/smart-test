@@ -177,6 +177,7 @@
         public const string GetPtInfModelsByName = "GetPtInfModelsByName";
         public const string GetPtInfModelsByRefNo = "GetPtInfModelsByRefNo";
         public const string GetVisitTimesManagementModels = "GetVisitTimesManagementModels";
+        public const string UpdateVisitTimesManagement = "UpdateVisitTimesManagement";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";

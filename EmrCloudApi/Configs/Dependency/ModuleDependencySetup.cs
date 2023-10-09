@@ -845,6 +845,7 @@ using UseCase.MstItem.SaveSetNameMnt;
 using UseCase.Online.GetOnlineConsent;
 using UseCase.Online.UpdateOnlineConsents;
 using UseCase.PatientInfor.GetVisitTimesManagementModels;
+using UseCase.PatientInfor.UpdateVisitTimesManagement;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1359,6 +1360,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPtInfModelsByNameInputData, GetPtInfModelsByNameInteractor>();
             busBuilder.RegisterUseCase<GetPtInfModelsByRefNoInputData, GetPtInfModelsByRefNoInteractor>();
             busBuilder.RegisterUseCase<GetVisitTimesManagementModelsInputData, GetVisitTimesManagementModelsInteractor>();
+            busBuilder.RegisterUseCase<UpdateVisitTimesManagementInputData, UpdateVisitTimesManagementInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();

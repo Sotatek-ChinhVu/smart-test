@@ -79,5 +79,7 @@ namespace Domain.Models.PatientInfor
         bool SavePtKyusei(int hpId, int userId, List<PtKyuseiModel> ptKyuseiList);
 
         List<VisitTimesManagementModel> GetVisitTimesManagementModels(int hpId, int sinYm, long ptId, int kohiId);
+
+        bool UpdateVisitTimesManagement(int hpId, int userId, long ptId, int kohiId, List<VisitTimesManagementModel> visitTimesManagementList);
     }
 }

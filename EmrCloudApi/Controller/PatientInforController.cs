@@ -106,6 +106,7 @@ using UseCase.PatientInfor.GetPtInfModelsByName;
 using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using System.Linq;
 using UseCase.PatientInfor.GetVisitTimesManagementModels;
+using UseCase.PatientInfor.UpdateVisitTimesManagement;
 
 namespace EmrCloudApi.Controller
 {
@@ -1082,6 +1083,31 @@ namespace EmrCloudApi.Controller
             var presenter = new GetVisitTimesManagementModelsPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetVisitTimesManagementModelsResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateVisitTimesManagement)]
+        public ActionResult<Response<UpdateVisitTimesManagementResponse>> UpdateVisitTimesManagement([FromBody] UpdateVisitTimesManagementRequest request)
+        {
+            var input = new UpdateVisitTimesManagementInputData(HpId, UserId, request.SinYm, request.PtId, request.KohiId, ConvertToVisitTimesManagementList(request));
+            var output = _bus.Handle(input);
+            var presenter = new UpdateVisitTimesManagementPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateVisitTimesManagementResponse>>(presenter.Result);
+        }
+
+        private List<VisitTimesManagementModel> ConvertToVisitTimesManagementList(UpdateVisitTimesManagementRequest request)
+        {
+            List<VisitTimesManagementModel> result = new();
+            result = request.VisitTimesManagementList.Select(item => new VisitTimesManagementModel(
+                                                                         request.PtId,
+                                                                         item.SinDate,
+                                                                         item.HokenPid,
+                                                                         request.KohiId,
+                                                                         item.SeqNo,
+                                                                         item.SortKey,
+                                                                         item.IsDeleted
+                                                      )).ToList();
+            return result;
         }
 
         private void StopCalculationCaculaleSwapHoken(CalculationSwapHokenMessageStop stopCalcStatus)
