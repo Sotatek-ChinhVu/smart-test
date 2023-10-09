@@ -1191,7 +1191,8 @@ namespace Infrastructure.Repositories
             TrackingDataContext.Database.SetCommandTimeout(1200);
             bool resultCreatePatient = TrackingDataContext.Database.ExecuteSqlRaw(querySql) > 0;
 
-            if (!resultCreatePatient) {
+            if (!resultCreatePatient)
+            {
                 return (false, 0);
             }
             else
@@ -2764,6 +2765,25 @@ namespace Infrastructure.Repositories
             {
                 newCloneByomei.SeqNo = newCloneByomei.Id;
             }
+        }
+
+        public List<VisitTimesManagementModel> GetVisitTimesManagementModels(int hpId, int sinYm, long ptId, int kohiId)
+        {
+            var limitCntListInfList = NoTrackingDataContext.LimitCntListInfs.Where(item => item.HpId == hpId
+                                                                                           && item.SinDate / 100 == sinYm
+                                                                                           && item.PtId == ptId
+                                                                                           && item.KohiId == kohiId
+                                                                                           && item.IsDeleted == DeleteTypes.None)
+                                                                            .ToList();
+            return limitCntListInfList.Select(item => new VisitTimesManagementModel(
+                                                          item.PtId,
+                                                          item.SinDate,
+                                                          item.HokenPid,
+                                                          item.KohiId,
+                                                          item.SeqNo,
+                                                          item.SortKey ?? string.Empty))
+                                      .OrderBy(item => item.SortKey)
+                                      .ToList();
         }
     }
 }
