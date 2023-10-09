@@ -6834,7 +6834,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         int dateNow = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
         var listSetKbn = GetListSetKbn(checkBoxStatus);
 
-        if (listSetKbn.Count <= 0 || CheckTargetSetOdrInfDetail(checkBoxStatus) == false)
+        if (listSetKbn.Count <= 0 || !CheckTargetSetOdrInfDetail(checkBoxStatus))
             return new List<SetNameMntModel>();
 
         var setMstRepo = TrackingDataContext.SetMsts
@@ -6849,25 +6849,25 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         IQueryable<SetOdrInfDetail> setOdrInfDetailRepo = null;
 
-        if (checkBoxStatus.JihiChecked == true)
+        if (checkBoxStatus.JihiChecked)
         {
-            var jihi = setOdrInfDetailRepoAll.Where(item => item.ItemCd.StartsWith("J"));
+            var jihi = setOdrInfDetailRepoAll.Where(item => !string.IsNullOrEmpty(item.ItemCd) && item.ItemCd.StartsWith("J"));
             setOdrInfDetailRepo = jihi;
         }
-        if (checkBoxStatus.KihonChecked == true)
+        if (checkBoxStatus.KihonChecked)
         {
-            var Kihon = setOdrInfDetailRepoAll.Where(item => !item.ItemCd.StartsWith("J") &&
+            var Kihon = setOdrInfDetailRepoAll.Where(item => !string.IsNullOrEmpty(item.ItemCd) && !item.ItemCd.StartsWith("J") &&
             !item.ItemCd.StartsWith("Z") && !item.ItemCd.StartsWith("Y"));
             setOdrInfDetailRepo = setOdrInfDetailRepo == null ? Kihon : setOdrInfDetailRepo.Union(Kihon);
         }
-        if (checkBoxStatus.TokuChecked == true)
+        if (checkBoxStatus.TokuChecked)
         {
-            var toku = setOdrInfDetailRepoAll.Where(item => item.ItemCd.StartsWith("Z"));
+            var toku = setOdrInfDetailRepoAll.Where(item => !string.IsNullOrEmpty(item.ItemCd) && item.ItemCd.StartsWith("Z"));
             setOdrInfDetailRepo = setOdrInfDetailRepo == null ? toku : setOdrInfDetailRepo.Union(toku);
         }
-        if (checkBoxStatus.YohoChecked == true)
+        if (checkBoxStatus.YohoChecked)
         {
-            var yoho = setOdrInfDetailRepoAll.Where(item => item.ItemCd.StartsWith("Y"));
+            var yoho = setOdrInfDetailRepoAll.Where(item => !string.IsNullOrEmpty(item.ItemCd) && item.ItemCd.StartsWith("Y"));
             setOdrInfDetailRepo = setOdrInfDetailRepo == null ? yoho : setOdrInfDetailRepo.Union(yoho);
         }
 
@@ -6880,11 +6880,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
         else
         {
-            if (checkBoxStatus.DiffChecked == true)
+            if (checkBoxStatus.DiffChecked)
             {
                 var setOdrInfDetailCmt =
-                    setOdrInfDetailRepo.Where(item =>
-                        item.ItemCd.StartsWith(ItemCdConst.Comment830Pattern) ||
+                    setOdrInfDetailRepo.Where(item => !string.IsNullOrEmpty(item.ItemCd)
+                        && (item.ItemCd.StartsWith(ItemCdConst.Comment830Pattern) ||
                         item.ItemCd.StartsWith(ItemCdConst.Comment831Pattern) ||
                         (item.ItemCd.StartsWith(ItemCdConst.Comment840Pattern) && item.ItemCd != ItemCdConst.GazoDensibaitaiHozon) ||
                         item.ItemCd.StartsWith(ItemCdConst.Comment842Pattern) ||
@@ -6892,11 +6892,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                         item.ItemCd.StartsWith(ItemCdConst.Comment851Pattern) ||
                         item.ItemCd.StartsWith(ItemCdConst.Comment852Pattern) ||
                         item.ItemCd.StartsWith(ItemCdConst.Comment853Pattern) ||
-                        item.ItemCd.StartsWith(ItemCdConst.Comment880Pattern));
+                        item.ItemCd.StartsWith(ItemCdConst.Comment880Pattern)));
 
                 var setOdrInfDetailNotCmt =
-                    setOdrInfDetailRepo.Where(item =>
-                        !item.ItemCd.StartsWith(ItemCdConst.Comment830Pattern) &&
+                    setOdrInfDetailRepo.Where(item => !string.IsNullOrEmpty(item.ItemCd)
+                        && (!item.ItemCd.StartsWith(ItemCdConst.Comment830Pattern) &&
                         !item.ItemCd.StartsWith(ItemCdConst.Comment831Pattern) &&
                         !(item.ItemCd.StartsWith(ItemCdConst.Comment840Pattern) && item.ItemCd != ItemCdConst.GazoDensibaitaiHozon) &&
                         !item.ItemCd.StartsWith(ItemCdConst.Comment842Pattern) &&
@@ -6904,7 +6904,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                         !item.ItemCd.StartsWith(ItemCdConst.Comment851Pattern) &&
                         !item.ItemCd.StartsWith(ItemCdConst.Comment852Pattern) &&
                         !item.ItemCd.StartsWith(ItemCdConst.Comment853Pattern) &&
-                        !item.ItemCd.StartsWith(ItemCdConst.Comment880Pattern));
+                        !item.ItemCd.StartsWith(ItemCdConst.Comment880Pattern)));
 
                 var queryDetailCmt = from setMst in setMstRepo
                                      join setOdrInfDetail in setOdrInfDetailCmt on
@@ -6975,14 +6975,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
                 var listSetNameMntOdrDetail = queryDetail.AsEnumerable()
                     .Select(item => new SetNameMntModel(true, item.ItemNameTenMst, item.CmtCol1, item.CmtColKeta1, item.CmtCol2, item.CmtColKeta2, item.CmtCol3, item.CmtColKeta3, item.CmtCol4, item.CmtColKeta4,
-                    item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName,
-                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd, item.SetOdrInfDetail.ItemName, item.SetOdrInfDetail.CmtName, item.SetOdrInfDetail.CmtOpt, item.SetMst.CreateDate, item.SetMst.CreateId,
-                    item.SetMst.CreateMachine, item.SetMst.UpdateDate, item.SetMst.UpdateId, item.SetMst.UpdateMachine));
+                    item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName ?? string.Empty,
+                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd ?? string.Empty, item.SetOdrInfDetail.ItemName ?? string.Empty, item.SetOdrInfDetail.CmtName ?? string.Empty, item.SetOdrInfDetail.CmtOpt ?? string.Empty,
+                    item.SetOdrInfDetail.RpNo, item.SetOdrInfDetail.RpEdaNo));
 
                 var listSetNameMntSetMst = querySet.AsEnumerable()
                     .Distinct()
-                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName, item.CreateDate, item.CreateId,
-                    item.CreateMachine, item.UpdateDate, item.UpdateId, item.UpdateMachine, "", 0, 0, 0, 0, 0, 0, 0, 0));
+                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName ?? string.Empty,
+                    string.Empty, 0, 0, 0, 0, 0, 0, 0, 0));
 
                 return listSetNameMntSetMst
                     .Union(listSetNameMntOdrDetail)
@@ -7029,14 +7029,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
                 var listSetNameMntOdrDetail = queryDetail.AsEnumerable()
                     .Select(item => new SetNameMntModel(true, item.ItemNameTenMst, item.CmtCol1, item.CmtColKeta1, item.CmtCol2, item.CmtColKeta2, item.CmtCol3, item.CmtColKeta3, item.CmtCol4, item.CmtColKeta4,
-                    item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName,
-                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd, item.SetOdrInfDetail.ItemName, item.SetOdrInfDetail.CmtName, item.SetOdrInfDetail.CmtOpt, item.SetMst.CreateDate, item.SetMst.CreateId,
-                    item.SetMst.CreateMachine, item.SetMst.UpdateDate, item.SetMst.UpdateId, item.SetMst.UpdateMachine));
+                    item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName ?? string.Empty,
+                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd ?? string.Empty, item.SetOdrInfDetail.ItemName ?? string.Empty, item.SetOdrInfDetail.CmtName ?? string.Empty, item.SetOdrInfDetail.CmtOpt ?? string.Empty,
+                    item.SetOdrInfDetail.RpNo, item.SetOdrInfDetail.RpEdaNo));
 
                 var listSetNameMntSetMst = querySet.AsEnumerable()
                     .Distinct()
-                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName, item.CreateDate, item.CreateId,
-                    item.CreateMachine, item.UpdateDate, item.UpdateId, item.UpdateMachine, "", 0, 0, 0, 0, 0, 0, 0, 0));
+                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName,
+                    string.Empty, 0, 0, 0, 0, 0, 0, 0, 0));
 
                 return listSetNameMntSetMst
                     .Union(listSetNameMntOdrDetail)
@@ -7051,6 +7051,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
         }
     }
+
     public List<YohoSetMstModel> GetListYohoSetMstModelByUserID(int hpId, int userIdLogin, int sinDate, int userId = 0)
     {
         List<YohoSetMstModel> result = new List<YohoSetMstModel>();
@@ -7544,12 +7545,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         TrackingDataContext.YohoSetMsts.UpdateRange(yohoSetUpdate);
         return TrackingDataContext.SaveChanges() > 0;
     }
+
     private void _UpdateYohoSetMst(int userId, YohoSetMst yohoSetMst)
     {
         yohoSetMst.CreateDate = TimeZoneInfo.ConvertTimeToUtc(yohoSetMst.CreateDate);
         yohoSetMst.UpdateId = userId;
         yohoSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
     }
+
     private void _CreateYohoSetMst(int userId, YohoSetMst yohoSetMst)
     {
         yohoSetMst.CreateDate = CIUtil.GetJapanDateTimeNow();
@@ -7557,6 +7560,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         yohoSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
         yohoSetMst.UpdateId = userId;
     }
+
     public List<RenkeiMstModel> GetRenkeiMstModels(int hpId)
     {
         var result = NoTrackingDataContext.RenkeiMsts.Where(item => item.HpId == hpId
@@ -7957,14 +7961,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
         try
         {
-            var computerName = "SmartKarte";
             foreach (var setNameMnt in lstModel)
             {
                 if (setNameMnt.SetFlag == "●")
                 {
-                    if (setNameMnt.IsSet == false)
+                    if (!setNameMnt.IsSet)
                     {
-                        var getItem = TrackingDataContext.SetOdrInfDetail.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == setNameMnt.ItemCd && x.SetCd == setNameMnt.SetCd);
+                        var getItem = TrackingDataContext.SetOdrInfDetail.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == setNameMnt.ItemCd && x.SetCd == setNameMnt.SetCd && x.RpNo == setNameMnt.RpNo && x.RpEdaNo == setNameMnt.RpEdaNo && x.RowNo == setNameMnt.RowNo);
                         if (getItem != null)
                         {
                             if (setNameMnt.IsCommentMaster)
@@ -7976,27 +7979,21 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                             {
                                 getItem.ItemName = setNameMnt.ItemNameTenMst;
                             }
-                            TrackingDataContext.SetOdrInfDetail.Update(getItem);
-                            TrackingDataContext.SaveChanges();
                         }
                     }
-                    else if (!string.IsNullOrWhiteSpace(setNameMnt.ItemNameTenMstBinding) == true)
+                    else if (!string.IsNullOrWhiteSpace(setNameMnt.ItemNameTenMstBinding))
                     {
                         var setItem = TrackingDataContext.SetMsts.FirstOrDefault(x => x.HpId == hpId && x.SetCd == setNameMnt.SetCd && x.SetKbn == setNameMnt.SetKbn && x.SetKbnEdaNo == setNameMnt.SetKbnEdaNo);
                         if (setItem != null)
                         {
                             setItem.SetName = setNameMnt.ItemNameTenMstBinding;
-                            setItem.CreateDate = TimeZoneInfo.ConvertTimeToUtc(setItem.CreateDate);
                             setItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             setItem.UpdateId = userId;
-                            setItem.UpdateMachine = computerName;
-                            TrackingDataContext.SetMsts.Update(setItem);
-                            TrackingDataContext.SaveChanges();
                         }
                     }
                 }
             }
-            return true;
+            return TrackingDataContext.SaveChanges() > 0;
         }
         catch
         {

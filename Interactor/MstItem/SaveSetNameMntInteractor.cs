@@ -26,17 +26,6 @@ namespace Interactor.MstItem
                 {
                     return new SaveSetNameMntOutputData(false, SaveSetNameMntStatus.ListDataEmpty);
                 }
-
-                if (inputData.HpId <= 0)
-                {
-                    return new SaveSetNameMntOutputData(false, SaveSetNameMntStatus.InvalidHpId);
-                }
-
-                if (inputData.UserId <= 0)
-                {
-                    return new SaveSetNameMntOutputData(false, SaveSetNameMntStatus.InvalidUserId);
-                }
-
                 if (inputData.Sindate <= 0)
                 {
                     return new SaveSetNameMntOutputData(false, SaveSetNameMntStatus.InvalidSinDate);

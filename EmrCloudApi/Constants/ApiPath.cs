@@ -476,6 +476,8 @@
         public const string GetListOnlineConfirmationHistoryByPtId = "GetListOnlineConfirmationHistoryByPtId";
         public const string GetListOnlineConfirmationHistoryModel = "GetListOnlineConfirmationHistoryModel";
         public const string ConvertXmlToQCXmlMsg = "ConvertXmlToQCXmlMsg";
+        public const string GetOnlineConsent = "GetOnlineConsent";
+        public const string UpdateOnlineConsents = "UpdateOnlineConsents";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
@@ -489,6 +491,9 @@
 
         //ListSetMst
         public const string UpdateListSetMst = "UpdateListSetMst";
+
+        //ByomeiSetMst
+        public const string UpdateByomeiSetMst = "UpdateByomeiSetMst";
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";

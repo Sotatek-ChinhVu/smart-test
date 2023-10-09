@@ -5,6 +5,7 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace Infrastructure.Repositories
 {
@@ -164,6 +165,8 @@ namespace Infrastructure.Repositories
 
         public List<long> RemoveLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string tabKey)
         {
+            var stopwatch = Stopwatch.StartNew();
+            Console.WriteLine("Start Remove Lock");
             var lockInf = TrackingDataContext.LockInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.FunctionCd == functionCd && r.RaiinNo == raiinNo && r.SinDate == sinDate && r.UserId == userId && r.Machine == tabKey);
             if (lockInf == null)
             {
@@ -171,6 +174,7 @@ namespace Infrastructure.Repositories
             }
             TrackingDataContext.LockInfs.Remove(lockInf);
             TrackingDataContext.SaveChanges();
+            Console.WriteLine("Stop Remove Lock: " + stopwatch.ElapsedMilliseconds);
             return new() { raiinNo };
         }
 
