@@ -19,12 +19,11 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
 
     public bool CheckDuplicateCategoryName(int hpId, int categoryCd, string categoryName)
     {
-        return NoTrackingDataContext.DocCategoryMsts.Any(
-                                                        item => item.HpId == hpId
-                                                        && item.CategoryCd != categoryCd
-                                                        && item.CategoryName != null
-                                                        && item.IsDeleted == 0
-                                                        && item.CategoryName.Equals(categoryName));
+        return NoTrackingDataContext.DocCategoryMsts.Any(item => item.HpId == hpId
+                                                                 && item.CategoryCd != categoryCd
+                                                                 && item.CategoryName != null
+                                                                 && item.IsDeleted == 0
+                                                                 && item.CategoryName.Equals(categoryName));
     }
 
     public List<DocCategoryModel> GetAllDocCategory(int hpId)
@@ -37,14 +36,14 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
     {
         var listDocCategory = GetAllDocCategory(hpId);
         var docCategoryCdList = listDocCategory.Select(item => item.CategoryCd).Distinct().ToList();
-        var listDocDB = NoTrackingDataContext.DocInfs.Where(item => item.HpId == hpId
-                                                                 && item.IsDeleted == 0
-                                                                 && item.PtId == ptId
-                                                                 && docCategoryCdList.Contains(item.CategoryCd))
-                                                     .OrderByDescending(x => x.SinDate)
-                                                     .ThenByDescending(x => x.UpdateDate)
-                                                     .ThenBy(x => x.DspFileName)
-                                                     .ToList();
+        var listDocDB = NoTrackingDataContext.FilingInf.Where(item => item.HpId == hpId
+                                                                      && item.IsDeleted == 0
+                                                                      && item.PtId == ptId
+                                                                      && docCategoryCdList.Contains(item.CategoryCd))
+                                                       .OrderByDescending(x => x.GetDate)
+                                                       .ThenByDescending(x => x.UpdateDate)
+                                                       .ThenBy(x => x.DspFileName)
+                                                       .ToList();
         return listDocDB.Select(item => ConvertToDocInfModel(item, listDocCategory)).ToList();
     }
 
@@ -91,14 +90,13 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
     public List<DocInfModel> GetDocInfByCategoryCd(int hpId, long ptId, int categoryCd)
     {
         var docCategory = GetDocCategoryDetail(hpId, categoryCd);
-        var listDocDB = TrackingDataContext.DocInfs
-                                                            .Where(item => item.HpId == hpId
-                                                                        && item.IsDeleted == 0
-                                                                        && item.CategoryCd == categoryCd
-                                                                        && item.PtId == ptId)
-                                                            .OrderByDescending(x => x.SinDate)
-                                                            .ThenBy(x => x.UpdateDate)
-                                                            .ToList();
+        var listDocDB = TrackingDataContext.FilingInf.Where(item => item.HpId == hpId
+                                                                    && item.IsDeleted == 0
+                                                                    && item.CategoryCd == categoryCd
+                                                                    && item.PtId == ptId)
+                                                     .OrderByDescending(x => x.GetDate)
+                                                     .ThenBy(x => x.UpdateDate)
+                                                     .ToList();
         return listDocDB.Select(item => ConvertToDocInfModel(item, new List<DocCategoryModel> { docCategory })).ToList();
     }
 
@@ -129,16 +127,11 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         return false;
     }
 
-    public DocInfModel GetDocInfDetail(int hpId, long ptId, int sinDate, long raiinNo, int seqNo)
+    public DocInfModel GetDocInfDetail(int hpId, long fileId)
     {
-        var docInfDB = NoTrackingDataContext.DocInfs.FirstOrDefault(entity =>
-                                                                entity.HpId == hpId
-                                                                && entity.PtId == ptId
-                                                                && entity.SinDate == sinDate
-                                                                && entity.RaiinNo == raiinNo
-                                                                && entity.SeqNo == seqNo
-                                                                && entity.IsDeleted == 0
-                                                            );
+        var docInfDB = NoTrackingDataContext.FilingInf.FirstOrDefault(entity => entity.HpId == hpId
+                                                                                && entity.FileId == fileId
+                                                                                && entity.IsDeleted == 0);
         if (docInfDB == null)
         {
             return new DocInfModel();
@@ -149,25 +142,21 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
 
     public bool SaveDocInf(int userId, DocInfModel model, bool overwriteFile)
     {
-        if (model.SeqNo <= 0)
+        if (model.FileId <= 0)
         {
-            TrackingDataContext.DocInfs.Add(ConvertToNewDocInf(userId, model));
+            TrackingDataContext.FilingInf.Add(ConvertToNewDocInf(userId, model));
         }
         else
         {
-            var docInfDB = TrackingDataContext.DocInfs.FirstOrDefault(entity =>
-                                                                entity.HpId == model.HpId
-                                                                && entity.PtId == model.PtId
-                                                                && entity.SinDate == model.SinDate
-                                                                && entity.RaiinNo == model.RaiinNo
-                                                                && entity.SeqNo == model.SeqNo
-                                                                && entity.IsDeleted == 0
-                                                            );
+            var docInfDB = TrackingDataContext.FilingInf.FirstOrDefault(entity => entity.HpId == model.HpId
+                                                                                  && entity.FileId == model.FileId
+                                                                                  && entity.IsDeleted == 0);
             if (docInfDB == null)
             {
                 return false;
             }
             docInfDB.CategoryCd = model.CategoryCd;
+            docInfDB.GetDate = model.GetDate;
             docInfDB.DspFileName = model.DisplayFileName;
             if (overwriteFile)
             {
@@ -179,16 +168,11 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
-    public bool DeleteDocInf(int hpId, int userId, long ptId, int sinDate, long raiinNo, int seqNo)
+    public bool DeleteDocInf(int hpId, int userId, long fileId)
     {
-        var docInfDB = TrackingDataContext.DocInfs.FirstOrDefault(entity =>
-                                                                entity.HpId == hpId
-                                                                && entity.PtId == ptId
-                                                                && entity.SinDate == sinDate
-                                                                && entity.RaiinNo == raiinNo
-                                                                && entity.SeqNo == seqNo
-                                                                && entity.IsDeleted == 0
-                                                            );
+        var docInfDB = TrackingDataContext.FilingInf.FirstOrDefault(entity => entity.HpId == hpId
+                                                                              && entity.FileId == fileId
+                                                                              && entity.IsDeleted == 0);
         if (docInfDB == null)
         {
             return false;
@@ -202,12 +186,10 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
 
     public bool DeleteDocInfs(int hpId, int userId, long ptId, int categoryCd)
     {
-        var docInfsDB = TrackingDataContext.DocInfs.Where(entity =>
-                                                                entity.HpId == hpId
-                                                                && entity.PtId == ptId
-                                                                && entity.CategoryCd == categoryCd
-                                                                && entity.IsDeleted == 0
-                                                            );
+        var docInfsDB = TrackingDataContext.FilingInf.Where(entity => entity.HpId == hpId
+                                                                      && entity.PtId == ptId
+                                                                      && entity.CategoryCd == categoryCd
+                                                                      && entity.IsDeleted == 0);
         if (docInfsDB.Any())
         {
             foreach (var item in docInfsDB)
@@ -223,11 +205,9 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
 
     public bool DeleteDocCategory(int hpId, int userId, int categoryCd)
     {
-        var docCategoryDB = TrackingDataContext.DocCategoryMsts.FirstOrDefault(entity =>
-                                                                entity.HpId == hpId
-                                                                && entity.CategoryCd == categoryCd
-                                                                && entity.IsDeleted == 0
-                                                            );
+        var docCategoryDB = TrackingDataContext.DocCategoryMsts.FirstOrDefault(entity => entity.HpId == hpId
+                                                                                         && entity.CategoryCd == categoryCd
+                                                                                         && entity.IsDeleted == 0);
         if (docCategoryDB == null)
         {
             return false;
@@ -241,11 +221,10 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
 
     public bool MoveDocInf(int hpId, int userId, int categoryCd, int moveCategoryCd)
     {
-        var listDocInfs = TrackingDataContext.DocInfs.Where(item =>
-                                                                item.HpId == hpId
-                                                                && item.CategoryCd == categoryCd
-                                                                && item.IsDeleted == 0)
-                                                            .ToList();
+        var listDocInfs = TrackingDataContext.FilingInf.Where(item => item.HpId == hpId
+                                                                      && item.CategoryCd == categoryCd
+                                                                      && item.IsDeleted == 0)
+                                                       .ToList();
         foreach (var item in listDocInfs)
         {
             item.CategoryCd = moveCategoryCd;
@@ -294,14 +273,12 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         return entity;
     }
 
-    private DocInf ConvertToNewDocInf(int userId, DocInfModel model)
+    private FilingInf ConvertToNewDocInf(int userId, DocInfModel model)
     {
-        DocInf entity = new();
+        FilingInf entity = new();
         entity.HpId = model.HpId;
         entity.PtId = model.PtId;
-        entity.SinDate = model.SinDate;
-        entity.RaiinNo = model.RaiinNo;
-        entity.SeqNo = GetLastDocInfSeqNo(model.HpId, model.PtId, model.SinDate, model.RaiinNo) + 1;
+        entity.GetDate = model.GetDate;
         entity.CategoryCd = model.CategoryCd;
         entity.FileName = model.FileName;
         entity.DspFileName = model.DisplayFileName;
@@ -313,41 +290,29 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         return entity;
     }
 
-    private DocInfModel ConvertToDocInfModel(DocInf entity, List<DocCategoryModel> listDocCategory)
+    private DocInfModel ConvertToDocInfModel(FilingInf entity, List<DocCategoryModel> listDocCategory)
     {
         return new DocInfModel(
-                entity.HpId,
-                entity.PtId,
-                entity.SinDate,
-                entity.RaiinNo,
-                entity.SeqNo,
-                entity.CategoryCd,
-                listDocCategory.FirstOrDefault(item => item.CategoryCd == entity.CategoryCd)?.CategoryName ?? string.Empty,
-                entity.FileName ?? string.Empty,
-                entity.DspFileName ?? string.Empty,
-                entity.UpdateDate
+               entity.HpId,
+               entity.FileId,
+               entity.PtId,
+               entity.GetDate,
+               entity.CategoryCd,
+               listDocCategory.FirstOrDefault(item => item.CategoryCd == entity.CategoryCd)?.CategoryName ?? string.Empty,
+               entity.FileName ?? string.Empty,
+               entity.DspFileName ?? string.Empty,
+               entity.UpdateDate
             );
-    }
-
-    private int GetLastDocInfSeqNo(int hpId, long ptId, int sinDate, long raiinNo)
-    {
-        var listDocInf = NoTrackingDataContext.DocInfs.Where(entity =>
-                                                                entity.HpId == hpId
-                                                                && entity.PtId == ptId
-                                                                && entity.SinDate == sinDate
-                                                                && entity.RaiinNo == raiinNo
-                                                            ).ToList();
-        return listDocInf.Any() ? listDocInf.Max(item => item.SeqNo) : 0;
     }
 
     private void SortDocCategory()
     {
-        var listDocCategory = TrackingDataContext.DocCategoryMsts
-                                                    .Where(item => item.IsDeleted == 0)
-                                                    .OrderBy(item => item.SortNo)
-                                                    .ToList();
+        var docCategoryList = TrackingDataContext.DocCategoryMsts
+                                                 .Where(item => item.IsDeleted == 0)
+                                                 .OrderBy(item => item.SortNo)
+                                                 .ToList();
         int sortNo = 1;
-        foreach (var item in listDocCategory)
+        foreach (var item in docCategoryList)
         {
             item.SortNo = sortNo;
             sortNo++;

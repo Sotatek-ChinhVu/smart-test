@@ -27,6 +27,7 @@ namespace Domain.Models.InsuranceInfor
             StartDate = startDate;
             EndDate = endDate;
             IsAddNew = isAddNew;
+            HokenId = hokenInf.HokenId;
         }
 
         public InsuranceModel() // new model
@@ -278,7 +279,7 @@ namespace Domain.Models.InsuranceInfor
 
         public bool IsAddNew { get; private set; }
 
-        public bool IsExpirated => ((!HokenInf.IsEmptyModel && HokenInf.IsExpirated) || 
+        public bool IsExpirated => ((!HokenInf.IsEmptyModel && HokenInf.IsExpirated) ||
                  (!Kohi1.IsEmptyModel && Kohi1.IsExpirated) ||
                  (!Kohi2.IsEmptyModel && Kohi2.IsExpirated) ||
                  (!Kohi3.IsEmptyModel && Kohi3.IsExpirated) ||
@@ -310,7 +311,7 @@ namespace Domain.Models.InsuranceInfor
         {
             string hokenName = HokenPid.ToString().PadLeft(3, '0') + ". ";
 
-            if ((!HokenInf.IsEmptyModel && HokenInf.IsExpirated) || 
+            if ((!HokenInf.IsEmptyModel && HokenInf.IsExpirated) ||
                  (!Kohi1.IsEmptyModel && Kohi1.IsExpirated) ||
                  (!Kohi2.IsEmptyModel && Kohi2.IsExpirated) ||
                  (!Kohi3.IsEmptyModel && Kohi3.IsExpirated) ||

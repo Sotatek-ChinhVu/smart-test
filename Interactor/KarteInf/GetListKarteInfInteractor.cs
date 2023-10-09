@@ -78,7 +78,8 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
                                                             k.SinDate,
                                                             k.Text,
                                                             k.IsDeleted,
-                                                            k.RichText
+                                                            k.RichText,
+                                                            k.IsAutoFill
                                                         )).ToList(),
                                                         listFile,
                                                         isKarteExisted && raiinStatus >= 3,

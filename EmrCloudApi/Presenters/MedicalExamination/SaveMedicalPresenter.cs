@@ -447,6 +447,7 @@ public class SaveMedicalPresenter : ISaveMedicalOutputPort
         SaveMedicalStatus.Successed => ResponseMessage.Success,
         SaveMedicalStatus.Failed => ResponseMessage.Failed,
         SaveMedicalStatus.MedicalScreenLocked => ResponseMessage.MedicalScreenLocked,
+        SaveMedicalStatus.NoPermissionSaveSummary => ResponseMessage.NoPermissionSaveSummary,
         _ => string.Empty
     };
 }

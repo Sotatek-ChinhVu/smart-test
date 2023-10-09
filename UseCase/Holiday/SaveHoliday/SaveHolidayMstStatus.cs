@@ -4,6 +4,7 @@
     {
         Successful,
         Failed,
-        InvalidUserId
+        InvalidUserId,
+        NoPermission
     }
 }

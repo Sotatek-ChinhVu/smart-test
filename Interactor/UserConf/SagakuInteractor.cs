@@ -25,7 +25,7 @@ public class SagakuInteractor : ISagakuInputPort
                 return new SagakuOutputData(SagakuStatus.InvalidUserId, 0);
             }
 
-            var result = _userConfRepository.Sagaku(inputData.FromRece);
+            var result = _userConfRepository.Sagaku(inputData.HpId, inputData.UserId, inputData.FromRece);
             return new SagakuOutputData(SagakuStatus.Successed, result);
         }
         catch

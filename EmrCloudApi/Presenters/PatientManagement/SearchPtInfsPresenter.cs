@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.PatientManagement;
-using UseCase.PatientManagement;
+using UseCase.PatientManagement.SearchPtInfs;
 
 namespace EmrCloudApi.Presenters.PatientManagement
 {

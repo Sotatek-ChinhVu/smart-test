@@ -1,4 +1,5 @@
-﻿using Domain.Models.Receipt;
+﻿using Domain.Models.AuditLog;
+using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
 using Helper.Constants;
 using Helper.Messaging;
@@ -14,15 +15,17 @@ public class RecalculationInteractor : IRecalculationInputPort
     private readonly IReceiptRepository _receiptRepository;
     private readonly ICalculateService _calculateService;
     private readonly ICommonReceRecalculation _commonReceRecalculation;
+    private readonly IAuditLogRepository _auditLogRepository;
     private IMessenger? _messenger;
 
     bool isStopCalc = false;
 
-    public RecalculationInteractor(IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation, ICalculateService calculateRepository)
+    public RecalculationInteractor(IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation, ICalculateService calculateRepository, IAuditLogRepository auditLogRepository)
     {
         _receiptRepository = receiptRepository;
         _commonReceRecalculation = commonReceRecalculation;
         _calculateService = calculateRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
@@ -34,7 +37,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             // run Recalculation
             if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
-                success = RunCalculateMonth(inputData.HpId, inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
+                success = RunCalculateMonth(inputData.HpId, inputData.UserId, inputData.SinYm, inputData.PtIdList, inputData.UniqueKey, inputData.CancellationToken);
 
                 // Check next step
                 while (true)
@@ -88,16 +91,18 @@ public class RecalculationInteractor : IRecalculationInputPort
             {
                 SendMessager(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, string.Empty, string.Empty));
             }
+            AddAuditLog(inputData.HpId, inputData.UserId, inputData.SinYm, inputData.IsRecalculationCheckBox, inputData.IsReceiptAggregationCheckBox, inputData.IsCheckErrorCheckBox, inputData.PtIdList.Any());
             return new RecalculationOutputData(success);
         }
         finally
         {
             _commonReceRecalculation.ReleaseResource();
             _receiptRepository.ReleaseResource();
+            _auditLogRepository.ReleaseResource();
         }
     }
 
-    private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
+    private bool RunCalculateMonth(int hpId, int userId, int seikyuYm, List<long> ptInfList, string uniqueKey, CancellationToken cancellationToken)
     {
         SendMessager(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, 0, 0, "StartCalculateMonth", string.Empty));
         var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
@@ -111,6 +116,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             HpId = hpId,
             PtIds = ptInfList,
             SeikyuYm = seikyuYm,
+            PreFix = userId.ToString(),
             UniqueKey = uniqueKey
         }, cancellationToken);
         return true;
@@ -138,5 +144,27 @@ public class RecalculationInteractor : IRecalculationInputPort
     {
         var allowNextStep = _messenger!.SendAsync(new AllowNextStepStatus());
         return allowNextStep.Result.Result;
+    }
+
+    private void AddAuditLog(int hpId, int userId, int sinDate, bool recalculation, bool receiptAggregation, bool isCheckError, bool isSpecifiedPt)
+    {
+        var hosoku = string.Format("CALC:{0},SUMRECE:{1},CHECK:{2},PT:{3}",
+                                                   recalculation ? 1 : 0,
+                                                   receiptAggregation ? 1 : 0,
+                                                   isCheckError ? 1 : 0,
+                                                   isSpecifiedPt ? 1 : 0);
+        var arg = new ArgumentModel(
+                        EventCode.Recalculation,
+                        0,
+                        sinDate,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+        hosoku
+        );
+
+        _auditLogRepository.AddAuditTrailLog(hpId, userId, arg);
     }
 }

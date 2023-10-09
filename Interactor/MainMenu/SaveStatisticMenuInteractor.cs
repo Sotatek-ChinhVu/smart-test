@@ -1,16 +1,22 @@
 ﻿using Domain.Models.MainMenu;
+using Domain.Models.User;
+using Helper.Constants;
+using Reporting.DailyStatic.Enum;
 using UseCase.MainMenu;
 using UseCase.MainMenu.SaveStatisticMenu;
+using static Helper.Constants.UserConst;
 
 namespace Interactor.MainMenu;
 
 public class SaveStatisticMenuInteractor : ISaveStatisticMenuInputPort
 {
     private readonly IStatisticRepository _statisticRepository;
+    private readonly IUserRepository _userRepository;
 
-    public SaveStatisticMenuInteractor(IStatisticRepository statisticRepository)
+    public SaveStatisticMenuInteractor(IStatisticRepository statisticRepository, IUserRepository userRepository)
     {
         _statisticRepository = statisticRepository;
+        _userRepository = userRepository;
     }
 
     public SaveStatisticMenuOutputData Handle(SaveStatisticMenuInputData inputData)
@@ -32,6 +38,7 @@ public class SaveStatisticMenuInteractor : ISaveStatisticMenuInputPort
         finally
         {
             _statisticRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
         }
     }
 
@@ -42,6 +49,10 @@ public class SaveStatisticMenuInteractor : ISaveStatisticMenuInputPort
         if (input.GrpId != 0 && staMenuDBList.Any() && !staMenuDBList.Exists(item => item.GrpId == input.GrpId))
         {
             return SaveStatisticMenuStatus.InvalidGrpId;
+        }
+        else if (staGrpDBList.Exists(item => GetPermissionSta(input.HpId, input.UserId, item.ReportId) != PermissionType.Unlimited))
+        {
+            return SaveStatisticMenuStatus.NoPermission;
         }
         foreach (var menu in input.StaticMenuList)
         {
@@ -80,5 +91,63 @@ public class SaveStatisticMenuInteractor : ISaveStatisticMenuInputPort
                                                               menu.IsSaveTemp
                                           )).ToList();
         return result;
+    }
+
+    private PermissionType GetPermissionSta(int hpId, int userId, int reportId)
+    {
+        switch ((StatisticReportType)reportId)
+        {
+            case StatisticReportType.Sta1001:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta1001);
+            case StatisticReportType.Sta1002:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta1002);
+            case StatisticReportType.Sta1010:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta1010);
+            case StatisticReportType.Sta2001:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta2001);
+            case StatisticReportType.Sta2002:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta2002);
+            case StatisticReportType.Sta2003:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta2003);
+            case StatisticReportType.Sta2010:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta2010);
+            case StatisticReportType.Sta2011:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta2011);
+            case StatisticReportType.Sta2020:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta2020);
+            case StatisticReportType.Sta2021:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta2021);
+            case StatisticReportType.Sta3001:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3001);
+            case StatisticReportType.Sta3010:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3010);
+            case StatisticReportType.Sta3020:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3020);
+            case StatisticReportType.Sta3030:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3030);
+            case StatisticReportType.Sta3040:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3040);
+            case StatisticReportType.Sta3041:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3041);
+            case StatisticReportType.Sta3050:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3050);
+            case StatisticReportType.Sta3060:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3060);
+            case StatisticReportType.Sta3061:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3061);
+            case StatisticReportType.Sta3070:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3070);
+            case StatisticReportType.Sta3071:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3071);
+            case StatisticReportType.Sta3080:
+                return GetPermissionByScreenCode(hpId, userId, FunctionCode.Sta3080);
+            default:
+                return PermissionType.Unlimited;
+        }
+    }
+
+    private PermissionType GetPermissionByScreenCode(int hpId, int userId, string screenCode)
+    {
+        return _userRepository.GetPermissionByScreenCode(hpId, userId, screenCode);
     }
 }

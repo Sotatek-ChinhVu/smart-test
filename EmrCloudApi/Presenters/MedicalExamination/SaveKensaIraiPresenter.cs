@@ -11,7 +11,7 @@ public class SaveKensaIraiPresenter : ISaveKensaIraiOutputPort
 
     public void Complete(SaveKensaIraiOutputData output)
     {
-        Result.Data = new SaveKensaIraiResponse(output.Message);
+        Result.Data = new SaveKensaIraiResponse(output.Message, output.KensaIraiReportItemList);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

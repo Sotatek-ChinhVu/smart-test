@@ -16,8 +16,8 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
             _tenantDataContext = tenantDataContext;
         }
 
-        private List<TokkiMstModel> _tokkiMstModels = new List<TokkiMstModel>();
-        private List<KogakuLimitModel> _kogakuLimitModels = new List<KogakuLimitModel>();
+        private List<TokkiMstModel>? _tokkiMstModels;
+        private List<KogakuLimitModel>? _kogakuLimitModels;
 
         /// <summary>
         /// レセプト対象の会計情報の取得

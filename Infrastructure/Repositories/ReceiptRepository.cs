@@ -2936,7 +2936,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
             bool hasError = receCheckErrList.Any(item => item.SinYm == receInfModel.SinYm
                                                          && item.PtId == receInfModel.PtId
-                                                         && item.HokenId == receInfModel.HokenId);
+                                                         && item.HokenId == receInfModel.HokenId
+                                                         && item.IsChecked == 0);
             if (receStatus == null)
             {
                 if (hasError)
