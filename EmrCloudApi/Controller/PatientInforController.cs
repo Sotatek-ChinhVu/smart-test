@@ -105,6 +105,7 @@ using UseCase.PatientInfor.GetPtInfByRefNo;
 using UseCase.PatientInfor.GetPtInfModelsByName;
 using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using System.Linq;
+using UseCase.PatientInfor.GetVisitTimesManagementModels;
 
 namespace EmrCloudApi.Controller
 {
@@ -598,7 +599,7 @@ namespace EmrCloudApi.Controller
                        x.StartDate,
                        x.EndDate,
                        hokenInfs.FirstOrDefault(h => h.HokenId == x.HokenId) ?? new(),
-                       hokenKohis.FirstOrDefault( k => k.HokenId == x.Kohi1Id) ?? new(),
+                       hokenKohis.FirstOrDefault(k => k.HokenId == x.Kohi1Id) ?? new(),
                        hokenKohis.FirstOrDefault(k => k.HokenId == x.Kohi2Id) ?? new(),
                        hokenKohis.FirstOrDefault(k => k.HokenId == x.Kohi3Id) ?? new(),
                        hokenKohis.FirstOrDefault(k => k.HokenId == x.Kohi4Id) ?? new(),
@@ -613,7 +614,7 @@ namespace EmrCloudApi.Controller
                                                 x.GroupCode,
                                                 x.GroupName)).ToList();
 
-       
+
 
             var insuranceScans = request.ImageScans.Select(x => new InsuranceScanModel(
                                                                     HpId,
@@ -1071,6 +1072,16 @@ namespace EmrCloudApi.Controller
             var presenter = new SearchPatientInfoByPtIdListPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SearchPatientInfoByPtIdListResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetVisitTimesManagementModels)]
+        public ActionResult<Response<GetVisitTimesManagementModelsResponse>> GetVisitTimesManagementModels([FromQuery] GetVisitTimesManagementModelsRequest request)
+        {
+            var input = new GetVisitTimesManagementModelsInputData(HpId, request.SinYm, request.PtId, request.KohiId);
+            var output = _bus.Handle(input);
+            var presenter = new GetVisitTimesManagementModelsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetVisitTimesManagementModelsResponse>>(presenter.Result);
         }
 
         private void StopCalculationCaculaleSwapHoken(CalculationSwapHokenMessageStop stopCalcStatus)
