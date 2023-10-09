@@ -1,4 +1,5 @@
 ﻿using Domain.Models.PatientInfor;
+using Helper.Common;
 
 namespace EmrCloudApi.Responses.PatientInfor.Dto;
 
@@ -25,4 +26,10 @@ public class VisitTimesManagementDto
     public int SeqNo { get; private set; }
 
     public string SortKey { get; private set; }
+
+    public string DisplaySinDate => IsOutHospital ? string.Empty : (SinDate > 0 ? CIUtil.SDateToShowSDate(SinDate) : string.Empty);
+
+    public string InOrOutHospital => IsOutHospital ? "他院" : "自院";
+
+    public bool IsOutHospital => HokenPid == 0;
 }
