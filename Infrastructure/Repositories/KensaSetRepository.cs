@@ -175,11 +175,11 @@ namespace Infrastructure.Repositories
                         null
                         )).ToList();
 
-            var parents = data.Where(x => !string.IsNullOrEmpty(x.OyaItemCd)).ToList();
+            var parents = data.Where(x => string.IsNullOrEmpty(x.OyaItemCd)).ToList();
 
             foreach (var item in parents)
             {
-                var children = data.Where(x => x.KensaItemCd == item.OyaItemCd).Select(x => new KensaSetDetailModel(
+                var children = data.Where(x => x.OyaItemCd == item.KensaItemCd).Select(x => new KensaSetDetailModel(
                        x.HpId,
                        x.SetId,
                        x.SetEdaNo,
