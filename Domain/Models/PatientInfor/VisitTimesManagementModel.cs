@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.PatientInfor;
+﻿using Helper.Common;
+
+namespace Domain.Models.PatientInfor;
 
 public class VisitTimesManagementModel
 {
@@ -26,4 +28,6 @@ public class VisitTimesManagementModel
     public bool IsDeleted { get; private set; }
 
     public string SortKey { get; private set; }
+
+    public bool IsOutHospital => HokenPid == 0;
 }

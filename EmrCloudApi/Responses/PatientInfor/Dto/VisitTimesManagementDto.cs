@@ -13,6 +13,7 @@ public class VisitTimesManagementDto
         KohiId = model.KohiId;
         SeqNo = model.SeqNo;
         SortKey = model.SortKey;
+        IsOutHospital = model.IsOutHospital;
     }
 
     public long PtId { get; private set; }
@@ -27,9 +28,9 @@ public class VisitTimesManagementDto
 
     public string SortKey { get; private set; }
 
+    public bool IsOutHospital { get; private set; }
+
     public string DisplaySinDate => IsOutHospital ? string.Empty : (SinDate > 0 ? CIUtil.SDateToShowSDate(SinDate) : string.Empty);
 
     public string InOrOutHospital => IsOutHospital ? "他院" : "自院";
-
-    public bool IsOutHospital => HokenPid == 0;
 }
