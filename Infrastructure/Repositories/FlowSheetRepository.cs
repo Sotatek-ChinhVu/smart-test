@@ -551,11 +551,12 @@ namespace Infrastructure.Repositories
             var stopwatch = Stopwatch.StartNew();
             var raiinListInfs =
                      (
-                        from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo != 0)
-                        join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
+                        from raiinListInf in NoTrackingDataContext.RaiinListInfs
+                        join raiinListMst in NoTrackingDataContext.RaiinListDetails
                         on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
+                        where raiinListInf.HpId == hpId && raiinListInf.PtId == ptId && raiinListInf.RaiinNo != 0 && raiinListMst.HpId == hpId && raiinListMst.IsDeleted == DeleteTypes.None
                         select new { raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
-                     );
+                     ).ToList();
 
             var result = raiinListInfs
                 .GroupBy(r => r.RaiinNo)
