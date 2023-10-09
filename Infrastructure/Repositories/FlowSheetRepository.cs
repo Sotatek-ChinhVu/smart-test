@@ -541,14 +541,15 @@ namespace Infrastructure.Repositories
         public Dictionary<long, List<RaiinListInfModel>> GetRaiinListInf(int hpId, long ptId)
         {
             var stopwatch = Stopwatch.StartNew();
+            var raiinListInfList = NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo != 0).ToList();
+            var raiinListMstList = NoTrackingDataContext.RaiinListDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None).ToList();
             var raiinListInfs =
-                     (
-                        from raiinListInf in NoTrackingDataContext.RaiinListInfs
-                        join raiinListMst in NoTrackingDataContext.RaiinListDetails
-                        on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
-                        where raiinListInf.HpId == hpId && raiinListInf.PtId == ptId && raiinListInf.RaiinNo != 0 && raiinListMst.HpId == hpId && raiinListMst.IsDeleted == DeleteTypes.None
-                        select new { raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
-                     ).ToList();
+               (
+                  from raiinListInf in raiinListInfList
+                  join raiinListMst in raiinListMstList
+                  on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
+                  select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
+               ).ToList();
 
             var result = raiinListInfs
                 .GroupBy(r => r.RaiinNo)
@@ -560,12 +561,13 @@ namespace Infrastructure.Repositories
         public Dictionary<int, List<RaiinListInfModel>> GetRaiinListInfForNextOrder(int hpId, long ptId)
         {
             var stopwatch = Stopwatch.StartNew();
+            var raiinListInfList = NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == 0).ToList();
+            var raiinListMstList = NoTrackingDataContext.RaiinListDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None).ToList();
             var raiinListInfs =
                (
-                  from raiinListInf in NoTrackingDataContext.RaiinListInfs
-                  join raiinListMst in NoTrackingDataContext.RaiinListDetails
+                  from raiinListInf in raiinListInfList
+                  join raiinListMst in raiinListMstList
                   on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
-                  where raiinListInf.HpId == hpId && raiinListInf.PtId == ptId && raiinListInf.RaiinNo == 0 && raiinListMst.HpId == hpId && raiinListMst.IsDeleted == DeleteTypes.None
                   select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
                ).ToList();
 
