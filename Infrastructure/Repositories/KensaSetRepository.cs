@@ -322,7 +322,7 @@ namespace Infrastructure.Repositories
             return successed;
         }
 
-        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, int ptId, int setId, int iraiDate, int startDate, bool showAbnormalKbn, int itemQuantity)
+        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, int ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity)
         {
             IQueryable<KensaInfDetail> kensaInfDetails;
 
@@ -354,9 +354,9 @@ namespace Infrastructure.Repositories
                             ).OrderBy(x => x.SortNo).Select(x => x.Result);
             }
 
-            if (iraiDate != 0)
+            if (iraiCd != 0)
             {
-                kensaInfDetails = kensaInfDetails.Where(x => x.IraiDate == iraiDate);
+                kensaInfDetails = kensaInfDetails.Where(x => x.IraiCd == iraiCd);
             }
 
             var data = from t1 in kensaInfDetails

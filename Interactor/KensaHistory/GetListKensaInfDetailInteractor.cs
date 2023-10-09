@@ -22,7 +22,7 @@ namespace Interactor.KensaHistory
 
             try
             {
-                var result = _kensaSetRepository.GetListKensaInfDetail(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SetId, inputData.IraiDate, inputData.StartDate, inputData.ShowAbnormalKbn, inputData.ItemQuantity);
+                var result = _kensaSetRepository.GetListKensaInfDetail(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SetId, inputData.IraiCd, inputData.StartDate, inputData.ShowAbnormalKbn, inputData.ItemQuantity);
                 if (result == null)
                 {
                     return new GetListKensaInfDetailOutputData(new ListKensaInfDetailModel(), SearchPostCodeStatus.NoData);
