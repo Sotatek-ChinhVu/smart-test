@@ -1,9 +1,18 @@
-﻿using Helper.Common;
-
-namespace Domain.Models.PatientInfor;
+﻿namespace Domain.Models.PatientInfor;
 
 public class VisitTimesManagementModel
 {
+    public VisitTimesManagementModel(long ptId, int sinDate, int hokenPid, int kohiId, int seqNo, string sortKey, bool isDeleted)
+    {
+        SinDate = sinDate;
+        HokenPid = hokenPid;
+        SeqNo = seqNo;
+        IsDeleted = isDeleted;
+        PtId = ptId;
+        KohiId = kohiId;
+        SortKey = sortKey;
+    }
+
     public VisitTimesManagementModel(long ptId, int sinDate, int hokenPid, int kohiId, int seqNo, string sortKey)
     {
         PtId = ptId;
@@ -13,6 +22,19 @@ public class VisitTimesManagementModel
         SeqNo = seqNo;
         SortKey = sortKey;
         IsDeleted = false;
+    }
+
+    public VisitTimesManagementModel ChangeSortKey(int sinDate, string sortKey)
+    {
+        SinDate = sinDate;
+        SortKey = sortKey;
+        return this;
+    }
+
+    public VisitTimesManagementModel ChangeSeqNo(int seqNo)
+    {
+        SeqNo = seqNo;
+        return this;
     }
 
     public long PtId { get; private set; }
