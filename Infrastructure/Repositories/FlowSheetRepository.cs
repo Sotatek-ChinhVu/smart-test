@@ -164,18 +164,16 @@ namespace Infrastructure.Repositories
 
         private List<FlowSheetModel> TodayFlowSheet(int hpId, long ptId)
         {
-            var stopwatch = Stopwatch.StartNew();
             var allRaiinInfList = _tenantHistory.RaiinInfs
            .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status >= RaiinState.TempSave && r.IsDeleted == 0)
            .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.UketukeTime ?? string.Empty, r.SyosaisinKbn, r.Status))
            .ToList();
-            Console.WriteLine($"End TodayFlowSheet: {ptId} - {stopwatch.ElapsedMilliseconds}");
+
             return allRaiinInfList;
         }
 
         private List<FlowSheetModel> NextOrderFlowSheet(int hpId, long ptId)
         {
-            var stopwatch = Stopwatch.StartNew();
             var rsvkrtOdrInfs = _tenantNextOrder.RsvkrtOdrInfs.Where(r => r.HpId == hpId
                                                                                      && r.PtId == ptId
                                                                                      && r.IsDeleted == DeleteTypes.None);
@@ -190,46 +188,40 @@ namespace Infrastructure.Repositories
                                     group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo } into g
                                     select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, string.Empty, -1, 0)
                                ).ToList();
-            Console.WriteLine($"End NextOrderFlowSheet: {ptId} - {stopwatch.ElapsedMilliseconds}");
+
             return groupNextOdr;
         }
 
         private List<RsvkrtKarteInf> RsvkrtKarteInf(int hpId, long ptId)
         {
-            var stopwatch = Stopwatch.StartNew();
             var nextKarteList = _tenantNextKarteInf.RsvkrtKarteInfs
              .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && k.KarteKbn == 1)
              .ToList();
-             Console.WriteLine($"End RsvkrtKarteInf: {ptId} - {stopwatch.ElapsedMilliseconds}");
             return nextKarteList;
         }
 
         private List<KarteInf> KarteInf(int hpId, long ptId)
         {
-            var stopwatch = Stopwatch.StartNew();
             var historyKarteList = _tenantKarteInf.KarteInfs
                   .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && k.KarteKbn == 1).ToList();
-            Console.WriteLine($"End KarteInf: {ptId} - {stopwatch.ElapsedMilliseconds}");
             return historyKarteList;
         }
 
         private List<RaiinListTag> RaiinListTag(int hpId, long ptId)
         {
-            var stopwatch = Stopwatch.StartNew();
             var tagInfList = _tenantTagInf.RaiinListTags
                 .Where(tag => tag.HpId == hpId && tag.PtId == ptId && tag.IsDeleted == 0)
                 .ToList();
-            Console.WriteLine($"End RaiinListTag: {ptId} - {stopwatch.ElapsedMilliseconds}");
+
             return tagInfList;
         }
 
         private List<RaiinListCmt> RaiinListCmt(int hpId, long ptId)
         {
-            var stopwatch = Stopwatch.StartNew();
             var commentList = _tenantCmtInf.RaiinListCmts
                  .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))
                  .ToList();
-            Console.WriteLine($"End RaiinListCmt: {ptId} - {stopwatch.ElapsedMilliseconds}");
+
             return commentList;
         }
 
@@ -549,14 +541,15 @@ namespace Infrastructure.Repositories
         public Dictionary<long, List<RaiinListInfModel>> GetRaiinListInf(int hpId, long ptId)
         {
             var stopwatch = Stopwatch.StartNew();
+            var raiinListInfList = NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo != 0).ToList();
+            var raiinListMstList = NoTrackingDataContext.RaiinListDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None).ToList();
             var raiinListInfs =
-                     (
-                        from raiinListInf in NoTrackingDataContext.RaiinListInfs
-                        join raiinListMst in NoTrackingDataContext.RaiinListDetails
-                        on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
-                        where raiinListInf.HpId == hpId && raiinListInf.PtId == ptId && raiinListInf.RaiinNo != 0 && raiinListMst.HpId == hpId && raiinListMst.IsDeleted == DeleteTypes.None
-                        select new { raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
-                     ).ToList();
+               (
+                  from raiinListInf in raiinListInfList
+                  join raiinListMst in raiinListMstList
+                  on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
+                  select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
+               ).ToList();
 
             var result = raiinListInfs
                 .GroupBy(r => r.RaiinNo)
@@ -568,13 +561,15 @@ namespace Infrastructure.Repositories
         public Dictionary<int, List<RaiinListInfModel>> GetRaiinListInfForNextOrder(int hpId, long ptId)
         {
             var stopwatch = Stopwatch.StartNew();
+            var raiinListInfList = NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == 0).ToList();
+            var raiinListMstList = NoTrackingDataContext.RaiinListDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None).ToList();
             var raiinListInfs =
-                     (
-                        from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == 0)
-                        join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
-                        on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
-                        select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
-                     );
+               (
+                  from raiinListInf in raiinListInfList
+                  join raiinListMst in raiinListMstList
+                  on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
+                  select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
+               ).ToList();
 
             var result = raiinListInfs
                 .GroupBy(r => r.SinDate)
