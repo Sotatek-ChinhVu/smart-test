@@ -1074,15 +1074,5 @@ namespace EmrCloudApi.Controller
                                          .ToList();
             return result;
         }
-
-        [HttpGet(ApiPath.GetListKensaMst)]
-        public ActionResult<Response<GetListKensaMstResponse>> GetListKensaMst([FromQuery] GetListKensaMstRequest request)
-        {
-            var input = new GetListKensaMstInputData(HpId, request.Keyword);
-            var output = _bus.Handle(input);
-            var presenter = new GetListKensaMstPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<GetListKensaMstResponse>>(presenter.Result);
-        }
     }
 }
