@@ -15,7 +15,7 @@ namespace AspNetCoreSchedulerDemo.ScheduleTask
         {
         }
 
-        protected override string Schedule => "*/1440 * * * *"; // every 1 min 
+        protected override string Schedule => "*/60 * * * *"; // every 1 min 
 
         public override Task ProcessInScope(IServiceProvider scopeServiceProvider)
         {
