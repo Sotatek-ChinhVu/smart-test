@@ -9,6 +9,6 @@ namespace UseCase.KensaHistory.GetListKensaSet
             HpId = hpId;
         }
 
-        public int HpId { get; set; }
+        public int HpId { get; private set; }
     }
 }
