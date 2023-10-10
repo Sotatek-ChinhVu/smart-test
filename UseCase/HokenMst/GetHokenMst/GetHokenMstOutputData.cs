@@ -4,7 +4,7 @@ namespace UseCase.HokenMst.GetHokenMst
 {
     public class GetHokenMstOutputData : IOutputData
     {
-        public GetHokenMstOutputData(Dictionary<string, string> hokenInfModels, Dictionary<string, string> kohiModelWithFutansyanos, Dictionary<string, string> kohiModels, GetHokenMstStatus status)
+        public GetHokenMstOutputData(Dictionary<string, string> hokenInfModels, Dictionary<string, string> kohiModelWithFutansyanos, List<HokenMstItem> kohiModels, GetHokenMstStatus status)
         {
             HokenInfModels = hokenInfModels;
             KohiModelWithFutansyanos = kohiModelWithFutansyanos;
@@ -16,7 +16,7 @@ namespace UseCase.HokenMst.GetHokenMst
 
         public Dictionary<string, string> KohiModelWithFutansyanos { get; private set; }
 
-        public Dictionary<string, string> KohiModels { get; private set; }
+        public List<HokenMstItem> KohiModels { get; private set; }
 
         public GetHokenMstStatus Status { get; private set; }
     }

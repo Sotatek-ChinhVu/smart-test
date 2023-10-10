@@ -2,6 +2,7 @@
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3040.Models;
@@ -44,9 +45,11 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
 
         //診療識別
         var odrKouiKbnExpression = CreateOdrKouiKbnExpression(printConf.SinryoSbt);
+
+        var odrInfList = odrInfs.ToList();
         if (odrKouiKbnExpression != null)
         {
-            odrInfs = odrInfs.Where(odrKouiKbnExpression);
+            odrInfList = odrInfList.AsQueryable().Where(odrKouiKbnExpression).ToList();
         }
         #endregion
 
@@ -57,25 +60,49 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
         var yakkaSyusaiMsts = NoTrackingDataContext.YakkaSyusaiMsts;
         var drugUnitConvs = NoTrackingDataContext.DrugUnitConvs;
 
+        List<long> ptIdList = new();
+        List<int> hokenPidList = new();
+        List<long> raiinNoList = new();
+        List<long> rpNoList = new();
+        List<long> rpEdaNoList = new();
+
+        Task taskId1 = Task.Factory.StartNew(() => ptIdList = odrInfList.Select(item => item.PtId).Distinct().ToList());
+        Task taskId2 = Task.Factory.StartNew(() => hokenPidList = odrInfList.Select(item => item.HokenPid).Distinct().ToList());
+        Task taskId3 = Task.Factory.StartNew(() => raiinNoList = odrInfList.Select(item => item.RaiinNo).Distinct().ToList());
+        Task taskId4 = Task.Factory.StartNew(() => rpNoList = odrInfList.Select(item => item.RpNo).Distinct().ToList());
+        Task taskId5 = Task.Factory.StartNew(() => rpEdaNoList = odrInfList.Select(item => item.RpEdaNo).Distinct().ToList());
+        Task.WaitAll(taskId1, taskId2, taskId3, taskId4, taskId5);
+
+        var ptHokenPatternList = ptHokenPatterns.Where(item => item.HpId == hpId && ptIdList.Contains(item.PtId) && hokenPidList.Contains(item.HokenPid)).ToList();
+        var ptInfList = ptInfs.Where(item => item.HpId == hpId && ptIdList.Contains(item.PtId)).ToList();
+        var odrInfDetailList = odrInfDetails.Where(item => item.HpId == hpId && ptIdList.Contains(item.PtId) && raiinNoList.Contains(item.RaiinNo) && rpNoList.Contains(item.RpNo) && rpEdaNoList.Contains(item.RpEdaNo)).ToList();
+
+        var itemCdList = odrInfDetailList.Select(item => item.ItemCd).Distinct().ToList();
+        var tenMstList = tenMsts.Where(item => item.HpId == hpId && itemCdList.Contains(item.ItemCd)).ToList();
+        var yakkaCdList = tenMstList.Select(item => item.YakkaCd).Distinct().ToList();
+
+        var yakkaSyusaiMstList = yakkaSyusaiMsts.Where(item => item.HpId == hpId && itemCdList.Contains(item.ItemCd) && yakkaCdList.Contains(item.YakkaCd)).ToList();
+        var drugUnitConvList = drugUnitConvs.Where(item => itemCdList.Contains(item.ItemCd)).ToList();
+
         var odrDrugJoinQuery = (
-            from odrInf in odrInfs
-            join ptHokenPattern in ptHokenPatterns on
+            from odrInf in odrInfList
+            join ptHokenPattern in ptHokenPatternList on
                 new { odrInf.HpId, odrInf.PtId, odrInf.HokenPid } equals
                 new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenPid }
-            join ptInf in ptInfs on
+            join ptInf in ptInfList on
                 new { odrInf.HpId, odrInf.PtId } equals
                 new { ptInf.HpId, ptInf.PtId }
-            join odrInfDetail in odrInfDetails on
+            join odrInfDetail in odrInfDetailList on
                 new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                 new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
-            join tenMst in tenMsts on
+            join tenMst in tenMstList on
                 new { odrInfDetail.HpId, odrInfDetail.ItemCd } equals
                 new { tenMst.HpId, tenMst.ItemCd }
-            join yakkaSyusaiMst in yakkaSyusaiMsts on
+            join yakkaSyusaiMst in yakkaSyusaiMstList on
                 new { tenMst.HpId, tenMst.ItemCd, tenMst.YakkaCd } equals
                 new { yakkaSyusaiMst.HpId, yakkaSyusaiMst.ItemCd, yakkaSyusaiMst.YakkaCd } into yakkaSyusaiJoins
             from yakkaSyusaiJoin in yakkaSyusaiJoins.DefaultIfEmpty()
-            join drugUnitConv in drugUnitConvs on
+            join drugUnitConv in drugUnitConvList on
                 new { tenMst.ItemCd } equals
                 new { drugUnitConv.ItemCd } into drugUnitConvJoins
             from drugUnitConvJoin in drugUnitConvJoins.DefaultIfEmpty()
@@ -133,7 +160,6 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
         ).ToList();
 
         return retData;
-
     }
 
 

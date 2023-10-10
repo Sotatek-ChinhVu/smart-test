@@ -77,6 +77,7 @@
         public static readonly string InvalidPtNum = "Invalid PtNum";
         public static readonly string InvalidKanjiName = "Invalid Kanji Name";
         public static readonly string InvalidSex = "Invalid sex";
+        public static readonly string CanNotDeleted = "Can Not Deleted.";
 
         // RousaiJibai
         public static readonly string InvalidHokenKbn = "Invalid HokenKbn";
@@ -1027,6 +1028,8 @@
         public static readonly string InvalidConfirmationResult = "Invalid ConfirmationResult.";
         public static readonly string InvalidOnlineId = "Invalid OnlineId.";
         public static readonly string InvalidUketukeStatus = "Invalid UketukeStatus.";
+        public static readonly string InvalidOnlineConfirmationDate = "Invalid OnlineConfirmationDate.";
+        public static readonly string InvalidXmlFile = "Invalid XmlFile.";
 
         // KensaIrai
         public static readonly string IsDeleteFile = "IsDeleteFile.";
@@ -1035,5 +1038,24 @@
         public static readonly string DeleteRowIndex0 = "Cannot delete row have index 0.";
         public static readonly string InvalidRowIndex = "Invalid row index.";
         public static readonly string InvalidGenerationId = "Invalid GenerationId.";
+
+        // Renkei
+        public static readonly string InvalidTemplateId = "Invalid TemplateId.";
+        public static readonly string InvalidIsInvalid = "Invalid IsInvalid.";
+        public static readonly string InvalidBiko = "Invalid Biko, max length is 300 characters.";
+        public static readonly string InvalidPath = "Invalid Path, max length is 300 characters.";
+        public static readonly string InvalidMachine = "Invalid Machine, max length is 60 characters.";
+        public static readonly string InvalidParamRenki = "Invalid Machine, max length is 1000 characters.";
+        public static readonly string InvalidWorkPath = "Invalid WorkPath, max length is 300 characters.";
+        public static readonly string InvalidUser = "Invalid User, max length is 100 characters.";
+        public static readonly string InvalidPassWord = "Invalid PassWord, max length is 100 characters.";
+        public static readonly string InvalidEventCd = "Invalid EventCd.";
+        public static readonly string InvalidRenkeiSbt = "Invalid RenkeiSbt.";
+        public static readonly string InvalidRenkeiTimingModelList = "Invalid RenkeiTimingModelList.";
+
+
+        //Main Menu
+        public static readonly string InvalidConFName = "Invalid ConfName.";
+        public static readonly string InvalidColumnName = "Invalid ColumnName.";
     }
 }

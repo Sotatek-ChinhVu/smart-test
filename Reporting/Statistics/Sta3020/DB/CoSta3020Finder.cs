@@ -119,7 +119,7 @@ namespace Reporting.Statistics.Sta3020.DB
                         CenterItemCd2 = kensaMstJoin.CenterItemCd2 == null ? string.Empty : kensaMstJoin.CenterItemCd2,
                         MaxEndDate = maxTenMstJoin.MaxEndDate == null ? 0 : maxTenMstJoin.MaxEndDate
                     }
-                );
+                ).AsEnumerable();
 
                 //条件２-対象データ
                 switch (printConf.TgtData)
@@ -151,7 +151,7 @@ namespace Reporting.Statistics.Sta3020.DB
                             //検索項目
                             if (printConf.ItemSearchOpt == 0 && ((printConf.ItemCds?.Count ?? 0) > 0))
                             {
-                                joinDetails = joinDetails.Where(x => printConf.ItemCds.Any(key => x.ItemCd.Contains(key)));
+                                joinDetails = joinDetails.Where(x => x.ItemCd != null && printConf.ItemCds.Any(key => x.ItemCd.Contains(key)));
                             }
                             break;
                         }

@@ -1,17 +1,22 @@
 ﻿using Domain.Models.Diseases;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Diseases;
+using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Requests.Diseases;
+using EmrCloudApi.Requests.ListSetMst;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Diseases;
+using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.ByomeiSetMst.UpdateByomeiSetMst;
 using UseCase.Core.Sync;
 using UseCase.Diseases.GetAllByomeiByPtId;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.GetSetByomeiTree;
 using UseCase.Diseases.Upsert;
 using UseCase.Diseases.Validation;
+using UseCase.ListSetMst.UpdateListSetMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -131,6 +136,16 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<ValidationPtDiseaseListResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateByomeiSetMst)]
+        public ActionResult<Response<UpdateByomeiSetMstResponse>> UpdateByomeiSetMst([FromBody] UpdateByomeiSetMstRequest request)
+        {
+            var input = new UpdateByomeiSetMstInputData(UserId, HpId, request.ByomeiSetMsts);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateByomeiSetMstPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
         
     }

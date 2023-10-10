@@ -22,6 +22,7 @@ public class InsertOnlineConfirmHistoryPresenter : IInsertOnlineConfirmHistoryOu
         InsertOnlineConfirmHistoryStatus.Successed => ResponseMessage.Success,
         InsertOnlineConfirmHistoryStatus.Failed => ResponseMessage.Failed,
         InsertOnlineConfirmHistoryStatus.InvalidConfirmationResult => ResponseMessage.InvalidConfirmationResult,
+        InsertOnlineConfirmHistoryStatus.InvalidOnlineConfirmationDate => ResponseMessage.InvalidOnlineConfirmationDate,
         _ => string.Empty
     };
 }

@@ -10,7 +10,7 @@ public class RemoveLockPresenter : IRemoveLockOutputPort
 
     public void Complete(RemoveLockOutputData outputData)
     {
-        Result.Data = new UpdateVisitingLockResponse(outputData.ResponseLockList.Select(item => new ResponseLockDto(item)).ToList());
+        Result.Data = new UpdateVisitingLockResponse(outputData.ResponseLockList.Select(item => new ResponseLockDto(item)).ToList(), outputData.RemovedCount);
         Result.Message = outputData.Status == RemoveLockStatus.Successed ? "Successed" : "Failed";
         Result.Status = (int)outputData.Status;
     }
