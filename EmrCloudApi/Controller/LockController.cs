@@ -68,6 +68,7 @@ namespace EmrCloudApi.Controller
             }
             else
             {
+                Console.WriteLine("Addlock Status: AddLockStatus.Successed");
                 if (output.Status == AddLockStatus.Successed)
                 {
                     await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockModel);

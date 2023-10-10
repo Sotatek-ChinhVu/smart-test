@@ -15,6 +15,7 @@
         public int SetId { get; private set; }
 
         public int SortNo { get; private set; }
+        
         public string SetName { get; private set; }
 
         public int IsDeleted { get; private set; }
