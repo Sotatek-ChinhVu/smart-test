@@ -34,6 +34,9 @@ namespace Entity.Logger
 
         public long RaiinNo { get; set; }
 
+        [MaxLength(1000)]
+        public string? Path { get; set; } = string.Empty;
+
         public string RequestInfo { get; set; } = string.Empty;
 
         [MaxLength(60)]
