@@ -2,6 +2,7 @@
 using Domain.Models.KensaSetDetail;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -110,6 +111,21 @@ namespace Infrastructure.Repositories
                     }
                 });
             return successed;
+        }
+
+        public List<KensaSetModel> GetListKensaSet(int hpId)
+        {
+            return NoTrackingDataContext.KensaSets.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => new KensaSetModel(
+                x.HpId,
+                x.SetId,
+                x.SetName,
+                x.SortNo,
+                x.IsDeleted,
+                x.CreateDate,
+                x.CreateId,
+                x.UpdateDate,
+                x.UpdateId
+                )).ToList();
         }
 
         public void ReleaseResource()
