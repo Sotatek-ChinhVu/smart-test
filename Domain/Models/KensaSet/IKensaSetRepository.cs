@@ -5,7 +5,7 @@ namespace Domain.Models.KensaSet
 {
     public interface IKensaSetRepository : IRepositoryBase
     {
-        public bool UpdateKensaSet(int hpId, int userId, int setId, string setName, int sortNo, int isDeleted,List<KensaSetDetailModel>kensaSetDetails);
-        public List<KensaSetModel> GetListKensaSet(int hpId);
+         bool UpdateKensaSet(int hpId, int userId, int setId, string setName, int sortNo, int isDeleted,List<KensaSetDetailModel>kensaSetDetails);
+         List<KensaSetModel> GetListKensaSet(int hpId);
     }
 }
