@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-
-namespace AspNetCoreSchedulerDemo.BackgroundService
+﻿namespace EmrCloudApi.BackgroundService
 {
     public abstract class BackgroundService : IHostedService
     {

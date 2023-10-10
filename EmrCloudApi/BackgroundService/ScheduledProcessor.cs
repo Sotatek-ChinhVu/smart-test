@@ -1,6 +1,6 @@
 ﻿using NCrontab;
 
-namespace AspNetCoreSchedulerDemo.BackgroundService
+namespace EmrCloudApi.BackgroundService
 {
     public abstract class ScheduledProcessor : ScopedProcessor
     {

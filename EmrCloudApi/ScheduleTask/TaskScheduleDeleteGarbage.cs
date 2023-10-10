@@ -1,12 +1,7 @@
-﻿using AspNetCoreSchedulerDemo.BackgroundService;
+﻿using EmrCloudApi.BackgroundService;
 using EmrCloudApi.Services;
-using Helper.Common;
-using Interactor.SystemStartDbs;
-using UseCase.Core.Sync;
-using UseCase.Document.GetDocCategoryDetail;
-using UseCase.SystemStartDbs;
 
-namespace AspNetCoreSchedulerDemo.ScheduleTask
+namespace EmrCloudApi.ScheduleTask
 {
     public class TaskScheduleDeleteGarbage : ScheduledProcessor
     {
