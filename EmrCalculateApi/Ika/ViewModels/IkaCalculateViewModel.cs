@@ -951,8 +951,8 @@ namespace EmrCalculateApi.Ika.ViewModels
                                                               + " WHERE  \"HP_ID\" = @hpId"
                                                               + "        AND  \"STATUS\" in (0, 1)"
                                                               + "        AND \"CREATE_MACHINE\" = @createMachine";
-                        _tenantDataContext.Database.SetCommandTimeout(1800);
-                        _tenantDataContext.Database.ExecuteSqlRaw(sql,
+                        TenantDataContext.Database.SetCommandTimeout(1800);
+                        TenantDataContext.Database.ExecuteSqlRaw(sql,
                                 new NpgsqlParameter("@hpId", _hpId),
                                 new NpgsqlParameter("@createMachine", UniqueKey));
                     }
