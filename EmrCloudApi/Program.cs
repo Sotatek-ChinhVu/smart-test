@@ -26,7 +26,7 @@ builder.Services.AddResponseCompression(options =>
 
 int minWorker, minIOC;
 ThreadPool.GetMinThreads(out minWorker, out minIOC);
-if (ThreadPool.SetMinThreads(2000, minIOC))
+if (ThreadPool.SetMinThreads(3000, minIOC))
 {
     Console.WriteLine("Set Min thread");    
 }
@@ -88,7 +88,7 @@ builder.Services.AddSignalR()
                 var connection = await ConnectionMultiplexer.ConnectAsync(config, writer);
                 connection.ConnectionFailed += (_, e) =>
                 {
-                    Console.WriteLine("Connection to Redis failed.");
+                    Console.WriteLine("Connection to Redis failed." + Environment.NewLine + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
                 };
 
                 if (!connection.IsConnected)

@@ -1,13 +1,13 @@
 ﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.Lock;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
 using EmrCloudApi.Services;
-using Helper.Constants;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
@@ -34,12 +34,25 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.AddLock)]
         public async Task<ActionResult<Response<LockResponse>>> AddLock([FromBody] LockRequest request, CancellationToken cancellationToken)
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, request.TabKey, request.LoginKey);
             var output = _bus.Handle(input);
-            var presenter = new AddLockPresenter();
+            AddLockPresenter presenter = new();
+            presenter.Complete(output);
+            var result = new ActionResult<Response<LockResponse>>(presenter.Result);
+
+            stopWatch.Stop();
+            TimeSpan ts = stopWatch.Elapsed;
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds);
+            var json = JsonSerializer.Serialize(input);
+
+            Console.WriteLine("Addlock Time: " + DateTime.Now);
+            Console.WriteLine("Addlock RunTime: " + elapsedTime);
+            Console.WriteLine("Addlock Input: " + json);
 
             _cancellationToken = cancellationToken;
-
             if (_cancellationToken!.Value.IsCancellationRequested)
             {
                 Console.WriteLine("Come in cancelation Addlock");
@@ -60,9 +73,8 @@ namespace EmrCloudApi.Controller
                     await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockModel);
                 }
             }
-            presenter.Complete(output);
 
-            return new ActionResult<Response<LockResponse>>(presenter.Result);
+            return result;
         }
 
         [HttpPost(ApiPath.CheckLock)]

@@ -13,13 +13,15 @@ namespace UseCase.MstItem.GetListResultKensaMst
 {
     public class GetListKensaMstOuputData : IOutputData
     {
-        public GetListKensaMstOuputData(List<KensaMstModel> kensaMsts, SearchTenMstItemStatus status)
+        public GetListKensaMstOuputData(List<KensaMstModel> kensaMsts, SearchPostCodeStatus status, int totalCount)
         {
             KensaMsts = kensaMsts;
             Status = status;
+            TotalCount = totalCount;
         }
 
         public List<KensaMstModel> KensaMsts { get; private set; }
-        public SearchTenMstItemStatus Status { get; private set; }
+        public SearchPostCodeStatus Status { get; private set; }
+        public int TotalCount { get; private set; }
     }
 }

@@ -231,6 +231,7 @@ namespace Infrastructure.Repositories
                 raiinListKoui = new RaiinListKoui()
                 {
                     KouiKbnId = kouiKbnId,
+                    GrpId = grpId,
                     KbnCd = KbnCd,
                     HpId = hpId,
                     IsDeleted = DeleteTypes.Deleted
@@ -1144,6 +1145,7 @@ namespace Infrastructure.Repositories
                     {
                         var kouiList = NoTrackingDataContext.KouiKbnMsts.Where(item => koui.ListKoui.Contains(item.KouiKbnId)).Select(item => item.KouiKbn1).ToList();
                         if (kouiList == null || !kouiList.Any()) continue;
+
                         string kouiInCondition = string.Join(",", kouiList);
                         string addByKouiQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
                                            + " ("
@@ -1154,6 +1156,7 @@ namespace Infrastructure.Repositories
                                            + $" AND \"ODR_KOUI_KBN\" IN ({kouiInCondition})"
                                            + " GROUP BY \"HP_ID\", \"SIN_DATE\", \"RAIIN_NO\", \"PT_ID\" "
                                            + " )  ON CONFLICT DO NOTHING;";
+                        TrackingDataContext.Database.SetCommandTimeout(1200);
                         TrackingDataContext.Database.ExecuteSqlRaw(addByKouiQuery);
                         TrackingDataContext.SaveChanges();
                     }
@@ -1181,6 +1184,7 @@ namespace Infrastructure.Repositories
                                            + $" AND DETAIL.\"ITEM_CD\" IN ({itemInCondition})"
                                            + " GROUP BY ODR.\"HP_ID\", ODR.\"SIN_DATE\", ODR.\"RAIIN_NO\", ODR.\"PT_ID\" "
                                            + " )  ON CONFLICT DO NOTHING;";
+                        TrackingDataContext.Database.SetCommandTimeout(1200);
                         TrackingDataContext.Database.ExecuteSqlRaw(addByItemQuery);
                         TrackingDataContext.SaveChanges();
                     }
@@ -1205,6 +1209,7 @@ namespace Infrastructure.Repositories
                                             + $" AND DOC.\"CATEGORY_CD\" IN ({docInCondition})"
                                             + " GROUP BY DOC.\"HP_ID\", DOC.\"SIN_DATE\", DOC.\"RAIIN_NO\", DOC.\"PT_ID\" "
                                             + " )  ON CONFLICT DO NOTHING;";
+                        TrackingDataContext.Database.SetCommandTimeout(1200);
                         TrackingDataContext.Database.ExecuteSqlRaw(addByDocQuery);
                         TrackingDataContext.SaveChanges();
                     }
@@ -1229,6 +1234,7 @@ namespace Infrastructure.Repositories
                                             + $" AND FILE.\"CATEGORY_CD\" IN ({fileInCondition})"
                                             + " GROUP BY FILE.\"HP_ID\", FILE.\"GET_DATE\", FILE.\"PT_ID\" "
                                             + " )  ON CONFLICT DO NOTHING;";
+                        TrackingDataContext.Database.SetCommandTimeout(1200);
                         TrackingDataContext.Database.ExecuteSqlRaw(addByFileQuery);
                         TrackingDataContext.SaveChanges();
                     }

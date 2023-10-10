@@ -1,6 +1,8 @@
-﻿using Helper.Common;
+﻿using Domain.Models.SetMst;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using static Helper.Constants.TenMstConst;
 
@@ -8,6 +10,7 @@ namespace Domain.Models.MstItem
 {
     public class TenItemModel
     {
+
         [JsonConstructor]
         public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted, int handanGrpKbn, bool isKensaMstEmpty)
         {
@@ -404,6 +407,47 @@ namespace Domain.Models.MstItem
             ListGenDate = new();
         }
 
+        public TenItemModel(int sinKouiKbn, string masterSbt, string itemCd, string kensaItemCd, int kensaItemSeqNo, double ten, string name, string receName, string kanaName1
+                          , string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, int startDate, int endDate, double defaultValue
+                          , string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch, int isDeleted)
+        {
+            SinKouiKbn = sinKouiKbn;
+            MasterSbt = masterSbt;
+            ItemCd = itemCd;
+            KensaItemCd = kensaItemCd;
+            KensaItemSeqNo = kensaItemSeqNo;
+            Ten = ten;
+            Name = name;
+            ReceName = receName;
+            KanaName1 = kanaName1;
+            KanaName2 = kanaName2;
+            KanaName3 = kanaName3;
+            KanaName4 = kanaName4;
+            KanaName5 = kanaName5;
+            KanaName6 = kanaName6;
+            KanaName7 = kanaName7;
+            StartDate = startDate;
+            EndDate = endDate;
+            DefaultValue = defaultValue;
+            OdrUnitName = odrUnitName;
+            SanteiItemCd = santeiItemCd;
+            SanteigaiKbn = santeigaiKbn;
+            IsNoSearch = isNoSearch;
+            KensaMstCenterItemCd1 = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            IpnNameCd = string.Empty;
+            YjCd = string.Empty;
+            CnvUnitName = string.Empty;
+            IpnCD = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            MinAge = string.Empty;
+            MaxAge = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = new();
+            IsDeleted = isDeleted;
+        }
+
         public TenItemModel(string itemCd, int sinKouiKbn, string name, string odrUnitName, string cnvUnitName, int isNodspRece, int yohoKbn, double odrTermVal, double cnvTermVal, string yjCd, string kensaItemCd, int kensaItemSeqNo
                           , int kohatuKbn, double ten, int handanGrpKbn, string ipnNameCd, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, string minAge
                           , string maxAge, int startDate, int endDate, string masterSbt, int buiKbn, string cdKbn, int cdKbnNo, int cdEdano, string kokuji1, string kokuji2, int drugKbn, string receName, string santeiItemCd, int jihiSbt, int isDeleted)
@@ -522,6 +566,56 @@ namespace Domain.Models.MstItem
             ListGenDate = new();
         }
 
+        public TenItemModel(int hpId, string itemCd, string kokuji1, string kokuji2, int sinKouiKbn, string name, string kanaName1, string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, string odrUnitName, string cnvUnitName, int isNodspRece, int yohoKbn, double odrTermVal, double cnvTermVal, string yjCd, string kensaItemCd, int kensaItemSeqNo, int kohatuKbn, double ten, int handanGrpKbn, string ipnNameCd, int isAdopted, int drugKbn, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, string masterSbt, double defaultValue)
+        {
+            HpId = hpId;
+            ItemCd = itemCd;
+            Kokuji1 = kokuji1;
+            Kokuji2 = kokuji2;
+            SinKouiKbn = sinKouiKbn;
+            Name = name;
+            KanaName1 = kanaName1;
+            KanaName2 = kanaName2;
+            KanaName3 = kanaName3;
+            KanaName4 = kanaName4;
+            KanaName5 = kanaName5;
+            KanaName6 = kanaName6;
+            KanaName7 = kanaName7;
+            OdrUnitName = odrUnitName;
+            CnvUnitName = cnvUnitName;
+            IsNodspRece = isNodspRece;
+            YohoKbn = yohoKbn;
+            OdrTermVal = odrTermVal;
+            CnvTermVal = cnvTermVal;
+            YjCd = yjCd;
+            KensaItemCd = kensaItemCd;
+            KensaItemSeqNo = kensaItemSeqNo;
+            KohatuKbn = kohatuKbn;
+            Ten = ten;
+            HandanGrpKbn = handanGrpKbn;
+            IpnNameCd = ipnNameCd;
+            IsAdopted = isAdopted;
+            DrugKbn = drugKbn;
+            CmtCol1 = cmtCol1;
+            CmtCol2 = cmtCol2;
+            CmtCol3 = cmtCol3;
+            CmtCol4 = cmtCol4;
+            CmtColKeta1 = cmtColKeta1;
+            CmtColKeta2 = cmtColKeta2;
+            CmtColKeta3 = cmtColKeta3;
+            CmtColKeta4 = cmtColKeta4;
+            MasterSbt = masterSbt;
+            DefaultValue = defaultValue;
+            ReceName = string.Empty;
+            KensaMstCenterItemCd1 = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            IpnCD = string.Empty;
+            MaxAge = string.Empty;
+            MinAge = string.Empty;
+            SanteiItemCd = string.Empty;
+            ListGenDate = new();
+            CdKbn = string.Empty;
+        }
 
         public int HpId { get; private set; }
 

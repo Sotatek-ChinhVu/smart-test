@@ -1,17 +1,22 @@
 ﻿using Domain.Common;
 using Domain.Enum;
+using Domain.Models.AuditLog;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
 using Domain.Models.MaterialMaster;
 using Domain.Models.OrdInf;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.TodayOdr;
+using Domain.Models.User;
 using Helper.Enum;
 
 namespace Domain.Models.MstItem
 {
     public interface IMstItemRepository : IRepositoryBase
     {
+        bool ExistUsedKensaItemCd(int hpId, string kensaItemCd, int kensaSeqNo);
+
         List<TenItemModel> GetTenMstsWithStartDate(int hpId, string itemCd);
 
         bool IsKensaItemOrdering(int hpId, string tenItemCd);
@@ -34,7 +39,7 @@ namespace Domain.Models.MstItem
 
         bool UpdateKensaStdMst(int hpId, int userId, List<KensaStdMstModel> kensaStdMstModels);
 
-        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts);
+        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts, List<KensaMstModel> childKensaMsts);
 
         List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord, string itemCd);
 
@@ -168,7 +173,7 @@ namespace Domain.Models.MstItem
 
         (int, List<PostCodeMstModel>) SearchAddress(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
 
-        List<KensaMstModel> GetListKensaMst(int hpId, string searchValue);
+        (List<KensaMstModel>, int) GetListKensaMst(int hpId, string searchValue, int pageIndex, int pageSize);
 
         string GetDrugAction(string yjCd);
 
@@ -196,6 +201,7 @@ namespace Domain.Models.MstItem
         bool UpdateJihiSbtMst(int hpId, int userId, List<JihiSbtMstModel> jihiSbtMsts);
 
         string GetNameByItemCd(int hpId, string itemCd);
+        List<YohoSetMstModel> GetListYohoSetMstModelByUserID(int hpId, int userIdLogin, int sinDate, int userId = 0);
 
         List<RenkeiConfModel> GetRenkeiConfModels(int hpId, int renkeiSbt);
 
@@ -203,15 +209,30 @@ namespace Domain.Models.MstItem
 
         List<RenkeiTemplateMstModel> GetRenkeiTemplateMstModels(int hpId);
 
+        List<EventMstModel> GetEventMstModelList();
+
+        bool SaveRenkei(int hpId, int userId, List<(int renkeiSbt, List<RenkeiConfModel> renkeiConfList)> renkeiTabList);
+
         List<SetNameMntModel> GetSetNameMnt(SetCheckBoxStatusModel checkBoxStatus,int generationId, int hpId);
 
         List<SetKbnMstModel> GetListSetKbnMst(int generationId, int hpId);
 
         int GetGenerationId(int hpId);
         
+
+        List<UserMstModel> GetListUser(int hpId, int userId, int sinDate);
+        
         List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison);
 
         bool SaveCompareTenMst(List<SaveCompareTenMstModel> ListData, ComparisonSearchModel comparison, int userId);
+
+        bool UpdateYohoSetMst(int hpId, int userId, List<YohoSetMstModel> listYohoSetMstModels);
+
+        TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate);
+
+        ByomeiMstModel GetByomeiByCode(string byomeiCd);
+
+        bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate);
     }
 
 }
