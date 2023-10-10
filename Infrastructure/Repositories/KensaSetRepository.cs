@@ -448,6 +448,9 @@ namespace Infrastructure.Repositories
                 }
             }
 
+            //
+            var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName });
+
             // Get list iraiCd
             var kensaInfDetailCol = SortIraiDateAsc ? data
                                 .OrderBy(x => x.IraiDate)
@@ -460,38 +463,66 @@ namespace Infrastructure.Repositories
 
             kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
 
-            var kensaInfDetailData = new List<Dictionary<long, List<ListKensaInfDetailItem>>>();
+            var kensaInfDetailData = new List<object>();
 
-            foreach (var item in kensaInfDetailCol)
+
+
+            foreach (var kensaMstItem in kensaItemCds)
             {
-                Dictionary<long, List<ListKensaInfDetailItem>> kensaInfDetailDataItem = new Dictionary<long, List<ListKensaInfDetailItem>>();
-                var kensaInfDetailByIraiCds = data.Where(x => x.IraiCd == item.IraiCd)
-                                               .Select(x => new ListKensaInfDetailItem(
-                                                   x.SeqNo,
-                                                   x.KensaName,
-                                                   x.KensaItemCd,
-                                                   x.ResultVal,
-                                                   x.ResultType,
-                                                   x.AbnormalKbn,
-                                                   x.CmtCd1,
-                                                   x.CmtCd2,
-                                                   x.Cmt1,
-                                                   x.Cmt2,
-                                                   x.Std,
-                                                   x.StdLow,
-                                                   x.StdHigh,
-                                                   x.Unit,
-                                                   x.Nyubi,
-                                                   x.Yoketu,
-                                                   x.Bilirubin,
-                                                   x.SikyuKbn,
-                                                   x.TosekiKbn
-                                               )).ToList();
-                kensaInfDetailDataItem.Add(item.IraiCd, kensaInfDetailByIraiCds);
-                kensaInfDetailData.Add(kensaInfDetailDataItem);
-            }
-            var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData);
+                var dynamicArray = new List<object>();
 
+                foreach (var item in kensaInfDetailCol)
+                {
+                    var dynamicDataItem = data.Where(x => x.IraiCd == item.IraiCd && x.KensaItemCd == kensaMstItem.KensaItemCd).FirstOrDefault();
+                    
+                    if (dynamicDataItem == null)
+                    {
+                        dynamicArray.Add(new
+                        {
+                            PtId = ptId,
+                            IraiCd = item.IraiCd,
+                            RaiinNo = 0,
+                            IraiDate = 0,
+                            SeqNo = 0,
+                            KensaName = string.Empty,
+                            KensaKana = string.Empty,
+                            SortNo = 0,
+                            KensaItemCd = string.Empty,
+                            ResultVal = string.Empty,
+                            ResultType = string.Empty,
+                            AbnormalKbn = string.Empty,
+                            CmtCd1 = string.Empty,
+                            CmtCd2 = string.Empty,
+                            Cmt1 = string.Empty,
+                            Cmt2 = string.Empty,
+                            Std = string.Empty,
+                            StdLow = string.Empty,
+                            StdHigh = string.Empty,
+                            Unit = string.Empty,
+                            Nyubi = string.Empty,
+                            Yoketu = string.Empty,
+                            Bilirubin = string.Empty,
+                            SikyuKbn = 0,
+                            TosekiKbn = 0
+                        });
+                    }
+                    else
+                    {
+                        dynamicArray.Add(dynamicDataItem);
+                    }
+                }
+
+                var row = new
+                {
+                    KensaItemCd = kensaMstItem.KensaItemCd,
+                    KensaName =  kensaMstItem.KensaName,
+                    DynamicArray = dynamicArray
+                };
+
+                kensaInfDetailData.Add(row);
+            }
+
+            var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData);
             return result;
         }
         public void ReleaseResource()

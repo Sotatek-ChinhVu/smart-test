@@ -2,7 +2,7 @@
 {
     public class ListKensaInfDetailModel
     {
-        public ListKensaInfDetailModel(List<KensaInfDetailColModel> kensaInfDetailCol, List<Dictionary<long, List<ListKensaInfDetailItem>>> kensaInfDetailData)
+        public ListKensaInfDetailModel(List<KensaInfDetailColModel> kensaInfDetailCol, List<object> kensaInfDetailData)
         {
             KensaInfDetailCol = kensaInfDetailCol;
             KensaInfDetailData = kensaInfDetailData;
@@ -14,7 +14,7 @@
 
         public List<KensaInfDetailColModel> KensaInfDetailCol { get; private set; }
 
-        public List<Dictionary<long, List<ListKensaInfDetailItem>>> KensaInfDetailData { get; private set; }
+        public List<object> KensaInfDetailData { get; private set; }
 
         public class KensaInfDetailColModel
         {
