@@ -1,10 +1,9 @@
 ﻿using Domain.Models.Online;
+using Domain.Models.Online.QualificationConfirmation;
 using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
-using UseCase.Online;
 using UseCase.Online.InsertOnlineConfirmHistory;
-using UseCase.Online.QualificationConfirmation;
 
 namespace Interactor.Online;
 
@@ -34,9 +33,18 @@ public class InsertOnlineConfirmHistoryInteractor : IInsertOnlineConfirmHistoryI
                 if (xmlObject != null)
                 {
                     var onlineConfirmationDate = xmlObject.MessageHeader.ProcessExecutionTime;
+                    DateTime confirmDateInsert;
+                    try
+                    {
+                        confirmDateInsert = TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(onlineConfirmationDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture));
+                    }
+                    catch
+                    {
+                        return new InsertOnlineConfirmHistoryOutputData(new(), InsertOnlineConfirmHistoryStatus.InvalidOnlineConfirmationDate);
+                    }
                     onlineModelList.Add(new OnlineConfirmationHistoryModel(0,
                                                                            item.PtId,
-                                                                           TimeZoneInfo.ConvertTimeToUtc(DateTime.ParseExact(onlineConfirmationDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture)),
+                                                                           confirmDateInsert,
                                                                            item.ConfirmationType,
                                                                            item.InfoConsFlg,
                                                                            item.ConfirmationResult,

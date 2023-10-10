@@ -1,12 +1,10 @@
 ﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.Lock;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
 using EmrCloudApi.Services;
-using Helper.Constants;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
@@ -36,10 +34,11 @@ namespace EmrCloudApi.Controller
         {
             var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, request.TabKey, request.LoginKey);
             var output = _bus.Handle(input);
-            var presenter = new AddLockPresenter();
+            AddLockPresenter presenter = new();
+            presenter.Complete(output);
+            var result = new ActionResult<Response<LockResponse>>(presenter.Result);
 
             _cancellationToken = cancellationToken;
-
             if (_cancellationToken!.Value.IsCancellationRequested)
             {
                 Console.WriteLine("Come in cancelation Addlock");
@@ -60,9 +59,8 @@ namespace EmrCloudApi.Controller
                     await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockModel);
                 }
             }
-            presenter.Complete(output);
 
-            return new ActionResult<Response<LockResponse>>(presenter.Result);
+            return result;
         }
 
         [HttpPost(ApiPath.CheckLock)]
