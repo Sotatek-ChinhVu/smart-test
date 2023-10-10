@@ -17,6 +17,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Infrastructure.Repositories
@@ -1184,11 +1185,20 @@ namespace Infrastructure.Repositories
             patientInsert.UpdateId = userId;
             patientInsert.UpdateDate = CIUtil.GetJapanDateTimeNow();
             patientInsert.HpId = hpId;
-            TrackingDataContext.PtInfs.Add(patientInsert);
-            bool resultCreatePatient = TrackingDataContext.SaveChanges() > 0;
+
+            string querySql = $"INSERT INTO public.\"PT_INF\"\r\n(\"HP_ID\", \"PT_NUM\", \"KANA_NAME\", \"NAME\", \"SEX\", \"BIRTHDAY\", \"IS_DEAD\", \"DEATH_DATE\", \"HOME_POST\", \"HOME_ADDRESS1\", \"HOME_ADDRESS2\", \"TEL1\", \"TEL2\", \"MAIL\", \"SETAINUSI\", \"ZOKUGARA\", \"JOB\", \"RENRAKU_NAME\", \"RENRAKU_POST\", \"RENRAKU_ADDRESS1\", \"RENRAKU_ADDRESS2\", \"RENRAKU_TEL\", \"RENRAKU_MEMO\", \"OFFICE_NAME\", \"OFFICE_POST\", \"OFFICE_ADDRESS1\", \"OFFICE_ADDRESS2\", \"OFFICE_TEL\", \"OFFICE_MEMO\", \"IS_RYOSYO_DETAIL\", \"PRIMARY_DOCTOR\", \"IS_TESTER\", \"IS_DELETE\", \"CREATE_DATE\", \"CREATE_ID\", \"CREATE_MACHINE\", \"UPDATE_DATE\", \"UPDATE_ID\", \"UPDATE_MACHINE\", \"MAIN_HOKEN_PID\", \"LIMIT_CONS_FLG\") VALUES({patientInsert.HpId}, {patientInsert.PtNum}, '{patientInsert.KanaName}', '{patientInsert.Name}', {patientInsert.Sex}, {patientInsert.Birthday}, {patientInsert.IsDead}, {patientInsert.DeathDate}, '{patientInsert.HomePost}', '{patientInsert.HomeAddress1}', '{patientInsert.HomeAddress2}', '{patientInsert.Tel1}', '{patientInsert.Tel2}', '{patientInsert.Mail}', '{patientInsert.Setanusi}', '{patientInsert.Zokugara}', '{patientInsert.Job}', '{patientInsert.RenrakuName}', '{patientInsert.RenrakuPost}', '{patientInsert.RenrakuAddress1}', '{patientInsert.RenrakuAddress2}', '{patientInsert.RenrakuTel}', '{patientInsert.RenrakuMemo}', '{patientInsert.OfficeName}', '{patientInsert.OfficePost}', '{patientInsert.OfficeAddress1}', '{patientInsert.OfficeAddress2}', '{patientInsert.OfficeTel}', '{patientInsert.OfficeMemo}', {patientInsert.IsRyosyoDetail}, {patientInsert.PrimaryDoctor}, {patientInsert.IsTester}, {patientInsert.IsDelete}, '{patientInsert.CreateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.CreateId}, '', '{patientInsert.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.UpdateId}, '', {patientInsert.MainHokenPid}, {patientInsert.LimitConsFlg}) ON CONFLICT DO NOTHING;";
+            //TrackingDataContext.PtInfs.Add(patientInsert);
+            TrackingDataContext.Database.SetCommandTimeout(1200);
+            bool resultCreatePatient = TrackingDataContext.Database.ExecuteSqlRaw(querySql) > 0;
 
             if (!resultCreatePatient)
+            {
                 return (false, 0);
+            }
+            else
+            {
+                patientInsert.PtId = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == patientInsert.PtNum)?.PtId ?? 0;
+            }
 
             if (ptSanteis != null && ptSanteis.Any())
             {
@@ -2755,6 +2765,83 @@ namespace Infrastructure.Repositories
             {
                 newCloneByomei.SeqNo = newCloneByomei.Id;
             }
+        }
+
+        public List<VisitTimesManagementModel> GetVisitTimesManagementModels(int hpId, int sinYm, long ptId, int kohiId)
+        {
+            var limitCntListInfList = NoTrackingDataContext.LimitCntListInfs.Where(item => item.HpId == hpId
+                                                                                           && item.SinDate / 100 == sinYm
+                                                                                           && item.PtId == ptId
+                                                                                           && item.KohiId == kohiId
+                                                                                           && item.IsDeleted == DeleteTypes.None)
+                                                                            .ToList();
+            return limitCntListInfList.Select(item => new VisitTimesManagementModel(
+                                                          item.PtId,
+                                                          item.SinDate,
+                                                          item.HokenPid,
+                                                          item.KohiId,
+                                                          item.SeqNo,
+                                                          item.SortKey ?? string.Empty))
+                                      .OrderBy(item => item.SortKey)
+                                      .ToList();
+        }
+
+        public bool UpdateVisitTimesManagement(int hpId, int userId, long ptId, int kohiId, List<VisitTimesManagementModel> visitTimesManagementList)
+        {
+            var limitCntListInfDBList = TrackingDataContext.LimitCntListInfs.Where(item => item.HpId == hpId
+                                                                                           && item.PtId == ptId
+                                                                                           && item.KohiId == kohiId)
+                                                                            .ToList();
+            var maxSeqNo = limitCntListInfDBList.Any() ? limitCntListInfDBList.Max(item => item.SeqNo) : 0;
+            limitCntListInfDBList = limitCntListInfDBList.Where(item => item.IsDeleted == 0).ToList();
+
+            var seqNoList = visitTimesManagementList.Where(item => item.SeqNo >= 0).Select(item => item.SeqNo).Distinct().ToList();
+            var deletedVisitTimeList = limitCntListInfDBList.Where(item => item.HokenPid == 0 && !seqNoList.Contains(item.SeqNo)).ToList();
+            foreach (var item in deletedVisitTimeList)
+            {
+                item.IsDeleted = 1;
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                item.UpdateId = userId;
+            }
+
+            foreach (var model in visitTimesManagementList)
+            {
+                bool isAddNew = false;
+                var entity = limitCntListInfDBList.FirstOrDefault(item => model.SeqNo > 0 && item.SeqNo == model.SeqNo);
+                if (entity == null)
+                {
+                    if (model.SeqNo == 0 && model.IsOutHospital)
+                    {
+                        entity = new LimitCntListInf();
+                        entity.HpId = hpId;
+                        entity.PtId = ptId;
+                        entity.KohiId = kohiId;
+                        entity.SinDate = model.SinDate;
+                        entity.SeqNo = maxSeqNo + 1;
+                        entity.IsDeleted = 0;
+                        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        entity.CreateId = userId;
+                        entity.SortKey = model.SortKey;
+                        maxSeqNo = entity.SeqNo;
+                        isAddNew = true;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateId = userId;
+                if (model.IsDeleted)
+                {
+                    entity.IsDeleted = 1;
+                }
+                if (isAddNew)
+                {
+                    TrackingDataContext.LimitCntListInfs.Add(entity);
+                }
+            }
+            return TrackingDataContext.SaveChanges() > 0;
         }
     }
 }

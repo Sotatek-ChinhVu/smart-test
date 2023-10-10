@@ -820,7 +820,6 @@ namespace Infrastructure.Repositories
             {
                 filteredRaiinInfs = filteredRaiinInfs.Where(item => item.Status >= 3);
             }
-
             // 3. Perform the join operation
             var raiinQuery =
                 from raiinInf in filteredRaiinInfs
@@ -1840,7 +1839,7 @@ namespace Infrastructure.Repositories
 
             if (raiinInfList.Any(item => item.Status == RaiinState.Reservation))
             {
-                raiinInf = raiinInfList.OrderBy(item => item.YoyakuTime).ThenBy(item => item.RaiinNo).First();
+                raiinInf = raiinInfList.OrderByDescending(item => item.IsYoyaku).ThenBy(item => item.YoyakuTime).ThenBy(item => item.RaiinNo).First();
             }
             else
             {

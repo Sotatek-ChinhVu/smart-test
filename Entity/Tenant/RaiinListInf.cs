@@ -1,9 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
     [Table(name: "RAIIN_LIST_INF")]
+    [Serializable]
+    [Index(nameof(GrpId), nameof(KbnCd), nameof(RaiinListKbn), Name = "RAIIN_LIST_INF_IDX01")]
+    [Index(nameof(HpId), nameof(PtId), nameof(RaiinNo), Name = "RAIIN_LIST_INF_IDX02")]
+
     public class RaiinListInf : EmrCloneable<RaiinListInf>
     {
         /// <summary>

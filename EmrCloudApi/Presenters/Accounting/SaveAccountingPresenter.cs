@@ -25,6 +25,7 @@ namespace EmrCloudApi.Presenters.Accounting
             SaveAccountingStatus.InvalidComment => ResponseMessage.InvalidComment,
             SaveAccountingStatus.InvalidSindate => ResponseMessage.InvalidSinDate,
             SaveAccountingStatus.InvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
+            SaveAccountingStatus.NoPermission => ResponseMessage.NoPermission,
             _ => string.Empty
         };
     }

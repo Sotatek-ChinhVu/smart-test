@@ -60,11 +60,28 @@
         public const string GetKensaStdMst = "GetKensaStdMst";
         public const string GetUsedKensaItemCds = "GetUsedKensaItemCds";
         public const string GetTenItemCds = "GetTenItemCds";
+        public const string UpdateJihiSbtMst = "UpdateJihiSbtMst";
         public const string GetMaterialMsts = "GetMaterialMsts";
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
         public const string GetListKensaMst = "GetListKensaMst";
+        public const string GetListYohoSetMstModelByUserID = "GetListYohoSetMstModelByUserID";
+        public const string GetRenkeiConf = "GetRenkeiConf";
+        public const string SaveRenkei = "SaveRenkei";
+        public const string GetSetNameMnt = "GetSetNameMnt";
+        public const string GetListKensaIjiSetting = "GetListKensaIjiSetting";
+        public const string GetTreeListSet = "GetTreeListSet";
+        public const string GetTreeByomeiSet = "GetTreeByomeiSet";
+        public const string GetListUser = "GetListUser";
+        public const string GetListSetGeneration = "GetListSetGeneration";
+        public const string GetListByomeiSetGeneration = "GetListByomeiSetGeneration";
+        public const string UpdateYohoSetMst = "UpdateYohoSetMst";
+        public const string F17Common = "F17Common";
+        public const string IsKensaItemOrdering = "IsKensaItemOrdering";
+        public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
+        public const string GetTenMstByCode = "GetTenMstByCode";
+        public const string GetByomeiByCode = "GetByomeiByCode";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -141,6 +158,7 @@
         public const string ExportPeriodReceipt = "ExportPeriodReceipt";
         public const string CheckExistTemplateAccounting = "CheckExistTemplateAccounting";
         public const string ExportStatics = "ExportStatics";
+        public const string ExportSta9000Csv = "ExportSta9000Csv";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -159,6 +177,8 @@
         public const string GetPtInfByRefNo = "GetPtInfByRefNo";
         public const string GetPtInfModelsByName = "GetPtInfModelsByName";
         public const string GetPtInfModelsByRefNo = "GetPtInfModelsByRefNo";
+        public const string GetVisitTimesManagementModels = "GetVisitTimesManagementModels";
+        public const string UpdateVisitTimesManagement = "UpdateVisitTimesManagement";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -429,7 +449,9 @@
         public const string GetKensaInf = "GetKensaInf";
         public const string DeleteKensaInf = "DeleteKensaInf";
         public const string GetKensaIraiLog = "GetKensaIraiLog";
+        public const string GetStaCsvMst = "GetStaCsvMst";
         public const string KensaIraiReport = "KensaIraiReport";
+        public const string SaveStaCsvMst = "SaveStaCsvMst";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
@@ -456,6 +478,8 @@
         public const string GetListOnlineConfirmationHistoryByPtId = "GetListOnlineConfirmationHistoryByPtId";
         public const string GetListOnlineConfirmationHistoryModel = "GetListOnlineConfirmationHistoryModel";
         public const string ConvertXmlToQCXmlMsg = "ConvertXmlToQCXmlMsg";
+        public const string GetOnlineConsent = "GetOnlineConsent";
+        public const string UpdateOnlineConsents = "UpdateOnlineConsents";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
@@ -467,6 +491,11 @@
 
         public const string Test = "Test";
 
+        //ListSetMst
+        public const string UpdateListSetMst = "UpdateListSetMst";
+
+        //ByomeiSetMst
+        public const string UpdateByomeiSetMst = "UpdateByomeiSetMst";
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";
@@ -475,5 +504,14 @@
 
         //SetSendaiGeneration
         public const string Restore = "Restore";
+
+        //Search Compare Tenmst
+        public const string SearchCompareTenMst = "SearchCompareTenMst";
+        public const string SaveCompareTenMst = "SaveCompareTenMst";
+        public const string SaveSetNameMnt = "SaveSetNameMnt";
+        public const string GetColumnSettingByTableNameList = "GetColumnSettingByTableNameList";
+
+        //log
+        public const string WriteLog = "WriteLog";
     }
 }

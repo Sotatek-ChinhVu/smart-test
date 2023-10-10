@@ -1224,7 +1224,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                     "commnet"
                 )
         });
-        mockSanteiInfRepo.Setup(repo => repo.SaveSantei(hpId, userId, It.IsAny<List<SanteiInfModel>>()))
+        mockSanteiInfRepo.Setup(repo => repo.SaveSantei(hpId, userId, ptId, It.IsAny<List<SanteiInfModel>>()))
         .Returns(true);
 
         var mockHpInfRepo = new Mock<IHpInfRepository>();
@@ -1320,7 +1320,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                     "commnet"
                 )
         });
-        mockSanteiInfRepo.Setup(repo => repo.SaveSantei(hpId, userId, It.IsAny<List<SanteiInfModel>>()))
+        mockSanteiInfRepo.Setup(repo => repo.SaveSantei(hpId, userId, ptId, It.IsAny<List<SanteiInfModel>>()))
         .Returns(false);
 
         var mockHpInfRepo = new Mock<IHpInfRepository>();

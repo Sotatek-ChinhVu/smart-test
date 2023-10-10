@@ -1,6 +1,6 @@
-﻿using Amazon.Runtime.Internal;
-using Helper.Constants;
+﻿using Helper.Constants;
 using Infrastructure.Common;
+using Helper.Redis;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PostgreDataContext;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Unicode;
 
 namespace Infrastructure.CommonDB
 {
@@ -26,7 +28,30 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-            string dbSample = _configuration["TenantDbSample"] ?? string.Empty;
+            string dbSample = _configuration["TenantDb"] ?? string.Empty;
+            string clientDomain = GetDomainFromHeader();
+            clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
+            if (string.IsNullOrEmpty(clientDomain))
+            {
+                return dbSample;
+            }
+            var domainList = _configuration.GetSection("DomainList").Path;
+            if (string.IsNullOrEmpty(domainList))
+            {
+                return dbSample;
+            }
+            var clientDomainInConfig = _configuration[domainList + ":" + clientDomain] ?? string.Empty;
+            if (string.IsNullOrEmpty(clientDomainInConfig))
+            {
+                return dbSample;
+            }
+            string result = clientDomainInConfig ?? string.Empty;
+
+            return result;
+        }
+        public string GetAdminConnectionString()
+        {
+            string dbSample = _configuration["AdminDatabase"] ?? string.Empty;
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
@@ -76,26 +101,44 @@ namespace Infrastructure.CommonDB
             string body = await GetRawBodyAsync(request);
             string query = request.QueryString.ToString();
 
-            RequestInfo requestInfo = new RequestInfo(method, path, body, query);
+            RequestInfo requestInfo = new RequestInfo(method, path, "body-data-key", query);
 
-            return JsonSerializer.Serialize<RequestInfo>(requestInfo);
+            var options = new JsonSerializerOptions
+            {
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+                WriteIndented = true
+            };
+
+            _requestInfo = JsonSerializer.Serialize<RequestInfo>(requestInfo, options);
+            _requestInfo = _requestInfo.Replace("body-data-key", body);
+            return _requestInfo;
         }
 
-        private async Task<string> GetRawBodyAsync(HttpRequest request, Encoding encoding = null)
+        private async Task<string> GetRawBodyAsync(HttpRequest request)
         {
-            if (!request.Body.CanSeek)
+            string body = string.Empty;
+            if (request.ContentType != null)
             {
-                return string.Empty;
+                if (request.ContentType.StartsWith("text/") || request.ContentType == "application/json")
+                {
+                    // Leave the body open so the next middleware can read it.
+                    using (var reader = new StreamReader(
+                                            request.Body,
+                                            encoding: Encoding.UTF8,
+                                            detectEncodingFromByteOrderMarks: false,
+                                            leaveOpen: true))
+                    {
+                        body = await reader.ReadToEndAsync();
+
+                        // Reset the request body stream position so the next middleware can read it
+                        request.Body.Position = 0;
+                    }
+                }
+                else
+                {
+                    body = request.ContentType;
+                }
             }
-
-            request.Body.Position = 0;
-
-            var reader = new StreamReader(request.Body, encoding ?? Encoding.UTF8);
-
-            var body = await reader.ReadToEndAsync().ConfigureAwait(false);
-
-            request.Body.Position = 0;
-
             return body;
         }
 
@@ -143,7 +186,7 @@ namespace Infrastructure.CommonDB
             }
             return int.TryParse(departmentId, out _departmentId) ? _departmentId : 0;
         }
-        
+
         public string GetClientIp()
         {
             if (!string.IsNullOrEmpty(_clientIp))
@@ -154,7 +197,7 @@ namespace Infrastructure.CommonDB
             _clientIp = clientIp.ToString();
             return _clientIp;
         }
-        
+
         public string GetDomain()
         {
             if (!string.IsNullOrEmpty(_domain))
@@ -173,7 +216,7 @@ namespace Infrastructure.CommonDB
         #endregion
 
         #region Domain handler
-        
+
 
         public string GetDomainFromHeader()
         {
@@ -259,6 +302,16 @@ namespace Infrastructure.CommonDB
             return _trackingDataContext;
         }
 
+        private DbContextOptions? _dbAdminContextOptions;
+        public DbContextOptions GetAdminTrackingDbContextOption()
+        {
+            if (_dbAdminContextOptions == null)
+            {
+                _dbAdminContextOptions = CreateNewTrackingAdminDbContextOption();
+            }
+            return _dbAdminContextOptions;
+        }
+
         public TenantDataContext CreateNewTrackingDataContext()
         {
             ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
@@ -283,6 +336,18 @@ namespace Infrastructure.CommonDB
                 .Options;
             var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
             return factory.CreateDbContext();
+        }
+
+        public DbContextOptions CreateNewTrackingAdminDbContextOption()
+        {
+            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            var options = new DbContextOptionsBuilder<AdminDataContext>().UseNpgsql(GetAdminConnectionString(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+                    .UseLoggerFactory(loggerFactory)
+                    .Options;
+            return options;
         }
 
         #endregion

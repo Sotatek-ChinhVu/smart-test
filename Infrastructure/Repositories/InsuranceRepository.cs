@@ -2,6 +2,7 @@
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
+using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -11,6 +12,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
@@ -899,6 +901,7 @@ namespace Infrastructure.Repositories
                 // Rousai, jibai, jihi => use syosaisin
                 return selectedHokenPid;
             }
+            // ■初再診が主保険なし（HOKEN_SBT_CD[5xx]）の場合
             else if (syosaisinHokenPattern?.HokenSbtCd >= 500)
             {
                 if (!historyHokenPattern.IsExpirated)
@@ -915,7 +918,7 @@ namespace Infrastructure.Repositories
                 else
                 {
                     var sameKohiPattern = hokenPatternModels
-                        .Where(p => p.HokenSbtCd >= 500 && !historyHokenPattern.IsExpirated && _isSameKohiHoubetu(historyHokenPattern, p))
+                        .Where(p => p.HokenSbtCd >= 500 && !p.IsExpirated && _isSameKohiHoubetu(historyHokenPattern, p))
                         .OrderBy(p => p.IsExpirated)
                         .ThenBy(p => p.HokenPid)
                         .FirstOrDefault();
@@ -944,94 +947,99 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    if (syosaisinHokenPattern?.IsExpirated == false  && syosaisinHokenPattern?.HokenId == historyHokenPattern.HokenId)
+                    if (!hokenPatternModels.Any(p => p.HokenSbtCd < 500 && p.HokenSbtCd > 0
+                                                && !p.IsEmptyHoken
+                                                && !p.IsExpirated
+                                                && p.HokenInf.HokenId == syosaisinHokenPattern?.HokenInf.HokenId))
                     {
-                        // Kenpo - 主保険あり
-                        var sameHokenPatternBuntenKohi = hokenPatternModels
+                        //② 初再診と同じ主保険を持つ有効な保険パターンがない場合は、履歴と同じPID
+                        return historyPid;
+                    }
+
+                    var sameHokenPatternBuntenKohi = hokenPatternModels
+                            .Where(p => p.HokenSbtCd < 500 && p.HokenSbtCd > 0
+                                   && !p.IsEmptyHoken
+                                   && !p.IsExpirated
+                                   && p.HokenInf.HokenId == syosaisinHokenPattern?.HokenInf.HokenId
+                                   && p.BuntenKohis.Count > 0)
+                            .OrderBy(p => p.IsExpirated)
+                            .ThenBy(p => p.HokenPid)
+                            .FirstOrDefault();
+
+                    if (sameHokenPatternBuntenKohi == null)
+                    {
+                        // ③ 初再診と同じ主保険を持つ有効な保険パターンの中で、分点公費（HOKEN_MST.HOKEN_SBT_KBN=6）を持つ保険パターンがない場合は、初再診の保険PID
+                        return syosaisinHokenPattern?.HokenPid ?? 0;
+                    }
+                    else
+                    {
+                        var sameHokenPattern = hokenPatternModels
                                                 .Where(p => p.HokenSbtCd < 500 && p.HokenSbtCd > 0
                                                        && !p.IsEmptyHoken
                                                        && !p.IsExpirated
                                                        && p.HokenPid == syosaisinHokenPattern?.HokenPid
-                                                       && p.BuntenKohis.Count > 0)
+                                                       && _isSameKohiHoubetu(historyHokenPattern, p))
                                                 .OrderBy(p => p.IsExpirated)
                                                 .ThenBy(p => p.HokenPid)
                                                 .FirstOrDefault();
-
-                        if (sameHokenPatternBuntenKohi == null)
+                        if (sameHokenPattern != null)
                         {
-                            // ② 初再診と同じ主保険を持つ有効な保険パターンの中で、分点公費（HOKEN_MST.HOKEN_SBT_KBN=6）を持つ保険パターンがない場合は、初再診の保険PID
-                            return syosaisinHokenPattern?.HokenPid ?? 0;
+                            // ④ 初再診と同じ主保険を持つ有効な保険パターンの中で、履歴と同じ組合せの法別番号の公費を持つPID
+                            return sameHokenPattern.HokenPid;
                         }
                         else
                         {
-                            var sameHokenPattern = hokenPatternModels
+                            // ⑤ 初再診と同じ主保険を持つ有効な保険パターンの中で、履歴の法別番号の一致率が高くて組合せ数が少ないPID
+                            var sameHokenPatternDiffHoubetu = hokenPatternModels
                                                     .Where(p => p.HokenSbtCd < 500 && p.HokenSbtCd > 0
                                                            && !p.IsEmptyHoken
                                                            && !p.IsExpirated
-                                                           && p.HokenPid == syosaisinHokenPattern?.HokenPid
-                                                           && _isSameKohiHoubetu(historyHokenPattern, p))
+                                                           && p.HokenInf.HokenId == syosaisinHokenPattern?.HokenInf.HokenId)
                                                     .OrderBy(p => p.IsExpirated)
                                                     .ThenBy(p => p.HokenPid)
-                                                    .FirstOrDefault();
-                            if (sameHokenPattern != null)
+                                                    .ToList();
+                            if (sameHokenPatternDiffHoubetu.Count > 0)
                             {
-                                // ① 初再診と同じ主保険を持つ保険パターンの中で、履歴と同じ組合せの法別番号の公費を持つPID
-                                return sameHokenPattern.HokenPid;
-                            }
-                            else
-                            {
-                                // ② 初再診と同じ主保険を持つ保険パターンの中で、履歴の法別番号の一致率が高くて組合せ数が少ないPID
-                                var sameHokenPatternDiffHoubetu = hokenPatternModels
-                                                        .Where(p => p.HokenSbtCd < 500 && p.HokenSbtCd > 0
-                                                               && !p.IsEmptyHoken
-                                                               && !p.IsExpirated
-                                                               && p.HokenPid == syosaisinHokenPattern?.HokenPid)
-                                                        .OrderBy(p => p.IsExpirated)
-                                                        .ThenBy(p => p.HokenPid)
-                                                        .ToList();
-                                if (sameHokenPatternDiffHoubetu.Count > 0)
+                                List<string> historyHoubetuList = new List<string>();
+                                if (!historyHokenPattern.IsEmptyKohi1 && !string.IsNullOrEmpty(historyHokenPattern.Kohi1.Houbetu))
                                 {
-                                    List<string> historyHoubetuList = new List<string>();
-                                    if (!historyHokenPattern.IsEmptyKohi1 && !string.IsNullOrEmpty(historyHokenPattern.Kohi1.Houbetu))
-                                    {
-                                        historyHoubetuList.Add(historyHokenPattern.Kohi1.Houbetu);
-                                    }
-                                    if (!historyHokenPattern.IsEmptyKohi2 && !string.IsNullOrEmpty(historyHokenPattern.Kohi2.Houbetu))
-                                    {
-                                        historyHoubetuList.Add(historyHokenPattern.Kohi2.Houbetu);
-                                    }
-                                    if (!historyHokenPattern.IsEmptyKohi3 && !string.IsNullOrEmpty(historyHokenPattern.Kohi3.Houbetu))
-                                    {
-                                        historyHoubetuList.Add(historyHokenPattern.Kohi3.Houbetu);
-                                    }
-                                    if (!historyHokenPattern.IsEmptyKohi4 && !string.IsNullOrEmpty(historyHokenPattern.Kohi4.Houbetu))
-                                    {
-                                        historyHoubetuList.Add(historyHokenPattern.Kohi4.Houbetu);
-                                    }
+                                    historyHoubetuList.Add(historyHokenPattern.Kohi1.Houbetu);
+                                }
+                                if (!historyHokenPattern.IsEmptyKohi2 && !string.IsNullOrEmpty(historyHokenPattern.Kohi2.Houbetu))
+                                {
+                                    historyHoubetuList.Add(historyHokenPattern.Kohi2.Houbetu);
+                                }
+                                if (!historyHokenPattern.IsEmptyKohi3 && !string.IsNullOrEmpty(historyHokenPattern.Kohi3.Houbetu))
+                                {
+                                    historyHoubetuList.Add(historyHokenPattern.Kohi3.Houbetu);
+                                }
+                                if (!historyHokenPattern.IsEmptyKohi4 && !string.IsNullOrEmpty(historyHokenPattern.Kohi4.Houbetu))
+                                {
+                                    historyHoubetuList.Add(historyHokenPattern.Kohi4.Houbetu);
+                                }
 
-                                    int maxPoint = 0;
-                                    InsuranceModel? foundPattern = null;
-                                    foreach (var hokenPattern in sameHokenPatternDiffHoubetu)
+                                int maxPoint = 0;
+                                InsuranceModel? foundPattern = null;
+                                foreach (var hokenPattern in sameHokenPatternDiffHoubetu)
+                                {
+                                    int houbetuPoint = hokenPattern.HoubetuPoint(historyHoubetuList);
+                                    if (houbetuPoint > maxPoint)
                                     {
-                                        int houbetuPoint = hokenPattern.HoubetuPoint(historyHoubetuList);
-                                        if (houbetuPoint > maxPoint)
+                                        maxPoint = houbetuPoint;
+                                        foundPattern = hokenPattern;
+                                    }
+                                    else if (houbetuPoint == maxPoint)
+                                    {
+                                        if (foundPattern != null && hokenPattern.KohiCount < foundPattern.KohiCount)
                                         {
                                             maxPoint = houbetuPoint;
                                             foundPattern = hokenPattern;
                                         }
-                                        else if (houbetuPoint == maxPoint)
-                                        {
-                                            if (foundPattern != null && hokenPattern.KohiCount < foundPattern.KohiCount)
-                                            {
-                                                maxPoint = houbetuPoint;
-                                                foundPattern = hokenPattern;
-                                            }
-                                        }
                                     }
-                                    if (foundPattern != null)
-                                    {
-                                        return foundPattern.HokenPid;
-                                    }
+                                }
+                                if (foundPattern != null)
+                                {
+                                    return foundPattern.HokenPid;
                                 }
                             }
                         }
@@ -1161,7 +1169,15 @@ namespace Infrastructure.Repositories
             hokenEdaNoList.AddRange(itemList.Select(i => i.ptKohi4 != null ? i.ptKohi4.HokenEdaNo : 0).ToList());
             hokenEdaNoList = hokenEdaNoList.Distinct().ToList();
 
-            List<HokenMst> hokenMstList = NoTrackingDataContext.HokenMsts.Where(h => (h.PrefNo == prefCd || h.PrefNo == 0 || h.IsOtherPrefValid == 1) && h.HpId == hpId && hokenNoList.Contains(h.HokenNo) && hokenEdaNoList.Contains(h.HokenEdaNo)).ToList();
+            List<HokenMst> hokenMstList = NoTrackingDataContext.HokenMsts.Where(h => (h.PrefNo == prefCd || h.PrefNo == 0 || h.IsOtherPrefValid == 1) && h.HpId == hpId && hokenNoList.Contains(h.HokenNo) && hokenEdaNoList.Contains(h.HokenEdaNo))
+                                                                         .OrderBy(e => e.HpId)
+                                                                         .ThenBy(e => e.HokenNo)
+                                                                         .ThenBy(e => e.HokenEdaNo)
+                                                                         .ThenByDescending(e => e.StartDate)
+                                                                         .ThenBy(e => e.HokenSbtKbn)
+                                                                         .ThenBy(e => e.SortNo)
+                                                                         .ToList();
+
             List<PtHokenCheck> ptHokenCheckList = NoTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None).ToList();
 
             List<InsuranceModel> listInsurance = new List<InsuranceModel>();
@@ -1216,7 +1232,6 @@ namespace Infrastructure.Repositories
                     sinDate,
                     GetConfirmDateList(HokenGroupConstant.HokenGroupKohi, ptKohi.HokenId));
             }
-
             foreach (var item in itemList)
             {
                 HokenMst? hokenMst = hokenMstList.FirstOrDefault(h => h.HokenNo == item.ptHokenInf.HokenNo && h.HokenEdaNo == item.ptHokenInf.HokenEdaNo);

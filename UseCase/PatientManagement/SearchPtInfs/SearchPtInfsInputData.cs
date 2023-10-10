@@ -5,12 +5,10 @@ namespace UseCase.PatientManagement.SearchPtInfs
 {
     public class SearchPtInfsInputData : IInputData<SearchPtInfsOutputData>
     {
-        public SearchPtInfsInputData(int hpId, int pageIndex, int pageCount, int outputOrder, CoSta9000PtConf coSta9000PtConf, CoSta9000HokenConf coSta9000HokenConf, CoSta9000ByomeiConf coSta9000ByomeiConf, CoSta9000RaiinConf coSta9000RaiinConf, CoSta9000SinConf coSta9000SinConf, CoSta9000KarteConf coSta9000KarteConf, CoSta9000KensaConf coSta9000KensaConf)
+        public SearchPtInfsInputData(int hpId, int outputOrder, CoSta9000PtConf coSta9000PtConf, CoSta9000HokenConf coSta9000HokenConf, CoSta9000ByomeiConf coSta9000ByomeiConf, CoSta9000RaiinConf coSta9000RaiinConf, CoSta9000SinConf coSta9000SinConf, CoSta9000KarteConf coSta9000KarteConf, CoSta9000KensaConf coSta9000KensaConf)
         {
             HpId = hpId;
             OutputOrder = outputOrder;
-            PageIndex = pageIndex;
-            PageCount = pageCount;
             CoSta9000PtConf = coSta9000PtConf;
             CoSta9000HokenConf = coSta9000HokenConf;
             CoSta9000ByomeiConf = coSta9000ByomeiConf;
@@ -23,10 +21,6 @@ namespace UseCase.PatientManagement.SearchPtInfs
         public int HpId { get; private set; }
 
         public int OutputOrder { get; private set; }
-
-        public int PageIndex { get; private set; }
-
-        public int PageCount { get; private set; }
 
         public CoSta9000PtConf CoSta9000PtConf { get; private set; }
 
