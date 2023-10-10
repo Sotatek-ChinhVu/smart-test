@@ -77,15 +77,6 @@ namespace TenantMigration.Migrations
 
             migrationBuilder.DropTable(
                 name: "KENSA_SET_DETAIL");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_FILING_INF",
-                table: "FILING_INF");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_FILING_INF",
-                table: "FILING_INF",
-                columns: new[] { "HP_ID", "FILE_ID", "PT_ID", "GET_DATE", "FILE_NO" });
         }
     }
 }

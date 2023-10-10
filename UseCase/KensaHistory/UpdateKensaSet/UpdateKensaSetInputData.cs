@@ -5,13 +5,19 @@ namespace UseCase.KensaHistory.UpdateKensaSet
 {
     public class UpdateKensaSetInputData : IInputData<UpdateKensaSetOuputData>
     {
-        public int HpId { get; set; }
-        public int UserId { get; set; }
-        public int SetId { get; set; }
-        public string SetName { get; set; }
-        public int SortNo { get; set; }
-        public int IsDeleted { get; set; }
-        public List<KensaSetDetailModel> KensaSetDetails { get; set; }
+        public int HpId { get; private set; }
+
+        public int UserId { get; private set; }
+
+        public int SetId { get; private set; }
+
+        public string SetName { get; private set; }
+
+        public int SortNo { get; private set; }
+
+        public int IsDeleted { get; private set; }
+
+        public List<KensaSetDetailModel> KensaSetDetails { get; private set; }
 
         public UpdateKensaSetInputData(int hpId, int userId, int setId, string setName, int sortNo, int isDeleted, List<KensaSetDetailModel> kensaSetDetails)
         {
