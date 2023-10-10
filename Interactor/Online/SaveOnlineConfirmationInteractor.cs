@@ -24,11 +24,13 @@ namespace Interactor.Online
         {
             try
             {
+                var message = string.Empty;
+
                 if (inputData.QCBIDResponse == null ||
                     inputData.QCBIDResponse.MessageHeader == null ||
                     inputData.QCBIDResponse.MessageHeader.ReceptionNumber != inputData.QCBIDRequest.MessageBody.ReceptionNumber)
                 {
-                    return new SaveOnlineConfirmationOutputData(SaveOnlineConfirmationStatus.InvalidReceptionNumber);
+                    return new SaveOnlineConfirmationOutputData(SaveOnlineConfirmationStatus.InvalidReceptionNumber, message);
                 }
 
                 string segmentOfResult = inputData.QCBIDResponse.MessageHeader.SegmentOfResult;
@@ -85,31 +87,27 @@ namespace Interactor.Online
 
                                 )).ToList();
                         }
-                        isUpdateRaiinInfSuccess = _onlConfHanlder.UpdateRaiinInfByResResult(listResultModel);
+                        isUpdateRaiinInfSuccess = _onlineRepository.UpdateRaiinInfByResResult(inputData.HpId, inputData.UserId, listResultModel);
+
                         if (isUpdateRaiinInfSuccess)
                         {
-                            string statistical = String.Format("{0}件(正常{1}件 異常{2}件)", response.MessageHeader.NumberOfProcessingResult, response.MessageHeader.NumberOfNormalProcessing, response.MessageHeader.NumberOfError);
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                Log.WriteLogMsg(ModuleName, this, functionName, "Dispatcher.Invoke EmrDialogMessage");
-                                new EmrDialogMessage(EmrMessageType.mFree00010,
-                                                    "一括照会結果を受信しました。" + Environment.NewLine +
-                                                    SegmentOfResultDisplay(response.MessageHeader.SegmentOfResult) + Environment.NewLine +
-                                                    (string.IsNullOrEmpty(response.MessageHeader.ErrorMessage) ? string.Empty : (response.MessageHeader.ErrorMessage + Environment.NewLine)) +
-                                                    statistical,
-                                                    EmrMessageButtons.mbClose, 0).Send();
-                            });
+                            string statistical = String.Format("{0}件(正常{1}件 異常{2}件)", inputData.QCBIDResponse.MessageHeader.NumberOfProcessingResult, inputData.QCBIDResponse.MessageHeader.NumberOfNormalProcessing, inputData.QCBIDResponse.MessageHeader.NumberOfError);
+                            message = String.Format("一括照会結果を受信しました。" + Environment.NewLine +
+                                                SegmentOfResultDisplay(inputData.QCBIDResponse.MessageHeader.SegmentOfResult) + Environment.NewLine +
+                                                (string.IsNullOrEmpty(inputData.QCBIDResponse.MessageHeader.ErrorMessage) ? string.Empty : (inputData.QCBIDResponse.MessageHeader.ErrorMessage + Environment.NewLine)) +
+                                                statistical);
+                            return new SaveOnlineConfirmationOutputData(SaveOnlineConfirmationStatus.Successed, message);
                         }
                     }
 
                     if (!isUpdateOnlineConfrimSuccess || !isUpdateRaiinInfSuccess)
                     {
-                        new EmrDialogMessage(EmrMessageType.mEdit01030, "オンライン資格確認一括照会", new EmrMessageButtons[] { EmrMessageButtons.mbOK }, 1).Send();
+                        message = "オンライン資格確認一括照会";
+                        return new SaveOnlineConfirmationOutputData(SaveOnlineConfirmationStatus.Failed, message);
                     }
                 }
-                //var result = _onlineRepository.SaveOnlineConfirmation(inputData.UserId, inputData.QualificationInf, inputData.ModelStatus);
 
-                //return new SaveOnlineConfirmationOutputData(result ? SaveOnlineConfirmationStatus.Successed : SaveOnlineConfirmationStatus.Failed);
+                return new SaveOnlineConfirmationOutputData(SaveOnlineConfirmationStatus.Successed, message);
             }
             finally
             {
@@ -251,6 +249,24 @@ namespace Interactor.Online
                 xmlserializer.Serialize(writer, model, serializerNamespaces);
                 return stringWriter.ToString();
             }
+        }
+
+        public string SegmentOfResultDisplay(string segmentOfResult)
+        {
+            if (string.IsNullOrEmpty(segmentOfResult) || segmentOfResult == "0")
+            {
+                return "照会中";
+            }
+            switch (segmentOfResult)
+            {
+                case "1":
+                    return "正常終了";
+                case "2":
+                    return "処理中";
+                case "9":
+                    return "異常終了";
+            }
+            return string.Empty;
         }
     }
 }

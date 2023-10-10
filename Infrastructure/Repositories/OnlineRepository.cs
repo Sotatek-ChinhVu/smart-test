@@ -1,13 +1,15 @@
 ﻿using Domain.Constant;
+using Domain.Converter;
+using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.Online;
+using Domain.Models.PatientInfor;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Text;
@@ -603,14 +605,12 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
             {
                 raiinInf.ConfirmationResult = GetConfirmationResult(hpId, resResult, raiinInf.SinDate);
                 raiinInf.ConfirmationState = resResult.ConfirmationStatus;
-                raiinInf.UpdateDate = DateTime.Now;
-                raiinInf.UpdateId = Session.UserID;
-                raiinInf.UpdateMachine = CIUtil.GetComputerName();
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
             }
         }
-        dbService.SaveChanged();
 
-        return true;
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     private (List<RaiinInf>? raiinInfs, long referenceNo) GetRaiinInfToUpdateByPtId(int hpId, long ptId, int sinDate)
@@ -638,7 +638,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     private string GetConfirmationResult(int hpId, ConfirmResultModel resResult, int sinDate)
     {
         var hokenInfs = _insuranceRepository.FindHokenInfByPtId(hpId, resResult.PtId);
-        var ptInfModel = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == resResult.PtId && p.IsDelete != 1);
+        var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == resResult.PtId && p.IsDelete != 1);
         var matchPtInf = new List<PtInfConfirmationModel>();
         var resultOfQC = new ResultOfQualificationConfirmation()
         {
@@ -658,11 +658,11 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
             InsuredCardValidDate = resResult.InsuredCardValidDate,
             InsuredCardExpirationDate = resResult.InsuredCardExpirationDate,
         };
-        var matchHokenInfs = hokenInfs.FindAll(p => PatientInfoConverter.GetHokenConfirmationModels(p, resResult, resResult.Birthday.AsInteger(), sinDate).All(x => x.IsReflect));
+        var matchHokenInfs = hokenInfs.FindAll(p => PatientInfoConverter.GetHokenConfirmationModels(p, resultOfQC, resResult.Birthday.AsInteger(), sinDate).All(x => x.IsReflect));
 
-        if (ptInfModel != null)
+        if (ptInf != null)
         {
-            matchPtInf = PatientInfoConverter.GetPtInfConfirmationModels(ptInfModel.PtInf, resultOfQC).Where(x => x.IsVisible).ToList();
+            matchPtInf = PatientInfoConverter.GetPtInfConfirmationModels(ConvertToPatientInfoModel(ptInf), resultOfQC).Where(x => x.IsVisible).ToList();
         }
         if (matchPtInf.Any(x => !x.IsReflect) && matchHokenInfs.Count <= 0)
         {
@@ -679,28 +679,17 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return resResult.ProcessingResultMessage;
     }
 
-    private List<HokenConfirmationModel> GetHokenConfirmationModels(PtHokenInf HokenInf, ConfirmResultModel resResult, int birthDay, int sinDate)
+    private static PatientInforModel ConvertToPatientInfoModel(PtInf ptInf)
     {
-        int age = CIUtil.SDateToAge(birthDay, CIUtil.DateTimeToInt(DateTime.Now));
-        var list = new List<HokenConfirmationModel>
-            {
-                new HokenConfirmationModel(HokenConfOnlQuaConst.HOKENSYA_NO, HokenInf.HokensyaNo, resResult.InsurerNumber?.AsString().Trim(), sinDate: sinDate),
-                new HokenConfirmationModel(HokenConfOnlQuaConst.KIGO, HokenInf.Kigo, resResult.InsuredCardSymbol, sinDate: sinDate),
-                new HokenConfirmationModel(HokenConfOnlQuaConst.BANGO, HokenInf.Bango, resResult.InsuredIdentificationNumber, sinDate: sinDate),
-                new HokenConfirmationModel(HokenConfOnlQuaConst.EDANO, HokenInf.EdaNo, resResult.InsuredBranchNumber, sinDate: sinDate),
-                new HokenConfirmationModel(HokenConfOnlQuaConst.HONKE, HokenInf.HonkeKbn.AsString(), resResult.PersonalFamilyClassification, sinDate: sinDate),
-                new HokenConfirmationModel(HokenConfOnlQuaConst.KOFU_DATE, HokenInf.KofuDate.AsString(), resResult.InsuredCertificateIssuanceDate, sinDate: sinDate),
-                new HokenConfirmationModel(HokenConfOnlQuaConst.START_DATE, HokenInf.StartDate.AsString(), resResult.InsuredCardValidDate, sinDate: sinDate),
-                new HokenConfirmationModel(HokenConfOnlQuaConst.END_DATE, HokenInf.EndDate.AsString(), resResult.InsuredCardExpirationDate, sinDate: sinDate),
-                new HokenConfirmationModel(HokenConfOnlQuaConst.KOGAKU_KBN
-                                        , HokenInf.KogakuKbn.AsString()
-                                        , resResult.LimitApplicationCertificateRelatedInfo?.LimitApplicationCertificateClassificationFlag
-                                        , age, sinDate: sinDate, onlineKogakuHelper: new Helper.OnlineKogakuHelper(resultOfQualification, age)),
-                 new HokenConfirmationModel(HokenConfOnlQuaConst.CREDENTIAL
-                                        , (HokenInf.HokenNo == 68 && HokenInf.HokenEdaNo == 0) ? "該当" : string.Empty
-                                        , (resResult.InsuredCardClassification.AsInteger() == 5) ?  "該当" : string.Empty, sinDate: sinDate)
-            };
-        return list;
+        return new PatientInforModel(
+                    ptInf.KanaName ?? string.Empty,
+                    ptInf.Name ?? string.Empty,
+                    ptInf.Sex,
+                    ptInf.Birthday,
+                    ptInf.HomePost ?? string.Empty,
+                    ptInf.HomeAddress1 ?? string.Empty,
+                    ptInf.Setanusi ?? string.Empty
+                );
     }
 
     #region private function

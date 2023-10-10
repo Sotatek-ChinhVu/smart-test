@@ -1,12 +1,11 @@
-﻿using Domain.Models.Online;
-using Helper.Constants;
-
-namespace EmrCloudApi.Requests.Online
+﻿namespace EmrCloudApi.Requests.Online
 {
     public class SaveOnlineConfirmationRequest
     {
-        public QualificationInfModel QualificationInf { get; set; } = new();
+        public long RaiinNo { get; set; }
 
-        public ModelStatus ModelStatus { get; set; } = ModelStatus.None;
+        public string QCBIDXmlMsgRequest { get; set; } = string.Empty;
+
+        public string QCBIDXmlMsgResponse { get; set; } = string.Empty;
     }
 }

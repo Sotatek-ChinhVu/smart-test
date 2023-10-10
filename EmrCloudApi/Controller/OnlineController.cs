@@ -235,7 +235,7 @@ public class OnlineController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveOnlineConfirmation)]
     public ActionResult<Response<SaveOnlineConfirmationResponse>> SaveOnlineConfirmation([FromBody] SaveOnlineConfirmationRequest request)
     {
-        var input = new SaveOnlineConfirmationInputData(UserId, request.QualificationInf, request.ModelStatus);
+        var input = new SaveOnlineConfirmationInputData(HpId, UserId, request.RaiinNo, request.QCBIDXmlMsgRequest, request.QCBIDXmlMsgResponse);
         var output = _bus.Handle(input);
 
         var presenter = new SaveOnlineConfirmationPresenter();

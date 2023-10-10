@@ -37,4 +37,6 @@ public interface IOnlineRepository : IRepositoryBase
     bool SaveOnlineConfirmation(int userId, QualificationInfModel qualificationInf, ModelStatus status);
 
     bool InsertListOnlConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> listOnlineConfirmationHistoryModel);
+
+    bool UpdateRaiinInfByResResult(int hpId, int userId, List<ConfirmResultModel> listResResult);
 }
