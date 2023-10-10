@@ -13,7 +13,7 @@ public class AddLockPresenter : IAddLockOutputPort
     public void Complete(AddLockOutputData outputData)
     {
         var lockInf = outputData.LockInf;
-        Result.Data = new LockResponse(lockInf.UserId, lockInf.UserName, lockInf.LockLevel, lockInf.FunctionName);
+        Result.Data = new LockResponse(lockInf.UserId, lockInf.UserName, lockInf.LockLevel, lockInf.FunctionName, outputData.AddLockInputData);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

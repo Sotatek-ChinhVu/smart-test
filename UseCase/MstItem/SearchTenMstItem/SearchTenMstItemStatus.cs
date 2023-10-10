@@ -11,5 +11,6 @@
         InvalidKouiKbn = 7,
         InvalidPointFrom = 8,
         InvalidPointTo = 9,
+        NoData = 10,
     }
 }

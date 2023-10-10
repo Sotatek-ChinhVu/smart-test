@@ -177,6 +177,8 @@
         public const string GetPtInfByRefNo = "GetPtInfByRefNo";
         public const string GetPtInfModelsByName = "GetPtInfModelsByName";
         public const string GetPtInfModelsByRefNo = "GetPtInfModelsByRefNo";
+        public const string GetVisitTimesManagementModels = "GetVisitTimesManagementModels";
+        public const string UpdateVisitTimesManagement = "UpdateVisitTimesManagement";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -476,6 +478,8 @@
         public const string GetListOnlineConfirmationHistoryByPtId = "GetListOnlineConfirmationHistoryByPtId";
         public const string GetListOnlineConfirmationHistoryModel = "GetListOnlineConfirmationHistoryModel";
         public const string ConvertXmlToQCXmlMsg = "ConvertXmlToQCXmlMsg";
+        public const string GetOnlineConsent = "GetOnlineConsent";
+        public const string UpdateOnlineConsents = "UpdateOnlineConsents";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
@@ -489,6 +493,9 @@
 
         //ListSetMst
         public const string UpdateListSetMst = "UpdateListSetMst";
+
+        //ByomeiSetMst
+        public const string UpdateByomeiSetMst = "UpdateByomeiSetMst";
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";
@@ -508,6 +515,7 @@
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";
         public const string SaveCompareTenMst = "SaveCompareTenMst";
+        public const string SaveSetNameMnt = "SaveSetNameMnt";
         public const string GetColumnSettingByTableNameList = "GetColumnSettingByTableNameList";
 
         //log
