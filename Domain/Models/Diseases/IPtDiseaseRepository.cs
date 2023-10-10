@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Enum;
+using Domain.Models.ListSetMst;
 
 namespace Domain.Models.Diseases
 {
@@ -20,6 +21,7 @@ namespace Domain.Models.Diseases
         List<PtDiseaseModel> GetTekiouByomeiByOrder(int hpId, List<string> itemCds);
 
         List<PtDiseaseModel> GetAllByomeiByPtId(int hpId, long ptId, int pageIndex, int pageSize);
+        bool UpdateByomeiSetMst(int userId, int hpId, List<ByomeiSetMstUpdateModel> listData);
 
         Dictionary<string, string> GetByomeiMst(int hpId, List<string> byomeiCds);
     }

@@ -236,10 +236,10 @@ namespace EmrCalculateApi.Ika.DB.Finder
         /// <param name="ptId"></param>
         /// <param name="sinDate"></param>
         /// <returns></returns>
-        public CalcStatusModel GetCalcStatus(int hpId, long ptId, int sinDate, string preFix)
+        public CalcStatusModel GetCalcStatus(int hpId, long ptId, int sinDate, string calcKeyId)
         {
             CalcStatusModel calcStatus = null;
-            string computerName = (preFix + Hardcode.ComputerName).ToUpper();
+            string computerName = calcKeyId;
 
             if (hpId >= 0 && ptId >= 0)
             {
@@ -348,10 +348,10 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
             return calcStatus;
         }
-        public List<CalcStatusModel> GetCalcStatusies(List<long> calcIds, string preFix)
+        public List<CalcStatusModel> GetCalcStatusies(List<long> calcIds, string calcKeyId)
         {
             List<CalcStatusModel> calcStatusies = new List<CalcStatusModel>();
-            string computerName = (preFix + Hardcode.ComputerName).ToUpper();
+            string computerName = calcKeyId;
 
             if (calcIds != null && calcIds.Any())
             {
@@ -402,9 +402,9 @@ namespace EmrCalculateApi.Ika.DB.Finder
             return results;
         }
 
-        public List<CalcStatusModel> GetSameCalcStatus(long CalcId, string preFix)
+        public List<CalcStatusModel> GetSameCalcStatus(long CalcId, string calcKeyId)
         {
-            string computerName = (preFix + Hardcode.ComputerName).ToUpper();
+            string computerName = calcKeyId;
 
             var entities = _tenantDataContext.CalcStatus.FindListQueryable(p =>
                 p.CreateMachine == computerName &&
@@ -542,10 +542,10 @@ namespace EmrCalculateApi.Ika.DB.Finder
             return results;
         }
 
-        public int GetCountCalcInMonth(string prefix)
+        public int GetCountCalcInMonth(string calcKeyId)
         {
             return _tenantDataContext.CalcStatus
-                            .FindListQueryableNoTrack(p => p.CreateMachine == (prefix + Hardcode.ComputerName).ToUpper() &&
+                            .FindListQueryableNoTrack(p => p.CreateMachine == calcKeyId &&
                                                            p.Status == 0).Count();
         }
     }

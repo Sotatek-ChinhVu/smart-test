@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Accounting;
+using Domain.Models.AuditLog;
 using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
@@ -18,8 +19,9 @@ namespace Interactor.Accounting
         private readonly IHpInfRepository _hpInfRepository;
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IReceptionRepository _receptionRepository;
+        private readonly IAuditLogRepository _auditLogRepository;
 
-        public SaveAccountingInteractor(IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository)
+        public SaveAccountingInteractor(IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IAuditLogRepository auditLogRepository)
         {
             _accountingRepository = accountingRepository;
             _systemConfRepository = systemConfRepository;
@@ -27,6 +29,7 @@ namespace Interactor.Accounting
             _hpInfRepository = hpInfRepository;
             _patientInforRepository = patientInforRepository;
             _receptionRepository = receptionRepository;
+            _auditLogRepository = auditLogRepository;
         }
 
         public SaveAccountingOutputData Handle(SaveAccountingInputData inputData)
@@ -73,6 +76,8 @@ namespace Interactor.Accounting
                                                                 inputData.PayType, inputData.Comment, inputData.IsDisCharged, inputData.KaikeiTime);
                 if (save)
                 {
+                    AddAuditTrailLog(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, accDue, inputData.SinDate, inputData.Credit, inputData.IsDisCharged);
+
                     var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, CommonConstants.InvalidId, inputData.PtId, isDeleted: 0);
                     var sameVisitList = _receptionRepository.GetListSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
                     return new SaveAccountingOutputData(SaveAccountingStatus.Success, receptionInfos, sameVisitList);
@@ -128,5 +133,43 @@ namespace Interactor.Accounting
             }
             return SaveAccountingStatus.ValidateSuccess;
         }
+
+        #region AddAuditTrailLog
+        private void AddAuditTrailLog(int hpId, int userId, long ptId, int sinDate, long raiinNo, int misyu, int nyukinDate, int nyukin, bool isDisCharged)
+        {
+            if (isDisCharged)
+            {
+                var arg = new ArgumentModel(
+                                EventCode.DisCharged,
+                                ptId,
+                                sinDate,
+                                raiinNo,
+                                misyu,
+                                nyukinDate,
+                                0,
+                                0,
+                                string.Empty
+                );
+
+                _auditLogRepository.AddAuditTrailLog(hpId, userId, arg);
+            }
+            else
+            {
+                var arg = new ArgumentModel(
+                                EventCode.AccountingExecute,
+                                ptId,
+                                sinDate,
+                                raiinNo,
+                                misyu,
+                                nyukinDate,
+                                nyukin,
+                                1,
+                                string.Empty
+                );
+
+                _auditLogRepository.AddAuditTrailLog(hpId, userId, arg);
+            }
+        }
+        #endregion
     }
 }

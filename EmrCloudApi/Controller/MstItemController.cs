@@ -7,6 +7,7 @@ using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Presenters.MstItem;
+using EmrCloudApi.Requests.ListSetMst;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
@@ -22,6 +23,7 @@ using Interactor.MstItem;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
+using UseCase.ListSetMst.UpdateListSetMst;
 using UseCase.IsUsingKensa;
 using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.CompareTenMst;
@@ -67,6 +69,7 @@ using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveRenkei;
 using UseCase.MstItem.SaveCompareTenMst;
 using UseCase.MstItem.SaveSetDataTenMst;
+using UseCase.MstItem.SaveSetNameMnt;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
@@ -85,6 +88,8 @@ using UseCase.UpdateKensaMst;
 using UseCase.UpsertMaterialMaster;
 using Domain.Models.OrdInfDetails;
 using UseCase.MstItem.UpdateYohoSetMst;
+using UseCase.MstItem.GetTenMstByCode;
+using UseCase.MstItem.GetByomeiByCode;
 
 namespace EmrCloudApi.Controller
 {
@@ -795,7 +800,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<IsKensaItemOrderingResponse>>(presenter.Result);
         }
         [HttpGet(ApiPath.GetSetNameMnt)]
-        public ActionResult<Response<GetSetNameMntResponse>> GetSetNameMnt(GetSetNameMntRequest request)
+        public ActionResult<Response<GetSetNameMntResponse>> GetSetNameMnt([FromQuery] GetSetNameMntRequest request)
         {
             var input = new GetSetNameMntInputData(HpId, request.SetKbnChecked1, request.SetKbnChecked2, request.SetKbnChecked3, request.SetKbnChecked4, request.SetKbnChecked5, request.SetKbnChecked6, request.SetKbnChecked7,
                     request.SetKbnChecked8, request.SetKbnChecked9, request.SetKbnChecked10, request.JihiChecked, request.KihonChecked, request.TokuChecked, request.YohoChecked, request.DiffChecked);
@@ -835,7 +840,7 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<UpdateJihiSbtMstResponse>>(presenter.Result);
         }
-        
+
         [HttpGet(ApiPath.GetTreeByomeiSet)]
         public ActionResult<Response<GetTreeByomeiSetResponse>> GetTreeByomeiSet([FromQuery] GetTreeByomeiSetRequest request)
         {
@@ -909,7 +914,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.UpdateYohoSetMst)]
         public ActionResult<Response<UpdateYohoSetMstResponse>> UpdateYohoSetMst(UpdateYohoSetMstRequest request)
         {
-            var input = new UpdateYohoSetMstInputData(HpId, UserId, request.YohoSetMsts.Select(i=> YohoSetMstRequestToModel(i)).ToList());
+            var input = new UpdateYohoSetMstInputData(HpId, UserId, request.YohoSetMsts.Select(i => YohoSetMstRequestToModel(i)).ToList());
             var output = _bus.Handle(input);
             var presenter = new UpdateYohoSetMstPresenter();
             presenter.Complete(output);
@@ -1020,6 +1025,64 @@ namespace EmrCloudApi.Controller
             var presenter = new ExistUsedKensaItemCdPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<ExistUsedKensaItemCdResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTenMstByCode)]
+        public ActionResult<Response<GetTenMstByCodeResponse>> GetTenMstByCode([FromQuery] GetTenMstByCodeRequest request)
+        {
+            var input = new GetTenMstByCodeInputData(request.ItemCd, request.SetKbn, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenMstByCodePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenMstByCodeResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetByomeiByCode)]
+        public ActionResult<Response<GetByomeiByCodeResponse>> GetByomeiByCode([FromQuery] GetByomeiByCodeRequest request)
+        {
+            var input = new GetByomeiByCodeInputData(request.ByomeiCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetByomeiByCodePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetByomeiByCodeResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveSetNameMnt)]
+        public ActionResult<Response<SaveSetNameMntResponse>> SaveSetNameMnt([FromBody] SaveSetNameMntRequest request)
+        {
+            var input = new SaveSetNameMntInputData(ConvertToSetNameMntModelList(request), HpId, UserId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new SaveSetNameMntPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveSetNameMntResponse>>(presenter.Result);
+        }
+
+        private List<SetNameMntModel> ConvertToSetNameMntModelList(SaveSetNameMntRequest request)
+        {
+            var result = request.ListData.Select(item => new SetNameMntModel(
+                                                             item.IsSet,
+                                                             item.SetFlag,
+                                                             item.ItemCd,
+                                                             item.ItemNameTenMst,
+                                                             item.ItemNameTenMstBinding,
+                                                             item.SetCd,
+                                                             item.RowNo,
+                                                             item.RpNo,
+                                                             item.RpEdaNo,
+                                                             item.SetKbn,
+                                                             item.SetKbnEdaNo))
+                                         .ToList();
+            return result;
+        }
+
+        [HttpGet(ApiPath.GetListKensaMst)]
+        public ActionResult<Response<GetListKensaMstResponse>> GetListKensaMst([FromQuery] GetListKensaMstRequest request)
+        {
+            var input = new GetListKensaMstInputData(HpId, request.Keyword);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaMstResponse>>(presenter.Result);
         }
     }
 }

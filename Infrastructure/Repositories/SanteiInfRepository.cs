@@ -578,7 +578,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                     }
                     else
                     {
-                        santeiInfDetail.PtId = model.PtId;
+                        santeiInfDetail.PtId = ptId;
                         santeiInfDetail.KisanSbt = model.KisanSbt;
                         santeiInfDetail.KisanDate = model.KisanDate;
                         santeiInfDetail.Byomei = model.Byomei;
