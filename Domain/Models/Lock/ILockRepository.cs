@@ -12,11 +12,11 @@ namespace Domain.Models.Lock
 
         List<LockModel> GetLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
 
-        List<long> RemoveLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string tabKey);
+        (List<long> raiinList, int removedCount) RemoveLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string tabKey);
 
         List<long> RemoveAllLock(int hpId, int userId);
 
-        List<long> RemoveAllLock(int hpId, int userId, long ptId, int sinDate, string functionCd, string tabKey);
+        (List<long> raiinNoList, int removedCount) RemoveAllLock(int hpId, int userId, long ptId, int sinDate, string functionCd, string tabKey);
 
         List<long> RemoveAllLock(int hpId, int userId, string loginKey);
 

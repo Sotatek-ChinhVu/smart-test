@@ -21,12 +21,7 @@ namespace EmrCloudApi.BackgroundService
             {
                 var now = DateTime.Now;
 
-                if (now.Hour != 0)
-                {
-                    continue;
-                }
-
-                if (now > _nextRun)
+                if (now > _nextRun && now.Hour == 0)
                 {
                     await Process();
 

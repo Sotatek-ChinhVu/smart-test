@@ -558,6 +558,7 @@ using UseCase.PatientInfor.GetPtInfByRefNo;
 using UseCase.PatientInfor.GetPtInfModelsByName;
 using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using UseCase.PatientInfor.GetTokiMstList;
+using UseCase.PatientInfor.GetVisitTimesManagementModels;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.Save;
@@ -568,6 +569,7 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using UseCase.PatientInfor.SearchSimple;
+using UseCase.PatientInfor.UpdateVisitTimesManagement;
 using UseCase.PatientInformation.GetById;
 using UseCase.PatientManagement.GetStaConf;
 using UseCase.PatientManagement.SaveStaConf;
@@ -1269,6 +1271,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPtInfByRefNoInputData, GetPtInfByRefNoInteractor>();
             busBuilder.RegisterUseCase<GetPtInfModelsByNameInputData, GetPtInfModelsByNameInteractor>();
             busBuilder.RegisterUseCase<GetPtInfModelsByRefNoInputData, GetPtInfModelsByRefNoInteractor>();
+            busBuilder.RegisterUseCase<GetVisitTimesManagementModelsInputData, GetVisitTimesManagementModelsInteractor>();
+            busBuilder.RegisterUseCase<UpdateVisitTimesManagementInputData, UpdateVisitTimesManagementInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
