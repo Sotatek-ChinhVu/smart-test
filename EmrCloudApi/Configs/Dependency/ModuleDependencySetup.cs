@@ -848,6 +848,8 @@ using Interactor.SystemStartDbs;
 using UseCase.SystemStartDbs;
 using Domain.Models.SystemStartDb;
 using AspNetCoreSchedulerDemo.ScheduleTask;
+using UseCase.PatientInfor.GetVisitTimesManagementModels;
+using UseCase.PatientInfor.UpdateVisitTimesManagement;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1365,6 +1367,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPtInfByRefNoInputData, GetPtInfByRefNoInteractor>();
             busBuilder.RegisterUseCase<GetPtInfModelsByNameInputData, GetPtInfModelsByNameInteractor>();
             busBuilder.RegisterUseCase<GetPtInfModelsByRefNoInputData, GetPtInfModelsByRefNoInteractor>();
+            busBuilder.RegisterUseCase<GetVisitTimesManagementModelsInputData, GetVisitTimesManagementModelsInteractor>();
+            busBuilder.RegisterUseCase<UpdateVisitTimesManagementInputData, UpdateVisitTimesManagementInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
