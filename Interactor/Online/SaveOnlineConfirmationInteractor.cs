@@ -1,5 +1,5 @@
-﻿using Domain.Models.Online;
-using Entity.Tenant;
+﻿using Domain.Models.Insurance;
+using Domain.Models.Online;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
@@ -38,53 +38,52 @@ namespace Interactor.Online
                 bool isUpdateRaiinInfSuccess = true;
                 if (segmentOfResult == "1" || segmentOfResult == "2" || segmentOfResult == "9")
                 {
-                    var onlConfirmModel = QualificationInfGrid.SelectedInstance;
-                    onlConfirmModel.SegmentOfResult = inputData.QCBIDResponse.MessageHeader.SegmentOfResult;
-                    onlConfirmModel.ErrorMessage = inputData.QCBIDResponse.MessageHeader.ErrorMessage;
-                    bool isUpdateOnlineConfrimSuccess = _onlConfHanlder.UpdateOnlineConfirmation(onlConfirmModel);
+                    var onlConfirmModel = new QualificationInfModel(inputData.RaiinNo.ToString(),
+                                                                    inputData.QCBIDResponse.MessageHeader.SegmentOfResult,
+                                                                    inputData.QCBIDResponse.MessageHeader.ErrorMessage
+                                                                    );
+                    bool isUpdateOnlineConfrimSuccess = _onlineRepository.SaveOnlineConfirmation(inputData.UserId, onlConfirmModel, ModelStatus.Modified);
 
-                    if (segmentOfResult != "9" && response.MessageBody != null)
+                    if (segmentOfResult != "9" && inputData.QCBIDResponse.MessageBody != null)
                     {
-                        List<QCBIDXmlMsgResponseInfo> listDataInf = response.MessageBody.QCBIDXmlMsgResponseInfo?.ToList();
-                        List<ConfirmResultModel> listResultModel = new List<ConfirmResultModel>();
+                        var listDataInf = inputData.QCBIDResponse.MessageBody.QCBIDXmlMsgResponseInfo?.ToList();
+                        var listResultModel = new List<ConfirmResultModel>();
                         if (listDataInf?.Count > 0)
                         {
-                            listResultModel = listDataInf.Select(u => new ConfirmResultModel()
-                            {
-                                PtId = GetPtIdFromArbitraryIdentifier(u.QualificationConfirmSearchInfo.ArbitraryIdentifier),
-                                SinDate = onlConfirmModel.YoyakuDate,
-                                ConfirmationStatus = u.ProcessingResultStatus.AsInteger(),
-                                ReferenceNo = u.ReferenceNumber.AsLong(),
-                                Birthday = u.ResultOfQualificationConfirmation?.Birthdate,
-                                Sex1 = u.ResultOfQualificationConfirmation?.Sex1,
-                                Sex2 = u.ResultOfQualificationConfirmation?.Sex2,
-                                Address = u.ResultOfQualificationConfirmation?.Address,
-                                PostNumber = u.ResultOfQualificationConfirmation?.PostNumber,
-                                NameKana = u.ResultOfQualificationConfirmation?.NameKana,
-                                Name = u.ResultOfQualificationConfirmation?.Name,
-                                ProcessingResultMessage = u.ProcessingResultMessage,
-                                InsuredName = u.ResultOfQualificationConfirmation?.InsuredName,
+                            listResultModel = listDataInf.Select(u => new ConfirmResultModel(
+                                                                            GetPtIdFromArbitraryIdentifier(u.QualificationConfirmSearchInfo.ArbitraryIdentifier),
+                                                                            onlConfirmModel.YoyakuDate,
+                                                                            u.ResultOfQualificationConfirmation?.Birthdate ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.Sex1 ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.Sex2 ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.Address ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.InsuredName ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.PostNumber ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.NameKana ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.Name ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.InsurerNumber ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.InsuredCardSymbol ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.InsuredIdentificationNumber ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.InsuredBranchNumber ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.PersonalFamilyClassification ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.InsuredCertificateIssuanceDate ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.InsuredCardValidDate ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.InsuredCardExpirationDate ?? string.Empty,
+                                                                            u.ResultOfQualificationConfirmation?.LimitApplicationCertificateChanged ?? string.Empty,
+                                                                            u.ProcessingResultMessage,
+                                                                            string.Empty,
+                                                                            u.ProcessingResultStatus.AsInteger(),
+                                                                            u.ReferenceNumber.AsLong(),
+                                                                            new ConfirmDateModel(
+                                                                                        GetPtIdFromArbitraryIdentifier(u.QualificationConfirmSearchInfo.ArbitraryIdentifier),
+                                                                                        1,
+                                                                                        u.QualificationConfirmSearchInfo.ArbitraryIdentifier?.Substring(u.QualificationConfirmSearchInfo.ArbitraryIdentifier.LastIndexOf("_") + 1).AsInteger() ?? 0,
+                                                                                        CIUtil.IntToDate(inputData.QCBIDResponse.MessageHeader.QualificationConfirmationDate.AsInteger()),
+                                                                                        inputData.UserId,
+                                                                                        "オンライン資格確認一括照会"
+                                                                                )
 
-                                InsurerNumber = u.ResultOfQualificationConfirmation?.InsurerNumber,
-                                InsuredCardSymbol = u.ResultOfQualificationConfirmation?.InsuredCardSymbol,
-                                InsuredBranchNumber = u.ResultOfQualificationConfirmation?.InsuredBranchNumber,
-                                PersonalFamilyClassification = u.ResultOfQualificationConfirmation?.PersonalFamilyClassification,
-                                InsuredCertificateIssuanceDate = u.ResultOfQualificationConfirmation?.InsuredCertificateIssuanceDate,
-                                InsuredCardValidDate = u.ResultOfQualificationConfirmation?.InsuredCardValidDate,
-                                InsuredCardExpirationDate = u.ResultOfQualificationConfirmation?.InsuredCardExpirationDate,
-                                // LimitApplicationCertificateClassificationFlag = u.ResultOfQualificationConfirmation?.LimitApplicationCertificateChanged,
-
-                                PtHokenCheckModel = new PtHokenCheckModel(new PtHokenCheck())
-                                {
-                                    PtID = GetPtIdFromArbitraryIdentifier(u.QualificationConfirmSearchInfo.ArbitraryIdentifier),
-                                    HokenId = u.QualificationConfirmSearchInfo.ArbitraryIdentifier?.Substring(u.QualificationConfirmSearchInfo.ArbitraryIdentifier.LastIndexOf("_") + 1).AsInteger() ?? 0,
-                                    CheckDate = CIUtil.IntToDate(response.MessageHeader.QualificationConfirmationDate.AsInteger()),
-                                    HokenGrp = 1,
-                                    CheckCmt = "オンライン資格確認一括照会",
-                                    CheckId = Session.UserID,
-                                    CheckMachine = CIUtil.GetComputerName()
-                                }
-                            }).ToList();
+                                )).ToList();
                         }
                         isUpdateRaiinInfSuccess = _onlConfHanlder.UpdateRaiinInfByResResult(listResultModel);
                         if (isUpdateRaiinInfSuccess)

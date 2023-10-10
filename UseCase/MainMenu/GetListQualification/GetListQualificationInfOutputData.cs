@@ -1,4 +1,4 @@
-﻿using Domain.Models.MainMenu;
+﻿using Domain.Models.Online;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.MainMenu.GetListQualification

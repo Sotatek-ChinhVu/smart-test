@@ -1,4 +1,4 @@
-﻿using Domain.Models.MainMenu;
+﻿using Domain.Models.Online;
 
 namespace EmrCloudApi.Responses.MainMenu
 {

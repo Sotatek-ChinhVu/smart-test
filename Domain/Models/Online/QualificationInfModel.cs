@@ -1,7 +1,6 @@
 ﻿using Helper.Common;
-using System.Text.Json.Serialization;
 
-namespace Domain.Models.MainMenu
+namespace Domain.Models.Online
 {
     public class QualificationInfModel
     {
@@ -19,6 +18,13 @@ namespace Domain.Models.MainMenu
             ReceptionNo = string.Empty;
             SegmentOfResult = string.Empty;
             ErrorMessage = string.Empty;
+        }
+
+        public QualificationInfModel(string receptionNo, string segmentOfResult, string errorMessage)
+        {
+            ReceptionNo = receptionNo;
+            SegmentOfResult = segmentOfResult;
+            ErrorMessage = errorMessage;
         }
 
         public string ReceptionNo { get; private set; }

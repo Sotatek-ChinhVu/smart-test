@@ -9,9 +9,10 @@ namespace UseCase.Online.SaveOnlineConfirmation
 {
     public class SaveOnlineConfirmationInputData : IInputData<SaveOnlineConfirmationOutputData>
     {
-        public SaveOnlineConfirmationInputData(int userId, string qCBIDXmlMsgRequest, string qCBIDXmlMsgResponse, QualificationInfModel qualificationInf, ModelStatus modelStatus)
+        public SaveOnlineConfirmationInputData(int userId, long raiinNo, string qCBIDXmlMsgRequest, string qCBIDXmlMsgResponse, QualificationInfModel qualificationInf, ModelStatus modelStatus)
         {
             UserId = userId;
+            RaiinNo = raiinNo;
             QCBIDXmlMsgRequest = qCBIDXmlMsgRequest;
             QCBIDXmlMsgResponse = qCBIDXmlMsgResponse;
             QualificationInf = qualificationInf;
@@ -19,6 +20,8 @@ namespace UseCase.Online.SaveOnlineConfirmation
         }
 
         public int UserId { get; set; }
+
+        public long RaiinNo { get; set; }
 
         public string QCBIDXmlMsgRequest { get; private set; }
 

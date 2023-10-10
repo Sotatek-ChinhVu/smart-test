@@ -1,4 +1,4 @@
-﻿using Domain.Models.MainMenu;
+﻿using Domain.Models.Online;
 using Helper.Constants;
 
 namespace EmrCloudApi.Requests.Online

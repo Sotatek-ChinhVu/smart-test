@@ -9,6 +9,20 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        public static bool IsNumberic(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return false;
+            foreach (char c in str)
+            {
+                if (!char.IsDigit(c) && c != '.')
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static string CalcChkDgtM10W2(string code)
         {
             int weight = 2;

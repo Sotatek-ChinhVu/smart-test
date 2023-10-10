@@ -4,6 +4,8 @@ namespace Domain.Models.Insurance
 {
     public class ConfirmDateModel
     {
+        public long PtId { get; private set; }
+
         public int HokenGrp { get; private set; }
 
         public int HokenId { get; private set; }
@@ -21,6 +23,18 @@ namespace Domain.Models.Insurance
         public string CheckMachine { get; private set; }
 
         public int IsDeleted { get; private set; }
+
+        public ConfirmDateModel(long ptId, int hokenGrp, int hokenId, DateTime confirmDate, int checkId, string checkComment)
+        {
+            PtId = ptId;
+            HokenGrp = hokenGrp;
+            HokenId = hokenId;
+            ConfirmDate = int.Parse(confirmDate.ToString("yyyyMMdd"));
+            CheckId = checkId;
+            CheckMachine = string.Empty;
+            CheckName = string.Empty;
+            CheckComment = checkComment;
+        }
 
         public ConfirmDateModel(int hokenGrp, int hokenId, DateTime confirmDate, int checkId, string checkMachine, string checkComment, int isDeleted)
         {
