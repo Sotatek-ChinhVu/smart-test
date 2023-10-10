@@ -139,19 +139,19 @@ namespace Reporting.Statistics.Sta3020.DB
                                 if (printConf.SearchOpt == 1)
                                 {
                                     //and検索
-                                    joinDetails = joinDetails.Where(x => printConf.ListSearchWord.All(key => x.SetName.Contains(key)));
+                                    joinDetails = joinDetails.Where(x => printConf.ListSearchWord!.All(key => x.SetName.Contains(key)));
                                 }
                                 else
                                 {
                                     //or検索
-                                    joinDetails = joinDetails.Where(x => printConf.ListSearchWord.Any(key => x.SetName.Contains(key)));
+                                    joinDetails = joinDetails.Where(x => printConf.ListSearchWord!.Any(key => x.SetName.Contains(key)));
                                 }
                             }
 
                             //検索項目
                             if (printConf.ItemSearchOpt == 0 && ((printConf.ItemCds?.Count ?? 0) > 0))
                             {
-                                joinDetails = joinDetails.Where(x => x.ItemCd != null && printConf.ItemCds.Any(key => x.ItemCd.Contains(key)));
+                                joinDetails = joinDetails.Where(x => x.ItemCd != null && printConf.ItemCds!.Any(key => x.ItemCd.Contains(key)));
                             }
                             break;
                         }
@@ -210,7 +210,7 @@ namespace Reporting.Statistics.Sta3020.DB
                         byomeiSetMst.SelectType,
                         DelDate = byomeiMstJoin != null ? byomeiMstJoin.DelDate : 0
                     }
-                );
+                ).AsEnumerable();
 
 
                 //条件２-対象データ
@@ -231,19 +231,19 @@ namespace Reporting.Statistics.Sta3020.DB
                                 if (printConf.SearchOpt == 1)
                                 {
                                     //and検索
-                                    joinDetails = joinDetails.Where(x => printConf.ListSearchWord.All(key => x.SetName.Contains(key)));
+                                    joinDetails = joinDetails.Where(x => printConf.ListSearchWord!.All(key => x.SetName.Contains(key)));
                                 }
                                 else
                                 {
                                     //or検索
-                                    joinDetails = joinDetails.Where(x => printConf.ListSearchWord.Any(key => x.SetName.Contains(key)));
+                                    joinDetails = joinDetails.Where(x => printConf.ListSearchWord!.Any(key => x.SetName.Contains(key)));
                                 }
                             }
 
                             //検索項目
                             if (printConf.ItemSearchOpt == 1 && ((printConf.ItemCds?.Count ?? 0) > 0))
                             {
-                                joinDetails = joinDetails.Where(x => printConf.ItemCds.Any(key => x.ByomeiCd.Contains(key)));
+                                joinDetails = joinDetails.Where(x => printConf.ItemCds!.Any(key => x.ByomeiCd.Contains(key)));
                             }
                             break;
                         }
