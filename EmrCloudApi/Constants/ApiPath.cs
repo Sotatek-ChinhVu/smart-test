@@ -81,6 +81,7 @@
         public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
         public const string GetTenMstByCode = "GetTenMstByCode";
         public const string GetByomeiByCode = "GetByomeiByCode";
+        public const string GetListKensaMst = "GetListKensaMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -504,6 +505,8 @@
         //SetSendaiGeneration
         public const string Restore = "Restore";
 
+        //KensaHistory
+        public const string UpdateKensaSet = "UpdateKensaSet";
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";
         public const string SaveCompareTenMst = "SaveCompareTenMst";

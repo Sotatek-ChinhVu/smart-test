@@ -88,6 +88,7 @@ using Domain.Models.OrdInfDetails;
 using UseCase.MstItem.UpdateYohoSetMst;
 using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
+using UseCase.MstItem.GetListResultKensaMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -1043,6 +1044,16 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveSetNameMntPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveSetNameMntResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListKensaMst)]
+        public ActionResult<Response<GetListKensaMstResponse>> GetListKensaMst([FromQuery] GetListKensaMstRequest request)
+        {
+            var input = new GetListKensaMstInputData(HpId, request.Keyword);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaMstResponse>>(presenter.Result);
         }
 
         private List<SetNameMntModel> ConvertToSetNameMntModelList(SaveSetNameMntRequest request)
