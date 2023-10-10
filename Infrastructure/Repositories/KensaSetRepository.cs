@@ -396,7 +396,8 @@ namespace Infrastructure.Repositories
                            Yoketu = t3.Yoketu ?? string.Empty,
                            Bilirubin = t3.Bilirubin ?? string.Empty,
                            SikyuKbn = t3.SikyuKbn,
-                           TosekiKbn = t3.TosekiKbn
+                           TosekiKbn = t3.TosekiKbn,
+                           IsDeleted = 0
                        };
 
             if (showAbnormalKbn)
@@ -448,24 +449,34 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            //
+            // Get list with start date
+            if (SortIraiDateAsc && startDate != 0)
+            {
+                data = data.Where(x => x.IraiDate >= startDate);
+            }
+            else if (startDate != 0)
+            {
+                data = data.Where(x => x.IraiDate <= startDate);
+            }
+
             var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName });
 
             // Get list iraiCd
             var kensaInfDetailCol = SortIraiDateAsc ? data
                                 .OrderBy(x => x.IraiDate)
                                 .GroupBy(x => new { x.IraiCd, x.IraiDate })
-                                .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate)).Where(x => (startDate == 0 || x.IraiDate >= startDate))
+                                .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate))
 
                             : data.OrderByDescending(x => x.IraiDate)
                                 .GroupBy(x => new { x.IraiCd, x.IraiDate })
-                                .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate)).Where(x => (startDate == 0 || x.IraiDate <= startDate));
+                                .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate));
+
+            
 
             kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
 
+
             var kensaInfDetailData = new List<object>();
-
-
 
             foreach (var kensaMstItem in kensaItemCds)
             {
@@ -474,7 +485,7 @@ namespace Infrastructure.Repositories
                 foreach (var item in kensaInfDetailCol)
                 {
                     var dynamicDataItem = data.Where(x => x.IraiCd == item.IraiCd && x.KensaItemCd == kensaMstItem.KensaItemCd).FirstOrDefault();
-                    
+
                     if (dynamicDataItem == null)
                     {
                         dynamicArray.Add(new
@@ -503,7 +514,8 @@ namespace Infrastructure.Repositories
                             Yoketu = string.Empty,
                             Bilirubin = string.Empty,
                             SikyuKbn = 0,
-                            TosekiKbn = 0
+                            TosekiKbn = 0,
+                            IsDeleted = 0
                         });
                     }
                     else
@@ -512,14 +524,14 @@ namespace Infrastructure.Repositories
                     }
                 }
 
-                var row = new
+                var rowData = new
                 {
                     KensaItemCd = kensaMstItem.KensaItemCd,
-                    KensaName =  kensaMstItem.KensaName,
+                    KensaName = kensaMstItem.KensaName,
                     DynamicArray = dynamicArray
                 };
 
-                kensaInfDetailData.Add(row);
+                kensaInfDetailData.Add(rowData);
             }
 
             var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData);
