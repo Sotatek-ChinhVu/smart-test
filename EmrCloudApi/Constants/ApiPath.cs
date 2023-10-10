@@ -65,7 +65,6 @@
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
-        public const string GetListKensaMst = "GetListKensaMst";
         public const string GetListYohoSetMstModelByUserID = "GetListYohoSetMstModelByUserID";
         public const string GetRenkeiConf = "GetRenkeiConf";
         public const string SaveRenkei = "SaveRenkei";
