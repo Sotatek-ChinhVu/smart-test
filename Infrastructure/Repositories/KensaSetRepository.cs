@@ -123,10 +123,8 @@ namespace Infrastructure.Repositories
                 x.IsDeleted,
                 x.CreateDate,
                 x.CreateId,
-                x.CreateMachine,
                 x.UpdateDate,
-                x.UpdateId,
-                x.UpdateMachine
+                x.UpdateId
                 )).ToList();
         }
 
