@@ -713,7 +713,21 @@ public class Sta3061CoReportService : ISta3061CoReportService
         }
 
         //データ取得
-        kouiTensus = _finder.GetKouiTensu(hpId, printConf);
+        if (printConf.IsSinDate)
+        {
+            kouiTensus = _finder.GetKouiTensu(hpId, printConf);
+        }
+        else
+        {
+            if (printConf.EndSinYm - printConf.StartSinYm == 0)
+            {
+                kouiTensus = _finder.GetKouiTensu(hpId, printConf);
+            }
+            else
+            {
+                kouiTensus = _finder.GetKouiTensu2(hpId, printConf);
+            }
+        }
         if ((kouiTensus?.Count ?? 0) == 0) return false;
 
         hpInf = _finder.GetHpInf(hpId, kouiTensus?.FirstOrDefault()?.SinDate ?? 0);
