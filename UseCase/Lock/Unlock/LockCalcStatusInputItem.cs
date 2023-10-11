@@ -2,7 +2,7 @@
 {
     public class LockCalcStatusInputItem
     {
-        public LockCalcStatusInputItem(long calcId, long ptId, long ptNum, int sinDate, DateTime createDate, string createMachine)
+        public LockCalcStatusInputItem(long calcId, long ptId, long ptNum, int sinDate, DateTime createDate, string createMachine, int createId)
         {
             CalcId = calcId;
             PtId = ptId;
@@ -10,6 +10,7 @@
             SinDate = sinDate;
             CreateDate = createDate;
             CreateMachine = createMachine;
+            CreateId = createId;
         }
 
         public long CalcId { get; private set; }
@@ -31,5 +32,7 @@
         }
 
         public string CreateMachine { get; set; }
+
+        public int CreateId {  get; private set; }
     }
 }

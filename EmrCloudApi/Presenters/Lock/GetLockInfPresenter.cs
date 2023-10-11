@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.Lock
         {
             Result = new Response<GetLockInfResponse>()
             {
-                Data = new GetLockInfResponse(outputData.LockInfs),
+                Data = new GetLockInfResponse(outputData.LockInfs, outputData.UserLocks),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)

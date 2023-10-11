@@ -209,9 +209,9 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetLockInf)]
-        public ActionResult<Response<GetLockInfResponse>> GetLockInf()
+        public ActionResult<Response<GetLockInfResponse>> GetLockInf([FromQuery] GetLockInfRequest request)
         {
-            var input = new GetLockInfInputData(HpId);
+            var input = new GetLockInfInputData(HpId, UserId, request.ManagerKbn);
             var output = _bus.Handle(input);
 
             var presenter = new GetLockInfPresenter();
@@ -223,7 +223,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Unlock)]
         public ActionResult<Response<UnlockResponse>> Unlock(UnlockRequest request)
         {
-            var input = new UnlockInputData(HpId, UserId, request.LockInfModels.Select(x => LockInfInputItemRequestToModel(x)).ToList());
+            var input = new UnlockInputData(HpId, UserId, request.LockInfModels.Select(x => LockInfInputItemRequestToModel(x)).ToList(), request.ManagerKbn);
             var output = _bus.Handle(input);
 
             var presenter = new UnlockPresenter();
@@ -252,7 +252,8 @@ namespace EmrCloudApi.Controller
                                             lockInfInputItem.CalcStatusModels.PtNum,
                                             lockInfInputItem.CalcStatusModels.SinDate,
                                             lockInfInputItem.CalcStatusModels.CreateDate,
-                                            lockInfInputItem.CalcStatusModels.CreateMachine), 
+                                            lockInfInputItem.CalcStatusModels.CreateMachine, 
+                                            lockInfInputItem.CalcStatusModels.CreateId), 
                     new LockDocInfModel(lockInfInputItem.DocInfModels.PtId,
                                         lockInfInputItem.DocInfModels.PtNum,
                                         lockInfInputItem.DocInfModels.SinDate,

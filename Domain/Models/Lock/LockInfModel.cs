@@ -30,11 +30,51 @@ namespace Domain.Models.Lock
             DocInfModels = docInfModels;
         }
 
+        public int UserId
+        {
+            get
+            {
+                if (DocInfModels != null)
+                {
+                    return DocInfModels.LockId;
+                }
+                if (CalcStatusModels != null)
+                {
+                    return CalcStatusModels.CreateId;
+                }
+                if (PatientInfoModels != null)
+                {
+                    return PatientInfoModels.UserId;
+                }
+                return 0;
+            }
+        }
+
         public LockPtInfModel PatientInfoModels { get; private set; } 
 
         public LockCalcStatusModel CalcStatusModels { get; private set; }
 
-        public LockDocInfModel DocInfModels { get; private set; } 
+        public LockDocInfModel DocInfModels { get; private set; }
+
+        public string FunctionName
+        {
+            get
+            {
+                if (DocInfModels != null && !string.IsNullOrEmpty(DocInfModels.FunctionName))
+                {
+                    return DocInfModels.FunctionName;
+                }
+                if (CalcStatusModels != null)
+                {
+                    return "計算";
+                }
+                if (PatientInfoModels != null && !string.IsNullOrEmpty(PatientInfoModels.FunctionName))
+                {
+                    return PatientInfoModels.FunctionName;
+                }
+                return string.Empty;
+            }
+        }
 
         public long PtNum
         {

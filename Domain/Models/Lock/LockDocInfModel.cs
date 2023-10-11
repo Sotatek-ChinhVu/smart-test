@@ -43,7 +43,14 @@
 
         public string FileName { get; private set; }
 
-
         public int IsDeleted { get; private set; }
+
+        public string FunctionName
+        {
+            get
+            {
+                return DspFileName != null ? "[文書]" + DspFileName : string.Empty;
+            }
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace Interactor.Lock
         {
             try
             {
-                var data = _lockRepository.Unlock(inputData.HpId, inputData.UserId, inputData.LockModels);
+                var data = _lockRepository.Unlock(inputData.HpId, inputData.UserId, inputData.LockModels, inputData.ManagerKbn);
                 if (data)
                 {
                     return new UnlockOutputData(UnlockStatus.Success);
