@@ -1091,7 +1091,6 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
 
         var ptIdList = sinKouiList.Select(item => item.ptInf.PtId).Distinct().ToList();
         var sinKouiFilmList = sinKouiFilms.Where(item => ptIdList.Contains(item.PtId)).ToList();
-        var ptGrpInfList = ptGrpInfs.Where(item => item.HpId == hpId).ToList();
 
         var retDatas =
             (from sinKoui in sinKouiList
@@ -1321,11 +1320,11 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
                     sinCount.SinDate,
                     sinKoui.JihiSbt
                 } into sinGroupj
-            select new JihiMeisai()
+            select new
             {
-                SinDate = sinGroupj.Key.SinDate,
-                RaiinNo = sinGroupj.Key.RaiinNo,
-                JihiSbt = sinGroupj.Key.JihiSbt,
+                sinGroupj.Key.SinDate,
+                sinGroupj.Key.RaiinNo,
+                sinGroupj.Key.JihiSbt,
                 JihiFutan =
                         sinGroupj.Sum
                             (x =>
@@ -1444,18 +1443,5 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
         public int RpNo { get; private set; }
 
         public int SeqNo { get; private set; }
-    }
-
-    private class JihiMeisai
-    {
-        public int JihiCount { get; set; }
-
-        public int SinDate { get; set; }
-
-        public long RaiinNo { get; set; }
-
-        public int JihiSbt { get; set; }
-
-        public double JihiFutan { get; set; }
     }
 }
