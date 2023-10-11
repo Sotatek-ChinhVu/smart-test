@@ -1,4 +1,5 @@
-﻿using Domain.Models.KensaSet;
+﻿using Domain.Models.KensaCmtMst.cs;
+using Domain.Models.KensaSet;
 using Domain.Models.KensaSetDetail;
 using Entity.Tenant;
 using Helper.Common;
@@ -139,6 +140,32 @@ namespace Infrastructure.Repositories
                 x.SortNo,
                 x.IsDeleted
                 )).ToList();
+        }
+
+        public List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, string keyWord)
+        {
+            string bigKeyWord = keyWord.ToUpper()
+                                   .Replace("ｧ", "ｱ")
+                                   .Replace("ｨ", "ｲ")
+                                   .Replace("ｩ", "ｳ")
+                                   .Replace("ｪ", "ｴ")
+                                   .Replace("ｫ", "ｵ")
+                                   .Replace("ｬ", "ﾔ")
+                                   .Replace("ｭ", "ﾕ")
+                                   .Replace("ｮ", "ﾖ")
+                                   .Replace("ｯ", "ﾂ");
+
+            //get kensa in KensaMst
+            var kensaInKensaMst = from t1 in NoTrackingDataContext.KensaCmtMsts
+                                  join t2 in NoTrackingDataContext.KensaCenterMsts on t1.CenterCd equals t2.CenterCd
+                                  where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CMT ?? "").ToUpper().Contains(bigKeyWord)
+                                  select new KensaCmtMstModel(
+                                      t1.CmtCd, 
+                                      t1.CMT ?? string.Empty,
+                                      t1.CmtSeqNo, 
+                                      t2.CenterName ?? string.Empty
+                                  );
+            return kensaInKensaMst.ToList();
         }
 
         public void ReleaseResource()

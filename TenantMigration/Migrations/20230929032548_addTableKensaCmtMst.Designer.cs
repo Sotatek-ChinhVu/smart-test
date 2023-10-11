@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20230929032548_addTableKensaCmtMst")]
+    partial class addTableKensaCmtMst
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -14664,8 +14667,6 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex(new[] { "HpId", "GrpId", "KbnCd", "IsDeleted" }, "RAIIN_LIST_DETAIL_IDX01");
 
-                    b.HasIndex(new[] { "HpId", "IsDeleted" }, "RAIIN_LIST_DETAIL_IDX02");
-
                     b.ToTable("RAIIN_LIST_DETAIL");
                 });
 
@@ -14849,10 +14850,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "GrpId", "RaiinListKbn");
-
-                    b.HasIndex(new[] { "GrpId", "KbnCd", "RaiinListKbn" }, "RAIIN_LIST_INF_IDX01");
-
-                    b.HasIndex(new[] { "HpId", "PtId", "RaiinNo" }, "RAIIN_LIST_INF_IDX02");
 
                     b.ToTable("RAIIN_LIST_INF");
                 });
