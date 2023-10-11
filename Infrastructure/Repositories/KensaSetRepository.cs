@@ -390,6 +390,8 @@ namespace Infrastructure.Repositories
                            Std = t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
                            StdLow = t4.Sex == 1 ? t2.MaleStdLow ?? string.Empty : t2.FemaleStdLow ?? string.Empty,
                            StdHigh = t4.Sex == 1 ? t2.MaleStdHigh ?? string.Empty : t2.FemaleStdHigh ?? string.Empty,
+                           MaleStd = t2.MaleStd?? string.Empty,
+                           FemaleStd =  t2.FemaleStd ?? string.Empty,
                            Unit = t2.Unit ?? string.Empty,
                            Nyubi = t3.Nyubi ?? string.Empty,
                            Yoketu = t3.Yoketu ?? string.Empty,
@@ -460,7 +462,7 @@ namespace Infrastructure.Repositories
                 data = data.Where(x => x.IraiDate <= startDate);
             }
 
-            var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName });
+            var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
 
             // Get list iraiCd
             IOrderedQueryable<object> kensaInfDetailColOrder = data.OrderBy(x => x.IraiDate);
@@ -509,6 +511,8 @@ namespace Infrastructure.Repositories
                             Std = string.Empty,
                             StdLow = string.Empty,
                             StdHigh = string.Empty,
+                            MaleStd = string.Empty,
+                            FemaleStd = string.Empty,
                             Unit = string.Empty,
                             Nyubi = string.Empty,
                             Yoketu = string.Empty,
@@ -530,6 +534,8 @@ namespace Infrastructure.Repositories
                 {
                     KensaItemCd = kensaMstItem.KensaItemCd,
                     KensaName = kensaMstItem.KensaName,
+                    Unit = kensaMstItem.Unit,
+                    Std = kensaMstItem.Std,
                     DynamicArray = dynamicArray
                 };
 
