@@ -84,25 +84,25 @@ namespace Infrastructure.Logger
             }
         }
 
-        public bool WriteAuditLog(string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType)
+        public bool WriteAuditLog(string path, string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType)
         {
             AuditLog audit = new AuditLog()
             {
                 Domain = _tenantProvider.GetDomain(),
-                ClientIP = _tenantProvider.GetClientIp(),
                 HpId = _tenantProvider.GetHpId(),
                 DepartmentId = _tenantProvider.GetDepartmentId(),
                 UserId = _tenantProvider.GetUserId(),
                 TenantId = _tenantProvider.GetClinicID(),
+                Path = path,
                 RequestInfo = requestInfo,
                 LogDate = CIUtil.GetJapanDateTimeNow(),
-                ThreadId = Thread.CurrentThread.ManagedThreadId.ToString(),
                 EventCd = eventCd,
                 PtId = ptId,
                 RaiinNo = raiinNo,
                 SinDay = sinDay,
                 Desciption = description,
-                LogType = logType
+                LogType = logType,
+                LoginKey = _tenantProvider.GetLoginKeyFromHeader()
             };
 
             AuditLogs.Add(audit);

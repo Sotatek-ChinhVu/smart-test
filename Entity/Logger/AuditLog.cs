@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Logger
 {
@@ -13,13 +13,16 @@ namespace Entity.Logger
 
         public string Domain { get; set; } = string.Empty;
 
-        public string ThreadId { get; set;} = string.Empty;
+        public string ThreadId { get; set; } = string.Empty;
 
         public string LogType { get; set; } = string.Empty;
 
         public int HpId { get; set; }
 
         public int UserId { get; set; }
+
+        [MaxLength(250)]
+        public string LoginKey { get; set; } = string.Empty;
 
         public int DepartmentId { get; set; }
 
@@ -33,6 +36,9 @@ namespace Entity.Logger
         public int SinDay { get; set; }
 
         public long RaiinNo { get; set; }
+
+        [MaxLength(1000)]
+        public string? Path { get; set; } = string.Empty;
 
         public string RequestInfo { get; set; } = string.Empty;
 
