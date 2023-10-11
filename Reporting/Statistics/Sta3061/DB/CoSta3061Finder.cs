@@ -59,8 +59,6 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
     {
         try
         {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
             IQueryable<SinKouiCount> sinKouiCounts = NoTrackingDataContext.SinKouiCounts;
             if (printConf.IsSinDate)
             {
@@ -735,15 +733,6 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
                 }
             }
             #endregion
-
-            stopWatch.Stop();
-            // Get the elapsed time as a TimeSpan value.
-            TimeSpan ts = stopWatch.Elapsed;
-
-            // Format and display the TimeSpan value.
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-                ts.Hours, ts.Minutes, ts.Seconds,
-                ts.Milliseconds / 10);
             return retDatas;
         }
         finally
@@ -759,8 +748,6 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
 
     public List<CoKouiTensuModel> GetKouiTensu2(int hpId, CoSta3061PrintConf printConf)
     {
-        Stopwatch stopWatch = new Stopwatch();
-        stopWatch.Start();
         IQueryable<SinKouiCount> sinKouiCounts = NoTrackingDataContext.SinKouiCounts;
         if (printConf.IsSinDate)
         {
@@ -1388,14 +1375,6 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
             }
         }
         #endregion
-        stopWatch.Stop();
-        // Get the elapsed time as a TimeSpan value.
-        TimeSpan ts = stopWatch.Elapsed;
-
-        // Format and display the TimeSpan value.
-        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
         return retDatas;
     }
 
