@@ -119,7 +119,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<TenMst>().HasKey(r => new { r.HpId, r.ItemCd, r.StartDate });
             modelBuilder.Entity<RaiinListCmt>().HasKey(r => new { r.HpId, r.RaiinNo, r.CmtKbn });
             modelBuilder.Entity<RaiinListTag>().HasKey(r => new { r.HpId, r.RaiinNo, r.SeqNo });
-            modelBuilder.Entity<RaiinListInf>().HasKey(r => new { r.HpId, r.PtId, r.SinDate, r.RaiinNo, r.GrpId, r.RaiinListKbn });
+            modelBuilder.Entity<RaiinListInf>().HasKey(r => new { r.Id });
             modelBuilder.Entity<RaiinListDetail>().HasKey(r => new { r.HpId, r.GrpId, r.KbnCd });
             modelBuilder.Entity<RaiinListMst>().HasKey(r => new { r.HpId, r.GrpId });
             modelBuilder.Entity<RoudouMst>().HasKey(r => new { r.RoudouCd });
@@ -440,6 +440,9 @@ namespace PostgreDataContext
             modelBuilder.Entity<LockInf>()
            .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter($"\"FUNCTION_CD\" IN ('02000000', '03000000')").IsUnique();
             modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
+
+            modelBuilder.Entity<RaiinListInf>()
+         .HasIndex(r => new { r.HpId, r.PtId, r.SinDate, r.RaiinNo, r.GrpId, r.RaiinListKbn }).IsUnique();
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
