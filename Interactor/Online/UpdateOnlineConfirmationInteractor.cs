@@ -225,7 +225,7 @@ namespace Interactor.Online
                 );
             }
 
-            _onlineRepository.InsertOnlineConfirmHistory(userId, listOnlineConfirmationHistoryModel);
+            _onlineRepository.InsertListOnlConfirmHistory(userId, listOnlineConfirmationHistoryModel);
 
         }
 

@@ -1,6 +1,5 @@
 using Helper.Constants;
 using Helper.Extension;
-using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,6 +8,17 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        //convert yyyyMMddHHmmss to yyyy/MM/dd HH:mm:ss
+        public static DateTime StrDateToDate(string sDate, string format = "yyyyMMddHHmmss")
+        {
+            var dateTimeResult = CIUtil.GetJapanDateTimeNow();
+
+            format = "yyyyMMddHHmmss";
+            DateTime.TryParseExact(sDate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeResult);
+
+            return dateTimeResult;
+        }
+
         public static bool IsNumberic(string str)
         {
             if (string.IsNullOrWhiteSpace(str)) return false;

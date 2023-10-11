@@ -28,7 +28,7 @@ namespace UseCase.Online.SaveOnlineConfirmation
 
         public QCBIDXmlMsgResponse QCBIDResponse
         {
-            get => new XmlSerializer(typeof(QCBIDXmlMsgResponse)).Deserialize(new StringReader(QCBIDXmlMsgRequest)) as QCBIDXmlMsgResponse ?? new();
+            get => new XmlSerializer(typeof(QCBIDXmlMsgResponse)).Deserialize(new StringReader(QCBIDXmlMsgResponse)) as QCBIDXmlMsgResponse ?? new();
         }
 
         public QCBIDXmlMsgRequest QCBIDRequest
