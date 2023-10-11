@@ -322,7 +322,7 @@ namespace Infrastructure.Repositories
             return successed;
         }
 
-        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, int ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity)
+        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity)
         {
             IQueryable<KensaInfDetail> kensaInfDetails;
 
@@ -369,39 +369,39 @@ namespace Infrastructure.Repositories
                        join t6 in NoTrackingDataContext.KensaCmtMsts
                             on t1.CmtCd2 equals t6.CMT into leftJoinT6
                        from t6 in leftJoinT6.DefaultIfEmpty()
-                       select new
-                       {
-                           PtId = t1.PtId,
-                           IraiCd = t1.IraiCd,
-                           RaiinNo = t1.RaiinNo,
-                           IraiDate = t1.IraiDate,
-                           SeqNo = t1.SeqNo,
-                           KensaName = t2.KensaName ?? string.Empty,
-                           KensaKana = t2.KensaKana ?? string.Empty,
-                           SortNo = t2.SortNo,
-                           KensaItemCd = t1.KensaItemCd ?? string.Empty,
-                           ResultVal = t1.ResultVal ?? string.Empty,
-                           ResultType = t1.ResultType ?? string.Empty,
-                           AbnormalKbn = t1.AbnormalKbn ?? string.Empty,
-                           CmtCd1 = t1.CmtCd1 ?? string.Empty,
-                           CmtCd2 = t1.CmtCd2 ?? string.Empty,
-                           Cmt1 = (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
-                           Cmt2 = (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
-                           Std = t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
-                           StdLow = t4.Sex == 1 ? t2.MaleStdLow ?? string.Empty : t2.FemaleStdLow ?? string.Empty,
-                           StdHigh = t4.Sex == 1 ? t2.MaleStdHigh ?? string.Empty : t2.FemaleStdHigh ?? string.Empty,
-                           MaleStd = t2.MaleStd?? string.Empty,
-                           FemaleStd =  t2.FemaleStd ?? string.Empty,
-                           Unit = t2.Unit ?? string.Empty,
-                           Nyubi = t3.Nyubi ?? string.Empty,
-                           Yoketu = t3.Yoketu ?? string.Empty,
-                           Bilirubin = t3.Bilirubin ?? string.Empty,
-                           SikyuKbn = t3.SikyuKbn,
-                           TosekiKbn = t3.TosekiKbn,
-                           InoutKbn = t3.InoutKbn,
-                           Status = t3.Status,
-                           IsDeleted = 0
-                       };
+                       select new ListKensaInfDetailItem
+                       (
+                           t1.PtId,
+                           t1.IraiCd,
+                           t1.RaiinNo,
+                           t1.IraiDate,
+                           t1.SeqNo,
+                           t2.KensaName ?? string.Empty,
+                           t2.KensaKana ?? string.Empty,
+                           t2.SortNo,
+                           t1.KensaItemCd ?? string.Empty,
+                           t1.ResultVal ?? string.Empty,
+                           t1.ResultType ?? string.Empty,
+                           t1.AbnormalKbn ?? string.Empty,
+                           t1.CmtCd1 ?? string.Empty,
+                           t1.CmtCd2 ?? string.Empty,
+                           (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
+                           (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
+                           t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
+                           t4.Sex == 1 ? t2.MaleStdLow ?? string.Empty : t2.FemaleStdLow ?? string.Empty,
+                           t4.Sex == 1 ? t2.MaleStdHigh ?? string.Empty : t2.FemaleStdHigh ?? string.Empty,
+                           t2.MaleStd ?? string.Empty,
+                           t2.FemaleStd ?? string.Empty,
+                           t2.Unit ?? string.Empty,
+                           t3.Nyubi ?? string.Empty,
+                           t3.Yoketu ?? string.Empty,
+                           t3.Bilirubin ?? string.Empty,
+                           t3.SikyuKbn,
+                           t3.TosekiKbn,
+                           t3.InoutKbn,
+                           t3.Status,
+                           0
+                       );
 
             if (showAbnormalKbn)
             {
@@ -463,7 +463,7 @@ namespace Infrastructure.Repositories
             }
 
             var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
-
+            var a = kensaItemCds.ToList();
             // Get list iraiCd
             IOrderedQueryable<object> kensaInfDetailColOrder = data.OrderBy(x => x.IraiDate);
             var kensaInfDetailCol = SortIraiDateAsc ? data
@@ -478,11 +478,11 @@ namespace Infrastructure.Repositories
             kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
 
 
-            var kensaInfDetailData = new List<object>();
+            var kensaInfDetailData = new List<KensaInfDetailDataModel>();
 
             foreach (var kensaMstItem in kensaItemCds)
             {
-                var dynamicArray = new List<object>();
+                var dynamicArray = new List<ListKensaInfDetailItem>();
 
                 foreach (var item in kensaInfDetailCol)
                 {
@@ -490,39 +490,10 @@ namespace Infrastructure.Repositories
 
                     if (dynamicDataItem == null)
                     {
-                        dynamicArray.Add(new
-                        {
-                            PtId = ptId,
-                            IraiCd = item.IraiCd,
-                            RaiinNo = 0,
-                            IraiDate = 0,
-                            SeqNo = 0,
-                            KensaName = string.Empty,
-                            KensaKana = string.Empty,
-                            SortNo = 0,
-                            KensaItemCd = string.Empty,
-                            ResultVal = string.Empty,
-                            ResultType = string.Empty,
-                            AbnormalKbn = string.Empty,
-                            CmtCd1 = string.Empty,
-                            CmtCd2 = string.Empty,
-                            Cmt1 = string.Empty,
-                            Cmt2 = string.Empty,
-                            Std = string.Empty,
-                            StdLow = string.Empty,
-                            StdHigh = string.Empty,
-                            MaleStd = string.Empty,
-                            FemaleStd = string.Empty,
-                            Unit = string.Empty,
-                            Nyubi = string.Empty,
-                            Yoketu = string.Empty,
-                            Bilirubin = string.Empty,
-                            SikyuKbn = 0,
-                            TosekiKbn = 0,
-                            InoutKbn = 0,
-                            Status = 0,
-                            IsDeleted = 0
-                        });
+                        dynamicArray.Add(new ListKensaInfDetailItem(
+                            ptId,
+                            item.IraiCd
+                        ));
                     }
                     else
                     {
@@ -530,14 +501,13 @@ namespace Infrastructure.Repositories
                     }
                 }
 
-                var rowData = new
-                {
-                    KensaItemCd = kensaMstItem.KensaItemCd,
-                    KensaName = kensaMstItem.KensaName,
-                    Unit = kensaMstItem.Unit,
-                    Std = kensaMstItem.Std,
-                    DynamicArray = dynamicArray
-                };
+                var rowData = new KensaInfDetailDataModel(
+                     kensaMstItem.KensaItemCd,
+                    kensaMstItem.KensaName,
+                    kensaMstItem.Unit,
+                    kensaMstItem.Std,
+                    dynamicArray
+                );
 
                 kensaInfDetailData.Add(rowData);
             }

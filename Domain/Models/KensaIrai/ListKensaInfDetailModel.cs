@@ -2,23 +2,24 @@
 {
     public class ListKensaInfDetailModel
     {
-        public ListKensaInfDetailModel(List<KensaInfDetailColModel> kensaInfDetailCol, List<object> kensaInfDetailData)
+        public ListKensaInfDetailModel()
+        {
+            KensaInfDetailCol = new List<KensaInfDetailColModel>();
+            KensaInfDetailData = new List<KensaInfDetailDataModel>();
+        }
+        public ListKensaInfDetailModel(List<KensaInfDetailColModel> kensaInfDetailCol, List<KensaInfDetailDataModel> kensaInfDetailData)
         {
             KensaInfDetailCol = kensaInfDetailCol;
             KensaInfDetailData = kensaInfDetailData;
         }
 
-        public ListKensaInfDetailModel()
-        {
-        }
-
         public List<KensaInfDetailColModel> KensaInfDetailCol { get; private set; }
 
-        public List<object> KensaInfDetailData { get; private set; }
+        public List<KensaInfDetailDataModel> KensaInfDetailData { get; private set; }
 
         public class KensaInfDetailColModel
         {
-            public KensaInfDetailColModel(long iraiCd, int iraiDate, string nyubi, string yoketu, int bilirubin, int sikyuKbn, int tosekiKbn)
+            public KensaInfDetailColModel(long iraiCd, long iraiDate, string nyubi, string yoketu, int bilirubin, int sikyuKbn, int tosekiKbn)
             {
                 IraiCd = iraiCd;
                 IraiDate = iraiDate;
@@ -31,7 +32,7 @@
 
             public long IraiCd { get; private set; }
 
-            public int IraiDate { get; private set; }
+            public long IraiDate { get; private set; }
 
             public string Nyubi { get; private set; }
 
@@ -42,6 +43,28 @@
             public int SikyuKbn { get; private set; }
 
             public int TosekiKbn { get; private set; }
+        }
+
+        public class KensaInfDetailDataModel
+        {
+            public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string std, List<ListKensaInfDetailItem> dynamicArray)
+            {
+                KensaItemCd = kensaItemCd;
+                KensaName = kensaName;
+                Unit = unit;
+                Std = std;
+                DynamicArray = dynamicArray;
+            }
+
+            public string KensaItemCd { get; private set; }
+
+            public string KensaName { get; private set; }
+
+            public string Unit { get; private set; }
+
+            public string Std { get; private set; }
+
+            public List<ListKensaInfDetailItem> DynamicArray { get; private set; }
         }
     }
 }
