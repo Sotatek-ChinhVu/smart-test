@@ -4,7 +4,7 @@ namespace UseCase.Logger
 {
     public class WriteLogInputData : IInputData<WriteLogOutputData>
     {
-        public WriteLogInputData(string eventCd, long ptId, int sinDay, long raiinNo, string path, string requestInfo, string description, string logType, string loginKey)
+        public WriteLogInputData(string eventCd, long ptId, int sinDay, long raiinNo, string path, string requestInfo, string description, string logType)
         {
             EventCd = eventCd;
             PtId = ptId;
@@ -14,7 +14,6 @@ namespace UseCase.Logger
             RequestInfo = requestInfo;
             Description = description;
             LogType = logType;
-            LoginKey = loginKey;
         }
 
         public string EventCd { get; private set; }
@@ -32,7 +31,5 @@ namespace UseCase.Logger
         public string Description { get; private set; }
 
         public string LogType { get; private set; }
-
-        public string LoginKey { get; private set; }
     }
 }

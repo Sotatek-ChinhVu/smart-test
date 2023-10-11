@@ -84,7 +84,7 @@ namespace Infrastructure.Logger
             }
         }
 
-        public bool WriteAuditLog(string path, string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType, string loginKey)
+        public bool WriteAuditLog(string path, string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType)
         {
             AuditLog audit = new AuditLog()
             {
@@ -104,7 +104,7 @@ namespace Infrastructure.Logger
                 SinDay = sinDay,
                 Desciption = description,
                 LogType = logType,
-                LoginKey = loginKey
+                LoginKey = _tenantProvider.GetLoginKeyFromHeader()
             };
 
             AuditLogs.Add(audit);
