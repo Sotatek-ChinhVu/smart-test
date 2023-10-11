@@ -10,7 +10,11 @@ namespace EmrCloudApi.ScheduleTask
         {
         }
 
-        protected override string Schedule => "*/60 * * * *"; // every 1 min 
+#if DEBUG
+        protected override string Schedule => "*/1 * * * *"; // every 1 min 
+#else
+        protected override string Schedule => "*/60 * * * *"; // every 60 min 
+#endif
 
         public override Task ProcessInScope(IServiceProvider scopeServiceProvider)
         {
