@@ -10,7 +10,7 @@ namespace UseCase.KensaHistory.GetListKensaSetDetail
             SetId = setId;
         }
 
-        public int HpId { get; set; }
-        public int SetId { get; set; }
+        public int HpId { get; private set; }
+        public int SetId { get; private set; }
     }
 }

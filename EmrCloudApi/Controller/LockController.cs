@@ -43,6 +43,8 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             var result = new ActionResult<Response<LockResponse>>(presenter.Result);
 
+            Thread.Sleep(100);
+
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
             string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds);
@@ -68,6 +70,7 @@ namespace EmrCloudApi.Controller
             }
             else
             {
+                Console.WriteLine("Addlock Status: AddLockStatus.Successed");
                 if (output.Status == AddLockStatus.Successed)
                 {
                     await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockModel);

@@ -7,10 +7,10 @@ namespace Domain.Models.KensaSet
 {
     public interface IKensaSetRepository : IRepositoryBase
     {
-        public bool UpdateKensaSet(int hpId, int userId, int setId, string setName, int sortNo, int isDeleted,List<KensaSetDetailModel>kensaSetDetails);
-        public List<KensaSetModel> GetListKensaSet(int hpId);
-        public List<KensaSetDetailModel> GetListKensaSetDetail(int hpId, int setId);
-        public List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, string keyword);
-        public bool UpdateKensaInfDetail(int hpId, int userId, List<KensaInfDetailUpdateModel> kensaInfDetails);
+        bool UpdateKensaInfDetail(int hpId, int userId, List<KensaInfDetailUpdateModel> kensaInfDetails);
+        List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, string keyword);
+        bool UpdateKensaSet(int hpId, int userId, int setId, string setName, int sortNo, int isDeleted,List<KensaSetDetailModel>kensaSetDetails);
+        List<KensaSetModel> GetListKensaSet(int hpId);
+        List<KensaSetDetailModel> GetListKensaSetDetail(int hpId, int setId);
     }
 }

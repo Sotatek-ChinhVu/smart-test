@@ -20,9 +20,12 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
+using System;
 using System.Text;
 using KensaCenterMstModel = Domain.Models.MstItem.KensaCenterMstModel;
 
@@ -6150,7 +6153,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                             y.SanteigaiKbn,
                                                             y.IsNosearch)).OrderByDescending(x => x.StartDate).ToList(),
                 entity.ChildKensaMsts.OrderBy(x => x.MaterialCd).ToList(),
-                new()
+                new(),
+                string.Empty
                 ));
         }
 
@@ -7823,7 +7827,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 res.CenterName ?? string.Empty
             )
         ).ToList();
-        
         if (allkensaKensaMst == null)
         {
             return (result, 0);
@@ -7912,10 +7915,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                       x.SortNo,
                       x.CenterItemCd1 ?? string.Empty,
                       x.CenterItemCd2 ?? string.Empty,
-                     new(),
-                     new(),
-                     new(),
-                     new(),
+                      new(),
+                      new(),
+                      new(),
+                      new(),
                       x.CenterName
                     )).OrderBy(x => x.SortNo).ToList();
 
@@ -8090,139 +8093,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return itemName;
     }
 
-    public List<KensaMstModel> GetListKensaMst(int hpId, string keyWord)
-    {
-        var result = new List<KensaMstModel>();
-        var allkensaKensaMst = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId && x.IsDelete == DeleteTypes.None).ToList();
-
-        if (allkensaKensaMst == null)
-        {
-            return result;
-        }
-
-        string bigKeyWord = keyWord.ToUpper()
-                                   .Replace("ｧ", "ｱ")
-                                   .Replace("ｨ", "ｲ")
-                                   .Replace("ｩ", "ｳ")
-                                   .Replace("ｪ", "ｴ")
-                                   .Replace("ｫ", "ｵ")
-                                   .Replace("ｬ", "ﾔ")
-                                   .Replace("ｭ", "ﾕ")
-                                   .Replace("ｮ", "ﾖ")
-                                   .Replace("ｯ", "ﾂ");
-
-        //get kensa in KensaMst
-        var kensaInKensaMst = allkensaKensaMst.Where(p => p.HpId == hpId &&
-                p.IsDelete == DeleteTypes.None &&
-                    (p.KensaItemCd.Contains(bigKeyWord) ||
-                    (keyWord == "ﾊﾞｲﾀﾙ" ? p.KensaItemCd.Contains("V") :
-                    (p.KensaName != null && p.KensaKana != null &&
-                     (p.KensaName.ToUpper().Contains(bigKeyWord) ||
-                      p.KensaKana.ToUpper()
-                              .Replace("ｧ", "ｱ")
-                              .Replace("ｨ", "ｲ")
-                              .Replace("ｩ", "ｳ")
-                              .Replace("ｪ", "ｴ")
-                              .Replace("ｫ", "ｵ")
-                              .Replace("ｬ", "ﾔ")
-                              .Replace("ｭ", "ﾕ")
-                              .Replace("ｮ", "ﾖ")
-                              .Replace("ｯ", "ﾂ")
-                              .StartsWith(bigKeyWord)))))).ToList(); ;
-
-
-        foreach (var entity in kensaInKensaMst)
-        {
-            var parentItem = allkensaKensaMst.Where(x => !string.IsNullOrEmpty(entity.OyaItemCd) && x.KensaItemCd == entity.OyaItemCd).Select(x => new KensaMstModel(
-                      entity.KensaItemCd,
-                      entity.KensaItemSeqNo,
-                      entity.CenterCd ?? string.Empty,
-                      entity.KensaName ?? string.Empty,
-                      entity.KensaKana ?? string.Empty,
-                      entity.Unit ?? string.Empty,
-                      entity.MaterialCd,
-                      entity.ContainerCd,
-                      entity.MaleStd ?? string.Empty,
-                      entity.MaleStdLow ?? string.Empty,
-                      entity.MaleStdHigh ?? string.Empty,
-                      entity.FemaleStd ?? string.Empty,
-                      entity.FemaleStdLow ?? string.Empty,
-                      entity.FemaleStdHigh ?? string.Empty,
-                      entity.Formula ?? string.Empty,
-                      entity.Digit,
-                      entity.OyaItemCd ?? string.Empty,
-                      entity.OyaItemSeqNo,
-                      entity.SortNo,
-                      entity.CenterItemCd1 ?? string.Empty,
-                      entity.CenterItemCd2 ?? string.Empty,
-                      new(),
-                      new(),
-                      new(),
-                      new()
-                    )).FirstOrDefault();
-
-            var chilrenItems = allkensaKensaMst.Where(x => !string.IsNullOrEmpty(x.OyaItemCd) && x.OyaItemCd == entity.KensaItemCd).Select(x => new KensaMstModel(
-                      entity.KensaItemCd,
-                      entity.KensaItemSeqNo,
-                      entity.CenterCd ?? string.Empty,
-                      entity.KensaName ?? string.Empty,
-                      entity.KensaKana ?? string.Empty,
-                      entity.Unit ?? string.Empty,
-                      entity.MaterialCd,
-                      entity.ContainerCd,
-                      entity.MaleStd ?? string.Empty,
-                      entity.MaleStdLow ?? string.Empty,
-                      entity.MaleStdHigh ?? string.Empty,
-                      entity.FemaleStd ?? string.Empty,
-                      entity.FemaleStdLow ?? string.Empty,
-                      entity.FemaleStdHigh ?? string.Empty,
-                      entity.Formula ?? string.Empty,
-                      entity.Digit,
-                      entity.OyaItemCd ?? string.Empty,
-                      entity.OyaItemSeqNo,
-                      entity.SortNo,
-                      entity.CenterItemCd1 ?? string.Empty,
-                      entity.CenterItemCd2 ?? string.Empty,
-                      new(),
-                      new(),
-                      new(),
-                      new()
-                    )).ToList();
-
-            result.Add(new KensaMstModel(
-              entity.KensaItemCd,
-              entity.KensaItemSeqNo,
-              entity.CenterCd ?? string.Empty,
-              entity.KensaName ?? string.Empty,
-              entity.KensaKana ?? string.Empty,
-              entity.Unit ?? string.Empty,
-              entity.MaterialCd,
-              entity.ContainerCd,
-              entity.MaleStd ?? string.Empty,
-              entity.MaleStdLow ?? string.Empty,
-              entity.MaleStdHigh ?? string.Empty,
-              entity.FemaleStd ?? string.Empty,
-              entity.FemaleStdLow ?? string.Empty,
-              entity.FemaleStdHigh ?? string.Empty,
-              entity.Formula ?? string.Empty,
-              entity.Digit,
-              entity.OyaItemCd ?? string.Empty,
-              entity.OyaItemSeqNo,
-              entity.SortNo,
-              entity.CenterItemCd1 ?? string.Empty,
-              entity.CenterItemCd2 ?? string.Empty,
-              new(),
-              new(),
-              chilrenItems,
-              parentItem
-              ));
-
-
-        }
-        return result;
-    }
-    
-     public TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate)
+    public TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate)
     {
         List<int> setKbns = new List<int>();
         // Alway search comment master
