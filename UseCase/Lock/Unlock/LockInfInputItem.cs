@@ -1,5 +1,4 @@
-﻿using Domain.Models.Lock;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Extension;
 
 namespace UseCase.Lock.Unlock
@@ -23,15 +22,15 @@ namespace UseCase.Lock.Unlock
         {
             get
             {
-                if (DocInfModels?.PtNum > 0)
+                if (DocInfModels.PtNum > 0)
                 {
                     return DocInfModels.PtNum;
                 }
-                if (CalcStatusModels?.PtNum > 0)
+                if (CalcStatusModels.PtNum > 0)
                 {
                     return CalcStatusModels.PtNum;
                 }
-                if (PatientInfoModels?.PtNum > 0)
+                if (PatientInfoModels.PtNum > 0)
                 {
                     return PatientInfoModels.PtNum;
                 }
@@ -43,13 +42,13 @@ namespace UseCase.Lock.Unlock
         {
             get
             {
-                if (DocInfModels != null && !string.IsNullOrEmpty(DocInfModels.Machine))
+                if (DocInfModels != null && !string.IsNullOrEmpty(DocInfModels.LockMachine))
                 {
-                    return DocInfModels.Machine;
+                    return DocInfModels.LockMachine;
                 }
-                if (CalcStatusModels != null && !string.IsNullOrEmpty(CalcStatusModels.Machine))
+                if (CalcStatusModels != null && !string.IsNullOrEmpty(CalcStatusModels.CreateMachine))
                 {
-                    return CalcStatusModels.Machine;
+                    return CalcStatusModels.CreateMachine;
                 }
                 if (PatientInfoModels != null && !string.IsNullOrEmpty(PatientInfoModels.Machine))
                 {
@@ -63,15 +62,15 @@ namespace UseCase.Lock.Unlock
         {
             get
             {
-                if (DocInfModels?.SinDate > 0)
+                if (DocInfModels.SinDate > 0)
                 {
                     return DocInfModels.SinDate;
                 }
-                if (CalcStatusModels?.SinDate > 0)
+                if (CalcStatusModels.SinDate > 0)
                 {
                     return CalcStatusModels.SinDate;
                 }
-                if (PatientInfoModels?.SinDateInt > 0)
+                if (PatientInfoModels.SinDateInt > 0)
                 {
                     return PatientInfoModels.SinDateInt;
                 }

@@ -45,13 +45,5 @@
 
 
         public int IsDeleted { get; private set; }
-
-        public string Machine
-        {
-            get
-            {
-                return LockMachine?.ToUpper() ?? string.Empty;
-            }
-        }
     }
 }

@@ -33,7 +33,7 @@ public class DocInfModel
         return this;
     }
 
-    public DocInfModel(long ptId, long ptNum, int sinDate, long raiinNo, int seqNo, int categoryCd, string fileName, string dspFileName, int isLocked, Nullable<DateTime> lockDate, int lockId, string lockMachine, int isDeleted)
+    public DocInfModel(long ptId, long ptNum, int sinDate, long raiinNo, int seqNo, int categoryCd, string fileName, string dspFileName, int isLocked, DateTime lockDate, int lockId, string lockMachine, int isDeleted)
     {
         PtId = ptId;
         PtNum = ptNum;
@@ -85,7 +85,7 @@ public class DocInfModel
 
     public int IsLocked { get; private set; }
 
-    public Nullable<DateTime> LockDate { get; private set; }
+    public DateTime LockDate { get; private set; }
 
     public int LockId { get; private set; }
 

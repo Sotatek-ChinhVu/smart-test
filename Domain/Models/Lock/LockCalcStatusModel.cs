@@ -30,14 +30,6 @@
             }
         }
 
-        public string CreateMachine { get; set; }
-
-        public string Machine
-        {
-            get
-            {
-                return CreateMachine?.ToUpper() ?? string.Empty;
-            }
-        }
+        public string CreateMachine { get; private set; }
     }
 }

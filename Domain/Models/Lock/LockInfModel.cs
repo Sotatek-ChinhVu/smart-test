@@ -60,13 +60,13 @@ namespace Domain.Models.Lock
         {
             get
             {
-                if (DocInfModels != null && !string.IsNullOrEmpty(DocInfModels.Machine))
+                if (DocInfModels != null && !string.IsNullOrEmpty(DocInfModels.LockMachine))
                 {
-                    return DocInfModels.Machine;
+                    return DocInfModels.LockMachine;
                 }
-                if (CalcStatusModels != null && !string.IsNullOrEmpty(CalcStatusModels.Machine))
+                if (CalcStatusModels != null && !string.IsNullOrEmpty(CalcStatusModels.CreateMachine))
                 {
-                    return CalcStatusModels.Machine;
+                    return CalcStatusModels.CreateMachine;
                 }
                 if (PatientInfoModels != null && !string.IsNullOrEmpty(PatientInfoModels.Machine))
                 {

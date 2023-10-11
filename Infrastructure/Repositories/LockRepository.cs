@@ -13,8 +13,11 @@ namespace Infrastructure.Repositories
 {
     public class LockRepository : RepositoryBase, ILockRepository
     {
-        public LockRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IAuditLogRepository _auditLogRepository;
+
+        public LockRepository(ITenantProvider tenantProvider, IAuditLogRepository auditLogRepository) : base(tenantProvider)
         {
+            _auditLogRepository = auditLogRepository;
         }
 
         public bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string tabKey, string loginKey)
@@ -588,7 +591,7 @@ namespace Infrastructure.Repositories
             {
 
 
-                SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", item.PtId, item.SinDateInt, item.RaiinNo, "", "LOCK_INF:" + item.FunctionName));
+                _auditLogRepository.SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", item.PtId, item.SinDateInt, item.RaiinNo, "", "LOCK_INF:" + item.FunctionName));
 
                 var lockInf = TrackingDataContext.LockInfs.Where(x =>
                                                                    x.HpId == hpId &&
@@ -616,7 +619,7 @@ namespace Infrastructure.Repositories
                     calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 }
 
-                SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", listLockCalcStatusModel.PtId, listLockCalcStatusModel.SinDate, 0, "", "CALC_STATUS:" + listLockCalcStatusModel.CalcId));
+                _auditLogRepository.SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", listLockCalcStatusModel.PtId, listLockCalcStatusModel.SinDate, 0, "", "CALC_STATUS:" + listLockCalcStatusModel.CalcId));
             }
         }
 
@@ -633,34 +636,8 @@ namespace Infrastructure.Repositories
                     docInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 }
 
-                SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", docInfModel.PtId, docInfModel.SinDate, 0, "", "DOC_INF:" + docInfModel.DspFileName));
+                _auditLogRepository.SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", docInfModel.PtId, docInfModel.SinDate, 0, "", "DOC_INF:" + docInfModel.DspFileName));
             }
-        }
-
-        public bool SaveAuditLog(int hpId, int userId, AuditTrailLogModel auditTrailLogModel)
-        {
-            AuditTrailLog auditTrailLog = new AuditTrailLog();
-            auditTrailLog.HpId = hpId;
-            auditTrailLog.PtId = auditTrailLogModel.PtId;
-            auditTrailLog.SinDay = auditTrailLogModel.SinDate;
-            auditTrailLog.UserId = userId;
-            auditTrailLog.RaiinNo = auditTrailLogModel.RaiinNo;
-            auditTrailLog.EventCd = auditTrailLogModel.EventCd;
-            auditTrailLog.LogDate = CIUtil.GetJapanDateTimeNow();
-            TrackingDataContext.AuditTrailLogs.Add(auditTrailLog);
-            var saveAuditLog = TrackingDataContext.SaveChanges();
-            string hosoku = auditTrailLogModel.AuditTrailLogDetailModel.Hosoku;
-
-            if (string.IsNullOrEmpty(hosoku) == false)
-            {
-                // 補足が必要な場合は、AUDIT_TRAIL_LOG_DETAILに保存
-                AuditTrailLogDetail auditTrailLogDetailMode = new AuditTrailLogDetail();
-                auditTrailLogDetailMode.LogId = auditTrailLog.LogId;
-                auditTrailLogDetailMode.Hosoku = hosoku;
-                TrackingDataContext.AuditTrailLogDetails.Add(auditTrailLogDetailMode);
-            }
-
-            return saveAuditLog > 0 || TrackingDataContext.SaveChanges() > 0;
         }
     }
 }
