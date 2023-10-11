@@ -151,10 +151,8 @@ namespace Infrastructure.Repositories
                 x.IsDeleted,
                 x.CreateDate,
                 x.CreateId,
-                x.CreateMachine,
                 x.UpdateDate,
-                x.UpdateId,
-                x.UpdateMachine
+                x.UpdateId
                 )).ToList();
         }
 
@@ -173,7 +171,7 @@ namespace Infrastructure.Repositories
                         t2.KensaName ?? string.Empty,
                         t1.KensaItemSeqNo,
                         t1.SortNo,
-                        null
+                        new()
                         )).ToList();
 
             var parents = data.Where(x => string.IsNullOrEmpty(x.OyaItemCd)).ToList();
@@ -189,7 +187,7 @@ namespace Infrastructure.Repositories
                        x.KensaName ?? string.Empty,
                        x.KensaItemSeqNo,
                        x.SortNo,
-                       null
+                       new()
                        )).ToList();
                 res.Add(new KensaSetDetailModel(
                        item.HpId,
@@ -224,7 +222,12 @@ namespace Infrastructure.Repositories
             var kensaInKensaMst = from t1 in NoTrackingDataContext.KensaCmtMsts
                                   join t2 in NoTrackingDataContext.KensaCenterMsts on t1.CenterCd equals t2.CenterCd
                                   where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CMT ?? "").ToUpper().Contains(bigKeyWord)
-                                  select new KensaCmtMstModel(t1.CmtCd, t1.CMT, t1.CmtSeqNo, t2.CenterName);
+                                  select new KensaCmtMstModel(
+                                      t1.CmtCd,
+                                      t1.CMT ?? string.Empty,
+                                      t1.CmtSeqNo,
+                                      t2.CenterName ?? string.Empty
+                                  );
             return kensaInKensaMst.ToList();
         }
 
@@ -515,6 +518,7 @@ namespace Infrastructure.Repositories
             var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData);
             return result;
         }
+
         public void ReleaseResource()
         {
             DisposeDataContext();

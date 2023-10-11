@@ -1,4 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
+﻿﻿using Amazon.Runtime.Internal.Transform;
 using Domain.Constant;
 using Domain.Enum;
 using Domain.Models.AuditLog;
@@ -20,6 +20,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -6152,7 +6153,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                             y.SanteigaiKbn,
                                                             y.IsNosearch)).OrderByDescending(x => x.StartDate).ToList(),
                 entity.ChildKensaMsts.OrderBy(x => x.MaterialCd).ToList(),
-                null
+                new(),
+                string.Empty
                 ));
         }
 
@@ -7818,14 +7820,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 kensaMst.SortNo,
                 kensaMst.CenterItemCd1 ?? string.Empty,
                 kensaMst.CenterItemCd2 ?? string.Empty,
-                null,
-                null,
-                null,
-                null,
+                new(),
+                new(),
+                new(),
+                new(),
                 res.CenterName ?? string.Empty
             )
         ).ToList();
-
+        
         if (allkensaKensaMst == null)
         {
             return (result, 0);
@@ -7886,10 +7888,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                       x.SortNo,
                       x.CenterItemCd1 ?? string.Empty,
                       x.CenterItemCd2 ?? string.Empty,
-                      null,
-                      null,
-                      null,
-                      null,
+                      new(),
+                      new(),
+                      new(),
+                      new(),
                       x.CenterName
                     )).FirstOrDefault();
             var chilrenItems = allkensaKensaMst.Where(x => x.OyaItemCd == entity.KensaItemCd).Select(x => new KensaMstModel(
@@ -7914,10 +7916,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                       x.SortNo,
                       x.CenterItemCd1 ?? string.Empty,
                       x.CenterItemCd2 ?? string.Empty,
-                      null,
-                      null,
-                      null,
-                      null,
+                      new(),
+                      new(),
+                      new(),
+                      new(),
                       x.CenterName
                     )).OrderBy(x => x.SortNo).ToList();
 
@@ -7943,8 +7945,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
               entity.SortNo,
               entity.CenterItemCd1 ?? string.Empty,
               entity.CenterItemCd2 ?? string.Empty,
-              null,
-              null,
+              new(),
+              new(),
               chilrenItems,
               parentItem,
               entity.CenterName

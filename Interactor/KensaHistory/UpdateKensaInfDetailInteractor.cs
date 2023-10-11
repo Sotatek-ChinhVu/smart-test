@@ -25,13 +25,13 @@ namespace Interactor.KensaHistory
                 return new UpdateKensaInfDetailOutputData(false, UpdateKensaInfDetailStatus.InValidUserId);
             }
 
-            if (inputData.kensaInfDetails.Count <= 0)
+            if (inputData.KensaInfDetails.Count <= 0)
             {
                 return new UpdateKensaInfDetailOutputData(false, UpdateKensaInfDetailStatus.InvalidDataUpdate);
             }
             try
             {
-                var data = _kensaSetRepository.UpdateKensaInfDetail(inputData.HpId, inputData.UserId, inputData.kensaInfDetails);
+                var data = _kensaSetRepository.UpdateKensaInfDetail(inputData.HpId, inputData.UserId, inputData.KensaInfDetails);
                 return new UpdateKensaInfDetailOutputData(data, UpdateKensaInfDetailStatus.Successed);
             }
             finally

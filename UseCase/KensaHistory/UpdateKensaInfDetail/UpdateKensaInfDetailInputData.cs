@@ -9,11 +9,11 @@ namespace UseCase.KensaHistory.UpdateKensaInfDetail
         {
             HpId = hpId;
             UserId = userId;
-            this.kensaInfDetails = kensaInfDetails;
+            KensaInfDetails = kensaInfDetails;
         }
 
-        public int HpId { get; set; }
-        public int UserId { get; set; }
-        public List<KensaInfDetailUpdateModel> kensaInfDetails { get; set; }
+        public int HpId { get; private set; }
+        public int UserId { get; private set; }
+        public List<KensaInfDetailUpdateModel> KensaInfDetails { get; private set; }
     }
 }
