@@ -169,7 +169,8 @@ namespace Infrastructure.Repositories
                         t2.KensaName ?? string.Empty,
                         t1.KensaItemSeqNo,
                         t1.SortNo,
-                        new()
+                        new(),
+                        t1.IsDeleted
                         )).ToList();
 
             var parents = data.Where(x => string.IsNullOrEmpty(x.OyaItemCd)).ToList();
@@ -185,7 +186,8 @@ namespace Infrastructure.Repositories
                        x.KensaName ?? string.Empty,
                        x.KensaItemSeqNo,
                        x.SortNo,
-                       new()
+                       new(),
+                       x.IsDeleted
                        )).ToList();
                 res.Add(new KensaSetDetailModel(
                        item.HpId,
@@ -196,7 +198,8 @@ namespace Infrastructure.Repositories
                        item.KensaName ?? string.Empty,
                        item.KensaItemSeqNo,
                        item.SortNo,
-                       children
+                       children,
+                       item.IsDeleted
                        ));
             }
 
