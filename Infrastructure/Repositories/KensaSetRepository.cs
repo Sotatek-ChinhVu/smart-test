@@ -314,7 +314,7 @@ namespace Infrastructure.Repositories
                         transaction.Commit();
                         successed = true;
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         transaction.Rollback();
                     }
@@ -358,7 +358,6 @@ namespace Infrastructure.Repositories
             {
                 kensaInfDetails = kensaInfDetails.Where(x => x.IraiCd == iraiCd);
             }
-
             var data = from t1 in kensaInfDetails
                        join t2 in NoTrackingDataContext.KensaMsts
                         on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
@@ -386,8 +385,8 @@ namespace Infrastructure.Repositories
                            AbnormalKbn = t1.AbnormalKbn ?? string.Empty,
                            CmtCd1 = t1.CmtCd1 ?? string.Empty,
                            CmtCd2 = t1.CmtCd2 ?? string.Empty,
-                           Cmt1 = t5.CMT ?? string.Empty,
-                           Cmt2 = t6.CMT ?? string.Empty,
+                           Cmt1 = (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
+                           Cmt2 = (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
                            Std = t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
                            StdLow = t4.Sex == 1 ? t2.MaleStdLow ?? string.Empty : t2.FemaleStdLow ?? string.Empty,
                            StdHigh = t4.Sex == 1 ? t2.MaleStdHigh ?? string.Empty : t2.FemaleStdHigh ?? string.Empty,
@@ -397,6 +396,8 @@ namespace Infrastructure.Repositories
                            Bilirubin = t3.Bilirubin ?? string.Empty,
                            SikyuKbn = t3.SikyuKbn,
                            TosekiKbn = t3.TosekiKbn,
+                           InoutKbn = t3.InoutKbn,
+                           Status = t3.Status,
                            IsDeleted = 0
                        };
 
@@ -462,16 +463,15 @@ namespace Infrastructure.Repositories
             var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName });
 
             // Get list iraiCd
+            IOrderedQueryable<object> kensaInfDetailColOrder = data.OrderBy(x => x.IraiDate);
             var kensaInfDetailCol = SortIraiDateAsc ? data
                                 .OrderBy(x => x.IraiDate)
-                                .GroupBy(x => new { x.IraiCd, x.IraiDate })
-                                .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate))
+                                .GroupBy(x => new { x.IraiCd, x.IraiDate, x.Nyubi, x.Yoketu, x.Bilirubin, x.SikyuKbn, x.TosekiKbn })
+                                .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate, group.Key.Nyubi, group.Key.Yoketu, group.Key.TosekiKbn, group.Key.SikyuKbn, group.Key.TosekiKbn))
 
                             : data.OrderByDescending(x => x.IraiDate)
-                                .GroupBy(x => new { x.IraiCd, x.IraiDate })
-                                .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate));
-
-            
+                                .GroupBy(x => new { x.IraiCd, x.IraiDate, x.Nyubi, x.Yoketu, x.Bilirubin, x.SikyuKbn, x.TosekiKbn })
+                                 .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate, group.Key.Nyubi, group.Key.Yoketu, group.Key.TosekiKbn, group.Key.SikyuKbn, group.Key.TosekiKbn));
 
             kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
 
@@ -515,6 +515,8 @@ namespace Infrastructure.Repositories
                             Bilirubin = string.Empty,
                             SikyuKbn = 0,
                             TosekiKbn = 0,
+                            InoutKbn = 0,
+                            Status = 0,
                             IsDeleted = 0
                         });
                     }
