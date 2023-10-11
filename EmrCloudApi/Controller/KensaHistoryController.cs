@@ -9,6 +9,7 @@ using UseCase.Core.Sync;
 using UseCase.KensaHistory.GetListKensaCmtMst;
 using UseCase.KensaHistory.GetListKensaSet;
 using UseCase.KensaHistory.GetListKensaSetDetail;
+using UseCase.KensaHistory.UpdateKensaInfDetail;
 using UseCase.KensaHistory.UpdateKensaSet;
 
 namespace EmrCloudApi.Controller
@@ -61,6 +62,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetListKensaCmtMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetListKensaCmtMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateKensaInfDetail)]
+        public ActionResult<Response<UpdateKensaInfDetailResponse>> UpdateKensaInfDetail([FromBody] UpdateKensaInfDetailRequest request)
+        {
+            var input = new UpdateKensaInfDetailInputData(HpId, UserId, request.kensaInfDetails);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateKensaInfDetailPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateKensaInfDetailResponse>>(presenter.Result);
         }
     }
 }
