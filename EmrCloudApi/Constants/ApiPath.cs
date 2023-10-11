@@ -478,6 +478,7 @@
         public const string GetListOnlineConfirmationHistoryModel = "GetListOnlineConfirmationHistoryModel";
         public const string ConvertXmlToQCXmlMsg = "ConvertXmlToQCXmlMsg";
         public const string UpdateOnlineConfirmation = "UpdateOnlineConfirmation";
+        public const string InsertOnlineConfirmation = "InsertOnlineConfirmation";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";

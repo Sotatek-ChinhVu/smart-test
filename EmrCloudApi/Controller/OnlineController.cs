@@ -12,6 +12,7 @@ using UseCase.Core.Sync;
 using UseCase.Online;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
+using UseCase.Online.InsertOnlineConfirmation;
 using UseCase.Online.InsertOnlineConfirmHistory;
 using UseCase.Online.SaveAllOQConfirmation;
 using UseCase.Online.SaveOnlineConfirmation;
@@ -242,5 +243,17 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpdateOnlineConfirmationResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.InsertOnlineConfirmation)]
+    public ActionResult<Response<InsertOnlineConfirmationResponse>> InsertOnlineConfirmation([FromBody] InsertOnlineConfirmationRequest request)
+    {
+        var input = new InsertOnlineConfirmationInputData(UserId, request.SinDate, request.QCBIXmlMsgRequest, request.QCBIXmlMsgResponse);
+        var output = _bus.Handle(input);
+
+        var presenter = new InsertOnlineConfirmationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<InsertOnlineConfirmationResponse>>(presenter.Result);
     }
 }

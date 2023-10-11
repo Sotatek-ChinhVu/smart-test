@@ -522,6 +522,7 @@ using UseCase.NextOrder.Upsert;
 using UseCase.NextOrder.Validation;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
+using UseCase.Online.InsertOnlineConfirmation;
 using UseCase.Online.InsertOnlineConfirmHistory;
 using UseCase.Online.SaveAllOQConfirmation;
 using UseCase.Online.SaveOnlineConfirmation;
@@ -1736,6 +1737,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdatePtInfOnlineQualifyInputData, UpdatePtInfOnlineQualifyInteractor>();
             busBuilder.RegisterUseCase<GetListOnlineConfirmationHistoryModelInputData, GetListOnlineConfirmationHistoryModelInteractor>();
             busBuilder.RegisterUseCase<UpdateOnlineConfirmationInputData, UpdateOnlineConfirmationInteractor>();
+            busBuilder.RegisterUseCase<InsertOnlineConfirmationInputData, InsertOnlineConfirmationInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();
