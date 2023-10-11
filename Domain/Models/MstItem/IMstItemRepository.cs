@@ -231,6 +231,8 @@ namespace Domain.Models.MstItem
         ByomeiMstModel GetByomeiByCode(string byomeiCd);
 
         bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate);
+
+        List<KensaMstModel> GetListKensaMst(int hpId, string keyWord);
     }
 
 }
