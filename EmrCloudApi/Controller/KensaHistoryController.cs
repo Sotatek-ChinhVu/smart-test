@@ -1,16 +1,16 @@
 ﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Presenters.MstItem;
-using EmrCloudApi.Responses.MstItem;
+using EmrCloudApi.Presenters.KensaHistory;
+using EmrCloudApi.Requests.KensaHistory;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.KensaHistory;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.MstItem.GetListResultKensaMst;
-using UseCase.KensaHistory.UpdateKensaSet;
-using EmrCloudApi.Presenters.KensaHistory;
-using EmrCloudApi.Responses.KensaHistory;
-using EmrCloudApi.Requests.KensaHistory;
+using UseCase.KensaHistory.GetListKensaCmtMst;
 using UseCase.KensaHistory.GetListKensaSet;
+using UseCase.KensaHistory.GetListKensaSetDetail;
+using UseCase.KensaHistory.UpdateKensaInfDetail;
+using UseCase.KensaHistory.UpdateKensaSet;
 
 namespace EmrCloudApi.Controller
 {
@@ -42,6 +42,36 @@ namespace EmrCloudApi.Controller
             var presenter = new GetListKensaSetPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetListKensaSetResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListKensaSetDetail)]
+        public ActionResult<Response<GetListKensaSetDetailResponse>> GetListKensaSetDetail([FromQuery] GetListKensaSetDetailRequest request)
+        {
+            var input = new GetListKensaSetDetailInputData(HpId, request.SetId);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaSetDetailPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaSetDetailResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListKensaCmtMst)]
+        public ActionResult<Response<GetListKensaCmtMstResponse>> GetListKensaCmtMst([FromQuery] GetListKensaCmtMstRequest request)
+        {
+            var input = new GetListKensaCmtMstInputData(HpId, request.Keyword);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaCmtMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaCmtMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateKensaInfDetail)]
+        public ActionResult<Response<UpdateKensaInfDetailResponse>> UpdateKensaInfDetail([FromBody] UpdateKensaInfDetailRequest request)
+        {
+            var input = new UpdateKensaInfDetailInputData(HpId, UserId, request.kensaInfDetails);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateKensaInfDetailPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateKensaInfDetailResponse>>(presenter.Result);
         }
     }
 }

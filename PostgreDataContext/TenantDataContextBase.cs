@@ -427,6 +427,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
             modelBuilder.Entity<KensaSet>().HasKey(s => new { s.HpId, s.SetId});
             modelBuilder.Entity<KensaSetDetail>().HasKey(s => new { s.HpId, s.SetId, s.SetEdaNo});
+            modelBuilder.Entity<KensaCmtMst>().HasKey(s => new { s.HpId, s.CmtCd, s.CmtSeqNo});
             modelBuilder.Entity<SetMst>()
            .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
 
@@ -1177,5 +1178,6 @@ namespace PostgreDataContext
         public DbSet<KacodeReceYousiki> KacodeReceYousikis { get; set; } = default!;
         public DbSet<KensaSet> KensaSets { get; set; } = default!;
         public DbSet<KensaSetDetail> KensaSetDetails { get; set; } = default!;
+        public DbSet<KensaCmtMst> KensaCmtMsts { get; set; } = default!;
     }
 }

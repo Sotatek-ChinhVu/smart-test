@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20230929032548_addTableKensaCmtMst")]
+    partial class addTableKensaCmtMst
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -14664,8 +14667,6 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex(new[] { "HpId", "GrpId", "KbnCd", "IsDeleted" }, "RAIIN_LIST_DETAIL_IDX01");
 
-                    b.HasIndex(new[] { "HpId", "IsDeleted" }, "RAIIN_LIST_DETAIL_IDX02");
-
                     b.ToTable("RAIIN_LIST_DETAIL");
                 });
 
@@ -14801,41 +14802,39 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.RaiinListInf", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("ID");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("GrpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("GRP_ID");
-
                     b.Property<int>("HpId")
                         .HasColumnType("integer")
-                        .HasColumnName("HP_ID");
-
-                    b.Property<int>("KbnCd")
-                        .HasColumnType("integer")
-                        .HasColumnName("KBN_CD");
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")
-                        .HasColumnName("PT_ID");
+                        .HasColumnName("PT_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("SinDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("SIN_DATE")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("RaiinNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RAIIN_NO")
+                        .HasColumnOrder(4);
+
+                    b.Property<int>("GrpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("GRP_ID")
+                        .HasColumnOrder(5);
 
                     b.Property<int>("RaiinListKbn")
                         .HasColumnType("integer")
                         .HasColumnName("RAIIN_LIST_KBN")
                         .HasColumnOrder(6);
 
-                    b.Property<long>("RaiinNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("RAIIN_NO");
-
-                    b.Property<int>("SinDate")
+                    b.Property<int>("KbnCd")
                         .HasColumnType("integer")
-                        .HasColumnName("SIN_DATE");
+                        .HasColumnName("KBN_CD");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
@@ -14850,14 +14849,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("HpId", "PtId", "SinDate", "RaiinNo", "GrpId", "RaiinListKbn")
-                        .IsUnique();
-
-                    b.HasIndex(new[] { "GrpId", "KbnCd", "RaiinListKbn" }, "RAIIN_LIST_INF_IDX01");
-
-                    b.HasIndex(new[] { "HpId", "PtId" }, "RAIIN_LIST_INF_IDX02");
+                    b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "GrpId", "RaiinListKbn");
 
                     b.ToTable("RAIIN_LIST_INF");
                 });
