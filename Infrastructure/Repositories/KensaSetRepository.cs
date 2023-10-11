@@ -185,9 +185,9 @@ namespace Infrastructure.Repositories
                                   join t2 in NoTrackingDataContext.KensaCenterMsts on t1.CenterCd equals t2.CenterCd
                                   where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CMT ?? "").ToUpper().Contains(bigKeyWord)
                                   select new KensaCmtMstModel(
-                                      t1.CmtCd, 
+                                      t1.CmtCd,
                                       t1.CMT ?? string.Empty,
-                                      t1.CmtSeqNo, 
+                                      t1.CmtSeqNo,
                                       t2.CenterName ?? string.Empty
                                   );
             return kensaInKensaMst.ToList();
@@ -195,75 +195,60 @@ namespace Infrastructure.Repositories
 
         public bool UpdateKensaInfDetail(int hpId, int userId, List<KensaInfDetailUpdateModel> kensaInfDetails)
         {
-            bool successed = false;
-            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
-            executionStrategy.Execute(
-                () =>
+            foreach (var item in kensaInfDetails)
+            {
+                // Create kensaInfDetail
+                if (item.SeqNo == 0)
                 {
-                    using var transaction = TrackingDataContext.Database.BeginTransaction();
-                    try
+                    TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
                     {
-                        foreach (var item in kensaInfDetails)
-                        {
-                            // Create kensaInfDetail
-                            if (item.SeqNo == 0)
-                            {
-                                TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
-                                {
-                                    HpId = hpId,
-                                    PtId = item.PtId,
-                                    IraiCd = item.IraiCd,
-                                    IraiDate = item.IraiDate,
-                                    RaiinNo = item.RaiinNo,
-                                    KensaItemCd = item.KensaItemCd,
-                                    ResultVal = CIUtil.ToHalfsize(item.ResultVal),
-                                    ResultType = item.ResultType,
-                                    AbnormalKbn = item.AbnormalKbn,
-                                    CmtCd1 = item.CmtCd1,
-                                    CmtCd2 = item.CmtCd2,
-                                    CreateId = userId,
-                                    UpdateId = userId,
-                                    CreateMachine = CIUtil.GetComputerName(),
-                                    UpdateMachine = CIUtil.GetComputerName(),
-                                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                                    IsDeleted = 0,
-                                });
-                            }
+                        HpId = hpId,
+                        PtId = item.PtId,
+                        IraiCd = item.IraiCd,
+                        IraiDate = item.IraiDate,
+                        RaiinNo = item.RaiinNo,
+                        KensaItemCd = item.KensaItemCd,
+                        ResultVal = CIUtil.ToHalfsize(item.ResultVal),
+                        ResultType = item.ResultType,
+                        AbnormalKbn = item.AbnormalKbn,
+                        CmtCd1 = item.CmtCd1,
+                        CmtCd2 = item.CmtCd2,
+                        CreateId = userId,
+                        UpdateId = userId,
+                        CreateMachine = CIUtil.GetComputerName(),
+                        UpdateMachine = CIUtil.GetComputerName(),
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        IsDeleted = 0,
+                    });
+                }
 
-                            // Update kensaInfDetail
-                            else
-                            {
-                                var kensaInfDetail = TrackingDataContext.KensaInfDetails.FirstOrDefault(x => x.HpId == hpId && x.PtId == item.PtId && x.IraiCd == item.IraiCd && x.SeqNo == item.SeqNo);
-                                if (kensaInfDetail == null)
-                                {
-                                    transaction.Rollback();
-                                }
-
-                                kensaInfDetail.ResultVal = item.ResultVal;
-                                kensaInfDetail.ResultType = item.ResultType;
-                                kensaInfDetail.AbnormalKbn = item.AbnormalKbn;
-                                kensaInfDetail.CmtCd1 = item.CmtCd1;
-                                kensaInfDetail.CmtCd2 = item.CmtCd2;
-                                kensaInfDetail.IsDeleted = item.IsDeleted;
-                                kensaInfDetail.UpdateId = userId;
-                                kensaInfDetail.UpdateMachine = CIUtil.GetComputerName();
-                                kensaInfDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
-
-                            }
-                        }
-
-                        TrackingDataContext.SaveChanges();
-                        transaction.Commit();
-                        successed = true;
-                    }
-                    catch (Exception ex)
+                // Update kensaInfDetail
+                else
+                {
+                    var kensaInfDetail = TrackingDataContext.KensaInfDetails.FirstOrDefault(x => x.HpId == hpId && x.PtId == item.PtId && x.IraiCd == item.IraiCd && x.SeqNo == item.SeqNo);
+                    if (kensaInfDetail == null)
                     {
-                        transaction.Rollback();
+                        return false;
                     }
-                });
-            return successed;
+
+                    kensaInfDetail.ResultVal = item.ResultVal;
+                    kensaInfDetail.ResultType = item.ResultType;
+                    kensaInfDetail.AbnormalKbn = item.AbnormalKbn;
+                    kensaInfDetail.CmtCd1 = item.CmtCd1;
+                    kensaInfDetail.CmtCd2 = item.CmtCd2;
+                    kensaInfDetail.IsDeleted = item.IsDeleted;
+                    kensaInfDetail.UpdateId = userId;
+                    kensaInfDetail.UpdateMachine = CIUtil.GetComputerName();
+                    kensaInfDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
+
+                }
+            }
+
+            TrackingDataContext.SaveChanges();
+            return true;
         }
+
 
         public void ReleaseResource()
         {
