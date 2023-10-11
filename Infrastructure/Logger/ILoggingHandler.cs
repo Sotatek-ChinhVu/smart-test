@@ -10,6 +10,6 @@
 
         Task WriteLogMessageAsync(string message);
 
-        bool WriteAuditLog(string path, string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType, string loginId);
+        bool WriteAuditLog(string path, string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType, string loginKey);
     }
 }

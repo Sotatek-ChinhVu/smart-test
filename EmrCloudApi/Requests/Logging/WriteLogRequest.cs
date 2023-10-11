@@ -18,6 +18,6 @@
 
         public string LogType { get; set; } = string.Empty;
 
-        public string LoginId { get; set; } = string.Empty;
+        public string LoginKey { get; set; } = string.Empty;
     }
 }

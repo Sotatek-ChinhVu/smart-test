@@ -18,7 +18,7 @@ namespace Interactor.Logger
         public WriteLogOutputData Handle(WriteLogInputData inputData)
         {
             var status = _loggingHandler.WriteAuditLog(
-                 inputData.Path, inputData.RequestInfo, inputData.EventCd, inputData.PtId, inputData.RaiinNo, inputData.SinDay, inputData.Description, inputData.LogType, inputData.LoginId);
+                 inputData.Path, inputData.RequestInfo, inputData.EventCd, inputData.PtId, inputData.RaiinNo, inputData.SinDay, inputData.Description, inputData.LogType, inputData.LoginKey);
 
             return new WriteLogOutputData(status ? WriteLogStatus.Successed : WriteLogStatus.Failed);
         }

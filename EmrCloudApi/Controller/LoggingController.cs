@@ -24,7 +24,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.WriteLog)]
         public ActionResult<Response<WriteLogResponse>> WriteLog([FromBody] WriteLogRequest request)
         {
-            var input = new WriteLogInputData(request.EventCd, request.PtId, request.SinDay, request.RaiinNo, request.Path, request.RequestInfo, request.Description, request.LogType, request.LoginId);
+            var input = new WriteLogInputData(request.EventCd, request.PtId, request.SinDay, request.RaiinNo, request.Path, request.RequestInfo, request.Description, request.LogType, request.LoginKey);
             var output = _bus.Handle(input);
 
             var presenter = new WriteLogPresenter();

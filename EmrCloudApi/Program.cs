@@ -232,7 +232,7 @@ app.Use(async (context, next) =>
         context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
         context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
         context.Response.Headers.Add("Access-Control-Max-Age", "7200");
-        context.Response.Headers.Add("Access-Control-Allow-LoginId", new[] { (string)context.Request.Headers["LoginId"] });
+        context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { (string)context.Request.Headers["Login-Key"] });
         context.Response.StatusCode = 200;
         await next(context);
     }
@@ -246,7 +246,7 @@ app.Use(async (context, next) =>
             {
                 await loggingHandler!.WriteLogStartAsync("Start request");
 
-                context.Response.Headers.Add("Access-Control-Allow-AgentGUID", new[] { (string)context.Request.Headers["AgentGUID"] });
+                context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { (string)context.Request.Headers["Login-Key"] });
                 await next(context);
             }
             catch (Exception ex)
