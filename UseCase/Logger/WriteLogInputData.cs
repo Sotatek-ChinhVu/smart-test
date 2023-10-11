@@ -4,12 +4,13 @@ namespace UseCase.Logger
 {
     public class WriteLogInputData : IInputData<WriteLogOutputData>
     {
-        public WriteLogInputData(string eventCd, long ptId, int sinDay, long raiinNo, string requestInfo, string description, string logType)
+        public WriteLogInputData(string eventCd, long ptId, int sinDay, long raiinNo, string path, string requestInfo, string description, string logType)
         {
             EventCd = eventCd;
             PtId = ptId;
             SinDay = sinDay;
             RaiinNo = raiinNo;
+            Path = path;
             RequestInfo = requestInfo;
             Description = description;
             LogType = logType;
@@ -22,6 +23,8 @@ namespace UseCase.Logger
         public int SinDay { get; private set; }
 
         public long RaiinNo { get; private set; }
+
+        public string Path { get; private set; }
 
         public string RequestInfo { get; private set; }
 
