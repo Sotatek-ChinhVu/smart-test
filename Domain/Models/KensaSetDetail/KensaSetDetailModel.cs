@@ -31,8 +31,6 @@
 
         public int SortNo { get; private set; }
 
-        public int IsDeleted { get; private set; }
-
         public List<KensaSetDetailModel> Childrens { get; private set; }
     }
 }
