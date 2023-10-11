@@ -2,20 +2,38 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using System.Data;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
     public class SetKbnMstRepository : RepositoryBase, ISetKbnMstRepository
     {
-        private readonly IMemoryCache _memoryCache;
-        public SetKbnMstRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
+        private readonly string key;
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
+        public SetKbnMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
-            _memoryCache = memoryCache;
+            key = GetCacheKey() + "SetKbn";
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
 
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
+        }
         private IEnumerable<SetKbnMstModel> ReloadCache()
         {
             var setKbnMstList = NoTrackingDataContext.SetKbnMsts.Where(s => s.HpId == 1 && s.IsDeleted == 0).Select(s =>
@@ -30,19 +48,31 @@ namespace Infrastructure.Repositories
                         s.GenerationId
                     )
                   ).ToList();
-            //var cacheEntryOptions = new MemoryCacheEntryOptions()
-            //        .SetPriority(CacheItemPriority.Normal);
-            //_memoryCache.Set(GetCacheKey(), setKbnMstList, cacheEntryOptions);
+            var json = JsonSerializer.Serialize(setKbnMstList);
+            _cache.StringSet(key, json);
 
             return setKbnMstList;
         }
 
+        private IEnumerable<SetKbnMstModel> ReadCache()
+        {
+            var results = _cache.StringGet(key);
+            var json = results.AsString();
+            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SetKbnMstModel>>(json) : new();
+            return datas ?? new();
+        }
+
         public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
         {
-            //if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetKbnMstModel>? setKbnMstList))
-            //{
-            var setKbnMstList = ReloadCache();
-            //}
+            var setKbnMstList = Enumerable.Empty<SetKbnMstModel>();
+            if (!_cache.KeyExists(key))
+            {
+                setKbnMstList = ReloadCache();
+            }
+            else
+            {
+                setKbnMstList = ReadCache();
+            }
 
             return setKbnMstList!.Where(s => s.HpId == hpId && s.SetKbn >= setKbnFrom && s.SetKbn <= setKbnTo && s.IsDeleted == 0).OrderBy(s => s.SetKbn).ToList();
         }
@@ -94,10 +124,10 @@ namespace Infrastructure.Repositories
                 }
             }
             var check = TrackingDataContext.SaveChanges() > 0;
-            //if (check)
-            //{
-            //    _memoryCache.Remove(GetCacheKey());
-            //}
+            if (check)
+            {
+                ReloadCache();
+            }
             return check;
         }
 

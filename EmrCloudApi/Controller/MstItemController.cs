@@ -67,6 +67,7 @@ using UseCase.MstItem.SaveAddressMst;
 using UseCase.MstItem.SaveRenkei;
 using UseCase.MstItem.SaveCompareTenMst;
 using UseCase.MstItem.SaveSetDataTenMst;
+using UseCase.MstItem.SaveSetNameMnt;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
@@ -87,6 +88,7 @@ using Domain.Models.OrdInfDetails;
 using UseCase.MstItem.UpdateYohoSetMst;
 using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
+using UseCase.MstItem.GetListResultKensaMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -837,7 +839,7 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<UpdateJihiSbtMstResponse>>(presenter.Result);
         }
-        
+
         [HttpGet(ApiPath.GetTreeByomeiSet)]
         public ActionResult<Response<GetTreeByomeiSetResponse>> GetTreeByomeiSet([FromQuery] GetTreeByomeiSetRequest request)
         {
@@ -901,7 +903,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.UpdateYohoSetMst)]
         public ActionResult<Response<UpdateYohoSetMstResponse>> UpdateYohoSetMst(UpdateYohoSetMstRequest request)
         {
-            var input = new UpdateYohoSetMstInputData(HpId, UserId, request.YohoSetMsts.Select(i=> YohoSetMstRequestToModel(i)).ToList());
+            var input = new UpdateYohoSetMstInputData(HpId, UserId, request.YohoSetMsts.Select(i => YohoSetMstRequestToModel(i)).ToList());
             var output = _bus.Handle(input);
             var presenter = new UpdateYohoSetMstPresenter();
             presenter.Complete(output);
@@ -1032,6 +1034,44 @@ namespace EmrCloudApi.Controller
             var presenter = new GetByomeiByCodePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetByomeiByCodeResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveSetNameMnt)]
+        public ActionResult<Response<SaveSetNameMntResponse>> SaveSetNameMnt([FromBody] SaveSetNameMntRequest request)
+        {
+            var input = new SaveSetNameMntInputData(ConvertToSetNameMntModelList(request), HpId, UserId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new SaveSetNameMntPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveSetNameMntResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListKensaMst)]
+        public ActionResult<Response<GetListKensaMstResponse>> GetListKensaMst([FromQuery] GetListKensaMstRequest request)
+        {
+            var input = new GetListKensaMstInputData(HpId, request.Keyword);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaMstResponse>>(presenter.Result);
+        }
+
+        private List<SetNameMntModel> ConvertToSetNameMntModelList(SaveSetNameMntRequest request)
+        {
+            var result = request.ListData.Select(item => new SetNameMntModel(
+                                                             item.IsSet,
+                                                             item.SetFlag,
+                                                             item.ItemCd,
+                                                             item.ItemNameTenMst,
+                                                             item.ItemNameTenMstBinding,
+                                                             item.SetCd,
+                                                             item.RowNo,
+                                                             item.RpNo,
+                                                             item.RpEdaNo,
+                                                             item.SetKbn,
+                                                             item.SetKbnEdaNo))
+                                         .ToList();
+            return result;
         }
     }
 }

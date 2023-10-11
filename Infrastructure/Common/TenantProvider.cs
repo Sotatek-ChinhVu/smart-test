@@ -1,5 +1,6 @@
 ﻿using Helper.Constants;
 using Infrastructure.Common;
+using Helper.Redis;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +29,29 @@ namespace Infrastructure.CommonDB
         public string GetConnectionString()
         {
             string dbSample = _configuration["TenantDb"] ?? string.Empty;
+            string clientDomain = GetDomainFromHeader();
+            clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
+            if (string.IsNullOrEmpty(clientDomain))
+            {
+                return dbSample;
+            }
+            var domainList = _configuration.GetSection("DomainList").Path;
+            if (string.IsNullOrEmpty(domainList))
+            {
+                return dbSample;
+            }
+            var clientDomainInConfig = _configuration[domainList + ":" + clientDomain] ?? string.Empty;
+            if (string.IsNullOrEmpty(clientDomainInConfig))
+            {
+                return dbSample;
+            }
+            string result = clientDomainInConfig ?? string.Empty;
+
+            return result;
+        }
+        public string GetAdminConnectionString()
+        {
+            string dbSample = _configuration["AdminDatabase"] ?? string.Empty;
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
@@ -196,7 +220,7 @@ namespace Infrastructure.CommonDB
 
         public string GetDomainFromHeader()
         {
-            var headers = _httpContextAccessor.HttpContext.Request.Headers;
+            var headers = _httpContextAccessor.HttpContext?.Request?.Headers;
             if (headers == null || !headers.ContainsKey(ParamConstant.Domain))
             {
                 return string.Empty;
@@ -208,7 +232,7 @@ namespace Infrastructure.CommonDB
 
         public string GetDomainFromQueryString()
         {
-            var queryString = _httpContextAccessor.HttpContext.Request.QueryString.Value;
+            var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value;
             if (string.IsNullOrEmpty(queryString) || !queryString.Contains(ParamConstant.Domain))
             {
                 return string.Empty;
@@ -278,6 +302,16 @@ namespace Infrastructure.CommonDB
             return _trackingDataContext;
         }
 
+        private DbContextOptions? _dbAdminContextOptions;
+        public DbContextOptions GetAdminTrackingDbContextOption()
+        {
+            if (_dbAdminContextOptions == null)
+            {
+                _dbAdminContextOptions = CreateNewTrackingAdminDbContextOption();
+            }
+            return _dbAdminContextOptions;
+        }
+
         public TenantDataContext CreateNewTrackingDataContext()
         {
             ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
@@ -302,6 +336,18 @@ namespace Infrastructure.CommonDB
                 .Options;
             var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
             return factory.CreateDbContext();
+        }
+
+        public DbContextOptions CreateNewTrackingAdminDbContextOption()
+        {
+            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            var options = new DbContextOptionsBuilder<AdminDataContext>().UseNpgsql(GetAdminConnectionString(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+                    .UseLoggerFactory(loggerFactory)
+                    .Options;
+            return options;
         }
 
         #endregion

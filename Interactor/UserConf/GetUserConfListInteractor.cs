@@ -25,7 +25,7 @@ public class GetUserConfListInteractor : IGetUserConfListInputPort
                 return new GetUserConfListOutputData(GetUserConfListStatus.InvalidUserId, new());
             }
 
-            var result = _userConfRepository.GetList(inputData.UserId);
+            var result = _userConfRepository.GetDic(inputData.HpId, inputData.UserId);
             return new GetUserConfListOutputData(GetUserConfListStatus.Successed, result);
         }
         catch

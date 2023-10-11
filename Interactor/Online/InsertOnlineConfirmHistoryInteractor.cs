@@ -1,10 +1,9 @@
 ﻿using Domain.Models.Online;
+using Domain.Models.Online.QualificationConfirmation;
 using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
-using UseCase.Online;
 using UseCase.Online.InsertOnlineConfirmHistory;
-using UseCase.Online.QualificationConfirmation;
 
 namespace Interactor.Online;
 
