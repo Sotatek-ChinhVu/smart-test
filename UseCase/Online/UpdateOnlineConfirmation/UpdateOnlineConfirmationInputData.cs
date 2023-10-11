@@ -5,9 +5,9 @@ using UseCase.XmlDTD.QCBIDXmlMsgResponse;
 
 namespace UseCase.Online.SaveOnlineConfirmation
 {
-    public class SaveOnlineConfirmationInputData : IInputData<SaveOnlineConfirmationOutputData>
+    public class UpdateOnlineConfirmationInputData : IInputData<UpdateOnlineConfirmationOutputData>
     {
-        public SaveOnlineConfirmationInputData(int hpId, int userId, long raiinNo, string qCBIDXmlMsgRequest, string qCBIDXmlMsgResponse)
+        public UpdateOnlineConfirmationInputData(int hpId, int userId, long raiinNo, string qCBIDXmlMsgRequest, string qCBIDXmlMsgResponse)
         {
             HpId = hpId;
             UserId = userId;

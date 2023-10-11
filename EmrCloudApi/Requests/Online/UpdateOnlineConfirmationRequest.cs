@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Online
 {
-    public class SaveOnlineConfirmationRequest
+    public class UpdateOnlineConfirmationRequest
     {
         public long RaiinNo { get; set; }
 

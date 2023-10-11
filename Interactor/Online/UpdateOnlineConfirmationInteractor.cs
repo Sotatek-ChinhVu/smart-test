@@ -11,16 +11,16 @@ using UseCase.XmlDTD.QCBIDXmlMsgResponse;
 
 namespace Interactor.Online
 {
-    public class SaveOnlineConfirmationInteractor : ISaveOnlineConfirmationInputPort
+    public class UpdateOnlineConfirmationInteractor : IUpdateOnlineConfirmationInputPort
     {
         private readonly IOnlineRepository _onlineRepository;
 
-        public SaveOnlineConfirmationInteractor(IOnlineRepository onlineRepository)
+        public UpdateOnlineConfirmationInteractor(IOnlineRepository onlineRepository)
         {
             _onlineRepository = onlineRepository;
         }
 
-        public SaveOnlineConfirmationOutputData Handle(SaveOnlineConfirmationInputData inputData)
+        public UpdateOnlineConfirmationOutputData Handle(UpdateOnlineConfirmationInputData inputData)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace Interactor.Online
                     inputData.QCBIDResponse.MessageHeader == null ||
                     inputData.QCBIDResponse.MessageHeader.ReceptionNumber != inputData.QCBIDRequest.MessageBody.ReceptionNumber)
                 {
-                    return new SaveOnlineConfirmationOutputData(SaveOnlineConfirmationStatus.InvalidReceptionNumber, message);
+                    return new UpdateOnlineConfirmationOutputData(UpdateOnlineConfirmationStatus.InvalidReceptionNumber, message);
                 }
 
                 string segmentOfResult = inputData.QCBIDResponse.MessageHeader.SegmentOfResult;
@@ -96,18 +96,18 @@ namespace Interactor.Online
                                                 SegmentOfResultDisplay(inputData.QCBIDResponse.MessageHeader.SegmentOfResult) + Environment.NewLine +
                                                 (string.IsNullOrEmpty(inputData.QCBIDResponse.MessageHeader.ErrorMessage) ? string.Empty : (inputData.QCBIDResponse.MessageHeader.ErrorMessage + Environment.NewLine)) +
                                                 statistical);
-                            return new SaveOnlineConfirmationOutputData(SaveOnlineConfirmationStatus.Successed, message);
+                            return new UpdateOnlineConfirmationOutputData(UpdateOnlineConfirmationStatus.Successed, message);
                         }
                     }
 
                     if (!isUpdateOnlineConfrimSuccess || !isUpdateRaiinInfSuccess)
                     {
                         message = "オンライン資格確認一括照会";
-                        return new SaveOnlineConfirmationOutputData(SaveOnlineConfirmationStatus.Failed, message);
+                        return new UpdateOnlineConfirmationOutputData(UpdateOnlineConfirmationStatus.Failed, message);
                     }
                 }
 
-                return new SaveOnlineConfirmationOutputData(SaveOnlineConfirmationStatus.Successed, message);
+                return new UpdateOnlineConfirmationOutputData(UpdateOnlineConfirmationStatus.Successed, message);
             }
             finally
             {

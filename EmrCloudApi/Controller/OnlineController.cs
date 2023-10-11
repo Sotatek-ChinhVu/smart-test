@@ -232,15 +232,15 @@ public class OnlineController : AuthorizeControllerBase
         return new ActionResult<Response<ConvertXmlToQCXmlMsgResponse>>(response);
     }
 
-    [HttpPost(ApiPath.SaveOnlineConfirmation)]
-    public ActionResult<Response<SaveOnlineConfirmationResponse>> SaveOnlineConfirmation([FromBody] SaveOnlineConfirmationRequest request)
+    [HttpPost(ApiPath.UpdateOnlineConfirmation)]
+    public ActionResult<Response<UpdateOnlineConfirmationResponse>> UpdateOnlineConfirmation([FromBody] UpdateOnlineConfirmationRequest request)
     {
-        var input = new SaveOnlineConfirmationInputData(HpId, UserId, request.RaiinNo, request.QCBIDXmlMsgRequest, request.QCBIDXmlMsgResponse);
+        var input = new UpdateOnlineConfirmationInputData(HpId, UserId, request.RaiinNo, request.QCBIDXmlMsgRequest, request.QCBIDXmlMsgResponse);
         var output = _bus.Handle(input);
 
-        var presenter = new SaveOnlineConfirmationPresenter();
+        var presenter = new UpdateOnlineConfirmationPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<SaveOnlineConfirmationResponse>>(presenter.Result);
+        return new ActionResult<Response<UpdateOnlineConfirmationResponse>>(presenter.Result);
     }
 }

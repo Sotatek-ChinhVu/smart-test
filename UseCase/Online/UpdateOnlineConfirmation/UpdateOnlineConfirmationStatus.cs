@@ -1,6 +1,6 @@
 ﻿namespace UseCase.Online.SaveOnlineConfirmation
 {
-    public enum SaveOnlineConfirmationStatus
+    public enum UpdateOnlineConfirmationStatus
     {
         Successed = 1,
         Failed = 2,
