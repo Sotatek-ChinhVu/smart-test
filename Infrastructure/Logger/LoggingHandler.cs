@@ -84,7 +84,7 @@ namespace Infrastructure.Logger
             }
         }
 
-        public bool WriteAuditLog(string path, string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType)
+        public bool WriteAuditLog(string path, string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType, string loginId)
         {
             AuditLog audit = new AuditLog()
             {
@@ -103,7 +103,8 @@ namespace Infrastructure.Logger
                 RaiinNo = raiinNo,
                 SinDay = sinDay,
                 Desciption = description,
-                LogType = logType
+                LogType = logType,
+                LoginId = loginId
             };
 
             AuditLogs.Add(audit);
