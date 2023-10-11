@@ -156,20 +156,51 @@ namespace Infrastructure.Repositories
 
         public List<KensaSetDetailModel> GetListKensaSetDetail(int hpId, int setId)
         {
-            var result = (from t1 in NoTrackingDataContext.KensaSetDetails
-                          join t2 in NoTrackingDataContext.KensaMsts on t1.KensaItemCd equals t2.KensaItemCd
-                          where t1.HpId == hpId && t1.SetId == setId && t1.IsDeleted == DeleteTypes.None
-                          select new KensaSetDetailModel(
-                          t1.HpId,
-                          t1.SetId,
-                          t1.SetEdaNo,
-                          t1.KensaItemCd,
-                          t2.KensaName,
-                          t1.KensaItemSeqNo,
-                          t1.SortNo,
-                          t1.IsDeleted
-                          )).ToList();
-            return result;
+            var res = new List<KensaSetDetailModel>();
+            var data = (from t1 in NoTrackingDataContext.KensaSetDetails
+                        join t2 in NoTrackingDataContext.KensaMsts on t1.KensaItemCd equals t2.KensaItemCd
+                        where t1.HpId == hpId && t1.SetId == setId && t1.IsDeleted == DeleteTypes.None
+                        select new KensaSetDetailModel(
+                        t1.HpId,
+                        t1.SetId,
+                        t1.SetEdaNo,
+                        t1.KensaItemCd,
+                        t2.OyaItemCd ?? string.Empty,
+                        t2.KensaName ?? string.Empty,
+                        t1.KensaItemSeqNo,
+                        t1.SortNo,
+                        new()
+                        )).ToList();
+
+            var parents = data.Where(x => string.IsNullOrEmpty(x.OyaItemCd)).ToList();
+
+            foreach (var item in parents)
+            {
+                var children = data.Where(x => x.OyaItemCd == item.KensaItemCd).Select(x => new KensaSetDetailModel(
+                       x.HpId,
+                       x.SetId,
+                       x.SetEdaNo,
+                       x.KensaItemCd,
+                       x.OyaItemCd ?? string.Empty,
+                       x.KensaName ?? string.Empty,
+                       x.KensaItemSeqNo,
+                       x.SortNo,
+                       new()
+                       )).ToList();
+                res.Add(new KensaSetDetailModel(
+                       item.HpId,
+                       item.SetId,
+                       item.SetEdaNo,
+                       item.KensaItemCd,
+                       item.OyaItemCd ?? string.Empty,
+                       item.KensaName ?? string.Empty,
+                       item.KensaItemSeqNo,
+                       item.SortNo,
+                       children
+                       ));
+            }
+
+            return res;
         }
 
         public List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, string keyWord)
