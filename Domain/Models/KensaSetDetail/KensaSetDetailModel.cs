@@ -2,7 +2,6 @@
 {
     public class KensaSetDetailModel
     {
-
         public KensaSetDetailModel(int hpId, int setId, int setEdaNo, string kensaItemCd, int kensaItemSeqNo, int sortNo, int isDeleted)
         {
             HpId = hpId;

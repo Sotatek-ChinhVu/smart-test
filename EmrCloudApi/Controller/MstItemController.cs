@@ -890,6 +890,16 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveCompareTenMstResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.GetListKensaMst)]
+        public ActionResult<Response<GetListKensaMstResponse>> GetListKensaMst([FromQuery] GetListKensaMstRequest request)
+        {
+            var input = new GetListKensaMstInputData(HpId, request.Keyword, request.PageIndex, request.PageSize);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaMstResponse>>(presenter.Result);
+        }
+        
         [HttpGet(ApiPath.GetListYohoSetMstModelByUserID)]
         public ActionResult<Response<GetListYohoSetMstModelByUserIDResponse>> GetListYohoSetMstModelByUserID([FromQuery] GetListYohoSetMstModelByUserIDRequest request)
         {
@@ -1044,16 +1054,6 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveSetNameMntPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveSetNameMntResponse>>(presenter.Result);
-        }
-
-        [HttpGet(ApiPath.GetListKensaMst)]
-        public ActionResult<Response<GetListKensaMstResponse>> GetListKensaMst([FromQuery] GetListKensaMstRequest request)
-        {
-            var input = new GetListKensaMstInputData(HpId, request.Keyword);
-            var output = _bus.Handle(input);
-            var presenter = new GetListKensaMstPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<GetListKensaMstResponse>>(presenter.Result);
         }
 
         private List<SetNameMntModel> ConvertToSetNameMntModelList(SaveSetNameMntRequest request)
