@@ -21,6 +21,7 @@ namespace Entity.Logger
 
         public int UserId { get; set; }
 
+        [MaxLength(250)]
         public string LoginKey { get; set; } = string.Empty;
 
         public int DepartmentId { get; set; }
