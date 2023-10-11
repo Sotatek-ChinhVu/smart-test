@@ -19,7 +19,6 @@ using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
 using Helper.Extension;
 using Helper.Mapping;
-using Interactor.MstItem;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
@@ -44,7 +43,6 @@ using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetListByomeiSetGenerationMst;
 using UseCase.MstItem.GetListDrugImage;
-using UseCase.MstItem.GetListResultKensaMst;
 using UseCase.MstItem.GetListKensaIjiSetting;
 using UseCase.MstItem.GetListSetGenerationMst;
 using UseCase.MstItem.GetListTenMstOrigin;
@@ -90,6 +88,7 @@ using Domain.Models.OrdInfDetails;
 using UseCase.MstItem.UpdateYohoSetMst;
 using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
+using UseCase.MstItem.GetListResultKensaMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -840,7 +839,7 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<UpdateJihiSbtMstResponse>>(presenter.Result);
         }
-        
+
         [HttpGet(ApiPath.GetTreeByomeiSet)]
         public ActionResult<Response<GetTreeByomeiSetResponse>> GetTreeByomeiSet([FromQuery] GetTreeByomeiSetRequest request)
         {
@@ -914,7 +913,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.UpdateYohoSetMst)]
         public ActionResult<Response<UpdateYohoSetMstResponse>> UpdateYohoSetMst(UpdateYohoSetMstRequest request)
         {
-            var input = new UpdateYohoSetMstInputData(HpId, UserId, request.YohoSetMsts.Select(i=> YohoSetMstRequestToModel(i)).ToList());
+            var input = new UpdateYohoSetMstInputData(HpId, UserId, request.YohoSetMsts.Select(i => YohoSetMstRequestToModel(i)).ToList());
             var output = _bus.Handle(input);
             var presenter = new UpdateYohoSetMstPresenter();
             presenter.Complete(output);
@@ -1050,11 +1049,29 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SaveSetNameMnt)]
         public ActionResult<Response<SaveSetNameMntResponse>> SaveSetNameMnt([FromBody] SaveSetNameMntRequest request)
         {
-            var input = new SaveSetNameMntInputData(request.ListData, HpId, UserId, request.SinDate);
+            var input = new SaveSetNameMntInputData(ConvertToSetNameMntModelList(request), HpId, UserId, request.SinDate);
             var output = _bus.Handle(input);
             var presenter = new SaveSetNameMntPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveSetNameMntResponse>>(presenter.Result);
+        }
+
+        private List<SetNameMntModel> ConvertToSetNameMntModelList(SaveSetNameMntRequest request)
+        {
+            var result = request.ListData.Select(item => new SetNameMntModel(
+                                                             item.IsSet,
+                                                             item.SetFlag,
+                                                             item.ItemCd,
+                                                             item.ItemNameTenMst,
+                                                             item.ItemNameTenMstBinding,
+                                                             item.SetCd,
+                                                             item.RowNo,
+                                                             item.RpNo,
+                                                             item.RpEdaNo,
+                                                             item.SetKbn,
+                                                             item.SetKbnEdaNo))
+                                         .ToList();
+            return result;
         }
     }
 }

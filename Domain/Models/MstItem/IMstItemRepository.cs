@@ -234,5 +234,4 @@ namespace Domain.Models.MstItem
 
         bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate);
     }
-
 }

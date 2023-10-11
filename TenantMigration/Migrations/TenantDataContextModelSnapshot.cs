@@ -14664,6 +14664,8 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex(new[] { "HpId", "GrpId", "KbnCd", "IsDeleted" }, "RAIIN_LIST_DETAIL_IDX01");
 
+                    b.HasIndex(new[] { "HpId", "IsDeleted" }, "RAIIN_LIST_DETAIL_IDX02");
+
                     b.ToTable("RAIIN_LIST_DETAIL");
                 });
 
@@ -14849,6 +14851,8 @@ namespace TenantMigration.Migrations
                     b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "GrpId", "RaiinListKbn");
 
                     b.HasIndex(new[] { "GrpId", "KbnCd", "RaiinListKbn" }, "RAIIN_LIST_INF_IDX01");
+
+                    b.HasIndex(new[] { "HpId", "PtId", "RaiinNo" }, "RAIIN_LIST_INF_IDX02");
 
                     b.ToTable("RAIIN_LIST_INF");
                 });
