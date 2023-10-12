@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231011110800_ReStructure_RaiinListInf")]
+    partial class ReStructureRaiinListInf
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -6080,79 +6083,6 @@ namespace TenantMigration.Migrations
                     b.HasKey("HpId", "Id");
 
                     b.ToTable("KENSA_CENTER_MST");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.KensaCmtMst", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasMaxLength(2)
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(1);
-
-                    b.Property<string>("CmtCd")
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)")
-                        .HasColumnName("CMT_CD")
-                        .HasColumnOrder(2);
-
-                    b.Property<int>("CmtSeqNo")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(9)
-                        .HasColumnType("integer")
-                        .HasColumnName("CMT_SEQ_NO")
-                        .HasColumnOrder(3);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CmtSeqNo"));
-
-                    b.Property<string>("CMT")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("CMT");
-
-                    b.Property<string>("CenterCd")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("CENTER_CD");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasMaxLength(8)
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<int>("IsDeleted")
-                        .HasMaxLength(1)
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_DELETED");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<int>("UpdateId")
-                        .HasMaxLength(8)
-                        .HasColumnType("integer")
-                        .HasColumnName("UPDATE_ID");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("UPDATE_MACHINE");
-
-                    b.HasKey("HpId", "CmtCd", "CmtSeqNo");
-
-                    b.HasIndex(new[] { "HpId", "CmtCd", "CmtSeqNo", "IsDeleted" }, "KENSA_CMT_MST_SKEY1");
-
-                    b.ToTable("KENSA_CMT_MST");
                 });
 
             modelBuilder.Entity("Entity.Tenant.KensaInf", b =>
