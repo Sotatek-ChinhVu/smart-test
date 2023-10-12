@@ -543,11 +543,10 @@ namespace Infrastructure.Repositories
             var stopwatch = Stopwatch.StartNew();
             var raiinListInfs =
                (
-                  from raiinListInf in NoTrackingDataContext.RaiinListInfs
-                  join raiinListMst in NoTrackingDataContext.RaiinListDetails
+                  from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo != 0)
+                  join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None)
                   on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
-                  where raiinListInf.HpId == hpId && raiinListInf.PtId == ptId && raiinListInf.RaiinNo != 0 && raiinListMst.HpId == hpId && raiinListMst.IsDeleted == DeleteTypes.None
-                  select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListMst.GrpId, raiinListMst.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
+                  select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
                ).ToList();
 
             var result = raiinListInfs
@@ -562,11 +561,10 @@ namespace Infrastructure.Repositories
             var stopwatch = Stopwatch.StartNew();
             var raiinListInfs =
                (
-                  from raiinListInf in NoTrackingDataContext.RaiinListInfs
-                  join raiinListMst in NoTrackingDataContext.RaiinListDetails
+                  from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == 0)
+                  join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None)
                   on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
-                  where raiinListInf.HpId == hpId && raiinListInf.PtId == ptId && raiinListInf.RaiinNo == 0 && raiinListMst.HpId == hpId && raiinListMst.IsDeleted == DeleteTypes.None
-                  select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListMst.GrpId, raiinListMst.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
+                  select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
                ).ToList();
 
             var result = raiinListInfs
