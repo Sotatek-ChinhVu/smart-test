@@ -246,7 +246,7 @@ namespace Infrastructure.Repositories
                     {
                         foreach (var item in kensaInfDetails)
                         {
-                            // Create kensaInfDetail
+                            // Create
                             if (item.SeqNo == 0)
                             {
 
@@ -274,6 +274,7 @@ namespace Infrastructure.Repositories
 
                                 TrackingDataContext.SaveChanges();
 
+                                //Create kensaInfDetail
                                 TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
                                 {
                                     HpId = hpId,
