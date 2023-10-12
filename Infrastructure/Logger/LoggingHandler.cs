@@ -89,7 +89,6 @@ namespace Infrastructure.Logger
             AuditLog audit = new AuditLog()
             {
                 Domain = _tenantProvider.GetDomain(),
-                ClientIP = _tenantProvider.GetClientIp(),
                 HpId = _tenantProvider.GetHpId(),
                 DepartmentId = _tenantProvider.GetDepartmentId(),
                 UserId = _tenantProvider.GetUserId(),
@@ -97,13 +96,13 @@ namespace Infrastructure.Logger
                 Path = path,
                 RequestInfo = requestInfo,
                 LogDate = CIUtil.GetJapanDateTimeNow(),
-                ThreadId = Thread.CurrentThread.ManagedThreadId.ToString(),
                 EventCd = eventCd,
                 PtId = ptId,
                 RaiinNo = raiinNo,
                 SinDay = sinDay,
                 Desciption = description,
-                LogType = logType
+                LogType = logType,
+                LoginKey = _tenantProvider.GetLoginKeyFromHeader()
             };
 
             AuditLogs.Add(audit);
