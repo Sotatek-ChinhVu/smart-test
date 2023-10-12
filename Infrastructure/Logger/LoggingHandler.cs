@@ -1,8 +1,11 @@
 ﻿using Entity.Logger;
+using Entity.Tenant;
 using Helper.Common;
+using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.IO;
 
 namespace Infrastructure.Logger
 {
@@ -107,6 +110,39 @@ namespace Infrastructure.Logger
 
             AuditLogs.Add(audit);
 
+            return SaveChanges() > 0;
+        }
+
+        public bool WriteAuditLog(List<AuditLogModel> auditLogList)
+        {
+            string domain = _tenantProvider.GetDomain();
+            int hpId = _tenantProvider.GetHpId();
+            int departmentId = _tenantProvider.GetDepartmentId();
+            int userId = _tenantProvider.GetUserId();
+            string tenantId = _tenantProvider.GetClinicID();
+
+            foreach (var item in auditLogList)
+            {
+                AuditLog audit = new AuditLog()
+                {
+                    Domain = domain,
+                    HpId = hpId,
+                    DepartmentId = departmentId,
+                    UserId = userId,
+                    TenantId = tenantId,
+                    Path = item.Path,
+                    RequestInfo = item.RequestInfo,
+                    LogDate = CIUtil.GetJapanDateTimeNow(),
+                    EventCd = item.EventCd,
+                    PtId = item.PtId,
+                    RaiinNo = item.RaiinNo,
+                    SinDay = item.SinDay,
+                    Desciption = item.Description,
+                    LogType = item.LogType,
+                    LoginKey = _tenantProvider.GetLoginKeyFromHeader()
+                };
+                AuditLogs.Add(audit);
+            }
             return SaveChanges() > 0;
         }
     }
