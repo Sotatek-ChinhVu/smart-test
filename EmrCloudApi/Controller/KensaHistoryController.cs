@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.KensaHistory.GetListKensaCmtMst;
+using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.KensaHistory.GetListKensaSet;
 using UseCase.KensaHistory.GetListKensaSetDetail;
 using UseCase.KensaHistory.UpdateKensaInfDetail;
@@ -73,5 +74,16 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<UpdateKensaInfDetailResponse>>(presenter.Result);
         }
+
+        [HttpGet(ApiPath.GetListKensaInfDetail)]
+        public ActionResult<Response<GetListKensaInfDetailResponse>> GetListKensaInfDetail([FromQuery] GetListKensaInfDetailRequest request)
+        {
+            var input = new GetListKensaInfDetailInputData(HpId, UserId, request.PtId, request.SetId, request.IraiCd, request.StartDate, request.ShowAbnormalKbn, request.ItemQuantity);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaInfDetailPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaInfDetailResponse>>(presenter.Result);
+        }
     }
 }
+
