@@ -503,7 +503,7 @@ namespace Infrastructure.Repositories
             List<LockInfModel> result = new List<LockInfModel>();
             var listLock = NoTrackingDataContext.LockInfs.Where(u => u.HpId == hpId && !string.IsNullOrEmpty(u.Machine));
 
-            if(managerKbn  == 0)
+            if (managerKbn == 0)
             {
                 listLock = listLock.Where(x => x.UserId == userId);
             }
@@ -562,13 +562,13 @@ namespace Infrastructure.Repositories
             var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId).ToList();
             var index = 0;
             var query = (from userIdLockInf in userIdLockInfs
-                        join userMst in userMsts
-                        on userIdLockInf equals userMst.UserId
-                        select new
-                        {
-                            userIdLockInf,
-                            userMst.Name
-                        }).OrderBy(x => x.userIdLockInf);
+                         join userMst in userMsts
+                         on userIdLockInf equals userMst.UserId
+                         select new
+                         {
+                             userIdLockInf,
+                             userMst.Name
+                         }).OrderBy(x => x.userIdLockInf);
 
             foreach (var item in query.AsEnumerable().ToList())
             {
@@ -586,32 +586,30 @@ namespace Infrastructure.Repositories
         public bool Unlock(int hpId, int userId, List<LockInfModel> lockInfModels, int managerKbn)
         {
             bool result = true;
-            if (managerKbn == 9)
-            {
-                try
-                {
-                    List<string> listMachineLock = lockInfModels.Where(u => !string.IsNullOrEmpty(u.Machine)).Select(u => u.Machine).GroupBy(u => u).Select(u => u.First()).ToList();
-                    List<LockPtInfModel> listLockPtInfModel = lockInfModels.Where(u => u.PatientInfoModels != null && !u.CheckDefaultValue()).Select(u => u.PatientInfoModels).ToList();
-                    List<LockCalcStatusModel> listLockCalcStatusModel = lockInfModels.Where(u => u.CalcStatusModels != null && !u.CheckDefaultValue()).Select(u => u.CalcStatusModels).ToList();
-                    List<LockDocInfModel> listLockDocInfModel = lockInfModels.Where(u => u.DocInfModels != null && !u.CheckDefaultValue()).Select(u => u.DocInfModels).ToList();
-                    UnlockSessionInf(hpId, listMachineLock);
-                    UnlockPtInf(hpId, userId, listLockPtInfModel);
-                    UnlockCalcStatusInf(hpId, userId, listLockCalcStatusModel);
-                    UnlockDocInf(hpId, userId, listLockDocInfModel);
 
-                    if (TrackingDataContext.SaveChanges() >= 1)
-                    {
-                        result = true;
-                    }
-                    else
-                    {
-                        result = false;
-                    }
-                }
-                catch (Exception e)
+            try
+            {
+                List<string> listMachineLock = lockInfModels.Where(u => !string.IsNullOrEmpty(u.Machine)).Select(u => u.Machine).GroupBy(u => u).Select(u => u.First()).ToList();
+                List<LockPtInfModel> listLockPtInfModel = lockInfModels.Where(u => u.PatientInfoModels != null && !u.CheckDefaultValue()).Select(u => u.PatientInfoModels).ToList();
+                List<LockCalcStatusModel> listLockCalcStatusModel = lockInfModels.Where(u => u.CalcStatusModels != null && !u.CheckDefaultValue()).Select(u => u.CalcStatusModels).ToList();
+                List<LockDocInfModel> listLockDocInfModel = lockInfModels.Where(u => u.DocInfModels != null && !u.CheckDefaultValue()).Select(u => u.DocInfModels).ToList();
+                UnlockSessionInf(hpId, listMachineLock);
+                UnlockPtInf(hpId, userId, listLockPtInfModel);
+                UnlockCalcStatusInf(hpId, userId, listLockCalcStatusModel);
+                UnlockDocInf(hpId, userId, listLockDocInfModel);
+
+                if (TrackingDataContext.SaveChanges() >= 1)
                 {
-                    return false;
+                    result = true;
                 }
+                else
+                {
+                    result = false;
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
             }
 
             return result;
