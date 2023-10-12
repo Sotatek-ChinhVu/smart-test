@@ -34,25 +34,11 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.AddLock)]
         public async Task<ActionResult<Response<LockResponse>>> AddLock([FromBody] LockRequest request, CancellationToken cancellationToken)
         {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
             var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, request.TabKey, request.LoginKey);
             var output = _bus.Handle(input);
             AddLockPresenter presenter = new();
             presenter.Complete(output);
             var result = new ActionResult<Response<LockResponse>>(presenter.Result);
-
-            Thread.Sleep(100);
-
-            stopWatch.Stop();
-            TimeSpan ts = stopWatch.Elapsed;
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds);
-            var json = JsonSerializer.Serialize(input);
-
-            Console.WriteLine("Addlock Time: " + DateTime.Now);
-            Console.WriteLine("Addlock RunTime: " + elapsedTime);
-            Console.WriteLine("Addlock Input: " + json);
 
             _cancellationToken = cancellationToken;
             if (_cancellationToken!.Value.IsCancellationRequested)
@@ -70,13 +56,11 @@ namespace EmrCloudApi.Controller
             }
             else
             {
-                Console.WriteLine("Addlock Status: AddLockStatus.Successed");
                 if (output.Status == AddLockStatus.Successed)
                 {
                     await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockModel);
                 }
             }
-
             return result;
         }
 
