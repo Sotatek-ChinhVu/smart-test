@@ -47,7 +47,7 @@
 
         public class KensaInfDetailDataModel
         {
-            public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string std, List<ListKensaInfDetailItem> dynamicArray)
+            public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string std, List<ListKensaInfDetailItemModel> dynamicArray)
             {
                 KensaItemCd = kensaItemCd;
                 KensaName = kensaName;
@@ -64,7 +64,7 @@
 
             public string Std { get; private set; }
 
-            public List<ListKensaInfDetailItem> DynamicArray { get; private set; }
+            public List<ListKensaInfDetailItemModel> DynamicArray { get; private set; }
         }
     }
 }

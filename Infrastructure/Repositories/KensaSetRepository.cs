@@ -375,7 +375,7 @@ namespace Infrastructure.Repositories
                         join t6 in NoTrackingDataContext.KensaCmtMsts
                              on t1.CmtCd2 equals t6.CMT into leftJoinT6
                         from t6 in leftJoinT6.DefaultIfEmpty()
-                        select new ListKensaInfDetailItem
+                        select new ListKensaInfDetailItemModel
                         (
                             t1.PtId,
                             t1.IraiCd,
@@ -488,7 +488,7 @@ namespace Infrastructure.Repositories
 
             foreach (var kensaMstItem in kensaItemCds)
             {
-                var dynamicArray = new List<ListKensaInfDetailItem>();
+                var dynamicArray = new List<ListKensaInfDetailItemModel>();
 
                 foreach (var item in kensaInfDetailCol)
                 {
@@ -496,7 +496,7 @@ namespace Infrastructure.Repositories
 
                     if (dynamicDataItem == null)
                     {
-                        dynamicArray.Add(new ListKensaInfDetailItem(
+                        dynamicArray.Add(new ListKensaInfDetailItemModel(
                             ptId,
                             item.IraiCd
                         ));

@@ -1,8 +1,8 @@
 ﻿namespace Domain.Models.KensaIrai
 {
-    public class ListKensaInfDetailItem
+    public class ListKensaInfDetailItemModel
     {
-        public ListKensaInfDetailItem(long ptId, long iraiCd)
+        public ListKensaInfDetailItemModel(long ptId, long iraiCd)
         {
             PtId = ptId;
             IraiCd = iraiCd;
@@ -36,7 +36,7 @@
             IsDeleted = 0;
         }
 
-        public ListKensaInfDetailItem(
+        public ListKensaInfDetailItemModel(
             long ptId, long iraiCd, long raiinNo, long iraiDate, long seqNo, string kensaName, string kensaKana, long sortNo, string kensaItemCd, string resultVal,
             string resultType, string abnormalKbn, string cmtCd1, string cmtCd2, string cmt1, string cmt2, string std, string stdLow, string stdHigh, string maleStd,
             string femaleStd, string unit, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, int inoutKbn, int status, int isDeleted)

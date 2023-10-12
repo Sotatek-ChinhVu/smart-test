@@ -15,13 +15,20 @@ namespace UseCase.KensaHistory.GetListKensaInfDetail
             ShowAbnormalKbn = showAbnormalKbn;
             ItemQuantity = itemQuantity;
         }
-        public int HpId {get; set;}
-        public long PtId {get; set;}
-        public int UserId { get; set;}
-        public int SetId { get; set;}
-        public int IraiCd { get; set; }
-        public int StartDate { get; set; }
-        public bool ShowAbnormalKbn { get; set; }
-        public int ItemQuantity { get; set; }
+        public int HpId {get; private set;}
+
+        public long PtId {get; private set;}
+
+        public int UserId { get; private set;}
+
+        public int SetId { get; private set;}
+
+        public int IraiCd { get; private set; }
+
+        public int StartDate { get; private set; }
+
+        public bool ShowAbnormalKbn { get; private set; }
+
+        public int ItemQuantity { get; private set; }
     }
 }
