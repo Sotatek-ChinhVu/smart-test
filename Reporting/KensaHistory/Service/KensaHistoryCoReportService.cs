@@ -1,4 +1,5 @@
 ﻿using Domain.Models.HpInf;
+using Domain.Models.KensaIrai;
 using Domain.Models.KensaSet;
 using Reporting.KensaHistory.DB;
 using Reporting.KensaHistory.Mapper;
@@ -13,6 +14,14 @@ namespace Reporting.KensaHistory.Service
         private ICoKensaHistoryFinder _coKensaHistoryFinder;
         private HpInfModel hpInf;
         private int hpId;
+        private int userId;
+        private long ptId;
+        private int setId;
+        private int iraiCd;
+        private int startDate;
+        private bool showAbnormalKbn;
+        private int itemQuantity;
+        private ListKensaInfDetailModel kensaInfDetailModel;
         private List<string> printHokensyaNos;
         private bool hasNextPage;
         private int currentPage;
@@ -37,8 +46,18 @@ namespace Reporting.KensaHistory.Service
             _visibleAtPrint = new();
         }
 
-        public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, long ptId, int startSinYm, int endSinYm, bool includeHoken, bool includeJihi)
+        public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity)
         {
+            this.hpId = hpId;
+            this.userId = userId;
+            this.ptId = ptId;
+            this.setId = setId;
+            this.iraiCd = iraiCd;
+            this.startDate = startDate;
+            this.showAbnormalKbn = showAbnormalKbn;
+            this.itemQuantity = itemQuantity;
+
+            var getData = GetData();
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
             return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
@@ -47,14 +66,14 @@ namespace Reporting.KensaHistory.Service
         private bool GetData()
         {
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId);
-            receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.NoSum);
+            kensaInfDetailModel = _kokhoFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, iraiCd, startDate, showAbnormalKbn, itemQuantity);
             //保険者番号の指定がある場合は絞り込み
-            var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
-                receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
+            //var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
+            //    receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
             //保険者番号リストを取得
-            hokensyaNos = wrkReceInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();
+            //hokensyaNos = wrkReceInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();
 
-            return (receInfs?.Count ?? 0) > 0;
+            return (kensaInfDetailModel?.KensaInfDetailData.Count ?? 0) > 0 || (kensaInfDetailModel?.KensaInfDetailCol.Count ?? 0) > 0;
         }
 
         private void SetFieldData(string field, string value)
