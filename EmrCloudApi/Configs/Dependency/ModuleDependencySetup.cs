@@ -787,6 +787,8 @@ using UseCase.MstItem.SaveSetNameMnt;
 using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.Online.GetOnlineConsent;
 using UseCase.Online.UpdateOnlineConsents;
+using Reporting.KensaHistory.DB;
+using Reporting.KensaHistory.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -937,6 +939,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISyahoCoReportService, SyahoCoReportService>();
             services.AddTransient<ICoSyahoFinder, CoSyahoFinder>();
             services.AddTransient<ICoAccountingCardFinder, CoAccountingCardFinder>();
+            services.AddTransient<ICoKensaHistoryFinder, CoKensaHistoryFinder>();
+            services.AddTransient<IKensaHistoryCoReportService, KensaHistoryCoReportService>();
             services.AddTransient<IAccountingCardCoReportService, AccountingCardCoReportService>();
             services.AddTransient<IP33KoukiSeikyuCoReportService, P33KoukiSeikyuCoReportService>();
             services.AddTransient<IP34KoukiSeikyuCoReportService, P34KoukiSeikyuCoReportService>();

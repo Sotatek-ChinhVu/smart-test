@@ -35,7 +35,7 @@ namespace Reporting.KensaHistory.Service
         private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
         private readonly Dictionary<string, bool> _visibleAtPrint;
 
-        public KensaHistoryCoReportService(IKensaSetRepository kokhoFinder)
+        public KensaHistoryCoReportService(IKensaSetRepository kokhoFinder, ICoKensaHistoryFinder coKensaHistoryFinder)
         {
             _kokhoFinder = kokhoFinder;
             _setFieldData = new();
@@ -44,6 +44,7 @@ namespace Reporting.KensaHistory.Service
             _listTextData = new();
             _visibleFieldData = new();
             _visibleAtPrint = new();
+            _coKensaHistoryFinder = coKensaHistoryFinder;
         }
 
         public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity)

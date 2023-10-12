@@ -159,6 +159,7 @@
         public const string CheckExistTemplateAccounting = "CheckExistTemplateAccounting";
         public const string ExportStatics = "ExportStatics";
         public const string ExportSta9000Csv = "ExportSta9000Csv";
+        public const string KensaHistoryReport = "KensaHistoryReport";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
