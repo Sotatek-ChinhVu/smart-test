@@ -466,7 +466,7 @@ namespace Infrastructure.Repositories
             }
 
             var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
-            var a = kensaItemCds.ToList();
+            
             // Get list iraiCd
             IOrderedQueryable<object> kensaInfDetailColOrder = data.OrderBy(x => x.IraiDate);
             var kensaInfDetailCol = SortIraiDateAsc ? data
