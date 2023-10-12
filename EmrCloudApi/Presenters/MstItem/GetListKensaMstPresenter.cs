@@ -17,10 +17,15 @@ namespace EmrCloudApi.Presenters.MstItem
             Result.Status = (int)outputData.Status;
         }
 
-        private string GetMessage(SearchTenMstItemStatus status) => status switch
+        private string GetMessage(SearchPostCodeStatus status) => status switch
         {
-            SearchTenMstItemStatus.Successed => ResponseMessage.Success,
-            SearchTenMstItemStatus.InValidHpId => ResponseMessage.InvalidHpId,
+            SearchPostCodeStatus.Success => ResponseMessage.Success,
+            SearchPostCodeStatus.Failed => ResponseMessage.Failed,
+            SearchPostCodeStatus.NoData => ResponseMessage.NoData,
+            SearchPostCodeStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+            SearchPostCodeStatus.InvalidPostCode => ResponseMessage.InvalidPostCode,
+            SearchPostCodeStatus.InvalidPageIndex => ResponseMessage.InvalidPageIndex,
+            SearchPostCodeStatus.InvalidPageSize => ResponseMessage.InvalidPageCount,
             _ => string.Empty
         };
     }

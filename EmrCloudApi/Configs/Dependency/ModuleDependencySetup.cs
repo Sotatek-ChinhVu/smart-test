@@ -27,6 +27,7 @@ using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.KensaIrai;
+using Domain.Models.KensaSet;
 using Domain.Models.ListSetGenerationMst;
 using Domain.Models.ListSetMst;
 using Domain.Models.Lock;
@@ -68,6 +69,7 @@ using Domain.Models.SuperSetDetail;
 using Domain.Models.SwapHoken;
 using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
+using Domain.Models.SystemStartDb;
 using Domain.Models.TimeZone;
 using Domain.Models.TodayOdr;
 using Domain.Models.Todo;
@@ -80,6 +82,7 @@ using Domain.Models.UserToken;
 using Domain.Models.VisitingListSetting;
 using Domain.Models.YohoSetMst;
 using EmrCloudApi.Realtime;
+using EmrCloudApi.ScheduleTask;
 using EmrCloudApi.Services;
 using EventProcessor.Interfaces;
 using EventProcessor.Service;
@@ -120,6 +123,7 @@ using Interactor.Ka;
 using Interactor.KarteFilter;
 using Interactor.KarteInf;
 using Interactor.KarteInfs;
+using Interactor.KensaHistory;
 using Interactor.KohiHokenMst;
 using Interactor.ListSetGenerationMst;
 using Interactor.ListSetMst;
@@ -163,6 +167,7 @@ using Interactor.SuperSetDetail;
 using Interactor.SwapHoken;
 using Interactor.SystemConf;
 using Interactor.SystemGenerationConf;
+using Interactor.SystemStartDbs;
 using Interactor.TimeZoneConf;
 using Interactor.Todo;
 using Interactor.UketukeSbtMst;
@@ -396,6 +401,10 @@ using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInf.ConvertTextToRichText;
 using UseCase.KarteInf.GetList;
+using UseCase.KensaHistory.GetListKensaCmtMst;
+using UseCase.KensaHistory.GetListKensaSet;
+using UseCase.KensaHistory.GetListKensaSetDetail;
+using UseCase.KensaHistory.UpdateKensaSet;
 using UseCase.KohiHokenMst.Get;
 using UseCase.ListSetMst.UpdateListSetMst;
 using UseCase.Lock.Add;
@@ -698,6 +707,7 @@ using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf.Get;
 using UseCase.SystemGenerationConf.GetList;
+using UseCase.SystemStartDbs;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using UseCase.TimeZoneConf.SaveTimeZoneConf;
 using UseCase.Todo.GetListTodoKbn;
@@ -751,6 +761,28 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using Infrastructure.Logger;
+using UseCase.MstItem.SaveRenkei;
+using UseCase.MstItem.GetListYohoSetMstModelByUserID;
+using Interactor.ListSetGenerationMst;
+using Domain.Models.ListSetGenerationMst;
+using Domain.Models.ByomeiSetGenerationMst;
+using UseCase.MstItem.GetListByomeiSetGenerationMst;
+using UseCase.MstItem.GetTreeListSet;
+using UseCase.MstItem.GetTreeByomeiSet;
+using UseCase.MstItem.GetListSetGenerationMst;
+using UseCase.MstItem.GetListKensaIjiSetting;
+using UseCase.MstItem.CompareTenMst;
+using UseCase.MstItem.SaveCompareTenMst;
+using UseCase.MstItem.UpdateYohoSetMst;
+using Infrastructure.Logger;
+using UseCase.MstItem.ExistUsedKensaItemCd;
+using UseCase.MstItem.IsKensaItemOrdering;
+using UseCase.MstItem.IsUsingKensa;
+using UseCase.KensaHistory.UpdateKensaInfDetail;
+using UseCase.MstItem.GetTenMstByCode;
+using UseCase.MstItem.GetByomeiByCode;
+using UseCase.ColumnSetting.GetColumnSettingByTableNameList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -792,6 +824,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             services.AddScoped<IMessenger, Messenger>();
             services.AddScoped<ILoggingHandler, LoggingHandler>();
+
+            services.AddScoped<ISystemStartDbService, SystemStartDbService>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
@@ -1152,8 +1186,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IStaticsticExportCsvService, StaticsticExportCsvService>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
+            services.AddTransient<IKensaSetRepository, KensaSetRepository>();
             services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
+            services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
+            services.AddSingleton<IHostedService, TaskScheduleDeleteGarbage>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1778,6 +1815,13 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<AddSetSendaiGenerationInputData, AddSetSendaiGenerationInteractor>();
             busBuilder.RegisterUseCase<RestoreSetSendaiGenerationInputData, RestoreSetSendaiGenerationInteractor>();
 
+            // KensaHistory
+            busBuilder.RegisterUseCase<UpdateKensaSetInputData, UpdateKensaSetInteractor>();
+            busBuilder.RegisterUseCase<GetListKensaSetInputData, GetListKensaSetInteractor>();
+            busBuilder.RegisterUseCase<GetListKensaSetDetailInputData, GetListKensaSetDetailInteractor>();
+            busBuilder.RegisterUseCase<GetListKensaCmtMstInputData, GetListKensaCmtMstInteractor>();
+            busBuilder.RegisterUseCase<UpdateKensaInfDetailInputData, UpdateKensaInfDetailInteractor>();
+
 
             //ListSetGeneration
             busBuilder.RegisterUseCase<GetListSetGenerationMstInputData, ListSetGenerationMstInteractor>();
@@ -1786,6 +1830,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CompareTenMstInputData, CompareTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveCompareTenMstInputData, SaveCompareTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveSetNameMntInputData, SaveSetNameMntInteractor>();
+
+            //SystemStartDb 
+            busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

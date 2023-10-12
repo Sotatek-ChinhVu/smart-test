@@ -505,6 +505,13 @@
         //SetSendaiGeneration
         public const string Restore = "Restore";
 
+        //KensaHistory
+        public const string UpdateKensaSet = "UpdateKensaSet";
+        public const string GetListKensaSet = "GetListKensaSet";
+        public const string GetListKensaSetDetail = "GetListKensaSetDetail";
+        public const string GetListKensaCmtMst = "GetListKensaCmtMst";
+        public const string UpdateKensaInfDetail = "UpdateKensaInfDetail";
+
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";
         public const string SaveCompareTenMst = "SaveCompareTenMst";

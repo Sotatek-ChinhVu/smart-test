@@ -173,7 +173,7 @@ namespace Domain.Models.MstItem
 
         (int, List<PostCodeMstModel>) SearchAddress(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
 
-        List<KensaMstModel> GetListKensaMst(int hpId, string searchValue);
+        (List<KensaMstModel>, int) GetListKensaMst(int hpId, string searchValue, int pageIndex, int pageSize);
 
         string GetDrugAction(string yjCd);
 
@@ -234,5 +234,4 @@ namespace Domain.Models.MstItem
 
         bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate);
     }
-
 }
