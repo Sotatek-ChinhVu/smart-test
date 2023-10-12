@@ -558,27 +558,26 @@ namespace Infrastructure.Repositories
         public Dictionary<int, Dictionary<int, string>> GetLockInf(int hpId)
         {
             Dictionary<int, Dictionary<int, string>> result = new();
-            var lockInfs = NoTrackingDataContext.LockInfs.Where(x => x.HpId == hpId).ToList();
-            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
-            var count = 0;
-
-            var query = from lockInf in lockInfs
+            var userIdLockInfs = NoTrackingDataContext.LockInfs.Where(x => x.HpId == hpId).Select(x => x.UserId).Distinct().ToList();
+            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId).ToList();
+            var index = 0;
+            var query = (from userIdLockInf in userIdLockInfs
                         join userMst in userMsts
-                        on lockInf.UserId equals userMst.UserId
+                        on userIdLockInf equals userMst.UserId
                         select new
                         {
-                            lockInf.UserId,
+                            userIdLockInf,
                             userMst.Name
-                        };
+                        }).OrderBy(x => x.userIdLockInf);
 
             foreach (var item in query.AsEnumerable().ToList())
             {
                 Dictionary<int, string> data = new()
                 {
-                    { item.UserId, item.Name }
+                    { item.userIdLockInf, item.Name }
                 };
-                result.Add(count, data);
-                count++;
+                result.Add(index, data);
+                index++;
             }
 
             return result;
