@@ -7824,7 +7824,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 res.CenterName ?? string.Empty
             )
         ).ToList();
-
+        
         if (allkensaKensaMst == null)
         {
             return (result, 0);
