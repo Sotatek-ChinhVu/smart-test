@@ -364,50 +364,50 @@ namespace Infrastructure.Repositories
             {
                 kensaInfDetails = kensaInfDetails.Where(x => x.IraiCd == iraiCd);
             }
-            var data = from t1 in kensaInfDetails
-                       join t2 in NoTrackingDataContext.KensaMsts
-                        on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
-                       join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
-                       join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
-                       join t5 in NoTrackingDataContext.KensaCmtMsts
-                            on t1.CmtCd1 equals t5.CMT into leftJoinT5
-                       from t5 in leftJoinT5.DefaultIfEmpty()
-                       join t6 in NoTrackingDataContext.KensaCmtMsts
-                            on t1.CmtCd2 equals t6.CMT into leftJoinT6
-                       from t6 in leftJoinT6.DefaultIfEmpty()
-                       select new ListKensaInfDetailItem
-                       (
-                           t1.PtId,
-                           t1.IraiCd,
-                           t1.RaiinNo,
-                           t1.IraiDate,
-                           t1.SeqNo,
-                           t2.KensaName ?? string.Empty,
-                           t2.KensaKana ?? string.Empty,
-                           t2.SortNo,
-                           t1.KensaItemCd ?? string.Empty,
-                           t1.ResultVal ?? string.Empty,
-                           t1.ResultType ?? string.Empty,
-                           t1.AbnormalKbn ?? string.Empty,
-                           t1.CmtCd1 ?? string.Empty,
-                           t1.CmtCd2 ?? string.Empty,
-                           (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
-                           (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
-                           t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
-                           t4.Sex == 1 ? t2.MaleStdLow ?? string.Empty : t2.FemaleStdLow ?? string.Empty,
-                           t4.Sex == 1 ? t2.MaleStdHigh ?? string.Empty : t2.FemaleStdHigh ?? string.Empty,
-                           t2.MaleStd ?? string.Empty,
-                           t2.FemaleStd ?? string.Empty,
-                           t2.Unit ?? string.Empty,
-                           t3.Nyubi ?? string.Empty,
-                           t3.Yoketu ?? string.Empty,
-                           t3.Bilirubin ?? string.Empty,
-                           t3.SikyuKbn,
-                           t3.TosekiKbn,
-                           t3.InoutKbn,
-                           t3.Status,
-                           0
-                       );
+            var data = (from t1 in kensaInfDetails
+                        join t2 in NoTrackingDataContext.KensaMsts
+                         on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
+                        join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
+                        join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
+                        join t5 in NoTrackingDataContext.KensaCmtMsts
+                             on t1.CmtCd1 equals t5.CMT into leftJoinT5
+                        from t5 in leftJoinT5.DefaultIfEmpty()
+                        join t6 in NoTrackingDataContext.KensaCmtMsts
+                             on t1.CmtCd2 equals t6.CMT into leftJoinT6
+                        from t6 in leftJoinT6.DefaultIfEmpty()
+                        select new ListKensaInfDetailItem
+                        (
+                            t1.PtId,
+                            t1.IraiCd,
+                            t1.RaiinNo,
+                            t1.IraiDate,
+                            t1.SeqNo,
+                            t2.KensaName ?? string.Empty,
+                            t2.KensaKana ?? string.Empty,
+                            t2.SortNo,
+                            t1.KensaItemCd ?? string.Empty,
+                            t1.ResultVal ?? string.Empty,
+                            t1.ResultType ?? string.Empty,
+                            t1.AbnormalKbn ?? string.Empty,
+                            t1.CmtCd1 ?? string.Empty,
+                            t1.CmtCd2 ?? string.Empty,
+                            (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
+                            (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
+                            t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
+                            t4.Sex == 1 ? t2.MaleStdLow ?? string.Empty : t2.FemaleStdLow ?? string.Empty,
+                            t4.Sex == 1 ? t2.MaleStdHigh ?? string.Empty : t2.FemaleStdHigh ?? string.Empty,
+                            t2.MaleStd ?? string.Empty,
+                            t2.FemaleStd ?? string.Empty,
+                            t2.Unit ?? string.Empty,
+                            t3.Nyubi ?? string.Empty,
+                            t3.Yoketu ?? string.Empty,
+                            t3.Bilirubin ?? string.Empty,
+                            t3.SikyuKbn,
+                            t3.TosekiKbn,
+                            t3.InoutKbn,
+                            t3.Status,
+                            DeleteTypes.None
+                        )).AsEnumerable();
 
             if (showAbnormalKbn)
             {
@@ -469,9 +469,9 @@ namespace Infrastructure.Repositories
             }
 
             var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
-            
+
             // Get list iraiCd
-            IOrderedQueryable<object> kensaInfDetailColOrder = data.OrderBy(x => x.IraiDate);
+            IOrderedEnumerable<object> kensaInfDetailColOrder = data.OrderBy(x => x.IraiDate);
             var kensaInfDetailCol = SortIraiDateAsc ? data
                                 .OrderBy(x => x.IraiDate)
                                 .GroupBy(x => new { x.IraiCd, x.IraiDate, x.Nyubi, x.Yoketu, x.Bilirubin, x.SikyuKbn, x.TosekiKbn })
@@ -509,10 +509,10 @@ namespace Infrastructure.Repositories
 
                 var rowData = new KensaInfDetailDataModel(
                      kensaMstItem.KensaItemCd,
-                    kensaMstItem.KensaName,
-                    kensaMstItem.Unit,
-                    kensaMstItem.Std,
-                    dynamicArray
+                     kensaMstItem.KensaName,
+                     kensaMstItem.Unit,
+                     kensaMstItem.Std,
+                     dynamicArray
                 );
 
                 kensaInfDetailData.Add(rowData);
