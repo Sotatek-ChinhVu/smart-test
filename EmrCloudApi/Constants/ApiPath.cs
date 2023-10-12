@@ -520,5 +520,6 @@
 
         //log
         public const string WriteLog = "WriteLog";
+        public const string WriteListLog = "WriteListLog";
     }
 }

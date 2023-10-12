@@ -783,6 +783,7 @@ using UseCase.KensaHistory.UpdateKensaInfDetail;
 using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
 using UseCase.ColumnSetting.GetColumnSettingByTableNameList;
+using UseCase.Logger.WriteListLog;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1796,6 +1797,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Audit Log
             busBuilder.RegisterUseCase<SaveAuditTrailLogInputData, SaveAuditTrailLogInteractor>();
             busBuilder.RegisterUseCase<WriteLogInputData, WriteLogInteractor>();
+            busBuilder.RegisterUseCase<WriteListLogInputData, WriteListLogInteractor>();
 
             // Disease Name Mst Seach
             busBuilder.RegisterUseCase<DiseaseNameMstSearchInputData, DiseaseNameMstSearchInteractor>();
