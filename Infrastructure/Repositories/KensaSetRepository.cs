@@ -249,11 +249,36 @@ namespace Infrastructure.Repositories
                             // Create kensaInfDetail
                             if (item.SeqNo == 0)
                             {
+
+                                // Create KensaInf
+                                var kensaInf = TrackingDataContext.KensaInfs.Add(new KensaInf()
+                                {
+                                    HpId = hpId,
+                                    PtId = item.PtId,
+                                    IraiCd = 0,
+                                    IraiDate = item.IraiDate,
+                                    RaiinNo = item.RaiinNo,
+                                    InoutKbn = 0,
+                                    Status = 0,
+                                    TosekiKbn = 0,
+                                    SikyuKbn = 0,
+                                    ResultCheck = 0,
+                                    CreateId = userId,
+                                    UpdateId = userId,
+                                    CreateMachine = CIUtil.GetComputerName(),
+                                    UpdateMachine = CIUtil.GetComputerName(),
+                                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                    IsDeleted = 0
+                                });
+
+                                TrackingDataContext.SaveChanges();
+
                                 TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
                                 {
                                     HpId = hpId,
                                     PtId = item.PtId,
-                                    IraiCd = item.IraiCd,
+                                    IraiCd = kensaInf.Entity.IraiCd,
                                     IraiDate = item.IraiDate,
                                     RaiinNo = item.RaiinNo,
                                     KensaItemCd = item.KensaItemCd,
@@ -269,28 +294,6 @@ namespace Infrastructure.Repositories
                                     CreateDate = CIUtil.GetJapanDateTimeNow(),
                                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                     IsDeleted = 0,
-                                });
-
-                                // Create KensaInf
-                                TrackingDataContext.KensaInfs.Add(new KensaInf()
-                                {
-                                    HpId = hpId,
-                                    PtId = item.PtId,
-                                    IraiCd = item.IraiCd,
-                                    IraiDate = item.IraiDate,
-                                    RaiinNo = item.RaiinNo,
-                                    InoutKbn = 0,
-                                    Status = 0,
-                                    TosekiKbn = 0,
-                                    SikyuKbn = 0,
-                                    ResultCheck = 0,
-                                    CreateId = userId,
-                                    UpdateId = userId,
-                                    CreateMachine = CIUtil.GetComputerName(),
-                                    UpdateMachine = CIUtil.GetComputerName(),
-                                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                                    IsDeleted = 0
                                 });
                             }
 
