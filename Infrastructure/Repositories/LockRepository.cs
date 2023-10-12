@@ -170,7 +170,13 @@ namespace Infrastructure.Repositories
             var lockInf = TrackingDataContext.LockInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.FunctionCd == functionCd && r.RaiinNo == raiinNo && r.SinDate == sinDate && r.UserId == userId && r.Machine == tabKey);
             if (lockInf == null)
             {
-                return (new() { raiinNo }, 0);
+                // if the key does not exist in the DB, wait 500ms and then try again to remove the key.
+                Thread.Sleep(500);
+                lockInf = TrackingDataContext.LockInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.FunctionCd == functionCd && r.RaiinNo == raiinNo && r.SinDate == sinDate && r.UserId == userId && r.Machine == tabKey);
+                if (lockInf == null)
+                {
+                    return (new() { raiinNo }, 0);
+                }
             }
             TrackingDataContext.LockInfs.Remove(lockInf);
             var removedCount = TrackingDataContext.SaveChanges();
