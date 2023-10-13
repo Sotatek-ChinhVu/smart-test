@@ -18,6 +18,7 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
     {
         _hpInfFinder = hpInfFinder;
     }
+
     public CoHpInfModel GetHpInf(int hpId, int sinDate)
     {
         return _hpInfFinder.GetHpInf(hpId, sinDate);
@@ -25,7 +26,6 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
 
     public List<CoUsedDrugInf> GetUsedDrugInfs(int hpId, CoSta3040PrintConf printConf)
     {
-
         var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.IsDelete == DeleteStatus.None);
         if (!printConf.IsTester)
         {
@@ -35,74 +35,40 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
 
         var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None);
         //自費・労災・自賠を除く
-        int[] expHokKbns = new int[] { 0, 11, 12, 13, 14 };
-        ptHokenPatterns = ptHokenPatterns.Where(x => !expHokKbns.Contains(x.HokenKbn));
+        int[] ExpHokKbns = new int[] { 0, 11, 12, 13, 14 };
+        ptHokenPatterns = ptHokenPatterns.Where(x => !ExpHokKbns.Contains(x.HokenKbn));
 
-        var odrInfs = NoTrackingDataContext.OdrInfs.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None && x.SanteiKbn == 0);
-        #region 条件
         //期間
-        odrInfs = odrInfs.Where(x => printConf.FromYm * 100 <= x.SinDate && x.SinDate <= printConf.ToYm * 100 + 31);
-
-        //診療識別
-        var odrKouiKbnExpression = CreateOdrKouiKbnExpression(printConf.SinryoSbt);
-
-        var odrInfList = odrInfs.ToList();
-        if (odrKouiKbnExpression != null)
-        {
-            odrInfList = odrInfList.AsQueryable().Where(odrKouiKbnExpression).ToList();
-        }
-        #endregion
+        var odrInfs = NoTrackingDataContext.OdrInfs.Where(x => x.HpId == hpId
+                                                               && x.IsDeleted == DeleteStatus.None
+                                                               && x.SanteiKbn == 0
+                                                               && printConf.FromYm * 100 <= x.SinDate
+                                                               && x.SinDate <= printConf.ToYm * 100 + 31);
 
         var odrInfDetails = NoTrackingDataContext.OdrInfDetails;
-
         var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.DrugKbn > 0);
-
         var yakkaSyusaiMsts = NoTrackingDataContext.YakkaSyusaiMsts;
         var drugUnitConvs = NoTrackingDataContext.DrugUnitConvs;
 
-        List<long> ptIdList = new();
-        List<int> hokenPidList = new();
-        List<long> raiinNoList = new();
-        List<long> rpNoList = new();
-        List<long> rpEdaNoList = new();
-
-        Task taskId1 = Task.Factory.StartNew(() => ptIdList = odrInfList.Select(item => item.PtId).Distinct().ToList());
-        Task taskId2 = Task.Factory.StartNew(() => hokenPidList = odrInfList.Select(item => item.HokenPid).Distinct().ToList());
-        Task taskId3 = Task.Factory.StartNew(() => raiinNoList = odrInfList.Select(item => item.RaiinNo).Distinct().ToList());
-        Task taskId4 = Task.Factory.StartNew(() => rpNoList = odrInfList.Select(item => item.RpNo).Distinct().ToList());
-        Task taskId5 = Task.Factory.StartNew(() => rpEdaNoList = odrInfList.Select(item => item.RpEdaNo).Distinct().ToList());
-        Task.WaitAll(taskId1, taskId2, taskId3, taskId4, taskId5);
-
-        var ptHokenPatternList = ptHokenPatterns.Where(item => item.HpId == hpId && ptIdList.Contains(item.PtId) && hokenPidList.Contains(item.HokenPid)).ToList();
-        var ptInfList = ptInfs.Where(item => item.HpId == hpId && ptIdList.Contains(item.PtId)).ToList();
-        var odrInfDetailList = odrInfDetails.Where(item => item.HpId == hpId && ptIdList.Contains(item.PtId) && raiinNoList.Contains(item.RaiinNo) && rpNoList.Contains(item.RpNo) && rpEdaNoList.Contains(item.RpEdaNo)).ToList();
-
-        var itemCdList = odrInfDetailList.Select(item => item.ItemCd).Distinct().ToList();
-        var tenMstList = tenMsts.Where(item => item.HpId == hpId && itemCdList.Contains(item.ItemCd)).ToList();
-        var yakkaCdList = tenMstList.Select(item => item.YakkaCd).Distinct().ToList();
-
-        var yakkaSyusaiMstList = yakkaSyusaiMsts.Where(item => item.HpId == hpId && itemCdList.Contains(item.ItemCd) && yakkaCdList.Contains(item.YakkaCd)).ToList();
-        var drugUnitConvList = drugUnitConvs.Where(item => itemCdList.Contains(item.ItemCd)).ToList();
-
         var odrDrugJoinQuery = (
-            from odrInf in odrInfList
-            join ptHokenPattern in ptHokenPatternList on
+            from odrInf in odrInfs
+            join ptHokenPattern in ptHokenPatterns on
                 new { odrInf.HpId, odrInf.PtId, odrInf.HokenPid } equals
                 new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenPid }
-            join ptInf in ptInfList on
+            join ptInf in ptInfs on
                 new { odrInf.HpId, odrInf.PtId } equals
                 new { ptInf.HpId, ptInf.PtId }
-            join odrInfDetail in odrInfDetailList on
+            join odrInfDetail in odrInfDetails on
                 new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                 new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
-            join tenMst in tenMstList on
+            join tenMst in tenMsts on
                 new { odrInfDetail.HpId, odrInfDetail.ItemCd } equals
                 new { tenMst.HpId, tenMst.ItemCd }
-            join yakkaSyusaiMst in yakkaSyusaiMstList on
+            join yakkaSyusaiMst in yakkaSyusaiMsts on
                 new { tenMst.HpId, tenMst.ItemCd, tenMst.YakkaCd } equals
                 new { yakkaSyusaiMst.HpId, yakkaSyusaiMst.ItemCd, yakkaSyusaiMst.YakkaCd } into yakkaSyusaiJoins
             from yakkaSyusaiJoin in yakkaSyusaiJoins.DefaultIfEmpty()
-            join drugUnitConv in drugUnitConvList on
+            join drugUnitConv in drugUnitConvs on
                 new { tenMst.ItemCd } equals
                 new { drugUnitConv.ItemCd } into drugUnitConvJoins
             from drugUnitConvJoin in drugUnitConvJoins.DefaultIfEmpty()
@@ -110,21 +76,37 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
                 );
 
         //診療日が期間外の薬情報を除外する
-        odrDrugJoinQuery = odrDrugJoinQuery.Where(x => x.tenMst.StartDate <= x.odrInf.SinDate && x.odrInf.SinDate <= x.tenMst.EndDate)
-            .Where(x => x.yakkaSyusaiJoin == null || x.yakkaSyusaiJoin.StartDate <= x.odrInf.SinDate && x.odrInf.SinDate <= x.yakkaSyusaiJoin.EndDate)
-            .Where(x => x.drugUnitConvJoin == null || x.drugUnitConvJoin.StartDate <= x.odrInf.SinDate && x.odrInf.SinDate <= x.drugUnitConvJoin.EndDate);
+        odrDrugJoinQuery = odrDrugJoinQuery.Where(x => (x.tenMst.StartDate <= x.odrInf.SinDate && x.odrInf.SinDate <= x.tenMst.EndDate)
+            && (x.yakkaSyusaiJoin == null || x.yakkaSyusaiJoin.StartDate <= x.odrInf.SinDate && x.odrInf.SinDate <= x.yakkaSyusaiJoin.EndDate)
+            && (x.drugUnitConvJoin == null || x.drugUnitConvJoin.StartDate <= x.odrInf.SinDate && x.odrInf.SinDate <= x.drugUnitConvJoin.EndDate));
 
         //後発医薬品の規格単位数量の割合を算出する際に除外する医薬品
         odrDrugJoinQuery = odrDrugJoinQuery.Where(x => x.yakkaSyusaiJoin == null || x.yakkaSyusaiJoin.IsNotarget == 0);
 
-        var odrDrugInfs = odrDrugJoinQuery.AsEnumerable().Select(
+        List<CoOdrDrugInf> odrDrugInfs;
+
+        //診療識別
+        var odrKouiKbnExpression = CreateOdrKouiKbnExpression(printConf.SinryoSbt);
+        if (odrKouiKbnExpression != null)
+        {
+            var odrDrugJoinList = odrDrugJoinQuery.ToList();
+            var odrDrugJoin = odrDrugJoinList.Select(item => item.odrInf).AsQueryable().Where(odrKouiKbnExpression).ToList();
+            odrDrugInfs = (from data in odrDrugJoinList
+                           join joinItem in odrDrugJoin on data.odrInf equals joinItem
+                           select new CoOdrDrugInf(data.odrInf, data.odrInfDetail, data.tenMst, data.yakkaSyusaiJoin, data.drugUnitConvJoin))
+                           .ToList();
+        }
+        else
+        {
+            odrDrugInfs = odrDrugJoinQuery.AsEnumerable().Select(
             data =>
                 new CoOdrDrugInf(data.odrInf, data.odrInfDetail, data.tenMst, data.yakkaSyusaiJoin, data.drugUnitConvJoin)
-        ).ToList();
+            ).ToList();
+        }
 
         var grpOdrDrugInfs = from odrDrugInf in odrDrugInfs
                              group odrDrugInf by new { odrDrugInf.SinYm, odrDrugInf.ItemCd, odrDrugInf.ReceName, odrDrugInf.ReceUnitName }
-                     into grpOdrDrugInf
+                             into grpOdrDrugInf
                              orderby grpOdrDrugInf.FirstOrDefault()?.SinYm
                              select new
                              {
@@ -142,7 +124,7 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
                                  ExixtCnvVal = grpOdrDrugInf.Max(x => x.ExistCnvVal)
                              };
 
-        var retData = grpOdrDrugInfs.AsEnumerable().Select(data => new CoUsedDrugInf()
+        var retData = grpOdrDrugInfs.Select(data => new CoUsedDrugInf()
         {
             SinYm = data.SinYm,
             ItemCd = data.ItemCd,
@@ -156,12 +138,10 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
             TermVal = data.TermVal,
             CnvVal = data.CnvVal,
             ExistCnvVal = data.ExixtCnvVal
-        }
-        ).ToList();
+        }).ToList();
 
         return retData;
     }
-
 
     /// <summary>
     /// 診療識別のOR条件を作成する

@@ -1,4 +1,4 @@
-﻿﻿using Amazon.Runtime.Internal.Transform;
+﻿using Amazon.Runtime.Internal.Transform;
 using Domain.Constant;
 using Domain.Enum;
 using Domain.Models.AuditLog;
@@ -20,12 +20,9 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
-using System;
 using System.Text;
 using KensaCenterMstModel = Domain.Models.MstItem.KensaCenterMstModel;
 
@@ -7827,6 +7824,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 res.CenterName ?? string.Empty
             )
         ).ToList();
+        
         if (allkensaKensaMst == null)
         {
             return (result, 0);
@@ -7957,7 +7955,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var models = result.OrderBy(u => u.SortNo).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
         return (models, total);
     }
-    
+
     public bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate)
     {
         try

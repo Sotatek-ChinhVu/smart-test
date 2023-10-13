@@ -1227,13 +1227,13 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             DateTime startRegDate;
             if (DateTime.TryParseExact(ptConf.StartRegDate.ToString(), "yyyyMMdd", null, DateTimeStyles.None, out startRegDate))
             {
-                ptInfs = ptInfs.Where(p => p.CreateDate >= startRegDate);
+                ptInfs = ptInfs.Where(p => p.CreateDate >= CIUtil.SetKindUtc(startRegDate));
             }
             DateTime endRegDate;
             if (DateTime.TryParseExact(ptConf.EndRegDate.ToString(), "yyyyMMdd", null, DateTimeStyles.None, out endRegDate))
             {
                 endRegDate = endRegDate.AddDays(1);
-                ptInfs = ptInfs.Where(p => p.CreateDate < endRegDate);
+                ptInfs = ptInfs.Where(p => p.CreateDate < CIUtil.SetKindUtc(endRegDate));
             }
 
             //患者グループ

@@ -4,9 +4,11 @@ using EmrCloudApi.Requests.Logging;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Logger;
 using EmrCloudApi.Services;
+using Infrastructure.Common;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Logger;
+using UseCase.Logger.WriteListLog;
 
 namespace EmrCloudApi.Controller
 {
@@ -31,6 +33,28 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<WriteLogResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.WriteListLog)]
+        public ActionResult<Response<WriteListLogResponse>> WriteListLog([FromBody] WriteListLogRequest request)
+        {
+            var auditLogModelList = request.WriteListLogRequests.Select(item => new AuditLogModel(
+                                                                                item.EventCd,
+                                                                                item.PtId,
+                                                                                item.SinDay,
+                                                                                item.RaiinNo,
+                                                                                item.Path,
+                                                                                item.RequestInfo,
+                                                                                item.Description,
+                                                                                item.LogType
+                                                                )).ToList();
+            var input = new WriteListLogInputData(auditLogModelList);
+            var output = _bus.Handle(input);
+
+            var presenter = new WriteListLogPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<WriteListLogResponse>>(presenter.Result);
         }
     }
 }
