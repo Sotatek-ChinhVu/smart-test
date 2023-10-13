@@ -761,33 +761,10 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using Infrastructure.Logger;
-using UseCase.MstItem.SaveRenkei;
-using UseCase.MstItem.GetListYohoSetMstModelByUserID;
-using Interactor.ListSetGenerationMst;
-using Domain.Models.ListSetGenerationMst;
-using Domain.Models.ByomeiSetGenerationMst;
-using UseCase.MstItem.GetListByomeiSetGenerationMst;
-using UseCase.MstItem.GetTreeListSet;
-using UseCase.MstItem.GetTreeByomeiSet;
-using UseCase.MstItem.GetListSetGenerationMst;
-using UseCase.MstItem.GetListKensaIjiSetting;
-using UseCase.MstItem.CompareTenMst;
-using UseCase.MstItem.SaveCompareTenMst;
-using UseCase.MstItem.UpdateYohoSetMst;
-using Infrastructure.Logger;
-using UseCase.MstItem.ExistUsedKensaItemCd;
-using UseCase.MstItem.IsKensaItemOrdering;
-using UseCase.MstItem.IsUsingKensa;
 using UseCase.KensaHistory.UpdateKensaInfDetail;
-using UseCase.MstItem.GetTenMstByCode;
-using UseCase.MstItem.GetByomeiByCode;
-using UseCase.ColumnSetting.GetColumnSettingByTableNameList;
 using UseCase.Logger.WriteListLog;
-using UseCase.MstItem.SaveSetNameMnt;
 using UseCase.KensaHistory.GetListKensaInfDetail;
-using UseCase.Online.GetOnlineConsent;
-using UseCase.Online.UpdateOnlineConsents;
+using UseCase.MainMenu.ImportKensaIrai;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1749,6 +1726,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<KensaIraiReportInputData, KensaIraiReportInteractor>();
             busBuilder.RegisterUseCase<GetStaCsvMstInputData, GetStaCsvMstInteractor>();
             busBuilder.RegisterUseCase<SaveStaCsvMstInputData, SaveStaCsvMstInteractor>();
+            busBuilder.RegisterUseCase<ImportKensaIraiInputData, ImportKensaIraiInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();

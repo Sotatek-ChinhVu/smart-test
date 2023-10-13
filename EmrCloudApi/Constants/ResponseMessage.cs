@@ -1020,6 +1020,10 @@
         public static readonly string InvalidReportId = "Invalid ReportId!";
         public static readonly string InvalidMenuName = "Invalid MenuName!";
         public static readonly string InvalidIraiCd = "Invalid IraiCd!";
+        public static readonly string InvalidInputFile = "Invalid InputFile!";
+        public static readonly string InvalidAbnormalKbn = "Invalid AbnormalKbn!";
+        public static readonly string InvalidResultType = "Invalid ResultType!";
+        public static readonly string InvalidKensaItemCd = "Invalid KensaItemCd!";
 
         public static readonly string NoPermission = "No permission";
         public static readonly string InvalidContentFile = "Invalid file content";

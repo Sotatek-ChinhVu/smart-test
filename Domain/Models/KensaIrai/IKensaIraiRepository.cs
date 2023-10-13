@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Helper.Messaging;
 
 namespace Domain.Models.KensaIrai;
 
@@ -20,6 +21,10 @@ public interface IKensaIraiRepository : IRepositoryBase
 
     bool CheckExistCenterCd(int hpId, string centerCd);
 
+    bool CheckExistCenterCd(int hpId, List<string> centerCdList);
+
+    public bool CheckExistIraiCd(int hpId, List<long> iraiCdList);
+
     bool ReCreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, int systemDate);
 
     List<KensaInfModel> GetKensaInfModels(int hpId, int startDate, int endDate, string centerCd = "");
@@ -31,4 +36,6 @@ public interface IKensaIraiRepository : IRepositoryBase
     List<KensaIraiLogModel> GetKensaIraiLogModels(int hpId, int startDate, int endDate);
 
     bool SaveKensaIraiLog(int hpId, int userId, KensaIraiLogModel model);
+
+    List<KensaInfMessageModel> SaveKensaIraiImport(int hpId, int userId, IMessenger messenger, List<KensaInfDetailModel> kensaInfDetailList);
 }
