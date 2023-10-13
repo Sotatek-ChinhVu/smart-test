@@ -412,7 +412,9 @@ using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Get;
+using UseCase.Lock.GetLockInf;
 using UseCase.Lock.Remove;
+using UseCase.Lock.Unlock;
 using UseCase.Logger;
 using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using UseCase.MainMenu.DeleteKensaInf;
@@ -1734,6 +1736,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetLockInfoInputData, GetLockInfoInteractor>();
             busBuilder.RegisterUseCase<CheckLockVisitingInputData, CheckLockVisitingInteractor>();
             busBuilder.RegisterUseCase<CheckExistFunctionCodeInputData, CheckExistFunctionCodeInteractor>();
+            busBuilder.RegisterUseCase<GetLockInfInputData, GetLockInfInteractor>();
+            busBuilder.RegisterUseCase<UnlockInputData, UnlockInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
