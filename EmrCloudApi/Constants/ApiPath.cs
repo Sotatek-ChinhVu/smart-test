@@ -65,6 +65,7 @@
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
+        public const string GetListKensaMst = "GetListKensaMst";
         public const string GetListYohoSetMstModelByUserID = "GetListYohoSetMstModelByUserID";
         public const string GetRenkeiConf = "GetRenkeiConf";
         public const string SaveRenkei = "SaveRenkei";
@@ -81,7 +82,6 @@
         public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
         public const string GetTenMstByCode = "GetTenMstByCode";
         public const string GetByomeiByCode = "GetByomeiByCode";
-        public const string GetListKensaMst = "GetListKensaMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -427,7 +427,9 @@
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
         public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
-        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut";
+        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut"; 
+        public const string GetLockInf = "GetLockInf"; 
+        public const string Unlock = "Unlock";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
