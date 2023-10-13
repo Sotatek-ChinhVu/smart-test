@@ -24,7 +24,7 @@ namespace Interactor.Lock
                 string tabKey = inputData.TabKey;
                 int removeCounted = 0;
 
-                List<long> raiinNoList;
+                List<long>? raiinNoList;
                 if (inputData.IsRemoveAllLock)
                 {
                     raiinNoList = _lockRepository.RemoveAllLock(hpId, userId);
@@ -49,7 +49,7 @@ namespace Interactor.Lock
                     removeCounted = removeResult.removedCount;
                     raiinNo = 0;
                 }
-                if (raiinNoList.Any())
+                if (raiinNoList?.Any() == true)
                 {
                     List<ResponseLockModel> responseLockList;
                     if (inputData.IsRemoveLockWhenLogOut)
