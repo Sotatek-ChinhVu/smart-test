@@ -1,4 +1,5 @@
-﻿using CloudUnitTest.SampleData;
+﻿using Castle.Core.Configuration;
+using CloudUnitTest.SampleData;
 using Domain.Models.Diseases;
 using Domain.Models.MedicalExamination;
 using Domain.Models.OrdInfDetails;
@@ -6,6 +7,7 @@ using Domain.Models.OrdInfs;
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Repositories;
+using Moq;
 using static Helper.Constants.OrderInfConst;
 
 namespace CloudUnitTest.Repository.CheckedSpecialItem;
@@ -42,8 +44,8 @@ public class CheckedOrderTest : BaseUT
                 10
             )
         };
-
-        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        var mock = new Mock<IConfiguration>();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mock.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -79,9 +81,10 @@ public class CheckedOrderTest : BaseUT
                 "113001810",
                 10
             )
-        };
+        };  
 
-        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        var mock = new Mock<IConfiguration>();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mock.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate1, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou1);

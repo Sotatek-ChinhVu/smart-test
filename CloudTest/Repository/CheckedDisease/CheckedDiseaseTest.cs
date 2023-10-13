@@ -3,6 +3,8 @@ using Domain.Models.Diseases;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Infrastructure.Repositories;
+using Microsoft.Extensions.Configuration;
+using Moq;
 
 namespace CloudUnitTest.Repository.CheckedDisease;
 
@@ -42,7 +44,8 @@ public class CheckedDiseaseTest : BaseUT
                 ordInfDetailModels
                 ),
         };
-        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        var mock = new Mock<IConfiguration>();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mock.Object);
         UserRepository userRepository = new UserRepository(TenantProvider);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
@@ -84,7 +87,8 @@ public class CheckedDiseaseTest : BaseUT
                 ordInfDetailModels
                 ),
         };
-        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        var mock = new Mock<IConfiguration>();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mock.Object);
         UserRepository userRepository = new UserRepository(TenantProvider);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
@@ -134,7 +138,9 @@ public class CheckedDiseaseTest : BaseUT
                 ordInfDetailModels
                 ),
         };
-        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+
+        var mock = new Mock<IConfiguration>();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mock.Object);
         UserRepository userRepository = new UserRepository(TenantProvider);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
