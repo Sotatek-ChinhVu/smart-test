@@ -7919,7 +7919,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                       new(),
                       new(),
                       new(),
-                      new(),
+                      entity,
                       x.CenterName
                     )).OrderBy(x => x.SortNo).ToList();
 
