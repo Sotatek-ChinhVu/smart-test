@@ -27,7 +27,7 @@ namespace Reporting.KensaHistory.Mapper
 
         public override int GetReportType()
         {
-            return (int)CoReportType.KoukiSeikyu;
+            return (int)CoReportType.KensaHistory;
         }
 
         public override string GetRowCountFieldName()

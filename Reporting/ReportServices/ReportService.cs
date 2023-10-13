@@ -712,8 +712,8 @@ public class ReportService : IReportService
         return _sta9000CoReportService.OutPutFile(hpId, outputColumns, isPutColName, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf, kensaConf, ptIds, sortOrder, sortOrder2, sortOrder3);
     }
 
-    public CommonReportingRequestModel GetKensaHistoryPrint(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity)
+    public CommonReportingRequestModel GetKensaHistoryPrint(int hpId, int userId, long ptId, int setId, int iraiCd, int seikyuYm, int startDate, int endDate, bool showAbnormalKbn, int itemQuantity)
     {
-        return _kensaHistoryCoReportService.GetKensaHistoryPrintData(hpId, userId, ptId, setId, iraiCd, startDate, showAbnormalKbn, itemQuantity);
+        return _kensaHistoryCoReportService.GetKensaHistoryPrintData(hpId, userId, ptId, setId, iraiCd, seikyuYm, startDate, endDate, showAbnormalKbn, itemQuantity);
     }
 }
