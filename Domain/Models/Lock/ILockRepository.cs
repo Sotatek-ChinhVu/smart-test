@@ -4,6 +4,12 @@ namespace Domain.Models.Lock
 {
     public interface ILockRepository : IRepositoryBase
     {
+        Dictionary<int, Dictionary<int, string>> GetLockInf(int hpId);
+
+        bool Unlock(int hpId, int userId, List<LockInfModel> lockInfModels, int managerKbn);
+
+        List<LockInfModel> GetLockInfModels(int hpId, int userId, int managerKbn);
+
         bool ExistLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo);
 
         bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId, string tabKey, string loginKey);

@@ -9,6 +9,7 @@ namespace Entity.Tenant
     /// </summary>
     [Table("PT_INF")]
     [Index(nameof(HpId), nameof(PtNum), Name = "PT_INF_IDX01")]
+    [Index(nameof(HpId), nameof(PtId), nameof(IsDelete), Name = "PT_INF_IDX02")]
     public class PtInf : EmrCloneable<PtInf>
     {
         /// <summary>

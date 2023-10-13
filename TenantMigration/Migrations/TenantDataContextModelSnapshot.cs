@@ -14801,41 +14801,34 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.RaiinListInf", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("ID");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("GrpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("GRP_ID");
-
                     b.Property<int>("HpId")
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID");
 
-                    b.Property<int>("KbnCd")
-                        .HasColumnType("integer")
-                        .HasColumnName("KBN_CD");
-
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")
                         .HasColumnName("PT_ID");
+
+                    b.Property<int>("SinDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("SIN_DATE");
+
+                    b.Property<long>("RaiinNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RAIIN_NO");
+
+                    b.Property<int>("GrpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("GRP_ID");
 
                     b.Property<int>("RaiinListKbn")
                         .HasColumnType("integer")
                         .HasColumnName("RAIIN_LIST_KBN")
                         .HasColumnOrder(6);
 
-                    b.Property<long>("RaiinNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("RAIIN_NO");
-
-                    b.Property<int>("SinDate")
+                    b.Property<int>("KbnCd")
                         .HasColumnType("integer")
-                        .HasColumnName("SIN_DATE");
+                        .HasColumnName("KBN_CD");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
@@ -14850,10 +14843,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("HpId", "PtId", "SinDate", "RaiinNo", "GrpId", "RaiinListKbn")
-                        .IsUnique();
+                    b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "GrpId", "RaiinListKbn");
 
                     b.HasIndex(new[] { "GrpId", "KbnCd", "RaiinListKbn" }, "RAIIN_LIST_INF_IDX01");
 
