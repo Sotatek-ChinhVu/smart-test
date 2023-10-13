@@ -1,5 +1,4 @@
-﻿using Castle.Core.Configuration;
-using CloudUnitTest.SampleData;
+﻿using CloudUnitTest.SampleData;
 using Domain.Models.Diseases;
 using Domain.Models.MedicalExamination;
 using Domain.Models.OrdInfDetails;
@@ -7,6 +6,7 @@ using Domain.Models.OrdInfs;
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Repositories;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using static Helper.Constants.OrderInfConst;
 
