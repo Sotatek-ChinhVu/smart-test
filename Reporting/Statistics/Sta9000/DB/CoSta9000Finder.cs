@@ -1923,17 +1923,6 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         return retDatas;
     }
 
-    public static Expression<Func<string, bool>> BuildLikeExpression(string propertyName, string value)
-    {
-        var parameter = Expression.Parameter(typeof(string), "item");
-        var property = Expression.Property(parameter, propertyName);
-        var method = typeof(DbFunctionsExtensions).GetMethod("Like", new[] { typeof(DbFunctions), typeof(string), typeof(string) });
-
-        var likeExpression = Expression.Call(null, method, Expression.Constant(EF.Functions), property, Expression.Constant("%" + value + "%"));
-
-        return Expression.Lambda<Func<string, bool>>(likeExpression, parameter);
-    }
-
     private (IQueryable<PtHokenPattern> ptHokenPatterns, IQueryable<PtHokenInf> ptHokenInfs, IQueryable<PtKohi> ptKohis, bool isHokenConf, bool isKohiConf)
         GetPtHokenPatterns(CoSta9000HokenConf? hokenConf)
     {
