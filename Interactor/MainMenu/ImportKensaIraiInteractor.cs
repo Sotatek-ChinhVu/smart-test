@@ -58,25 +58,7 @@ public class ImportKensaIraiInteractor : IImportKensaIraiInputPort
                 continue;
             }
             string type = SubString(item, 1, 2);
-            if (type != "A1" || string.IsNullOrEmpty(type))
-            {
-                SendMessager(new KensaInfMessageStatus(true, 0, 0, string.IsNullOrEmpty(type) ? "レコード区分が未設定です。" : "レコード区分の値が不正です。"));
-                successed = false;
-                break;
-            }
             string centerCd = SubString(item, 3, 6);
-            if (string.IsNullOrEmpty(centerCd))
-            {
-                SendMessager(new KensaInfMessageStatus(true, 0, 0, "センターコードが未設定です。"));
-                successed = false;
-                break;
-            }
-            if (string.IsNullOrEmpty(SubString(item, 9, 20)))
-            {
-                SendMessager(new KensaInfMessageStatus(true, 0, 0, "依頼キーが未設定です。"));
-                successed = false;
-                break;
-            }
             long iraiCd = long.Parse(SubString(item, 9, 20));
             string nyubi = SubString(item, 70, 3);
             string yoketu = SubString(item, 73, 3);
@@ -87,7 +69,7 @@ public class ImportKensaIraiInteractor : IImportKensaIraiInputPort
             string resultType = SubString(item, 104, 1);
             string cmtCd1 = SubString(item, 105, 3);
             string cmtCd2 = SubString(item, 108, 3);
-            result.Add(new KensaInfDetailModel(centerCd, iraiCd, nyubi, yoketu, bilirubin, kensaItemCd, abnormalKbn, resultVal, resultType, cmtCd1, cmtCd2));
+            result.Add(new KensaInfDetailModel(type, centerCd, iraiCd, nyubi, yoketu, bilirubin, kensaItemCd, abnormalKbn, resultVal, resultType, cmtCd1, cmtCd2));
         }
         var iraiCdList = result.Select(item => item.IraiCd).Distinct().ToList();
         var iraiCdNotExitList = _kensaIraiRepository.GetIraiCdNotExistList(hpId, iraiCdList);

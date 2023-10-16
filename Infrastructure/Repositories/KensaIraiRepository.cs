@@ -1009,6 +1009,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         var iraiCdCount = iraiCdList.Count;
         string messageItem = string.Empty;
         int successCount = 0;
+        bool doneProgress = true;
 
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(
@@ -1020,12 +1021,25 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     foreach (var iraiCd in iraiCdList)
                     {
                         messageItem = string.Empty;
-                        var kensaInfDetailModelList = kensaInfDetailList.Where(item => item.IraiCd == iraiCd).ToList();
-                        var kensaInfMessageModel = SaveKensaInfAction(hpId, userId, iraiCd, kensaInfDetailModelList, ptInfDBList, kensaInfDBList, kensaInfDetailDBList, kensaMstDBList);
-                        if (kensaInfMessageModel != null)
+                        if (iraiCd == 0)
                         {
-                            result.Add(kensaInfMessageModel);
-                            messageItem = JsonSerializer.Serialize(kensaInfMessageModel);
+                            SendMessager(new KensaInfMessageStatus(true, 0, 0, "依頼キーが未設定です。"));
+                            transaction.Rollback();
+                            doneProgress = false;
+                            break;
+                        }
+                        var kensaInfDetailModelList = kensaInfDetailList.Where(item => item.IraiCd == iraiCd).ToList();
+                        var resultSave = SaveKensaInfAction(hpId, userId, iraiCdCount, successCount, iraiCd, kensaInfDetailModelList, ptInfDBList, kensaInfDBList, kensaInfDetailDBList, kensaMstDBList);
+                        if (resultSave.rollBack)
+                        {
+                            transaction.Rollback();
+                            doneProgress = false;
+                            break;
+                        }
+                        if (resultSave.kensaInfMessageModel != null)
+                        {
+                            result.Add(resultSave.kensaInfMessageModel);
+                            messageItem = JsonSerializer.Serialize(resultSave.kensaInfMessageModel);
                         }
                         successCount++;
                         if (successCount < iraiCdCount)
@@ -1034,7 +1048,10 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                             SendMessager(status);
                         }
                     }
-                    transaction.Commit();
+                    if (doneProgress)
+                    {
+                        transaction.Commit();
+                    }
                 }
                 catch
                 {
@@ -1042,8 +1059,11 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 }
                 finally
                 {
-                    var status = new KensaInfMessageStatus(true, iraiCdCount, successCount, messageItem);
-                    SendMessager(status);
+                    if (doneProgress)
+                    {
+                        var status = new KensaInfMessageStatus(true, iraiCdCount, successCount, messageItem);
+                        SendMessager(status);
+                    }
                 }
             });
         return result;
@@ -1221,7 +1241,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         TrackingDataContext.SaveChanges();
     }
 
-    private KensaInfMessageModel? SaveKensaInfAction(int hpId, int userId, long iraiCd, List<KensaInfDetailModel> kensaInfDetailModelList, List<PtInf> ptInfDBList, List<KensaInf> kensaInfDBList, List<KensaInfDetail> kensaInfDetailDBList, List<KensaMst> kensaMstDBList)
+    private (KensaInfMessageModel? kensaInfMessageModel, bool rollBack) SaveKensaInfAction(int hpId, int userId, int iraiCdCount, int successCount, long iraiCd, List<KensaInfDetailModel> kensaInfDetailModelList, List<PtInf> ptInfDBList, List<KensaInf> kensaInfDBList, List<KensaInfDetail> kensaInfDetailDBList, List<KensaMst> kensaMstDBList)
     {
         List<KensaInfDetailMessageModel> kensaInfDetailMessageList = new();
 
@@ -1230,8 +1250,9 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         if (kensaInf == null)
         {
             // 分析物コードが未設定の場合は、読み飛ばす。 skip if iraiCd is not match
-            return null;
+            return (null, false);
         }
+        var ptInf = ptInfDBList.FirstOrDefault(item => item.PtId == kensaInf.PtId);
 
         // update kensaInfDetail
         foreach (var detailModel in kensaInfDetailModelList)
@@ -1240,6 +1261,31 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
             {
                 continue;
             }
+            if (string.IsNullOrEmpty(detailModel.Type) || detailModel.Type != "A1")
+            {
+                string message = JsonSerializer.Serialize(new KensaInfMessageModel(
+                                                              kensaInf.PtId,
+                                                              iraiCd,
+                                                              ptInf?.PtNum ?? 0,
+                                                              ptInf?.Name ?? string.Empty,
+                                                              kensaInfDetailMessageList));
+                SendMessager(new KensaInfMessageStatus(false, iraiCdCount, successCount, message));
+                SendMessager(new KensaInfMessageStatus(true, 0, 0, string.IsNullOrEmpty(detailModel.Type) ? "レコード区分が未設定です。" : "レコード区分の値が不正です。"));
+                return (null, true);
+            }
+            if (string.IsNullOrEmpty(detailModel.CenterCd))
+            {
+                string message = JsonSerializer.Serialize(new KensaInfMessageModel(
+                                                              kensaInf.PtId,
+                                                              iraiCd,
+                                                              ptInf?.PtNum ?? 0,
+                                                              ptInf?.Name ?? string.Empty,
+                                                              kensaInfDetailMessageList));
+                SendMessager(new KensaInfMessageStatus(false, iraiCdCount, successCount, message));
+                SendMessager(new KensaInfMessageStatus(true, 0, 0, "センターコードが未設定です。"));
+                return (null, true);
+            }
+
             // update kensaInf
             kensaInf.CenterCd = detailModel.CenterCd;
             kensaInf.Nyubi = detailModel.Nyubi;
@@ -1292,14 +1338,13 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         }
 
         TrackingDataContext.SaveChanges();
-        var ptInf = ptInfDBList.FirstOrDefault(item => item.PtId == kensaInf.PtId);
         var result = new KensaInfMessageModel(
                          kensaInf.PtId,
                          iraiCd,
                          ptInf?.PtNum ?? 0,
                          ptInf?.Name ?? string.Empty,
                          kensaInfDetailMessageList);
-        return result;
+        return (result, false);
     }
 
     private void SendMessager(KensaInfMessageStatus status)

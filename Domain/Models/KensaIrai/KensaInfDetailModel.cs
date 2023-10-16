@@ -21,7 +21,7 @@ public class KensaInfDetailModel
         Nyubi = string.Empty;
         Yoketu = string.Empty;
         Bilirubin = string.Empty;
-
+        Type = string.Empty;
     }
 
     public KensaInfDetailModel(long seqNo, long ptId, long iraiCd)
@@ -40,10 +40,12 @@ public class KensaInfDetailModel
         Nyubi = string.Empty;
         Yoketu = string.Empty;
         Bilirubin = string.Empty;
+        Type = string.Empty;
     }
 
-    public KensaInfDetailModel(string centerCd, long iraiCd, string nyubi, string yoketu, string bilirubin, string kensaItemCd, string abnormalKbn, string resultVal, string resultType, string cmtCd1, string cmtCd2)
+    public KensaInfDetailModel(string type, string centerCd, long iraiCd, string nyubi, string yoketu, string bilirubin, string kensaItemCd, string abnormalKbn, string resultVal, string resultType, string cmtCd1, string cmtCd2)
     {
+        Type = type;
         IraiCd = iraiCd;
         KensaItemCd = kensaItemCd;
         ResultVal = resultVal;
@@ -57,6 +59,8 @@ public class KensaInfDetailModel
         Bilirubin = bilirubin;
         KensaMstModel = new();
     }
+
+    public string Type { get; private set; }
 
     public long PtId { get; private set; }
 
