@@ -516,38 +516,6 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            //foreach (var kensaMstItem in kensaItemCds)
-            //{
-            //    var dynamicArray = new List<ListKensaInfDetailItemModel>();
-
-            //    foreach (var item in kensaInfDetailCol)
-            //    {
-            //        var dynamicDataItem = data.Where(x => x.IraiCd == item.IraiCd && x.KensaItemCd == kensaMstItem.KensaItemCd).FirstOrDefault();
-
-            //        if (dynamicDataItem == null)
-            //        {
-            //            dynamicArray.Add(new ListKensaInfDetailItemModel(
-            //                ptId,
-            //                item.IraiCd
-            //            ));
-            //        }
-            //        else
-            //        {
-            //            dynamicArray.Add(dynamicDataItem);
-            //        }
-            //    }
-
-            //    var rowData = new KensaInfDetailDataModel(
-            //         kensaMstItem.KensaItemCd,
-            //         kensaMstItem.KensaName,
-            //         kensaMstItem.Unit,
-            //         kensaMstItem.Std,
-            //         dynamicArray
-            //    );
-
-            //    kensaInfDetailData.Add(rowData);
-            //}
-
             var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData);
             return result;
         }
