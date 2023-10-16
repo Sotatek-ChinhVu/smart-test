@@ -6,10 +6,8 @@ using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Requests.MainMenu;
 using EmrCloudApi.Requests.MainMenu.RequestItem;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Responses.Insurance;
 using EmrCloudApi.Responses.MainMenu;
-using EmrCloudApi.Responses.Receipt.Dto;
 using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
@@ -17,7 +15,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.Json;
 using UseCase.Core.Sync;
-using UseCase.Document.UploadTemplateToCategory;
 using UseCase.Insurance.FindPtHokenList;
 using UseCase.MainMenu;
 using UseCase.MainMenu.CreateDataKensaIraiRenkei;
@@ -233,23 +230,11 @@ public class MainMenuController : AuthorizeControllerBase
     {
         try
         {
-            //if (Request.ContentLength > 30000000)
-            //{
-            //    return Ok(new Response<ImportKensaIraiResponse>()
-            //    {
-            //        Message = "Invalid file size!",
-            //        Status = (int)ImportKensaIraiStatus.InvalidSizeFile
-            //    });
-            //}
             _messenger.Register<KensaInfMessageStatus>(this, UpdateKensaInfMessageStatus);
             HttpContext.Response.ContentType = "application/json";
-            HttpResponse response = HttpContext.Response;
 
             var input = new ImportKensaIraiInputData(HpId, UserId, _messenger, Request.Body);
-            var output = _bus.Handle(input);
-            var presenter = new ImportKensaIraiPresenter();
-            presenter.Complete(output);
-            //return new ActionResult<Response<ImportKensaIraiResponse>>(presenter.Result);
+            _bus.Handle(input);
         }
         finally
         {

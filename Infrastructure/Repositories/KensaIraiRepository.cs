@@ -918,6 +918,18 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         return iraiCdList.Count == kensaInfCount;
     }
 
+    public List<long> GetIraiCdNotExistList(int hpId, List<long> iraiCdList)
+    {
+        iraiCdList = iraiCdList.Distinct().ToList();
+        var kensaInfExist = TrackingDataContext.KensaInfs.Where(item => item.HpId == hpId
+                                                                           && iraiCdList.Contains(item.IraiCd))
+                                                         .Select(item => item.IraiCd)
+                                                         .Distinct()
+                                                         .ToList();
+        var kensaInfNotExist = iraiCdList.Where(item => !kensaInfExist.Contains(item)).ToList();
+        return kensaInfNotExist;
+    }
+
     public List<KensaIraiLogModel> GetKensaIraiLogModels(int hpId, int startDate, int endDate)
     {
         var kensaIraiLogEntities = NoTrackingDataContext.KensaIraiLogs.Where(item => item.HpId == hpId
@@ -979,16 +991,20 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                                                      && ptIdList.Contains(item.PtId)
                                                                      && item.IsDelete == 0)
                                                       .ToList();
+
+        var kensaMstDBList = NoTrackingDataContext.KensaMsts.Where(item => item.HpId == hpId
+                                                                           && (kensaItemCdList.Contains(item.KensaItemCd)
+                                                                               || (item.OyaItemCd != null && kensaItemCdList.Contains(item.OyaItemCd)))
+                                                                           && item.IsDelete == 0)
+                                                            .ToList();
+
+        kensaItemCdList = kensaMstDBList.Select(item => item.KensaItemCd).Distinct().ToList();
         var kensaInfDetailDBList = TrackingDataContext.KensaInfDetails.Where(item => item.HpId == hpId
                                                                                      && iraiCdList.Contains(item.IraiCd)
                                                                                      && item.KensaItemCd != null
                                                                                      && kensaItemCdList.Contains(item.KensaItemCd)
                                                                                      && item.IsDeleted == 0)
                                                                       .ToList();
-        var kensaMstDBList = NoTrackingDataContext.KensaMsts.Where(item => item.HpId == hpId
-                                                                           && kensaItemCdList.Contains(item.KensaItemCd)
-                                                                           && item.IsDelete == 0)
-                                                             .ToList();
         List<KensaInfMessageModel> result = new();
         var iraiCdCount = iraiCdList.Count;
         string messageItem = string.Empty;
@@ -1201,28 +1217,46 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
             // 分析物コードが未設定の場合は、読み飛ばす。 skip if iraiCd is not match
             return null;
         }
-        kensaInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
-        kensaInf.UpdateId = userId;
-        kensaInf.Status = 2;
 
         // update kensaInfDetail
         foreach (var detailModel in kensaInfDetailModelList)
         {
+            if (string.IsNullOrEmpty(detailModel.KensaItemCd))
+            {
+                continue;
+            }
             // update kensaInf
             kensaInf.CenterCd = detailModel.CenterCd;
             kensaInf.Nyubi = detailModel.Nyubi;
             kensaInf.Yoketu = detailModel.Yoketu;
             kensaInf.Bilirubin = detailModel.Bilirubin;
+            kensaInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            kensaInf.UpdateId = userId;
+            kensaInf.Status = 2;
 
             var kensaInfDetail = kensaInfDetailDBList.FirstOrDefault(item => item.IraiCd == iraiCd && item.KensaItemCd == detailModel.KensaItemCd);
             if (kensaInfDetail == null)
             {
+                // check item is chirl, if not match then continue
+                var kensaMstOya = kensaMstDBList.FirstOrDefault(item => item.OyaItemCd == detailModel.KensaItemCd);
+                if (kensaMstOya == null)
+                {
+                    continue;
+                }
+                var kensaInfParent = kensaInfDetailDBList.FirstOrDefault(item => item.KensaItemCd == kensaMstOya.KensaItemCd);
+                if (kensaInfParent == null)
+                {
+                    continue;
+                }
                 kensaInfDetail = new KensaInfDetail();
                 kensaInfDetail.HpId = hpId;
                 kensaInfDetail.CreateDate = CIUtil.GetJapanDateTimeNow();
                 kensaInfDetail.CreateId = userId;
                 kensaInfDetail.IsDeleted = 0;
                 kensaInfDetail.IraiCd = iraiCd;
+                kensaInfDetail.PtId = kensaInf.PtId;
+                kensaInfDetail.IraiDate = kensaInfParent.IraiDate;
+                kensaInfDetail.RaiinNo = kensaInfParent.RaiinNo;
                 kensaInfDetail.KensaItemCd = detailModel.KensaItemCd;
                 kensaInfDetail.SeqNo = 0;
             }

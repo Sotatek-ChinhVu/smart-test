@@ -33,6 +33,8 @@ public interface IKensaIraiRepository : IRepositoryBase
 
     bool CheckExistIraiCdList(int hpId, List<long> iraiCdList);
 
+    List<long> GetIraiCdNotExistList(int hpId, List<long> iraiCdList);
+
     List<KensaIraiLogModel> GetKensaIraiLogModels(int hpId, int startDate, int endDate);
 
     bool SaveKensaIraiLog(int hpId, int userId, KensaIraiLogModel model);
