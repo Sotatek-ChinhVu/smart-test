@@ -22,20 +22,28 @@ public class ImportKensaIraiInteractor : IImportKensaIraiInputPort
         string contentString = string.Empty;
         try
         {
-            var streamReader = new StreamReader(inputData.DatFile, Encoding.ASCII);
-            contentString = streamReader.ReadToEnd();
+            try
+            {
+                var streamReader = new StreamReader(inputData.DatFile, Encoding.ASCII);
+                contentString = streamReader.ReadToEnd();
+            }
+            catch
+            {
+                return new ImportKensaIraiOutputData(ImportKensaIraiStatus.InvalidInputFile);
+            }
+            _kensaIraiRepository.SaveKensaResultLog(inputData.HpId, inputData.UserId, contentString);
+            var kensaInfDetailResult = GenKensaInfDetailList(inputData.HpId, contentString);
+            if (kensaInfDetailResult.successed)
+            {
+                var result = _kensaIraiRepository.SaveKensaIraiImport(inputData.HpId, inputData.UserId, inputData.Messenger, kensaInfDetailResult.kensaInfDetailList);
+                return new ImportKensaIraiOutputData(result, ImportKensaIraiStatus.Successed);
+            }
+            return new ImportKensaIraiOutputData(ImportKensaIraiStatus.Failed);
         }
-        catch
+        finally
         {
-            return new ImportKensaIraiOutputData(ImportKensaIraiStatus.InvalidInputFile);
+            _kensaIraiRepository.ReleaseResource();
         }
-        var kensaInfDetailResult = GenKensaInfDetailList(inputData.HpId, contentString);
-        if (kensaInfDetailResult.successed)
-        {
-            var result = _kensaIraiRepository.SaveKensaIraiImport(inputData.HpId, inputData.UserId, inputData.Messenger, kensaInfDetailResult.kensaInfDetailList);
-            return new ImportKensaIraiOutputData(result, ImportKensaIraiStatus.Successed);
-        }
-        return new ImportKensaIraiOutputData(ImportKensaIraiStatus.Failed);
     }
 
     private (List<KensaInfDetailModel> kensaInfDetailList, bool successed) GenKensaInfDetailList(int hpId, string contentString)

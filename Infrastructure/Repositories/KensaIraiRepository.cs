@@ -1049,6 +1049,21 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         return result;
     }
 
+    public bool SaveKensaResultLog(int hpId, int userId, string KekaFile)
+    {
+        KensaResultLog kensaResultLog = new KensaResultLog()
+        {
+            HpId = hpId,
+            OpId = 0,
+            ImpDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow()),
+            KekaFile = KekaFile ?? string.Empty,
+            CreateId = userId,
+            CreateDate = CIUtil.GetJapanDateTimeNow()
+        };
+        TrackingDataContext.KensaResultLogs.Add(kensaResultLog);
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();

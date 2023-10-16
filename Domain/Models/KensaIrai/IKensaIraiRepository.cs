@@ -40,4 +40,6 @@ public interface IKensaIraiRepository : IRepositoryBase
     bool SaveKensaIraiLog(int hpId, int userId, KensaIraiLogModel model);
 
     List<KensaInfMessageModel> SaveKensaIraiImport(int hpId, int userId, IMessenger messenger, List<KensaInfDetailModel> kensaInfDetailList);
+
+    bool SaveKensaResultLog(int hpId, int userId, string KekaFile);
 }
