@@ -423,7 +423,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 result.Add(new KensaIraiModel(
                                 firstTodayOdr.RaiinInf.SinDate,
                                 firstTodayOdr.RaiinInf.RaiinNo,
-                                0,
+                                kensaInf.IraiCd,
                                 firstTodayOdr.PtInf.PtId,
                                 firstTodayOdr.PtInf.PtNum,
                                 firstTodayOdr.PtInf.Name ?? string.Empty,
