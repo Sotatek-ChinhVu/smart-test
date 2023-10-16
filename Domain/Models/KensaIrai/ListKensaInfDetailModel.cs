@@ -7,15 +7,17 @@
             KensaInfDetailCol = new List<KensaInfDetailColModel>();
             KensaInfDetailData = new List<KensaInfDetailDataModel>();
         }
-        public ListKensaInfDetailModel(List<KensaInfDetailColModel> kensaInfDetailCol, List<KensaInfDetailDataModel> kensaInfDetailData)
+        public ListKensaInfDetailModel(List<KensaInfDetailColModel> kensaInfDetailCol, List<KensaInfDetailDataModel> kensaInfDetailData, int totalCol)
         {
             KensaInfDetailCol = kensaInfDetailCol;
             KensaInfDetailData = kensaInfDetailData;
+            TotalCol = totalCol;
         }
 
         public List<KensaInfDetailColModel> KensaInfDetailCol { get; private set; }
 
         public List<KensaInfDetailDataModel> KensaInfDetailData { get; private set; }
+        public int TotalCol { get; private set; }
 
         public class KensaInfDetailColModel
         {
