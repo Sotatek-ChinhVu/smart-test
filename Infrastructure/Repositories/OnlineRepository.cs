@@ -467,9 +467,9 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     {
         var systemDate = CIUtil.GetJapanDateTimeNow();
         var onlineConsentList = NoTrackingDataContext.OnlineConsents.Where(item => item.PtId == ptId
-                                                                                   && new List<int>() { 1, 2, 3 }.Contains(item.ConsKbn)
-                                                                                   && item.LimitDate >= systemDate)
+                                                                                   && new List<int>() { 1, 2, 3 }.Contains(item.ConsKbn))
                                                                     .ToList();
+        onlineConsentList = onlineConsentList.Where(item => item.LimitDate >= systemDate).ToList();
         return onlineConsentList.Select(item => new OnlineConsentModel(item.PtId, item.ConsKbn, item.ConsDate, item.LimitDate)).ToList();
     }
 
