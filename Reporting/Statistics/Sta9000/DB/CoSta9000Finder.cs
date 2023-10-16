@@ -13,7 +13,6 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta9000.Models;
 using System.Data;
 using System.Globalization;
-using System.Linq.Expressions;
 
 namespace Reporting.Statistics.Sta9000.DB;
 
@@ -1743,7 +1742,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 //or条件
 
                 var keywordConditions = karteConf.SearchWords.Select(keyword => $"%{keyword}%").Distinct().ToList();
-                karteInfs = karteInfs.Where(item => keywordConditions.Any(condition => EF.Functions.Like(item.Text ?? string.Empty, condition)));
+                karteInfs = karteConf.SearchWords?.Count >= 1 ?
+                                     karteInfs.Where(item => keywordConditions.Any(condition => EF.Functions.Like(item.Text ?? string.Empty, condition)))
+                            : karteInfs;
             }
             else
             {
