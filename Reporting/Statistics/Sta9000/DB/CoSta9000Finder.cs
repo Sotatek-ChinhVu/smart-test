@@ -5,6 +5,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Reporting.CommonMasters.Config;
 using Reporting.CommonMasters.Services;
 using Reporting.Statistics.DB;
@@ -12,6 +13,7 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta9000.Models;
 using System.Data;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace Reporting.Statistics.Sta9000.DB;
 
@@ -1739,7 +1741,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             if (karteConf?.WordOpt == 0)
             {
                 //or条件
-                karteInfs = karteConf.SearchWords?.Count >= 1 ? karteInfs.Where(r => karteConf.SearchWords.Any(key => (r.Text ?? string.Empty).Contains(key))) : karteInfs;
+
+                var keywordConditions = karteConf.SearchWords.Select(keyword => $"%{keyword}%").ToList();
+                karteInfs = karteInfs.Where(item => keywordConditions.Any(condition => EF.Functions.Like(item.Text ?? string.Empty, condition)));
             }
             else
             {
@@ -1917,6 +1921,17 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         );
 
         return retDatas;
+    }
+
+    public static Expression<Func<string, bool>> BuildLikeExpression(string propertyName, string value)
+    {
+        var parameter = Expression.Parameter(typeof(string), "item");
+        var property = Expression.Property(parameter, propertyName);
+        var method = typeof(DbFunctionsExtensions).GetMethod("Like", new[] { typeof(DbFunctions), typeof(string), typeof(string) });
+
+        var likeExpression = Expression.Call(null, method, Expression.Constant(EF.Functions), property, Expression.Constant("%" + value + "%"));
+
+        return Expression.Lambda<Func<string, bool>>(likeExpression, parameter);
     }
 
     private (IQueryable<PtHokenPattern> ptHokenPatterns, IQueryable<PtHokenInf> ptHokenInfs, IQueryable<PtKohi> ptKohis, bool isHokenConf, bool isKohiConf)
