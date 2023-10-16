@@ -500,7 +500,7 @@ namespace Infrastructure.Repositories
 
                 if (getGetPrevious)
                 {
-                    kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x=> x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
+                    kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
                 }
                 else
                 {
@@ -508,9 +508,21 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
+            // Check next back last page
+            if (totalCol < itemQuantity && iraiCdStart != 0)
+            {
+                return new ListKensaInfDetailModel();
+            }
 
-            var kensaItemCds = data.Where(x=> kensaIraiCdSet.Contains(x.IraiCd)).GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
+            if (totalCol >= itemQuantity && kensaInfDetailCol.Count() < itemQuantity)
+            {
+                return new ListKensaInfDetailModel();
+            }
+
+            // Fillter data by IraiCds
+            var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
+            data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));
+            var kensaItemCds = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd)).GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
 
             var groupRowData = data
                 .GroupBy(x => x.KensaItemCd)
