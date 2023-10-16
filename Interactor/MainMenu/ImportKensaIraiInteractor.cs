@@ -59,7 +59,9 @@ public class ImportKensaIraiInteractor : IImportKensaIraiInputPort
             }
             string type = SubString(item, 1, 2);
             string centerCd = SubString(item, 3, 6);
-            long iraiCd = long.Parse(SubString(item, 9, 20));
+            string iraiCdInput = SubString(item, 9, 20);
+            long iraiCd = 0;
+            long.TryParse(iraiCdInput, out iraiCd);
             string nyubi = SubString(item, 70, 3);
             string yoketu = SubString(item, 73, 3);
             string bilirubin = SubString(item, 76, 3);
@@ -71,7 +73,7 @@ public class ImportKensaIraiInteractor : IImportKensaIraiInputPort
             string cmtCd2 = SubString(item, 108, 3);
             result.Add(new KensaInfDetailModel(type, centerCd, iraiCd, nyubi, yoketu, bilirubin, kensaItemCd, abnormalKbn, resultVal, resultType, cmtCd1, cmtCd2));
         }
-        var iraiCdList = result.Select(item => item.IraiCd).Distinct().ToList();
+        var iraiCdList = result.Where(item => item.IraiCd > 0).Select(item => item.IraiCd).Distinct().ToList();
         var iraiCdNotExitList = _kensaIraiRepository.GetIraiCdNotExistList(hpId, iraiCdList);
         if (iraiCdNotExitList.Any())
         {
@@ -85,7 +87,7 @@ public class ImportKensaIraiInteractor : IImportKensaIraiInputPort
                 }
                 iraiCdNotExistString.Append(", " + item);
             }
-            SendMessager(new KensaInfMessageStatus(true, 0, 0, "登録のない依頼キーです。{" + iraiCdNotExistString.ToString() + "}"));
+            SendMessager(new KensaInfMessageStatus(true, false, string.Empty, "登録のない依頼キーです。{" + iraiCdNotExistString.ToString() + "}"));
             successed = false;
         }
         return (result, successed);

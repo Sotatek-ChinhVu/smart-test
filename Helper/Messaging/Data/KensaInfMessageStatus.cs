@@ -4,23 +4,23 @@ namespace Helper.Messaging.Data;
 
 public class KensaInfMessageStatus
 {
-    public KensaInfMessageStatus(bool done, int length, int successCount, string message)
+    public KensaInfMessageStatus(bool doneProgress, bool successed, string kensaItem, string errorMessage)
     {
-        Done = done;
-        Length = length;
-        SuccessCount = successCount;
-        Message = message;
+        DoneProgress = doneProgress;
+        Successed = successed;
+        KensaItem = kensaItem;
+        ErrorMessage = errorMessage;
     }
 
-    [JsonPropertyName("done")]
-    public bool Done { get; private set; }
+    [JsonPropertyName("doneProgress")]
+    public bool DoneProgress { get; private set; }
 
-    [JsonPropertyName("length")]
-    public int Length { get; private set; }
+    [JsonPropertyName("successed")]
+    public bool Successed { get; private set; }
 
-    [JsonPropertyName("successCount")]
-    public int SuccessCount { get; private set; }
+    [JsonPropertyName("kensaItem")]
+    public string KensaItem { get; private set; }
 
-    [JsonPropertyName("message")]
-    public string Message { get; private set; }
+    [JsonPropertyName("errorMessage")]
+    public string ErrorMessage { get; private set; }
 }
