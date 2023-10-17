@@ -836,7 +836,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    if (karte.Text != karteMst.Text || Encoding.UTF8.GetBytes(karte.RichText) != karteMst.RichText)
+                    if (karte.Text != karteMst.Text || (karteMst.RichText != null && karte.RichText != Encoding.UTF8.GetString(karteMst.RichText)))
                     {
                         karteMst.IsDeleted = status == RaiinState.Reservation ? DeleteTypes.Confirm : DeleteTypes.Deleted;
                         var karteEntity = new KarteInf
