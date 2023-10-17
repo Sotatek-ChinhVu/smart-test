@@ -26,6 +26,8 @@ namespace Reporting.KensaHistory.Service
         private PtInf ptInf;
         private ListKensaInfDetailModel kensaInfDetailModel;
         private List<ListKensaInfDetailItemModel> listKensaInfDetailItemModels = new();
+        private bool hasNextPage;
+        private int currentPage;
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
@@ -63,7 +65,13 @@ namespace Reporting.KensaHistory.Service
 
             if (getData)
             {
-                UpdateDrawForm();
+                currentPage = 1;
+                hasNextPage = true;
+                while (hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
             }
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
@@ -78,6 +86,8 @@ namespace Reporting.KensaHistory.Service
             #region Header
             int UpdateFormHeader()
             {
+
+                Dictionary<string, string> fieldDataPerPage = new();
                 //医療機関コード
                 SetFieldData("hpCode", hpInf.HpCd);
                 SetFieldData("hpName", hpInf.HpName);
@@ -85,6 +95,9 @@ namespace Reporting.KensaHistory.Service
                 SetFieldData("name", ptInf.Name ?? string.Empty);
                 SetFieldData("iraiDate", CIUtil.SDateToShowSDate(seikyuYm));
                 SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString());
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/" + currentPage.ToString());
+                _setFieldData.Add(pageIndex, fieldDataPerPage);
                 //保険者
 
                 return 1;
@@ -96,18 +109,51 @@ namespace Reporting.KensaHistory.Service
             {
                 List<ListTextObject> listDataPerPage1 = new();
                 List<ListTextObject> listDataPerPage0 = new();
+                Dictionary<string, string> fieldDataPerPage = new();
+
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 short maxRow = 30;
-                short row = 0;
                 int rowNo = 0;
+
+                if (currentPage == 1)
+                {
+                    foreach (var item in listKensaInfDetailItemModels)
+                    {
+                        listDataPerPage0.Add(new("itemName", 0, rowNo, item.KensaName));
+                        listDataPerPage0.Add(new("resultValue", 0, rowNo, item.ResultVal));
+                        listDataPerPage0.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
+                        listDataPerPage0.Add(new("unit", 0, rowNo, item.Unit));
+                        listDataPerPage0.Add(new("standardValue", 0, rowNo, item.MaleStd));
+                        rowNo++;
+                        if (rowNo == maxRow)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (listKensaInfDetailItemModels.Count < maxRow)
+                    {
+                        _listTextData.Add(pageIndex, listDataPerPage0);
+                        hasNextPage = false;
+                        return 1;
+                    }
+                    else
+                    {
+                        hasNextPage = true;
+                        listKensaInfDetailItemModels.RemoveRange(0, maxRow);
+                        _listTextData.Add(pageIndex, listDataPerPage0);
+                        return 1;
+                    }
+                }
 
                 foreach (var item in listKensaInfDetailItemModels)
                 {
-                    listDataPerPage0.Add(new("itemName", 0, rowNo, item.KensaName));
-                    listDataPerPage0.Add(new("resultValue", 0, rowNo, item.ResultVal));
-                    listDataPerPage0.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
-                    listDataPerPage0.Add(new("unit", 0, rowNo, item.Unit));
-                    listDataPerPage0.Add(new("standardValue", 0, rowNo, item.MaleStd));
+                    rowNo = 0;
+                    listDataPerPage1.Add(new("itemName", 0, rowNo, item.KensaName));
+                    listDataPerPage1.Add(new("resultValue", 0, rowNo, item.ResultVal));
+                    listDataPerPage1.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
+                    listDataPerPage1.Add(new("unit", 0, rowNo, item.Unit));
+                    listDataPerPage1.Add(new("standardValue", 0, rowNo, item.MaleStd));
                     rowNo++;
                     if (rowNo == maxRow)
                     {
@@ -115,33 +161,7 @@ namespace Reporting.KensaHistory.Service
                     }
                 }
 
-                if (listKensaInfDetailItemModels.Count < maxRow)
-                {
-                    listKensaInfDetailItemModels.RemoveRange(0, listKensaInfDetailItemModels.Count - 1);
-                    SetFieldData("pageNumber", pageIndex.ToString() + "/" + pageIndex.ToString());
-                    _listTextData.Add(pageIndex, listDataPerPage0);
-                    return 1;
-                }
-                else
-                {
-                    listKensaInfDetailItemModels.RemoveRange(0, maxRow);
-                    _listTextData.Add(pageIndex, listDataPerPage0);
-                    pageIndex = pageIndex + 1;
-                    foreach (var item in listKensaInfDetailItemModels)
-                    {
-                        rowNo = 0;
-                        listDataPerPage1.Add(new("itemName", 0, rowNo, item.KensaName));
-                        listDataPerPage1.Add(new("resultValue", 0, rowNo, item.ResultVal));
-                        listDataPerPage1.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
-                        listDataPerPage1.Add(new("unit", 0, rowNo, item.Unit));
-                        listDataPerPage1.Add(new("standardValue", 0, rowNo, item.MaleStd));
-                        rowNo++;
-                        if (rowNo == maxRow)
-                        {
-                            break;
-                        }
-                    }
-                }
+                hasNextPage = false;
                 _listTextData.Add(pageIndex, listDataPerPage1);
 
                 return 1;
