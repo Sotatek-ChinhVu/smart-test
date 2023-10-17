@@ -1,4 +1,6 @@
 ﻿using Domain.Models.ColumnSetting;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.ColumnSetting.SaveList;
 
 namespace Interactor.ColumnSetting;
@@ -6,10 +8,14 @@ namespace Interactor.ColumnSetting;
 public class SaveColumnSettingListInteractor : ISaveColumnSettingListInputPort
 {
     private readonly IColumnSettingRepository _columnSettingRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveColumnSettingListInteractor(IColumnSettingRepository columnSettingRepository)
+    public SaveColumnSettingListInteractor(ITenantProvider tenantProvider, IColumnSettingRepository columnSettingRepository)
     {
         _columnSettingRepository = columnSettingRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveColumnSettingListOutputData Handle(SaveColumnSettingListInputData input)
@@ -19,6 +25,11 @@ public class SaveColumnSettingListInteractor : ISaveColumnSettingListInputPort
             bool success = _columnSettingRepository.SaveList(input.Settings);
             var status = success ? SaveColumnSettingListStatus.Success : SaveColumnSettingListStatus.Failed;
             return new SaveColumnSettingListOutputData(status);
+        }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
         }
         finally
         {
