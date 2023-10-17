@@ -1376,7 +1376,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     public List<ConversionItemInfModel> GetConversionItem(int hpId, string itemCd, int sinDate)
     {
         var conversionItemInfRepo = NoTrackingDataContext.ConversionItemInfs.Where(item => item.HpId == hpId
-                                                                                           && item.SourceItemCd == itemCd);
+                                                                                           && item.SourceItemCd == itemCd
+                                                                                           && item.IsDeleted == 0);
 
         var tenMstRepo = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
                                                                      && item.StartDate <= sinDate
@@ -1412,6 +1413,27 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                     .ToList();
     }
 
+    public bool SaveConversionItemInf(int hpId, int userId, ConversionItemInfModel conversionItemInf, string itemCd)
+    {
+        var conversionItemInfOldList = NoTrackingDataContext.ConversionItemInfs.Where(item => item.HpId == hpId
+                                                                                              && item.SourceItemCd == itemCd
+                                                                                              && item.IsDeleted == 0)
+                                                                               .ToList();
+        dbService.ConversionItemInfRepository.RemoveRange(listConversionItemInfOld);
+
+        foreach (var conversionItemInf in listConversionItemInf)
+        {
+            conversionItemInf.HpId = hpId;
+
+            conversionItemInf.CreateDate = DateTime.Now;
+            conversionItemInf.CreateId = Session.UserID;
+
+            conversionItemInf.UpdateDate = DateTime.Now;
+            conversionItemInf.UpdateId = Session.UserID;
+        }
+
+        dbService.ConversionItemInfRepository.AddRange(listConversionItemInf);
+    }
     public void ReleaseResource()
     {
         DisposeDataContext();
