@@ -5,6 +5,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Reporting.CommonMasters.Config;
 using Reporting.CommonMasters.Services;
 using Reporting.Statistics.DB;
@@ -1739,7 +1740,11 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             if (karteConf?.WordOpt == 0)
             {
                 //or条件
-                karteInfs = karteConf.SearchWords?.Count >= 1 ? karteInfs.Where(r => karteConf.SearchWords.Any(key => (r.Text ?? string.Empty).Contains(key))) : karteInfs;
+
+                var keywordConditions = karteConf.SearchWords.Select(keyword => $"%{keyword}%").Distinct().ToList();
+                karteInfs = karteConf.SearchWords?.Count >= 1 ?
+                                     karteInfs.Where(item => keywordConditions.Any(condition => EF.Functions.Like(item.Text ?? string.Empty, condition)))
+                            : karteInfs;
             }
             else
             {
@@ -2106,15 +2111,16 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     searchWords.AddRange(values);
                 }
 
+                var keywordConditions = searchWords.Select(keyword => $"%{keyword}%").Distinct().ToList();
                 if (byomeiConf.WordOpt == 0)
                 {
                     //or条件
-                    ptByomeis = ptByomeis.Where(p => searchWords.Any(key => p.Byomei.Contains(key)));
+                    ptByomeis = ptByomeis.Where(item => keywordConditions.Any(condition => EF.Functions.Like(item.Byomei ?? string.Empty, condition)));
                 }
                 else
                 {
                     //and条件
-                    ptByomeis = ptByomeis.Where(p => searchWords.All(key => p.Byomei.Contains(key)));
+                    ptByomeis = ptByomeis.Where(item => keywordConditions.All(condition => EF.Functions.Like(item.Byomei ?? string.Empty, condition)));
                 }
             }
             //検索病名
