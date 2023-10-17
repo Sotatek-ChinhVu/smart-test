@@ -4,14 +4,18 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
 public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
 {
+    private IMessenger? _messenger;
     public KensaIraiRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
     }
@@ -419,7 +423,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 result.Add(new KensaIraiModel(
                                 firstTodayOdr.RaiinInf.SinDate,
                                 firstTodayOdr.RaiinInf.RaiinNo,
-                                0,
+                                kensaInf.IraiCd,
                                 firstTodayOdr.PtInf.PtId,
                                 firstTodayOdr.PtInf.PtNum,
                                 firstTodayOdr.PtInf.Name ?? string.Empty,
@@ -726,6 +730,18 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         return NoTrackingDataContext.KensaCenterMsts.Any(item => item.HpId == hpId && item.CenterCd == centerCd);
     }
 
+    public bool CheckExistCenterCd(int hpId, List<string> centerCdList)
+    {
+        centerCdList = centerCdList.Distinct().ToList();
+        return NoTrackingDataContext.KensaCenterMsts.Count(item => item.HpId == hpId && item.CenterCd != null && centerCdList.Contains(item.CenterCd)) != centerCdList.Count;
+    }
+
+    public bool CheckExistIraiCd(int hpId, List<long> iraiCdList)
+    {
+        iraiCdList = iraiCdList.Distinct().ToList();
+        return NoTrackingDataContext.KensaInfDetails.Count(item => item.HpId == hpId && iraiCdList.Contains(item.IraiCd)) != iraiCdList.Count;
+    }
+
     public List<KensaInfModel> GetKensaInfModels(int hpId, int startDate, int endDate, string centerCd = "")
     {
         var kensaInfList = NoTrackingDataContext.KensaInfs.Where(item => item.HpId == hpId
@@ -902,6 +918,18 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         return iraiCdList.Count == kensaInfCount;
     }
 
+    public List<long> GetIraiCdNotExistList(int hpId, List<long> iraiCdList)
+    {
+        iraiCdList = iraiCdList.Distinct().ToList();
+        var kensaInfExist = TrackingDataContext.KensaInfs.Where(item => item.HpId == hpId
+                                                                           && iraiCdList.Contains(item.IraiCd))
+                                                         .Select(item => item.IraiCd)
+                                                         .Distinct()
+                                                         .ToList();
+        var kensaInfNotExist = iraiCdList.Where(item => !kensaInfExist.Contains(item)).ToList();
+        return kensaInfNotExist;
+    }
+
     public List<KensaIraiLogModel> GetKensaIraiLogModels(int hpId, int startDate, int endDate)
     {
         var kensaIraiLogEntities = NoTrackingDataContext.KensaIraiLogs.Where(item => item.HpId == hpId
@@ -947,6 +975,112 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         kensaIraiLog.UpdateDate = CIUtil.GetJapanDateTimeNow();
         kensaIraiLog.UpdateId = userId;
         TrackingDataContext.Add(kensaIraiLog);
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public List<KensaInfMessageModel> SaveKensaIraiImport(int hpId, int userId, IMessenger messenger, List<KensaInfDetailModel> kensaInfDetailList)
+    {
+        _messenger = messenger;
+        var iraiCdList = kensaInfDetailList.Select(item => item.IraiCd).Distinct().ToList();
+        var kensaItemCdList = kensaInfDetailList.Select(item => item.KensaItemCd).Distinct().ToList();
+        var kensaInfDBList = TrackingDataContext.KensaInfs.Where(item => item.HpId == hpId
+                                                                         && iraiCdList.Contains(item.IraiCd))
+                                                          .ToList();
+        var ptIdList = kensaInfDBList.Select(item => item.PtId).Distinct().ToList();
+        var ptInfDBList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                     && ptIdList.Contains(item.PtId)
+                                                                     && item.IsDelete == 0)
+                                                      .ToList();
+
+        var kensaMstDBList = NoTrackingDataContext.KensaMsts.Where(item => item.HpId == hpId
+                                                                           && (kensaItemCdList.Contains(item.KensaItemCd)
+                                                                               || (item.OyaItemCd != null && kensaItemCdList.Contains(item.OyaItemCd)))
+                                                                           && item.IsDelete == 0)
+                                                            .ToList();
+
+        kensaItemCdList = kensaMstDBList.Select(item => item.KensaItemCd).Distinct().ToList();
+        var kensaInfDetailDBList = TrackingDataContext.KensaInfDetails.Where(item => item.HpId == hpId
+                                                                                     && iraiCdList.Contains(item.IraiCd)
+                                                                                     && item.KensaItemCd != null
+                                                                                     && kensaItemCdList.Contains(item.KensaItemCd)
+                                                                                     && item.IsDeleted == 0)
+                                                                      .ToList();
+        List<KensaInfMessageModel> result = new();
+        var iraiCdCount = iraiCdList.Count;
+        string messageItem = string.Empty;
+        int successCount = 0;
+        bool doneProgress = true;
+
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
+            {
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
+                {
+                    foreach (var iraiCd in iraiCdList)
+                    {
+                        messageItem = string.Empty;
+                        if (iraiCd == 0)
+                        {
+                            SendMessager(new KensaInfMessageStatus(true, false, string.Empty, "依頼キーが未設定です。"));
+                            transaction.Rollback();
+                            doneProgress = false;
+                            break;
+                        }
+                        var kensaInfDetailModelList = kensaInfDetailList.Where(item => item.IraiCd == iraiCd).ToList();
+                        var resultSave = SaveKensaInfAction(hpId, userId, iraiCd, kensaInfDetailModelList, ptInfDBList, kensaInfDBList, kensaInfDetailDBList, kensaMstDBList);
+                        if (resultSave.rollBack)
+                        {
+                            transaction.Rollback();
+                            doneProgress = false;
+                            break;
+                        }
+                        if (resultSave.kensaInfMessageModel != null)
+                        {
+                            result.Add(resultSave.kensaInfMessageModel);
+                            messageItem = JsonSerializer.Serialize(resultSave.kensaInfMessageModel);
+                        }
+                        successCount++;
+                        if (successCount < iraiCdCount)
+                        {
+                            var status = new KensaInfMessageStatus(false, false, messageItem, string.Empty);
+                            SendMessager(status);
+                        }
+                    }
+                    if (doneProgress)
+                    {
+                        transaction.Commit();
+                    }
+                }
+                catch
+                {
+                    transaction.Rollback();
+                }
+                finally
+                {
+                    if (doneProgress)
+                    {
+                        var status = new KensaInfMessageStatus(true, true, messageItem, string.Empty);
+                        SendMessager(status);
+                    }
+                }
+            });
+        return result;
+    }
+
+    public bool SaveKensaResultLog(int hpId, int userId, string KekaFile)
+    {
+        var kensaResultLog = new KensaResultLog()
+        {
+            HpId = hpId,
+            OpId = 0,
+            ImpDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow()),
+            KekaFile = KekaFile ?? string.Empty,
+            CreateId = userId,
+            CreateDate = CIUtil.GetJapanDateTimeNow()
+        };
+        TrackingDataContext.KensaResultLogs.Add(kensaResultLog);
         return TrackingDataContext.SaveChanges() > 0;
     }
 
@@ -1105,6 +1239,144 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
             }
         }
         TrackingDataContext.SaveChanges();
+    }
+
+    private (KensaInfMessageModel? kensaInfMessageModel, bool rollBack) SaveKensaInfAction(int hpId, int userId, long iraiCd, List<KensaInfDetailModel> kensaInfDetailModelList, List<PtInf> ptInfDBList, List<KensaInf> kensaInfDBList, List<KensaInfDetail> kensaInfDetailDBList, List<KensaMst> kensaMstDBList)
+    {
+        List<KensaInfDetailMessageModel> kensaInfDetailMessageList = new();
+
+        // update kensaInf
+        var kensaInf = kensaInfDBList.FirstOrDefault(item => item.IraiCd == iraiCd);
+        if (kensaInf == null)
+        {
+            // 分析物コードが未設定の場合は、読み飛ばす。 skip if iraiCd is not match
+            return (null, false);
+        }
+        var ptInf = ptInfDBList.FirstOrDefault(item => item.PtId == kensaInf.PtId);
+
+        // update kensaInfDetail
+        foreach (var detailModel in kensaInfDetailModelList)
+        {
+            if (string.IsNullOrEmpty(detailModel.KensaItemCd))
+            {
+                continue;
+            }
+
+            var kensaInfDetail = kensaInfDetailDBList.FirstOrDefault(item => item.IraiCd == iraiCd && item.KensaItemCd == detailModel.KensaItemCd);
+            string kensaMstName = kensaMstDBList.FirstOrDefault(item => item.KensaItemCd == detailModel.KensaItemCd)?.KensaName ?? string.Empty;
+
+            #region check and return error message to FE
+            if (string.IsNullOrEmpty(detailModel.Type) || detailModel.Type != "A1")
+            {
+                string itemSuccessed = JsonSerializer.Serialize(new KensaInfMessageModel(
+                                                                    kensaInf.PtId,
+                                                                    iraiCd,
+                                                                    ptInf?.PtNum ?? 0,
+                                                                    ptInf?.Name ?? string.Empty,
+                                                                    kensaInfDetailMessageList));
+                SendMessager(new KensaInfMessageStatus(false, false, itemSuccessed, string.Empty));
+
+                string errorItem = JsonSerializer.Serialize(new KensaInfMessageModel(
+                                                                kensaInf.PtId,
+                                                                iraiCd,
+                                                                ptInf?.PtNum ?? 0,
+                                                                ptInf?.Name ?? string.Empty,
+                                                                new()
+                                                                {
+                                                                    new KensaInfDetailMessageModel(detailModel.KensaItemCd, kensaMstName)
+                                                                }));
+                SendMessager(new KensaInfMessageStatus(true, false, errorItem, string.IsNullOrEmpty(detailModel.Type) ? "レコード区分が未設定です。" : "レコード区分の値が不正です。"));
+                return (null, true);
+            }
+            if (string.IsNullOrEmpty(detailModel.CenterCd))
+            {
+                string message = JsonSerializer.Serialize(new KensaInfMessageModel(
+                                                              kensaInf.PtId,
+                                                              iraiCd,
+                                                              ptInf?.PtNum ?? 0,
+                                                              ptInf?.Name ?? string.Empty,
+                                                              kensaInfDetailMessageList));
+                SendMessager(new KensaInfMessageStatus(false, false, message, string.Empty));
+
+                string errorItem = JsonSerializer.Serialize(new KensaInfMessageModel(
+                                                                kensaInf.PtId,
+                                                                iraiCd,
+                                                                ptInf?.PtNum ?? 0,
+                                                                ptInf?.Name ?? string.Empty,
+                                                                new()
+                                                                {
+                                                                    new KensaInfDetailMessageModel(detailModel.KensaItemCd, kensaMstName)
+                                                                }));
+                SendMessager(new KensaInfMessageStatus(true, false, errorItem, "センターコードが未設定です。"));
+                return (null, true);
+            }
+            #endregion
+
+            #region logic save
+            if (kensaInfDetail == null)
+            {
+                // check item is chirl, if not match then continue
+                var kensaMstOya = kensaMstDBList.FirstOrDefault(item => item.OyaItemCd == detailModel.KensaItemCd);
+                if (kensaMstOya == null)
+                {
+                    continue;
+                }
+                var kensaInfParent = kensaInfDetailDBList.FirstOrDefault(item => item.KensaItemCd == kensaMstOya.KensaItemCd);
+                if (kensaInfParent == null)
+                {
+                    continue;
+                }
+                kensaInfDetail = new KensaInfDetail();
+                kensaInfDetail.HpId = hpId;
+                kensaInfDetail.CreateDate = CIUtil.GetJapanDateTimeNow();
+                kensaInfDetail.CreateId = userId;
+                kensaInfDetail.IsDeleted = 0;
+                kensaInfDetail.IraiCd = iraiCd;
+                kensaInfDetail.PtId = kensaInf.PtId;
+                kensaInfDetail.IraiDate = kensaInfParent.IraiDate;
+                kensaInfDetail.RaiinNo = kensaInfParent.RaiinNo;
+                kensaInfDetail.KensaItemCd = detailModel.KensaItemCd;
+                kensaInfDetail.SeqNo = 0;
+            }
+            kensaInfDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            kensaInfDetail.UpdateId = userId;
+            kensaInfDetail.ResultVal = detailModel.ResultVal;
+            kensaInfDetail.AbnormalKbn = detailModel.AbnormalKbn;
+            kensaInfDetail.CmtCd1 = detailModel.CmtCd1;
+            kensaInfDetail.CmtCd2 = detailModel.CmtCd2;
+            kensaInfDetail.ResultType = detailModel.ResultType == "B" ? string.Empty : detailModel.ResultType;
+            if (kensaInfDetail.SeqNo == 0)
+            {
+                TrackingDataContext.KensaInfDetails.Add(kensaInfDetail);
+            }
+            kensaInfDetailMessageList.Add(new KensaInfDetailMessageModel(
+                                              kensaInfDetail.KensaItemCd ?? string.Empty,
+                                              kensaMstName));
+
+            // update kensaInf
+            kensaInf.CenterCd = detailModel.CenterCd;
+            kensaInf.Nyubi = detailModel.Nyubi;
+            kensaInf.Yoketu = detailModel.Yoketu;
+            kensaInf.Bilirubin = detailModel.Bilirubin;
+            kensaInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            kensaInf.UpdateId = userId;
+            kensaInf.Status = 2;
+            #endregion
+        }
+
+        TrackingDataContext.SaveChanges();
+        var result = new KensaInfMessageModel(
+                         kensaInf.PtId,
+                         iraiCd,
+                         ptInf?.PtNum ?? 0,
+                         ptInf?.Name ?? string.Empty,
+                         kensaInfDetailMessageList);
+        return (result, false);
+    }
+
+    private void SendMessager(KensaInfMessageStatus status)
+    {
+        _messenger!.Send(status);
     }
     #endregion
 }

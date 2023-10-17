@@ -17,6 +17,11 @@ public class KensaInfDetailModel
         CmtCd1 = cmtCd1;
         CmtCd2 = cmtCd2;
         KensaMstModel = kensaMstModel;
+        CenterCd = KensaMstModel.CenterCd;
+        Nyubi = string.Empty;
+        Yoketu = string.Empty;
+        Bilirubin = string.Empty;
+        Type = string.Empty;
     }
 
     public KensaInfDetailModel(long seqNo, long ptId, long iraiCd)
@@ -31,7 +36,31 @@ public class KensaInfDetailModel
         CmtCd1 = string.Empty;
         CmtCd2 = string.Empty;
         KensaMstModel = new();
+        CenterCd = KensaMstModel.CenterCd;
+        Nyubi = string.Empty;
+        Yoketu = string.Empty;
+        Bilirubin = string.Empty;
+        Type = string.Empty;
     }
+
+    public KensaInfDetailModel(string type, string centerCd, long iraiCd, string nyubi, string yoketu, string bilirubin, string kensaItemCd, string abnormalKbn, string resultVal, string resultType, string cmtCd1, string cmtCd2)
+    {
+        Type = type;
+        IraiCd = iraiCd;
+        KensaItemCd = kensaItemCd;
+        ResultVal = resultVal;
+        ResultType = resultType;
+        AbnormalKbn = abnormalKbn;
+        CmtCd1 = cmtCd1;
+        CmtCd2 = cmtCd2;
+        CenterCd = centerCd;
+        Nyubi = nyubi;
+        Yoketu = yoketu;
+        Bilirubin = bilirubin;
+        KensaMstModel = new();
+    }
+
+    public string Type { get; private set; }
 
     public long PtId { get; private set; }
 
@@ -56,6 +85,14 @@ public class KensaInfDetailModel
     public string CmtCd1 { get; private set; }
 
     public string CmtCd2 { get; private set; }
+
+    public string CenterCd { get; private set; }
+
+    public string Nyubi { get; private set; }
+
+    public string Yoketu { get; private set; }
+
+    public string Bilirubin { get; private set; }
 
     public KensaMstModel KensaMstModel { get; private set; }
 
