@@ -80,15 +80,6 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         // get list of SanteiInfDetails to validate SanteiInfDetail
         var listSanteiInfDetails = _santeiInfRepository.GetListSanteiInfDetails(input.HpId, input.PtId);
 
-        // get list of Byomeis to validate 
-        var listByomeis = _mstItemRepository.GetListSanteiByomeis(input.HpId, input.PtId, input.SinDate, input.HokenPid);
-        if (listSanteiInfDetails.Any())
-        {
-            listByomeis.AddRange(from item in listSanteiInfDetails// Add byomei to byomei List
-                                 where listByomeis.FirstOrDefault(byomei => byomei.Equals(item.Byomei)) == null && !string.IsNullOrEmpty(item.Byomei)
-                                 select item.Byomei);
-        }
-
         foreach (var santeiInf in input.ListSanteiInfs)
         {
             // validate itemCd, itemCd is not duplicate
@@ -127,7 +118,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             // validate list SanteiInfDetails
             foreach (var santeiInfDetail in santeiInf.ListSanteInfDetails)
             {
-                var resultValidateDetail = ValidateSanteiInfDetail(santeiInf.ItemCd, santeiInfDetail, listSanteiInfDetails, listByomeis);
+                var resultValidateDetail = ValidateSanteiInfDetail(santeiInf.ItemCd, santeiInfDetail, listSanteiInfDetails);
                 if (resultValidateDetail != SaveListSanteiInfStatus.ValidateSuccess)
                 {
                     return resultValidateDetail;
@@ -137,7 +128,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         return SaveListSanteiInfStatus.ValidateSuccess;
     }
 
-    public SaveListSanteiInfStatus ValidateSanteiInfDetail(string itemCd, SanteiInfDetailInputItem santeiInfDetail, List<SanteiInfDetailModel> listSanteiInfDetails, List<string> listByomeis)
+    public SaveListSanteiInfStatus ValidateSanteiInfDetail(string itemCd, SanteiInfDetailInputItem santeiInfDetail, List<SanteiInfDetailModel> listSanteiInfDetails)
     {
         // validate KisanSbt, KisanSbt must exist in dictionary
         //{ 0, string.Empty },
@@ -168,12 +159,6 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         else if (CIUtil.SDateToShowSDate(santeiInfDetail.KisanDate) == string.Empty)
         {
             return SaveListSanteiInfStatus.InvalidKisanDate;
-        }
-
-        // validate Byomei
-        else if (santeiInfDetail.Byomei.Length > 0 && !listByomeis.Contains(santeiInfDetail.Byomei))
-        {
-            return SaveListSanteiInfStatus.InvalidByomei;
         }
 
         // validate HosokuComment
