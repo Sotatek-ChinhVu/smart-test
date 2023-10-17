@@ -19,4 +19,6 @@ public interface ISuperSetDetailRepository : IRepositoryBase
     bool CheckExistSupperSetDetail(int hpId, int setCd);
 
     bool ClearTempData(int hpId, List<string> listFileNames);
+
+    List<ConversionItemInfModel> GetConversionItem(int hpId, string itemCd, int sinDate);
 }

@@ -55,7 +55,7 @@ public class ConversionItemInfModel
 
     private string GetUnitName()
     {
-        string unitName = "";
+        string unitName;
 
         if (!string.IsNullOrEmpty(OdrUnitName))
         {

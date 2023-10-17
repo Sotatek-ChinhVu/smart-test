@@ -185,6 +185,7 @@ namespace Domain.Models.MstItem
 
         bool CheckPostCodeExist(int hpId, string zipCD);
 
+        TenItemModel GetTenMst(int hpId, string itemCd, int sinDate);
 
         List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
 
@@ -213,15 +214,15 @@ namespace Domain.Models.MstItem
 
         bool SaveRenkei(int hpId, int userId, List<(int renkeiSbt, List<RenkeiConfModel> renkeiConfList)> renkeiTabList);
 
-        List<SetNameMntModel> GetSetNameMnt(SetCheckBoxStatusModel checkBoxStatus,int generationId, int hpId);
+        List<SetNameMntModel> GetSetNameMnt(SetCheckBoxStatusModel checkBoxStatus, int generationId, int hpId);
 
         List<SetKbnMstModel> GetListSetKbnMst(int generationId, int hpId);
 
         int GetGenerationId(int hpId);
-        
+
 
         List<UserMstModel> GetListUser(int hpId, int userId, int sinDate);
-        
+
         List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison);
 
         bool SaveCompareTenMst(List<SaveCompareTenMstModel> ListData, ComparisonSearchModel comparison, int userId);

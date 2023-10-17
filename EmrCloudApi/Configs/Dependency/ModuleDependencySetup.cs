@@ -790,6 +790,7 @@ using UseCase.MstItem.SaveSetNameMnt;
 using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.Online.GetOnlineConsent;
 using UseCase.Online.UpdateOnlineConsents;
+using UseCase.SuperSetDetail.GetConversion;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1330,6 +1331,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ReorderSetMstInputData, ReorderSetMstInteractor>();
             busBuilder.RegisterUseCase<CopyPasteSetMstInputData, CopyPasteSetMstInteractor>();
             busBuilder.RegisterUseCase<GetSetMstToolTipInputData, GetSetMstToolTipInteractor>();
+            busBuilder.RegisterUseCase<GetConversionInputData, GetConversionInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();

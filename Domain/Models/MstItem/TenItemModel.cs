@@ -617,6 +617,40 @@ namespace Domain.Models.MstItem
             CdKbn = string.Empty;
         }
 
+        public TenItemModel(string itemCd,double ten, int handanGrpKbn, int endDate, string kensaItemCd, int kensaItemSeqNo, string ipnNameCd)
+        {
+            Ten = ten;
+            HandanGrpKbn = handanGrpKbn;
+            EndDate = endDate;
+            KensaItemCd = kensaItemCd;
+            KensaItemSeqNo = kensaItemSeqNo;
+            IpnNameCd = ipnNameCd;
+            ItemCd = itemCd;
+            KanaName1 = string.Empty;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            ReceName = string.Empty;
+            Name = string.Empty;
+            OdrUnitName =string.Empty;
+            MasterSbt = string.Empty;
+            YjCd = string.Empty;
+            CnvUnitName = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            KensaMstCenterItemCd1 = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            IpnCD = string.Empty;
+            MaxAge = string.Empty;
+            MinAge = string.Empty;
+            SanteiItemCd = string.Empty;
+            ListGenDate = new();
+            CdKbn = string.Empty;
+        }
+
         public int HpId { get; private set; }
 
         public string ReceName { get; private set; }

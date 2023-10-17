@@ -7,6 +7,7 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.Extensions.Options;
 using System.Text;
 
@@ -1370,6 +1371,45 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                                             ).ToList();
         TrackingDataContext.SetKarteImgInf.RemoveRange(listDeletes);
         return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public List<ConversionItemInfModel> GetConversionItem(int hpId, string itemCd, int sinDate)
+    {
+        var conversionItemInfRepo = NoTrackingDataContext.ConversionItemInfs.Where(item => item.HpId == hpId
+                                                                                           && item.SourceItemCd == itemCd);
+
+        var tenMstRepo = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                     && item.StartDate <= sinDate
+                                                                     && item.EndDate >= sinDate
+                                                                     && item.IsDeleted == DeleteTypes.None);
+
+        var query = from conversionItemInf in conversionItemInfRepo
+                    join tenMst in tenMstRepo on conversionItemInf.DestItemCd equals tenMst.ItemCd
+                    select new
+                    {
+                        conversionItemInf,
+                        tenMst,
+                    };
+
+        return query.AsEnumerable()
+                    .Select(item => new ConversionItemInfModel(
+                                        item.conversionItemInf.SourceItemCd,
+                                        item.conversionItemInf.DestItemCd,
+                                        item.conversionItemInf.SortNo,
+                                        item.tenMst.ItemCd,
+                                        item.tenMst.Name ?? string.Empty,
+                                        item.tenMst.DefaultVal,
+                                        item.tenMst.Ten,
+                                        item.tenMst.HandanGrpKbn,
+                                        item.tenMst.MasterSbt ?? string.Empty,
+                                        item.tenMst.EndDate,
+                                        item.tenMst.KensaItemCd ?? string.Empty,
+                                        item.tenMst.KensaItemSeqNo,
+                                        item.tenMst.IpnNameCd ?? string.Empty,
+                                        item.tenMst.OdrUnitName ?? string.Empty,
+                                        item.tenMst.CnvUnitName ?? string.Empty))
+                    .OrderBy(item => item.SortNo)
+                    .ToList();
     }
 
     public void ReleaseResource()
