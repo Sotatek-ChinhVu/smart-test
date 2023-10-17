@@ -30,16 +30,18 @@ namespace Infrastructure.Repositories
                     try
                     {
                         int kensaSetId = setId;
+                        int maxKensaSetSortNo = NoTrackingDataContext.KensaSets.Where(c => c.HpId == hpId).AsEnumerable().Select(c => c.SortNo).DefaultIfEmpty(0).Max();
                         // Create kensaSet
                         if (setId == 0)
                         {
+                            maxKensaSetSortNo++;
                             var kensaSet = TrackingDataContext.KensaSets.Add(new KensaSet()
                             {
                                 HpId = hpId,
                                 CreateId = userId,
                                 UpdateId = userId,
                                 SetName = setName,
-                                SortNo = sortNo,
+                                SortNo = maxKensaSetSortNo,
                                 CreateMachine = CIUtil.GetComputerName(),
                                 CreateDate = CIUtil.GetJapanDateTimeNow(),
                                 UpdateDate = CIUtil.GetJapanDateTimeNow(),
@@ -60,7 +62,10 @@ namespace Infrastructure.Repositories
                             }
 
                             KensaSet.SetName = setName;
-                            KensaSet.SortNo = sortNo;
+                            if (sortNo > 0)
+                            {
+                                KensaSet.SortNo = sortNo;
+                            }
                             KensaSet.IsDeleted = isDeleted;
                             KensaSet.UpdateId = userId;
                             KensaSet.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -77,6 +82,7 @@ namespace Infrastructure.Repositories
                         }
                         if (isDeleted == DeleteTypes.None)
                         {
+                            int maxKensaSetDetailSortNo = NoTrackingDataContext.KensaSetDetails.Where(c => c.HpId == hpId && c.SetId == setId).AsEnumerable().Select(c => c.SortNo).DefaultIfEmpty(0).Max();
                             foreach (var item in kensaSetDetails)
                             {
                                 // Create kensaSetDetail
@@ -88,7 +94,7 @@ namespace Infrastructure.Repositories
                                         SetId = kensaSetId,
                                         KensaItemCd = item.KensaItemCd,
                                         KensaItemSeqNo = item.KensaItemSeqNo,
-                                        SortNo = item.SortNo,
+                                        SortNo = item.SortNo == 0 ? ++maxKensaSetDetailSortNo : item.SortNo,
                                         CreateId = userId,
                                         UpdateId = userId,
                                         CreateMachine = CIUtil.GetComputerName(),
@@ -107,7 +113,10 @@ namespace Infrastructure.Repositories
                                     {
                                         transaction.Rollback();
                                     }
-                                    kensaSetDetail.SortNo = item.SortNo;
+                                    if (kensaSetDetail.SortNo > 0)
+                                    {
+                                        kensaSetDetail.SortNo = item.SortNo;
+                                    }
                                     kensaSetDetail.IsDeleted = item.IsDeleted;
                                     kensaSetDetail.UpdateId = userId;
                                     kensaSetDetail.UpdateMachine = CIUtil.GetComputerName();
@@ -143,7 +152,7 @@ namespace Infrastructure.Repositories
 
         public List<KensaSetModel> GetListKensaSet(int hpId)
         {
-            return NoTrackingDataContext.KensaSets.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => new KensaSetModel(
+            return NoTrackingDataContext.KensaSets.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.SortNo).Select(x => new KensaSetModel(
                 x.HpId,
                 x.SetId,
                 x.SetName,
@@ -162,6 +171,7 @@ namespace Infrastructure.Repositories
             var data = (from t1 in NoTrackingDataContext.KensaSetDetails
                         join t2 in NoTrackingDataContext.KensaMsts on t1.KensaItemCd equals t2.KensaItemCd
                         where t1.HpId == hpId && t1.SetId == setId && t1.IsDeleted == DeleteTypes.None
+                        orderby t1.SortNo
                         select new KensaSetDetailModel(
                         t1.HpId,
                         t1.SetId,
