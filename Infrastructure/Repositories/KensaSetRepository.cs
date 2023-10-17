@@ -472,15 +472,17 @@ namespace Infrastructure.Repositories
 
             var kensaInfDetailCol = sortedData
                 .GroupBy(x => new { x.IraiCd, x.IraiDate, x.Nyubi, x.Yoketu, x.Bilirubin, x.SikyuKbn, x.TosekiKbn })
-                .Select(group => new KensaInfDetailColModel(
+                .Select((group, index) => new KensaInfDetailColModel(
                     group.Key.IraiCd,
                     group.Key.IraiDate,
                     group.Key.Nyubi,
                     group.Key.Yoketu,
                     group.Key.TosekiKbn,
                     group.Key.SikyuKbn,
-                    group.Key.TosekiKbn
+                    group.Key.TosekiKbn,
+                    index
                 ));
+
 
             var totalCol = kensaInfDetailCol.Count();
             // Get list with start date
@@ -507,19 +509,18 @@ namespace Infrastructure.Repositories
                     kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1).Take(itemQuantity);
                 }
             }
-
-            // Check next back last page
-            if (totalCol < itemQuantity && iraiCdStart != 0)
+            else
             {
-                return new ListKensaInfDetailModel();
+                if (getGetPrevious)
+                {
+                    kensaInfDetailCol = kensaInfDetailCol.TakeLast(itemQuantity);
+                }
+                else
+                {
+                    kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+                }
             }
 
-            if (totalCol >= itemQuantity && kensaInfDetailCol.Count() < itemQuantity)
-            {
-                return new ListKensaInfDetailModel();
-            }
-
-            // Fillter data by IraiCds
             var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
             data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));
             var kensaItemCds = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd)).GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
