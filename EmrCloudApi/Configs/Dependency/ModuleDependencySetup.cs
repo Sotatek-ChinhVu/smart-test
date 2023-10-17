@@ -767,6 +767,7 @@ using UseCase.KensaHistory.UpdateKensaInfDetail;
 using UseCase.Logger.WriteListLog;
 using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.MainMenu.ImportKensaIrai;
+using Infrastructure.Common;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -784,6 +785,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
+            });
+
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<GlobalExceptionFilters>();
             });
 
             SetupRepositories(services);
