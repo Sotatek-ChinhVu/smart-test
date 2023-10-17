@@ -3,14 +3,9 @@ using Domain.Models.KensaIrai;
 using Domain.Models.KensaSet;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
-using Helper.Extension;
 using Reporting.KensaHistory.DB;
 using Reporting.KensaHistory.Mapper;
 using Reporting.Mappers.Common;
-using Reporting.Sokatu;
-using Reporting.Sokatu.Common.Utils;
-using static Domain.Models.KensaIrai.ListKensaInfDetailModel;
 
 namespace Reporting.KensaHistory.Service
 {
@@ -26,21 +21,18 @@ namespace Reporting.KensaHistory.Service
         private int iraiCd;
         private int seikyuYm;
         private int startDate;
-        private int endDate;
         private bool showAbnormalKbn;
         private int itemQuantity;
         private PtInf ptInf;
         private ListKensaInfDetailModel kensaInfDetailModel;
         private List<ListKensaInfDetailItemModel> listKensaInfDetailItemModels = new();
-        private bool hasNextPage;
-        private int currentPage;
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<string, string> _extralData;
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, bool> _visibleFieldData;
-        private string _formFileName = "Form1.rse";
+        private string _formFileName = "kensaResult.rse";
         private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
         private readonly Dictionary<string, bool> _visibleAtPrint;
 
@@ -65,16 +57,15 @@ namespace Reporting.KensaHistory.Service
             this.iraiCd = iraiCd;
             this.seikyuYm = seikyuYm;
             this.startDate = startDate;
-            this.endDate = endDate;
             this.showAbnormalKbn = showAbnormalKbn;
             this.itemQuantity = itemQuantity;
             var getData = GetData();
 
             if (startDate != 0 && endDate != 0)
             {
-                _formFileName = "Form2";
+                _formFileName = "kensaResultMulti.rse";
             }
-            if(getData) 
+            if (getData)
             {
                 UpdateDrawForm();
             }
@@ -96,7 +87,7 @@ namespace Reporting.KensaHistory.Service
                 SetFieldData("hpName", hpInf.HpName);
                 SetFieldData("ptNum", ptInf.PtNum.ToString());
                 SetFieldData("name", ptInf.Name ?? string.Empty);
-                SetFieldData("iraiDate", CIUtil.SDateToShowSDate(startDate));
+                SetFieldData("iraiDate", CIUtil.SDateToShowSDate(seikyuYm));
                 SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString());
                 //保険者
 
@@ -107,28 +98,54 @@ namespace Reporting.KensaHistory.Service
             #region Body
             int UpdateFormBody()
             {
-                List<ListTextObject> listDataPerPage = new();
+                List<ListTextObject> listDataPerPage1 = new();
+                List<ListTextObject> listDataPerPage0 = new();
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                int row = 0;
+                short maxRow = 30;
+                short row = 0;
+                int rowNo = 0;
 
-                if (startDate != 0 && endDate != 0)
+                foreach (var item in listKensaInfDetailItemModels)
                 {
-                    
-                }
-                else
-                {
-                    foreach (var item in listKensaInfDetailItemModels)
+                    listDataPerPage0.Add(new("itemName", 0, rowNo, item.KensaName));
+                    listDataPerPage0.Add(new("resultValue", 0, rowNo, item.ResultVal));
+                    listDataPerPage0.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
+                    listDataPerPage0.Add(new("unit", 0, rowNo, item.Unit));
+                    listDataPerPage0.Add(new("standardValue", 0, rowNo, item.MaleStd));
+                    rowNo++;
+                    if (rowNo == maxRow)
                     {
-                        listDataPerPage.Add(new("itemName", 0, row, item.KensaName));
-                        listDataPerPage.Add(new("resultValue", 0, row, item.ResultVal));
-                        listDataPerPage.Add(new("abnormalFlag", 0, row, item.AbnormalKbn));
-                        listDataPerPage.Add(new("unit", 0, row, item.Unit));
-                        listDataPerPage.Add(new("standardValue", 0, row, item.MaleStd));
-                        row++;
+                        break;
                     }
                 }
 
-                _listTextData.Add(pageIndex, listDataPerPage);
+                if (listKensaInfDetailItemModels.Count < maxRow)
+                {
+                    listKensaInfDetailItemModels.RemoveRange(0, listKensaInfDetailItemModels.Count - 1);
+                    _listTextData.Add(pageIndex, listDataPerPage0);
+                    return 1;
+                }
+                else
+                {
+                    listKensaInfDetailItemModels.RemoveRange(0, maxRow);
+                    _listTextData.Add(pageIndex, listDataPerPage0);
+                    pageIndex = pageIndex + 1;
+                    foreach (var item in listKensaInfDetailItemModels)
+                    {
+                        rowNo = 0;
+                        listDataPerPage1.Add(new("itemName", 0, rowNo, item.KensaName));
+                        listDataPerPage1.Add(new("resultValue", 0, rowNo, item.ResultVal));
+                        listDataPerPage1.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
+                        listDataPerPage1.Add(new("unit", 0, rowNo, item.Unit));
+                        listDataPerPage1.Add(new("standardValue", 0, rowNo, item.MaleStd));
+                        rowNo++;
+                        if (rowNo == maxRow)
+                        {
+                            break;
+                        }
+                    }
+                }
+                _listTextData.Add(pageIndex, listDataPerPage1);
 
                 return 1;
             }
@@ -148,7 +165,7 @@ namespace Reporting.KensaHistory.Service
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             kensaInfDetailModel = _kokhoFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, iraiCd, startDate, showAbnormalKbn, itemQuantity);
-            var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray);
+            var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray);/*
 
             if (startDate != 0 && endDate != 0)
             {
@@ -164,7 +181,7 @@ namespace Reporting.KensaHistory.Service
                 }
             }
             else
-            {
+            {*/
                 foreach (var item in kensaInfDetails)
                 {
                     foreach (var index in item)
@@ -175,9 +192,9 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
                 }
-            }
+           // }
 
-            return listKensaInfDetailItemModels.Count > 0;  
+            return listKensaInfDetailItemModels.Count > 0;
         }
 
         private void SetFieldData(string field, string value)
@@ -185,14 +202,6 @@ namespace Reporting.KensaHistory.Service
             if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
             {
                 _singleFieldData.Add(field, value);
-            }
-        }
-
-        private void SetVisibleFieldData(string field, bool value)
-        {
-            if (!string.IsNullOrEmpty(field) && !_visibleFieldData.ContainsKey(field))
-            {
-                _visibleFieldData.Add(field, value);
             }
         }
     }
