@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231013035452_ReStructure_RaiinListInf2")]
+    partial class ReStructureRaiinListInf2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -6566,51 +6569,6 @@ namespace TenantMigration.Migrations
                     b.ToTable("KENSA_MST");
                 });
 
-            modelBuilder.Entity("Entity.Tenant.KensaResultLog", b =>
-                {
-                    b.Property<int>("OpId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("OP_ID")
-                        .HasColumnOrder(1);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OpId"));
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(2);
-
-                    b.Property<int>("ImpDate")
-                        .HasColumnType("integer")
-                        .HasColumnName("IMP_DATE")
-                        .HasColumnOrder(3);
-
-                    b.Property<string>("KekaFile")
-                        .HasColumnType("text")
-                        .HasColumnName("KEKA_FILE")
-                        .HasColumnOrder(4);
-
-                    b.HasKey("OpId");
-
-                    b.HasIndex(new[] { "HpId", "ImpDate" }, "KENSA_RESULT_LOG_IDX01");
-
-                    b.ToTable("KENSA_RESULT_LOG");
-                });
-
             modelBuilder.Entity("Entity.Tenant.KensaSet", b =>
                 {
                     b.Property<int>("HpId")
@@ -12000,8 +11958,6 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "PtId", "HokenId", "SeqNo");
 
-                    b.HasIndex(new[] { "HpId", "PtId", "HokenId", "HokenKbn", "Houbetu" }, "PT_HOKEN_INF_IDX01");
-
                     b.ToTable("PT_HOKEN_INF");
                 });
 
@@ -12400,8 +12356,6 @@ namespace TenantMigration.Migrations
                     b.HasKey("HpId", "PtId", "SeqNo");
 
                     b.HasIndex(new[] { "HpId", "PtNum" }, "PT_INF_IDX01");
-
-                    b.HasIndex(new[] { "HpId", "PtId", "IsDelete" }, "PT_INF_IDX02");
 
                     b.ToTable("PT_INF");
                 });
@@ -14153,8 +14107,6 @@ namespace TenantMigration.Migrations
                     b.HasIndex(new[] { "HpId", "PtId", "SinDate", "Status", "SyosaisinKbn", "IsDeleted" }, "RAIIN_INF_IDX02");
 
                     b.HasIndex(new[] { "IsDeleted", "SinDate", "PtId" }, "RAIIN_INF_IDX03");
-
-                    b.HasIndex(new[] { "HpId", "RaiinNo", "IsDeleted", "Status" }, "RAIIN_INF_IDX04");
 
                     b.ToTable("RAIIN_INF");
                 });
