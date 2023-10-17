@@ -521,6 +521,7 @@
         public const string SaveCompareTenMst = "SaveCompareTenMst";
         public const string SaveSetNameMnt = "SaveSetNameMnt";
         public const string GetColumnSettingByTableNameList = "GetColumnSettingByTableNameList";
+        public const string GetRenkeiTiming = "GetRenkeiTiming";
 
         //log
         public const string WriteLog = "WriteLog";
