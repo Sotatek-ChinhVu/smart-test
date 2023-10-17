@@ -61,10 +61,6 @@ namespace Reporting.KensaHistory.Service
             this.itemQuantity = itemQuantity;
             var getData = GetData();
 
-            if (startDate != 0 && endDate != 0)
-            {
-                _formFileName = "kensaResultMulti.rse";
-            }
             if (getData)
             {
                 UpdateDrawForm();
@@ -122,6 +118,7 @@ namespace Reporting.KensaHistory.Service
                 if (listKensaInfDetailItemModels.Count < maxRow)
                 {
                     listKensaInfDetailItemModels.RemoveRange(0, listKensaInfDetailItemModels.Count - 1);
+                    SetFieldData("pageNumber", pageIndex.ToString() + "/" + pageIndex.ToString());
                     _listTextData.Add(pageIndex, listDataPerPage0);
                     return 1;
                 }
@@ -165,34 +162,18 @@ namespace Reporting.KensaHistory.Service
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             kensaInfDetailModel = _kokhoFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, iraiCd, startDate, showAbnormalKbn, itemQuantity);
-            var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray);/*
+            var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray);
 
-            if (startDate != 0 && endDate != 0)
+            foreach (var item in kensaInfDetails)
             {
-                foreach (var item in kensaInfDetails)
+                foreach (var index in item)
                 {
-                    foreach (var index in item)
+                    if (index.IraiDate == seikyuYm)
                     {
-                        if (index.IraiDate >= startDate && index.IraiDate <= endDate)
-                        {
-                            listKensaInfDetailItemModels.Add(index);
-                        }
+                        listKensaInfDetailItemModels.Add(index);
                     }
                 }
             }
-            else
-            {*/
-                foreach (var item in kensaInfDetails)
-                {
-                    foreach (var index in item)
-                    {
-                        if (index.IraiDate == seikyuYm)
-                        {
-                            listKensaInfDetailItemModels.Add(index);
-                        }
-                    }
-                }
-           // }
 
             return listKensaInfDetailItemModels.Count > 0;
         }
