@@ -769,6 +769,7 @@ using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.SuperSetDetail.GetConversion;
 using UseCase.MainMenu.ImportKensaIrai;
 using UseCase.SuperSetDetail.SaveConversion;
+using UseCase.MstItem.GetRenkeiTiming;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1472,6 +1473,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListUserInputData, GetListUserInteractor>();
             busBuilder.RegisterUseCase<GetTenMstByCodeInputData, GetTenMstByCodeInteractor>();
             busBuilder.RegisterUseCase<GetByomeiByCodeInputData, GetByomeiByCodeInteractor>();
+            busBuilder.RegisterUseCase<GetRenkeiTimingInputData, GetRenkeiTimingInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
