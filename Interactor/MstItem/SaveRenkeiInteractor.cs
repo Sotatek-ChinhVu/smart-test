@@ -41,6 +41,7 @@ public class SaveRenkeiInteractor : ISaveRenkeiInputPort
         finally
         {
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

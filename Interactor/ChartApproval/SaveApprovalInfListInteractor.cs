@@ -45,6 +45,7 @@ namespace Interactor.ChartApproval
             finally
             {
                 _approvalInfRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

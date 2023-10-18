@@ -69,6 +69,7 @@ namespace Interactor.ReceiptCheck
                 SendMessenger(new RecalculationStatus(true, CalculateStatusConstant.ReceCheckMessage, 0, 0, string.Empty, "NotConnectSocket"));
                 _commonReceRecalculation.ReleaseResource();
                 _receiptRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
 
         }

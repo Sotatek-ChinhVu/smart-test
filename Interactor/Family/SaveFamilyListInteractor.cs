@@ -79,6 +79,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
             _patientInforRepository.ReleaseResource();
             _userRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

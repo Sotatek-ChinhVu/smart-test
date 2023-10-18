@@ -45,6 +45,7 @@ public class SaveReceCheckOptInteractor : ISaveReceCheckOptInputPort
         finally
         {
             _receiptRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

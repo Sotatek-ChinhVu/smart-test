@@ -55,6 +55,7 @@ public class UpsertUketukeSbtMstInteractor : IUpsertUketukeSbtMstInputPort
         finally
         {
             _uketukeSbtMstRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
     private static UpsertUketukeSbtMstStatus ConvertStatus(ValidationStatus status)

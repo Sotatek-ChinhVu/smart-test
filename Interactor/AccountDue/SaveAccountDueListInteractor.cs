@@ -91,6 +91,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
             _userRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
             _hpInfRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
         return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Failed);
     }

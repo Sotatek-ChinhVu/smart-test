@@ -138,6 +138,7 @@ namespace Interactor.SetKbnMst
                 _setKbnMstRepository.ReleaseResource();
                 _kaRepository.ReleaseResource();
                 _userRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

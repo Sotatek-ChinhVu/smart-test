@@ -61,6 +61,7 @@ namespace Interactor.PatientInfor
             {
                 _hokenMstRepository.ReleaseResource();
                 _patientInforRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

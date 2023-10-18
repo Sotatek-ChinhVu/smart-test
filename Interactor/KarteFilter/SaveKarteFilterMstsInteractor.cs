@@ -62,6 +62,7 @@ public class SaveKarteFilterMstsInteractor : ISaveKarteFilterInputPort
         finally
         {
             _karteFilterMstRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 }

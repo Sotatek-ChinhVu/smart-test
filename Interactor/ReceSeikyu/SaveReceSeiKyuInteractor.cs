@@ -319,6 +319,7 @@ namespace Interactor.ReceSeikyu
                 _commonMedicalCheck.ReleaseResource();
                 _receSeikyuRepository.ReleaseResource();
                 _drugDetailRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

@@ -42,6 +42,7 @@ public class SaveDrugCheckSettingInteractor : ISaveDrugCheckSettingInputPort
         finally
         {
             _systemConfRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

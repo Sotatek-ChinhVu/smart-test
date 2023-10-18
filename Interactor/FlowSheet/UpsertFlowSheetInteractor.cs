@@ -90,6 +90,7 @@ namespace Interactor.FlowSheet
                 _flowsheetRepository.ReleaseResource();
                 _patientRepository.ReleaseResource();
                 _receptionRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

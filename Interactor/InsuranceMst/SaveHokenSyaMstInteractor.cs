@@ -65,6 +65,7 @@ namespace Interactor.InsuranceMst
             finally
             {
                 _insuranceMstReponsitory.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

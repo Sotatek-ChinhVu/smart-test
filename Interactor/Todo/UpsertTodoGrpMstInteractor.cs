@@ -59,6 +59,7 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
         finally
         {
             _todoGrpMstRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

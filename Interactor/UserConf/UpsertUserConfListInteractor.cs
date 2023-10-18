@@ -69,6 +69,7 @@ public class UpsertUserConfListInteractor : IUpsertUserConfListInputPort
         finally
         {
             _userConfRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 }

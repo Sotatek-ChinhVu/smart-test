@@ -49,6 +49,7 @@ public class SavePtKyuseiInteractor : ISavePtKyuseiInputPort
         finally
         {
             _patientInforRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
 
     }

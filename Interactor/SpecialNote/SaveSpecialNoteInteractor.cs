@@ -83,6 +83,7 @@ namespace Interactor.SpecialNote
                 _userRepository.ReleaseResource();
                 _specialNoteRepository.ReleaseResource();
                 _summaryInfRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

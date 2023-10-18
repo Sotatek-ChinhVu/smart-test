@@ -126,6 +126,7 @@ namespace Interactor.PatientInfor
             {
                 _patientInforRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

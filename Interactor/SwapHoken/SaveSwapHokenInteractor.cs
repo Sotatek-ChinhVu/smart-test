@@ -147,6 +147,7 @@ namespace Interactor.SwapHoken
             finally
             {
                 _swapHokenRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

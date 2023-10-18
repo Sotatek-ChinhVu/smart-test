@@ -65,6 +65,7 @@ namespace Interactor.RaiinKubunMst
             finally
             {
                 _raiinKubunMstRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

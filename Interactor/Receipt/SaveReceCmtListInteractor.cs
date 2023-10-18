@@ -77,6 +77,7 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
             _patientInforRepository.ReleaseResource();
             _insuranceRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

@@ -34,6 +34,7 @@ namespace Interactor.PatientManagement
             finally
             {
                 _statisticRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
 
         }

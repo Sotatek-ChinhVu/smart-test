@@ -92,6 +92,7 @@ public class SaveListPatientGroupMstInteractor : ISaveListPatientGroupMstInputPo
         finally
         {
             _patientGroupMstRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
     private List<PatientGroupMstModel> ConvertToListModel(List<SaveListPatientGroupMstInputItem> inputItem)

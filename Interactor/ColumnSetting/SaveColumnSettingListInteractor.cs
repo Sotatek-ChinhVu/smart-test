@@ -34,6 +34,7 @@ public class SaveColumnSettingListInteractor : ISaveColumnSettingListInputPort
         finally
         {
             _columnSettingRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 }

@@ -29,6 +29,10 @@ namespace Interactor.Logger
                 _loggingHandler.WriteLogExceptionAsync(ex);
                 throw;
             }
+            finally
+            {
+                _loggingHandler.Dispose();
+            }
         }
     }
 }

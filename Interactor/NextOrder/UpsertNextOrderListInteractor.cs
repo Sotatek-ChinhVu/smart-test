@@ -161,6 +161,7 @@ namespace Interactor.NextOrder
                 _nextOrderRepository.ReleaseResource();
                 _patientInfRepository.ReleaseResource();
                 _userRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

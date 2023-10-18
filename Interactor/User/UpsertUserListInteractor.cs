@@ -125,6 +125,7 @@ namespace Interactor.User
             {
                 _kaRepository.ReleaseResource();
                 _userRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
         private static UpsertUserListStatus ConvertStatusUser(ValidationStatus status)

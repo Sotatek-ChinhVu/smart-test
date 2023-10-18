@@ -46,6 +46,7 @@ namespace Interactor.MaxMoney
             finally
             {
                 _maxmoneyReposiory.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

@@ -45,6 +45,7 @@ public class SaveOQConfirmationInteractor : ISaveOQConfirmationInputPort
         finally
         {
             _onlineRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

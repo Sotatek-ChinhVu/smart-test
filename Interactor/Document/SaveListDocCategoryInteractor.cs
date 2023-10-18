@@ -52,6 +52,7 @@ public class SaveListDocCategoryInteractor : ISaveListDocCategoryInputPort
             _documentRepository.ReleaseResource();
             _hpInfRepository.ReleaseResource();
             _userRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

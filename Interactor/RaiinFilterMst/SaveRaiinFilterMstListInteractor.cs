@@ -33,6 +33,7 @@ public class SaveRaiinFilterMstListInteractor : ISaveRaiinFilterMstListInputPort
         finally
         {
             _raiinFilterMstRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 }

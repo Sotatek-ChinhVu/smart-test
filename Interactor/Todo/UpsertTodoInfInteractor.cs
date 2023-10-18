@@ -58,6 +58,7 @@ public class UpsertTodoInfInteractor : IUpsertTodoInfInputPort
         finally
         {
             _todoInfRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

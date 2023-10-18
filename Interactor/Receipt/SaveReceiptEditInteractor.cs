@@ -57,6 +57,7 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
             _patientInforRepository.ReleaseResource();
             _insuranceRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

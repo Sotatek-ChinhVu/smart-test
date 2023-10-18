@@ -43,6 +43,7 @@ namespace Interactor.PtGroupMst
             finally
             {
                 _groupNameMstRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

@@ -84,6 +84,7 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
             _nextOrderRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
             _superSetDetailRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

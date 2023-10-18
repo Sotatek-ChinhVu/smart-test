@@ -139,6 +139,7 @@ namespace Interactor.ReceiptCheck
                 _calculationInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
                 _receiptRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

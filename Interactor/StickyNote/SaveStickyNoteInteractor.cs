@@ -37,6 +37,7 @@ namespace Interactor.StickyNote
             finally
             {
                 _ptTagRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

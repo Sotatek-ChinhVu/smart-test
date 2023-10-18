@@ -34,6 +34,7 @@ namespace Interactor.MedicalExamination
             finally
             {
                 _mstItemRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

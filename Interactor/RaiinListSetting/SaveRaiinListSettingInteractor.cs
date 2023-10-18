@@ -38,6 +38,7 @@ namespace Interactor.RaiinListSetting
             finally
             {
                 _raiinListSettingRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

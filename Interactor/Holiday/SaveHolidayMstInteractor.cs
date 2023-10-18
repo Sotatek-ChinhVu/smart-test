@@ -48,6 +48,7 @@ namespace Interactor.Holiday
             {
                 _flowSheetRepository.ReleaseResource();
                 _userRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

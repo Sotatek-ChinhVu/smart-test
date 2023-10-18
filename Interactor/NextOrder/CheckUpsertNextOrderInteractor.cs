@@ -39,6 +39,7 @@ namespace Interactor.NextOrder
             finally
             {
                 _nextOrderRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

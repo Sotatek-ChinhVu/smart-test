@@ -104,6 +104,7 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
             _setMstRepository.ReleaseResource();
             _auditLogRepository.ReleaseResource();
             _userRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

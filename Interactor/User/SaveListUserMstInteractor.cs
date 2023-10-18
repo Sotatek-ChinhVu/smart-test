@@ -55,6 +55,7 @@ namespace Interactor.User
             finally
             {
                 _userRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

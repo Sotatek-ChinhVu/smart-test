@@ -37,6 +37,7 @@ public class UpsertJsonSettingInteractor : IUpsertJsonSettingInputPort
         finally
         {
             _jsonSettingRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 }

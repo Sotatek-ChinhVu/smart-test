@@ -38,6 +38,7 @@ namespace Interactor.SystemConf
             finally
             {
                 _systemConfRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

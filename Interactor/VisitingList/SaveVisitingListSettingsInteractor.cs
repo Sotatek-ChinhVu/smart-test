@@ -41,6 +41,7 @@ public class SaveVisitingListSettingsInteractor : ISaveVisitingListSettingsInput
         finally
         {
             _visitingListSettingRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 }

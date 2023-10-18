@@ -88,6 +88,7 @@ namespace Interactor.PatientManagement
             finally
             {
                 _coSta9000Finder.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

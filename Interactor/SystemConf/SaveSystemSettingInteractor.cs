@@ -72,6 +72,7 @@ namespace Interactor.SystemConf
                 _systemConfRepository.ReleaseResource();
                 _santeiInfRepository.ReleaseResource();
                 _mstItemRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

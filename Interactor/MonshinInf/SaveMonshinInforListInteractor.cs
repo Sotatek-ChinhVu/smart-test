@@ -54,6 +54,7 @@ namespace Interactor.MonshinInf
             {
                 _monshinInforRepository.ReleaseResource();
                 _receptionRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

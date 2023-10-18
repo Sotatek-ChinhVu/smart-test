@@ -95,6 +95,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             _receptionRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
             _auditLogRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

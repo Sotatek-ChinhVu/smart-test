@@ -97,6 +97,7 @@ namespace Interactor.Diseases
                 _insuranceInforRepository.ReleaseResource();
                 _patientInforRepository.ReleaseResource();
                 _auditLogRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

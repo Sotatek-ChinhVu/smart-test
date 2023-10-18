@@ -1,4 +1,5 @@
-﻿using Infrastructure.Interfaces;
+﻿using Infrastructure.CommonDB;
+using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using UseCase.CommonChecker;
@@ -38,6 +39,11 @@ namespace Interactor.CommonChecker
             {
                 _loggingHandler.WriteLogExceptionAsync(ex);
                 throw;
+            }
+            finally
+            {
+                _commonMedicalCheck.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

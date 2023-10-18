@@ -112,6 +112,7 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
             _receptionRepository.ReleaseResource();
             _ordInfRepository.ReleaseResource();
             _groupInfRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

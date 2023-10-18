@@ -50,6 +50,7 @@ public class SaveStatisticMenuInteractor : ISaveStatisticMenuInputPort
         {
             _statisticRepository.ReleaseResource();
             _userRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

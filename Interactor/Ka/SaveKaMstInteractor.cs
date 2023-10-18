@@ -86,6 +86,7 @@ public class SaveKaMstInteractor : ISaveKaMstInputPort
         finally
         {
             _kaMstRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 }

@@ -59,6 +59,7 @@ public class SaveStaCsvMstInteractor : ISaveStaCsvMstInputPort
         finally
         {
             _statisticRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 }

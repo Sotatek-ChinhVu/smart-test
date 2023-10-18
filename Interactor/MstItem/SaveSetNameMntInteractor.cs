@@ -42,6 +42,7 @@ namespace Interactor.MstItem
             finally
             {
                 _mstItemRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

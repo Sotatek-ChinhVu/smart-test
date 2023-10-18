@@ -38,6 +38,7 @@ namespace Interactor.AuditTrailLog
             finally
             {
                 _auditLogRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

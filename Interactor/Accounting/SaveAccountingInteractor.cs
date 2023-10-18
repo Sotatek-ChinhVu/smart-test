@@ -103,6 +103,7 @@ namespace Interactor.Accounting
                 _userRepository.ReleaseResource();
                 _hpInfRepository.ReleaseResource();
                 _patientInforRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

@@ -101,6 +101,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
             _mstItemRepository.ReleaseResource();
             _setMstRepository.ReleaseResource();
             _superSetDetailRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

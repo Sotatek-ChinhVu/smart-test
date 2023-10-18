@@ -51,6 +51,7 @@ namespace Interactor.TimeZoneConf
             {
                 _timeZoneConfRepository.ReleaseResource();
                 _userRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }
