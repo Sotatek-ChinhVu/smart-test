@@ -1064,8 +1064,7 @@ namespace Infrastructure.Repositories
             }
 
             updateEntity(raiinInf);
-            NoTrackingDataContext.SaveChanges();
-            return true;
+            return NoTrackingDataContext.SaveChanges() > 0;
         }
 
         public ReceptionModel GetReceptionComments(int hpId, long raiinNo)

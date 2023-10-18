@@ -219,10 +219,6 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         {
             return SaveAccountDueListStatus.NyukinCmtMaxLength100;
         }
-        else if (inputData.SyunoNyukinInputItems.Any(item => item.SeikyuGaku < 0))
-        {
-            return SaveAccountDueListStatus.InvalidSeikyuGaku;
-        }
         else if (inputData.SyunoNyukinInputItems.Any(item => item.SeikyuTensu < 0))
         {
             return SaveAccountDueListStatus.InvalidSeikyuTensu;

@@ -1065,7 +1065,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 {
                     if (doneProgress)
                     {
-                        var status = new KensaInfMessageStatus(true, true, messageItem, string.Empty);
+                        var status = new KensaInfMessageStatus(true, successCount, true, messageItem, string.Empty);
                         SendMessager(status);
                     }
                 }
@@ -1272,13 +1272,16 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
             #region check and return error message to FE
             if (string.IsNullOrEmpty(detailModel.Type) || detailModel.Type != "A1")
             {
-                string itemSuccessed = JsonSerializer.Serialize(new KensaInfMessageModel(
+                if (kensaInfDetailMessageList.Any())
+                {
+                    string itemSuccessed = JsonSerializer.Serialize(new KensaInfMessageModel(
                                                                     kensaInf.PtId,
                                                                     iraiCd,
                                                                     ptInf?.PtNum ?? 0,
                                                                     ptInf?.Name ?? string.Empty,
                                                                     kensaInfDetailMessageList));
-                SendMessager(new KensaInfMessageStatus(false, false, itemSuccessed, string.Empty));
+                    SendMessager(new KensaInfMessageStatus(false, false, itemSuccessed, string.Empty));
+                }
 
                 string errorItem = JsonSerializer.Serialize(new KensaInfMessageModel(
                                                                 kensaInf.PtId,
@@ -1294,14 +1297,16 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
             }
             if (string.IsNullOrEmpty(detailModel.CenterCd))
             {
-                string message = JsonSerializer.Serialize(new KensaInfMessageModel(
-                                                              kensaInf.PtId,
-                                                              iraiCd,
-                                                              ptInf?.PtNum ?? 0,
-                                                              ptInf?.Name ?? string.Empty,
-                                                              kensaInfDetailMessageList));
-                SendMessager(new KensaInfMessageStatus(false, false, message, string.Empty));
-
+                if (kensaInfDetailMessageList.Any())
+                {
+                    string message = JsonSerializer.Serialize(new KensaInfMessageModel(
+                                                                  kensaInf.PtId,
+                                                                  iraiCd,
+                                                                  ptInf?.PtNum ?? 0,
+                                                                  ptInf?.Name ?? string.Empty,
+                                                                  kensaInfDetailMessageList));
+                    SendMessager(new KensaInfMessageStatus(false, false, message, string.Empty));
+                }
                 string errorItem = JsonSerializer.Serialize(new KensaInfMessageModel(
                                                                 kensaInf.PtId,
                                                                 iraiCd,
