@@ -298,6 +298,7 @@ namespace Infrastructure.Repositories
                 ptDiseaseModel = ptDiseaseModel.ChangeCreateUserUpdateDate(createName, updateName, ptByomei.CreateDate, ptByomei.UpdateDate);
                 result.Add(ptDiseaseModel);
             }
+            result = result.OrderByDescending(p => p.UpdateDate).ThenByDescending(p => p.Id).ToList();
             return result;
         }
 
