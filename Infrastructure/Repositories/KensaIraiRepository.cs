@@ -1053,15 +1053,18 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                         transaction.Commit();
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
                     transaction.Rollback();
+                    doneProgress = false;
+                    var status = new KensaInfMessageStatus(true, false, messageItem, ex.Message);
+                    SendMessager(status);
                 }
                 finally
                 {
                     if (doneProgress)
                     {
-                        var status = new KensaInfMessageStatus(true, successCount, true, messageItem, string.Empty);
+                        var status = new KensaInfMessageStatus(true, true, messageItem, string.Empty);
                         SendMessager(status);
                     }
                 }
