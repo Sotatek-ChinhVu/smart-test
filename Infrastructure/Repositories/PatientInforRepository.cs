@@ -2843,5 +2843,40 @@ namespace Infrastructure.Repositories
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
+
+        public bool UpdateVisitTimesManagementNeedSave(int hpId, int userId, long ptId, int sinDate, List<VisitTimesManagementModel> visitTimesManagementList)
+        {
+            var kohiIdList = visitTimesManagementList.Select(item => item.KohiId).Distinct().ToList();
+            var limitCntListInfDBList = TrackingDataContext.LimitCntListInfs.Where(item => item.HpId == hpId
+                                                                                           && item.PtId == ptId
+                                                                                           && kohiIdList.Contains(item.KohiId))
+                                                                            .ToList();
+            foreach (var kohiId in kohiIdList)
+            {
+                var visitTimesModelList = visitTimesManagementList.Where(item => item.KohiId == kohiId).ToList();
+                var limitCntListInfByKohiDBList = limitCntListInfDBList.Where(item => item.KohiId == kohiId).ToList();
+                var maxSeqNo = limitCntListInfByKohiDBList.Any() ? limitCntListInfByKohiDBList.Max(item => item.SeqNo) : 0;
+
+                foreach (var model in visitTimesModelList)
+                {
+                    var limitCntListInf = new LimitCntListInf()
+                    {
+                        HpId = hpId,
+                        CreateId = userId,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        PtId = ptId,
+                        SinDate = sinDate,
+                        KohiId = kohiId,
+                        SeqNo = maxSeqNo + 1,
+                        SortKey = model.SortKey,
+                    };
+                    TrackingDataContext.LimitCntListInfs.Add(limitCntListInf);
+                    maxSeqNo = limitCntListInf.SeqNo;
+                }
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
     }
 }

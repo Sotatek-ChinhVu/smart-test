@@ -768,6 +768,7 @@ using UseCase.Logger.WriteListLog;
 using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.MainMenu.ImportKensaIrai;
 using UseCase.MstItem.GetRenkeiTiming;
+using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1288,6 +1289,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPtInfModelsByRefNoInputData, GetPtInfModelsByRefNoInteractor>();
             busBuilder.RegisterUseCase<GetVisitTimesManagementModelsInputData, GetVisitTimesManagementModelsInteractor>();
             busBuilder.RegisterUseCase<UpdateVisitTimesManagementInputData, UpdateVisitTimesManagementInteractor>();
+            busBuilder.RegisterUseCase<UpdateVisitTimesManagementNeedSaveInputData, UpdateVisitTimesManagementNeedSaveInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
