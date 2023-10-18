@@ -7,11 +7,11 @@ namespace Interactor.PatientInfor;
 public class UpdateVisitTimesManagementInteractor : IUpdateVisitTimesManagementInputPort
 {
     private readonly IPatientInforRepository _patientInforRepository;
-    private string defaultTimer = "000000";
-    private string defaultRaiiNo = "0000000000";
-    private string defaultKohiPriorityNumber = "99999999" + "99999999" + "99999999" + "99999999";
-    private string defaultHokenPId = "0000";
-    private string defaultSeqNo = "0";
+    private readonly string defaultTimer = "000000";
+    private readonly string defaultRaiiNo = "0000000000";
+    private readonly string defaultKohiPriorityNumber = "99999999" + "99999999" + "99999999" + "99999999";
+    private readonly string defaultHokenPId = "0000";
+    private readonly string defaultSeqNo = "0";
 
     public UpdateVisitTimesManagementInteractor(IPatientInforRepository patientInforRepository)
     {
