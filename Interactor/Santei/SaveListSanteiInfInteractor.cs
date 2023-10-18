@@ -1,10 +1,12 @@
 ﻿using Domain.Models.HpInf;
+using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Santei;
 using Domain.Models.User;
-using UseCase.Santei.SaveListSanteiInf;
 using Helper.Common;
-using Domain.Models.MstItem;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
+using UseCase.Santei.SaveListSanteiInf;
 
 namespace Interactor.Santei;
 
@@ -15,14 +17,18 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IUserRepository _userRepository;
     private readonly IMstItemRepository _mstItemRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveListSanteiInfInteractor(ISanteiInfRepository santeiInfRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IMstItemRepository mstItemRepository)
+    public SaveListSanteiInfInteractor(ITenantProvider tenantProvider, ISanteiInfRepository santeiInfRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IMstItemRepository mstItemRepository)
     {
         _santeiInfRepository = santeiInfRepository;
         _hpInfRepository = hpInfRepository;
         _patientInforRepository = patientInforRepository;
         _userRepository = userRepository;
         _mstItemRepository = mstItemRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveListSanteiInfOutputData Handle(SaveListSanteiInfInputData inputData)
@@ -41,6 +47,11 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             }
             return new SaveListSanteiInfOutputData(SaveListSanteiInfStatus.Failed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _santeiInfRepository.ReleaseResource();
@@ -48,6 +59,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             _patientInforRepository.ReleaseResource();
             _userRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

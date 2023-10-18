@@ -613,9 +613,9 @@ namespace Infrastructure.Repositories
                     result = false;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return false;
+                throw;
             }
 
             return result;

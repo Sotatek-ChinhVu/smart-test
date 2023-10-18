@@ -133,9 +133,10 @@ namespace Infrastructure.Repositories
                         transaction.Commit();
                         successed = true;
                     }
-                    catch
+                    catch (Exception)
                     {
                         transaction.Rollback();
+                        throw;
                     }
                 });
             return successed;
@@ -324,9 +325,10 @@ namespace Infrastructure.Repositories
                         transaction.Commit();
                         successed = true;
                     }
-                    catch
+                    catch (Exception)
                     {
                         transaction.Rollback();
+                        throw;
                     }
                 });
             return successed;
