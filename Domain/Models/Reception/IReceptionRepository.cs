@@ -72,5 +72,7 @@ namespace Domain.Models.Reception
         int GetStatusRaiinInf(int hpId, long raiinNo, long ptId);
 
         ReceptionModel GetRaiinInfBySinDate(int hpId, long ptId, int sinDate);
+
+        int GetNextUketukeNoBySetting(int hpId, int sindate, int infKbn, int kaId, int uketukeMode, int defaultUkeNo);
     }
 }

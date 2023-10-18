@@ -769,6 +769,13 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.KensaHistory.UpdateKensaInfDetail;
+using UseCase.Logger.WriteListLog;
+using UseCase.KensaHistory.GetListKensaInfDetail;
+using UseCase.MainMenu.ImportKensaIrai;
+using UseCase.Reception.GetNextUketukeNoBySetting;
+using UseCase.MstItem.GetRenkeiTiming;
+using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1294,6 +1301,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPtInfModelsByRefNoInputData, GetPtInfModelsByRefNoInteractor>();
             busBuilder.RegisterUseCase<GetVisitTimesManagementModelsInputData, GetVisitTimesManagementModelsInteractor>();
             busBuilder.RegisterUseCase<UpdateVisitTimesManagementInputData, UpdateVisitTimesManagementInteractor>();
+            busBuilder.RegisterUseCase<UpdateVisitTimesManagementNeedSaveInputData, UpdateVisitTimesManagementNeedSaveInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -1475,6 +1483,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListUserInputData, GetListUserInteractor>();
             busBuilder.RegisterUseCase<GetTenMstByCodeInputData, GetTenMstByCodeInteractor>();
             busBuilder.RegisterUseCase<GetByomeiByCodeInputData, GetByomeiByCodeInteractor>();
+            busBuilder.RegisterUseCase<GetNextUketukeNoBySettingInputData, GetNextUketukeNoBySettingInteractor>();
             busBuilder.RegisterUseCase<GetRenkeiTimingInputData, GetRenkeiTimingInteractor>();
 
             // Disease
