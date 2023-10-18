@@ -354,6 +354,7 @@
         public const string GetListSokatuMst = "GetListSokatuMst";
         public const string CheckExistsReceInf = "CheckExistsReceInf";
         public const string CheckExistSyobyoKeika = "CheckExistSyobyoKeika";
+        public const string GetNextUketukeNoBySetting = "GetNextUketukeNoBySetting";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";

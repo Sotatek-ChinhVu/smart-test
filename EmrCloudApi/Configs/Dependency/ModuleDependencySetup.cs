@@ -767,6 +767,7 @@ using UseCase.KensaHistory.UpdateKensaInfDetail;
 using UseCase.Logger.WriteListLog;
 using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.MainMenu.ImportKensaIrai;
+using UseCase.Reception.GetNextUketukeNoBySetting;
 using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 
@@ -1471,6 +1472,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListUserInputData, GetListUserInteractor>();
             busBuilder.RegisterUseCase<GetTenMstByCodeInputData, GetTenMstByCodeInteractor>();
             busBuilder.RegisterUseCase<GetByomeiByCodeInputData, GetByomeiByCodeInteractor>();
+            busBuilder.RegisterUseCase<GetNextUketukeNoBySettingInputData, GetNextUketukeNoBySettingInteractor>();
             busBuilder.RegisterUseCase<GetRenkeiTimingInputData, GetRenkeiTimingInteractor>();
 
             // Disease
