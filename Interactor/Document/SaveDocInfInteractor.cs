@@ -6,6 +6,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.Document.SaveDocInf;
 
 namespace Interactor.Document;
@@ -17,14 +18,18 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IReceptionRepository _receptionRepository;
     private readonly IAuditLogRepository _auditLogRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveDocInfInteractor(IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IAuditLogRepository auditLogRepository)
+    public SaveDocInfInteractor(ITenantProvider tenantProvider, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IAuditLogRepository auditLogRepository)
     {
         _documentRepository = documentRepository;
         _amazonS3Service = amazonS3Service;
         _patientInforRepository = patientInforRepository;
         _receptionRepository = receptionRepository;
         _auditLogRepository = auditLogRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveDocInfOutputData Handle(SaveDocInfInputData inputData)
@@ -78,6 +83,11 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
                 _amazonS3Service.DeleteObjectAsync(path + fileName);
             }
             return new SaveDocInfOutputData(SaveDocInfStatus.Failed);
+        }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
         }
         finally
         {

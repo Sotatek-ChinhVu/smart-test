@@ -1,6 +1,7 @@
-﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
-using Domain.Models.MstItem;
+﻿using Domain.Models.MstItem;
 using Helper.Enum;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.MstItem.SaveSetDataTenMst;
 
 namespace Interactor.MstItem
@@ -8,10 +9,14 @@ namespace Interactor.MstItem
     public class SaveSetDataTenMstInteractor : ISaveSetDataTenMstInputPort
     {
         private readonly IMstItemRepository _mstItemRepository;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SaveSetDataTenMstInteractor(IMstItemRepository mstItemRepository)
+        public SaveSetDataTenMstInteractor(ITenantProvider tenantProvider, IMstItemRepository mstItemRepository)
         {
             _mstItemRepository = mstItemRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveSetDataTenMstOutputData Handle(SaveSetDataTenMstInputData inputData)
@@ -38,6 +43,11 @@ namespace Interactor.MstItem
                 return new SaveSetDataTenMstOutputData(SaveSetDataTenMstStatus.Successful);
                 //else
                 //    return new SaveSetDataTenMstOutputData(SaveSetDataTenMstStatus.Failed);
+            }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
             }
             finally
             {

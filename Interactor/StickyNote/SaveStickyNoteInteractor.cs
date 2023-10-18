@@ -1,4 +1,6 @@
 ﻿using Domain.Models.PtTag;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.StickyNote;
 
 namespace Interactor.StickyNote
@@ -6,10 +8,14 @@ namespace Interactor.StickyNote
     public class SaveStickyNoteInteractor : ISaveStickyNoteInputPort
     {
         private readonly IPtTagRepository _ptTagRepository;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SaveStickyNoteInteractor(IPtTagRepository ptTagRepository)
+        public SaveStickyNoteInteractor(ITenantProvider tenantProvider, IPtTagRepository ptTagRepository)
         {
             _ptTagRepository = ptTagRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveStickyNoteOutputData Handle(SaveStickyNoteInputData inputData)
@@ -23,6 +29,11 @@ namespace Interactor.StickyNote
                 var result = _ptTagRepository.SaveStickyNote(inputData.stickyNoteModels, inputData.UserId);
                 return new SaveStickyNoteOutputData(result, result ? UpdateStickyNoteStatus.Successed : UpdateStickyNoteStatus.Failed);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _ptTagRepository.ReleaseResource();
@@ -34,7 +45,7 @@ namespace Interactor.StickyNote
             if (inputData == null || inputData.stickyNoteModels == null || !inputData.stickyNoteModels.Any())
                 return UpdateStickyNoteStatus.Failed;
 
-            for(int i=0;i< inputData.stickyNoteModels.Count;i++)
+            for (int i = 0; i < inputData.stickyNoteModels.Count; i++)
             {
                 if (inputData.stickyNoteModels[i].StartDate < 0 || inputData.stickyNoteModels[i].EndDate < 0 || inputData.stickyNoteModels[i].StartDate > inputData.stickyNoteModels[i].EndDate)
                 {
