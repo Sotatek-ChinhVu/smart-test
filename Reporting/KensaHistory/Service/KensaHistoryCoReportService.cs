@@ -107,23 +107,22 @@ namespace Reporting.KensaHistory.Service
             #region Body
             int UpdateFormBody()
             {
-                List<ListTextObject> listDataPerPage1 = new();
-                List<ListTextObject> listDataPerPage0 = new();
+                List<ListTextObject> listDataPerPage = new();
                 Dictionary<string, string> fieldDataPerPage = new();
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                short maxRow = 30;
+                short maxRow = 20;
                 int rowNo = 0;
 
                 if (currentPage == 1)
                 {
                     foreach (var item in listKensaInfDetailItemModels)
                     {
-                        listDataPerPage0.Add(new("itemName", 0, rowNo, item.KensaName));
-                        listDataPerPage0.Add(new("resultValue", 0, rowNo, item.ResultVal));
-                        listDataPerPage0.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
-                        listDataPerPage0.Add(new("unit", 0, rowNo, item.Unit));
-                        listDataPerPage0.Add(new("standardValue", 0, rowNo, item.MaleStd));
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
+                        listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
+                        listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
+                        listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
+                        listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd));
                         rowNo++;
                         if (rowNo == maxRow)
                         {
@@ -133,7 +132,7 @@ namespace Reporting.KensaHistory.Service
 
                     if (listKensaInfDetailItemModels.Count < maxRow)
                     {
-                        _listTextData.Add(pageIndex, listDataPerPage0);
+                        _listTextData.Add(pageIndex, listDataPerPage);
                         hasNextPage = false;
                         return 1;
                     }
@@ -141,19 +140,20 @@ namespace Reporting.KensaHistory.Service
                     {
                         hasNextPage = true;
                         listKensaInfDetailItemModels.RemoveRange(0, maxRow);
-                        _listTextData.Add(pageIndex, listDataPerPage0);
+                        _listTextData.Add(pageIndex, listDataPerPage);
                         return 1;
                     }
                 }
 
+                rowNo = 0;
+
                 foreach (var item in listKensaInfDetailItemModels)
                 {
-                    rowNo = 0;
-                    listDataPerPage1.Add(new("itemName", 0, rowNo, item.KensaName));
-                    listDataPerPage1.Add(new("resultValue", 0, rowNo, item.ResultVal));
-                    listDataPerPage1.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
-                    listDataPerPage1.Add(new("unit", 0, rowNo, item.Unit));
-                    listDataPerPage1.Add(new("standardValue", 0, rowNo, item.MaleStd));
+                    listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
+                    listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
+                    listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
+                    listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
+                    listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd));
                     rowNo++;
                     if (rowNo == maxRow)
                     {
@@ -162,7 +162,7 @@ namespace Reporting.KensaHistory.Service
                 }
 
                 hasNextPage = false;
-                _listTextData.Add(pageIndex, listDataPerPage1);
+                _listTextData.Add(pageIndex, listDataPerPage);
 
                 return 1;
             }
