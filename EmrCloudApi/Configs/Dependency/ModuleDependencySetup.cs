@@ -923,6 +923,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoAccountingCardFinder, CoAccountingCardFinder>();
             services.AddTransient<ICoKensaHistoryFinder, CoKensaHistoryFinder>();
             services.AddTransient<IKensaHistoryCoReportService, KensaHistoryCoReportService>();
+            services.AddTransient<IKensaResultMultiCoReportService, KensaResultMultiCoReportService>();
             services.AddTransient<IAccountingCardCoReportService, AccountingCardCoReportService>();
             services.AddTransient<IP33KoukiSeikyuCoReportService, P33KoukiSeikyuCoReportService>();
             services.AddTransient<IP34KoukiSeikyuCoReportService, P34KoukiSeikyuCoReportService>();

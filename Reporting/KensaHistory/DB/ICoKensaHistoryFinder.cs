@@ -1,5 +1,6 @@
 ﻿using Domain.Models.HpInf;
 using Entity.Tenant;
+using Reporting.KensaHistory.Models;
 
 namespace Reporting.KensaHistory.DB
 {
@@ -8,5 +9,7 @@ namespace Reporting.KensaHistory.DB
         HpInfModel GetHpInf(int hpId);
 
         PtInf GetPtInf(int hpId, long ptId);
+
+        List<CoKensaResultMultiModel> GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity);
     }
 }
