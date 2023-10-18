@@ -15,9 +15,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Infrastructure.Repositories
@@ -2844,7 +2842,7 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public bool UpdateVisitTimesManagementNeedSave(int hpId, int userId, long ptId, int sinDate, List<VisitTimesManagementModel> visitTimesManagementList)
+        public bool UpdateVisitTimesManagementNeedSave(int hpId, int userId, long ptId, List<VisitTimesManagementModel> visitTimesManagementList)
         {
             var kohiIdList = visitTimesManagementList.Select(item => item.KohiId).Distinct().ToList();
             var limitCntListInfDBList = TrackingDataContext.LimitCntListInfs.Where(item => item.HpId == hpId
@@ -2867,7 +2865,7 @@ namespace Infrastructure.Repositories
                         UpdateId = userId,
                         UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         PtId = ptId,
-                        SinDate = sinDate,
+                        SinDate = model.SinDate,
                         KohiId = kohiId,
                         SeqNo = maxSeqNo + 1,
                         SortKey = model.SortKey,

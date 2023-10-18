@@ -20,7 +20,7 @@ public class UpdateVisitTimesManagementNeedSaveInteractor : IUpdateVisitTimesMan
             {
                 return new UpdateVisitTimesManagementNeedSaveOutputData(UpdateVisitTimesManagementNeedSaveStatus.InvalidPtId);
             }
-            if (_patientInforRepository.UpdateVisitTimesManagementNeedSave(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.VisitTimesManagementList))
+            if (_patientInforRepository.UpdateVisitTimesManagementNeedSave(inputData.HpId, inputData.UserId, inputData.PtId, inputData.VisitTimesManagementList))
             {
                 return new UpdateVisitTimesManagementNeedSaveOutputData(UpdateVisitTimesManagementNeedSaveStatus.Successed);
             }

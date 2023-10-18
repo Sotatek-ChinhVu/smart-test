@@ -82,6 +82,6 @@ namespace Domain.Models.PatientInfor
 
         bool UpdateVisitTimesManagement(int hpId, int userId, long ptId, int kohiId, List<VisitTimesManagementModel> visitTimesManagementList);
 
-        bool UpdateVisitTimesManagementNeedSave(int hpId, int userId, long ptId, int sinDate, List<VisitTimesManagementModel> visitTimesManagementList);
+        bool UpdateVisitTimesManagementNeedSave(int hpId, int userId, long ptId, List<VisitTimesManagementModel> visitTimesManagementList);
     }
 }

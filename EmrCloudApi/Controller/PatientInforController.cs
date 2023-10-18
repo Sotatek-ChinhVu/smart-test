@@ -1099,7 +1099,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.UpdateVisitTimesManagementNeedSave)]
         public ActionResult<Response<UpdateVisitTimesManagementNeedSaveResponse>> UpdateVisitTimesManagementNeedSave([FromBody] UpdateVisitTimesManagementNeedSaveRequest request)
         {
-            var input = new UpdateVisitTimesManagementNeedSaveInputData(HpId, UserId, request.PtId, request.SinDate, ConvertToVisitTimesManagementList(request));
+            var input = new UpdateVisitTimesManagementNeedSaveInputData(HpId, UserId, request.PtId, ConvertToVisitTimesManagementList(request));
             var output = _bus.Handle(input);
             var presenter = new UpdateVisitTimesManagementNeedSavePresenter();
             presenter.Complete(output);
@@ -1124,7 +1124,7 @@ namespace EmrCloudApi.Controller
         {
             var result = request.VisitTimesManagementList.Select(item => new VisitTimesManagementModel(
                                                                              request.PtId,
-                                                                             request.SinDate,
+                                                                             item.SinDate,
                                                                              0,
                                                                              item.KohiId,
                                                                              0,
