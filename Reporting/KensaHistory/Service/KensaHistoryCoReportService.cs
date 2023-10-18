@@ -95,9 +95,21 @@ namespace Reporting.KensaHistory.Service
                 SetFieldData("name", ptInf.Name ?? string.Empty);
                 SetFieldData("iraiDate", CIUtil.SDateToShowSDate(seikyuYm));
                 SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString());
-                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/" + currentPage.ToString());
-                _setFieldData.Add(pageIndex, fieldDataPerPage);
+                var count = listKensaInfDetailItemModels.Count;
+                var maxRow = 30;
+                if (count <= maxRow && currentPage == 1)
+                {
+                    var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                    fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/1");
+                    _setFieldData.Add(pageIndex, fieldDataPerPage);
+                }
+                else
+                {
+                    var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                    fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/2");
+                    _setFieldData.Add(pageIndex, fieldDataPerPage);
+                }
+                
                 //保険者
 
                 return 1;
@@ -111,7 +123,7 @@ namespace Reporting.KensaHistory.Service
                 Dictionary<string, string> fieldDataPerPage = new();
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                short maxRow = 20;
+                short maxRow = 30;
                 int rowNo = 0;
 
                 if (currentPage == 1)
