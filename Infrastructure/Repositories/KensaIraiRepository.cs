@@ -1057,8 +1057,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 {
                     transaction.Rollback();
                     doneProgress = false;
-                    var status = new KensaInfMessageStatus(true, false, messageItem, ex.Message);
-                    SendMessager(status);
+                    throw;
                 }
                 finally
                 {
