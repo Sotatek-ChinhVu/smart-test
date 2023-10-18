@@ -3,7 +3,6 @@ using Infrastructure.Logger;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Net;
 
 namespace Infrastructure.Common
@@ -45,7 +44,10 @@ namespace Infrastructure.Common
                 }
 
                 var message = $"GlobalExceptionFilter: Error in {context.ActionDescriptor.DisplayName}. {exception.Message}. Stack Trace: {exception.StackTrace}. {Environment.NewLine}" +
-                              $"{context.ActionDescriptor.Parameters}. {context.HttpContext}.";
+                              $"{context.ActionDescriptor.Parameters}. {Environment.NewLine}" +
+                              $"{context.HttpContext}. {exception.Source}. {Environment.NewLine}" +
+                              $"{exception.InnerException?.Message ?? string.Empty}. {Environment.NewLine} {Environment.NewLine}" +
+                              $"{exception.TargetSite}";
                 _logger.LogError(message);
 
                 _loggingHandler.WriteLogExceptionAsync(context.Exception, message);
