@@ -16,6 +16,7 @@ using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 using UseCase.SuperSetDetail.GetConversion;
 using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
+using UseCase.SuperSetDetail.SaveConversion;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetKarteInput;
@@ -170,6 +171,18 @@ public class SetController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetConversionResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveConversion)]
+    public ActionResult<Response<SaveConversionResponse>> SaveConversion([FromBody] SaveConversionRequest request)
+    {
+        var input = new SaveConversionInputData(HpId, UserId, request.SourceItemCd, request.ConversionItemCd);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveConversionPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveConversionResponse>>(presenter.Result);
     }
 
     private List<SaveSetByomeiInputItem> ConvertToSetByomeiModelInputs(List<SaveSetByomeiRequestItem> requestItems)

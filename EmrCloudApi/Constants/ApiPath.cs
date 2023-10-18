@@ -26,6 +26,7 @@
         public const string GetSuperSetDetailForTodayOrder = "GetSuperSetDetailForTodayOrder";
         public const string ParrentKensaMst = "ParrentKensaMst";
         public const string GetConversion = "GetConversion";
+        public const string SaveConversion = "SaveConversion";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";

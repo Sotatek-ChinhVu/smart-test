@@ -391,6 +391,8 @@
         public static readonly string InvalidWeightKbn = "Invalid WeightKbn, WeightKbn >= 0";
         public static readonly string InvalidColor = "Invalid Color, Color >= 0";
         public static readonly string InvalidMemo = "Invalid Memo";
+        public static readonly string InvalidSourceItemCd = "Invalid SourceItemCd.";
+        public static readonly string InvalidConversionItemCd = "Invalid ConversionItemCd.";
 
         //Set
         public static readonly string GetSetKbnListInvalidHpId = "Invalid HpId";

@@ -1,20 +1,23 @@
-﻿using Domain.Models.SuperSetDetail;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.SuperSetDetail.SaveConversion;
 
 public class SaveConversionInputData : IInputData<SaveConversionOutputData>
 {
-    public SaveConversionInputData(int hpId, int userId, ConversionItemModel conversionModel)
+    public SaveConversionInputData(int hpId, int userId, string sourceItemCd, string conversionItemCd)
     {
         HpId = hpId;
         UserId = userId;
-        ConversionModel = conversionModel;
+        SourceItemCd = sourceItemCd;
+        ConversionItemCd = conversionItemCd;
     }
 
     public int HpId { get; private set; }
 
     public int UserId { get; private set; }
 
-    public ConversionItemModel ConversionModel { get; private set; }
+    public string SourceItemCd { get; private set; }
+
+    public string ConversionItemCd { get; private set; }
+
 }

@@ -4,13 +4,10 @@ namespace UseCase.SuperSetDetail.SaveConversion;
 
 public class SaveConversionOutputData : IOutputData
 {
-    public SaveConversionOutputData(SaveConversionStatus status, string errorMessage)
+    public SaveConversionOutputData(SaveConversionStatus status)
     {
         Status = status;
-        ErrorMessage = errorMessage;
     }
-
-    public string ErrorMessage { get; private set; }
 
     public SaveConversionStatus Status { get; private set; }
 }
