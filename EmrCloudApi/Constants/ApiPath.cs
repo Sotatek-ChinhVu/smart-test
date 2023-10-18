@@ -515,6 +515,7 @@
         public const string GetListKensaCmtMst = "GetListKensaCmtMst";
         public const string UpdateKensaInfDetail = "UpdateKensaInfDetail";
         public const string GetListKensaInfDetail = "GetListKensaInfDetail";
+        public const string GetKensaInfDetailByIraiCd = "GetKensaInfDetailByIraiCd";
 
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";

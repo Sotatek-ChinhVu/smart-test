@@ -255,17 +255,17 @@ namespace Infrastructure.Repositories
                     using var transaction = TrackingDataContext.Database.BeginTransaction();
                     try
                     {
+                        long maxRaiinNo = NoTrackingDataContext.KensaInfs.Where(c => c.HpId == hpId).AsEnumerable().Select(c => c.RaiinNo).DefaultIfEmpty(0).Max();
                         // Create KensaInf
                         if (iraiCdId == 0)
                         {
-                            MaxRaiinNo = 
                             var kensaInf = TrackingDataContext.KensaInfs.Add(new KensaInf()
                             {
                                 HpId = hpId,
                                 PtId = ptId,
                                 IraiCd = 0,
                                 IraiDate = iraiDate,
-                                RaiinNo = item.RaiinNo,
+                                RaiinNo = maxRaiinNo + 1,
                                 InoutKbn = 0,
                                 Status = 0,
                                 TosekiKbn = 0,
@@ -283,62 +283,103 @@ namespace Infrastructure.Repositories
                             iraiCdId = kensaInf.Entity.IraiCd;
                         }
 
+                        var uniqIdParents = new HashSet<string>(kensaInfDetails.Where(x => x.SeqNo == 0 && !string.IsNullOrEmpty(x.UniqIdParent)).Select(item => item.UniqIdParent));
 
-                        foreach (var item in kensaInfDetails)
+                        foreach (var item in kensaInfDetails.Where(x => uniqIdParents.Contains(x.UniqId)))
                         {
-                            //Create kensaInfDetail
-                            if (item.SeqNo == 0)
+                            //Create kensaInfDetail Parent
+                            var kensaInfDetailParent = TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
+                            {
+                                HpId = hpId,
+                                PtId = item.PtId,
+                                IraiCd = iraiCdId,
+                                IraiDate = item.IraiDate,
+                                RaiinNo = maxRaiinNo + 1,
+                                KensaItemCd = item.KensaItemCd,
+                                ResultVal = CIUtil.ToHalfsize(item.ResultVal),
+                                ResultType = item.ResultType,
+                                AbnormalKbn = item.AbnormalKbn,
+                                CmtCd1 = item.CmtCd1,
+                                CmtCd2 = item.CmtCd2,
+                                CreateId = userId,
+                                UpdateId = userId,
+                                SeqParentNo = 0,
+                                CreateMachine = CIUtil.GetComputerName(),
+                                UpdateMachine = CIUtil.GetComputerName(),
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                IsDeleted = 0,
+                            });
+
+                            TrackingDataContext.SaveChanges();
+                            long seqParentNo = kensaInfDetailParent.Entity.SeqNo;
+
+                            // Create children kensaInfDetail
+                            foreach (var child in kensaInfDetails.Where(x => x.SeqNo == 0 && x.UniqIdParent.Equals(item.UniqId)))
                             {
                                 TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
                                 {
                                     HpId = hpId,
-                                    PtId = item.PtId,
+                                    PtId = child.PtId,
                                     IraiCd = iraiCdId,
-                                    IraiDate = item.IraiDate,
-                                    RaiinNo = item.RaiinNo,
-                                    KensaItemCd = item.KensaItemCd,
+                                    IraiDate = child.IraiDate,
+                                    RaiinNo = child.RaiinNo == 0 ? maxRaiinNo + 1 : item.RaiinNo,
+                                    KensaItemCd = child.KensaItemCd,
                                     ResultVal = CIUtil.ToHalfsize(item.ResultVal),
-                                    ResultType = item.ResultType,
-                                    AbnormalKbn = item.AbnormalKbn,
-                                    CmtCd1 = item.CmtCd1,
-                                    CmtCd2 = item.CmtCd2,
+                                    ResultType = child.ResultType,
+                                    AbnormalKbn = child.AbnormalKbn,
+                                    CmtCd1 = child.CmtCd1,
+                                    CmtCd2 = child.CmtCd2,
                                     CreateId = userId,
                                     UpdateId = userId,
-                                    CreateMachine = CIUtil.GetComputerName(),
+                                    SeqParentNo = seqParentNo,
                                     UpdateMachine = CIUtil.GetComputerName(),
                                     CreateDate = CIUtil.GetJapanDateTimeNow(),
                                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                                    IsDeleted = 0,
+                                    IsDeleted = DeleteTypes.None,
                                 });
                             }
+                        }
 
-                            // Update kensaInfDetail
-                            else
+
+
+                        // Update kensaInfDetail
+
+                        foreach (var item in kensaInfDetails.Where(x => x.SeqNo != 0))
+                        {
+                            var kensaInfDetail = TrackingDataContext.KensaInfDetails.FirstOrDefault(x => x.HpId == hpId && x.PtId == item.PtId && x.IraiCd == item.IraiCd && x.SeqNo == item.SeqNo);
+                            if (kensaInfDetail == null)
                             {
-                                var kensaInfDetail = TrackingDataContext.KensaInfDetails.FirstOrDefault(x => x.HpId == hpId && x.PtId == item.PtId && x.IraiCd == item.IraiCd && x.SeqNo == item.SeqNo);
-                                if (kensaInfDetail == null)
-                                {
-                                    transaction.Rollback();
-                                }
-
-                                kensaInfDetail.ResultVal = item.ResultVal;
-                                kensaInfDetail.ResultType = item.ResultType;
-                                kensaInfDetail.AbnormalKbn = item.AbnormalKbn;
-                                kensaInfDetail.CmtCd1 = item.CmtCd1;
-                                kensaInfDetail.CmtCd2 = item.CmtCd2;
-                                kensaInfDetail.IsDeleted = item.IsDeleted;
-                                kensaInfDetail.UpdateId = userId;
-                                kensaInfDetail.UpdateMachine = CIUtil.GetComputerName();
-                                kensaInfDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
-
+                                transaction.Rollback();
                             }
+
+                            // Delete children
+                            if (item.IsDeleted == DeleteTypes.Deleted && kensaInfDetail.SeqParentNo == 0)
+                            {
+                                var childrens = TrackingDataContext.KensaInfDetails.Where(x => x.SeqParentNo == kensaInfDetail.SeqNo);
+                                foreach (var child in childrens)
+                                {
+                                    child.IsDeleted = DeleteTypes.Deleted;
+                                    child.UpdateId = userId;
+                                    child.UpdateMachine = CIUtil.GetComputerName();
+                                }
+                            }
+
+                            kensaInfDetail.ResultVal = item.ResultVal;
+                            kensaInfDetail.ResultType = item.ResultType;
+                            kensaInfDetail.AbnormalKbn = item.AbnormalKbn;
+                            kensaInfDetail.CmtCd1 = item.CmtCd1;
+                            kensaInfDetail.CmtCd2 = item.CmtCd2;
+                            kensaInfDetail.IsDeleted = item.IsDeleted;
+                            kensaInfDetail.UpdateId = userId;
+                            kensaInfDetail.UpdateMachine = CIUtil.GetComputerName();
                         }
 
                         TrackingDataContext.SaveChanges();
                         transaction.Commit();
                         successed = true;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
                     }
@@ -400,6 +441,7 @@ namespace Infrastructure.Repositories
                             t1.RaiinNo,
                             t1.IraiDate,
                             t1.SeqNo,
+                            t1.SeqParentNo,
                             t2.KensaName ?? string.Empty,
                             t2.KensaKana ?? string.Empty,
                             t2.SortNo,
@@ -564,6 +606,56 @@ namespace Infrastructure.Repositories
 
             var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData, totalCol);
             return result;
+        }
+
+        public List<ListKensaInfDetailItemModel> GetKensaInfDetailByIraiCd(int hpId, int iraiCd)
+        {
+            var data = (from t1 in NoTrackingDataContext.KensaInfDetails.Where(x => x.IraiCd == iraiCd && x.HpId == hpId)
+                        join t2 in NoTrackingDataContext.KensaMsts
+                         on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
+                        join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
+                        join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
+                        join t5 in NoTrackingDataContext.KensaCmtMsts
+                             on t1.CmtCd1 equals t5.CMT into leftJoinT5
+                        from t5 in leftJoinT5.DefaultIfEmpty()
+                        join t6 in NoTrackingDataContext.KensaCmtMsts
+                             on t1.CmtCd2 equals t6.CMT into leftJoinT6
+                        from t6 in leftJoinT6.DefaultIfEmpty()
+                        select new ListKensaInfDetailItemModel
+                        (
+                            t1.PtId,
+                            t1.IraiCd,
+                            t1.RaiinNo,
+                            t1.IraiDate,
+                            t1.SeqNo,
+                            t1.SeqParentNo,
+                            t2.KensaName ?? string.Empty,
+                            t2.KensaKana ?? string.Empty,
+                            t2.SortNo,
+                            t1.KensaItemCd ?? string.Empty,
+                            t1.ResultVal ?? string.Empty,
+                            t1.ResultType ?? string.Empty,
+                            t1.AbnormalKbn ?? string.Empty,
+                            t1.CmtCd1 ?? string.Empty,
+                            t1.CmtCd2 ?? string.Empty,
+                            (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
+                            (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
+                            t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
+                            t4.Sex == 1 ? t2.MaleStdLow ?? string.Empty : t2.FemaleStdLow ?? string.Empty,
+                            t4.Sex == 1 ? t2.MaleStdHigh ?? string.Empty : t2.FemaleStdHigh ?? string.Empty,
+                            t2.MaleStd ?? string.Empty,
+                            t2.FemaleStd ?? string.Empty,
+                            t2.Unit ?? string.Empty,
+                            t3.Nyubi ?? string.Empty,
+                            t3.Yoketu ?? string.Empty,
+                            t3.Bilirubin ?? string.Empty,
+                            t3.SikyuKbn,
+                            t3.TosekiKbn,
+                            t3.InoutKbn,
+                            t3.Status,
+                            DeleteTypes.None
+                        )).ToList();
+            return data;
         }
 
         public void ReleaseResource()

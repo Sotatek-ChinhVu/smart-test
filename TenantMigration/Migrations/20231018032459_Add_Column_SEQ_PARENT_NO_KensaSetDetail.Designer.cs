@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231018032459_Add_Column_SEQ_PARENT_NO_KensaSetDetail")]
+    partial class AddColumnSEQPARENTNOKensaSetDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27216,10 +27219,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("SEQ_NO");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SeqNo"));
-
-                    b.Property<long>("SeqParentNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("SEQ_PARENT_NO");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")

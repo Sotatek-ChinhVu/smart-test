@@ -767,6 +767,7 @@ using UseCase.KensaHistory.UpdateKensaInfDetail;
 using UseCase.Logger.WriteListLog;
 using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.MainMenu.ImportKensaIrai;
+using UseCase.KensaHistory.GetListKensaCmtMst.GetKensaInfDetailByIraiCd;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1810,6 +1811,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListKensaCmtMstInputData, GetListKensaCmtMstInteractor>();
             busBuilder.RegisterUseCase<UpdateKensaInfDetailInputData, UpdateKensaInfDetailInteractor>();
             busBuilder.RegisterUseCase<GetListKensaInfDetailInputData, GetListKensaInfDetailInteractor>();
+            busBuilder.RegisterUseCase<GetKensaInfDetailByIraiCdInputData, GetKensaInfDetailByIraiCdInteractor>();
 
 
             //ListSetGeneration
