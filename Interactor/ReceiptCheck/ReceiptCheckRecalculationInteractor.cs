@@ -19,6 +19,7 @@ using Helper.Extension;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using UseCase.MedicalExamination.Calculate;
@@ -49,6 +50,7 @@ namespace Interactor.ReceiptCheck
         private readonly IRealtimeOrderErrorFinder _realtimeOrderErrorFinder;
         private readonly ITenantProvider _tenantProvider;
         private readonly IReceiptRepository _receiptRepository;
+        private readonly ILoggingHandler _loggingHandler;
         private IMessenger? _messenger;
 
         private int seikyuYm;
@@ -76,6 +78,7 @@ namespace Interactor.ReceiptCheck
             _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
             _tenantProvider = tenantProvider;
             _receiptRepository = receiptRepository;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public ReceiptCheckRecalculationOutputData Handle(ReceiptCheckRecalculationInputData inputData)
@@ -123,6 +126,11 @@ namespace Interactor.ReceiptCheck
                 _receiptRepository.UpdateReceStatus(inputData.ReceStatus, inputData.HpId, inputData.UserId);
 
                 return new ReceiptCheckRecalculationOutputData(true);
+            }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
             }
             finally
             {
