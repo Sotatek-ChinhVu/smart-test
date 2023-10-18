@@ -179,6 +179,7 @@
         public const string GetPtInfModelsByRefNo = "GetPtInfModelsByRefNo";
         public const string GetVisitTimesManagementModels = "GetVisitTimesManagementModels";
         public const string UpdateVisitTimesManagement = "UpdateVisitTimesManagement";
+        public const string UpdateVisitTimesManagementNeedSave = "UpdateVisitTimesManagementNeedSave";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -353,6 +354,7 @@
         public const string GetListSokatuMst = "GetListSokatuMst";
         public const string CheckExistsReceInf = "CheckExistsReceInf";
         public const string CheckExistSyobyoKeika = "CheckExistSyobyoKeika";
+        public const string GetNextUketukeNoBySetting = "GetNextUketukeNoBySetting";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
