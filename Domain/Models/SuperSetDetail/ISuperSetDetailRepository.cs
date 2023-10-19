@@ -23,4 +23,6 @@ public interface ISuperSetDetailRepository : IRepositoryBase
     List<ConversionItemInfModel> GetConversionItem(int hpId, string itemCd, int sinDate);
 
     bool SaveConversionItemInf(int hpId, int userId, string conversionItemCd, string sourceItemCd);
+
+    List<OdrSetNameModel> GetOdrSetName(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, int timeExpired, string itemName);
 }

@@ -920,7 +920,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
     private string ConvertToLinkImage(string FileName)
     {
-        string link = "src=\string.Empty + _options.BaseAccessUrl + " / " + FileName + "\string.Empty;
+        string link = "src=\"" + _options.BaseAccessUrl + "/" + FileName + "\"";
         return link;
     }
     #endregion
@@ -1453,19 +1453,21 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var listSetKbn = GetListSetKbn(checkBoxStatus);
 
         if (listSetKbn.Count <= 0 || !CheckTargetSetOdrInfDetail(checkBoxStatus))
-            return new List<OdrSetNameModel>();
+        {
+            return new();
+        }
 
         // Input expired time and check to free comment only => just ignore all free comment
         if (CheckFreeCommentOnly(checkBoxStatus) && timeExpired != 0)
         {
-            return new List<OdrSetNameModel>();
+            return new();
         }
 
         var setMstRepo = NoTrackingDataContext.SetMsts
-            .Where(item => item.HpId == hpId
-                           && item.IsDeleted == 0
-                           && item.GenerationId == generationId
-                           && listSetKbn.Contains(item.SetKbn));
+                        .Where(item => item.HpId == hpId
+                                       && item.IsDeleted == 0
+                                       && item.GenerationId == generationId
+                                       && listSetKbn.Contains(item.SetKbn));
 
         var setOdrInfRepo = NoTrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId && item.IsDeleted == 0);
 
@@ -1474,7 +1476,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         {
             var listDetailFreeCommentOnly = GetOdrSetNameFreeComment(hpId, checkBoxStatus, generationId, itemName, timeExpired == 0);
 
-            var listSetMstFreeComment = listDetailFreeCommentOnly.Select(item => item.SetMst).Distinct();
+            var listSetMstFreeComment = listDetailFreeCommentOnly.DistinctBy(item => item.SetCd).ToList();
 
             var querySetFreeComment = (from setMstDetail in listSetMstFreeComment
                                        from setMst in setMstRepo.Where(item =>
@@ -1494,16 +1496,16 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             var listSetNameFreeComment = querySetFreeComment.Distinct()
                                         .Select(item => ConvertToOdrSetNameModel(item.SetMst, item.SetOdrInf, null, null, 0));
             return listSetNameFreeComment
-                .Union(listDetailFreeCommentOnly)
-                .OrderBy(item => item.SetKbn)
-                .ThenBy(item => item.SetKbnEdaNo)
-                .ThenBy(item => item.Level1)
-                .ThenBy(item => item.Level2)
-                .ThenBy(item => item.Level3)
-                .ThenBy(item => item.SetCd)
-                .ThenBy(item => item.SortNo)
-                .ThenBy(item => item.RowNo)
-                .ToList();
+                   .Union(listDetailFreeCommentOnly)
+                   .OrderBy(item => item.SetKbn)
+                   .ThenBy(item => item.SetKbnEdaNo)
+                   .ThenBy(item => item.Level1)
+                   .ThenBy(item => item.Level2)
+                   .ThenBy(item => item.Level3)
+                   .ThenBy(item => item.SetCd)
+                   .ThenBy(item => item.SortNo)
+                   .ThenBy(item => item.RowNo)
+                   .ToList();
         }
 
         // For all other case
@@ -1523,7 +1525,10 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         }
 
         var tenMstRepo = NoTrackingDataContext.TenMsts
-                .Where(item => item.HpId == hpId && item.StartDate <= timeExpired && item.EndDate >= timeExpired && item.IsDeleted == DeleteTypes.None);
+                         .Where(item => item.HpId == hpId
+                                        && item.StartDate <= timeExpired
+                                        && item.EndDate >= timeExpired
+                                        && item.IsDeleted == DeleteTypes.None);
 
         var detailResult = (from setMst in setMstRepo
                             join setOdrInf in setOdrInfRepo on
@@ -1546,11 +1551,13 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var listItemCd = detailResult.Select(item => item.SetOdrInfDetail.ItemCd).ToList();
 
         var tenMstRepoResult = NoTrackingDataContext.TenMsts
-           .Where(item => item.HpId == hpId && listItemCd.Contains(item.ItemCd) && item.IsDeleted == DeleteTypes.None)
-           .OrderByDescending(item => item.EndDate)
-           .GroupBy(item => item.ItemCd)
-           .Select(item => item.First())
-           .ToList();
+                               .Where(item => item.HpId == hpId
+                                              && listItemCd.Contains(item.ItemCd)
+                                              && item.IsDeleted == DeleteTypes.None)
+                               .OrderByDescending(item => item.EndDate)
+                               .GroupBy(item => item.ItemCd)
+                               .Select(item => item.First())
+                               .ToList();
 
         var listDetail = from detail in detailResult
                          join tenMst in tenMstRepoResult on
@@ -1599,31 +1606,30 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         // Check conditions
         if (checkBoxStatus.JihiChecked)
         {
-            var jihi = listDetail.Where(item => item.SetOdrInfDetail.ItemCd.StartsWith("J"));
+            var jihi = listDetail.Where(item => item.ItemCd.StartsWith("J"));
             listDetailResult = jihi;
         }
         if (checkBoxStatus.TokuChecked)
         {
-            var toku = listDetail.Where(item => item.TenMst != null && item.TenMst.MasterSbt == "T");
+            var toku = listDetail.Where(item => item.MasterSbt == "T");
             listDetailResult = listDetailResult == null ? toku : listDetailResult.Union(toku);
         }
         if (checkBoxStatus.YohoChecked)
         {
-            var yoho = listDetail.Where(item => item.TenMst != null && item.TenMst.YohoKbn > 0);
+            var yoho = listDetail.Where(item => item.YohoKbn > 0);
             listDetailResult = listDetailResult == null ? yoho : listDetailResult.Union(yoho);
         }
         if (checkBoxStatus.BuiChecked)
         {
-            var bui = listDetail.Where(item => item.TenMst != null && item.TenMst.BuiKbn > 0);
+            var bui = listDetail.Where(item => item.BuiKbn > 0);
             listDetailResult = listDetailResult == null ? bui : listDetailResult.Union(bui);
         }
         if (checkBoxStatus.KihonChecked)
         {
-            var Kihon = listDetail.Where(item =>
-                                        !item.ItemCd.StartsWith("J") &&
-                                        !(item.TenMst != null && item.TenMst.MasterSbt == "T") &&
-                                        !(item.TenMst != null && item.TenMst.YohoKbn > 0) &&
-                                        !(item.TenMst != null && item.TenMst.BuiKbn > 0));
+            var Kihon = listDetail.Where(item => !item.ItemCd.StartsWith("J")
+                                                 && (item.MasterSbt != "T")
+                                                 && (item.YohoKbn <= 0)
+                                                 && (item.BuiKbn <= 0));
             listDetailResult = listDetailResult == null ? Kihon : listDetailResult.Union(Kihon);
         }
 
@@ -1635,7 +1641,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
         var listDetailFreeComment = GetOdrSetNameFreeComment(hpId, checkBoxStatus, generationId, itemName, isQueryAll);
 
-        var listSetMst = listDetailResult.Union(listDetailFreeComment).Select(item => item.SetMst).Distinct();
+        var listSetMst = listDetailResult.Union(listDetailFreeComment).DistinctBy(item => item.SetCd).ToList();
 
         var querySet = (from setMstDetail in listSetMst
                         from setMst in setMstRepo.Where(item =>
@@ -1653,21 +1659,22 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                         .ToList();
 
         var listSetName = querySet
-            .Distinct()
-            .Select(item => ConvertToOdrSetNameModel(item.SetMst, item.SetOdrInf, null, null, 0));
+                          .Distinct()
+                          .Select(item => ConvertToOdrSetNameModel(item.SetMst, item.SetOdrInf, null, null, 0));
 
-        return listSetName
-                .Union(listDetailResult)
-                .Union(listDetailFreeComment)
-                .OrderBy(item => item.SetKbn)
-                .ThenBy(item => item.SetKbnEdaNo)
-                .ThenBy(item => item.Level1)
-                .ThenBy(item => item.Level2)
-                .ThenBy(item => item.Level3)
-                .ThenBy(item => item.SetCd)
-                .ThenBy(item => item.SortNo)
-                .ThenBy(item => item.RowNo)
-                .ToList();
+        var result = listSetName
+                    .Union(listDetailResult)
+                    .Union(listDetailFreeComment)
+                    .OrderBy(item => item.SetKbn)
+                    .ThenBy(item => item.SetKbnEdaNo)
+                    .ThenBy(item => item.Level1)
+                    .ThenBy(item => item.Level2)
+                    .ThenBy(item => item.Level3)
+                    .ThenBy(item => item.SetCd)
+                    .ThenBy(item => item.SortNo)
+                    .ThenBy(item => item.RowNo)
+                    .ToList();
+        return result;
     }
 
     private List<OdrSetNameModel> GetOdrSetNameFreeComment(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, string itemName, bool isQueryAll)
@@ -1758,7 +1765,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                tenMst?.StartDate ?? 0,
                lastEndDate > 0 ? lastEndDate : tenMst?.EndDate ?? 99999999,
                setOdrInfDetail?.YohoKbn ?? 0,
-               setOdrInf?.OdrKouiKbn ?? 0
+               setOdrInf?.OdrKouiKbn ?? 0,
+               tenMst?.BuiKbn ?? 0
             );
     }
 
@@ -1769,39 +1777,39 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         {
             listSetKbn.Add(SetNameConst.SetKbn1);
         }
-        else if (checkBoxStatus.SetKbnChecked2)
+        if (checkBoxStatus.SetKbnChecked2)
         {
             listSetKbn.Add(SetNameConst.SetKbn2);
         }
-        else if (checkBoxStatus.SetKbnChecked3)
+        if (checkBoxStatus.SetKbnChecked3)
         {
             listSetKbn.Add(SetNameConst.SetKbn3);
         }
-        else if (checkBoxStatus.SetKbnChecked4)
+        if (checkBoxStatus.SetKbnChecked4)
         {
             listSetKbn.Add(SetNameConst.SetKbn4);
         }
-        else if (checkBoxStatus.SetKbnChecked5)
+        if (checkBoxStatus.SetKbnChecked5)
         {
             listSetKbn.Add(SetNameConst.SetKbn5);
         }
-        else if (checkBoxStatus.SetKbnChecked6)
+        if (checkBoxStatus.SetKbnChecked6)
         {
             listSetKbn.Add(SetNameConst.SetKbn6);
         }
-        else if (checkBoxStatus.SetKbnChecked7)
+        if (checkBoxStatus.SetKbnChecked7)
         {
             listSetKbn.Add(SetNameConst.SetKbn7);
         }
-        else if (checkBoxStatus.SetKbnChecked8)
+        if (checkBoxStatus.SetKbnChecked8)
         {
             listSetKbn.Add(SetNameConst.SetKbn8);
         }
-        else if (checkBoxStatus.SetKbnChecked9)
+        if (checkBoxStatus.SetKbnChecked9)
         {
             listSetKbn.Add(SetNameConst.SetKbn9);
         }
-        else if (checkBoxStatus.SetKbnChecked10)
+        if (checkBoxStatus.SetKbnChecked10)
         {
             listSetKbn.Add(SetNameConst.SetKbn10);
         }

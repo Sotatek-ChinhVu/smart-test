@@ -770,6 +770,7 @@ using UseCase.SuperSetDetail.GetConversion;
 using UseCase.MainMenu.ImportKensaIrai;
 using UseCase.SuperSetDetail.SaveConversion;
 using UseCase.MstItem.GetRenkeiTiming;
+using UseCase.MainMenu.GetOdrSetName;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1312,6 +1313,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSetMstToolTipInputData, GetSetMstToolTipInteractor>();
             busBuilder.RegisterUseCase<GetConversionInputData, GetConversionInteractor>();
             busBuilder.RegisterUseCase<SaveConversionInputData, SaveConversionInteractor>();
+            busBuilder.RegisterUseCase<GetOdrSetNameInputData, GetOdrSetNameInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();

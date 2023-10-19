@@ -1,43 +1,45 @@
-﻿namespace Domain.Models.SuperSetDetail;
+﻿using Domain.Models.SuperSetDetail;
 
-public class OdrSetNameModel
+namespace EmrCloudApi.Responses.SetMst.Dto;
+
+public class OdrSetNameDto
 {
-    public OdrSetNameModel(int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int rowNo, int sortNo, string rpName, string itemCd, string itemName, string cmtName, string cmtOpt, double quantity, string unitName, int unitSbt, double odrTermVal, int kohatuKbn, string ipnCd, string ipnName, int drugKbn, int sinKouiKbn, int syohoKbn, int syohoLimitKbn, double ten, int handanGrpKbn, string masterSbt, int startDate, int endDate, int yohoKbn, int odrKouiKbn, int buiKbn)
+    public OdrSetNameDto(OdrSetNameModel model)
     {
-        SetCd = setCd;
-        SetKbn = setKbn;
-        SetKbnEdaNo = setKbnEdaNo;
-        GenerationId = generationId;
-        Level1 = level1;
-        Level2 = level2;
-        Level3 = level3;
-        SetName = setName;
-        RowNo = rowNo;
-        SortNo = sortNo;
-        RpName = rpName;
-        ItemCd = itemCd;
-        ItemName = itemName;
-        CmtName = cmtName;
-        CmtOpt = cmtOpt;
-        Quantity = quantity;
-        UnitName = unitName;
-        UnitSbt = unitSbt;
-        OdrTermVal = odrTermVal;
-        KohatuKbn = kohatuKbn;
-        IpnCd = ipnCd;
-        IpnName = ipnName;
-        DrugKbn = drugKbn;
-        SinKouiKbn = sinKouiKbn;
-        SyohoKbn = syohoKbn;
-        SyohoLimitKbn = syohoLimitKbn;
-        Ten = ten;
-        HandanGrpKbn = handanGrpKbn;
-        MasterSbt = masterSbt;
-        StartDate = startDate;
-        EndDate = endDate;
-        YohoKbn = yohoKbn;
-        OdrKouiKbn = odrKouiKbn;
-        BuiKbn = buiKbn;
+        SetCd = model.SetCd;
+        SetKbn = model.SetKbn;
+        SetKbnEdaNo = model.SetKbnEdaNo;
+        GenerationId = model.GenerationId;
+        Level1 = model.Level1;
+        Level2 = model.Level2;
+        Level3 = model.Level3;
+        SetName = model.SetName;
+        RowNo = model.RowNo;
+        SortNo = model.SortNo;
+        RpName = model.RpName;
+        ItemCd = model.ItemCd;
+        ItemName = model.ItemName;
+        CmtName = model.CmtName;
+        CmtOpt = model.CmtOpt;
+        Quantity = model.Quantity;
+        UnitName = model.UnitName;
+        UnitSbt = model.UnitSbt;
+        OdrTermVal = model.OdrTermVal;
+        KohatuKbn = model.KohatuKbn;
+        IpnCd = model.IpnCd;
+        IpnName = model.IpnName;
+        DrugKbn = model.DrugKbn;
+        SinKouiKbn = model.SinKouiKbn;
+        SyohoKbn = model.SyohoKbn;
+        SyohoLimitKbn = model.SyohoLimitKbn;
+        Ten = model.Ten;
+        HandanGrpKbn = model.HandanGrpKbn;
+        MasterSbt = model.MasterSbt;
+        StartDate = model.StartDate;
+        EndDate = model.EndDate;
+        YohoKbn = model.YohoKbn;
+        OdrKouiKbn = model.OdrKouiKbn;
+        BuiKbn = model.BuiKbn;
     }
 
     public int SetCd { get; private set; }
