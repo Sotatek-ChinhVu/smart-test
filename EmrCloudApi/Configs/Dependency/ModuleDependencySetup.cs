@@ -823,7 +823,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IMessenger, Messenger>();
             services.AddScoped<ILoggingHandler, LoggingHandler>();
 
-            services.AddScoped<ISystemStartDbService, SystemStartDbService>();
+            //services.AddScoped<ISystemStartDbService, SystemStartDbService>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
@@ -1837,7 +1837,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveSetNameMntInputData, SaveSetNameMntInteractor>();
 
             //SystemStartDb 
-            busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
+            //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
