@@ -65,6 +65,7 @@
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
+        public const string GetListKensaMst = "GetListKensaMst";
         public const string GetListYohoSetMstModelByUserID = "GetListYohoSetMstModelByUserID";
         public const string GetRenkeiConf = "GetRenkeiConf";
         public const string SaveRenkei = "SaveRenkei";
@@ -81,7 +82,6 @@
         public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
         public const string GetTenMstByCode = "GetTenMstByCode";
         public const string GetByomeiByCode = "GetByomeiByCode";
-        public const string GetListKensaMst = "GetListKensaMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -179,6 +179,7 @@
         public const string GetPtInfModelsByRefNo = "GetPtInfModelsByRefNo";
         public const string GetVisitTimesManagementModels = "GetVisitTimesManagementModels";
         public const string UpdateVisitTimesManagement = "UpdateVisitTimesManagement";
+        public const string UpdateVisitTimesManagementNeedSave = "UpdateVisitTimesManagementNeedSave";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -353,6 +354,7 @@
         public const string GetListSokatuMst = "GetListSokatuMst";
         public const string CheckExistsReceInf = "CheckExistsReceInf";
         public const string CheckExistSyobyoKeika = "CheckExistSyobyoKeika";
+        public const string GetNextUketukeNoBySetting = "GetNextUketukeNoBySetting";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -426,7 +428,9 @@
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
         public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
-        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut";
+        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut"; 
+        public const string GetLockInf = "GetLockInf"; 
+        public const string Unlock = "Unlock";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
@@ -452,6 +456,7 @@
         public const string GetStaCsvMst = "GetStaCsvMst";
         public const string KensaIraiReport = "KensaIraiReport";
         public const string SaveStaCsvMst = "SaveStaCsvMst";
+        public const string ImportKensaIrai = "ImportKensaIrai";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
@@ -511,14 +516,17 @@
         public const string GetListKensaSetDetail = "GetListKensaSetDetail";
         public const string GetListKensaCmtMst = "GetListKensaCmtMst";
         public const string UpdateKensaInfDetail = "UpdateKensaInfDetail";
+        public const string GetListKensaInfDetail = "GetListKensaInfDetail";
 
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";
         public const string SaveCompareTenMst = "SaveCompareTenMst";
         public const string SaveSetNameMnt = "SaveSetNameMnt";
         public const string GetColumnSettingByTableNameList = "GetColumnSettingByTableNameList";
+        public const string GetRenkeiTiming = "GetRenkeiTiming";
 
         //log
         public const string WriteLog = "WriteLog";
+        public const string WriteListLog = "WriteListLog";
     }
 }

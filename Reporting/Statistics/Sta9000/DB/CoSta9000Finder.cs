@@ -5,6 +5,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Reporting.CommonMasters.Config;
 using Reporting.CommonMasters.Services;
 using Reporting.Statistics.DB;
@@ -1227,13 +1228,13 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             DateTime startRegDate;
             if (DateTime.TryParseExact(ptConf.StartRegDate.ToString(), "yyyyMMdd", null, DateTimeStyles.None, out startRegDate))
             {
-                ptInfs = ptInfs.Where(p => p.CreateDate >= startRegDate);
+                ptInfs = ptInfs.Where(p => p.CreateDate >= CIUtil.SetKindUtc(startRegDate));
             }
             DateTime endRegDate;
             if (DateTime.TryParseExact(ptConf.EndRegDate.ToString(), "yyyyMMdd", null, DateTimeStyles.None, out endRegDate))
             {
                 endRegDate = endRegDate.AddDays(1);
-                ptInfs = ptInfs.Where(p => p.CreateDate < endRegDate);
+                ptInfs = ptInfs.Where(p => p.CreateDate < CIUtil.SetKindUtc(endRegDate));
             }
 
             //患者グループ
@@ -1627,15 +1628,16 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     searchWords.AddRange(values);
                 }
 
+                var keywordConditions = searchWords.Select(keyword => $"%{keyword}%").Distinct().ToList();
                 if (sinConf?.WordOpt == 0)
                 {
                     //or条件
-                    odrJoins = odrJoins.Where(p => searchWords.Any(key => p.ItemName.Contains(key)));
+                    odrJoins = odrJoins.Where(item => keywordConditions.Any(condition => EF.Functions.Like(item.ItemName ?? string.Empty, condition)));
                 }
                 else
                 {
                     //and条件
-                    odrJoins = odrJoins.Where(p => searchWords.All(key => p.ItemName.Contains(key)));
+                    odrJoins = odrJoins.Where(item => keywordConditions.All(condition => EF.Functions.Like(item.ItemName ?? string.Empty, condition)));
                 }
             }
             //検索項目
@@ -1739,7 +1741,11 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             if (karteConf?.WordOpt == 0)
             {
                 //or条件
-                karteInfs = karteConf.SearchWords?.Count >= 1 ? karteInfs.Where(r => karteConf.SearchWords.Any(key => (r.Text ?? string.Empty).Contains(key))) : karteInfs;
+
+                var keywordConditions = karteConf.SearchWords.Select(keyword => $"%{keyword}%").Distinct().ToList();
+                karteInfs = karteConf.SearchWords?.Count >= 1 ?
+                                     karteInfs.Where(item => keywordConditions.Any(condition => EF.Functions.Like(item.Text ?? string.Empty, condition)))
+                            : karteInfs;
             }
             else
             {
@@ -2106,15 +2112,16 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     searchWords.AddRange(values);
                 }
 
+                var keywordConditions = searchWords.Select(keyword => $"%{keyword}%").Distinct().ToList();
                 if (byomeiConf.WordOpt == 0)
                 {
                     //or条件
-                    ptByomeis = ptByomeis.Where(p => searchWords.Any(key => p.Byomei.Contains(key)));
+                    ptByomeis = ptByomeis.Where(item => keywordConditions.Any(condition => EF.Functions.Like(item.Byomei ?? string.Empty, condition)));
                 }
                 else
                 {
                     //and条件
-                    ptByomeis = ptByomeis.Where(p => searchWords.All(key => p.Byomei.Contains(key)));
+                    ptByomeis = ptByomeis.Where(item => keywordConditions.All(condition => EF.Functions.Like(item.Byomei ?? string.Empty, condition)));
                 }
             }
             //検索病名

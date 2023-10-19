@@ -12,12 +12,15 @@ namespace UseCase.YohoSetMst.GetByItemCd
 
         public int StartDate { get; private set; }
 
-        public GetYohoMstByItemCdInputData(int hpId, int userId, string itemCd, int startDate)
+        public int SinDate { get; private set; }
+
+        public GetYohoMstByItemCdInputData(int hpId, int userId, string itemCd, int startDate, int sinDate)
         {
             HpId = hpId;
             UserId = userId;
             ItemCd = itemCd;
             StartDate = startDate;
+            SinDate = sinDate;
         }
     }
 }

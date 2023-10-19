@@ -19,6 +19,7 @@ using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
 using Helper.Extension;
 using Helper.Mapping;
+using Interactor.MstItem;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ContainerMasterUpdate;
 using UseCase.Core.Sync;
@@ -43,6 +44,7 @@ using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetListByomeiSetGenerationMst;
 using UseCase.MstItem.GetListDrugImage;
+using UseCase.MstItem.GetListResultKensaMst;
 using UseCase.MstItem.GetListKensaIjiSetting;
 using UseCase.MstItem.GetListSetGenerationMst;
 using UseCase.MstItem.GetListTenMstOrigin;
@@ -89,6 +91,7 @@ using UseCase.MstItem.UpdateYohoSetMst;
 using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
 using UseCase.MstItem.GetListResultKensaMst;
+using UseCase.MstItem.GetRenkeiTiming;
 
 namespace EmrCloudApi.Controller
 {
@@ -899,7 +902,7 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<GetListKensaMstResponse>>(presenter.Result);
         }
-        
+
         [HttpGet(ApiPath.GetListYohoSetMstModelByUserID)]
         public ActionResult<Response<GetListYohoSetMstModelByUserIDResponse>> GetListYohoSetMstModelByUserID([FromQuery] GetListYohoSetMstModelByUserIDRequest request)
         {
@@ -1054,6 +1057,16 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveSetNameMntPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveSetNameMntResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetRenkeiTiming)]
+        public ActionResult<Response<GetRenkeiTimingResponse>> GetRenkeiTiming([FromQuery] GetRenkeiTimingRequest request)
+        {
+            var input = new GetRenkeiTimingInputData(HpId, request.RenkeiId);
+            var output = _bus.Handle(input);
+            var presenter = new GetRenkeiTimingPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetRenkeiTimingResponse>>(presenter.Result);
         }
 
         private List<SetNameMntModel> ConvertToSetNameMntModelList(SaveSetNameMntRequest request)

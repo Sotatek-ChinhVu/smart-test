@@ -308,8 +308,8 @@ public class CoSta3060Finder : RepositoryBase, ICoSta3060Finder
             Task taskList6 = Task.Factory.StartNew(() => ptHokenInfList = ptHokenInfs.Where(item => ptIdList.Contains(item.PtId)
                                                                                                     && hokenIdList.Contains(item.HokenId)).ToList());
 
-            Task taskList7 = Task.Factory.StartNew(() => kaMstList = _tenantKaMst.KaMsts.Where(item => kaIdList.Contains(item.KaId)).ToList());
-            Task taskList8 = Task.Factory.StartNew(() => userMstList = _tenantUserMst.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None).Where(item => tantoIdList.Contains(item.UserId)).ToList());
+            Task taskList7 = Task.Factory.StartNew(() => kaMstList = _tenantKaMst.KaMsts.Where(item => item.HpId == hpId && kaIdList.Contains(item.KaId)).ToList());
+            Task taskList8 = Task.Factory.StartNew(() => userMstList = _tenantUserMst.UserMsts.Where(item => item.HpId == hpId && item.IsDeleted == DeleteStatus.None && tantoIdList.Contains(item.UserId)).ToList());
             Task.WaitAll(taskList6, taskList7, taskList8);
 
             var joinQuery = (
