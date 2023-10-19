@@ -433,7 +433,7 @@ namespace Infrastructure.Repositories
 
             bool SortIraiDateAsc = true;
 
-            if (userConf.Where(x => x.GrpItemCd == 1).FirstOrDefault()?.Val == 1)
+            if (userConf.Where(x => x.GrpItemCd == 0).FirstOrDefault()?.Val == 1)
             {
                 SortIraiDateAsc = false;
             }
@@ -492,8 +492,8 @@ namespace Infrastructure.Repositories
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
                             t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
-                            t4.Sex == 1 ? t2.MaleStdLow ?? string.Empty : t2.FemaleStdLow ?? string.Empty,
-                            t4.Sex == 1 ? t2.MaleStdHigh ?? string.Empty : t2.FemaleStdHigh ?? string.Empty,
+                            t4.Sex == 1 ? GetValueLowHigSdt(t2.MaleStd).Item1 : GetValueLowHigSdt(t2.FemaleStd).Item1,
+                            t4.Sex == 1 ? GetValueLowHigSdt(t2.MaleStd).Item2 : GetValueLowHigSdt(t2.FemaleStd).Item2,
                             t2.MaleStd ?? string.Empty,
                             t2.FemaleStd ?? string.Empty,
                             t2.Unit ?? string.Empty,
@@ -515,10 +515,9 @@ namespace Infrastructure.Repositories
             // Sort data by user setting
             if (setId == 0)
             {
-
-                var confSort = userConf.Where(x => x.GrpItemCd == 2).FirstOrDefault();
+                var confSort = userConf.Where(x => x.GrpItemCd == 1).FirstOrDefault();
                 var sortType = confSort?.Val;
-                var sortCoulum = confSort?.Param;
+                var sortCoulum = confSort?.GrpItemEdaNo;
 
                 switch (sortCoulum)
                 {
@@ -532,7 +531,7 @@ namespace Infrastructure.Repositories
                             data = data.OrderBy(x => x.KensaItemCd);
                         }
                         break;
-                    case SortKensaMstColumn.KensaKna:
+                    case SortKensaMstColumn.KensaKana:
                         if (sortType == 1)
                         {
                             data = data.OrderByDescending(x => x.KensaKana);
@@ -646,6 +645,27 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        private static (string, string) GetValueLowHigSdt(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return (string.Empty, string.Empty);
+            }
+            else
+            {
+                string[] values = input.Split("-");
+
+                if (values.Length == 2)
+                {
+                    return (values[0], values[1]);
+                }
+                else
+                {
+                    return (string.Empty, string.Empty);
+                }
+            }
+        }
+
         public List<ListKensaInfDetailItemModel> GetKensaInfDetailByIraiCd(int hpId, int iraiCd)
         {
             var data = (from t1 in NoTrackingDataContext.KensaInfDetails.Where(x => x.IraiCd == iraiCd && x.HpId == hpId)
@@ -679,8 +699,8 @@ namespace Infrastructure.Repositories
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
                             t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
-                            t4.Sex == 1 ? t2.MaleStdLow ?? string.Empty : t2.FemaleStdLow ?? string.Empty,
-                            t4.Sex == 1 ? t2.MaleStdHigh ?? string.Empty : t2.FemaleStdHigh ?? string.Empty,
+                            t4.Sex == 1 ? GetValueLowHigSdt(t2.MaleStd).Item1 : GetValueLowHigSdt(t2.FemaleStd).Item1,
+                            t4.Sex == 1 ? GetValueLowHigSdt(t2.MaleStd).Item2 : GetValueLowHigSdt(t2.FemaleStd).Item2,
                             t2.MaleStd ?? string.Empty,
                             t2.FemaleStd ?? string.Empty,
                             t2.Unit ?? string.Empty,

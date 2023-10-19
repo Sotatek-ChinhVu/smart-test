@@ -2,7 +2,7 @@
 {
     public class KensaInfDetailUpdateModel
     {
-        public KensaInfDetailUpdateModel( string uniqId, string uniqIdParent, string kensaItemCd, long ptId, long iraiCd, int seqNo, int seqParentNo,  int iraiDate, long raiinNo, string maleStd, string feMaleStd, string unit, string resultVal, string resultType, string abnormalKbn, string cmtCd1, string cmtCd2, int isDeleted)
+        public KensaInfDetailUpdateModel(string uniqId, string uniqIdParent, string kensaItemCd, long ptId, long iraiCd, int seqNo, int seqParentNo, int iraiDate, long raiinNo, string maleStd, string feMaleStd, string unit, string resultVal, string resultType, string abnormalKbn, string cmtCd1, string cmtCd2, int isDeleted)
         {
             UniqId = uniqId;
             UniqIdParent = uniqIdParent;
@@ -24,8 +24,8 @@
             IsDeleted = isDeleted;
         }
 
-        public string UniqId { get; private set; }
-        public string UniqIdParent { get; private set; }
+        public string? UniqId { get; private set; }
+        public string? UniqIdParent { get; private set; }
         public string KensaItemCd { get; private set; }
         public long PtId { get; private set; }
         public long IraiCd { get; private set; }
