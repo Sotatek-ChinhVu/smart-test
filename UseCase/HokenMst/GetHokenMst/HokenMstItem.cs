@@ -2,20 +2,14 @@
 {
     public class HokenMstItem
     {
-        public HokenMstItem(string houbetu, string houbetuDisplayText, int hokenNumber, int hokenEdaNo)
+        public HokenMstItem(string selectedValueMaster, string displayTextMasterWithoutHokenNo)
         {
-            Houbetu = houbetu;
-            HoubetuDisplayText = houbetuDisplayText;
-            HokenNumber = hokenNumber;
-            HokenEdaNo = hokenEdaNo;
+            SelectedValueMaster = selectedValueMaster;
+            DisplayTextMasterWithoutHokenNo = displayTextMasterWithoutHokenNo;
         }
 
-        public string Houbetu { get; private set; }
+        public string SelectedValueMaster { get; private set; }
 
-        public string HoubetuDisplayText { get; private set; }
-
-        public int HokenNumber { get; private set; }
-
-        public int HokenEdaNo { get; private set; }
+        public string DisplayTextMasterWithoutHokenNo { get; private set; }
     }
 }
