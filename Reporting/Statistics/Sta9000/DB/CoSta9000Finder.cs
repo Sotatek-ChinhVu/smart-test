@@ -1628,16 +1628,15 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     searchWords.AddRange(values);
                 }
 
-                var keywordConditions = searchWords.Select(keyword => $"%{keyword}%").Distinct().ToList();
                 if (sinConf?.WordOpt == 0)
                 {
                     //or条件
-                    odrJoins = odrJoins.Where(item => keywordConditions.Any(condition => EF.Functions.Like(item.ItemName ?? string.Empty, condition)));            
+                    odrJoins = odrJoins.Where(p => searchWords.Any(key => p.ItemName.Contains(key)));
                 }
                 else
                 {
                     //and条件
-                    odrJoins = odrJoins.Where(item => keywordConditions.All(condition => EF.Functions.Like(item.ItemName ?? string.Empty, condition)));
+                    odrJoins = odrJoins.Where(p => searchWords.All(key => p.ItemName.Contains(key)));
                 }
             }
             //検索項目
