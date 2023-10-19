@@ -1,9 +1,11 @@
 ﻿using Entity.Logger;
+using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.IO;
 
 namespace Infrastructure.Logger
 {
@@ -63,8 +65,7 @@ namespace Infrastructure.Logger
                 RaiinNo = raiinNo,
                 SinDay = sinDay,
                 Desciption = description,
-                LogType = GetLogType(type),
-                LoginKey = _tenantProvider.GetLoginKeyFromHeader()
+                LogType = GetLogType(type)
             };
             return audit;
         }

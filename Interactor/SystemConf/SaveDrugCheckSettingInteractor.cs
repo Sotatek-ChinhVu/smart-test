@@ -1,6 +1,4 @@
 ﻿using Domain.Models.SystemConf;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using UseCase.SystemConf;
 using UseCase.SystemConf.SaveDrugCheckSetting;
 
@@ -9,14 +7,10 @@ namespace Interactor.SystemConf;
 public class SaveDrugCheckSettingInteractor : ISaveDrugCheckSettingInputPort
 {
     private readonly ISystemConfRepository _systemConfRepository;
-    private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
 
-    public SaveDrugCheckSettingInteractor(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository)
+    public SaveDrugCheckSettingInteractor(ISystemConfRepository systemConfRepository)
     {
         _systemConfRepository = systemConfRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveDrugCheckSettingOutputData Handle(SaveDrugCheckSettingInputData inputData)
@@ -34,15 +28,9 @@ public class SaveDrugCheckSettingInteractor : ISaveDrugCheckSettingInputPort
             }
             return new SaveDrugCheckSettingOutputData(SaveDrugCheckSettingStatus.Failed);
         }
-        catch (Exception ex)
-        {
-            _loggingHandler.WriteLogExceptionAsync(ex);
-            throw;
-        }
         finally
         {
             _systemConfRepository.ReleaseResource();
-            _loggingHandler.Dispose();
         }
     }
 

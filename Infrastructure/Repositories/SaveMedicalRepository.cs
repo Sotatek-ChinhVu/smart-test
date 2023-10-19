@@ -91,10 +91,10 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
                     transaction.Commit();
                     return true;
                 }
-                catch (Exception)
+                catch
                 {
                     transaction.Rollback();
-                    throw;
+                    return false;
                 }
             });
     }

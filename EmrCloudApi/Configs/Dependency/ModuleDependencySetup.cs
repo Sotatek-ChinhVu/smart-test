@@ -87,7 +87,6 @@ using EmrCloudApi.Services;
 using EventProcessor.Interfaces;
 using EventProcessor.Service;
 using Helper.Messaging;
-using Infrastructure.Common;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
@@ -403,10 +402,8 @@ using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInf.ConvertTextToRichText;
 using UseCase.KarteInf.GetList;
 using UseCase.KensaHistory.GetListKensaCmtMst;
-using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.KensaHistory.GetListKensaSet;
 using UseCase.KensaHistory.GetListKensaSetDetail;
-using UseCase.KensaHistory.UpdateKensaInfDetail;
 using UseCase.KensaHistory.UpdateKensaSet;
 using UseCase.KohiHokenMst.Get;
 using UseCase.ListSetMst.UpdateListSetMst;
@@ -419,7 +416,6 @@ using UseCase.Lock.GetLockInf;
 using UseCase.Lock.Remove;
 using UseCase.Lock.Unlock;
 using UseCase.Logger;
-using UseCase.Logger.WriteListLog;
 using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using UseCase.MainMenu.DeleteKensaInf;
 using UseCase.MainMenu.GetKensaCenterMstList;
@@ -428,7 +424,6 @@ using UseCase.MainMenu.GetKensaIrai;
 using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.MainMenu.GetStaCsvMstModel;
 using UseCase.MainMenu.GetStatisticMenu;
-using UseCase.MainMenu.ImportKensaIrai;
 using UseCase.MainMenu.KensaIraiReport;
 using UseCase.MainMenu.SaveStaCsvMst;
 using UseCase.MainMenu.SaveStatisticMenu;
@@ -501,7 +496,6 @@ using UseCase.MstItem.GetListYohoSetMstModelByUserID;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiConf;
 using UseCase.MstItem.GetRenkeiMst;
-using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
 using UseCase.MstItem.GetSetNameMnt;
@@ -793,11 +787,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
-            });
-
-            services.AddControllers(options =>
-            {
-                options.Filters.Add<GlobalExceptionFilters>();
             });
 
             SetupRepositories(services);

@@ -52,10 +52,9 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                         transaction.Commit();
                         success = true;
                     }
-                    catch (Exception)
+                    catch
                     {
                         transaction.Rollback();
-                        throw;
                     }
                 }
             });

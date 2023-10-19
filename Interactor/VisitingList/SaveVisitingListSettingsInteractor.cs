@@ -1,8 +1,6 @@
 ﻿using Domain.Models.SystemConf;
 using Domain.Models.VisitingListSetting;
 using Helper.Common;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using UseCase.VisitingList.SaveSettings;
 
 namespace Interactor.VisitingList;
@@ -10,14 +8,10 @@ namespace Interactor.VisitingList;
 public class SaveVisitingListSettingsInteractor : ISaveVisitingListSettingsInputPort
 {
     private readonly IVisitingListSettingRepository _visitingListSettingRepository;
-    private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
 
-    public SaveVisitingListSettingsInteractor(ITenantProvider tenantProvider, IVisitingListSettingRepository visitingListSettingRepository)
+    public SaveVisitingListSettingsInteractor(IVisitingListSettingRepository visitingListSettingRepository)
     {
         _visitingListSettingRepository = visitingListSettingRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveVisitingListSettingsOutputData Handle(SaveVisitingListSettingsInputData input)
@@ -33,15 +27,9 @@ public class SaveVisitingListSettingsInteractor : ISaveVisitingListSettingsInput
             _visitingListSettingRepository.Save(systemConfs, input.HpId, input.UserId);
             return new SaveVisitingListSettingsOutputData(SaveVisitingListSettingsStatus.Success);
         }
-        catch (Exception ex)
-        {
-            _loggingHandler.WriteLogExceptionAsync(ex);
-            throw;
-        }
         finally
         {
             _visitingListSettingRepository.ReleaseResource();
-            _loggingHandler.Dispose();
         }
     }
 }

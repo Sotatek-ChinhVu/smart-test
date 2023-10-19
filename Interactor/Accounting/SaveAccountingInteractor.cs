@@ -6,8 +6,6 @@ using Domain.Models.Reception;
 using Domain.Models.SystemConf;
 using Domain.Models.User;
 using Helper.Constants;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using UseCase.Accounting.SaveAccounting;
 using static Helper.Constants.UserConst;
 
@@ -22,10 +20,8 @@ namespace Interactor.Accounting
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IReceptionRepository _receptionRepository;
         private readonly IAuditLogRepository _auditLogRepository;
-        private readonly ILoggingHandler _loggingHandler;
-        private readonly ITenantProvider _tenantProvider;
 
-        public SaveAccountingInteractor(ITenantProvider tenantProvider, IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IAuditLogRepository auditLogRepository)
+        public SaveAccountingInteractor(IAccountingRepository accountingRepository, ISystemConfRepository systemConfRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IAuditLogRepository auditLogRepository)
         {
             _accountingRepository = accountingRepository;
             _systemConfRepository = systemConfRepository;
@@ -34,8 +30,6 @@ namespace Interactor.Accounting
             _patientInforRepository = patientInforRepository;
             _receptionRepository = receptionRepository;
             _auditLogRepository = auditLogRepository;
-            _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveAccountingOutputData Handle(SaveAccountingInputData inputData)
@@ -88,13 +82,10 @@ namespace Interactor.Accounting
                     var sameVisitList = _receptionRepository.GetListSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
                     return new SaveAccountingOutputData(SaveAccountingStatus.Success, receptionInfos, sameVisitList);
                 }
-                return new SaveAccountingOutputData(SaveAccountingStatus.Failed, new(), new());
-
-            }
-            catch (Exception ex)
-            {
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                else
+                {
+                    return new SaveAccountingOutputData(SaveAccountingStatus.Failed, new(), new());
+                }
             }
             finally
             {
@@ -103,7 +94,6 @@ namespace Interactor.Accounting
                 _userRepository.ReleaseResource();
                 _hpInfRepository.ReleaseResource();
                 _patientInforRepository.ReleaseResource();
-                _loggingHandler.Dispose();
             }
         }
 

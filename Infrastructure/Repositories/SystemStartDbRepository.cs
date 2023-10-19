@@ -33,7 +33,6 @@ public class SystemStartDbRepository : RepositoryBase, ISystemStartDbRepository
             catch (Exception e)
             {
                 _loggingHandler.WriteLogExceptionAsync(e, ModuleName);
-                throw;
             }
         }
 
@@ -50,7 +49,6 @@ public class SystemStartDbRepository : RepositoryBase, ISystemStartDbRepository
             catch (Exception e)
             {
                 _loggingHandler.WriteLogExceptionAsync(e, ModuleName);
-                throw;
             }
         }
         //Temp no update status in here
@@ -106,7 +104,6 @@ public class SystemStartDbRepository : RepositoryBase, ISystemStartDbRepository
             catch (Exception e)
             {
                 _loggingHandler.WriteLogExceptionAsync(e, ModuleName);
-                throw;
             }
         }
         #endregion

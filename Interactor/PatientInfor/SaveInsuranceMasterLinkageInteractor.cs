@@ -1,7 +1,5 @@
 ﻿using Domain.Models.HokenMst;
 using Domain.Models.PatientInfor;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
 using static Helper.Constants.DefHokenNoConst;
 
@@ -11,15 +9,10 @@ namespace Interactor.PatientInfor
     {
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IHokenMstRepository _hokenMstRepository;
-        private readonly ILoggingHandler _loggingHandler;
-        private readonly ITenantProvider _tenantProvider;
-
-        public SaveInsuranceMasterLinkageInteractor(ITenantProvider tenantProvider, IPatientInforRepository patientInforRepository, IHokenMstRepository hokenMstRepository)
+        public SaveInsuranceMasterLinkageInteractor(IPatientInforRepository patientInforRepository, IHokenMstRepository hokenMstRepository)
         {
             _patientInforRepository = patientInforRepository;
             _hokenMstRepository = hokenMstRepository;
-            _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveInsuranceMasterLinkageOutputData Handle(SaveInsuranceMasterLinkageInputData inputData)
@@ -52,16 +45,14 @@ namespace Interactor.PatientInfor
                 var status = success ? ValidationStatus.Success : ValidationStatus.Failed;
                 return new SaveInsuranceMasterLinkageOutputData(status);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.Failed);
             }
             finally
             {
                 _hokenMstRepository.ReleaseResource();
                 _patientInforRepository.ReleaseResource();
-                _loggingHandler.Dispose();
             }
         }
     }

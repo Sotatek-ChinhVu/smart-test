@@ -1,6 +1,4 @@
 ﻿using Domain.Models.Ka;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using UseCase.Ka.SaveList;
 
 namespace Interactor.Ka;
@@ -8,14 +6,10 @@ namespace Interactor.Ka;
 public class SaveKaMstInteractor : ISaveKaMstInputPort
 {
     private readonly IKaRepository _kaMstRepository;
-    private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
 
-    public SaveKaMstInteractor(ITenantProvider tenantProvider, IKaRepository kaMstRepository)
+    public SaveKaMstInteractor(IKaRepository kaMstRepository)
     {
         _kaMstRepository = kaMstRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveKaMstOutputData Handle(SaveKaMstInputData inputData)
@@ -78,15 +72,13 @@ public class SaveKaMstInteractor : ISaveKaMstInputPort
             }
             return new SaveKaMstOutputData(SaveKaMstStatus.Failed);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _loggingHandler.WriteLogExceptionAsync(ex);
-            throw;
+            return new SaveKaMstOutputData(SaveKaMstStatus.Failed);
         }
         finally
         {
             _kaMstRepository.ReleaseResource();
-            _loggingHandler.Dispose();
         }
     }
 }

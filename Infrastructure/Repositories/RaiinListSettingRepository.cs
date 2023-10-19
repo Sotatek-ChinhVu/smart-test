@@ -7,6 +7,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -1779,10 +1780,10 @@ namespace Infrastructure.Repositories
                         transaction.Commit();
                         resultSave = true;
                     }
-                    catch (Exception)
+                    catch
                     {
                         transaction.Rollback();
-                        throw;
+                        resultSave = false;
                     }
                 }
             });

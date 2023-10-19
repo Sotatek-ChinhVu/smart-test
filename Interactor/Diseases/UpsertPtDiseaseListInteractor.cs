@@ -3,8 +3,6 @@ using Domain.Models.Diseases;
 using Domain.Models.Insurance;
 using Domain.Models.PatientInfor;
 using Helper.Constants;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using UseCase.Diseases.Upsert;
 using static Helper.Constants.PtDiseaseConst;
 namespace Interactor.Diseases
@@ -15,17 +13,13 @@ namespace Interactor.Diseases
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IInsuranceRepository _insuranceInforRepository;
         private readonly IAuditLogRepository _auditLogRepository;
-        private readonly ILoggingHandler _loggingHandler;
-        private readonly ITenantProvider _tenantProvider;
 
-        public UpsertPtDiseaseListInteractor(ITenantProvider tenantProvider, IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IAuditLogRepository auditLogRepository)
+        public UpsertPtDiseaseListInteractor(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IAuditLogRepository auditLogRepository)
         {
             _diseaseRepository = diseaseRepository;
             _patientInforRepository = patientInforRepository;
             _insuranceInforRepository = insuranceInforRepository;
             _auditLogRepository = auditLogRepository;
-            _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public UpsertPtDiseaseListOutputData Handle(UpsertPtDiseaseListInputData inputData)
@@ -86,10 +80,9 @@ namespace Interactor.Diseases
 
                 return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.Success, result);
             }
-            catch (Exception ex)
+            catch
             {
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess, new());
             }
             finally
             {
@@ -97,7 +90,6 @@ namespace Interactor.Diseases
                 _insuranceInforRepository.ReleaseResource();
                 _patientInforRepository.ReleaseResource();
                 _auditLogRepository.ReleaseResource();
-                _loggingHandler.Dispose();
             }
         }
 

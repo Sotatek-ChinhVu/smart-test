@@ -1039,7 +1039,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception)
             {
-                throw;
+                return new List<DefHokenNoModel>();
             }
         }
 
@@ -1150,7 +1150,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception)
             {
-                throw;
+                return false;
             }
         }
 

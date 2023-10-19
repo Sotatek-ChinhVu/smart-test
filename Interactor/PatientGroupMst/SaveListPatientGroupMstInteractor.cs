@@ -1,6 +1,4 @@
 ﻿using Domain.Models.PatientGroupMst;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using UseCase.PatientGroupMst.SaveList;
 
 namespace Interactor.PatientGroupMst;
@@ -8,14 +6,9 @@ namespace Interactor.PatientGroupMst;
 public class SaveListPatientGroupMstInteractor : ISaveListPatientGroupMstInputPort
 {
     private readonly IPatientGroupMstRepository _patientGroupMstRepository;
-    private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
-
-    public SaveListPatientGroupMstInteractor(ITenantProvider tenantProvider, IPatientGroupMstRepository patientGroupMstRepository)
+    public SaveListPatientGroupMstInteractor(IPatientGroupMstRepository patientGroupMstRepository)
     {
         _patientGroupMstRepository = patientGroupMstRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
     public SaveListPatientGroupMstOutputData Handle(SaveListPatientGroupMstInputData inputData)
     {
@@ -84,15 +77,13 @@ public class SaveListPatientGroupMstInteractor : ISaveListPatientGroupMstInputPo
             }
             return new SaveListPatientGroupMstOutputData(SaveListPatientGroupMstStatus.Failed);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _loggingHandler.WriteLogExceptionAsync(ex);
-            throw;
+            return new SaveListPatientGroupMstOutputData(SaveListPatientGroupMstStatus.Failed);
         }
         finally
         {
             _patientGroupMstRepository.ReleaseResource();
-            _loggingHandler.Dispose();
         }
     }
     private List<PatientGroupMstModel> ConvertToListModel(List<SaveListPatientGroupMstInputItem> inputItem)

@@ -4,8 +4,6 @@ using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.User;
 using Helper.Common;
 using Helper.Constants;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using UseCase.SpecialNote.Save;
 using static Helper.Constants.UserConst;
 
@@ -16,16 +14,12 @@ namespace Interactor.SpecialNote
         private readonly ISpecialNoteRepository _specialNoteRepository;
         private readonly ISummaryInfRepository _summaryInfRepository;
         private readonly IUserRepository _userRepository;
-        private readonly ILoggingHandler _loggingHandler;
-        private readonly ITenantProvider _tenantProvider;
 
-        public SaveSpecialNoteInteractor(ITenantProvider tenantProvider, ISpecialNoteRepository specialNoteRepository, ISummaryInfRepository summaryInfRepository, IUserRepository userRepository)
+        public SaveSpecialNoteInteractor(ISpecialNoteRepository specialNoteRepository, ISummaryInfRepository summaryInfRepository, IUserRepository userRepository)
         {
             _specialNoteRepository = specialNoteRepository;
             _summaryInfRepository = summaryInfRepository;
             _userRepository = userRepository;
-            _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveSpecialNoteOutputData Handle(SaveSpecialNoteInputData inputData)
@@ -73,17 +67,11 @@ namespace Interactor.SpecialNote
 
                 return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.Successed);
             }
-            catch (Exception ex)
-            {
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
-            }
             finally
             {
                 _userRepository.ReleaseResource();
                 _specialNoteRepository.ReleaseResource();
                 _summaryInfRepository.ReleaseResource();
-                _loggingHandler.Dispose();
             }
         }
     }

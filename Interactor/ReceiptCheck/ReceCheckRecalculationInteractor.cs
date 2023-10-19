@@ -2,8 +2,6 @@
 using Helper.Constants;
 using Helper.Messaging;
 using Helper.Messaging.Data;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using Interactor.CalculateService;
 using Interactor.Receipt;
 using UseCase.MedicalExamination.Calculate;
@@ -17,17 +15,13 @@ namespace Interactor.ReceiptCheck
         private readonly ICalculateService _calculateService;
         private readonly IReceiptRepository _receiptRepository;
         private readonly ICommonReceRecalculation _commonReceRecalculation;
-        private readonly ILoggingHandler _loggingHandler;
-        private readonly ITenantProvider _tenantProvider;
         private IMessenger? _messenger;
 
-        public ReceCheckRecalculationInteractor(ITenantProvider tenantProvider, ICalculateService calculateService, IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation)
+        public ReceCheckRecalculationInteractor(ICalculateService calculateService, IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation)
         {
             _calculateService = calculateService;
             _receiptRepository = receiptRepository;
             _commonReceRecalculation = commonReceRecalculation;
-            _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public ReceiptCheckRecalculationOutputData Handle(ReceiptCheckRecalculationInputData inputData)
@@ -59,17 +53,11 @@ namespace Interactor.ReceiptCheck
 
                 return new ReceiptCheckRecalculationOutputData(success);
             }
-            catch (Exception ex)
-            {
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
-            }
             finally
             {
                 SendMessenger(new RecalculationStatus(true, CalculateStatusConstant.ReceCheckMessage, 0, 0, string.Empty, "NotConnectSocket"));
                 _commonReceRecalculation.ReleaseResource();
                 _receiptRepository.ReleaseResource();
-                _loggingHandler.Dispose();
             }
 
         }

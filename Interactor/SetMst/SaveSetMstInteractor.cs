@@ -2,8 +2,6 @@
 using Domain.Models.SetMst;
 using Domain.Models.User;
 using Helper.Constants;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using Interactor.SetMst.CommonSuperSet;
 using UseCase.SetMst.SaveSetMst;
 
@@ -15,17 +13,13 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
     private readonly IUserRepository _userRepository;
     private readonly ICommonSuperSet _commonSuperSet;
     private readonly IAuditLogRepository _auditLogRepository;
-    private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
 
-    public SaveSetMstInteractor(ITenantProvider tenantProvider, ISetMstRepository setMstRepository, IUserRepository userRepository, ICommonSuperSet commonSuperSet, IAuditLogRepository auditLogRepository)
+    public SaveSetMstInteractor(ISetMstRepository setMstRepository, IUserRepository userRepository, ICommonSuperSet commonSuperSet, IAuditLogRepository auditLogRepository)
     {
         _setMstRepository = setMstRepository;
         _userRepository = userRepository;
         _commonSuperSet = commonSuperSet;
         _auditLogRepository = auditLogRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveSetMstOutputData Handle(SaveSetMstInputData inputData)
@@ -94,17 +88,11 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
             }
             return new SaveSetMstOutputData(new(), SaveSetMstStatus.Failed);
         }
-        catch (Exception ex)
-        {
-            _loggingHandler.WriteLogExceptionAsync(ex);
-            throw;
-        }
         finally
         {
             _setMstRepository.ReleaseResource();
             _auditLogRepository.ReleaseResource();
             _userRepository.ReleaseResource();
-            _loggingHandler.Dispose();
         }
     }
 

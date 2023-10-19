@@ -4,8 +4,6 @@ using EventProcessor.Interfaces;
 using EventProcessor.Model;
 using Helper.Common;
 using Helper.Constants;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using UseCase.SwapHoken.Save;
 
 namespace Interactor.SwapHoken
@@ -14,15 +12,11 @@ namespace Interactor.SwapHoken
     {
         private readonly ISwapHokenRepository _swapHokenRepository;
         private readonly IEventProcessorService _eventProcessorService;
-        private readonly ILoggingHandler _loggingHandler;
-        private readonly ITenantProvider _tenantProvider;
 
-        public SaveSwapHokenInteractor(ITenantProvider tenantProvider, ISwapHokenRepository repository, IEventProcessorService eventProcessorService)
+        public SaveSwapHokenInteractor(ISwapHokenRepository repository, IEventProcessorService eventProcessorService)
         {
             _swapHokenRepository = repository;
             _eventProcessorService = eventProcessorService;
-            _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveSwapHokenOutputData Handle(SaveSwapHokenInputData inputData)
@@ -139,15 +133,9 @@ namespace Interactor.SwapHoken
 
                 return new SaveSwapHokenOutputData(SaveSwapHokenStatus.Successful, string.Empty, TypeMessage.TypeMessageSuccess, seikyuYms);
             }
-            catch (Exception ex)
-            {
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
-            }
             finally
             {
                 _swapHokenRepository.ReleaseResource();
-                _loggingHandler.Dispose();
             }
         }
     }

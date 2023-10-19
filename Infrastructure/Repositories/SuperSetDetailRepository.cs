@@ -791,7 +791,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         }
         catch (Exception)
         {
-            throw;
+            return status;
         }
     }
 
@@ -911,7 +911,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         }
         catch (Exception)
         {
-            throw;
+            return status;
         }
     }
 
@@ -983,7 +983,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         }
         catch (Exception)
         {
-            throw;
+            return status;
         }
     }
 
@@ -1242,7 +1242,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         }
         catch (Exception)
         {
-            throw;
+            return false;
         }
     }
 

@@ -1,7 +1,5 @@
 ﻿using Domain.Models.Online;
 using Domain.Models.PatientInfor;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using UseCase.Online.SaveAllOQConfirmation;
 
 namespace Interactor.Online;
@@ -10,15 +8,11 @@ public class SaveAllOQConfirmationInteractor : ISaveAllOQConfirmationInputPort
 {
     private readonly IOnlineRepository _onlineRepository;
     private readonly IPatientInforRepository _patientInforRepository;
-    private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
 
-    public SaveAllOQConfirmationInteractor(ITenantProvider tenantProvider, IOnlineRepository onlineRepository, IPatientInforRepository patientInforRepository)
+    public SaveAllOQConfirmationInteractor(IOnlineRepository onlineRepository, IPatientInforRepository patientInforRepository)
     {
         _onlineRepository = onlineRepository;
         _patientInforRepository = patientInforRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveAllOQConfirmationOutputData Handle(SaveAllOQConfirmationInputData inputData)
@@ -35,15 +29,9 @@ public class SaveAllOQConfirmationInteractor : ISaveAllOQConfirmationInputPort
             }
             return new SaveAllOQConfirmationOutputData(SaveAllOQConfirmationStatus.Failed);
         }
-        catch (Exception ex)
-        {
-            _loggingHandler.WriteLogExceptionAsync(ex);
-            throw;
-        }
         finally
         {
             _onlineRepository.ReleaseResource();
-            _loggingHandler.Dispose();
         }
     }
 }

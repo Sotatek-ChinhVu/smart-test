@@ -1,8 +1,9 @@
 ﻿using Helper;
 using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using Interactor.CalculateService;
 using Newtonsoft.Json;
+using System.Net;
+using System.Text;
 
 namespace EmrCloudApi.Services
 {
@@ -10,13 +11,11 @@ namespace EmrCloudApi.Services
     {
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly ITenantProvider _tenantProvider;
-        private readonly ILoggingHandler _loggingHandler;
 
         public CalcultateCustomerService(IConfiguration configuration, ITenantProvider tenantProvider)
         {
             _httpClient.BaseAddress = new Uri(configuration.GetSection("CalculateApi")["BasePath"] ?? "");
             _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public async Task<CalcultateCustomerResponse<T>> RunCaculationPostAsync<T>(TypeCalculate type, object input)
@@ -37,10 +36,9 @@ namespace EmrCloudApi.Services
                 }
                 else return new CalcultateCustomerResponse<T>(Activator.CreateInstance<T>(), result.StatusCode, result.IsSuccessStatusCode);
             }
-            catch (Exception ex)
+            catch
             {
-                await _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return new CalcultateCustomerResponse<T>(Activator.CreateInstance<T>(), HttpStatusCode.BadRequest, false);
             }
         }
 
@@ -55,11 +53,9 @@ namespace EmrCloudApi.Services
                 HttpResponseMessage result = await _httpClient.PostAsync(type.GetDescription(), content);
                 result.EnsureSuccessStatusCode();
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 Console.WriteLine("Err when run calculatePost api . details : " + ex.Message + " " + ex.InnerException);
-                await _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
             }
         }
     }
