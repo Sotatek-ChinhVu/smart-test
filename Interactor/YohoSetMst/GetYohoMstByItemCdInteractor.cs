@@ -26,7 +26,7 @@ namespace Interactor.YohoSetMst
                 if (string.IsNullOrEmpty(inputData.ItemCd))
                     return new GetYohoMstByItemCdOutputData(new List<YohoSetMstModel>(), GetYohoMstByItemCdStatus.InvalidItemCd);
 
-                var datas = _yohoSetMstRepository.GetByItemCd(inputData.HpId, inputData.UserId , inputData.ItemCd, inputData.StartDate);
+                var datas = _yohoSetMstRepository.GetByItemCd(inputData.HpId, inputData.UserId , inputData.ItemCd, inputData.StartDate, inputData.SinDate);
 
                 if (datas.Any())
                     return new GetYohoMstByItemCdOutputData(datas.ToList(), GetYohoMstByItemCdStatus.Successful);

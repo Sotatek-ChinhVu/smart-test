@@ -613,7 +613,7 @@ namespace Infrastructure.Repositories
                             odrTermVal,
                             cnvTermVal,
                             yjCd,
-                            yohoSets != null ? yohoSets.Where(y => y.ItemCd == ordInfDetail.ItemCd).ToList() : new List<YohoSetMstModel>(),
+                            yohoSets ?? new(),
                             kasan1,
                             kasan2,
                             cnvUnitName,
