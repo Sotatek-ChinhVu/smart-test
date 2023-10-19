@@ -1305,9 +1305,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     transaction.Commit();
                     success = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return success;
