@@ -7220,7 +7220,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                 )
                      .OrderBy(u => u.ItemCd).ToList();
         }
-        catch
+        catch (Exception)
         {
             throw;
         }
@@ -7409,9 +7409,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             return false;
         }
-        catch
+        catch (Exception)
         {
-            return false;
+            throw;
         }
     }
 
@@ -7995,9 +7995,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
-        catch
+        catch (Exception)
         {
-            return false;
+            throw;
         }
     }
 

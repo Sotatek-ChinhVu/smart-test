@@ -1,4 +1,6 @@
 ﻿using Domain.Models.RaiinListSetting;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.RaiinListSetting.SaveRaiinListSetting;
 
 namespace Interactor.RaiinListSetting
@@ -6,10 +8,14 @@ namespace Interactor.RaiinListSetting
     public class SaveRaiinListSettingInteractor : ISaveRaiinListSettingInputPort
     {
         private readonly IRaiinListSettingRepository _raiinListSettingRepository;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SaveRaiinListSettingInteractor(IRaiinListSettingRepository raiinListSettingRepository)
+        public SaveRaiinListSettingInteractor(ITenantProvider tenantProvider, IRaiinListSettingRepository raiinListSettingRepository)
         {
             _raiinListSettingRepository = raiinListSettingRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveRaiinListSettingOutputData Handle(SaveRaiinListSettingInputData inputData)
@@ -24,9 +30,15 @@ namespace Interactor.RaiinListSetting
                 if (result) return new SaveRaiinListSettingOutputData(SaveRaiinListSettingStatus.Successful);
                 else return new SaveRaiinListSettingOutputData(SaveRaiinListSettingStatus.Failed);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _raiinListSettingRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

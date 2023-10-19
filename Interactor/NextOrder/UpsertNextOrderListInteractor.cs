@@ -4,6 +4,8 @@ using Domain.Models.MstItem;
 using Domain.Models.NextOrder;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.NextOrder.Upsert;
 
 namespace Interactor.NextOrder
@@ -16,8 +18,10 @@ namespace Interactor.NextOrder
         private readonly IUserRepository _userRepository;
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IMstItemRepository _mstItemRepository;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public UpsertNextOrderListInteractor(INextOrderRepository nextOrderRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInfRepository, IUserRepository userRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
+        public UpsertNextOrderListInteractor(ITenantProvider tenantProvider, INextOrderRepository nextOrderRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInfRepository, IUserRepository userRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
         {
             _nextOrderRepository = nextOrderRepository;
             _hpInfRepository = hpInfRepository;
@@ -25,6 +29,8 @@ namespace Interactor.NextOrder
             _userRepository = userRepository;
             _insuranceRepository = insuranceRepository;
             _mstItemRepository = mstItemRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public UpsertNextOrderListOutputData Handle(UpsertNextOrderListInputData inputData)
@@ -142,9 +148,10 @@ namespace Interactor.NextOrder
                 var rsvkrtNo = _nextOrderRepository.Upsert(inputData.UserId, inputData.HpId, inputData.PtId, nextOrderModels);
                 return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Successed, new(), new(), new(), new());
             }
-            catch
+            catch (Exception ex)
             {
-                return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, new(), new(), new(), new());
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
             }
             finally
             {
@@ -154,6 +161,7 @@ namespace Interactor.NextOrder
                 _nextOrderRepository.ReleaseResource();
                 _patientInfRepository.ReleaseResource();
                 _userRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

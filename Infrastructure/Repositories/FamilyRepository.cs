@@ -5,9 +5,7 @@ using Helper.Constant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories;
@@ -141,7 +139,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 catch (Exception)
                 {
                     transaction.Rollback();
-                    return false;
+                    throw;
                 }
             });
     }

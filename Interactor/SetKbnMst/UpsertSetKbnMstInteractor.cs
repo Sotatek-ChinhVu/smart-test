@@ -3,6 +3,8 @@ using Domain.Models.Ka;
 using Domain.Models.SetGenerationMst;
 using Domain.Models.SetKbnMst;
 using Domain.Models.User;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.SetKbnMst.Upsert;
 
 namespace Interactor.SetKbnMst
@@ -14,13 +16,17 @@ namespace Interactor.SetKbnMst
         private readonly IUserRepository _userRepository;
         private readonly ISetGenerationMstRepository _setGenerationRepository;
         private readonly IHpInfRepository _hpInfRepository;
-        public UpsertSetKbnMstInteractor(ISetKbnMstRepository setKbnMstRepository, ISetGenerationMstRepository setGenerationRepository, IKaRepository kaRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository)
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
+        public UpsertSetKbnMstInteractor(ITenantProvider tenantProvider, ISetKbnMstRepository setKbnMstRepository, ISetGenerationMstRepository setGenerationRepository, IKaRepository kaRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository)
         {
             _setKbnMstRepository = setKbnMstRepository;
             _setGenerationRepository = setGenerationRepository;
             _kaRepository = kaRepository;
             _userRepository = userRepository;
             _hpInfRepository = hpInfRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public UpsertSetKbnMstOutputData Handle(UpsertSetKbnMstInputData inputData)
@@ -121,12 +127,18 @@ namespace Interactor.SetKbnMst
                 }
                 return new UpsertSetKbnMstOutputData(UpsertSetKbnMstStatus.Successed);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _setGenerationRepository.ReleaseResource();
                 _setKbnMstRepository.ReleaseResource();
                 _kaRepository.ReleaseResource();
                 _userRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }
