@@ -716,7 +716,8 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                         }
                     }
                     TrackingDataContext.KensaInfDetails.AddRange(kensaDetailList);
-                    TrackingDataContext.SaveChanges(); transaction.Commit();
+                    TrackingDataContext.SaveChanges(); 
+                    transaction.Commit();
                     successed = true;
                 }
                 catch (Exception)
