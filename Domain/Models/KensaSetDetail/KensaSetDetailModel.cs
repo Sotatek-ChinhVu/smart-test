@@ -55,8 +55,8 @@
 
         public int IsDeleted { get; private set; }
 
-        public string UniqId { get; private set; }
+        public string? UniqId { get; private set; }
 
-        public string UniqIdParent { get; private set; }
+        public string? UniqIdParent { get; private set; }
     }
 }
