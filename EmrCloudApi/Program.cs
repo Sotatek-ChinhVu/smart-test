@@ -256,6 +256,7 @@ app.Use(async (context, next) =>
             finally
             {
                 await loggingHandler!.WriteLogEndAsync("End request");
+                loggingHandler.Dispose();
             }
         }
     }
