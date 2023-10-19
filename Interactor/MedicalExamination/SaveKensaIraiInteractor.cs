@@ -7,8 +7,6 @@ using Domain.Models.Reception;
 using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using Reporting.Kensalrai.Service;
 using UseCase.MedicalExamination.SaveKensaIrai;
 
@@ -23,10 +21,8 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
     private readonly IOrdInfRepository _ordInfRepository;
     private readonly IKensaIraiCoReportService _kensaIraiCoReportService;
     private readonly IGroupInfRepository _groupInfRepository;
-    private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
 
-    public SaveKensaIraiInteractor(ITenantProvider tenantProvider, IKensaIraiRepository kensaIraiRepository, ISystemConfRepository systemConfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IOrdInfRepository ordInfRepository, IKensaIraiCoReportService kensaIraiCoReportService, IGroupInfRepository groupInfRepository)
+    public SaveKensaIraiInteractor(IKensaIraiRepository kensaIraiRepository, ISystemConfRepository systemConfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IOrdInfRepository ordInfRepository, IKensaIraiCoReportService kensaIraiCoReportService, IGroupInfRepository groupInfRepository)
     {
         _kensaIraiRepository = kensaIraiRepository;
         _systemConfRepository = systemConfRepository;
@@ -35,8 +31,6 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
         _ordInfRepository = ordInfRepository;
         _kensaIraiCoReportService = kensaIraiCoReportService;
         _groupInfRepository = groupInfRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         kensaCenterMst = new();
         odrInfModels = new();
         odrInfDetailModels = new();
@@ -99,11 +93,6 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
             }
             return new SaveKensaIraiOutputData(messageResult, kensaIraiReportItemList, SaveKensaIraiStatus.Successed);
         }
-        catch (Exception ex)
-        {
-            _loggingHandler.WriteLogExceptionAsync(ex);
-            throw;
-        }
         finally
         {
             _kensaIraiRepository.ReleaseResource();
@@ -112,7 +101,6 @@ public class SaveKensaIraiInteractor : ISaveKensaIraiInputPort
             _receptionRepository.ReleaseResource();
             _ordInfRepository.ReleaseResource();
             _groupInfRepository.ReleaseResource();
-            _loggingHandler.Dispose();
         }
     }
 

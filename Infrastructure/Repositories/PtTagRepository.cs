@@ -41,7 +41,7 @@ public class PtTagRepository : RepositoryBase, IPtTagRepository
         }
         catch (Exception)
         {
-            throw;
+            return false;
         }
     }
     public bool SaveStickyNote(List<StickyNoteModel> stickyNoteModels, int userId)
@@ -107,7 +107,7 @@ public class PtTagRepository : RepositoryBase, IPtTagRepository
                         catch (Exception)
                         {
                             transaction.Rollback();
-                            throw;
+                            return false;
                         }
                     }
                 });

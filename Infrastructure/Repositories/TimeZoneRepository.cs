@@ -100,9 +100,9 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
 
             return TrackingDataContext.SaveChanges() > 0;
         }
-        catch (Exception)
+        catch
         {
-            throw;
+            return false;
         }
     }
 
@@ -136,7 +136,7 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
                 result.Add(
                     new TimeZoneConfGroupModel(
                         day,
-                        new List<TimeZoneConfModel>() { }
+                        new List<TimeZoneConfModel>() {}
                 ));
             }
         }

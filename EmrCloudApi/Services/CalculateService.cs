@@ -1,9 +1,11 @@
 ﻿using Domain.Models.CalculateModel;
 using Helper.Enum;
+using Helper.Messaging.Data;
+using Helper.Messaging;
 using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using Interactor.CalculateService;
 using Newtonsoft.Json;
+using System.Net.Http;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
@@ -18,13 +20,11 @@ namespace EmrCloudApi.Services
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly IConfiguration _configuration;
         private readonly ITenantProvider _tenantProvider;
-        private readonly ILoggingHandler _loggingHandler;
 
         public CalculateService(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ITenantProvider tenantProvider)
         {
             _configuration = configuration;
             _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public async Task<CalculateResponse> CallCalculate(CalculateApiPath path, object inputData)
@@ -74,11 +74,10 @@ namespace EmrCloudApi.Services
                 return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
 
             }
-            catch (Exception ex)
+            catch (HttpRequestException ex)
             {
                 Console.WriteLine("Function CallCalculate " + ex);
-                await _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return new CalculateResponse("Failed: Could not connect to Calculate API", ResponseStatus.ConnectFailed);
             }
         }
 
@@ -132,8 +131,7 @@ namespace EmrCloudApi.Services
             catch (HttpRequestException ex)
             {
                 Console.WriteLine("Function CallCalculate " + ex);
-                await _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return new CalculateResponse("Failed: Could not connect to Calculate API", ResponseStatus.ConnectFailed);
             }
         }
 
@@ -152,8 +150,7 @@ namespace EmrCloudApi.Services
             catch (Exception ex)
             {
                 Console.WriteLine("Function GetSinMeiList " + ex);
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return new();
             }
         }
 
@@ -170,8 +167,7 @@ namespace EmrCloudApi.Services
             catch (Exception ex)
             {
                 Console.WriteLine("Function RunCalculate " + ex);
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return false;
             }
         }
 
@@ -187,10 +183,9 @@ namespace EmrCloudApi.Services
                 var result = JsonConvert.DeserializeObject<ReceInfModelDto>(task.Result.ResponseMessage);
                 return result ?? new();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return new();
             }
         }
 
@@ -212,8 +207,7 @@ namespace EmrCloudApi.Services
             catch (Exception ex)
             {
                 Console.WriteLine("Function RunTrialCalculate " + ex);
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return new RunTraialCalculateResponse(new(), new(), new());
             }
         }
 
@@ -230,8 +224,7 @@ namespace EmrCloudApi.Services
             catch (Exception ex)
             {
                 Console.WriteLine("Function RunCalculateOne " + ex);
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return false;
             }
         }
 
@@ -250,8 +243,7 @@ namespace EmrCloudApi.Services
             catch (Exception ex)
             {
                 Console.WriteLine("Function ReceFutanCalculateMain " + ex);
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return false;
             }
         }
 
@@ -270,8 +262,7 @@ namespace EmrCloudApi.Services
             catch (Exception ex)
             {
                 Console.WriteLine("Function RunCalculateMonth " + ex);
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return false;
             }
         }
 
@@ -290,8 +281,7 @@ namespace EmrCloudApi.Services
             catch (Exception ex)
             {
                 Console.WriteLine("Function RunCalculateMonth " + ex);
-                _loggingHandler.WriteLogExceptionAsync(ex);
-                throw;
+                return new();
             }
         }
     }

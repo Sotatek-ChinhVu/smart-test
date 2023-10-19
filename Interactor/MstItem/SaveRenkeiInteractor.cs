@@ -1,6 +1,4 @@
 ﻿using Domain.Models.MstItem;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using UseCase.MstItem.SaveRenkei;
 
 namespace Interactor.MstItem;
@@ -8,14 +6,10 @@ namespace Interactor.MstItem;
 public class SaveRenkeiInteractor : ISaveRenkeiInputPort
 {
     private readonly IMstItemRepository _mstItemRepository;
-    private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
 
-    public SaveRenkeiInteractor(ITenantProvider tenantProvider, IMstItemRepository mstItemRepository)
+    public SaveRenkeiInteractor(IMstItemRepository mstItemRepository)
     {
         _mstItemRepository = mstItemRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveRenkeiOutputData Handle(SaveRenkeiInputData inputData)
@@ -33,15 +27,9 @@ public class SaveRenkeiInteractor : ISaveRenkeiInputPort
             }
             return new SaveRenkeiOutputData(SaveRenkeiStatus.Failed);
         }
-        catch (Exception ex)
-        {
-            _loggingHandler.WriteLogExceptionAsync(ex);
-            throw;
-        }
         finally
         {
             _mstItemRepository.ReleaseResource();
-            _loggingHandler.Dispose();
         }
     }
 

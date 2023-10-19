@@ -1,6 +1,5 @@
 ﻿using Domain.Models.Todo;
-using Infrastructure.Interfaces;
-using Infrastructure.Logger;
+using System.Collections.Generic;
 using UseCase.Todo;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoInf;
@@ -10,14 +9,10 @@ namespace Interactor.Todo;
 public class UpsertTodoInfInteractor : IUpsertTodoInfInputPort
 {
     private readonly ITodoInfRepository _todoInfRepository;
-    private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
 
-    public UpsertTodoInfInteractor(ITenantProvider tenantProvider, ITodoInfRepository todoInfRepository)
+    public UpsertTodoInfInteractor(ITodoInfRepository todoInfRepository)
     {
         _todoInfRepository = todoInfRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public UpsertTodoInfOutputData Handle(UpsertTodoInfInputData input)
@@ -50,15 +45,9 @@ public class UpsertTodoInfInteractor : IUpsertTodoInfInputPort
             var result = GetListTodoInfos(upsertResult);
             return new UpsertTodoInfOutputData(result, UpsertTodoInfStatus.Success);
         }
-        catch (Exception ex)
-        {
-            _loggingHandler.WriteLogExceptionAsync(ex);
-            throw;
-        }
         finally
         {
             _todoInfRepository.ReleaseResource();
-            _loggingHandler.Dispose();
         }
     }
 

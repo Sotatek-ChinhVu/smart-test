@@ -134,10 +134,9 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     transaction.Commit();
                     successed = true;
                 }
-                catch (Exception)
+                catch
                 {
                     transaction.Rollback();
-                    throw;
                 }
             });
         return successed;
@@ -576,10 +575,9 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     transaction.Commit();
                     successed = true;
                 }
-                catch (Exception)
+                catch
                 {
                     transaction.Rollback();
-                    throw;
                 }
             });
         return successed;
@@ -719,10 +717,9 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     TrackingDataContext.SaveChanges(); transaction.Commit();
                     successed = true;
                 }
-                catch (Exception)
+                catch
                 {
                     transaction.Rollback();
-                    throw;
                 }
             });
         return successed;
@@ -1056,7 +1053,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                         transaction.Commit();
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     transaction.Rollback();
                     doneProgress = false;
