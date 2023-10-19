@@ -1188,7 +1188,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
             services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
-            services.AddSingleton<IHostedService, TaskScheduleDeleteGarbage>();
         }
 
         private void SetupUseCase(IServiceCollection services)
