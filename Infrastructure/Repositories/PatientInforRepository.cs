@@ -2784,14 +2784,16 @@ namespace Infrastructure.Repositories
                                       .ToList();
         }
 
-        public bool UpdateVisitTimesManagement(int hpId, int userId, long ptId, int kohiId, List<VisitTimesManagementModel> visitTimesManagementList)
+        public bool UpdateVisitTimesManagement(int hpId, int userId, long ptId, int kohiId, int sinYm, List<VisitTimesManagementModel> visitTimesManagementList)
         {
             var limitCntListInfDBList = TrackingDataContext.LimitCntListInfs.Where(item => item.HpId == hpId
                                                                                            && item.PtId == ptId
                                                                                            && item.KohiId == kohiId)
                                                                             .ToList();
             var maxSeqNo = limitCntListInfDBList.Any() ? limitCntListInfDBList.Max(item => item.SeqNo) : 0;
-            limitCntListInfDBList = limitCntListInfDBList.Where(item => item.IsDeleted == 0).ToList();
+            limitCntListInfDBList = limitCntListInfDBList.Where(item => item.IsDeleted == 0
+                                                                        && item.SinDate / 100 == sinYm)
+                                                         .ToList();
 
             var seqNoList = visitTimesManagementList.Where(item => item.SeqNo >= 0).Select(item => item.SeqNo).Distinct().ToList();
             var deletedVisitTimeList = limitCntListInfDBList.Where(item => item.HokenPid == 0 && !seqNoList.Contains(item.SeqNo)).ToList();
