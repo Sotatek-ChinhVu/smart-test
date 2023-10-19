@@ -1187,7 +1187,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaSetRepository, KensaSetRepository>();
             services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
-            services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
+            //services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
