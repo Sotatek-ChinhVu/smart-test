@@ -6,11 +6,9 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Text;
-using System.Linq;
 
 namespace Infrastructure.Repositories;
 
@@ -51,9 +49,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     }
                     transaction.Commit();
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return idList;
@@ -166,9 +165,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     transaction.Commit();
                     success = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return success;
@@ -219,9 +219,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     transaction.Commit();
                     success = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return success;
@@ -279,9 +280,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     transaction.Commit();
                     success = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return success;
@@ -307,9 +309,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     transaction.Commit();
                     success = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return success;
@@ -551,10 +554,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     }
                     transaction.Commit();
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
-                    successed = false;
+                    throw;
                 }
             });
         return successed;

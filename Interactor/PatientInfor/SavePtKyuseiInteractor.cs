@@ -1,4 +1,6 @@
 ﻿using Domain.Models.PatientInfor;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.PatientInfor.SavePtKyusei;
 
 namespace Interactor.PatientInfor;
@@ -6,10 +8,14 @@ namespace Interactor.PatientInfor;
 public class SavePtKyuseiInteractor : ISavePtKyuseiInputPort
 {
     private readonly IPatientInforRepository _patientInforRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SavePtKyuseiInteractor(IPatientInforRepository patientInforRepository)
+    public SavePtKyuseiInteractor(ITenantProvider tenantProvider, IPatientInforRepository patientInforRepository)
     {
         _patientInforRepository = patientInforRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SavePtKyuseiOutputData Handle(SavePtKyuseiInputData inputData)
@@ -35,9 +41,15 @@ public class SavePtKyuseiInteractor : ISavePtKyuseiInputPort
             }
             return new SavePtKyuseiOutputData(SavePtKyuseiStatus.Failed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _patientInforRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
 
     }
