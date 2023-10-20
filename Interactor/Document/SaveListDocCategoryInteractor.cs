@@ -1,6 +1,8 @@
 ﻿using Domain.Models.Document;
 using Domain.Models.HpInf;
 using Domain.Models.User;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.Document.SaveListDocCategory;
 
 namespace Interactor.Document;
@@ -10,12 +12,16 @@ public class SaveListDocCategoryInteractor : ISaveListDocCategoryInputPort
     private readonly IDocumentRepository _documentRepository;
     private readonly IHpInfRepository _hpInfRepository;
     private readonly IUserRepository _userRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveListDocCategoryInteractor(IDocumentRepository documentRepository, IHpInfRepository hpInfRepository, IUserRepository userRepository)
+    public SaveListDocCategoryInteractor(ITenantProvider tenantProvider, IDocumentRepository documentRepository, IHpInfRepository hpInfRepository, IUserRepository userRepository)
     {
         _documentRepository = documentRepository;
         _hpInfRepository = hpInfRepository;
         _userRepository = userRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
     public SaveListDocCategoryOutputData Handle(SaveListDocCategoryInputData inputData)
     {
@@ -36,11 +42,17 @@ public class SaveListDocCategoryInteractor : ISaveListDocCategoryInputPort
             _documentRepository.SaveListDocCategory(inputData.HpId, inputData.UserId, listDocCategoryModel);
             return new SaveListDocCategoryOutputData(SaveListDocCategoryStatus.Successed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _documentRepository.ReleaseResource();
             _hpInfRepository.ReleaseResource();
             _userRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

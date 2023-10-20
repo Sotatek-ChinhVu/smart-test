@@ -1,4 +1,6 @@
 ﻿using Domain.Models.MaxMoney;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.MaxMoney.SaveMaxMoney;
 
 namespace Interactor.MaxMoney
@@ -6,10 +8,14 @@ namespace Interactor.MaxMoney
     public class SaveMaxMoneyInteractor : ISaveMaxMoneyInputPort
     {
         private readonly IMaxmoneyReposiory _maxmoneyReposiory;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SaveMaxMoneyInteractor(IMaxmoneyReposiory maxmoneyReposiory)
+        public SaveMaxMoneyInteractor(ITenantProvider tenantProvider, IMaxmoneyReposiory maxmoneyReposiory)
         {
             _maxmoneyReposiory = maxmoneyReposiory;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveMaxMoneyOutputData Handle(SaveMaxMoneyInputData inputData)
@@ -32,9 +38,15 @@ namespace Interactor.MaxMoney
 
                 else return new SaveMaxMoneyOutputData(SaveMaxMoneyStatus.Failed);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _maxmoneyReposiory.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

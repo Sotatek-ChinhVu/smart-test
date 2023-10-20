@@ -63,5 +63,6 @@
         YoyakuHyo = 58,
         YoyakuList = 59,
         MemoMsg = 60,
+        KensaHistory = 61,
     }
 }

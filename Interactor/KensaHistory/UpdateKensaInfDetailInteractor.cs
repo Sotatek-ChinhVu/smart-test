@@ -31,7 +31,7 @@ namespace Interactor.KensaHistory
             }
             try
             {
-                var data = _kensaSetRepository.UpdateKensaInfDetail(inputData.HpId, inputData.UserId, inputData.KensaInfDetails);
+                var data = _kensaSetRepository.UpdateKensaInfDetail(inputData.HpId, inputData.UserId, inputData.PtId, inputData.IraiCd, inputData.IraiDate, inputData.KensaInfDetails);
                 return new UpdateKensaInfDetailOutputData(data, UpdateKensaInfDetailStatus.Successed);
             }
             finally

@@ -171,6 +171,10 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
+
+        [Column("SEQ_PARENT_NO")]
+        [CustomAttribute.DefaultValue(0)]
+        public long SeqParentNo { get; set; }
     }
 }
 

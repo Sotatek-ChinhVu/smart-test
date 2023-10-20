@@ -9,5 +9,6 @@
         InvalidPostCode = 5,
         InvalidPageIndex = 6,
         InvalidPageSize = 7,
+        InvalidPtId = 8,
     }
 }

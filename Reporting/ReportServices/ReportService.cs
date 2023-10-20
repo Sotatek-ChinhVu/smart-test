@@ -19,6 +19,7 @@ using Reporting.GrowthCurve.Service;
 using Reporting.InDrug.Service;
 using Reporting.Karte1.Service;
 using Reporting.Karte3.Service;
+using Reporting.KensaHistory.Service;
 using Reporting.KensaLabel.Model;
 using Reporting.KensaLabel.Service;
 using Reporting.Kensalrai.Service;
@@ -82,8 +83,10 @@ public class ReportService : IReportService
     private readonly IImportCSVCoReportService _importCSVCoReportService;
     private readonly IStaticsticExportCsvService _staticsticExportCsvService;
     private readonly ISta9000CoReportService _sta9000CoReportService;
+    private readonly IKensaHistoryCoReportService _kensaHistoryCoReportService;
+    private readonly IKensaResultMultiCoReportService _kensaResultMultiCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService, IReceiptPrintExcelService receiptPrintExcelService, IImportCSVCoReportService importCSVCoReportService, IStaticsticExportCsvService staticsticExportCsvService, ISta9000CoReportService sta9000CoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService, IReceiptPrintExcelService receiptPrintExcelService, IImportCSVCoReportService importCSVCoReportService, IStaticsticExportCsvService staticsticExportCsvService, ISta9000CoReportService sta9000CoReportService, IKensaHistoryCoReportService kensaHistoryCoReportService, IKensaResultMultiCoReportService kensaResultMultiCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -118,6 +121,8 @@ public class ReportService : IReportService
         _importCSVCoReportService = importCSVCoReportService;
         _staticsticExportCsvService = staticsticExportCsvService;
         _sta9000CoReportService = sta9000CoReportService;
+        _kensaHistoryCoReportService = kensaHistoryCoReportService;
+        _kensaResultMultiCoReportService = kensaResultMultiCoReportService;
     }
 
     //Byomei
@@ -707,5 +712,15 @@ public class ReportService : IReportService
     public (string message, CoPrintExitCode code, List<string> data) OutPutFileSta900(int hpId, List<string> outputColumns, bool isPutColName, CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf, CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf, CoSta9000KensaConf? kensaConf, List<long> ptIds, int sortOrder, int sortOrder2, int sortOrder3)
     {
         return _sta9000CoReportService.OutPutFile(hpId, outputColumns, isPutColName, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf, kensaConf, ptIds, sortOrder, sortOrder2, sortOrder3);
+    }
+
+    public CommonReportingRequestModel GetKensaHistoryPrint(int hpId, int userId, long ptId, int setId, int iraiCd, int seikyuYm, int startDate, int endDate, bool showAbnormalKbn, int itemQuantity)
+    {
+        return _kensaHistoryCoReportService.GetKensaHistoryPrintData(hpId, userId, ptId, setId, iraiCd, seikyuYm, startDate, endDate, showAbnormalKbn, itemQuantity);
+    }
+
+    public CommonReportingRequestModel GetKensaResultMultiPrint(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, int endDate, bool showAbnormalKbn, int itemQuantity)
+    {
+        return _kensaResultMultiCoReportService.GetKensaResultMultiPrintData(hpId, userId, ptId, setId, iraiCd, startDate, endDate, showAbnormalKbn, itemQuantity);
     }
 }
