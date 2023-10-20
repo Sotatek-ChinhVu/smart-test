@@ -4,9 +4,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using System.Linq;
-using System.Linq.Dynamic.Core.Tokenizer;
 
 namespace Infrastructure.Repositories;
 
@@ -183,9 +180,9 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
             var result = CompareResultList(originalList, raiinUpdateList);
             return result;
         }
-        catch
+        catch (Exception)
         {
-            return new();
+            throw;
         }
     }
 

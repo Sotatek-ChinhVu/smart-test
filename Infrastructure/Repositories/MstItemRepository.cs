@@ -20,6 +20,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -7219,7 +7220,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                 )
                      .OrderBy(u => u.ItemCd).ToList();
         }
-        catch
+        catch (Exception)
         {
             throw;
         }
@@ -7408,9 +7409,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             return false;
         }
-        catch
+        catch (Exception)
         {
-            return false;
+            throw;
         }
     }
 
@@ -7827,7 +7828,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 res.CenterName ?? string.Empty
             )
         ).ToList();
-        
+
         if (allkensaKensaMst == null)
         {
             return (result, 0);
@@ -7997,9 +7998,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
-        catch
+        catch (Exception)
         {
-            return false;
+            throw;
         }
     }
 
@@ -8131,5 +8132,32 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         if (byomeiMst == null)
             return new ByomeiMstModel(string.Empty);
         return new ByomeiMstModel(byomeiMst.Byomei ?? string.Empty);
+    }
+
+    public List<RenkeiTimingModel> GetRenkeiTimingModel(int hpId, int renkeiId)
+    {
+        var renkeiTimingMsts = NoTrackingDataContext.RenkeiTimingMsts.Where(x =>
+                x.HpId == hpId &&
+                x.RenkeiId == renkeiId);
+        var eventMsts = NoTrackingDataContext.EventMsts;
+        var query = from renkeiTimingMst in renkeiTimingMsts
+                    join eventMst in eventMsts on renkeiTimingMst.EventCd equals eventMst.EventCd into eventMstTimings
+                    from eventMstTiming in eventMstTimings
+                    select new
+                    {
+                        renkeiTimingMst,
+                        eventName =  eventMstTiming.EventName
+                    };
+        var result = query.AsEnumerable()
+                          .Select(item => new RenkeiTimingModel(
+                                          0,
+                                          item.eventName ?? string.Empty,
+                                          item.renkeiTimingMst.RenkeiId,
+                                          0,
+                                          item.renkeiTimingMst.EventCd,
+                                          item.renkeiTimingMst.IsInvalid,
+                                          false))
+                          .ToList();
+        return result;
     }
 }

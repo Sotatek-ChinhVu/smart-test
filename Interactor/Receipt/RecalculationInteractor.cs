@@ -4,6 +4,8 @@ using Domain.Models.Receipt.Recalculation;
 using Helper.Constants;
 using Helper.Messaging;
 using Helper.Messaging.Data;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Interactor.CalculateService;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.Receipt.Recalculation;
@@ -16,16 +18,20 @@ public class RecalculationInteractor : IRecalculationInputPort
     private readonly ICalculateService _calculateService;
     private readonly ICommonReceRecalculation _commonReceRecalculation;
     private readonly IAuditLogRepository _auditLogRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
     private IMessenger? _messenger;
 
     bool isStopCalc = false;
 
-    public RecalculationInteractor(IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation, ICalculateService calculateRepository, IAuditLogRepository auditLogRepository)
+    public RecalculationInteractor(ITenantProvider tenantProvider, IReceiptRepository receiptRepository, ICommonReceRecalculation commonReceRecalculation, ICalculateService calculateRepository, IAuditLogRepository auditLogRepository)
     {
         _receiptRepository = receiptRepository;
         _commonReceRecalculation = commonReceRecalculation;
         _calculateService = calculateRepository;
         _auditLogRepository = auditLogRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
@@ -94,11 +100,19 @@ public class RecalculationInteractor : IRecalculationInputPort
             AddAuditLog(inputData.HpId, inputData.UserId, inputData.SinYm, inputData.IsRecalculationCheckBox, inputData.IsReceiptAggregationCheckBox, inputData.IsCheckErrorCheckBox, inputData.PtIdList.Any());
             return new RecalculationOutputData(success);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _commonReceRecalculation.ReleaseResource();
             _receiptRepository.ReleaseResource();
             _auditLogRepository.ReleaseResource();
+            _calculateService.ReleaseSource();
+            _tenantProvider.DisposeDataContext();
+            _loggingHandler.Dispose();
         }
     }
 

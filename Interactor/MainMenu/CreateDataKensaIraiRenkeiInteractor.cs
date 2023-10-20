@@ -25,17 +25,18 @@ public class CreateDataKensaIraiRenkeiInteractor : ICreateDataKensaIraiRenkeiInp
             var validateResult = ValidateInput(inputData);
             if (validateResult != CreateDataKensaIraiRenkeiStatus.ValidateSuccess)
             {
-                return new CreateDataKensaIraiRenkeiOutputData(validateResult);
+                return new CreateDataKensaIraiRenkeiOutputData(validateResult, new());
             }
-            if (!inputData.ReCreateDataKensaIraiRenkei && _kensaIraiRepository.CreateDataKensaIraiRenkei(inputData.HpId, inputData.UserId, inputData.KensaIraiList, inputData.CenterCd, inputData.SystemDate))
+            if (!inputData.ReCreateDataKensaIraiRenkei)
             {
-                return new CreateDataKensaIraiRenkeiOutputData(CreateDataKensaIraiRenkeiStatus.Successed);
+                var result = _kensaIraiRepository.CreateDataKensaIraiRenkei(inputData.HpId, inputData.UserId, inputData.KensaIraiList, inputData.CenterCd, inputData.SystemDate);
+                return new CreateDataKensaIraiRenkeiOutputData(CreateDataKensaIraiRenkeiStatus.Successed, result);
             }
-            else if (inputData.ReCreateDataKensaIraiRenkei && _kensaIraiRepository.ReCreateDataKensaIraiRenkei(inputData.HpId, inputData.UserId, inputData.KensaIraiList, inputData.SystemDate))
+            else
             {
-                return new CreateDataKensaIraiRenkeiOutputData(CreateDataKensaIraiRenkeiStatus.Successed);
+                var result = _kensaIraiRepository.ReCreateDataKensaIraiRenkei(inputData.HpId, inputData.UserId, inputData.KensaIraiList, inputData.SystemDate);
+                return new CreateDataKensaIraiRenkeiOutputData(CreateDataKensaIraiRenkeiStatus.Successed, result);
             }
-            return new CreateDataKensaIraiRenkeiOutputData(CreateDataKensaIraiRenkeiStatus.Failed);
         }
         finally
         {

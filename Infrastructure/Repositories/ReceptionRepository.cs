@@ -1064,8 +1064,7 @@ namespace Infrastructure.Repositories
             }
 
             updateEntity(raiinInf);
-            NoTrackingDataContext.SaveChanges();
-            return true;
+            return NoTrackingDataContext.SaveChanges() > 0;
         }
 
         public ReceptionModel GetReceptionComments(int hpId, long raiinNo)
@@ -1872,5 +1871,22 @@ namespace Infrastructure.Repositories
                                       string.Empty
                                );
         }
+
+        public int GetNextUketukeNoBySetting(int hpId, int sindate, int infKbn, int kaId, int uketukeMode, int defaultUkeNo)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId 
+                                                                         && item.SinDate == sindate
+                                                                         && (!(uketukeMode == 1 || uketukeMode == 3) || item.UketukeSbt == infKbn)
+                                                                         && (!(uketukeMode == 2 || uketukeMode == 3) || item.KaId == kaId)
+                                                                         && item.IsDeleted == DeleteTypes.None
+                                                         ).OrderByDescending(p => p.UketukeNo)
+                                                          .FirstOrDefault();
+            if (raiinInf != null)
+            {
+                return raiinInf.UketukeNo + 1 < defaultUkeNo ? defaultUkeNo : raiinInf.UketukeNo + 1;
+            }
+            return defaultUkeNo > 0 ? defaultUkeNo : 1;
+        }
+
     }
 }
