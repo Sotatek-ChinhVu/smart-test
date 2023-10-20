@@ -10,6 +10,6 @@ namespace EmrCloudApi.Requests.KensaHistory
 
         public int IraiDate { get; set; }
 
-        public List<KensaInfDetailUpdateModel> kensaInfDetails { get; set; } = new();
+        public List<KensaInfDetailUpdateModel> kensaInfDetails { get; set; }
     }
 }
