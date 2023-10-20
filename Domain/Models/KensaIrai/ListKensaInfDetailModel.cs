@@ -7,19 +7,21 @@
             KensaInfDetailCol = new List<KensaInfDetailColModel>();
             KensaInfDetailData = new List<KensaInfDetailDataModel>();
         }
-        public ListKensaInfDetailModel(List<KensaInfDetailColModel> kensaInfDetailCol, List<KensaInfDetailDataModel> kensaInfDetailData)
+        public ListKensaInfDetailModel(List<KensaInfDetailColModel> kensaInfDetailCol, List<KensaInfDetailDataModel> kensaInfDetailData, int totalCol)
         {
             KensaInfDetailCol = kensaInfDetailCol;
             KensaInfDetailData = kensaInfDetailData;
+            TotalCol = totalCol;
         }
 
         public List<KensaInfDetailColModel> KensaInfDetailCol { get; private set; }
 
         public List<KensaInfDetailDataModel> KensaInfDetailData { get; private set; }
+        public int TotalCol { get; private set; }
 
         public class KensaInfDetailColModel
         {
-            public KensaInfDetailColModel(long iraiCd, long iraiDate, string nyubi, string yoketu, int bilirubin, int sikyuKbn, int tosekiKbn)
+            public KensaInfDetailColModel(long iraiCd, long iraiDate, string nyubi, string yoketu, int bilirubin, int sikyuKbn, int tosekiKbn, int index)
             {
                 IraiCd = iraiCd;
                 IraiDate = iraiDate;
@@ -28,6 +30,7 @@
                 Bilirubin = bilirubin;
                 SikyuKbn = sikyuKbn;
                 TosekiKbn = tosekiKbn;
+                Index = index;
             }
 
             public long IraiCd { get; private set; }
@@ -43,6 +46,7 @@
             public int SikyuKbn { get; private set; }
 
             public int TosekiKbn { get; private set; }
+            public int Index { get; private set; }
         }
 
         public class KensaInfDetailDataModel

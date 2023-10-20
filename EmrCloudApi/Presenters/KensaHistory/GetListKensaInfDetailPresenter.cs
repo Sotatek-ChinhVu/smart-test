@@ -27,6 +27,9 @@ namespace EmrCloudApi.Presenters.KensaHistory
                 case SearchPostCodeStatus.InvalidHpId:
                     Result.Message = ResponseMessage.InvalidHpId;
                     break;
+                case SearchPostCodeStatus.InvalidPtId:
+                    Result.Message = ResponseMessage.InvalidPtId;
+                    break;
             }
         }
     }

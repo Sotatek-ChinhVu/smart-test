@@ -344,7 +344,7 @@ namespace Infrastructure.Repositories
             return successed;
         }
 
-        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity)
+        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int itemQuantity)
         {
             IQueryable<KensaInfDetail> kensaInfDetails;
 
@@ -474,36 +474,68 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            // Get list with start date
-            if (SortIraiDateAsc && startDate != 0)
-            {
-                data = data.Where(x => x.IraiDate >= startDate);
-            }
-            else if (startDate != 0)
-            {
-                data = data.Where(x => x.IraiDate <= startDate);
-            }
-
-            var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
-
             // Sort by IraiDate
 
             var sortedData = SortIraiDateAsc
                 ? data.OrderBy(x => x.IraiDate)
                 : data.OrderByDescending(x => x.IraiDate);
 
+
+
             var kensaInfDetailCol = sortedData
                 .GroupBy(x => new { x.IraiCd, x.IraiDate, x.Nyubi, x.Yoketu, x.Bilirubin, x.SikyuKbn, x.TosekiKbn })
-                .Select(group => new KensaInfDetailColModel(
+                .Select((group, index) => new KensaInfDetailColModel(
                     group.Key.IraiCd,
                     group.Key.IraiDate,
                     group.Key.Nyubi,
                     group.Key.Yoketu,
                     group.Key.TosekiKbn,
                     group.Key.SikyuKbn,
-                    group.Key.TosekiKbn
-                ))
-                .Take(itemQuantity);
+                    group.Key.TosekiKbn,
+                    index
+                ));
+
+
+            var totalCol = kensaInfDetailCol.Count();
+            // Get list with start date
+
+            if (iraiCdStart > 0)
+            {
+
+                int currentIndex = 0;
+                foreach (var obj in kensaInfDetailCol)
+                {
+                    if (obj.IraiCd == iraiCdStart)
+                    {
+                        break;
+                    }
+                    currentIndex++;
+                }
+
+                if (getGetPrevious)
+                {
+                    kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
+                }
+                else
+                {
+                    kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1).Take(itemQuantity);
+                }
+            }
+            else
+            {
+                if (getGetPrevious)
+                {
+                    kensaInfDetailCol = kensaInfDetailCol.TakeLast(itemQuantity);
+                }
+                else
+                {
+                    kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+                }
+            }
+
+            var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
+            data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));
+            var kensaItemCds = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd)).GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
 
             var groupRowData = data
                 .GroupBy(x => x.KensaItemCd)
@@ -528,7 +560,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData);
+            var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData, totalCol);
             return result;
         }
 

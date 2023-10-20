@@ -4,14 +4,15 @@ namespace UseCase.KensaHistory.GetListKensaInfDetail
 {
     public class GetListKensaInfDetailInputData : IInputData<GetListKensaInfDetailOutputData>
     {
-        public GetListKensaInfDetailInputData(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity)
+        public GetListKensaInfDetailInputData(int hpId, int userId, long ptId, int setId, int iraiCd, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int itemQuantity)
         {
             HpId = hpId;
             UserId = userId;
             PtId = ptId;
             SetId = setId;
             IraiCd = iraiCd;
-            StartDate = startDate;
+            IraiCdStart = iraiCdStart;
+            GetGetPrevious = getGetPrevious;
             ShowAbnormalKbn = showAbnormalKbn;
             ItemQuantity = itemQuantity;
         }
@@ -25,7 +26,9 @@ namespace UseCase.KensaHistory.GetListKensaInfDetail
 
         public int IraiCd { get; private set; }
 
-        public int StartDate { get; private set; }
+        public int IraiCdStart { get; private set; }
+
+        public bool GetGetPrevious { get; private set; }
 
         public bool ShowAbnormalKbn { get; private set; }
 
