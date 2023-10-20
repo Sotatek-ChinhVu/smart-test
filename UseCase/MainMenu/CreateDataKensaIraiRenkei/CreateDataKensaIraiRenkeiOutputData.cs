@@ -5,12 +5,6 @@ namespace UseCase.MainMenu.CreateDataKensaIraiRenkei;
 
 public class CreateDataKensaIraiRenkeiOutputData : IOutputData
 {
-    public CreateDataKensaIraiRenkeiOutputData(CreateDataKensaIraiRenkeiStatus status)
-    {
-        Status = status;
-        KensaIraiList = new();
-    }
-
     public CreateDataKensaIraiRenkeiOutputData(CreateDataKensaIraiRenkeiStatus status, List<KensaIraiModel> kensaIraiList)
     {
         Status = status;

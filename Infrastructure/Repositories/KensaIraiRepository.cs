@@ -602,11 +602,9 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         return kensaIraiList;
     }
 
-    public bool ReCreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, int systemDate)
+    public List<KensaIraiModel> ReCreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, int systemDate)
     {
         List<(KensaInf kensaInf, List<KensaInfDetail> kensaInfDetailList, List<OdrInfDetail> odrInfDetailList)> modelRelationList = new();
-
-        bool successed = false;
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(
             () =>
@@ -735,7 +733,6 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     TrackingDataContext.KensaInfDetails.AddRange(kensaDetailList);
                     TrackingDataContext.SaveChanges();
                     transaction.Commit();
-                    successed = true;
                 }
                 catch (Exception)
                 {
@@ -743,7 +740,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     throw;
                 }
             });
-        return successed;
+        return kensaIraiList;
     }
 
     public bool CheckExistCenterCd(int hpId, string centerCd)

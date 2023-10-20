@@ -25,7 +25,7 @@ public interface IKensaIraiRepository : IRepositoryBase
 
     public bool CheckExistIraiCd(int hpId, List<long> iraiCdList);
 
-    bool ReCreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, int systemDate);
+    List<KensaIraiModel> ReCreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, int systemDate);
 
     List<KensaInfModel> GetKensaInfModels(int hpId, int startDate, int endDate, string centerCd = "");
 
