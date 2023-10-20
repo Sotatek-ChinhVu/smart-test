@@ -1,4 +1,6 @@
 ﻿using Domain.Models.Todo;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.Todo;
 using UseCase.Todo.UpsertTodoGrpMst;
 
@@ -7,10 +9,14 @@ namespace Interactor.Todo;
 public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
 {
     private readonly ITodoGrpMstRepository _todoGrpMstRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public UpsertTodoGrpMstInteractor(ITodoGrpMstRepository todoGrpMstRepository)
+    public UpsertTodoGrpMstInteractor(ITenantProvider tenantProvider, ITodoGrpMstRepository todoGrpMstRepository)
     {
         _todoGrpMstRepository = todoGrpMstRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public UpsertTodoGrpMstOutputData Handle(UpsertTodoGrpMstInputData input)
@@ -45,9 +51,15 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
 
             return new UpsertTodoGrpMstOutputData(UpsertTodoGrpMstStatus.Success);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _todoGrpMstRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

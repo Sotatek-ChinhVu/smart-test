@@ -36,7 +36,7 @@ public class RevertDeleteNoReceptInteractor : IRevertDeleteNoReceptInputPort
             }
             else
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
                 result = _receptionRepository.UpdateIsDeleted(inputData.HpId, inputData.RaiinNo);
                 if (result)
                 {
@@ -45,7 +45,7 @@ public class RevertDeleteNoReceptInteractor : IRevertDeleteNoReceptInputPort
                 }
             }
 
-            return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.Failed, new());
+            return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.Success, new());
         }
         finally
         {

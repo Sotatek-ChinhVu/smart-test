@@ -33,6 +33,7 @@ namespace EmrCalculateApi.Controllers
                 2 => new SinMeiViewModel(SinMeiMode.ReceCheck, true, request.HpId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, _tenantProvider, _systemConfigProvider, _emrLogger),
                 _ => null
             };
+            _tenantProvider.DisposeDataContext();
 
             return new ActionResult<GetSinMeiListResponse>(new GetSinMeiListResponse(sinMeiVM?.SinMei ?? new()));
 

@@ -1,15 +1,7 @@
-﻿using Domain.Models.Diseases;
-using Domain.Models.Insurance;
-using Domain.Models.Ka;
-using Domain.Models.PatientInfor;
+﻿using Domain.Models.Ka;
 using Domain.Models.User;
-using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.Diseases.Upsert;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.User.UpsertList;
 using static Helper.Constants.UserConst;
 
@@ -19,10 +11,14 @@ namespace Interactor.User
     {
         private readonly IUserRepository _userRepository;
         private readonly IKaRepository _kaRepository;
-        public UpsertUserListInteractor(IUserRepository userRepository, IKaRepository kaRepository)
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
+        public UpsertUserListInteractor(ITenantProvider tenantProvider, IUserRepository userRepository, IKaRepository kaRepository)
         {
             _userRepository = userRepository;
             _kaRepository = kaRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public UpsertUserListOutputData Handle(UpsertUserListInputData inputData)
@@ -81,10 +77,10 @@ namespace Interactor.User
                     }
                 }
 
-                if(!_userRepository.CheckExistedId(datas.Where(u => u.Id > 0).Select(u => u.Id).ToList()))
+                if (!_userRepository.CheckExistedId(datas.Where(u => u.Id > 0).Select(u => u.Id).ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidNoExistedId);
-                }    
+                }
 
                 if (_userRepository.CheckExistedUserIdCreate(datas.Where(u => u.Id == 0).Select(u => u.UserId).ToList()))
                 {
@@ -120,14 +116,16 @@ namespace Interactor.User
 
                 return new UpsertUserListOutputData(UpsertUserListStatus.Success);
             }
-            catch
+            catch (Exception ex)
             {
-                return new UpsertUserListOutputData(UpsertUserListStatus.Failed);
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
             }
             finally
             {
                 _kaRepository.ReleaseResource();
                 _userRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
         private static UpsertUserListStatus ConvertStatusUser(ValidationStatus status)

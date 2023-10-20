@@ -1,4 +1,6 @@
 ﻿using Domain.Models.AuditLog;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.SaveAuditLog;
 
 namespace Interactor.AuditTrailLog
@@ -6,9 +8,14 @@ namespace Interactor.AuditTrailLog
     public class SaveAuditTrailLogInteractor : ISaveAuditTrailLogInputPort
     {
         private readonly IAuditLogRepository _auditLogRepository;
-        public SaveAuditTrailLogInteractor(IAuditLogRepository auditLogRepository)
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
+
+        public SaveAuditTrailLogInteractor(ITenantProvider tenantProvider, IAuditLogRepository auditLogRepository)
         {
             _auditLogRepository = auditLogRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveAuditTrailLogOutputData Handle(SaveAuditTrailLogInputData inputData)
@@ -23,9 +30,15 @@ namespace Interactor.AuditTrailLog
 
                 return new SaveAuditTrailLogOutputData(SaveAuditTrailLogStatus.Failed);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _auditLogRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

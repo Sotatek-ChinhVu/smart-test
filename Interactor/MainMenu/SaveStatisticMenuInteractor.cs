@@ -1,6 +1,8 @@
 ﻿using Domain.Models.MainMenu;
 using Domain.Models.User;
 using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Reporting.DailyStatic.Enum;
 using UseCase.MainMenu;
 using UseCase.MainMenu.SaveStatisticMenu;
@@ -12,11 +14,15 @@ public class SaveStatisticMenuInteractor : ISaveStatisticMenuInputPort
 {
     private readonly IStatisticRepository _statisticRepository;
     private readonly IUserRepository _userRepository;
+    private readonly ITenantProvider _tenantProvider;
+    private readonly ILoggingHandler _loggingHandler;
 
-    public SaveStatisticMenuInteractor(IStatisticRepository statisticRepository, IUserRepository userRepository)
+    public SaveStatisticMenuInteractor(ITenantProvider tenantProvider, IStatisticRepository statisticRepository, IUserRepository userRepository)
     {
         _statisticRepository = statisticRepository;
         _userRepository = userRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveStatisticMenuOutputData Handle(SaveStatisticMenuInputData inputData)
@@ -35,10 +41,16 @@ public class SaveStatisticMenuInteractor : ISaveStatisticMenuInputPort
             }
             return new SaveStatisticMenuOutputData(0, SaveStatisticMenuStatus.Failed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _statisticRepository.ReleaseResource();
             _userRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

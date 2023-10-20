@@ -26,5 +26,7 @@ namespace Interactor.CalculateService
         bool RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken);
 
         SinMeiDataModelDto GetSinMeiInMonthList(GetSinMeiDtoInputData inputData);
+
+        void ReleaseSource();
     }
 }

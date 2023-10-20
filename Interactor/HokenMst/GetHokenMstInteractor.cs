@@ -27,7 +27,7 @@ namespace Interactor.HokenMst
                   || kohiInf.HokenSbtKbn == 6
                   || kohiInf.HokenSbtKbn == 7);
 
-                var kohiModels = kohis.Select(x => new HokenMstItem(x.Houbetu, x.HoubetuDisplayText, x.HokenNo, x.HokenEdaNo)).ToList();
+                var kohiModels = kohis.Select(x => new HokenMstItem(x.SelectedValueMaster, x.DisplayTextMasterWithoutHokenNo, x.Houbetu, x.HoubetuDisplayText, x.HokenNo, x.HokenEdaNo)).ToList();
 
                 var kohiModelWithFutansyanos = expireHokenMsts.Where(kohiInf =>
                 (kohiInf.HokenSbtKbn == 2

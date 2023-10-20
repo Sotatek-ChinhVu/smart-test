@@ -14,6 +14,7 @@ using Domain.Models.User;
 using Helper.Constants;
 using Helper.Enum;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Infrastructure.Options;
 using Interactor.CalculateService;
 using Microsoft.Extensions.Options;
@@ -39,9 +40,11 @@ namespace Interactor.MedicalExamination
         private readonly IKarteInfRepository _karteInfRepository;
         private readonly IAmazonS3Service _amazonS3Service;
         private readonly ICalculateService _calculateService;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
         private readonly AmazonS3Options _options;
 
-        public UpsertTodayOrdInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService)
+        public UpsertTodayOrdInteractor(ITenantProvider tenantProvider, IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService)
         {
             _amazonS3Service = amazonS3Service;
             _options = optionsAccessor.Value;
@@ -57,6 +60,8 @@ namespace Interactor.MedicalExamination
             _todayOdrRepository = todayOdrRepository;
             _karteInfRepository = karteInfRepository;
             _calculateService = calculateService;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public UpsertTodayOrdOutputData Handle(UpsertTodayOrdInputData inputDatas)
@@ -200,6 +205,11 @@ namespace Interactor.MedicalExamination
                         new(),
                         new());
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _ordInfRepository.ReleaseResource();
@@ -213,6 +223,8 @@ namespace Interactor.MedicalExamination
                 _hpInfRepository.ReleaseResource();
                 _todayOdrRepository.ReleaseResource();
                 _karteInfRepository.ReleaseResource();
+                _tenantProvider.DisposeDataContext();
+                _loggingHandler.Dispose();
             }
         }
 

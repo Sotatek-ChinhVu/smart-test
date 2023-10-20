@@ -1,5 +1,7 @@
 ﻿using Domain.Models.MonshinInf;
 using Domain.Models.Reception;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.MonshinInfor.Save;
 using static Helper.Constants.MonshinInfConst;
 
@@ -9,11 +11,15 @@ namespace Interactor.MonshinInf
     {
         private readonly IMonshinInforRepository _monshinInforRepository;
         private readonly IReceptionRepository _receptionRepository;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SaveMonshinInforListInteractor(IMonshinInforRepository monshinInforRepository, IReceptionRepository receptionRepository)
+        public SaveMonshinInforListInteractor(ITenantProvider tenantProvider, IMonshinInforRepository monshinInforRepository, IReceptionRepository receptionRepository)
         {
             _monshinInforRepository = monshinInforRepository;
             _receptionRepository = receptionRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveMonshinOutputData Handle(SaveMonshinInputData inputData)
@@ -39,14 +45,16 @@ namespace Interactor.MonshinInf
                 var status = success ? SaveMonshinStatus.Success : SaveMonshinStatus.Failed;
                 return new SaveMonshinOutputData(status);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new SaveMonshinOutputData(SaveMonshinStatus.Failed);
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
             }
             finally
             {
                 _monshinInforRepository.ReleaseResource();
                 _receptionRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

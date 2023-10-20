@@ -53,7 +53,7 @@ public class ImportKensaIraiInteractor : IImportKensaIraiInputPort
         bool successed = true;
         foreach (var item in contenItemList)
         {
-            if (string.IsNullOrEmpty(item) && item.Length != 256)
+            if (string.IsNullOrEmpty(item) && item.Length == 256)
             {
                 continue;
             }

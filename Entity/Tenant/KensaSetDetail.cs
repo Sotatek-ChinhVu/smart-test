@@ -39,6 +39,12 @@ namespace Entity.Tenant
         [MaxLength(9)]
         public int SetEdaNo { get; set; }
 
+
+        [Column("SEQ_PARENT_NO")]
+        [CustomAttribute.DefaultValue(0)]
+        [MaxLength(9)]
+        public int SetEdaParentNo { get; set; }
+
         /// <summary>
         /// 検査項目コード
         /// 

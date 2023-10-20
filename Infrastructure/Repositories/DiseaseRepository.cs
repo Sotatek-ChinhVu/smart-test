@@ -264,7 +264,15 @@ namespace Infrastructure.Repositories
             {
                 string createName = userMstList.FirstOrDefault(item => item.UserId == ptByomei.CreateId)?.Sname ?? string.Empty;
                 string updateName = userMstList.FirstOrDefault(item => item.UserId == ptByomei.UpdateId)?.Sname ?? string.Empty;
-                string byomeiName = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd)?.Byomei ?? ptByomei.Byomei ?? string.Empty;
+                string byomeiName = "";
+                if (ptByomei.ByomeiCd != "0000999")
+                {
+                    byomeiName = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd)?.Byomei ?? ptByomei.Byomei ?? string.Empty;
+                }
+                else
+                {
+                    byomeiName =  ptByomei.Byomei ?? (byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd)?.Byomei ?? string.Empty);
+                }
 
                 var ptDiseaseModel = new PtDiseaseModel(
                         ptByomei.HpId,

@@ -12,7 +12,7 @@ namespace EmrCloudApi.Presenters.MstItem
         public Response<GetListKensaMstResponse> Result { get; private set; } = new Response<GetListKensaMstResponse>();
         public void Complete(GetListKensaMstOuputData outputData)
         {
-            Result.Data = new GetListKensaMstResponse(outputData.KensaMsts);
+            Result.Data = new GetListKensaMstResponse(outputData.KensaMsts, outputData.TotalCount);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

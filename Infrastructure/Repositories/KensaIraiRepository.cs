@@ -134,9 +134,10 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     transaction.Commit();
                     successed = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return successed;
@@ -420,10 +421,17 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                               .ToList();
                     kensaIraiDetailList.AddRange(todayOdrList);
                 }
+                long iraiCd = 0;
+                if (kensaInf.RaiinNo == firstTodayOdr.RaiinInf.RaiinNo
+                    && kensaInf.TosekiKbn == firstTodayOdr.TosekiKbn
+                    && kensaInf.SikyuKbn == firstTodayOdr.SikyuKbn)
+                {
+                    iraiCd = kensaInf.IraiCd;
+                }
                 result.Add(new KensaIraiModel(
                                 firstTodayOdr.RaiinInf.SinDate,
                                 firstTodayOdr.RaiinInf.RaiinNo,
-                                kensaInf.IraiCd,
+                                iraiCd,
                                 firstTodayOdr.PtInf.PtId,
                                 firstTodayOdr.PtInf.PtNum,
                                 firstTodayOdr.PtInf.Name ?? string.Empty,
@@ -437,6 +445,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                          ));
             }
         }
+
         // Filter irai done item
         result = result.Where(item => item.KensaIraiDetails.Any(item => !string.IsNullOrEmpty(item.KensaItemCd)))
                        .OrderBy(item => item.SinDate)
@@ -446,11 +455,11 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         return result;
     }
 
-    public bool CreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, string centerCd, int systemDate)
+    public List<KensaIraiModel> CreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, string centerCd, int systemDate)
     {
         List<KensaInf> kensaInfs = new();
+        List<KensaInfDetail> kensaInfDetailList = new();
         List<(KensaInf kensaInf, List<KensaInfDetail> kensaInfDetailList, List<OdrInfDetail> odrInfDetailList)> modelRelationList = new();
-        bool successed = false;
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(
             () =>
@@ -469,7 +478,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                             InoutKbn = 1,
                             Status = 0,
                             TosekiKbn = kensaIrai.TosekiKbn,
-                            SikyuKbn = kensaIrai.SikyuKbn <= 1 ? 1 : kensaIrai.SikyuKbn,
+                            SikyuKbn = kensaIrai.SikyuKbn >= 1 ? 1 : kensaIrai.SikyuKbn,
                             ResultCheck = 0,
                             CenterCd = centerCd,
                             Nyubi = string.Empty,
@@ -509,7 +518,6 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                                                                                  && rowNoList.Contains(item.RowNo))
                                                                                    .ToList();
 
-                        List<KensaInfDetail> kensaInfDetailList = new();
                         List<OdrInfDetail> odrInfDetailList = new();
                         foreach (var kensaIraiDetail in kensaIrai.KensaIraiDetails)
                         {
@@ -573,21 +581,37 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     TrackingDataContext.KensaInfDetails.AddRange(kensaDetails);
                     TrackingDataContext.SaveChanges();
                     transaction.Commit();
-                    successed = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
-        return successed;
+
+        var raiinNoList = kensaIraiList.Select(item => item.RaiinNo).Distinct().ToList();
+        var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                         && raiinNoList.Contains(item.RaiinNo)
+                                                                         && item.IsDeleted == 0);
+        foreach (var model in kensaIraiList)
+        {
+            var kensaInf = kensaInfs.FirstOrDefault(item => item.PtId == model.PtId
+                                                            && item.RaiinNo == model.RaiinNo
+                                                            && item.SikyuKbn == model.SikyuKbn
+                                                            && item.TosekiKbn == model.TosekiKbn);
+            if (kensaInf == null)
+            {
+                continue;
+            }
+            var raiinInf = raiinInfList.FirstOrDefault(item => item.RaiinNo == model.RaiinNo);
+            model.UpdateIraiCd(kensaInf.IraiCd, raiinInf?.KaId ?? 0);
+        }
+        return kensaIraiList;
     }
 
-    public bool ReCreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, int systemDate)
+    public List<KensaIraiModel> ReCreateDataKensaIraiRenkei(int hpId, int userId, List<KensaIraiModel> kensaIraiList, int systemDate)
     {
         List<(KensaInf kensaInf, List<KensaInfDetail> kensaInfDetailList, List<OdrInfDetail> odrInfDetailList)> modelRelationList = new();
-
-        bool successed = false;
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(
             () =>
@@ -601,6 +625,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                                                                       && iraiCdList.Contains(item.IraiCd))
                                                                        .ToList();
 
+                    string centerCd = kensaIraiDBList.FirstOrDefault()?.CenterCd ?? string.Empty;
                     var ptIdList = kensaIraiList.Select(item => item.PtId).Distinct().ToList();
                     var raiinNoList = kensaIraiList.Select(item => item.RaiinNo).Distinct().ToList();
 
@@ -617,13 +642,25 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     foreach (var kensaIrai in kensaIraiList)
                     {
                         var kensaInf = kensaIraiDBList.FirstOrDefault(item => item.IraiCd == kensaIrai.IraiCd);
+                        if (kensaInf == null && kensaIrai.IraiCd == 0)
+                        {
+                            kensaInf = new KensaInf();
+                            kensaInf.HpId = hpId;
+                            kensaInf.IsDeleted = 0;
+                            kensaInf.RaiinNo = kensaIrai.RaiinNo;
+                            kensaInf.PtId = kensaIrai.PtId;
+                            kensaInf.CenterCd = centerCd;
+                            kensaInf.IraiCd = 0;
+                            kensaInf.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            kensaInf.CreateId = userId;
+                        }
                         if (kensaInf != null)
                         {
                             kensaInf.IraiDate = systemDate;
                             kensaInf.InoutKbn = 1;
                             kensaInf.Status = 0;
                             kensaInf.TosekiKbn = kensaIrai.TosekiKbn;
-                            kensaInf.SikyuKbn = kensaIrai.SikyuKbn <= 1 ? 1 : kensaIrai.SikyuKbn;
+                            kensaInf.SikyuKbn = kensaIrai.SikyuKbn >= 1 ? 1 : kensaIrai.SikyuKbn;
                             kensaInf.ResultCheck = 0;
                             kensaInf.Nyubi = string.Empty;
                             kensaInf.Yoketu = string.Empty;
@@ -666,6 +703,11 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                         newOdrInfList.Add(odrInfDetail);
                                     }
                                 }
+                            }
+                            if (kensaInf.IraiCd == 0)
+                            {
+                                TrackingDataContext.KensaInfs.Add(kensaInf);
+                                TrackingDataContext.SaveChanges();
                             }
                             modelRelationList.Add((kensaInf, newKensaInfDetailList, newOdrInfList));
                         }
@@ -714,15 +756,34 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                         }
                     }
                     TrackingDataContext.KensaInfDetails.AddRange(kensaDetailList);
-                    TrackingDataContext.SaveChanges(); transaction.Commit();
-                    successed = true;
+                    TrackingDataContext.SaveChanges();
+                    transaction.Commit();
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
-        return successed;
+
+        var raiinNoList = kensaIraiList.Select(item => item.RaiinNo).Distinct().ToList();
+        var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                         && raiinNoList.Contains(item.RaiinNo)
+                                                                         && item.IsDeleted == 0);
+        foreach (var model in kensaIraiList)
+        {
+            var mode = modelRelationList.FirstOrDefault(item => item.kensaInf.PtId == model.PtId
+                                                                     && item.kensaInf.RaiinNo == model.RaiinNo
+                                                                     && item.kensaInf.SikyuKbn == model.SikyuKbn
+                                                                     && item.kensaInf.TosekiKbn == model.TosekiKbn);
+            if (mode.kensaInf == null)
+            {
+                continue;
+            }
+            var raiinInf = raiinInfList.FirstOrDefault(item => item.RaiinNo == model.RaiinNo);
+            model.UpdateIraiCd(mode.kensaInf.IraiCd, raiinInf?.KaId ?? 0);
+        }
+        return kensaIraiList;
     }
 
     public bool CheckExistCenterCd(int hpId, string centerCd)
@@ -1053,9 +1114,11 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                         transaction.Commit();
                     }
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    doneProgress = false;
+                    throw;
                 }
                 finally
                 {

@@ -2,6 +2,8 @@
 using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Receipt;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.Receipt;
 using UseCase.Receipt.SaveListSyobyoKeika;
 
@@ -13,13 +15,17 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly IMstItemRepository _mstItemRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveSyobyoKeikaListInteractor(IReceiptRepository receiptRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
+    public SaveSyobyoKeikaListInteractor(ITenantProvider tenantProvider, IReceiptRepository receiptRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
     {
         _receiptRepository = receiptRepository;
         _patientInforRepository = patientInforRepository;
         _insuranceRepository = insuranceRepository;
         _mstItemRepository = mstItemRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveSyobyoKeikaListOutputData Handle(SaveSyobyoKeikaListInputData inputData)
@@ -44,12 +50,18 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
             }
             return new SaveSyobyoKeikaListOutputData(SaveSyobyoKeikaListStatus.Failed, syobyoKeikaInvalidList);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _receiptRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
             _insuranceRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

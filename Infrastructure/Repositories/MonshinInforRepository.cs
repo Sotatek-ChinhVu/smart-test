@@ -139,7 +139,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 

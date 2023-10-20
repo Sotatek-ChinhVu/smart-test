@@ -1,6 +1,8 @@
 ﻿using Domain.Constant;
 using Domain.Models.InsuranceMst;
 using Helper.Common;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.InsuranceMst.SaveHokenMaster;
 
 namespace Interactor.InsuranceMst
@@ -8,16 +10,20 @@ namespace Interactor.InsuranceMst
     public class SaveHokenMasterInteractor : ISaveHokenMasterInputPort
     {
         private readonly IInsuranceMstRepository _insuranceMstReponsitory;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SaveHokenMasterInteractor(IInsuranceMstRepository insuranceMstReponsitory)
+        public SaveHokenMasterInteractor(ITenantProvider tenantProvider, IInsuranceMstRepository insuranceMstReponsitory)
         {
             _insuranceMstReponsitory = insuranceMstReponsitory;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveHokenMasterOutputData Handle(SaveHokenMasterInputData inputData)
         {
             string message = string.Empty;
-            if(inputData.HpId <= 0)
+            if (inputData.HpId <= 0)
                 return new SaveHokenMasterOutputData(SaveHokenMasterStatus.InvalidHpId, string.Empty);
 
             if (inputData.Insurance.IsAdded && inputData.Insurance.HokenNo < 900)
@@ -30,7 +36,7 @@ namespace Interactor.InsuranceMst
             {
                 message = string.Format(ErrorMessage.MessageType_mNG01010, new string[] { "適用開始日" });
                 return new SaveHokenMasterOutputData(SaveHokenMasterStatus.InvalidStartDate, message);
-            }  
+            }
 
             if (inputData.Insurance.EndDate != 99999999 && string.IsNullOrEmpty(CIUtil.SDateToShowSDate(inputData.Insurance.EndDate)))
             {
@@ -74,9 +80,15 @@ namespace Interactor.InsuranceMst
                 else
                     return new SaveHokenMasterOutputData(SaveHokenMasterStatus.Failed, string.Empty);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _insuranceMstReponsitory.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

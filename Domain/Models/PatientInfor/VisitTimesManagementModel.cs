@@ -24,19 +24,6 @@ public class VisitTimesManagementModel
         IsDeleted = false;
     }
 
-    public VisitTimesManagementModel ChangeSortKey(int sinDate, string sortKey)
-    {
-        SinDate = sinDate;
-        SortKey = sortKey;
-        return this;
-    }
-
-    public VisitTimesManagementModel ChangeSeqNo(int seqNo)
-    {
-        SeqNo = seqNo;
-        return this;
-    }
-
     public long PtId { get; private set; }
 
     public int SinDate { get; private set; }
