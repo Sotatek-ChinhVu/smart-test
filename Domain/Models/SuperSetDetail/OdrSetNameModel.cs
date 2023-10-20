@@ -2,7 +2,7 @@
 
 public class OdrSetNameModel
 {
-    public OdrSetNameModel(int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int rowNo, int sortNo, string rpName, string itemCd, string itemName, string cmtName, string cmtOpt, double quantity, string unitName, int unitSbt, double odrTermVal, int kohatuKbn, string ipnCd, string ipnName, int drugKbn, int sinKouiKbn, int syohoKbn, int syohoLimitKbn, double ten, int handanGrpKbn, string masterSbt, int startDate, int endDate, int yohoKbn, int odrKouiKbn, int buiKbn)
+    public OdrSetNameModel(int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int rowNo, int sortNo, string rpName, string itemCd, string itemName, string cmtName, string cmtOpt, double quantity, string unitName, int unitSbt, double odrTermVal, int kohatuKbn, string ipnCd, string ipnName, int drugKbn, int sinKouiKbn, int syohoKbn, int syohoLimitKbn, double ten, int handanGrpKbn, string masterSbt, int startDate, int endDate, int yohoKbn, int odrKouiKbn, int buiKbn, long setOrdInfId)
     {
         SetCd = setCd;
         SetKbn = setKbn;
@@ -38,6 +38,7 @@ public class OdrSetNameModel
         YohoKbn = yohoKbn;
         OdrKouiKbn = odrKouiKbn;
         BuiKbn = buiKbn;
+        SetOrdInfId = setOrdInfId;
     }
 
     public int SetCd { get; private set; }
@@ -107,4 +108,6 @@ public class OdrSetNameModel
     public int OdrKouiKbn { get; private set; }
 
     public int BuiKbn { get; private set; }
+
+    public long SetOrdInfId { get; private set; }
 }

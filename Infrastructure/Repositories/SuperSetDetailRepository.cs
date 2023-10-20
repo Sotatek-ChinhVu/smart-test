@@ -1467,9 +1467,14 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                         .Where(item => item.HpId == hpId
                                        && item.IsDeleted == 0
                                        && item.GenerationId == generationId
-                                       && listSetKbn.Contains(item.SetKbn));
+                                       && listSetKbn.Contains(item.SetKbn))
+                        .ToList();
+        var setCdList = setMstRepo.Select(item => item.SetCd).Distinct().ToList();
 
-        var setOdrInfRepo = NoTrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId && item.IsDeleted == 0);
+        var setOdrInfRepo = NoTrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId
+                                                                          && item.IsDeleted == 0
+                                                                          && setCdList.Contains(item.SetCd))
+                                                           .ToList();
 
         // Free comment only
         if (CheckFreeCommentOnly(checkBoxStatus))
@@ -1493,8 +1498,10 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                        })
                                       .ToList();
 
-            var listSetNameFreeComment = querySetFreeComment.Distinct()
-                                        .Select(item => ConvertToOdrSetNameModel(item.SetMst, item.SetOdrInf, null, null, 0));
+            var listSetNameFreeComment = querySetFreeComment
+                                        .Select(item => ConvertToOdrSetNameModel(item.SetMst, item.SetOdrInf, null, null, 0))
+                                        .DistinctBy(item => new { item.SetCd, item.SetOrdInfId });
+
             return listSetNameFreeComment
                    .Union(listDetailFreeCommentOnly)
                    .OrderBy(item => item.SetKbn)
@@ -1511,12 +1518,15 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         // For all other case
         var setOdrInfDetailRepo = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.HpId == hpId
                                                                                       && item.ItemCd != null
-                                                                                      && item.ItemCd.Replace("　", string.Empty).Replace(" ", string.Empty) != string.Empty);
+                                                                                      && item.ItemCd.Replace("　", string.Empty).Replace(" ", string.Empty) != string.Empty
+                                                                                      && setCdList.Contains(item.SetCd));
 
         if (!string.IsNullOrWhiteSpace(itemName))
         {
             setOdrInfDetailRepo = setOdrInfDetailRepo.Where(item => item.ItemName != null && item.ItemName.Contains(itemName));
         }
+
+        var setOdrInfDetailList = setOdrInfDetailRepo.ToList();
 
         bool isQueryAll = timeExpired == 0;
         if (timeExpired == 0)
@@ -1524,16 +1534,19 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             timeExpired = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
         }
 
+        var itemCdList = setOdrInfDetailList.Select(item => item.ItemCd).Distinct().ToList();
         var tenMstRepo = NoTrackingDataContext.TenMsts
                          .Where(item => item.HpId == hpId
                                         && item.StartDate <= timeExpired
                                         && item.EndDate >= timeExpired
-                                        && item.IsDeleted == DeleteTypes.None);
+                                        && itemCdList.Contains(item.ItemCd)
+                                        && item.IsDeleted == DeleteTypes.None)
+                         .ToList();
 
         var detailResult = (from setMst in setMstRepo
                             join setOdrInf in setOdrInfRepo on
                                 setMst.SetCd equals setOdrInf.SetCd
-                            join setOdrInfDetail in setOdrInfDetailRepo on
+                            join setOdrInfDetail in setOdrInfDetailList on
                                 new { setOdrInf.SetCd, setOdrInf.RpNo, setOdrInf.RpEdaNo } equals
                                 new { setOdrInfDetail.SetCd, setOdrInfDetail.RpNo, setOdrInfDetail.RpEdaNo }
                             join tenMst in tenMstRepo on
@@ -1546,7 +1559,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                 SetOdrInf = setOdrInf,
                                 SetOdrInfDetail = setOdrInfDetail,
                             })
-            .ToList();
+                            .ToList();
 
         var listItemCd = detailResult.Select(item => item.SetOdrInfDetail.ItemCd).ToList();
 
@@ -1567,20 +1580,23 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         if (isQueryAll)
         {
             var tenMstAllRepo = NoTrackingDataContext.TenMsts
-                .Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None);
+                                .Where(item => item.HpId == hpId
+                                               && item.IsDeleted == DeleteTypes.None
+                                               && itemCdList.Contains(item.ItemCd))
+                                .ToList();
 
-            var tenMstMaxRepo = from tenMst in tenMstAllRepo
-                                group tenMst by tenMst.ItemCd into grp
-                                select new
-                                {
-                                    ItemCd = grp.Key,
-                                    EndDate = grp.Max(tenItem => tenItem.EndDate)
-                                };
+            var tenMstMaxRepo = (from tenMst in tenMstAllRepo
+                                 group tenMst by tenMst.ItemCd into grp
+                                 select new
+                                 {
+                                     ItemCd = grp.Key,
+                                     EndDate = grp.Max(tenItem => tenItem.EndDate)
+                                 }).ToList();
 
             var queryDetailAll = (from setMst in setMstRepo
                                   join setOdrInf in setOdrInfRepo on
                                       setMst.SetCd equals setOdrInf.SetCd
-                                  join setOdrInfDetail in setOdrInfDetailRepo on
+                                  join setOdrInfDetail in setOdrInfDetailList on
                                       new { setOdrInf.SetCd, setOdrInf.RpNo, setOdrInf.RpEdaNo } equals
                                       new { setOdrInfDetail.SetCd, setOdrInfDetail.RpNo, setOdrInfDetail.RpEdaNo }
                                   join tenMst in tenMstRepo on
@@ -1659,8 +1675,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                         .ToList();
 
         var listSetName = querySet
-                          .Distinct()
-                          .Select(item => ConvertToOdrSetNameModel(item.SetMst, item.SetOdrInf, null, null, 0));
+                          .Select(item => ConvertToOdrSetNameModel(item.SetMst, item.SetOdrInf, null, null, 0))
+                          .DistinctBy(item => new { item.SetCd, item.SetOrdInfId });
 
         var result = listSetName
                     .Union(listDetailResult)
@@ -1766,7 +1782,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                lastEndDate > 0 ? lastEndDate : tenMst?.EndDate ?? 99999999,
                setOdrInfDetail?.YohoKbn ?? 0,
                setOdrInf?.OdrKouiKbn ?? 0,
-               tenMst?.BuiKbn ?? 0
+               tenMst?.BuiKbn ?? 0,
+               setOdrInf?.Id ?? 0
             );
     }
 
