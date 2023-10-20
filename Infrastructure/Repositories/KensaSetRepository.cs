@@ -523,6 +523,7 @@ namespace Infrastructure.Repositories
                         join t7 in NoTrackingDataContext.KensaStdMsts
                             on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
                         from t7 in leftJoinT7.DefaultIfEmpty()
+                        where t2.SortNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd).Min(m => m.KensaItemSeqNo)
                         select new ListKensaInfDetailItemModel
                         (
                             t1.PtId,
@@ -741,6 +742,7 @@ namespace Infrastructure.Repositories
                         join t7 in NoTrackingDataContext.KensaStdMsts
                              on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
                         from t7 in leftJoinT7.DefaultIfEmpty()
+                        where t2.SortNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd).Min(m => m.KensaItemSeqNo)
                         select new ListKensaInfDetailItemModel
                         (
                             t1.PtId,
