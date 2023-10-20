@@ -171,9 +171,10 @@ namespace Infrastructure.Repositories
                         transaction.Commit();
                         successed = true;
                     }
-                    catch
+                    catch (Exception)
                     {
                         transaction.Rollback();
+                        throw;
                     }
                 });
             return successed;
@@ -417,15 +418,16 @@ namespace Infrastructure.Repositories
                         transaction.Commit();
                         successed = true;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         transaction.Rollback();
+                        throw;
                     }
                 });
             return successed;
         }
 
-        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int itemQuantity)
+        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int itemQuantity, int startDate)
         {
             IQueryable<KensaInfDetail> kensaInfDetails;
 
@@ -578,41 +580,50 @@ namespace Infrastructure.Repositories
 
 
             var totalCol = kensaInfDetailCol.Count();
+
             // Get list with start date
-
-            if (iraiCdStart > 0)
+            if (startDate > 0)
             {
-
-                int currentIndex = 0;
-                foreach (var obj in kensaInfDetailCol)
-                {
-                    if (obj.IraiCd == iraiCdStart)
-                    {
-                        break;
-                    }
-                    currentIndex++;
-                }
-
-                if (getGetPrevious)
-                {
-                    kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
-                }
-                else
-                {
-                    kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1).Take(itemQuantity);
-                }
+                kensaInfDetailCol = kensaInfDetailCol.Where(x => x.IraiDate >= startDate);
             }
             else
             {
-                if (getGetPrevious)
+                // Get list with iraiCdStart
+                if (iraiCdStart > 0)
                 {
-                    kensaInfDetailCol = kensaInfDetailCol.TakeLast(itemQuantity);
+
+                    int currentIndex = 0;
+                    foreach (var obj in kensaInfDetailCol)
+                    {
+                        if (obj.IraiCd == iraiCdStart)
+                        {
+                            break;
+                        }
+                        currentIndex++;
+                    }
+
+                    if (getGetPrevious)
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
+                    }
+                    else
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1).Take(itemQuantity);
+                    }
                 }
                 else
                 {
-                    kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+                    if (getGetPrevious)
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.TakeLast(itemQuantity);
+                    }
+                    else
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+                    }
                 }
             }
+
 
             var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
             data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));

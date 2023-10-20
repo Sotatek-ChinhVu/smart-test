@@ -293,6 +293,10 @@ namespace Interactor.MedicalExamination
             finally
             {
                 _medicalExaminationRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
+                _calculateRepository.ReleaseSource();
+                _todayOdrRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
             }
         }
 

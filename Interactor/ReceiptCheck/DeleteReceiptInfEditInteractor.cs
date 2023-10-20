@@ -32,6 +32,7 @@ namespace Interactor.ReceiptCheck
             finally
             {
                 _calculationInfRepository.ReleaseResource();
+                _calculateService.ReleaseSource();
             }
         }
     }

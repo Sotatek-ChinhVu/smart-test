@@ -1,6 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MainMenu;
+using EmrCloudApi.Responses.MainMenu.Dto;
 using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 
 namespace EmrCloudApi.Presenters.MainMenu;
@@ -11,7 +12,7 @@ public class CreateDataKensaIraiRenkeiPresenter : ICreateDataKensaIraiRenkeiOutp
 
     public void Complete(CreateDataKensaIraiRenkeiOutputData output)
     {
-        Result.Data = new CreateDataKensaIraiRenkeiResponse(output.Status == CreateDataKensaIraiRenkeiStatus.Successed);
+        Result.Data = new CreateDataKensaIraiRenkeiResponse(output.Status == CreateDataKensaIraiRenkeiStatus.Successed, output.KensaIraiList.Select(item => new KensaIraiDto(item)).ToList());
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

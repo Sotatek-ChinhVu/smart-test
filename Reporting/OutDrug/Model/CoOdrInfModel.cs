@@ -280,22 +280,13 @@ public class CoOdrInfModel
         return ret;
     }
 
-    /// <summary>
-    /// 公費１負担
-    /// </summary>
     public int Kohi1Futan { get; set; }
-    /// <summary>
-    /// 公費２負担
-    /// </summary>
+
     public int Kohi2Futan { get; set; }
-    /// <summary>
-    /// 公費３負担
-    /// </summary>
+
     public int Kohi3Futan { get; set; }
-    /// <summary>
-    /// 公費４負担
-    /// </summary>
-    public int Kohi4Futan { get; set; }
+
+    public int KohiSpFutan { get; set; }
 
     /// <summary>
     /// ソートキー
@@ -308,7 +299,7 @@ public class CoOdrInfModel
             if (this.Kohi1Futan > 1) return 4;
             if (this.Kohi2Futan > 1) return 3;
             if (this.Kohi3Futan > 1) return 2;
-            if (this.Kohi4Futan > 1) return 1;
+            if (this.KohiSpFutan > 1) return 1;
 
             return 0;
         }
@@ -324,7 +315,7 @@ public class CoOdrInfModel
             if (this.Kohi1Futan > 1) return 1;
             if (this.Kohi2Futan > 1) return 2;
             if (this.Kohi3Futan > 1) return 3;
-            if (this.Kohi4Futan > 1) return 4;
+            if (this.KohiSpFutan > 1) return 4;
 
             return 0;
         }

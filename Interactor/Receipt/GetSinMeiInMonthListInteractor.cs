@@ -33,6 +33,7 @@ public class GetSinMeiInMonthListInteractor : IGetSinMeiInMonthListInputPort
         finally
         {
             _mstItemRepository.ReleaseResource();
+            _calculateService.ReleaseSource();
         }
     }
 

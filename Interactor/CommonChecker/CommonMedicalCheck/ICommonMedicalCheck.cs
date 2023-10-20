@@ -1,6 +1,7 @@
 ﻿using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Common;
 using Domain.Models.Diseases;
 using UseCase.Family;
 using UseCase.MedicalExamination.SaveMedical;

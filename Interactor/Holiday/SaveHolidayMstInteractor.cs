@@ -1,6 +1,8 @@
 ﻿using Domain.Models.FlowSheet;
 using Domain.Models.User;
 using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.Holiday.SaveHoliday;
 using static Helper.Constants.UserConst;
 
@@ -10,11 +12,15 @@ namespace Interactor.Holiday
     {
         private readonly IFlowSheetRepository _flowSheetRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SaveHolidayMstInteractor(IFlowSheetRepository flowSheetRepository, IUserRepository userRepository)
+        public SaveHolidayMstInteractor(ITenantProvider tenantProvider, IFlowSheetRepository flowSheetRepository, IUserRepository userRepository)
         {
             _flowSheetRepository = flowSheetRepository;
             _userRepository = userRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveHolidayMstOutputData Handle(SaveHolidayMstInputData inputData)
@@ -33,10 +39,16 @@ namespace Interactor.Holiday
                 else
                     return new SaveHolidayMstOutputData(SaveHolidayMstStatus.Failed);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _flowSheetRepository.ReleaseResource();
                 _userRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }
