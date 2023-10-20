@@ -773,9 +773,7 @@ using UseCase.KensaHistory.UpdateKensaInfDetail;
 using UseCase.Logger.WriteListLog;
 using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.MainMenu.ImportKensaIrai;
-<<<<<<< HEAD
 using UseCase.KensaHistory.GetListKensaCmtMst.GetKensaInfDetailByIraiCd;
-=======
 using UseCase.Online.GetOnlineConsent;
 using UseCase.Online.UpdateOnlineConsents;
 using Reporting.KensaHistory.DB;
@@ -783,7 +781,6 @@ using Reporting.KensaHistory.Service;
 using UseCase.Reception.GetNextUketukeNoBySetting;
 using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
->>>>>>> f7780bf0c060d3b572b3f617e1b283ae552e6c2a
 
 namespace EmrCloudApi.Configs.Dependency
 {
