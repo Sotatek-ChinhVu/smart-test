@@ -27,6 +27,7 @@
         public const string ParrentKensaMst = "ParrentKensaMst";
         public const string GetConversion = "GetConversion";
         public const string SaveConversion = "SaveConversion";
+        public const string GetOdrSetName = "GetOdrSetName";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
