@@ -30,7 +30,7 @@ public class UpdateVisitTimesManagementInteractor : IUpdateVisitTimesManagementI
             {
                 return new UpdateVisitTimesManagementOutputData(UpdateVisitTimesManagementStatus.CanNotDeleted);
             }
-            if (_patientInforRepository.UpdateVisitTimesManagement(inputData.HpId, inputData.UserId, inputData.PtId, inputData.KohiId, inputData.VisitTimesManagementList))
+            if (_patientInforRepository.UpdateVisitTimesManagement(inputData.HpId, inputData.UserId, inputData.PtId, inputData.KohiId, inputData.SinYm, inputData.VisitTimesManagementList))
             {
                 return new UpdateVisitTimesManagementOutputData(UpdateVisitTimesManagementStatus.Successed);
             }
