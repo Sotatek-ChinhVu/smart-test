@@ -28,6 +28,7 @@ namespace Reporting.KensaHistory.Service
         private List<ListKensaInfDetailItemModel> listKensaInfDetailItemModels = new();
         private bool hasNextPage;
         private int currentPage;
+        private int totalPage;
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
@@ -95,21 +96,10 @@ namespace Reporting.KensaHistory.Service
                 SetFieldData("name", ptInf.Name ?? string.Empty);
                 SetFieldData("iraiDate", CIUtil.SDateToShowSDate(seikyuYm));
                 SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString());
-                var count = listKensaInfDetailItemModels.Count;
-                var maxRow = 30;
-                if (count <= maxRow && currentPage == 1)
-                {
-                    var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                    fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/1");
-                    _setFieldData.Add(pageIndex, fieldDataPerPage);
-                }
-                else
-                {
-                    var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                    fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/2");
-                    _setFieldData.Add(pageIndex, fieldDataPerPage);
-                }
-                
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/" + totalPage.ToString());
+                _setFieldData.Add(pageIndex, fieldDataPerPage);
+
                 //保険者
 
                 return 1;
@@ -206,6 +196,7 @@ namespace Reporting.KensaHistory.Service
                     }
                 }
             }
+            totalPage = (listKensaInfDetailItemModels.Count / 30) + 1;
 
             return listKensaInfDetailItemModels.Count > 0;
         }
