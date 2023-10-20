@@ -421,10 +421,17 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                               .ToList();
                     kensaIraiDetailList.AddRange(todayOdrList);
                 }
+                long iraiCd = 0;
+                if (kensaInf.RaiinNo == firstTodayOdr.RaiinInf.RaiinNo
+                    && kensaInf.TosekiKbn == firstTodayOdr.TosekiKbn
+                    && kensaInf.SikyuKbn == firstTodayOdr.SikyuKbn)
+                {
+                    iraiCd = kensaInf.IraiCd;
+                }
                 result.Add(new KensaIraiModel(
                                 firstTodayOdr.RaiinInf.SinDate,
                                 firstTodayOdr.RaiinInf.RaiinNo,
-                                kensaInf.IraiCd,
+                                iraiCd,
                                 firstTodayOdr.PtInf.PtId,
                                 firstTodayOdr.PtInf.PtNum,
                                 firstTodayOdr.PtInf.Name ?? string.Empty,
@@ -618,6 +625,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                                                                       && iraiCdList.Contains(item.IraiCd))
                                                                        .ToList();
 
+                    string centerCd = kensaIraiDBList.FirstOrDefault()?.CenterCd ?? string.Empty;
                     var ptIdList = kensaIraiList.Select(item => item.PtId).Distinct().ToList();
                     var raiinNoList = kensaIraiList.Select(item => item.RaiinNo).Distinct().ToList();
 
@@ -634,6 +642,18 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     foreach (var kensaIrai in kensaIraiList)
                     {
                         var kensaInf = kensaIraiDBList.FirstOrDefault(item => item.IraiCd == kensaIrai.IraiCd);
+                        if (kensaInf == null && kensaIrai.IraiCd == 0)
+                        {
+                            kensaInf = new KensaInf();
+                            kensaInf.HpId = hpId;
+                            kensaInf.IsDeleted = 0;
+                            kensaInf.RaiinNo = kensaIrai.RaiinNo;
+                            kensaInf.PtId = kensaIrai.PtId;
+                            kensaInf.CenterCd = centerCd;
+                            kensaInf.IraiCd = 0;
+                            kensaInf.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            kensaInf.CreateId = userId;
+                        }
                         if (kensaInf != null)
                         {
                             kensaInf.IraiDate = systemDate;
@@ -683,6 +703,11 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                         newOdrInfList.Add(odrInfDetail);
                                     }
                                 }
+                            }
+                            if (kensaInf.IraiCd == 0)
+                            {
+                                TrackingDataContext.KensaInfs.Add(kensaInf);
+                                TrackingDataContext.SaveChanges();
                             }
                             modelRelationList.Add((kensaInf, newKensaInfDetailList, newOdrInfList));
                         }
@@ -740,6 +765,24 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     throw;
                 }
             });
+
+        var raiinNoList = kensaIraiList.Select(item => item.RaiinNo).Distinct().ToList();
+        var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                         && raiinNoList.Contains(item.RaiinNo)
+                                                                         && item.IsDeleted == 0);
+        foreach (var model in kensaIraiList)
+        {
+            var mode = modelRelationList.FirstOrDefault(item => item.kensaInf.PtId == model.PtId
+                                                                     && item.kensaInf.RaiinNo == model.RaiinNo
+                                                                     && item.kensaInf.SikyuKbn == model.SikyuKbn
+                                                                     && item.kensaInf.TosekiKbn == model.TosekiKbn);
+            if (mode.kensaInf == null)
+            {
+                continue;
+            }
+            var raiinInf = raiinInfList.FirstOrDefault(item => item.RaiinNo == model.RaiinNo);
+            model.UpdateIraiCd(mode.kensaInf.IraiCd, raiinInf?.KaId ?? 0);
+        }
         return kensaIraiList;
     }
 
