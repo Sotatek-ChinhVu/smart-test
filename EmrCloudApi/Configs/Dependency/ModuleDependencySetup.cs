@@ -772,6 +772,7 @@ using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
 using UseCase.KensaHistory.UpdateKensaInfDetail;
 using UseCase.Logger.WriteListLog;
 using UseCase.KensaHistory.GetListKensaInfDetail;
+using UseCase.SuperSetDetail.GetConversion;
 using UseCase.MainMenu.ImportKensaIrai;
 using UseCase.KensaHistory.GetListKensaCmtMst.GetKensaInfDetailByIraiCd;
 using UseCase.Online.GetOnlineConsent;
@@ -1329,6 +1330,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ReorderSetMstInputData, ReorderSetMstInteractor>();
             busBuilder.RegisterUseCase<CopyPasteSetMstInputData, CopyPasteSetMstInteractor>();
             busBuilder.RegisterUseCase<GetSetMstToolTipInputData, GetSetMstToolTipInteractor>();
+            busBuilder.RegisterUseCase<GetConversionInputData, GetConversionInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();

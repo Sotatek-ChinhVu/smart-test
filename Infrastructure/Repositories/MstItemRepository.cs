@@ -2672,7 +2672,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return NoTrackingDataContext.OdrInfDetails.Any(x => x.HpId == hpId && x.ItemCd == itemCd);
     }
 
-
     public bool SaveDeleteOrRecoverTenMstOrigin(DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds)
     {
         var tenMstDatabases = TrackingDataContext.TenMsts.Where(item => item.ItemCd == itemCd).ToList();
@@ -6703,6 +6702,33 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                       )).ToList();
 
         return result;
+    }
+
+    public TenItemModel GetTenMst(int hpId, string itemCd, int sinDate)
+    {
+        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                          && item.StartDate <= sinDate
+                                                                          && item.EndDate >= sinDate
+                                                                          && item.ItemCd == itemCd);
+
+        if (tenMst == null)
+        {
+            tenMst = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                 && item.StartDate < sinDate
+                                                                 && item.EndDate < sinDate
+                                                                 && item.ItemCd == itemCd)
+                                                  .OrderByDescending(item => item.EndDate)
+                                                  .FirstOrDefault();
+        }
+
+        return new TenItemModel(
+                   tenMst?.ItemCd ?? string.Empty,
+                   tenMst?.Ten ?? 0,
+                   tenMst?.HandanGrpKbn ?? 0,
+                   tenMst?.EndDate ?? 0,
+                   tenMst?.KensaItemCd ?? string.Empty,
+                   tenMst?.KensaItemSeqNo ?? 0,
+                   tenMst?.IpnNameCd ?? string.Empty);
     }
 
     public List<KensaIjiSettingModel> GetListKensaIjiSettingModel(int hpId, string keyWords, bool isValid, bool isExpired, bool? isPayment)

@@ -25,6 +25,7 @@
         public const string GetToolTip = "GetToolTip";
         public const string GetSuperSetDetailForTodayOrder = "GetSuperSetDetailForTodayOrder";
         public const string ParrentKensaMst = "ParrentKensaMst";
+        public const string GetConversion = "GetConversion";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";

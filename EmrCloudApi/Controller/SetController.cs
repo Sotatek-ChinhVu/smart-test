@@ -14,6 +14,7 @@ using UseCase.SetMst.GetList;
 using UseCase.SetMst.GetToolTip;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
+using UseCase.SuperSetDetail.GetConversion;
 using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
@@ -157,6 +158,18 @@ public class SetController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetSuperSetDetailToDoTodayOrderResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.GetConversion)]
+    public ActionResult<Response<GetConversionResponse>> GetConversion([FromBody] GetConversionRequest request)
+    {
+        var input = new GetConversionInputData(HpId, request.ItemCd, request.SinDate, request.ItemName, request.Quantity, request.UnitName);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetConversionPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetConversionResponse>>(presenter.Result);
     }
 
     private List<SaveSetByomeiInputItem> ConvertToSetByomeiModelInputs(List<SaveSetByomeiRequestItem> requestItems)
