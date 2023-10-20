@@ -27,9 +27,10 @@ public class CreateDataKensaIraiRenkeiInteractor : ICreateDataKensaIraiRenkeiInp
             {
                 return new CreateDataKensaIraiRenkeiOutputData(validateResult);
             }
-            if (!inputData.ReCreateDataKensaIraiRenkei && _kensaIraiRepository.CreateDataKensaIraiRenkei(inputData.HpId, inputData.UserId, inputData.KensaIraiList, inputData.CenterCd, inputData.SystemDate))
+            if (!inputData.ReCreateDataKensaIraiRenkei)
             {
-                return new CreateDataKensaIraiRenkeiOutputData(CreateDataKensaIraiRenkeiStatus.Successed);
+                var result = _kensaIraiRepository.CreateDataKensaIraiRenkei(inputData.HpId, inputData.UserId, inputData.KensaIraiList, inputData.CenterCd, inputData.SystemDate);
+                return new CreateDataKensaIraiRenkeiOutputData(CreateDataKensaIraiRenkeiStatus.Successed, result);
             }
             else if (inputData.ReCreateDataKensaIraiRenkei && _kensaIraiRepository.ReCreateDataKensaIraiRenkei(inputData.HpId, inputData.UserId, inputData.KensaIraiList, inputData.SystemDate))
             {
