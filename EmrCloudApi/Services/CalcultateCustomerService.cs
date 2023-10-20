@@ -42,6 +42,11 @@ namespace EmrCloudApi.Services
                 await _loggingHandler.WriteLogExceptionAsync(ex);
                 throw;
             }
+            finally
+            {
+                _tenantProvider.DisposeDataContext();
+                _loggingHandler.Dispose();
+            }
         }
 
 
