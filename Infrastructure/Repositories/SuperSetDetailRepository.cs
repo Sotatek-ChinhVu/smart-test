@@ -1376,7 +1376,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     public List<ConversionItemInfModel> GetConversionItem(int hpId, string itemCd, int sinDate)
     {
         var conversionItemInfRepo = NoTrackingDataContext.ConversionItemInfs.Where(item => item.HpId == hpId
-                                                                                           && item.SourceItemCd == itemCd);
+                                                                                           && item.SourceItemCd == itemCd
+                                                                                           && item.IsDeleted == 0);
 
         var tenMstRepo = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
                                                                      && item.StartDate <= sinDate
@@ -1410,6 +1411,39 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                         item.tenMst.CnvUnitName ?? string.Empty))
                     .OrderBy(item => item.SortNo)
                     .ToList();
+    }
+
+    public bool SaveConversionItemInf(int hpId, int userId, string conversionItemCd, string sourceItemCd)
+    {
+        var conversionItemInfDBList = TrackingDataContext.ConversionItemInfs.Where(item => item.HpId == hpId
+                                                                                           && item.SourceItemCd == sourceItemCd
+                                                                                           && item.IsDeleted == 0)
+                                                                            .ToList();
+
+        if (!conversionItemInfDBList.Any() || !conversionItemInfDBList.Exists(item => item.DestItemCd == conversionItemCd))
+        {
+            var newConversionItemInf = new ConversionItemInf()
+            {
+                HpId = hpId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                CreateId = userId,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId,
+                SourceItemCd = sourceItemCd,
+                DestItemCd = conversionItemCd,
+                IsDeleted = 0,
+                SortNo = 1,
+            };
+            TrackingDataContext.ConversionItemInfs.Add(newConversionItemInf);
+            foreach (var conversionItem in conversionItemInfDBList)
+            {
+                conversionItem.UpdateId = userId;
+                conversionItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                conversionItem.SortNo += 1;
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+        return true;
     }
 
     public void ReleaseResource()

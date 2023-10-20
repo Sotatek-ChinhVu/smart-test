@@ -774,6 +774,7 @@ using UseCase.Logger.WriteListLog;
 using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.SuperSetDetail.GetConversion;
 using UseCase.MainMenu.ImportKensaIrai;
+using UseCase.SuperSetDetail.SaveConversion;
 using UseCase.KensaHistory.GetListKensaCmtMst.GetKensaInfDetailByIraiCd;
 using UseCase.Online.GetOnlineConsent;
 using UseCase.Online.UpdateOnlineConsents;
@@ -1331,6 +1332,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CopyPasteSetMstInputData, CopyPasteSetMstInteractor>();
             busBuilder.RegisterUseCase<GetSetMstToolTipInputData, GetSetMstToolTipInteractor>();
             busBuilder.RegisterUseCase<GetConversionInputData, GetConversionInteractor>();
+            busBuilder.RegisterUseCase<SaveConversionInputData, SaveConversionInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
