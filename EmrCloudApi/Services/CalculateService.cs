@@ -297,7 +297,6 @@ namespace EmrCloudApi.Services
 
         public void ReleaseSource()
         {
-            _httpClient.Dispose();
             _loggingHandler.Dispose();
             _tenantProvider.DisposeDataContext();
         }
