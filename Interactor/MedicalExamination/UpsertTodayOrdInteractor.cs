@@ -225,7 +225,6 @@ namespace Interactor.MedicalExamination
                 _karteInfRepository.ReleaseResource();
                 _tenantProvider.DisposeDataContext();
                 _loggingHandler.Dispose();
-                _calculateService.ReleaseSource();
             }
         }
 
