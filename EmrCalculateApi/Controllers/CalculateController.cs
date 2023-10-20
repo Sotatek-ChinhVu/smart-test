@@ -38,6 +38,7 @@ namespace EmrCalculateApi.Controllers
                 calculateOneRequest.SinDate,
                 calculateOneRequest.SeikyuUp,
                 calculateOneRequest.Prefix);
+            _ikaCalculate.Dispose();
             return Ok();
         }
 
@@ -50,6 +51,7 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.SinDate,
                 calculateRequest.SeikyuUp,
                 calculateRequest.Prefix);
+            _ikaCalculate.Dispose();
             return Ok();
         }
 
@@ -61,6 +63,7 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.Reception,
                 calculateRequest.CalcFutan);
             var result = new RunTraialCalculateResponse(data.sinMeis, data.kaikeis.Select(k => new KaikeiInfItemResponse(k)).ToList(), data.calcLogs);
+            _ikaCalculate.Dispose();
             return Ok(result);
         }
 
@@ -92,6 +95,7 @@ namespace EmrCalculateApi.Controllers
                 _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
                 _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
                 HttpContext.Response.Body.Close();
+                _ikaCalculate.Dispose();
             }
             return Ok();
         }

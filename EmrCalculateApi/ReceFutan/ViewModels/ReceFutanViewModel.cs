@@ -2560,5 +2560,10 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
 
         //    return false;
         //}
+
+        public void Dispose()
+        {
+            _tenantDataContext.Dispose();
+        }
     }
 }

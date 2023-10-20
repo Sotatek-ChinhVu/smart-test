@@ -13,5 +13,7 @@ namespace EmrCalculateApi.Interface
         void RunCalculateMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix, string uniqueKey);
 
         (List<SinMeiDataModel> sinMeis, List<Futan.Models.KaikeiInfModel> kaikeis, List<CalcLogModel> calcLogs) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true);
+
+        void Dispose();
     }
 }

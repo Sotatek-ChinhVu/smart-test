@@ -17,5 +17,7 @@ namespace EmrCalculateApi.Interface
         );
 
         void ReceCalculate(int seikyuYm);
+
+        void Dispose();
     }
 }
