@@ -421,10 +421,17 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                               .ToList();
                     kensaIraiDetailList.AddRange(todayOdrList);
                 }
+                long iraiCd = 0;
+                if (kensaInf.RaiinNo == firstTodayOdr.RaiinInf.RaiinNo
+                    && kensaInf.TosekiKbn == firstTodayOdr.TosekiKbn
+                    && kensaInf.SikyuKbn == firstTodayOdr.SikyuKbn)
+                {
+                    iraiCd = kensaInf.IraiCd;
+                }
                 result.Add(new KensaIraiModel(
                                 firstTodayOdr.RaiinInf.SinDate,
                                 firstTodayOdr.RaiinInf.RaiinNo,
-                                kensaInf.IraiCd,
+                                iraiCd,
                                 firstTodayOdr.PtInf.PtId,
                                 firstTodayOdr.PtInf.PtNum,
                                 firstTodayOdr.PtInf.Name ?? string.Empty,
@@ -634,6 +641,17 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     foreach (var kensaIrai in kensaIraiList)
                     {
                         var kensaInf = kensaIraiDBList.FirstOrDefault(item => item.IraiCd == kensaIrai.IraiCd);
+                        if (kensaInf == null && kensaIrai.IraiCd == 0)
+                        {
+                            kensaInf = new KensaInf();
+                            kensaInf.HpId = hpId;
+                            kensaInf.IsDeleted = 0;
+                            kensaInf.RaiinNo = kensaIrai.RaiinNo;
+                            kensaInf.PtId = kensaIrai.PtId;
+                            //kensaInf.CenterCd = kensaIrai.CenterCd;
+                            kensaInf.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            kensaInf.CreateId = userId;
+                        }
                         if (kensaInf != null)
                         {
                             kensaInf.IraiDate = systemDate;
