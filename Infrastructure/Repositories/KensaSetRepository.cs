@@ -132,6 +132,27 @@ namespace Infrastructure.Repositories
                                 }
                             }
 
+                            // Create kensaSetDetail no children
+                            foreach (var child in kensaSetDetails.Where(x => x.SetEdaNo == 0 && string.IsNullOrEmpty(x.UniqIdParent) && !uniqIdParents.Contains(x.UniqId)))
+                            {
+                                TrackingDataContext.KensaSetDetails.Add(new KensaSetDetail()
+                                {
+                                    HpId = hpId,
+                                    SetId = kensaSetId,
+                                    KensaItemCd = child.KensaItemCd,
+                                    KensaItemSeqNo = child.KensaItemSeqNo,
+                                    SortNo = child.SortNo == 0 ? ++maxKensaSetDetailSortNo : child.SortNo,
+                                    CreateId = userId,
+                                    UpdateId = userId,
+                                    SetEdaParentNo = 0,
+                                    CreateMachine = CIUtil.GetComputerName(),
+                                    UpdateMachine = CIUtil.GetComputerName(),
+                                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                    IsDeleted = DeleteTypes.None,
+                                });
+                            }
+
                             // Update kensaSetDetail
                             foreach (var item in kensaSetDetails.Where(x => x.SetEdaNo != 0))
                             {
@@ -362,9 +383,9 @@ namespace Infrastructure.Repositories
                                     PtId = child.PtId,
                                     IraiCd = iraiCdId,
                                     IraiDate = child.IraiDate,
-                                    RaiinNo = child.RaiinNo == 0 ? maxRaiinNo + 1 : item.RaiinNo,
+                                    RaiinNo = child.RaiinNo == 0 ? maxRaiinNo + 1 : child.RaiinNo,
                                     KensaItemCd = child.KensaItemCd,
-                                    ResultVal = CIUtil.ToHalfsize(item.ResultVal),
+                                    ResultVal = CIUtil.ToHalfsize(child.ResultVal),
                                     ResultType = child.ResultType,
                                     AbnormalKbn = child.AbnormalKbn,
                                     CmtCd1 = child.CmtCd1,
@@ -380,6 +401,31 @@ namespace Infrastructure.Repositories
                             }
                         }
 
+                        // Create kensaInfDetail no children
+                        foreach (var item in kensaInfDetails.Where(x => x.SeqNo == 0 && string.IsNullOrEmpty(x.UniqIdParent) && !uniqIdParents.Contains(x.UniqId)))
+                        {
+                            TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
+                            {
+                                HpId = hpId,
+                                PtId = item.PtId,
+                                IraiCd = iraiCdId,
+                                IraiDate = item.IraiDate,
+                                RaiinNo = item.RaiinNo == 0 ? maxRaiinNo + 1 : item.RaiinNo,
+                                KensaItemCd = item.KensaItemCd,
+                                ResultVal = CIUtil.ToHalfsize(item.ResultVal),
+                                ResultType = item.ResultType,
+                                AbnormalKbn = item.AbnormalKbn,
+                                CmtCd1 = item.CmtCd1,
+                                CmtCd2 = item.CmtCd2,
+                                CreateId = userId,
+                                UpdateId = userId,
+                                SeqParentNo = 0,
+                                UpdateMachine = CIUtil.GetComputerName(),
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                IsDeleted = DeleteTypes.None,
+                            });
+                        }
 
 
                         // Update kensaInfDetail
