@@ -472,6 +472,9 @@ namespace Infrastructure.Repositories
                         join t6 in NoTrackingDataContext.KensaCmtMsts
                              on t1.CmtCd2 equals t6.CMT into leftJoinT6
                         from t6 in leftJoinT6.DefaultIfEmpty()
+                        join t7 in NoTrackingDataContext.KensaStdMsts
+                            on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
+                        from t7 in leftJoinT7.DefaultIfEmpty()
                         select new ListKensaInfDetailItemModel
                         (
                             t1.PtId,
@@ -492,10 +495,10 @@ namespace Infrastructure.Repositories
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
                             t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
-                            t4.Sex == 1 ? GetValueLowHigSdt(t2.MaleStd).Item1 : GetValueLowHigSdt(t2.FemaleStd).Item1,
-                            t4.Sex == 1 ? GetValueLowHigSdt(t2.MaleStd).Item2 : GetValueLowHigSdt(t2.FemaleStd).Item2,
-                            t2.MaleStd ?? string.Empty,
-                            t2.FemaleStd ?? string.Empty,
+                            t4.Sex == 1 ? GetValueLowHigSdt(t7.MaleStd).Item1 : GetValueLowHigSdt(t7.FemaleStd).Item1,
+                            t4.Sex == 1 ? GetValueLowHigSdt(t7.MaleStd).Item2 : GetValueLowHigSdt(t7.FemaleStd).Item2,
+                            t7.MaleStd ?? string.Empty,
+                            t7.FemaleStd ?? string.Empty,
                             t2.Unit ?? string.Empty,
                             t3.Nyubi ?? string.Empty,
                             t3.Yoketu ?? string.Empty,
@@ -551,7 +554,6 @@ namespace Infrastructure.Repositories
                             data = data.OrderBy(x => x.KensaItemCd);
                         }
                         break;
-
                 }
             }
 
@@ -679,6 +681,9 @@ namespace Infrastructure.Repositories
                         join t6 in NoTrackingDataContext.KensaCmtMsts
                              on t1.CmtCd2 equals t6.CMT into leftJoinT6
                         from t6 in leftJoinT6.DefaultIfEmpty()
+                        join t7 in NoTrackingDataContext.KensaStdMsts
+                             on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
+                        from t7 in leftJoinT7.DefaultIfEmpty()
                         select new ListKensaInfDetailItemModel
                         (
                             t1.PtId,
@@ -698,11 +703,11 @@ namespace Infrastructure.Repositories
                             t1.CmtCd2 ?? string.Empty,
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
-                            t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
-                            t4.Sex == 1 ? GetValueLowHigSdt(t2.MaleStd).Item1 : GetValueLowHigSdt(t2.FemaleStd).Item1,
-                            t4.Sex == 1 ? GetValueLowHigSdt(t2.MaleStd).Item2 : GetValueLowHigSdt(t2.FemaleStd).Item2,
-                            t2.MaleStd ?? string.Empty,
-                            t2.FemaleStd ?? string.Empty,
+                            t4.Sex == 1 ? t7.MaleStd ?? string.Empty : t7.FemaleStd ?? string.Empty,
+                            t4.Sex == 1 ? GetValueLowHigSdt(t7.MaleStd).Item1 : GetValueLowHigSdt(t7.FemaleStd).Item1,
+                            t4.Sex == 1 ? GetValueLowHigSdt(t7.MaleStd).Item2 : GetValueLowHigSdt(t7.FemaleStd).Item2,
+                            t7.MaleStd ?? string.Empty,
+                            t7.FemaleStd ?? string.Empty,
                             t2.Unit ?? string.Empty,
                             t3.Nyubi ?? string.Empty,
                             t3.Yoketu ?? string.Empty,
