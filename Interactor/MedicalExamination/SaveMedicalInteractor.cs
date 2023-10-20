@@ -410,7 +410,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _tenantProvider.DisposeDataContext();
             _loggingHandler.Dispose();
             _saveMedicalRepository.ReleaseResource();
-            _calculateService.ReleaseSource();
         }
     }
 

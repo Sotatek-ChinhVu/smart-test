@@ -59,7 +59,6 @@ public class DeleteReceptionInteractor : IDeleteReceptionInputPort
         finally
         {
             _raiinInfRepository.ReleaseResource();
-            _calculateService.ReleaseSource();
             _receptionRepository.ReleaseResource();
         }
     }
