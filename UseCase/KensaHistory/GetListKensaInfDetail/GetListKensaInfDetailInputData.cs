@@ -26,8 +26,9 @@ namespace UseCase.KensaHistory.GetListKensaInfDetail
 
         public int IraiCd { get; private set; }
 
-        public int IraiCdStart { get; set; }
-        public bool GetGetPrevious { get; set; }
+        public int IraiCdStart { get; private set; }
+
+        public bool GetGetPrevious { get; private set; }
 
         public bool ShowAbnormalKbn { get; private set; }
 

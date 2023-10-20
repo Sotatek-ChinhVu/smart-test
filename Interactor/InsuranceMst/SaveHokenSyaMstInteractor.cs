@@ -1,5 +1,7 @@
 ﻿using Domain.Models.InsuranceMst;
 using Helper;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 
 namespace Interactor.InsuranceMst
@@ -7,10 +9,14 @@ namespace Interactor.InsuranceMst
     public class SaveHokenSyaMstInteractor : ISaveHokenSyaMstInputPort
     {
         private readonly IInsuranceMstRepository _insuranceMstReponsitory;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SaveHokenSyaMstInteractor(IInsuranceMstRepository insuranceMstReponsitory)
+        public SaveHokenSyaMstInteractor(ITenantProvider tenantProvider, IInsuranceMstRepository insuranceMstReponsitory)
         {
             _insuranceMstReponsitory = insuranceMstReponsitory;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveHokenSyaMstOutputData Handle(SaveHokenSyaMstInputData inputData)
@@ -34,7 +40,7 @@ namespace Interactor.InsuranceMst
                                                 , inputData.IsKigoNa);
 
             var validations = Validation(modelSave);
-            if(validations.Any())
+            if (validations.Any())
             {
                 string msgValidation = string.Empty;
                 foreach (var item in validations)
@@ -47,17 +53,19 @@ namespace Interactor.InsuranceMst
                 bool result = _insuranceMstReponsitory.SaveHokenSyaMst(modelSave, inputData.UserId);
 
                 if (result)
-                    return new SaveHokenSyaMstOutputData(SaveHokenSyaMstStatus.Successful,string.Empty);
+                    return new SaveHokenSyaMstOutputData(SaveHokenSyaMstStatus.Successful, string.Empty);
                 else
                     return new SaveHokenSyaMstOutputData(SaveHokenSyaMstStatus.Failed, string.Empty);
             }
-            catch
+            catch (Exception ex)
             {
-                return new SaveHokenSyaMstOutputData(SaveHokenSyaMstStatus.Failed, string.Empty);
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
             }
             finally
             {
                 _insuranceMstReponsitory.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 
@@ -71,7 +79,7 @@ namespace Interactor.InsuranceMst
             if (string.IsNullOrEmpty(model.HokensyaNo) || model.HokensyaNo.Length > 8)
                 result.Add(SaveHokenSyaMstValidation.InvalidHokensyaNo);
 
-            if(model.KanaName != null && model.KanaName.Length > 100) 
+            if (model.KanaName != null && model.KanaName.Length > 100)
                 result.Add(SaveHokenSyaMstValidation.InvalidKanaName);
 
             if (model.Name != null && model.Name.Length > 100)

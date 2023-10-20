@@ -1,5 +1,7 @@
 ﻿using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.Receipt.SaveReceCheckOpt;
 
 namespace Interactor.Receipt;
@@ -7,10 +9,14 @@ namespace Interactor.Receipt;
 public class SaveReceCheckOptInteractor : ISaveReceCheckOptInputPort
 {
     private readonly IReceiptRepository _receiptRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveReceCheckOptInteractor(IReceiptRepository receiptRepository)
+    public SaveReceCheckOptInteractor(ITenantProvider tenantProvider, IReceiptRepository receiptRepository)
     {
         _receiptRepository = receiptRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveReceCheckOptOutputData Handle(SaveReceCheckOptInputData inputData)
@@ -31,9 +37,15 @@ public class SaveReceCheckOptInteractor : ISaveReceCheckOptInputPort
             _receiptRepository.SaveReceCheckOpt(inputData.HpId, inputData.UserId, receCheckOptList);
             return new SaveReceCheckOptOutputData(SaveReceCheckOptStatus.Successed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _receiptRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

@@ -107,6 +107,7 @@ using UseCase.PatientInfor.GetPtInfModelsByRefNo;
 using System.Linq;
 using UseCase.PatientInfor.GetVisitTimesManagementModels;
 using UseCase.PatientInfor.UpdateVisitTimesManagement;
+using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 
 namespace EmrCloudApi.Controller
 {
@@ -1095,18 +1096,41 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<UpdateVisitTimesManagementResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.UpdateVisitTimesManagementNeedSave)]
+        public ActionResult<Response<UpdateVisitTimesManagementNeedSaveResponse>> UpdateVisitTimesManagementNeedSave([FromBody] UpdateVisitTimesManagementNeedSaveRequest request)
+        {
+            var input = new UpdateVisitTimesManagementNeedSaveInputData(HpId, UserId, request.PtId, ConvertToVisitTimesManagementList(request));
+            var output = _bus.Handle(input);
+            var presenter = new UpdateVisitTimesManagementNeedSavePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateVisitTimesManagementNeedSaveResponse>>(presenter.Result);
+        }
+
         private List<VisitTimesManagementModel> ConvertToVisitTimesManagementList(UpdateVisitTimesManagementRequest request)
         {
-            List<VisitTimesManagementModel> result = new();
-            result = request.VisitTimesManagementList.Select(item => new VisitTimesManagementModel(
-                                                                         request.PtId,
-                                                                         item.SinDate,
-                                                                         item.HokenPid,
-                                                                         request.KohiId,
-                                                                         item.SeqNo,
-                                                                         item.SortKey,
-                                                                         item.IsDeleted
-                                                      )).ToList();
+            var result = request.VisitTimesManagementList.Select(item => new VisitTimesManagementModel(
+                                                                             request.PtId,
+                                                                             item.SinDate,
+                                                                             item.HokenPid,
+                                                                             request.KohiId,
+                                                                             item.SeqNo,
+                                                                             item.SortKey,
+                                                                             item.IsDeleted
+                                                          )).ToList();
+            return result;
+        }
+
+        private List<VisitTimesManagementModel> ConvertToVisitTimesManagementList(UpdateVisitTimesManagementNeedSaveRequest request)
+        {
+            var result = request.VisitTimesManagementList.Select(item => new VisitTimesManagementModel(
+                                                                             request.PtId,
+                                                                             item.SinDate,
+                                                                             0,
+                                                                             item.KohiId,
+                                                                             0,
+                                                                             item.SortKey,
+                                                                             false
+                                                          )).ToList();
             return result;
         }
 
