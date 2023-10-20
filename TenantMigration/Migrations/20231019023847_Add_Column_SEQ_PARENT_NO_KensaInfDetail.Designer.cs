@@ -12,8 +12,8 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    [Migration("20231018071433_Add_Column_SEQ_PARENT_NO_ZKensaSetDetail")]
-    partial class AddColumnSEQPARENTNOZKensaSetDetail
+    [Migration("20231019023847_Add_Column_SEQ_PARENT_NO_KensaInfDetail")]
+    partial class AddColumnSEQPARENTNOKensaInfDetail
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

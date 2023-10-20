@@ -159,6 +159,7 @@
         public const string CheckExistTemplateAccounting = "CheckExistTemplateAccounting";
         public const string ExportStatics = "ExportStatics";
         public const string ExportSta9000Csv = "ExportSta9000Csv";
+        public const string KensaHistoryReport = "KensaHistoryReport";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -179,6 +180,7 @@
         public const string GetPtInfModelsByRefNo = "GetPtInfModelsByRefNo";
         public const string GetVisitTimesManagementModels = "GetVisitTimesManagementModels";
         public const string UpdateVisitTimesManagement = "UpdateVisitTimesManagement";
+        public const string UpdateVisitTimesManagementNeedSave = "UpdateVisitTimesManagementNeedSave";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -353,6 +355,7 @@
         public const string GetListSokatuMst = "GetListSokatuMst";
         public const string CheckExistsReceInf = "CheckExistsReceInf";
         public const string CheckExistSyobyoKeika = "CheckExistSyobyoKeika";
+        public const string GetNextUketukeNoBySetting = "GetNextUketukeNoBySetting";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -522,6 +525,7 @@
         public const string SaveCompareTenMst = "SaveCompareTenMst";
         public const string SaveSetNameMnt = "SaveSetNameMnt";
         public const string GetColumnSettingByTableNameList = "GetColumnSettingByTableNameList";
+        public const string GetRenkeiTiming = "GetRenkeiTiming";
 
         //log
         public const string WriteLog = "WriteLog";

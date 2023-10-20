@@ -1,4 +1,6 @@
 ﻿using Domain.Models.PatientInfor;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Reporting.Statistics.Sta9000.DB;
 using UseCase.PatientManagement.SearchPtInfs;
 
@@ -7,10 +9,14 @@ namespace Interactor.PatientManagement
     public class SearchPtInfsInteractor : ISearchPtInfsInputPort
     {
         private readonly ICoSta9000Finder _coSta9000Finder;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SearchPtInfsInteractor(ICoSta9000Finder coSta9000Finder)
+        public SearchPtInfsInteractor(ITenantProvider tenantProvider, ICoSta9000Finder coSta9000Finder)
         {
             _coSta9000Finder = coSta9000Finder;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SearchPtInfsOutputData Handle(SearchPtInfsInputData inputData)
@@ -74,9 +80,15 @@ namespace Interactor.PatientManagement
 
                 return new SearchPtInfsOutputData(totalCount, result, SearchPtInfsStatus.Successed);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _coSta9000Finder.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

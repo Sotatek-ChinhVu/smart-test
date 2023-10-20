@@ -255,22 +255,24 @@ public class MainMenuController : AuthorizeControllerBase
 
     private KensaIraiModel ConvertToKensaIraiModel(KensaIraiRequestItem request)
     {
-        List<KensaIraiDetailModel> kensaIraiDetailList = request.KensaIraiDetails.Select(item => new KensaIraiDetailModel(
-                                                                                                     item.TenKensaItemCd,
-                                                                                                     item.ItemCd,
-                                                                                                     item.ItemName,
-                                                                                                     item.KanaName1,
-                                                                                                     item.CenterCd,
-                                                                                                     item.KensaItemCd,
-                                                                                                     item.CenterItemCd,
-                                                                                                     item.KensaKana,
-                                                                                                     item.KensaName,
-                                                                                                     item.ContainerCd,
-                                                                                                     item.RpNo,
-                                                                                                     item.RpEdaNo,
-                                                                                                     item.RowNo,
-                                                                                                     item.SeqNo))
-                                                                                  .ToList();
+        List<KensaIraiDetailModel> kensaIraiDetailList = request.KensaIraiDetails
+                                                                .Where(item => !string.IsNullOrEmpty(item.KensaItemCd))
+                                                                .Select(item => new KensaIraiDetailModel(
+                                                                                    item.TenKensaItemCd,
+                                                                                    item.ItemCd,
+                                                                                    item.ItemName,
+                                                                                    item.KanaName1,
+                                                                                    item.CenterCd,
+                                                                                    item.KensaItemCd,
+                                                                                    item.CenterItemCd,
+                                                                                    item.KensaKana,
+                                                                                    item.KensaName,
+                                                                                    item.ContainerCd,
+                                                                                    item.RpNo,
+                                                                                    item.RpEdaNo,
+                                                                                    item.RowNo,
+                                                                                    item.SeqNo))
+                                                                .ToList();
         return new KensaIraiModel(
                    request.SinDate,
                    request.RaiinNo,
