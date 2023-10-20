@@ -10,6 +10,6 @@ namespace Reporting.KensaHistory.DB
 
         PtInf GetPtInf(int hpId, long ptId);
 
-        List<CoKensaResultMultiModel> GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity);
+        (List<CoKensaResultMultiModel>, List<long>) GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity);
     }
 }

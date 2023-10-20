@@ -41,7 +41,7 @@ namespace Reporting.KensaHistory.DB
             return ptInf;
         }
 
-        public List<CoKensaResultMultiModel> GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity)
+        public (List<CoKensaResultMultiModel>, List<long>) GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity)
         {
             IQueryable<KensaInfDetail> kensaInfDetails;
 
@@ -232,7 +232,7 @@ namespace Reporting.KensaHistory.DB
             }
 
             List<string> itemName = new();
-            foreach(var item in kensaInfDetailData)
+            foreach (var item in kensaInfDetailData)
             {
                 itemName.Add(item.KensaName);
             }
@@ -240,15 +240,129 @@ namespace Reporting.KensaHistory.DB
             itemName.Distinct();
 
             List<CoKensaResultMultiModel> result = new();
+            List<KensaResultMultiItem> kensaResultMultiItems = new();
 
-            foreach(var item in kensaInfDetailData)
+            foreach (var item in kensaInfDetailData)
             {
-                //result.Add(item.KensaName, item.Unit, item.Std, );
+                result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.Std, new(), new()));
             }
 
-                //(kensaInfDetailCol.ToList(), kensaInfDetailData);
-            return result;
-        }
+            foreach (var item in kensaInfDetailData)
+            {
+                foreach (var kensaResultMultiItem in item.DynamicArray)
+                {
+                    kensaResultMultiItems.Add(new KensaResultMultiItem(kensaResultMultiItem.ResultVal, kensaResultMultiItem.AbnormalKbn));
+                }
+            }
 
+            int count = kensaResultMultiItems.Count / itemName.Count;
+
+
+            int j = 0;
+            for (int i = 0; i < result.Count; i++)
+            {
+                if (count == 1)
+                {
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                }
+                else if (count == 2)
+                {
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                }
+                else if (count == 3)
+                {
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                }
+                else if (count == 4)
+                {
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                }
+                else if (count == 5)
+                {
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                }
+                else if (count == 6)
+                {
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                }
+                else if (count == 7)
+                {
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                }
+                else if (count == 8)
+                {
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                }
+                else if (count == 9)
+                {
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                }
+                else if (count == 9)
+                {
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                    result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
+                }
+            }
+            List<long> date = new();
+            foreach (var item in kensaInfDetailData)
+            {
+                foreach (var kensaResultMultiItem in item.DynamicArray)
+                {
+                    date.Add(kensaResultMultiItem.IraiDate);
+                }
+            }
+
+            date = date.Distinct().ToList();
+            date.Remove(0);
+
+
+            result.Add( new CoKensaResultMultiModel("","","", new(), date));
+
+            return (result, date);
+        }
     }
 }
