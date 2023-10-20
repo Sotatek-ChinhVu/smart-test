@@ -6,6 +6,8 @@ using Domain.Models.User;
 using EventProcessor.Interfaces;
 using EventProcessor.Model;
 using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.AccountDue.SaveAccountDueList;
 
 namespace Interactor.AccountDue;
@@ -18,8 +20,10 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IEventProcessorService _eventProcessorService;
     private readonly IReceptionRepository _receptionRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveAccountDueListInteractor(IAccountDueRepository accountDueRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IEventProcessorService eventProcessorService, IReceptionRepository receptionRepository)
+    public SaveAccountDueListInteractor(IAccountDueRepository accountDueRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IEventProcessorService eventProcessorService, IReceptionRepository receptionRepository, ITenantProvider tenantProvider)
     {
         _accountDueRepository = accountDueRepository;
         _userRepository = userRepository;
@@ -27,6 +31,8 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         _patientInforRepository = patientInforRepository;
         _eventProcessorService = eventProcessorService;
         _receptionRepository = receptionRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveAccountDueListOutputData Handle(SaveAccountDueListInputData inputData)
@@ -75,12 +81,17 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
                 return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Successed, result, receptionInfos, sameVisitList);
             }
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+        }
         finally
         {
             _accountDueRepository.ReleaseResource();
             _userRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
             _hpInfRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
         return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Failed);
     }
@@ -208,10 +219,6 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         else if (inputData.SyunoNyukinInputItems.Any(item => item.NyukinCmt.Length > 100))
         {
             return SaveAccountDueListStatus.NyukinCmtMaxLength100;
-        }
-        else if (inputData.SyunoNyukinInputItems.Any(item => item.SeikyuGaku < 0))
-        {
-            return SaveAccountDueListStatus.InvalidSeikyuGaku;
         }
         else if (inputData.SyunoNyukinInputItems.Any(item => item.SeikyuTensu < 0))
         {

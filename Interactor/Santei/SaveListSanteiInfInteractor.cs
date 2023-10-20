@@ -1,10 +1,12 @@
 ﻿using Domain.Models.HpInf;
+using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Santei;
 using Domain.Models.User;
-using UseCase.Santei.SaveListSanteiInf;
 using Helper.Common;
-using Domain.Models.MstItem;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
+using UseCase.Santei.SaveListSanteiInf;
 
 namespace Interactor.Santei;
 
@@ -15,14 +17,18 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IUserRepository _userRepository;
     private readonly IMstItemRepository _mstItemRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveListSanteiInfInteractor(ISanteiInfRepository santeiInfRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IMstItemRepository mstItemRepository)
+    public SaveListSanteiInfInteractor(ITenantProvider tenantProvider, ISanteiInfRepository santeiInfRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IMstItemRepository mstItemRepository)
     {
         _santeiInfRepository = santeiInfRepository;
         _hpInfRepository = hpInfRepository;
         _patientInforRepository = patientInforRepository;
         _userRepository = userRepository;
         _mstItemRepository = mstItemRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveListSanteiInfOutputData Handle(SaveListSanteiInfInputData inputData)
@@ -41,6 +47,11 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             }
             return new SaveListSanteiInfOutputData(SaveListSanteiInfStatus.Failed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _santeiInfRepository.ReleaseResource();
@@ -48,6 +59,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             _patientInforRepository.ReleaseResource();
             _userRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 
@@ -79,15 +91,6 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
 
         // get list of SanteiInfDetails to validate SanteiInfDetail
         var listSanteiInfDetails = _santeiInfRepository.GetListSanteiInfDetails(input.HpId, input.PtId);
-
-        // get list of Byomeis to validate 
-        var listByomeis = _mstItemRepository.GetListSanteiByomeis(input.HpId, input.PtId, input.SinDate, input.HokenPid);
-        if (listSanteiInfDetails.Any())
-        {
-            listByomeis.AddRange(from item in listSanteiInfDetails// Add byomei to byomei List
-                                 where listByomeis.FirstOrDefault(byomei => byomei.Equals(item.Byomei)) == null && !string.IsNullOrEmpty(item.Byomei)
-                                 select item.Byomei);
-        }
 
         foreach (var santeiInf in input.ListSanteiInfs)
         {
@@ -127,7 +130,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             // validate list SanteiInfDetails
             foreach (var santeiInfDetail in santeiInf.ListSanteInfDetails)
             {
-                var resultValidateDetail = ValidateSanteiInfDetail(santeiInf.ItemCd, santeiInfDetail, listSanteiInfDetails, listByomeis);
+                var resultValidateDetail = ValidateSanteiInfDetail(santeiInf.ItemCd, santeiInfDetail, listSanteiInfDetails);
                 if (resultValidateDetail != SaveListSanteiInfStatus.ValidateSuccess)
                 {
                     return resultValidateDetail;
@@ -137,7 +140,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         return SaveListSanteiInfStatus.ValidateSuccess;
     }
 
-    public SaveListSanteiInfStatus ValidateSanteiInfDetail(string itemCd, SanteiInfDetailInputItem santeiInfDetail, List<SanteiInfDetailModel> listSanteiInfDetails, List<string> listByomeis)
+    public SaveListSanteiInfStatus ValidateSanteiInfDetail(string itemCd, SanteiInfDetailInputItem santeiInfDetail, List<SanteiInfDetailModel> listSanteiInfDetails)
     {
         // validate KisanSbt, KisanSbt must exist in dictionary
         //{ 0, string.Empty },
@@ -168,12 +171,6 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         else if (CIUtil.SDateToShowSDate(santeiInfDetail.KisanDate) == string.Empty)
         {
             return SaveListSanteiInfStatus.InvalidKisanDate;
-        }
-
-        // validate Byomei
-        else if (santeiInfDetail.Byomei.Length > 0 && !listByomeis.Contains(santeiInfDetail.Byomei))
-        {
-            return SaveListSanteiInfStatus.InvalidByomei;
         }
 
         // validate HosokuComment

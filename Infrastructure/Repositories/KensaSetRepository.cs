@@ -30,16 +30,18 @@ namespace Infrastructure.Repositories
                     try
                     {
                         int kensaSetId = setId;
+                        int maxKensaSetSortNo = NoTrackingDataContext.KensaSets.Where(c => c.HpId == hpId).AsEnumerable().Select(c => c.SortNo).DefaultIfEmpty(0).Max();
                         // Create kensaSet
                         if (setId == 0)
                         {
+                            maxKensaSetSortNo++;
                             var kensaSet = TrackingDataContext.KensaSets.Add(new KensaSet()
                             {
                                 HpId = hpId,
                                 CreateId = userId,
                                 UpdateId = userId,
                                 SetName = setName,
-                                SortNo = sortNo,
+                                SortNo = maxKensaSetSortNo,
                                 CreateMachine = CIUtil.GetComputerName(),
                                 CreateDate = CIUtil.GetJapanDateTimeNow(),
                                 UpdateDate = CIUtil.GetJapanDateTimeNow(),
@@ -60,7 +62,10 @@ namespace Infrastructure.Repositories
                             }
 
                             KensaSet.SetName = setName;
-                            KensaSet.SortNo = sortNo;
+                            if (sortNo > 0)
+                            {
+                                KensaSet.SortNo = sortNo;
+                            }
                             KensaSet.IsDeleted = isDeleted;
                             KensaSet.UpdateId = userId;
                             KensaSet.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -77,6 +82,7 @@ namespace Infrastructure.Repositories
                         }
                         if (isDeleted == DeleteTypes.None)
                         {
+                            int maxKensaSetDetailSortNo = NoTrackingDataContext.KensaSetDetails.Where(c => c.HpId == hpId && c.SetId == setId).AsEnumerable().Select(c => c.SortNo).DefaultIfEmpty(0).Max();
                             foreach (var item in kensaSetDetails)
                             {
                                 // Create kensaSetDetail
@@ -88,7 +94,7 @@ namespace Infrastructure.Repositories
                                         SetId = kensaSetId,
                                         KensaItemCd = item.KensaItemCd,
                                         KensaItemSeqNo = item.KensaItemSeqNo,
-                                        SortNo = item.SortNo,
+                                        SortNo = item.SortNo == 0 ? ++maxKensaSetDetailSortNo : item.SortNo,
                                         CreateId = userId,
                                         UpdateId = userId,
                                         CreateMachine = CIUtil.GetComputerName(),
@@ -107,7 +113,10 @@ namespace Infrastructure.Repositories
                                     {
                                         transaction.Rollback();
                                     }
-                                    kensaSetDetail.SortNo = item.SortNo;
+                                    if (kensaSetDetail.SortNo > 0)
+                                    {
+                                        kensaSetDetail.SortNo = item.SortNo;
+                                    }
                                     kensaSetDetail.IsDeleted = item.IsDeleted;
                                     kensaSetDetail.UpdateId = userId;
                                     kensaSetDetail.UpdateMachine = CIUtil.GetComputerName();
@@ -133,9 +142,10 @@ namespace Infrastructure.Repositories
                         transaction.Commit();
                         successed = true;
                     }
-                    catch
+                    catch (Exception)
                     {
                         transaction.Rollback();
+                        throw;
                     }
                 });
             return successed;
@@ -143,7 +153,7 @@ namespace Infrastructure.Repositories
 
         public List<KensaSetModel> GetListKensaSet(int hpId)
         {
-            return NoTrackingDataContext.KensaSets.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => new KensaSetModel(
+            return NoTrackingDataContext.KensaSets.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.SortNo).Select(x => new KensaSetModel(
                 x.HpId,
                 x.SetId,
                 x.SetName,
@@ -162,6 +172,7 @@ namespace Infrastructure.Repositories
             var data = (from t1 in NoTrackingDataContext.KensaSetDetails
                         join t2 in NoTrackingDataContext.KensaMsts on t1.KensaItemCd equals t2.KensaItemCd
                         where t1.HpId == hpId && t1.SetId == setId && t1.IsDeleted == DeleteTypes.None
+                        orderby t1.SortNo
                         select new KensaSetDetailModel(
                         t1.HpId,
                         t1.SetId,
@@ -324,15 +335,16 @@ namespace Infrastructure.Repositories
                         transaction.Commit();
                         successed = true;
                     }
-                    catch
+                    catch (Exception)
                     {
                         transaction.Rollback();
+                        throw;
                     }
                 });
             return successed;
         }
 
-        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, bool showAbnormalKbn, int itemQuantity)
+        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int itemQuantity)
         {
             IQueryable<KensaInfDetail> kensaInfDetails;
 
@@ -462,67 +474,93 @@ namespace Infrastructure.Repositories
                 }
             }
 
+            // Sort by IraiDate
+
+            var sortedData = SortIraiDateAsc
+                ? data.OrderBy(x => x.IraiDate)
+                : data.OrderByDescending(x => x.IraiDate);
+
+
+
+            var kensaInfDetailCol = sortedData
+                .GroupBy(x => new { x.IraiCd, x.IraiDate, x.Nyubi, x.Yoketu, x.Bilirubin, x.SikyuKbn, x.TosekiKbn })
+                .Select((group, index) => new KensaInfDetailColModel(
+                    group.Key.IraiCd,
+                    group.Key.IraiDate,
+                    group.Key.Nyubi,
+                    group.Key.Yoketu,
+                    group.Key.TosekiKbn,
+                    group.Key.SikyuKbn,
+                    group.Key.TosekiKbn,
+                    index
+                ));
+
+
+            var totalCol = kensaInfDetailCol.Count();
             // Get list with start date
-            if (SortIraiDateAsc && startDate != 0)
+
+            if (iraiCdStart > 0)
             {
-                data = data.Where(x => x.IraiDate >= startDate);
+
+                int currentIndex = 0;
+                foreach (var obj in kensaInfDetailCol)
+                {
+                    if (obj.IraiCd == iraiCdStart)
+                    {
+                        break;
+                    }
+                    currentIndex++;
+                }
+
+                if (getGetPrevious)
+                {
+                    kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
+                }
+                else
+                {
+                    kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1).Take(itemQuantity);
+                }
             }
-            else if (startDate != 0)
+            else
             {
-                data = data.Where(x => x.IraiDate <= startDate);
+                if (getGetPrevious)
+                {
+                    kensaInfDetailCol = kensaInfDetailCol.TakeLast(itemQuantity);
+                }
+                else
+                {
+                    kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+                }
             }
 
-            var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
+            var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
+            data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));
+            var kensaItemCds = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd)).GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
 
-            // Get list iraiCd
-            IOrderedEnumerable<object> kensaInfDetailColOrder = data.OrderBy(x => x.IraiDate);
-            var kensaInfDetailCol = SortIraiDateAsc ? data
-                                .OrderBy(x => x.IraiDate)
-                                .GroupBy(x => new { x.IraiCd, x.IraiDate, x.Nyubi, x.Yoketu, x.Bilirubin, x.SikyuKbn, x.TosekiKbn })
-                                .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate, group.Key.Nyubi, group.Key.Yoketu, group.Key.TosekiKbn, group.Key.SikyuKbn, group.Key.TosekiKbn))
-
-                            : data.OrderByDescending(x => x.IraiDate)
-                                .GroupBy(x => new { x.IraiCd, x.IraiDate, x.Nyubi, x.Yoketu, x.Bilirubin, x.SikyuKbn, x.TosekiKbn })
-                                 .Select(group => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate, group.Key.Nyubi, group.Key.Yoketu, group.Key.TosekiKbn, group.Key.SikyuKbn, group.Key.TosekiKbn));
-
-            kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+            var groupRowData = data
+                .GroupBy(x => x.KensaItemCd)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.ToList());
 
 
             var kensaInfDetailData = new List<KensaInfDetailDataModel>();
 
             foreach (var kensaMstItem in kensaItemCds)
             {
-                var dynamicArray = new List<ListKensaInfDetailItemModel>();
-
-                foreach (var item in kensaInfDetailCol)
+                if (groupRowData.TryGetValue(kensaMstItem.KensaItemCd, out var dynamicArray))
                 {
-                    var dynamicDataItem = data.Where(x => x.IraiCd == item.IraiCd && x.KensaItemCd == kensaMstItem.KensaItemCd).FirstOrDefault();
-
-                    if (dynamicDataItem == null)
-                    {
-                        dynamicArray.Add(new ListKensaInfDetailItemModel(
-                            ptId,
-                            item.IraiCd
-                        ));
-                    }
-                    else
-                    {
-                        dynamicArray.Add(dynamicDataItem);
-                    }
+                    kensaInfDetailData.Add(new KensaInfDetailDataModel(
+                        kensaMstItem.KensaItemCd,
+                        kensaMstItem.KensaName,
+                        kensaMstItem.Unit,
+                        kensaMstItem.Std,
+                        dynamicArray
+                    ));
                 }
-
-                var rowData = new KensaInfDetailDataModel(
-                     kensaMstItem.KensaItemCd,
-                     kensaMstItem.KensaName,
-                     kensaMstItem.Unit,
-                     kensaMstItem.Std,
-                     dynamicArray
-                );
-
-                kensaInfDetailData.Add(rowData);
             }
 
-            var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData);
+            var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData, totalCol);
             return result;
         }
 

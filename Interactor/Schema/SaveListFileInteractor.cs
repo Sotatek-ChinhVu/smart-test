@@ -4,6 +4,7 @@ using Domain.Models.PatientInfor;
 using Domain.Models.SuperSetDetail;
 using Helper.Constants;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using UseCase.Schema.SaveListFileTodayOrder;
@@ -18,9 +19,11 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
     private readonly IKarteInfRepository _karteInfRepository;
     private readonly INextOrderRepository _nextOrderRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
     private readonly AmazonS3Options _options;
 
-    public SaveListFileInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, ISuperSetDetailRepository superSetDetailRepository, IKarteInfRepository karteInfRepository, INextOrderRepository nextOrderRepository)
+    public SaveListFileInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ITenantProvider tenantProvider, IPatientInforRepository patientInforRepository, ISuperSetDetailRepository superSetDetailRepository, IKarteInfRepository karteInfRepository, INextOrderRepository nextOrderRepository)
     {
         _options = optionsAccessor.Value;
         _amazonS3Service = amazonS3Service;
@@ -28,7 +31,8 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
         _superSetDetailRepository = superSetDetailRepository;
         _karteInfRepository = karteInfRepository;
         _nextOrderRepository = nextOrderRepository;
-
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveListFileTodayOrderOutputData Handle(SaveListFileTodayOrderInputData input)
@@ -69,12 +73,18 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
             }
             return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Failed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _karteInfRepository.ReleaseResource();
             _nextOrderRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
             _superSetDetailRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 
