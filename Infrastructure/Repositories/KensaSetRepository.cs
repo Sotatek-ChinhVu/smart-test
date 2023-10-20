@@ -515,10 +515,10 @@ namespace Infrastructure.Repositories
                         join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
                         join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
                         join t5 in NoTrackingDataContext.KensaCmtMsts
-                             on t1.CmtCd1 equals t5.CMT into leftJoinT5
+                             on t1.CmtCd1 equals t5.CmtCd into leftJoinT5
                         from t5 in leftJoinT5.DefaultIfEmpty()
                         join t6 in NoTrackingDataContext.KensaCmtMsts
-                             on t1.CmtCd2 equals t6.CMT into leftJoinT6
+                             on t1.CmtCd2 equals t6.CmtCd into leftJoinT6
                         from t6 in leftJoinT6.DefaultIfEmpty()
                         join t7 in NoTrackingDataContext.KensaStdMsts
                             on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
@@ -734,10 +734,10 @@ namespace Infrastructure.Repositories
                         join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
                         join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
                         join t5 in NoTrackingDataContext.KensaCmtMsts
-                             on t1.CmtCd1 equals t5.CMT into leftJoinT5
+                             on t1.CmtCd1 equals t5.CmtCd into leftJoinT5
                         from t5 in leftJoinT5.DefaultIfEmpty()
                         join t6 in NoTrackingDataContext.KensaCmtMsts
-                             on t1.CmtCd2 equals t6.CMT into leftJoinT6
+                             on t1.CmtCd2 equals t6.CmtCd into leftJoinT6
                         from t6 in leftJoinT6.DefaultIfEmpty()
                         join t7 in NoTrackingDataContext.KensaStdMsts
                              on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
