@@ -407,7 +407,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _karteInfRepository.ReleaseResource();
             _validateFamilyList.ReleaseResource();
             _summaryInfRepository.ReleaseResource();
+            _tenantProvider.DisposeDataContext();
             _loggingHandler.Dispose();
+            _saveMedicalRepository.ReleaseResource();
+            _calculateService.ReleaseSource();
         }
     }
 

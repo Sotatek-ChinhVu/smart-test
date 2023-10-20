@@ -139,7 +139,11 @@ namespace Interactor.ReceiptCheck
                 _calculationInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
                 _receiptRepository.ReleaseResource();
+                _tenantProvider.DisposeDataContext();
+                _calculateService.ReleaseSource();
                 _loggingHandler.Dispose();
+                _commonMedicalCheck.ReleaseResource();
+                _realtimeOrderErrorFinder.ReleaseResource();
             }
         }
 

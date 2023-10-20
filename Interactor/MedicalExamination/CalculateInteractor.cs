@@ -18,42 +18,50 @@ namespace Interactor.MedicalExamination
 
         public CalculateOutputData Handle(CalculateInputData inputData)
         {
-            var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
-            if (notAllowSave)
+            try
             {
-                return new CalculateOutputData(inputData.PtId, inputData.SinDate, CalculateStatus.MedicalScreenLocked);
-            }
-            var check = false;
-            if (inputData.FromRcCheck)
-            {
-                var checkRunCalculateOne = _calculateRepository.RunCalculateOne(new CalculateOneRequest(
-                        inputData.HpId,
-                        inputData.PtId,
-                        inputData.SinDate,
-                        inputData.SeikyuUp,
-                        inputData.Prefix
-                    ));
+                var notAllowSave = _userRepository.NotAllowSaveMedicalExamination(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.UserId);
+                if (notAllowSave)
+                {
+                    return new CalculateOutputData(inputData.PtId, inputData.SinDate, CalculateStatus.MedicalScreenLocked);
+                }
+                var check = false;
+                if (inputData.FromRcCheck)
+                {
+                    var checkRunCalculateOne = _calculateRepository.RunCalculateOne(new CalculateOneRequest(
+                            inputData.HpId,
+                            inputData.PtId,
+                            inputData.SinDate,
+                            inputData.SeikyuUp,
+                            inputData.Prefix
+                        ));
 
-                var checkReceFutanCalculateMain = _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(new List<long> { inputData.PtId }, inputData.SinDate / 100,  string.Empty), CancellationToken.None);
-                check = checkRunCalculateOne && checkReceFutanCalculateMain;
-            }
-            else
-            {
-                check = _calculateRepository.RunCalculate(new RecaculationInputDto(
-                        inputData.HpId,
-                        inputData.PtId,
-                        inputData.SinDate,
-                        inputData.SeikyuUp,
-                        inputData.Prefix
-                    ));
-            }
+                    var checkReceFutanCalculateMain = _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(new List<long> { inputData.PtId }, inputData.SinDate / 100, string.Empty), CancellationToken.None);
+                    check = checkRunCalculateOne && checkReceFutanCalculateMain;
+                }
+                else
+                {
+                    check = _calculateRepository.RunCalculate(new RecaculationInputDto(
+                            inputData.HpId,
+                            inputData.PtId,
+                            inputData.SinDate,
+                            inputData.SeikyuUp,
+                            inputData.Prefix
+                        ));
+                }
 
-            if (check)
-            {
-                return new CalculateOutputData(inputData.PtId, inputData.SinDate, CalculateStatus.Successed);
-            }
+                if (check)
+                {
+                    return new CalculateOutputData(inputData.PtId, inputData.SinDate, CalculateStatus.Successed);
+                }
 
-            return new CalculateOutputData(inputData.PtId, inputData.SinDate, CalculateStatus.Failed);
+                return new CalculateOutputData(inputData.PtId, inputData.SinDate, CalculateStatus.Failed);
+            }
+            finally
+            {
+                _userRepository.ReleaseResource();
+                _calculateRepository.ReleaseSource();
+            }
         }
     }
 }

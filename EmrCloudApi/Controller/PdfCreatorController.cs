@@ -245,8 +245,16 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.KensaHistoryReport)]
     public async Task<IActionResult> KensaHistoryReport([FromQuery] KensaHistoryReportRequest request)
     {
-        var data = _reportService.GetKensaHistoryPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiCd, request.SeikyuYm, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.ItemQuantity);
-        return await RenderPdf(data, ReportType.Common, data.JobName);
+        if (request.SeikyuYm != 0)
+        {
+            var data = _reportService.GetKensaHistoryPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiCd, request.SeikyuYm, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.ItemQuantity);
+            return await RenderPdf(data, ReportType.Common, data.JobName);
+        }
+        else
+        {
+            var data = _reportService.GetKensaResultMultiPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiCd, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.ItemQuantity);
+            return await RenderPdf(data, ReportType.Common, data.JobName);
+        }
     }
 
     [HttpPost(ApiPath.MemoMsgPrint)]

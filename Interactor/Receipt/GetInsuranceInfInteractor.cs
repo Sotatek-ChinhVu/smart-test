@@ -16,11 +16,18 @@ namespace Interactor.Receipt
 
         public GetInsuranceInfOutputData Handle(GetInsuranceInfInputData inputData)
         {
-            var receInfs = _calculateService.GetListReceInf(inputData);
+            try
+            {
+                var receInfs = _calculateService.GetListReceInf(inputData);
 
-            if (!receInfs.ReceInfModels.Any()) return new GetInsuranceInfOutputData(new(), GetInsuranceInfStatus.NoData);
+                if (!receInfs.ReceInfModels.Any()) return new GetInsuranceInfOutputData(new(), GetInsuranceInfStatus.NoData);
 
-            return new GetInsuranceInfOutputData(ConvertToInsuranceInfDto(receInfs), GetInsuranceInfStatus.Successed);
+                return new GetInsuranceInfOutputData(ConvertToInsuranceInfDto(receInfs), GetInsuranceInfStatus.Successed);
+            }
+            finally
+            {
+                _calculateService.ReleaseSource();
+            }
         }
 
         private List<InsuranceInfDto> ConvertToInsuranceInfDto(ReceInfModelDto receInf)
