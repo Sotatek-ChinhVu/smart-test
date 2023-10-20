@@ -524,6 +524,7 @@ namespace Infrastructure.Repositories
                             on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
                         from t7 in leftJoinT7.DefaultIfEmpty()
                         where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd).Min(m => m.KensaItemSeqNo)
+                        && t3.IsDeleted == DeleteTypes.None && t1.IsDeleted == DeleteTypes.None
                         select new ListKensaInfDetailItemModel
                         (
                             t1.PtId,
@@ -728,7 +729,7 @@ namespace Infrastructure.Repositories
 
         public List<ListKensaInfDetailItemModel> GetKensaInfDetailByIraiCd(int hpId, int iraiCd)
         {
-            var data = (from t1 in NoTrackingDataContext.KensaInfDetails.Where(x => x.IraiCd == iraiCd && x.HpId == hpId)
+            var data = (from t1 in NoTrackingDataContext.KensaInfDetails.Where(x => x.IraiCd == iraiCd && x.HpId == hpId && x.IsDeleted == DeleteTypes.None)
                         join t2 in NoTrackingDataContext.KensaMsts
                          on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
                         join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
@@ -743,6 +744,7 @@ namespace Infrastructure.Repositories
                              on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
                         from t7 in leftJoinT7.DefaultIfEmpty()
                         where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd).Min(m => m.KensaItemSeqNo)
+                        && t3.IsDeleted == DeleteTypes.None
                         select new ListKensaInfDetailItemModel
                         (
                             t1.PtId,
