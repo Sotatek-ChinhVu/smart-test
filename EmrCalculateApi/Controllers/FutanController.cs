@@ -26,6 +26,7 @@ namespace EmrCalculateApi.Controllers
                 null, null, null, null,
                 calculateRequest.SeikyuUp
             );
+            _futanCalculate.ReleaseResource();
             return Ok();
         }
     }

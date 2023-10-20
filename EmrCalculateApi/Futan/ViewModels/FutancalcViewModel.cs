@@ -3233,5 +3233,10 @@ namespace EmrCalculateApi.Futan.ViewModels
 
             CalcLogs.Add(calcLog);
         }
+
+        public void ReleaseResource()
+        {
+            _tenantDataContext.Dispose();
+        }
     }
 }
