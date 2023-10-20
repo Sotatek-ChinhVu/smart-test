@@ -183,7 +183,7 @@ namespace Reporting.KensaHistory.Service
         {
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
-            kensaInfDetailModel = _kokhoFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, iraiCd, startDate, showAbnormalKbn, itemQuantity);
+            kensaInfDetailModel = _kokhoFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, iraiCd, 0, false, showAbnormalKbn, itemQuantity, startDate);
             var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray);
 
             foreach (var item in kensaInfDetails)
