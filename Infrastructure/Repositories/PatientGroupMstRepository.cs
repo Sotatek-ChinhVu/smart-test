@@ -124,7 +124,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception)
             {
-                return status;
+                throw;
             }
         }
 

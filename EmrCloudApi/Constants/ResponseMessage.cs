@@ -318,7 +318,7 @@
         public static readonly string UpsertKarteInfInvalidPtId = "Invalid PtId";
         public static readonly string UpsertKarteInfInvalidSinDate = "Invalid SinDate";
         public static readonly string UpsertKarteInfInvalidIsDeleted = "Invalid IsDeleted";
-        public static readonly string UpsertKarteInfRaiinNoNoExist = "RaiinNo No Exist";
+        public static readonly string UpsertKarteInfRaiinNoNoExist = "指定された来院情報がないためオーダーは入力できません";
         public static readonly string UpsertKarteInfPtIdNoExist = "PtId No Exist";
         public static readonly string UpsertKarteInfKarteKbnNoExist = "KarteKbn No Exist";
 
@@ -643,7 +643,7 @@
         public static readonly string RaiinInfTodayOdrInvalidSinEndTime = "Invalid SinEndTime";
         public static readonly string RaiinInfTodayOdrPtIdNoExist = "PtId no exist";
         public static readonly string RaiinInfTodayOdrHpIdNoExist = "HpId no exist";
-        public static readonly string RaiinInfTodayOdrRaiinNoExist = "RaiinNo no exist";
+        public static readonly string RaiinInfTodayOdrRaiinNoExist = "指定された来院情報がないためオーダーは入力できません";
 
         //Monshin
         public static readonly string InputDataDoesNotExists = "Input Data does not exist";
@@ -1020,6 +1020,10 @@
         public static readonly string InvalidReportId = "Invalid ReportId!";
         public static readonly string InvalidMenuName = "Invalid MenuName!";
         public static readonly string InvalidIraiCd = "Invalid IraiCd!";
+        public static readonly string InvalidInputFile = "Invalid InputFile!";
+        public static readonly string InvalidAbnormalKbn = "Invalid AbnormalKbn!";
+        public static readonly string InvalidResultType = "Invalid ResultType!";
+        public static readonly string InvalidKensaItemCd = "Invalid KensaItemCd!";
 
         public static readonly string NoPermission = "No permission";
         public static readonly string InvalidContentFile = "Invalid file content";

@@ -1,20 +1,13 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Domain.Models.SetGenerationMst;
+﻿using Domain.Models.SetGenerationMst;
 using Domain.Models.SetMst;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
 using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using Microsoft.Extensions.Caching.Memory;
-using System.Text.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
@@ -94,9 +87,9 @@ Enumerable.Empty<SetGenerationMstModel>();
                     generationId = generation.GenerationId;
                 }
             }
-            catch
+            catch (Exception)
             {
-                return 0;
+                throw;
             }
             return generationId;
         }
@@ -292,9 +285,9 @@ Enumerable.Empty<SetGenerationMstModel>();
                 }
                 return new GetCountProcessModel(setMstsBackuped.Count, setKbnMstSource.Count, setByomeisSource.Count, setKarteInfsSource.Count, setKarteImgInfsSource.Count, setOdrInfsSource.Count, setOdrInfDetailsSource.Count, setOdrInfCmtSource.Count, ListSetMstNew, listMstDict);
             }
-            catch
+            catch (Exception)
             {
-                return new GetCountProcessModel();
+                throw;
             }
         }
 
@@ -324,9 +317,9 @@ Enumerable.Empty<SetGenerationMstModel>();
                 }
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -354,10 +347,10 @@ Enumerable.Empty<SetGenerationMstModel>();
                     TrackingDataContext.SaveChanges();
                     return true;
                 }
-                catch
+                catch (Exception)
                 {
                     TrackingDataContext.SetKbnMsts.RemoveRange(setKbnMstSource);
-                    return false;
+                    throw;
                 }
             }
             return false;
@@ -388,10 +381,9 @@ Enumerable.Empty<SetGenerationMstModel>();
                         TrackingDataContext.SaveChanges();
                         return true;
                     }
-                    catch {
-                        TrackingDataContext.SetByomei.RemoveRange(setByomeisSource);
-                        TrackingDataContext.SaveChanges();
-                        return false;
+                    catch (Exception)
+                    {
+                        throw;
                     }
                 }
 
@@ -437,9 +429,9 @@ Enumerable.Empty<SetGenerationMstModel>();
                 }
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -475,9 +467,9 @@ Enumerable.Empty<SetGenerationMstModel>();
 
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -517,9 +509,9 @@ Enumerable.Empty<SetGenerationMstModel>();
 
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -554,9 +546,9 @@ Enumerable.Empty<SetGenerationMstModel>();
 
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -591,9 +583,9 @@ Enumerable.Empty<SetGenerationMstModel>();
 
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -693,9 +685,9 @@ Enumerable.Empty<SetGenerationMstModel>();
                     // clone data from newest to restore item
                     return new AddSetSendaiModel(itemNewest.GenerationId, restoreGenerationId);
                 }
-                catch
+                catch (Exception)
                 {
-                    return null;
+                    throw;
                 }
             }
 

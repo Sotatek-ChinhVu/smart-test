@@ -87,6 +87,7 @@ namespace Infrastructure.CommonDB
         private int _hpId;
         private int _userId;
         private int _departmentId;
+        private string _loginKey = string.Empty;
 
         public async Task<string> GetRequestInfoAsync()
         {
@@ -228,6 +229,18 @@ namespace Infrastructure.CommonDB
             string? clientDomain = headers[ParamConstant.Domain];
 
             return clientDomain ?? string.Empty;
+        }
+
+        public string GetLoginKeyFromHeader()
+        {
+            var headers = _httpContextAccessor.HttpContext?.Request?.Headers;
+            if (headers == null || !headers.ContainsKey(ParamConstant.LoginKey))
+            {
+                return string.Empty;
+            }
+            string? loginkey = headers[ParamConstant.LoginKey];
+
+            return loginkey ?? string.Empty;
         }
 
         public string GetDomainFromQueryString()

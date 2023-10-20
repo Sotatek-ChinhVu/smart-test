@@ -34,6 +34,7 @@ namespace Interactor.Receipt
             finally
             {
                 _mstItemRepository.ReleaseResource();
+                _calculateService.ReleaseSource();
             }
         }
 

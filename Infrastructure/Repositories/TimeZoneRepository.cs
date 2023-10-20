@@ -49,7 +49,7 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
                                                          .ToList();
     }
 
-    public TimeZoneDayInfModel GetLatestTimeZoneDayInf(int hpId, int sinDate, int uketukeTime)
+    public TimeZoneDayInfModel? GetLatestTimeZoneDayInf(int hpId, int sinDate, int uketukeTime)
     {
         var result = NoTrackingDataContext.TimeZoneDayInfs.Where(item => item.HpId == hpId &&
                                                                                       item.SinDate == sinDate &&
@@ -57,14 +57,19 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
                                                                                       (item.EndTime == 0 ? uketukeTime <= 2400 : uketukeTime <= item.EndTime))
                                                                 .OrderByDescending(item => item.Id)
                                                                 .FirstOrDefault();
-        return new TimeZoneDayInfModel(
-                result != null ? result.HpId : 0,
-                result != null ? result.Id : 0,
-                result != null ? result.SinDate : 0,
-                result != null ? result.StartTime : 0,
-                result != null ? result.EndTime : 0,
-                result != null ? result.TimeKbn : 0
+        if (result != null)
+        {
+            return new TimeZoneDayInfModel(
+                result.HpId,
+                result.Id,
+                result.SinDate,
+                result.StartTime,
+                result.EndTime,
+                result.TimeKbn
             );
+        }
+
+        return null;
     }
 
     public bool UpdateTimeZoneDayInf(int hpId, int userId, int sinDate, int currentTimeKbn, int uketukeTime)
@@ -100,9 +105,9 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
 
             return TrackingDataContext.SaveChanges() > 0;
         }
-        catch
+        catch (Exception)
         {
-            return false;
+            throw;
         }
     }
 
@@ -136,7 +141,7 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
                 result.Add(
                     new TimeZoneConfGroupModel(
                         day,
-                        new List<TimeZoneConfModel>() {}
+                        new List<TimeZoneConfModel>() { }
                 ));
             }
         }

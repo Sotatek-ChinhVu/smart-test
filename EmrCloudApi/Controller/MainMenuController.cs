@@ -9,6 +9,8 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Insurance;
 using EmrCloudApi.Responses.MainMenu;
 using EmrCloudApi.Services;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.Json;
@@ -23,6 +25,7 @@ using UseCase.MainMenu.GetKensaIrai;
 using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.MainMenu.GetStaCsvMstModel;
 using UseCase.MainMenu.GetStatisticMenu;
+using UseCase.MainMenu.ImportKensaIrai;
 using UseCase.MainMenu.KensaIraiReport;
 using UseCase.MainMenu.SaveStaCsvMst;
 using UseCase.MainMenu.SaveStatisticMenu;
@@ -36,11 +39,13 @@ public class MainMenuController : AuthorizeControllerBase
     private readonly UseCaseBus _bus;
     private static HttpClient _httpClient = new HttpClient();
     private readonly IConfiguration _configuration;
+    private readonly IMessenger _messenger;
 
-    public MainMenuController(IConfiguration configuration, UseCaseBus bus, IUserService userService) : base(userService)
+    public MainMenuController(IConfiguration configuration, UseCaseBus bus, IUserService userService, IMessenger messenger) : base(userService)
     {
         _bus = bus;
         _configuration = configuration;
+        _messenger = messenger;
     }
 
     [HttpGet(ApiPath.GetStatisticMenuList)]
@@ -220,6 +225,24 @@ public class MainMenuController : AuthorizeControllerBase
         return new ActionResult<Response<SaveStaCsvMstResponse>>(presenter.Result);
     }
 
+    [HttpPost(ApiPath.ImportKensaIrai)]
+    public void ImportKensaIrai()
+    {
+        try
+        {
+            _messenger.Register<KensaInfMessageStatus>(this, UpdateKensaInfMessageStatus);
+            HttpContext.Response.ContentType = "application/json";
+
+            var input = new ImportKensaIraiInputData(HpId, UserId, _messenger, Request.Body);
+            _bus.Handle(input);
+        }
+        finally
+        {
+            _messenger.Deregister<KensaInfMessageStatus>(this, UpdateKensaInfMessageStatus);
+            HttpContext.Response.Body.Close();
+        }
+    }
+
     #region private function
     private KensaInfModel ConvertToKensaInfModel(KensaIraiByListRequestItem requestItem)
     {
@@ -232,22 +255,24 @@ public class MainMenuController : AuthorizeControllerBase
 
     private KensaIraiModel ConvertToKensaIraiModel(KensaIraiRequestItem request)
     {
-        List<KensaIraiDetailModel> kensaIraiDetailList = request.KensaIraiDetails.Select(item => new KensaIraiDetailModel(
-                                                                                                     item.TenKensaItemCd,
-                                                                                                     item.ItemCd,
-                                                                                                     item.ItemName,
-                                                                                                     item.KanaName1,
-                                                                                                     item.CenterCd,
-                                                                                                     item.KensaItemCd,
-                                                                                                     item.CenterItemCd,
-                                                                                                     item.KensaKana,
-                                                                                                     item.KensaName,
-                                                                                                     item.ContainerCd,
-                                                                                                     item.RpNo,
-                                                                                                     item.RpEdaNo,
-                                                                                                     item.RowNo,
-                                                                                                     item.SeqNo))
-                                                                                  .ToList();
+        List<KensaIraiDetailModel> kensaIraiDetailList = request.KensaIraiDetails
+                                                                .Where(item => !string.IsNullOrEmpty(item.KensaItemCd))
+                                                                .Select(item => new KensaIraiDetailModel(
+                                                                                    item.TenKensaItemCd,
+                                                                                    item.ItemCd,
+                                                                                    item.ItemName,
+                                                                                    item.KanaName1,
+                                                                                    item.CenterCd,
+                                                                                    item.KensaItemCd,
+                                                                                    item.CenterItemCd,
+                                                                                    item.KensaKana,
+                                                                                    item.KensaName,
+                                                                                    item.ContainerCd,
+                                                                                    item.RpNo,
+                                                                                    item.RpEdaNo,
+                                                                                    item.RowNo,
+                                                                                    item.SeqNo))
+                                                                .ToList();
         return new KensaIraiModel(
                    request.SinDate,
                    request.RaiinNo,
@@ -313,5 +338,12 @@ public class MainMenuController : AuthorizeControllerBase
         return result;
     }
 
+    private void UpdateKensaInfMessageStatus(KensaInfMessageStatus status)
+    {
+        string result = "\n" + JsonSerializer.Serialize(status);
+        var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+        HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+        HttpContext.Response.Body.FlushAsync();
+    }
     #endregion
 }

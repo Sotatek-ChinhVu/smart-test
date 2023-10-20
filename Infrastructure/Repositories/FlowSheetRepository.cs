@@ -125,7 +125,7 @@ namespace Infrastructure.Repositories
             {
                 string karteContent = string.Empty;
 
-                if (flowSheetModel.IsNext)
+                if (flowSheetModel.IsNextOrder)
                 {
                     var nextKarte = nextKarteList.FirstOrDefault(n => n.RsvkrtNo == flowSheetModel.RaiinNo);
                     karteContent = nextKarte?.Text ?? string.Empty;
@@ -166,7 +166,7 @@ namespace Infrastructure.Repositories
         {
             var allRaiinInfList = _tenantHistory.RaiinInfs
            .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status >= RaiinState.TempSave && r.IsDeleted == 0)
-           .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.UketukeTime ?? string.Empty, r.SyosaisinKbn, r.Status))
+           .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.UketukeTime ?? string.Empty, r.SyosaisinKbn, r.Status, false))
            .ToList();
 
             return allRaiinInfList;
@@ -186,7 +186,7 @@ namespace Infrastructure.Repositories
                                     join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
                                                      equals new { rsvkrtMst.HpId, rsvkrtMst.PtId, rsvkrtMst.RsvkrtNo }
                                     group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo } into g
-                                    select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, string.Empty, -1, 0)
+                                    select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, string.Empty, -1, 0, true)
                                ).ToList();
 
             return groupNextOdr;
@@ -543,9 +543,10 @@ namespace Infrastructure.Repositories
             var stopwatch = Stopwatch.StartNew();
             var raiinListInfs =
                (
-                  from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo != 0)
-                  join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None)
+                  from raiinListInf in NoTrackingDataContext.RaiinListInfs
+                  join raiinListMst in NoTrackingDataContext.RaiinListDetails
                   on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
+                  where raiinListInf.HpId == hpId && raiinListInf.PtId == ptId && raiinListInf.RaiinNo != 0 && raiinListMst.HpId == hpId && raiinListMst.IsDeleted == DeleteTypes.None
                   select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
                ).ToList();
 

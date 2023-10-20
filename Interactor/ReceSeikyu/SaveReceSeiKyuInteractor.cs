@@ -17,9 +17,10 @@ using Helper.Constants;
 using Helper.Extension;
 using Helper.Messaging;
 using Helper.Messaging.Data;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
-using System.Linq;
 using System.Text;
 using UseCase.ReceSeikyu.Save;
 
@@ -38,6 +39,8 @@ namespace Interactor.ReceSeikyu
         private readonly ICommonMedicalCheck _commonMedicalCheck;
         private readonly ITodayOdrRepository _todayOdrRepository;
         private readonly IDrugDetailRepository _drugDetailRepository;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
         private IMessenger? _messenger;
 
         private const string _hokenChar = "0";
@@ -53,7 +56,7 @@ namespace Interactor.ReceSeikyu
         private const string _rightLeft = "右左";
         bool isStopCalc = false;
 
-        public SaveReceSeiKyuInteractor(IReceSeikyuRepository receptionRepository, ICalcultateCustomerService calcultateCustomerService
+        public SaveReceSeiKyuInteractor(ITenantProvider tenantProvider, IReceSeikyuRepository receptionRepository, ICalcultateCustomerService calcultateCustomerService
             , IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IInsuranceMstRepository insuranceMstRepository, IMstItemRepository mstItemRepository
             , IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, ICommonMedicalCheck commonMedicalCheck, ITodayOdrRepository todayOdrRepository, IDrugDetailRepository drugDetailRepository)
         {
@@ -68,6 +71,8 @@ namespace Interactor.ReceSeikyu
             _commonMedicalCheck = commonMedicalCheck;
             _todayOdrRepository = todayOdrRepository;
             _drugDetailRepository = drugDetailRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveReceSeiKyuOutputData Handle(SaveReceSeiKyuInputData inputData)
@@ -297,6 +302,11 @@ namespace Interactor.ReceSeikyu
                 else
                     return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Failed);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _receiptRepository.ReleaseResource();
@@ -309,6 +319,7 @@ namespace Interactor.ReceSeikyu
                 _commonMedicalCheck.ReleaseResource();
                 _receSeikyuRepository.ReleaseResource();
                 _drugDetailRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

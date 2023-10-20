@@ -1,6 +1,8 @@
 ﻿using Domain.Constant;
 using Domain.Models.User;
 using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.User.SaveListUserMst;
 
 namespace Interactor.User
@@ -8,9 +10,13 @@ namespace Interactor.User
     public class SaveListUserMstInteractor : ISaveListUserMstInputPort
     {
         private readonly IUserRepository _userRepository;
-        public SaveListUserMstInteractor(IUserRepository userRepository)
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
+        public SaveListUserMstInteractor(ITenantProvider tenantProvider, IUserRepository userRepository)
         {
             _userRepository = userRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveListUserMstOutputData Handle(SaveListUserMstInputData inputData)
@@ -27,7 +33,7 @@ namespace Interactor.User
                     return new SaveListUserMstOutputData(SaveListUserMstStatus.NoData, string.Empty);
 
                 string msgValidate = this.ValidateMsg(inputData.HpId, inputData.Users, inputData.UserId);
-                if(!string.IsNullOrEmpty(msgValidate))
+                if (!string.IsNullOrEmpty(msgValidate))
                 {
                     return new SaveListUserMstOutputData(SaveListUserMstStatus.InvalidValiDate, msgValidate);
                 }
@@ -41,9 +47,15 @@ namespace Interactor.User
                     return new SaveListUserMstOutputData(SaveListUserMstStatus.Failed, message);
                 }
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _userRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 
@@ -54,7 +66,7 @@ namespace Interactor.User
             var currentInfo = _userRepository.GetByUserId(currentUser);
             string msg = string.Empty;
             string msgResult = string.Empty;
-            foreach(var user in users)
+            foreach (var user in users)
             {
                 if (user.UserId < 1)
                 {
@@ -71,8 +83,8 @@ namespace Interactor.User
                     msg = "ユーザーID,'1' ";
                     break;
                 }
-                else if ((user.Id == 0 && _userRepository.UserIdIsExistInDb(user.UserId)) 
-                            || users.Count(x=>x.UserId == user.UserId) > 1)
+                else if ((user.Id == 0 && _userRepository.UserIdIsExistInDb(user.UserId))
+                            || users.Count(x => x.UserId == user.UserId) > 1)
                 {
                     msg = "ログインID'" + user.LoginId + "' +" + "・ ログインIDを変更してください。";
                     break;

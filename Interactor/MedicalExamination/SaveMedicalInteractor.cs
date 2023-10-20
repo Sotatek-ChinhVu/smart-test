@@ -6,7 +6,6 @@ using Domain.Models.Insurance;
 using Domain.Models.Ka;
 using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
-using Domain.Models.Lock;
 using Domain.Models.Medical;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
@@ -22,8 +21,8 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Infrastructure.Options;
-using Infrastructure.Repositories.SpecialNote;
 using Interactor.CalculateService;
 using Interactor.Family.ValidateFamilyList;
 using Interactor.NextOrder;
@@ -34,7 +33,6 @@ using UseCase.Family;
 using UseCase.FlowSheet.Upsert;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.UpsertTodayOrd;
-using UseCase.SpecialNote.Save;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
 using static Helper.Constants.UserConst;
@@ -60,9 +58,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly ICalculateService _calculateService;
     private readonly ISummaryInfRepository _summaryInfRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
     private readonly AmazonS3Options _options;
 
-    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ISummaryInfRepository summaryInfRepository)
+    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ITenantProvider tenantProvider, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ISummaryInfRepository summaryInfRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
@@ -81,6 +81,8 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _calculateService = calculateService;
         _validateFamilyList = validateFamilyList;
         _summaryInfRepository = summaryInfRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveMedicalOutputData Handle(SaveMedicalInputData inputDatas)
@@ -385,6 +387,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     new()
                     );
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _ordInfRepository.ReleaseResource();
@@ -400,6 +407,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _karteInfRepository.ReleaseResource();
             _validateFamilyList.ReleaseResource();
             _summaryInfRepository.ReleaseResource();
+            _tenantProvider.DisposeDataContext();
+            _loggingHandler.Dispose();
+            _saveMedicalRepository.ReleaseResource();
         }
     }
 

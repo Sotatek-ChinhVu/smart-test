@@ -25,5 +25,7 @@ namespace EmrCalculateApi.Interface
         );
 
         void DetailCalculate(bool raiinAdjust);
+
+        void ReleaseResource();
     }
 }

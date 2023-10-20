@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.Lock;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Lock;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Lock;
@@ -13,7 +14,9 @@ using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
 using UseCase.Lock.Get;
+using UseCase.Lock.GetLockInf;
 using UseCase.Lock.Remove;
+using UseCase.Lock.Unlock;
 
 namespace EmrCloudApi.Controller
 {
@@ -34,23 +37,11 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.AddLock)]
         public async Task<ActionResult<Response<LockResponse>>> AddLock([FromBody] LockRequest request, CancellationToken cancellationToken)
         {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
             var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, request.TabKey, request.LoginKey);
             var output = _bus.Handle(input);
             AddLockPresenter presenter = new();
             presenter.Complete(output);
             var result = new ActionResult<Response<LockResponse>>(presenter.Result);
-
-            stopWatch.Stop();
-            TimeSpan ts = stopWatch.Elapsed;
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds);
-            var json = JsonSerializer.Serialize(input);
-
-            Console.WriteLine("Addlock Time: " + DateTime.Now);
-            Console.WriteLine("Addlock RunTime: " + elapsedTime);
-            Console.WriteLine("Addlock Input: " + json);
 
             _cancellationToken = cancellationToken;
             if (_cancellationToken!.Value.IsCancellationRequested)
@@ -68,13 +59,11 @@ namespace EmrCloudApi.Controller
             }
             else
             {
-                Console.WriteLine("Addlock Status: AddLockStatus.Successed");
                 if (output.Status == AddLockStatus.Successed)
                 {
                     await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockModel);
                 }
             }
-
             return result;
         }
 
@@ -201,6 +190,68 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<CheckLockVisitingResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetLockInf)]
+        public ActionResult<Response<GetLockInfResponse>> GetLockInf([FromQuery] GetLockInfRequest request)
+        {
+            var input = new GetLockInfInputData(HpId, UserId, request.ManagerKbn);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetLockInfPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetLockInfResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Unlock)]
+        public ActionResult<Response<UnlockResponse>> Unlock(UnlockRequest request)
+        {
+            var input = new UnlockInputData(HpId, UserId, request.LockInfModels.Select(x => LockInfInputItemRequestToModel(x)).ToList(), request.ManagerKbn);
+            var output = _bus.Handle(input);
+
+            var presenter = new UnlockPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UnlockResponse>>(presenter.Result);
+        }
+
+        private LockInfModel LockInfInputItemRequestToModel(LockInfInputItem lockInfInputItem)
+        {
+            return
+                new LockInfModel
+                (
+                    new LockPtInfModel(lockInfInputItem.PatientInfoModels.PtId,
+                                       lockInfInputItem.PatientInfoModels.FunctionName,
+                                       lockInfInputItem.PatientInfoModels.PtNum,
+                                       lockInfInputItem.PatientInfoModels.SinDate,
+                                       lockInfInputItem.PatientInfoModels.LockDate,
+                                       lockInfInputItem.PatientInfoModels.Machine,
+                                       lockInfInputItem.PatientInfoModels.FunctionCd,
+                                       lockInfInputItem.PatientInfoModels.RaiinNo,
+                                       lockInfInputItem.PatientInfoModels.OyaRaiinNo,
+                                       lockInfInputItem.PatientInfoModels.UserId),
+                    new LockCalcStatusModel(lockInfInputItem.CalcStatusModels.CalcId,
+                                            lockInfInputItem.CalcStatusModels.PtId,
+                                            lockInfInputItem.CalcStatusModels.PtNum,
+                                            lockInfInputItem.CalcStatusModels.SinDate,
+                                            lockInfInputItem.CalcStatusModels.CreateDate,
+                                            lockInfInputItem.CalcStatusModels.CreateMachine, 
+                                            lockInfInputItem.CalcStatusModels.CreateId), 
+                    new LockDocInfModel(lockInfInputItem.DocInfModels.PtId,
+                                        lockInfInputItem.DocInfModels.PtNum,
+                                        lockInfInputItem.DocInfModels.SinDate,
+                                        lockInfInputItem.DocInfModels.RaiinNo,
+                                        lockInfInputItem.DocInfModels.SeqNo,
+                                        lockInfInputItem.DocInfModels.CategoryCd,
+                                        lockInfInputItem.DocInfModels.FileName,
+                                        lockInfInputItem.DocInfModels.DspFileName,
+                                        lockInfInputItem.DocInfModels.IsLocked,
+                                        lockInfInputItem.DocInfModels.LockDate,
+                                        lockInfInputItem.DocInfModels.LockId,
+                                        lockInfInputItem.DocInfModels.LockMachine,
+                                        lockInfInputItem.DocInfModels.IsDeleted) 
+                );
         }
     }
 

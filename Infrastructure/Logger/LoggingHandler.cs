@@ -1,5 +1,6 @@
 ﻿using Entity.Logger;
 using Helper.Common;
+using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
@@ -62,7 +63,8 @@ namespace Infrastructure.Logger
                 RaiinNo = raiinNo,
                 SinDay = sinDay,
                 Desciption = description,
-                LogType = GetLogType(type)
+                LogType = GetLogType(type),
+                LoginKey = _tenantProvider.GetLoginKeyFromHeader()
             };
             return audit;
         }
@@ -84,29 +86,62 @@ namespace Infrastructure.Logger
             }
         }
 
-        public bool WriteAuditLog(string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType)
+        public bool WriteAuditLog(string path, string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType)
         {
             AuditLog audit = new AuditLog()
             {
                 Domain = _tenantProvider.GetDomain(),
-                ClientIP = _tenantProvider.GetClientIp(),
                 HpId = _tenantProvider.GetHpId(),
                 DepartmentId = _tenantProvider.GetDepartmentId(),
                 UserId = _tenantProvider.GetUserId(),
                 TenantId = _tenantProvider.GetClinicID(),
+                Path = path,
                 RequestInfo = requestInfo,
                 LogDate = CIUtil.GetJapanDateTimeNow(),
-                ThreadId = Thread.CurrentThread.ManagedThreadId.ToString(),
                 EventCd = eventCd,
                 PtId = ptId,
                 RaiinNo = raiinNo,
                 SinDay = sinDay,
                 Desciption = description,
-                LogType = logType
+                LogType = logType,
+                LoginKey = _tenantProvider.GetLoginKeyFromHeader()
             };
 
             AuditLogs.Add(audit);
 
+            return SaveChanges() > 0;
+        }
+
+        public bool WriteAuditLog(List<AuditLogModel> auditLogList)
+        {
+            string domain = _tenantProvider.GetDomain();
+            int hpId = _tenantProvider.GetHpId();
+            int departmentId = _tenantProvider.GetDepartmentId();
+            int userId = _tenantProvider.GetUserId();
+            string tenantId = _tenantProvider.GetClinicID();
+
+            foreach (var item in auditLogList)
+            {
+                AuditLog audit = new AuditLog()
+                {
+                    Domain = domain,
+                    HpId = hpId,
+                    DepartmentId = departmentId,
+                    UserId = userId,
+                    TenantId = tenantId,
+                    Path = item.Path,
+                    RequestInfo = item.RequestInfo,
+                    LogDate = CIUtil.GetJapanDateTimeNow(),
+                    EventCd = item.EventCd,
+                    PtId = item.PtId,
+                    RaiinNo = item.RaiinNo,
+                    SinDay = item.SinDay,
+                    Desciption = item.Description,
+                    LogType = item.LogType,
+                    LoginKey = _tenantProvider.GetLoginKeyFromHeader()
+                };
+                AuditLogs.Add(audit);
+            }
             return SaveChanges() > 0;
         }
     }

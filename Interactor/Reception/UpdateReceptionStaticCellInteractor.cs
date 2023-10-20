@@ -94,6 +94,8 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
             _uketukeSbtMstRepository.ReleaseResource();
             _kaMstRepository.ReleaseResource();
             _ptCmtInfRepository.ReleaseResource();
+            _calculateRepository.ReleaseSource();
+            _patientInforRepository.ReleaseResource();
         }
     }
 

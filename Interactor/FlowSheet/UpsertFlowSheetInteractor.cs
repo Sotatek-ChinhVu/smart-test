@@ -1,6 +1,8 @@
 ﻿using Domain.Models.FlowSheet;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.FlowSheet.Upsert;
 
 namespace Interactor.FlowSheet
@@ -10,11 +12,16 @@ namespace Interactor.FlowSheet
         private readonly IFlowSheetRepository _flowsheetRepository;
         private readonly IPatientInforRepository _patientRepository;
         private readonly IReceptionRepository _receptionRepository;
-        public UpsertFlowSheetInteractor(IFlowSheetRepository repository, IPatientInforRepository patientRepository, IReceptionRepository receptionRepository)
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
+
+        public UpsertFlowSheetInteractor(ITenantProvider tenantProvider, IFlowSheetRepository repository, IPatientInforRepository patientRepository, IReceptionRepository receptionRepository)
         {
             _flowsheetRepository = repository;
             _patientRepository = patientRepository;
             _receptionRepository = receptionRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public UpsertFlowSheetOutputData Handle(UpsertFlowSheetInputData inputData)
@@ -73,15 +80,17 @@ namespace Interactor.FlowSheet
 
                 return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.Success);
             }
-            catch
+            catch (Exception ex)
             {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.UpdateNoSuccess);
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
             }
             finally
             {
                 _flowsheetRepository.ReleaseResource();
                 _patientRepository.ReleaseResource();
                 _receptionRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

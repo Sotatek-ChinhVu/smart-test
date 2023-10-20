@@ -52,6 +52,7 @@ public class GetOutDrugOrderListInteractor : IGetOutDrugOrderListInputPort
             _kaMstRepository.ReleaseResource();
             _userRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
+            _calculateService.ReleaseSource();
         }
     }
 

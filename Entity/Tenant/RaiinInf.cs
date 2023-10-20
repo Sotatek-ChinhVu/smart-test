@@ -11,6 +11,7 @@ namespace Entity.Tenant
     [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(IsDeleted), Name = "RAIIN_INF_IDX01")]
     [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(SyosaisinKbn), nameof(IsDeleted), Name = "RAIIN_INF_IDX02")]
     [Index(nameof(IsDeleted), nameof(SinDate), nameof(PtId), Name = "RAIIN_INF_IDX03")]
+    [Index(nameof(HpId), nameof(RaiinNo), nameof(IsDeleted), nameof(Status), Name = "RAIIN_INF_IDX04")]
     public class RaiinInf : EmrCloneable<RaiinInf>
     {
         /// <summary>

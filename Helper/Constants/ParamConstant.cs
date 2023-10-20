@@ -7,5 +7,6 @@
         public const string HpId = "HpId";
         public const string DepartmentId = "DepartmentId";
         public const string Domain = "domain";
+        public const string LoginKey = "Login-Key";
     }
 }

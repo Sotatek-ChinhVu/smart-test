@@ -1,6 +1,5 @@
 using Helper.Constants;
 using Helper.Extension;
-using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,6 +8,23 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        public static DateTime? SetKindUtc(this DateTime? dateTime)
+        {
+            if (dateTime.HasValue)
+            {
+                return dateTime.Value.SetKindUtc();
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public static DateTime SetKindUtc(this DateTime dateTime)
+        {
+            if (dateTime.Kind == DateTimeKind.Utc) { return dateTime; }
+            return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+        }
+
         public static string CalcChkDgtM10W2(string code)
         {
             int weight = 2;
