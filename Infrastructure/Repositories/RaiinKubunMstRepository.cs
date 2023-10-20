@@ -266,8 +266,7 @@ namespace Infrastructure.Repositories
                         catch (Exception)
                         {
                             transaction.Rollback();
-                            result.Add(KubunSettingConstant.Failed);
-                            return false;
+                            throw;
                         }
                     }
                 });

@@ -1,4 +1,6 @@
 ﻿using Domain.Models.MstItem;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.MstItem.SaveAddressMst;
 
 namespace Interactor.MstItem
@@ -6,10 +8,14 @@ namespace Interactor.MstItem
     public class SaveAddressMstInteractor : ISaveAddressMstInputPort
     {
         private readonly IMstItemRepository _mstItemRepository;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SaveAddressMstInteractor(IMstItemRepository mstItemRepository)
+        public SaveAddressMstInteractor(ITenantProvider tenantProvider, IMstItemRepository mstItemRepository)
         {
             _mstItemRepository = mstItemRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveAddressMstOutputData Handle(SaveAddressMstInputData inputData)
@@ -44,9 +50,15 @@ namespace Interactor.MstItem
 
                 return new SaveAddressMstOutputData(-1, string.Empty, string.Empty, result ? SaveAddressMstStatus.Success : SaveAddressMstStatus.Failed);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _mstItemRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }
