@@ -345,34 +345,38 @@ namespace Infrastructure.Repositories
 
                         var uniqIdParents = new HashSet<string>(kensaInfDetails.Where(x => x.SeqNo == 0 && !string.IsNullOrEmpty(x.UniqIdParent)).Select(item => item.UniqIdParent));
 
-                        foreach (var item in kensaInfDetails.Where(x => uniqIdParents.Contains(x.UniqId) && x.IsDeleted == DeleteTypes.None))
+                        foreach (var item in kensaInfDetails.Where(x => uniqIdParents.Contains(x.UniqId)))
                         {
                             //Create kensaInfDetail Parent
-                            var kensaInfDetailParent = TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
+                            long seqParentNo = 0;
+                            if (item.IsDeleted == DeleteTypes.None)
                             {
-                                HpId = hpId,
-                                PtId = item.PtId,
-                                IraiCd = iraiCdId,
-                                IraiDate = item.IraiDate,
-                                RaiinNo = maxRaiinNo + 1,
-                                KensaItemCd = item.KensaItemCd,
-                                ResultVal = CIUtil.ToHalfsize(item.ResultVal),
-                                ResultType = item.ResultType,
-                                AbnormalKbn = item.AbnormalKbn,
-                                CmtCd1 = item.CmtCd1,
-                                CmtCd2 = item.CmtCd2,
-                                CreateId = userId,
-                                UpdateId = userId,
-                                SeqParentNo = 0,
-                                CreateMachine = CIUtil.GetComputerName(),
-                                UpdateMachine = CIUtil.GetComputerName(),
-                                CreateDate = CIUtil.GetJapanDateTimeNow(),
-                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                                IsDeleted = 0,
-                            });
 
-                            TrackingDataContext.SaveChanges();
-                            long seqParentNo = kensaInfDetailParent.Entity.SeqNo;
+                                var kensaInfDetailParent = TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
+                                {
+                                    HpId = hpId,
+                                    PtId = item.PtId,
+                                    IraiCd = iraiCdId,
+                                    IraiDate = item.IraiDate,
+                                    RaiinNo = maxRaiinNo + 1,
+                                    KensaItemCd = item.KensaItemCd,
+                                    ResultVal = CIUtil.ToHalfsize(item.ResultVal),
+                                    ResultType = item.ResultType,
+                                    AbnormalKbn = item.AbnormalKbn,
+                                    CmtCd1 = item.CmtCd1,
+                                    CmtCd2 = item.CmtCd2,
+                                    CreateId = userId,
+                                    UpdateId = userId,
+                                    SeqParentNo = 0,
+                                    CreateMachine = CIUtil.GetComputerName(),
+                                    UpdateMachine = CIUtil.GetComputerName(),
+                                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                    IsDeleted = DeleteTypes.None,
+                                });
+                                TrackingDataContext.SaveChanges();
+                                seqParentNo = kensaInfDetailParent.Entity.SeqNo;
+                            }
 
                             // Create children kensaInfDetail
                             foreach (var child in kensaInfDetails.Where(x => x.SeqNo == 0 && x.UniqIdParent.Equals(item.UniqId) && item.IsDeleted == DeleteTypes.None))
@@ -402,7 +406,7 @@ namespace Infrastructure.Repositories
                         }
 
                         // Create kensaInfDetail no children
-                        foreach (var item in kensaInfDetails.Where(x => x.SeqNo == 0 && string.IsNullOrEmpty(x.UniqIdParent) && !uniqIdParents.Contains(x.UniqId) &&  x.IsDeleted == DeleteTypes.None))
+                        foreach (var item in kensaInfDetails.Where(x => x.SeqNo == 0 && string.IsNullOrEmpty(x.UniqIdParent) && !uniqIdParents.Contains(x.UniqId) && x.IsDeleted == DeleteTypes.None))
                         {
                             TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
                             {
