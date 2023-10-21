@@ -379,7 +379,7 @@ namespace Infrastructure.Repositories
                             }
 
                             // Create children kensaInfDetail
-                            foreach (var child in kensaInfDetails.Where(x => x.SeqNo == 0 && x.UniqIdParent.Equals(item.UniqId) && item.IsDeleted == DeleteTypes.None))
+                            foreach (var child in kensaInfDetails.Where(x => x.SeqNo == 0 && x.UniqIdParent.Equals(item.UniqId) && x.IsDeleted == DeleteTypes.None))
                             {
                                 TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
                                 {
