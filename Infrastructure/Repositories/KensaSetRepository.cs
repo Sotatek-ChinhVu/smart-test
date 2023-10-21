@@ -345,7 +345,7 @@ namespace Infrastructure.Repositories
 
                         var uniqIdParents = new HashSet<string>(kensaInfDetails.Where(x => x.SeqNo == 0 && !string.IsNullOrEmpty(x.UniqIdParent)).Select(item => item.UniqIdParent));
 
-                        foreach (var item in kensaInfDetails.Where(x => uniqIdParents.Contains(x.UniqId)))
+                        foreach (var item in kensaInfDetails.Where(x => uniqIdParents.Contains(x.UniqId) && x.IsDeleted == DeleteTypes.None))
                         {
                             //Create kensaInfDetail Parent
                             var kensaInfDetailParent = TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
@@ -375,7 +375,7 @@ namespace Infrastructure.Repositories
                             long seqParentNo = kensaInfDetailParent.Entity.SeqNo;
 
                             // Create children kensaInfDetail
-                            foreach (var child in kensaInfDetails.Where(x => x.SeqNo == 0 && x.UniqIdParent.Equals(item.UniqId)))
+                            foreach (var child in kensaInfDetails.Where(x => x.SeqNo == 0 && x.UniqIdParent.Equals(item.UniqId) && item.IsDeleted == DeleteTypes.None))
                             {
                                 TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
                                 {
@@ -402,7 +402,7 @@ namespace Infrastructure.Repositories
                         }
 
                         // Create kensaInfDetail no children
-                        foreach (var item in kensaInfDetails.Where(x => x.SeqNo == 0 && string.IsNullOrEmpty(x.UniqIdParent) && !uniqIdParents.Contains(x.UniqId)))
+                        foreach (var item in kensaInfDetails.Where(x => x.SeqNo == 0 && string.IsNullOrEmpty(x.UniqIdParent) && !uniqIdParents.Contains(x.UniqId) &&  x.IsDeleted == DeleteTypes.None))
                         {
                             TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
                             {
