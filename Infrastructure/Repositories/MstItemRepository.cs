@@ -7822,6 +7822,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             on new { kensaMst.CenterCd, kensaMst.HpId } equals new { centerMst.CenterCd, centerMst.HpId }
             into joinedData
             from res in joinedData.DefaultIfEmpty()
+            join kensaStd in NoTrackingDataContext.KensaStdMsts
+                             on kensaMst.KensaItemCd equals kensaStd.KensaItemCd into leftJoinKensaStd
+            from kensaStd in leftJoinKensaStd.DefaultIfEmpty()
             select new KensaMstModel(
                kensaMst.KensaItemCd,
                kensaMst.KensaItemSeqNo,
@@ -7832,11 +7835,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 kensaMst.MaterialCd,
                 kensaMst.ContainerCd,
                 kensaMst.MaleStd ?? string.Empty,
-                kensaMst.MaleStdLow ?? string.Empty,
-                kensaMst.MaleStdHigh ?? string.Empty,
-                kensaMst.FemaleStd ?? string.Empty,
-                kensaMst.FemaleStdLow ?? string.Empty,
-                kensaMst.FemaleStdHigh ?? string.Empty,
+                kensaStd.MaleStdLow ?? string.Empty,
+                kensaStd.MaleStdHigh ?? string.Empty,
+                kensaStd.FemaleStd ?? string.Empty,
+                kensaStd.FemaleStdLow ?? string.Empty,
+                kensaStd.FemaleStdHigh ?? string.Empty,
                 kensaMst.Formula ?? string.Empty,
                 kensaMst.Digit,
                 kensaMst.OyaItemCd ?? string.Empty,
