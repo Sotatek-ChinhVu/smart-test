@@ -1,4 +1,4 @@
-﻿using Domain.Models.Accounting;
+using Domain.Models.Accounting;
 using Domain.Models.AuditLog;
 using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
@@ -103,6 +103,9 @@ namespace Interactor.Accounting
                 _userRepository.ReleaseResource();
                 _hpInfRepository.ReleaseResource();
                 _patientInforRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
+                _auditLogRepository.ReleaseResource();
+                _tenantProvider.DisposeDataContext();
                 _loggingHandler.Dispose();
             }
         }
