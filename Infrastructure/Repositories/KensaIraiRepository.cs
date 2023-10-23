@@ -9,6 +9,7 @@ using Helper.Messaging.Data;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Text.Json;
 
 namespace Infrastructure.Repositories;
@@ -341,6 +342,13 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                                                          && kensaItemSeqNoList.Contains(item.KensaItemSeqNo)
                                                                          && kensaItemCdList.Contains(item.KensaItemCd))
                                                           .ToList();
+
+        var iraiCdList = kensaInfModelList.Select(item => item.IraiCd).Distinct().ToList();
+        var kensaInfDBList = NoTrackingDataContext.KensaInfs.Where(item => item.HpId == hpId
+                                                                           && ptIdList.Contains(item.PtId)
+                                                                           && raiinNoList.Contains(item.RaiinNo)
+                                                                           && item.IsDeleted == 0)
+                                                            .ToList();
         foreach (var kensaInf in kensaInfModelList)
         {
             var odrInfEntities = odrInfDBList.Where(item => item.PtId == kensaInf.PtId
@@ -422,32 +430,37 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     kensaIraiDetailList.AddRange(todayOdrList);
                 }
                 long iraiCd = 0;
-                if (kensaInf.RaiinNo == firstTodayOdr.RaiinInf.RaiinNo
-                    && kensaInf.TosekiKbn == firstTodayOdr.TosekiKbn
-                    && kensaInf.SikyuKbn == firstTodayOdr.SikyuKbn)
+                var itemIraiCd = kensaInfDBList.FirstOrDefault(item => item.RaiinNo == firstTodayOdr.RaiinInf.RaiinNo
+                                                                       && item.TosekiKbn == firstTodayOdr.TosekiKbn
+                                                                       && item.SikyuKbn == firstTodayOdr.SikyuKbn);
+                if (itemIraiCd != null)
                 {
-                    iraiCd = kensaInf.IraiCd;
+                    iraiCd = itemIraiCd.IraiCd;
                 }
-                result.Add(new KensaIraiModel(
-                                firstTodayOdr.RaiinInf.SinDate,
-                                firstTodayOdr.RaiinInf.RaiinNo,
-                                iraiCd,
-                                firstTodayOdr.PtInf.PtId,
-                                firstTodayOdr.PtInf.PtNum,
-                                firstTodayOdr.PtInf.Name ?? string.Empty,
-                                firstTodayOdr.PtInf.KanaName ?? string.Empty,
-                                firstTodayOdr.PtInf.Sex,
-                                firstTodayOdr.PtInf.Birthday,
-                                firstTodayOdr.TosekiKbn,
-                                firstTodayOdr.SikyuKbn,
-                                firstTodayOdr.RaiinInf.KaId,
-                                kensaIraiDetailList
+                if (iraiCd == 0 || iraiCdList.Contains(iraiCd))
+                {
+                    result.Add(new KensaIraiModel(
+                                   firstTodayOdr.RaiinInf.SinDate,
+                                   firstTodayOdr.RaiinInf.RaiinNo,
+                                   iraiCd,
+                                   firstTodayOdr.PtInf.PtId,
+                                   firstTodayOdr.PtInf.PtNum,
+                                   firstTodayOdr.PtInf.Name ?? string.Empty,
+                                   firstTodayOdr.PtInf.KanaName ?? string.Empty,
+                                   firstTodayOdr.PtInf.Sex,
+                                   firstTodayOdr.PtInf.Birthday,
+                                   firstTodayOdr.TosekiKbn,
+                                   firstTodayOdr.SikyuKbn,
+                                   firstTodayOdr.RaiinInf.KaId,
+                                   kensaIraiDetailList
                          ));
+                }
             }
         }
 
         // Filter irai done item
         result = result.Where(item => item.KensaIraiDetails.Any(item => !string.IsNullOrEmpty(item.KensaItemCd)))
+                       .DistinctBy(item => item.IraiCd)
                        .OrderBy(item => item.SinDate)
                        .ThenBy(item => item.PtNum)
                        .ThenBy(item => item.SikyuKbn)
