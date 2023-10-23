@@ -75,6 +75,7 @@ public class RecalculationController : AuthorizeControllerBase
             _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
             _messenger.Deregister<AllowNextStepStatus>(this, CheckAllowNextStepAction);
             HttpContext.Response.Body.Close();
+            _tenantProvider.DisposeDataContext();
         }
     }
 
@@ -195,6 +196,7 @@ public class RecalculationController : AuthorizeControllerBase
             _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
             _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
             HttpContext.Response.Body.Close();
+            _tenantProvider.DisposeDataContext();
         }
     }
 
@@ -206,7 +208,7 @@ public class RecalculationController : AuthorizeControllerBase
 
         var presenter = new DeleteReceiptInfPresenter();
         presenter.Complete(output);
-
+        _tenantProvider.DisposeDataContext();
         return new ActionResult<Response<DeleteReceiptInfResponse>>(presenter.Result);
     }
 }
