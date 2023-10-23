@@ -221,6 +221,9 @@ namespace Infrastructure.Repositories
             var res = new List<KensaSetDetailModel>();
             var data = (from t1 in NoTrackingDataContext.KensaSetDetails
                         join t2 in NoTrackingDataContext.KensaMsts on t1.KensaItemCd equals t2.KensaItemCd
+                        join t3 in NoTrackingDataContext.KensaStdMsts
+                             on t1.KensaItemCd equals t3.KensaItemCd into leftJoinT3
+                        from t3 in leftJoinT3.DefaultIfEmpty()
                         where t1.HpId == hpId && t1.SetId == setId && t1.IsDeleted == DeleteTypes.None
                         orderby t1.SortNo
                         select new KensaSetDetailModel(
@@ -236,7 +239,9 @@ namespace Infrastructure.Repositories
                         new(),
                         t1.IsDeleted,
                         string.Empty,
-                        string.Empty
+                        string.Empty,
+                        t3.MaleStd,
+                        t3.FemaleStd
                         )).ToList();
 
             var parents = data.Where(x => x.SetEdaParentNo == 0).ToList();
@@ -256,7 +261,9 @@ namespace Infrastructure.Repositories
                        new(),
                        x.IsDeleted,
                        string.Empty,
-                        string.Empty
+                       string.Empty,
+                        x.MaleStd,
+                        x.FemaleStd
                        )).ToList();
                 res.Add(new KensaSetDetailModel(
                        item.HpId,
@@ -271,7 +278,9 @@ namespace Infrastructure.Repositories
                        childrens,
                        item.IsDeleted,
                        string.Empty,
-                       string.Empty
+                       string.Empty,
+                       item.MaleStd,
+                       item.FemaleStd
                        ));
             }
 
@@ -548,7 +557,7 @@ namespace Infrastructure.Repositories
                             t1.CmtCd2 ?? string.Empty,
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
-                            t4.Sex == 1 ? t2.MaleStd ?? string.Empty : t2.FemaleStd ?? string.Empty,
+                            t4.Sex == 1 ? t7.MaleStd ?? string.Empty : t7.FemaleStd ?? string.Empty,
                             t4.Sex == 1 ? GetValueLowHigSdt(t7.MaleStd).Item1 : GetValueLowHigSdt(t7.FemaleStd).Item1,
                             t4.Sex == 1 ? GetValueLowHigSdt(t7.MaleStd).Item2 : GetValueLowHigSdt(t7.FemaleStd).Item2,
                             t7.MaleStd ?? string.Empty,
