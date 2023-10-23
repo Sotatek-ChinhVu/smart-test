@@ -7683,6 +7683,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     continue;
                 }
                 renkeiEntity.Param = renkeiModel.Param;
+                renkeiEntity.RenkeiId = renkeiModel.RenkeiId;
                 renkeiEntity.PtNumLength = renkeiModel.PtNumLength;
                 renkeiEntity.TemplateId = renkeiModel.TemplateId;
                 renkeiEntity.IsInvalid = renkeiModel.IsInvalid;
