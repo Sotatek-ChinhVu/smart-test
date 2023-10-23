@@ -22,36 +22,44 @@ namespace Infrastructure.Common
 
         public void OnException(ExceptionContext context)
         {
-            if (!context.ExceptionHandled)
+            try
             {
-                var exception = context.Exception;
-                int statusCode;
-
-                switch (true)
+                if (!context.ExceptionHandled)
                 {
-                    case bool _ when exception is UnauthorizedAccessException:
-                        statusCode = (int)HttpStatusCode.Unauthorized;
-                        break;
-                    case bool _ when exception is InvalidOperationException:
-                        statusCode = (int)HttpStatusCode.BadRequest;
-                        break;
-                    case bool _ when exception is TimeoutException:
-                        statusCode = (int)HttpStatusCode.RequestTimeout;
-                        break;
-                    default:
-                        statusCode = (int)HttpStatusCode.InternalServerError;
-                        break;
+                    var exception = context.Exception;
+                    int statusCode;
+
+                    switch (true)
+                    {
+                        case bool _ when exception is UnauthorizedAccessException:
+                            statusCode = (int)HttpStatusCode.Unauthorized;
+                            break;
+                        case bool _ when exception is InvalidOperationException:
+                            statusCode = (int)HttpStatusCode.BadRequest;
+                            break;
+                        case bool _ when exception is TimeoutException:
+                            statusCode = (int)HttpStatusCode.RequestTimeout;
+                            break;
+                        default:
+                            statusCode = (int)HttpStatusCode.InternalServerError;
+                            break;
+                    }
+
+                    var message = $"GlobalExceptionFilter: Error in {context.ActionDescriptor.DisplayName}. {exception.Message}. Stack Trace: {exception.StackTrace}. {Environment.NewLine}" +
+                                  $"{context.ActionDescriptor.Parameters}. {Environment.NewLine}" +
+                                  $"{context.HttpContext}. {exception.Source}. {Environment.NewLine}" +
+                                  $"{exception.InnerException?.Message ?? string.Empty}. {Environment.NewLine} {Environment.NewLine}" +
+                                  $"{exception.TargetSite}";
+                    _logger.LogError(message);
+
+                    _loggingHandler.WriteLogExceptionAsync(context.Exception, message);
+                    context.Result = new ObjectResult(exception.Message) { StatusCode = statusCode };
                 }
-
-                var message = $"GlobalExceptionFilter: Error in {context.ActionDescriptor.DisplayName}. {exception.Message}. Stack Trace: {exception.StackTrace}. {Environment.NewLine}" +
-                              $"{context.ActionDescriptor.Parameters}. {Environment.NewLine}" +
-                              $"{context.HttpContext}. {exception.Source}. {Environment.NewLine}" +
-                              $"{exception.InnerException?.Message ?? string.Empty}. {Environment.NewLine} {Environment.NewLine}" +
-                              $"{exception.TargetSite}";
-                _logger.LogError(message);
-
-                _loggingHandler.WriteLogExceptionAsync(context.Exception, message);
-                context.Result = new ObjectResult(exception.Message) { StatusCode = statusCode };
+            }
+            finally
+            {
+                _tenantProvider.DisposeDataContext();
+                _loggingHandler.Dispose();
             }
         }
     }

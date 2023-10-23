@@ -110,6 +110,8 @@ public class RecalculationInteractor : IRecalculationInputPort
             _commonReceRecalculation.ReleaseResource();
             _receiptRepository.ReleaseResource();
             _auditLogRepository.ReleaseResource();
+            _calculateService.ReleaseSource();
+            _tenantProvider.DisposeDataContext();
             _loggingHandler.Dispose();
         }
     }

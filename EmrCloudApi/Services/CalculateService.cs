@@ -294,5 +294,11 @@ namespace EmrCloudApi.Services
                 throw;
             }
         }
+
+        public void ReleaseSource()
+        {
+            _loggingHandler.Dispose();
+            _tenantProvider.DisposeDataContext();
+        }
     }
 }

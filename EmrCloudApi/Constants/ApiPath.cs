@@ -25,6 +25,9 @@
         public const string GetToolTip = "GetToolTip";
         public const string GetSuperSetDetailForTodayOrder = "GetSuperSetDetailForTodayOrder";
         public const string ParrentKensaMst = "ParrentKensaMst";
+        public const string GetConversion = "GetConversion";
+        public const string SaveConversion = "SaveConversion";
+        public const string GetOdrSetName = "GetOdrSetName";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
@@ -159,6 +162,7 @@
         public const string CheckExistTemplateAccounting = "CheckExistTemplateAccounting";
         public const string ExportStatics = "ExportStatics";
         public const string ExportSta9000Csv = "ExportSta9000Csv";
+        public const string KensaHistoryReport = "KensaHistoryReport";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -517,6 +521,7 @@
         public const string GetListKensaCmtMst = "GetListKensaCmtMst";
         public const string UpdateKensaInfDetail = "UpdateKensaInfDetail";
         public const string GetListKensaInfDetail = "GetListKensaInfDetail";
+        public const string GetKensaInfDetailByIraiCd = "GetKensaInfDetailByIraiCd";
 
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";

@@ -24,6 +24,7 @@ namespace EmrCalculateApi.Controllers
         public ActionResult GetRecedenData([FromBody] GetRecedenDataRequest input)
         {
             var recedenVm = new RecedenViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
+            _tenantProvider.DisposeDataContext();
             return Ok(recedenVm.GetRecedenData(input.Mode, input.Sort, input.HpId, input.SeikyuYM, input.OutputYM, input.SeikyuKbnMode, input.KaId, input.TantoId, input.IncludeTester, input.IncludeOutDrug));
         }
     }

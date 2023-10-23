@@ -42,6 +42,7 @@ namespace Interactor.Accounting
             finally
             {
                 _accountingRepository.ReleaseResource();
+                _calculateService.ReleaseSource();
             }
         }
 

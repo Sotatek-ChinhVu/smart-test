@@ -6338,6 +6338,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(10)")
                         .HasColumnName("RESULT_VAL");
 
+                    b.Property<long>("SeqParentNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_PARENT_NO");
+
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("UPDATE_DATE");
@@ -6731,6 +6735,11 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(2)
                         .HasColumnType("integer")
                         .HasColumnName("KENSA_ITEM_SEQ_NO");
+
+                    b.Property<int>("SetEdaParentNo")
+                        .HasMaxLength(9)
+                        .HasColumnType("integer")
+                        .HasColumnName("SEQ_PARENT_NO");
 
                     b.Property<int>("SortNo")
                         .HasMaxLength(9)
@@ -27212,6 +27221,10 @@ namespace TenantMigration.Migrations
                         .HasColumnName("SEQ_NO");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SeqNo"));
+
+                    b.Property<long>("SeqParentNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_PARENT_NO");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")

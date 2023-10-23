@@ -20,9 +20,14 @@ namespace Interactor.KensaHistory
                 return new GetListKensaInfDetailOutputData(new ListKensaInfDetailModel(), SearchPostCodeStatus.InvalidHpId);
             }
 
+            if (inputData.PtId <= 0)
+            {
+                return new GetListKensaInfDetailOutputData(new ListKensaInfDetailModel(), SearchPostCodeStatus.InvalidPtId);
+            }
+
             try
             {
-                var result = _kensaSetRepository.GetListKensaInfDetail(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SetId, inputData.IraiCd, inputData.StartDate, inputData.ShowAbnormalKbn, inputData.ItemQuantity);
+                var result = _kensaSetRepository.GetListKensaInfDetail(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SetId, inputData.IraiCd, inputData.IraiCdStart, inputData.GetGetPrevious, inputData.ShowAbnormalKbn, inputData.ItemQuantity);
                 if (result == null)
                 {
                     return new GetListKensaInfDetailOutputData(new ListKensaInfDetailModel(), SearchPostCodeStatus.NoData);

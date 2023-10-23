@@ -2,8 +2,8 @@
 {
     public static class SortKensaMstColumn
     {
-        public const string SortNo = "SORT_NO";
-        public const string KensaItemCd = "KENSA_ITEM_CD";
-        public const string KensaKna = "KENSA_KANA";
+        public const int SortNo = 0;
+        public const int KensaItemCd = 1;
+        public const int KensaKana = 3;
     }
 }

@@ -2672,7 +2672,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return NoTrackingDataContext.OdrInfDetails.Any(x => x.HpId == hpId && x.ItemCd == itemCd);
     }
 
-
     public bool SaveDeleteOrRecoverTenMstOrigin(DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds)
     {
         var tenMstDatabases = TrackingDataContext.TenMsts.Where(item => item.ItemCd == itemCd).ToList();
@@ -6705,6 +6704,33 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
+    public TenItemModel GetTenMst(int hpId, string itemCd, int sinDate)
+    {
+        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                          && item.StartDate <= sinDate
+                                                                          && item.EndDate >= sinDate
+                                                                          && item.ItemCd == itemCd);
+
+        if (tenMst == null)
+        {
+            tenMst = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                 && item.StartDate < sinDate
+                                                                 && item.EndDate < sinDate
+                                                                 && item.ItemCd == itemCd)
+                                                  .OrderByDescending(item => item.EndDate)
+                                                  .FirstOrDefault();
+        }
+
+        return new TenItemModel(
+                   tenMst?.ItemCd ?? string.Empty,
+                   tenMst?.Ten ?? 0,
+                   tenMst?.HandanGrpKbn ?? 0,
+                   tenMst?.EndDate ?? 0,
+                   tenMst?.KensaItemCd ?? string.Empty,
+                   tenMst?.KensaItemSeqNo ?? 0,
+                   tenMst?.IpnNameCd ?? string.Empty);
+    }
+
     public List<KensaIjiSettingModel> GetListKensaIjiSettingModel(int hpId, string keyWords, bool isValid, bool isExpired, bool? isPayment)
     {
         List<KensaIjiSettingModel> result = null;
@@ -7796,6 +7822,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             on new { kensaMst.CenterCd, kensaMst.HpId } equals new { centerMst.CenterCd, centerMst.HpId }
             into joinedData
             from res in joinedData.DefaultIfEmpty()
+            join kensaStd in NoTrackingDataContext.KensaStdMsts
+                             on kensaMst.KensaItemCd equals kensaStd.KensaItemCd into leftJoinKensaStd
+            from kensaStd in leftJoinKensaStd.DefaultIfEmpty()
             select new KensaMstModel(
                kensaMst.KensaItemCd,
                kensaMst.KensaItemSeqNo,
@@ -7806,11 +7835,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 kensaMst.MaterialCd,
                 kensaMst.ContainerCd,
                 kensaMst.MaleStd ?? string.Empty,
-                kensaMst.MaleStdLow ?? string.Empty,
-                kensaMst.MaleStdHigh ?? string.Empty,
-                kensaMst.FemaleStd ?? string.Empty,
-                kensaMst.FemaleStdLow ?? string.Empty,
-                kensaMst.FemaleStdHigh ?? string.Empty,
+                kensaStd.MaleStdLow ?? string.Empty,
+                kensaStd.MaleStdHigh ?? string.Empty,
+                kensaStd.FemaleStd ?? string.Empty,
+                kensaStd.FemaleStdLow ?? string.Empty,
+                kensaStd.FemaleStdHigh ?? string.Empty,
                 kensaMst.Formula ?? string.Empty,
                 kensaMst.Digit,
                 kensaMst.OyaItemCd ?? string.Empty,
@@ -7917,7 +7946,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                       new(),
                       new(),
                       new(),
-                      new(),
+                      entity,
                       x.CenterName
                     )).OrderBy(x => x.SortNo).ToList();
 
