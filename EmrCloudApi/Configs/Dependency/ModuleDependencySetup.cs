@@ -82,7 +82,6 @@ using Domain.Models.UserToken;
 using Domain.Models.VisitingListSetting;
 using Domain.Models.YohoSetMst;
 using EmrCloudApi.Realtime;
-using EmrCloudApi.ScheduleTask;
 using EmrCloudApi.Services;
 using EventProcessor.Interfaces;
 using EventProcessor.Service;
