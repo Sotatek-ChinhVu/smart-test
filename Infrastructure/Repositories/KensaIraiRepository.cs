@@ -458,8 +458,32 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
             }
         }
 
+        // Add kensaInf don't exist KensaInfDetail
+        var iraiCdResultList = result.Select(item => item.IraiCd).Distinct().ToList();
+        kensaInfDBList = kensaInfDBList.Where(kensaInf => iraiCdList.Contains(kensaInf.IraiCd) && !iraiCdResultList.Contains(kensaInf.IraiCd)).ToList();
+        foreach (var kensaInf in kensaInfDBList)
+        {
+            var raiinInf = raiinInfDBList.FirstOrDefault(item => item.RaiinNo == kensaInf.RaiinNo);
+            var ptInf = ptInfDBList.FirstOrDefault(item => item.PtId == kensaInf.PtId);
+            result.Add(new KensaIraiModel(
+                           raiinInf?.SinDate ?? 0,
+                           kensaInf.RaiinNo,
+                           kensaInf.IraiCd,
+                           kensaInf.PtId,
+                           ptInf?.PtNum ?? 0,
+                           ptInf?.Name ?? string.Empty,
+                           ptInf?.KanaName ?? string.Empty,
+                           ptInf?.Sex ?? 0,
+                           ptInf?.Birthday ?? 0,
+                           kensaInf.TosekiKbn,
+                           kensaInf.SikyuKbn,
+                           raiinInf?.KaId ?? 0,
+                           new()
+                         ));
+        }
+
         // Filter irai done item
-        result = result.Where(item => item.KensaIraiDetails.Any(item => !string.IsNullOrEmpty(item.KensaItemCd)))
+        result = result.Where(item => item.KensaIraiDetails.Any(item => !string.IsNullOrEmpty(item.KensaItemCd)) || !item.KensaIraiDetails.Any())
                        .DistinctBy(item => item.IraiCd)
                        .OrderBy(item => item.SinDate)
                        .ThenBy(item => item.PtNum)
@@ -654,6 +678,10 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
 
                     foreach (var kensaIrai in kensaIraiList)
                     {
+                        if (!kensaIrai.KensaIraiDetails.Any())
+                        {
+                            continue;
+                        }
                         var kensaInf = kensaIraiDBList.FirstOrDefault(item => item.IraiCd == kensaIrai.IraiCd);
                         if (kensaInf == null && kensaIrai.IraiCd == 0)
                         {
@@ -742,7 +770,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                             foreach (var odrInfDetail in odrInfDetails)
                             {
                                 odrInfDetail.JissiKbn = 0;
-                                odrInfDetail.JissiDate = DateTime.MinValue;
+                                odrInfDetail.JissiDate = null;
                                 odrInfDetail.JissiId = 0;
                                 odrInfDetail.JissiMachine = string.Empty;
                                 odrInfDetail.ReqCd = string.Empty;
