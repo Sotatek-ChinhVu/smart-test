@@ -7722,6 +7722,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     pathEntity.Machine = pathModel.Machine;
                     pathEntity.CharCd = pathModel.CharCd;
                     pathEntity.IsInvalid = pathModel.IsInvalid;
+                    pathEntity.Param = pathModel.Param;
                     pathEntity.Biko = pathModel.Biko;
                     pathEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     pathEntity.UpdateId = userId;
