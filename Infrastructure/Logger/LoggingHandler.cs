@@ -109,9 +109,6 @@ namespace Infrastructure.Logger
 
             AuditLogs.Add(audit);
 
-            Console.WriteLine("Domain is : " + audit.Domain);
-            Console.WriteLine("TenantId is :" + audit.TenantId);
-
             return SaveChanges() > 0;
         }
 
