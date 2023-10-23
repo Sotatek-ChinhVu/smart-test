@@ -108,7 +108,7 @@ namespace Infrastructure.Logger
             };
 
             AuditLogs.Add(audit);
-
+            Console.WriteLine("Domain Value is " + audit.Domain);
             return SaveChanges() > 0;
         }
 
