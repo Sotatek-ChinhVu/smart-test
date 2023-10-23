@@ -1,14 +1,14 @@
-﻿using Domain.Models.RsvInf;
+﻿using UseCase.MainMenu.RsvInfToConfirm;
 
 namespace EmrCloudApi.Responses.MainMenu
 {
     public class GetRsvInfToConfirmResponse
     {
-        public GetRsvInfToConfirmResponse(List<RsvInfToConfirmModel> rsvInfToConfirms)
+        public GetRsvInfToConfirmResponse(List<RsvInfToConfirmItem> rsvInfToConfirms)
         {
             RsvInfToConfirms = rsvInfToConfirms;
         }
 
-        public List<RsvInfToConfirmModel> RsvInfToConfirms { get; private set; }
+        public List<RsvInfToConfirmItem> RsvInfToConfirms { get; private set; }
     }
 }

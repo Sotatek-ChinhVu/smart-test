@@ -1,5 +1,5 @@
 ﻿using Domain.Constant;
-using Domain.Models.MainMenu;
+using Domain.Models.Insurance;
 using Domain.Models.RsvInf;
 using Entity.Tenant;
 using Helper.Common;
@@ -130,7 +130,19 @@ public class RsvInfRepository : RepositoryBase, IRsvInfRepository
                                         ptInf.PtNum,
                                         ptInf.Birthday,
                                         raiinInf.TantoId,
-                                        raiinInf.KaId
-            );
+                                        raiinInf.KaId,
+                                        ptHokenInfs.Select(x => new HokenInfModel(x.PtId,
+                                                                                  x.HokenId,
+                                                                                  x.SeqNo,
+                                                                                  x.HokenNo,
+                                                                                  x.HokenEdaNo,
+                                                                                  x.HokenKbn,
+                                                                                  x.HokensyaNo ?? string.Empty,
+                                                                                  x.Kigo ?? string.Empty,
+                                                                                  x.Bango ?? string.Empty,
+                                                                                  x.EdaNo ?? string.Empty,
+                                                                                  x.HonkeKbn,
+                                                                                  x.KogakuKbn
+                                                                                  )).ToList());
     }
 }

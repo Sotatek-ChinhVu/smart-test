@@ -1,11 +1,12 @@
-﻿using Helper.Common;
+﻿using Domain.Models.Insurance;
+using Helper.Common;
 using Helper.Extension;
 
 namespace Domain.Models.RsvInf
 {
     public class RsvInfToConfirmModel
     {
-        public RsvInfToConfirmModel(string ptName, int hpId, int sinDate, long raiinNo, long ptId, long ptNum, int birthday, int tantoId, int kaId)
+        public RsvInfToConfirmModel(string ptName, int hpId, int sinDate, long raiinNo, long ptId, long ptNum, int birthday, int tantoId, int kaId, List<HokenInfModel> hokenInfModels)
         {
             PtName = ptName;
             HpId = hpId;
@@ -16,6 +17,7 @@ namespace Domain.Models.RsvInf
             Birthday = birthday;
             TantoId = tantoId;
             KaId = kaId;
+            ListPtHokenInfModel = hokenInfModels;
         }
 
         public string PtName { get; private set; }
@@ -35,6 +37,8 @@ namespace Domain.Models.RsvInf
         public int TantoId { get; private set; }
 
         public int KaId { get; private set; }
+
+        public List<HokenInfModel> ListPtHokenInfModel { get; private set; }
 
         public string PtNumDisplay
         {
