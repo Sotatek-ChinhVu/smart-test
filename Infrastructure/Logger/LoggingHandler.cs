@@ -94,7 +94,7 @@ namespace Infrastructure.Logger
                 HpId = _tenantProvider.GetHpId(),
                 DepartmentId = _tenantProvider.GetDepartmentId(),
                 UserId = _tenantProvider.GetUserId(),
-                TenantId = _tenantProvider.GetDomainFromHeader(),
+                TenantId = _tenantProvider.GetClinicID(),
                 Path = path,
                 RequestInfo = requestInfo,
                 LogDate = CIUtil.GetJapanDateTimeNow(),
@@ -114,11 +114,11 @@ namespace Infrastructure.Logger
 
         public bool WriteAuditLog(List<AuditLogModel> auditLogList)
         {
-            string domain = _tenantProvider.GetDomainFromHeader();
+            string domain = _tenantProvider.GetDomain();
             int hpId = _tenantProvider.GetHpId();
             int departmentId = _tenantProvider.GetDepartmentId();
             int userId = _tenantProvider.GetUserId();
-            string tenantId = _tenantProvider.GetDomainFromHeader();
+            string tenantId = _tenantProvider.GetClinicID();
 
             foreach (var item in auditLogList)
             {
