@@ -35,6 +35,13 @@ public class KensaIraiModel
         KensaIraiDetails = kensaIraiDetails;
     }
 
+    public KensaIraiModel UpdateIraiCd(long iraiCd, int kaId)
+    {
+        IraiCd = iraiCd;
+        KaId = kaId;
+        return this;
+    }
+
     public int SinDate { get; private set; }
 
     public long RaiinNo { get; private set; }

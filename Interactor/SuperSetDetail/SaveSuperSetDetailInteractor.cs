@@ -5,6 +5,7 @@ using Domain.Models.SuperSetDetail;
 using Domain.Models.User;
 using Helper.Constants;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
@@ -22,11 +23,13 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
     private readonly ISetMstRepository _setMstRepository;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IUserRepository _userRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
     private readonly AmazonS3Options _options;
     private const string SUSPECTED_CD = "8002";
     private const string FREE_WORD = "0000999";
 
-    public SaveSuperSetDetailInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository, ISetMstRepository setMstRepository, IUserRepository userRepository, IPatientInforRepository patientInforRepository)
+    public SaveSuperSetDetailInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ITenantProvider tenantProvider, ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository, ISetMstRepository setMstRepository, IUserRepository userRepository, IPatientInforRepository patientInforRepository)
     {
         _patientInforRepository = patientInforRepository;
         _amazonS3Service = amazonS3Service;
@@ -36,6 +39,8 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         _userRepository = userRepository;
         _setMstRepository = setMstRepository;
         _userRepository = userRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveSuperSetDetailOutputData Handle(SaveSuperSetDetailInputData inputData)
@@ -86,11 +91,17 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
             }
             return new SaveSuperSetDetailOutputData(result, SaveSuperSetDetailStatus.Successed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _mstItemRepository.ReleaseResource();
             _setMstRepository.ReleaseResource();
             _superSetDetailRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

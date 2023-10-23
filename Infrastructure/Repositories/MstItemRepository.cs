@@ -1,4 +1,4 @@
-﻿﻿using Amazon.Runtime.Internal.Transform;
+﻿using Amazon.Runtime.Internal.Transform;
 using Domain.Constant;
 using Domain.Enum;
 using Domain.Models.AuditLog;
@@ -24,8 +24,6 @@ using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
-using System;
 using System.Text;
 using KensaCenterMstModel = Domain.Models.MstItem.KensaCenterMstModel;
 
@@ -2673,7 +2671,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
         return NoTrackingDataContext.OdrInfDetails.Any(x => x.HpId == hpId && x.ItemCd == itemCd);
     }
-
 
     public bool SaveDeleteOrRecoverTenMstOrigin(DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds)
     {
@@ -6707,6 +6704,33 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
+    public TenItemModel GetTenMst(int hpId, string itemCd, int sinDate)
+    {
+        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                          && item.StartDate <= sinDate
+                                                                          && item.EndDate >= sinDate
+                                                                          && item.ItemCd == itemCd);
+
+        if (tenMst == null)
+        {
+            tenMst = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                 && item.StartDate < sinDate
+                                                                 && item.EndDate < sinDate
+                                                                 && item.ItemCd == itemCd)
+                                                  .OrderByDescending(item => item.EndDate)
+                                                  .FirstOrDefault();
+        }
+
+        return new TenItemModel(
+                   tenMst?.ItemCd ?? string.Empty,
+                   tenMst?.Ten ?? 0,
+                   tenMst?.HandanGrpKbn ?? 0,
+                   tenMst?.EndDate ?? 0,
+                   tenMst?.KensaItemCd ?? string.Empty,
+                   tenMst?.KensaItemSeqNo ?? 0,
+                   tenMst?.IpnNameCd ?? string.Empty);
+    }
+
     public List<KensaIjiSettingModel> GetListKensaIjiSettingModel(int hpId, string keyWords, bool isValid, bool isExpired, bool? isPayment)
     {
         List<KensaIjiSettingModel> result = null;
@@ -7222,7 +7246,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                 )
                      .OrderBy(u => u.ItemCd).ToList();
         }
-        catch
+        catch (Exception)
         {
             throw;
         }
@@ -7411,9 +7435,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             return false;
         }
-        catch
+        catch (Exception)
         {
-            return false;
+            throw;
         }
     }
 
@@ -7798,6 +7822,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             on new { kensaMst.CenterCd, kensaMst.HpId } equals new { centerMst.CenterCd, centerMst.HpId }
             into joinedData
             from res in joinedData.DefaultIfEmpty()
+            join kensaStd in NoTrackingDataContext.KensaStdMsts
+                             on kensaMst.KensaItemCd equals kensaStd.KensaItemCd into leftJoinKensaStd
+            from kensaStd in leftJoinKensaStd.DefaultIfEmpty()
             select new KensaMstModel(
                kensaMst.KensaItemCd,
                kensaMst.KensaItemSeqNo,
@@ -7808,11 +7835,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 kensaMst.MaterialCd,
                 kensaMst.ContainerCd,
                 kensaMst.MaleStd ?? string.Empty,
-                kensaMst.MaleStdLow ?? string.Empty,
-                kensaMst.MaleStdHigh ?? string.Empty,
-                kensaMst.FemaleStd ?? string.Empty,
-                kensaMst.FemaleStdLow ?? string.Empty,
-                kensaMst.FemaleStdHigh ?? string.Empty,
+                kensaStd.MaleStdLow ?? string.Empty,
+                kensaStd.MaleStdHigh ?? string.Empty,
+                kensaStd.FemaleStd ?? string.Empty,
+                kensaStd.FemaleStdLow ?? string.Empty,
+                kensaStd.FemaleStdHigh ?? string.Empty,
                 kensaMst.Formula ?? string.Empty,
                 kensaMst.Digit,
                 kensaMst.OyaItemCd ?? string.Empty,
@@ -7827,6 +7854,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 res.CenterName ?? string.Empty
             )
         ).ToList();
+
         if (allkensaKensaMst == null)
         {
             return (result, 0);
@@ -7918,7 +7946,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                       new(),
                       new(),
                       new(),
-                      new(),
+                      entity,
                       x.CenterName
                     )).OrderBy(x => x.SortNo).ToList();
 
@@ -7957,7 +7985,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var models = result.OrderBy(u => u.SortNo).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
         return (models, total);
     }
-    
+
     public bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate)
     {
         try
@@ -7996,9 +8024,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
-        catch
+        catch (Exception)
         {
-            return false;
+            throw;
         }
     }
 
@@ -8130,5 +8158,32 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         if (byomeiMst == null)
             return new ByomeiMstModel(string.Empty);
         return new ByomeiMstModel(byomeiMst.Byomei ?? string.Empty);
+    }
+
+    public List<RenkeiTimingModel> GetRenkeiTimingModel(int hpId, int renkeiId)
+    {
+        var renkeiTimingMsts = NoTrackingDataContext.RenkeiTimingMsts.Where(x =>
+                x.HpId == hpId &&
+                x.RenkeiId == renkeiId);
+        var eventMsts = NoTrackingDataContext.EventMsts;
+        var query = from renkeiTimingMst in renkeiTimingMsts
+                    join eventMst in eventMsts on renkeiTimingMst.EventCd equals eventMst.EventCd into eventMstTimings
+                    from eventMstTiming in eventMstTimings
+                    select new
+                    {
+                        renkeiTimingMst,
+                        eventName =  eventMstTiming.EventName
+                    };
+        var result = query.AsEnumerable()
+                          .Select(item => new RenkeiTimingModel(
+                                          0,
+                                          item.eventName ?? string.Empty,
+                                          item.renkeiTimingMst.RenkeiId,
+                                          0,
+                                          item.renkeiTimingMst.EventCd,
+                                          item.renkeiTimingMst.IsInvalid,
+                                          false))
+                          .ToList();
+        return result;
     }
 }

@@ -775,6 +775,9 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+            _insuranceRepository.ReleaseResource();
+            _raiinListTagRepository.ReleaseResource();
+            _karteInfRepository.ReleaseResource();
         }
 
         private List<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos)

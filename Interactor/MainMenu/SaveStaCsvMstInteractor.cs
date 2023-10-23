@@ -1,4 +1,6 @@
 ﻿using Domain.Models.MainMenu;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.MainMenu.SaveStaCsvMst;
 
 namespace Interactor.MainMenu;
@@ -6,10 +8,14 @@ namespace Interactor.MainMenu;
 public class SaveStaCsvMstInteractor : ISaveStaCsvMstInputPort
 {
     private readonly IStatisticRepository _statisticRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveStaCsvMstInteractor(IStatisticRepository statisticRepository)
+    public SaveStaCsvMstInteractor(ITenantProvider tenantProvider, IStatisticRepository statisticRepository)
     {
         _statisticRepository = statisticRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveStaCsvMstOutputData Handle(SaveStaCsvMstInputData inputData)
@@ -45,9 +51,15 @@ public class SaveStaCsvMstInteractor : ISaveStaCsvMstInputPort
 
             return new SaveStaCsvMstOutputData(SaveStaCsvMstStatus.Successed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _statisticRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 }

@@ -7,6 +7,8 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.KensaHistory.GetListKensaCmtMst;
+using UseCase.KensaHistory.GetListKensaCmtMst.GetKensaInfDetailByIraiCd;
+using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.KensaHistory.GetListKensaSet;
 using UseCase.KensaHistory.GetListKensaSetDetail;
 using UseCase.KensaHistory.UpdateKensaInfDetail;
@@ -67,11 +69,32 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.UpdateKensaInfDetail)]
         public ActionResult<Response<UpdateKensaInfDetailResponse>> UpdateKensaInfDetail([FromBody] UpdateKensaInfDetailRequest request)
         {
-            var input = new UpdateKensaInfDetailInputData(HpId, UserId, request.kensaInfDetails);
+            var input = new UpdateKensaInfDetailInputData(HpId, UserId, request.PtId, request.IraiCd, request.IraiDate, request.kensaInfDetails);
             var output = _bus.Handle(input);
             var presenter = new UpdateKensaInfDetailPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UpdateKensaInfDetailResponse>>(presenter.Result);
         }
+
+        [HttpGet(ApiPath.GetListKensaInfDetail)]
+        public ActionResult<Response<GetListKensaInfDetailResponse>> GetListKensaInfDetail([FromQuery] GetListKensaInfDetailRequest request)
+        {
+            var input = new GetListKensaInfDetailInputData(HpId, UserId, request.PtId, request.SetId, request.IraiCd, request.IraiCdStart, request.GetGetPrevious, request.ShowAbnormalKbn, request.ItemQuantity);
+            var output = _bus.Handle(input);
+            var presenter = new GetListKensaInfDetailPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListKensaInfDetailResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetKensaInfDetailByIraiCd)]
+        public ActionResult<Response<GetKensaInfDetailByIraiCdResponse>> GetKensaInfDetailByIraiCd([FromQuery] GetKensaInfDetailByIraiCdRequest request)
+        {
+            var input = new GetKensaInfDetailByIraiCdInputData(HpId, request.IraiCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetKensaInfDetailByIraiCdPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetKensaInfDetailByIraiCdResponse>>(presenter.Result);
+        }
     }
 }
+

@@ -87,6 +87,7 @@ using EmrCloudApi.Services;
 using EventProcessor.Interfaces;
 using EventProcessor.Service;
 using Helper.Messaging;
+using Infrastructure.Common;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
@@ -402,8 +403,10 @@ using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInf.ConvertTextToRichText;
 using UseCase.KarteInf.GetList;
 using UseCase.KensaHistory.GetListKensaCmtMst;
+using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.KensaHistory.GetListKensaSet;
 using UseCase.KensaHistory.GetListKensaSetDetail;
+using UseCase.KensaHistory.UpdateKensaInfDetail;
 using UseCase.KensaHistory.UpdateKensaSet;
 using UseCase.KohiHokenMst.Get;
 using UseCase.ListSetMst.UpdateListSetMst;
@@ -412,8 +415,11 @@ using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Get;
+using UseCase.Lock.GetLockInf;
 using UseCase.Lock.Remove;
+using UseCase.Lock.Unlock;
 using UseCase.Logger;
+using UseCase.Logger.WriteListLog;
 using UseCase.MainMenu.CreateDataKensaIraiRenkei;
 using UseCase.MainMenu.DeleteKensaInf;
 using UseCase.MainMenu.GetKensaCenterMstList;
@@ -422,6 +428,7 @@ using UseCase.MainMenu.GetKensaIrai;
 using UseCase.MainMenu.GetKensaIraiLog;
 using UseCase.MainMenu.GetStaCsvMstModel;
 using UseCase.MainMenu.GetStatisticMenu;
+using UseCase.MainMenu.ImportKensaIrai;
 using UseCase.MainMenu.KensaIraiReport;
 using UseCase.MainMenu.SaveStaCsvMst;
 using UseCase.MainMenu.SaveStatisticMenu;
@@ -494,6 +501,7 @@ using UseCase.MstItem.GetListYohoSetMstModelByUserID;
 using UseCase.MstItem.GetParrentKensaMst;
 using UseCase.MstItem.GetRenkeiConf;
 using UseCase.MstItem.GetRenkeiMst;
+using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
 using UseCase.MstItem.GetSetNameMnt;
@@ -761,28 +769,21 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using Infrastructure.Logger;
-using UseCase.MstItem.SaveRenkei;
-using UseCase.MstItem.GetListYohoSetMstModelByUserID;
-using Interactor.ListSetGenerationMst;
-using Domain.Models.ListSetGenerationMst;
-using Domain.Models.ByomeiSetGenerationMst;
-using UseCase.MstItem.GetListByomeiSetGenerationMst;
-using UseCase.MstItem.GetTreeListSet;
-using UseCase.MstItem.GetTreeByomeiSet;
-using UseCase.MstItem.GetListSetGenerationMst;
-using UseCase.MstItem.GetListKensaIjiSetting;
-using UseCase.MstItem.CompareTenMst;
-using UseCase.MstItem.SaveCompareTenMst;
-using UseCase.MstItem.UpdateYohoSetMst;
-using Infrastructure.Logger;
-using UseCase.MstItem.ExistUsedKensaItemCd;
-using UseCase.MstItem.IsKensaItemOrdering;
-using UseCase.MstItem.IsUsingKensa;
 using UseCase.KensaHistory.UpdateKensaInfDetail;
-using UseCase.MstItem.GetTenMstByCode;
-using UseCase.MstItem.GetByomeiByCode;
-using UseCase.ColumnSetting.GetColumnSettingByTableNameList;
+using UseCase.Logger.WriteListLog;
+using UseCase.KensaHistory.GetListKensaInfDetail;
+using UseCase.SuperSetDetail.GetConversion;
+using UseCase.MainMenu.ImportKensaIrai;
+using UseCase.SuperSetDetail.SaveConversion;
+using UseCase.KensaHistory.GetListKensaCmtMst.GetKensaInfDetailByIraiCd;
+using UseCase.Online.GetOnlineConsent;
+using UseCase.Online.UpdateOnlineConsents;
+using Reporting.KensaHistory.DB;
+using Reporting.KensaHistory.Service;
+using UseCase.Reception.GetNextUketukeNoBySetting;
+using UseCase.MstItem.GetRenkeiTiming;
+using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
+using UseCase.MainMenu.GetOdrSetName;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -800,6 +801,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
+            });
+
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<GlobalExceptionFilters>();
             });
 
             SetupRepositories(services);
@@ -825,7 +831,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IMessenger, Messenger>();
             services.AddScoped<ILoggingHandler, LoggingHandler>();
 
-            services.AddScoped<ISystemStartDbService, SystemStartDbService>();
+            //services.AddScoped<ISystemStartDbService, SystemStartDbService>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
@@ -933,6 +939,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISyahoCoReportService, SyahoCoReportService>();
             services.AddTransient<ICoSyahoFinder, CoSyahoFinder>();
             services.AddTransient<ICoAccountingCardFinder, CoAccountingCardFinder>();
+            services.AddTransient<ICoKensaHistoryFinder, CoKensaHistoryFinder>();
+            services.AddTransient<IKensaHistoryCoReportService, KensaHistoryCoReportService>();
+            services.AddTransient<IKensaResultMultiCoReportService, KensaResultMultiCoReportService>();
             services.AddTransient<IAccountingCardCoReportService, AccountingCardCoReportService>();
             services.AddTransient<IP33KoukiSeikyuCoReportService, P33KoukiSeikyuCoReportService>();
             services.AddTransient<IP34KoukiSeikyuCoReportService, P34KoukiSeikyuCoReportService>();
@@ -1189,8 +1198,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaSetRepository, KensaSetRepository>();
             services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
-            services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
-            services.AddSingleton<IHostedService, TaskScheduleDeleteGarbage>();
+            //services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1303,6 +1311,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPtInfModelsByRefNoInputData, GetPtInfModelsByRefNoInteractor>();
             busBuilder.RegisterUseCase<GetVisitTimesManagementModelsInputData, GetVisitTimesManagementModelsInteractor>();
             busBuilder.RegisterUseCase<UpdateVisitTimesManagementInputData, UpdateVisitTimesManagementInteractor>();
+            busBuilder.RegisterUseCase<UpdateVisitTimesManagementNeedSaveInputData, UpdateVisitTimesManagementNeedSaveInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -1323,6 +1332,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ReorderSetMstInputData, ReorderSetMstInteractor>();
             busBuilder.RegisterUseCase<CopyPasteSetMstInputData, CopyPasteSetMstInteractor>();
             busBuilder.RegisterUseCase<GetSetMstToolTipInputData, GetSetMstToolTipInteractor>();
+            busBuilder.RegisterUseCase<GetConversionInputData, GetConversionInteractor>();
+            busBuilder.RegisterUseCase<SaveConversionInputData, SaveConversionInteractor>();
+            busBuilder.RegisterUseCase<GetOdrSetNameInputData, GetOdrSetNameInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
@@ -1484,6 +1496,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListUserInputData, GetListUserInteractor>();
             busBuilder.RegisterUseCase<GetTenMstByCodeInputData, GetTenMstByCodeInteractor>();
             busBuilder.RegisterUseCase<GetByomeiByCodeInputData, GetByomeiByCodeInteractor>();
+            busBuilder.RegisterUseCase<GetNextUketukeNoBySettingInputData, GetNextUketukeNoBySettingInteractor>();
+            busBuilder.RegisterUseCase<GetRenkeiTimingInputData, GetRenkeiTimingInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -1729,6 +1743,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetLockInfoInputData, GetLockInfoInteractor>();
             busBuilder.RegisterUseCase<CheckLockVisitingInputData, CheckLockVisitingInteractor>();
             busBuilder.RegisterUseCase<CheckExistFunctionCodeInputData, CheckExistFunctionCodeInteractor>();
+            busBuilder.RegisterUseCase<GetLockInfInputData, GetLockInfInteractor>();
+            busBuilder.RegisterUseCase<UnlockInputData, UnlockInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
@@ -1744,6 +1760,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<KensaIraiReportInputData, KensaIraiReportInteractor>();
             busBuilder.RegisterUseCase<GetStaCsvMstInputData, GetStaCsvMstInteractor>();
             busBuilder.RegisterUseCase<SaveStaCsvMstInputData, SaveStaCsvMstInteractor>();
+            busBuilder.RegisterUseCase<ImportKensaIraiInputData, ImportKensaIraiInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
@@ -1796,6 +1813,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Audit Log
             busBuilder.RegisterUseCase<SaveAuditTrailLogInputData, SaveAuditTrailLogInteractor>();
             busBuilder.RegisterUseCase<WriteLogInputData, WriteLogInteractor>();
+            busBuilder.RegisterUseCase<WriteListLogInputData, WriteListLogInteractor>();
 
             // Disease Name Mst Seach
             busBuilder.RegisterUseCase<DiseaseNameMstSearchInputData, DiseaseNameMstSearchInteractor>();
@@ -1821,6 +1839,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListKensaSetDetailInputData, GetListKensaSetDetailInteractor>();
             busBuilder.RegisterUseCase<GetListKensaCmtMstInputData, GetListKensaCmtMstInteractor>();
             busBuilder.RegisterUseCase<UpdateKensaInfDetailInputData, UpdateKensaInfDetailInteractor>();
+            busBuilder.RegisterUseCase<GetListKensaInfDetailInputData, GetListKensaInfDetailInteractor>();
+            busBuilder.RegisterUseCase<GetKensaInfDetailByIraiCdInputData, GetKensaInfDetailByIraiCdInteractor>();
 
 
             //ListSetGeneration
@@ -1832,7 +1852,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveSetNameMntInputData, SaveSetNameMntInteractor>();
 
             //SystemStartDb 
-            busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
+            //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

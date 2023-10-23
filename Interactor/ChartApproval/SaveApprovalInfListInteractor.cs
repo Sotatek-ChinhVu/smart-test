@@ -1,4 +1,6 @@
 ﻿using Domain.Models.ChartApproval;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.ChartApproval.SaveApprovalInfList;
 
 namespace Interactor.ChartApproval
@@ -6,8 +8,15 @@ namespace Interactor.ChartApproval
     public class SaveApprovalInfListInteractor : ISaveApprovalInfListInputPort
     {
         private readonly IApprovalInfRepository _approvalInfRepository;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SaveApprovalInfListInteractor(IApprovalInfRepository approvalInfRepository) => _approvalInfRepository = approvalInfRepository;
+        public SaveApprovalInfListInteractor(ITenantProvider tenantProvider, IApprovalInfRepository approvalInfRepository)
+        {
+            _approvalInfRepository = approvalInfRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        }
 
         public SaveApprovalInfListOutputData Handle(SaveApprovalInfListInputData input)
         {
@@ -28,9 +37,15 @@ namespace Interactor.ChartApproval
                 else
                     return new SaveApprovalInfListOutputData(SaveApprovalInfStatus.Failed);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _approvalInfRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

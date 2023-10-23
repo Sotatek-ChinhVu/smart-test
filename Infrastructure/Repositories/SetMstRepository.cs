@@ -323,9 +323,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         TrackingDataContext.SaveChanges();
                         transaction.Commit();
                     }
-                    catch
+                    catch (Exception)
                     {
                         transaction.Rollback();
+                        throw;
                     }
                 });
 
@@ -400,7 +401,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     }
                 }
             }
-            Console.WriteLine(ex.Message);
+            //Console.WriteLine(ex.Message);
             if (!flag)
             {
                 RetrySaveSetMst(setMst);
@@ -669,10 +670,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             return false;
                         }
                     }
-                    catch
+                    catch (Exception)
                     {
                         transaction.Rollback();
-                        return false;
+                        throw;
                     }
                 });
         }
@@ -1057,6 +1058,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                             continue;
                                         }
                                         break;
+                                        throw;
                                     }
                                 }
                             }
@@ -1074,6 +1076,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     catch
                     {
                         transaction.Rollback();
+                        throw;
                     }
                 }
             }
@@ -1139,9 +1142,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         var firstSetMstResult = listPasteItems.FirstOrDefault(item => item.Level1 == pasteIndex && item.Level2 == 0 && item.Level3 == 0);
                         setCd = firstSetMstResult != null ? firstSetMstResult.SetCd : -1;
                     }
-                    catch
+                    catch (Exception)
                     {
                         transaction.Rollback();
+                        throw;
                     }
                 }
             }
@@ -2156,7 +2160,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 LevelDown(level, userId, listUpdate);
                 TrackingDataContext.SaveChanges();
             }
-            Console.WriteLine(ex.Message);
+            //Console.WriteLine(ex.Message);
         }
     }
 

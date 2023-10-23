@@ -15,9 +15,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Infrastructure.Repositories
@@ -1041,7 +1039,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception)
             {
-                return new List<DefHokenNoModel>();
+                throw;
             }
         }
 
@@ -1152,7 +1150,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -2786,14 +2784,16 @@ namespace Infrastructure.Repositories
                                       .ToList();
         }
 
-        public bool UpdateVisitTimesManagement(int hpId, int userId, long ptId, int kohiId, List<VisitTimesManagementModel> visitTimesManagementList)
+        public bool UpdateVisitTimesManagement(int hpId, int userId, long ptId, int kohiId, int sinYm, List<VisitTimesManagementModel> visitTimesManagementList)
         {
             var limitCntListInfDBList = TrackingDataContext.LimitCntListInfs.Where(item => item.HpId == hpId
                                                                                            && item.PtId == ptId
                                                                                            && item.KohiId == kohiId)
                                                                             .ToList();
             var maxSeqNo = limitCntListInfDBList.Any() ? limitCntListInfDBList.Max(item => item.SeqNo) : 0;
-            limitCntListInfDBList = limitCntListInfDBList.Where(item => item.IsDeleted == 0).ToList();
+            limitCntListInfDBList = limitCntListInfDBList.Where(item => item.IsDeleted == 0
+                                                                        && item.SinDate / 100 == sinYm)
+                                                         .ToList();
 
             var seqNoList = visitTimesManagementList.Where(item => item.SeqNo >= 0).Select(item => item.SeqNo).Distinct().ToList();
             var deletedVisitTimeList = limitCntListInfDBList.Where(item => item.HokenPid == 0 && !seqNoList.Contains(item.SeqNo)).ToList();
@@ -2839,6 +2839,41 @@ namespace Infrastructure.Repositories
                 if (isAddNew)
                 {
                     TrackingDataContext.LimitCntListInfs.Add(entity);
+                }
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool UpdateVisitTimesManagementNeedSave(int hpId, int userId, long ptId, List<VisitTimesManagementModel> visitTimesManagementList)
+        {
+            var kohiIdList = visitTimesManagementList.Select(item => item.KohiId).Distinct().ToList();
+            var limitCntListInfDBList = TrackingDataContext.LimitCntListInfs.Where(item => item.HpId == hpId
+                                                                                           && item.PtId == ptId
+                                                                                           && kohiIdList.Contains(item.KohiId))
+                                                                            .ToList();
+            foreach (var kohiId in kohiIdList)
+            {
+                var visitTimesModelList = visitTimesManagementList.Where(item => item.KohiId == kohiId).ToList();
+                var limitCntListInfByKohiDBList = limitCntListInfDBList.Where(item => item.KohiId == kohiId).ToList();
+                var maxSeqNo = limitCntListInfByKohiDBList.Any() ? limitCntListInfByKohiDBList.Max(item => item.SeqNo) : 0;
+
+                foreach (var model in visitTimesModelList)
+                {
+                    var limitCntListInf = new LimitCntListInf()
+                    {
+                        HpId = hpId,
+                        CreateId = userId,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        PtId = ptId,
+                        SinDate = model.SinDate,
+                        KohiId = kohiId,
+                        SeqNo = maxSeqNo + 1,
+                        SortKey = model.SortKey,
+                    };
+                    TrackingDataContext.LimitCntListInfs.Add(limitCntListInf);
+                    maxSeqNo = limitCntListInf.SeqNo;
                 }
             }
             return TrackingDataContext.SaveChanges() > 0;

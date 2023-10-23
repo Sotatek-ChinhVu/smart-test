@@ -1,5 +1,7 @@
 ﻿using Domain.Models.UserConf;
 using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.User.UpsertUserConfList;
 
 namespace Interactor.UserConf;
@@ -7,10 +9,14 @@ namespace Interactor.UserConf;
 public class UpsertUserConfListInteractor : IUpsertUserConfListInputPort
 {
     private readonly IUserConfRepository _userConfRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public UpsertUserConfListInteractor(IUserConfRepository userConfRepository)
+    public UpsertUserConfListInteractor(ITenantProvider tenantProvider, IUserConfRepository userConfRepository)
     {
         _userConfRepository = userConfRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public UpsertUserConfListOutputData Handle(UpsertUserConfListInputData inputData)
@@ -55,9 +61,15 @@ public class UpsertUserConfListInteractor : IUpsertUserConfListInputPort
             }
             return new UpsertUserConfListOutputData(UpsertUserConfListStatus.Successed, new());
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _userConfRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 }

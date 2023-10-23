@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Vml.Office;
-using Domain.Constant;
+﻿using Domain.Constant;
 using Domain.Models.Diseases;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
@@ -10,6 +9,7 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using UseCase.PatientInfor.Save;
@@ -22,14 +22,18 @@ namespace Interactor.PatientInfor
         private readonly ISystemConfRepository _systemConfRepository;
         private readonly IPtDiseaseRepository _ptDiseaseRepository;
         private readonly IAmazonS3Service _amazonS3Service;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
         private const byte retryNumber = 50;
 
-        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service, IPtDiseaseRepository ptDiseaseRepository)
+        public SavePatientInfoInteractor(ITenantProvider tenantProvider, IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service, IPtDiseaseRepository ptDiseaseRepository)
         {
             _patientInforRepository = patientInforRepository;
             _systemConfRepository = systemConfRepository;
             _amazonS3Service = amazonS3Service;
             _ptDiseaseRepository = ptDiseaseRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         [Obsolete]
@@ -113,10 +117,16 @@ namespace Interactor.PatientInfor
                 else
                     return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0, patientInforModel, false);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _patientInforRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 

@@ -1,4 +1,4 @@
-﻿using Domain.Models.Diseases;
+using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.FlowSheet;
 using Domain.Models.KarteInfs;
@@ -91,10 +91,10 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
                     transaction.Commit();
                     return true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
-                    return false;
+                    throw;
                 }
             });
     }
@@ -102,5 +102,12 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
     public void ReleaseResource()
     {
         DisposeDataContext();
+        _familyRepository.ReleaseResource();
+        _todayOdrRepository.ReleaseResource();
+        _specialNoteRepository.ReleaseResource();
+        _nextOrderRepository.ReleaseResource();
+        _ptDiseaseRepository.ReleaseResource();
+        _flowSheetRepository.ReleaseResource();
+        _monshinInforRepository.ReleaseResource();
     }
 }

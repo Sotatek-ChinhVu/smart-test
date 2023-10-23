@@ -93,13 +93,5 @@ namespace Entity.Tenant
         [Column("RAIIN_LIST_KBN", Order = 6)]
         [CustomAttribute.DefaultValue(0)]
         public int RaiinListKbn { get; set; }
-
-        /// <summary>
-        /// ID
-        /// </summary>
-
-        [Column("ID")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; set; }
     }
 }

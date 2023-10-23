@@ -3,6 +3,7 @@ using EmrCloudApi.Presenters.DrugInfor;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.DrugInfor;
 using EmrCloudApi.Requests.ExportPDF;
+using EmrCloudApi.Requests.KensaHistory;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.PatientManagement;
 using Helper.Enum;
@@ -238,6 +239,21 @@ public class PdfCreatorController : ControllerBase
         {
             var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
             return RenderCsv(data);
+        }
+    }
+
+    [HttpGet(ApiPath.KensaHistoryReport)]
+    public async Task<IActionResult> KensaHistoryReport([FromQuery] KensaHistoryReportRequest request)
+    {
+        if (request.SeikyuYm != 0)
+        {
+            var data = _reportService.GetKensaHistoryPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiCd, request.SeikyuYm, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.ItemQuantity);
+            return await RenderPdf(data, ReportType.Common, data.JobName);
+        }
+        else
+        {
+            var data = _reportService.GetKensaResultMultiPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiCd, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.ItemQuantity);
+            return await RenderPdf(data, ReportType.Common, data.JobName);
         }
     }
 

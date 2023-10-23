@@ -1,4 +1,6 @@
 ﻿using Domain.Models.KarteFilterMst;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.KarteFilter.SaveListKarteFilter;
 
 namespace Interactor.KarteFilter;
@@ -6,9 +8,14 @@ namespace Interactor.KarteFilter;
 public class SaveKarteFilterMstsInteractor : ISaveKarteFilterInputPort
 {
     private readonly IKarteFilterMstRepository _karteFilterMstRepository;
-    public SaveKarteFilterMstsInteractor(IKarteFilterMstRepository karteFilterMstRepository)
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
+
+    public SaveKarteFilterMstsInteractor(ITenantProvider tenantProvider, IKarteFilterMstRepository karteFilterMstRepository)
     {
         _karteFilterMstRepository = karteFilterMstRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveKarteFilterOutputData Handle(SaveKarteFilterInputData inputData)
@@ -47,13 +54,15 @@ public class SaveKarteFilterMstsInteractor : ISaveKarteFilterInputPort
             }
             return new SaveKarteFilterOutputData(SaveKarteFilterStatus.Failed);
         }
-        catch
+        catch (Exception ex)
         {
-            return new SaveKarteFilterOutputData(SaveKarteFilterStatus.Failed);
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
         }
         finally
         {
             _karteFilterMstRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 }
