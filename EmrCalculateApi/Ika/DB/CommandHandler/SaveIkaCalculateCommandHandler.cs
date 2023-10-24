@@ -26,7 +26,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             _emrLogger = emrLogger;
         }
 
-        public long AddCalcStatus(List<CalcStatusModel> calcStatusModels, string preFix)
+        public long AddCalcStatus(List<CalcStatusModel> calcStatusModels, string preFix, string calcKeyId)
         {
             const string conFncName = nameof(AddCalcStatus);
 
@@ -39,8 +39,8 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 {
                     p.CreateDate = CIUtil.GetJapanDateTimeNow();
                     p.CreateId = Hardcode.UserID;
-                    p.CreateMachine = (preFix + Hardcode.ComputerName).ToUpper();
-
+                    //p.CreateMachine = (preFix + Hardcode.ComputerName).ToUpper();
+                    p.CreateMachine = calcKeyId;
                 }
                 );
                 _tenantDataContext.CalcStatus.AddRange(CalcStatusies);

@@ -5,7 +5,7 @@ namespace Domain.Models.PatientInfor
 {
     public class PatientInforModel
     {
-        public PatientInforModel(int hpId, long ptId, long referenceNo, long seqNo, long ptNum, string kanaName, string name, int sex, int birthday, int limitConsFlg, int isDead, int deathDate, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string mail, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, string memo, int lastVisitDate, int firstVisitDate, int rainCount, string comment)
+        public PatientInforModel(int hpId, long ptId, long referenceNo, long seqNo, long ptNum, string kanaName, string name, int sex, int birthday, int limitConsFlg, int isDead, int deathDate, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string mail, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, string memo, int lastVisitDate, int firstVisitDate, int rainCount, string comment, int sinDate, bool isShowKyuSeiName = false)
         {
             HpId = hpId;
             PtId = ptId;
@@ -49,6 +49,8 @@ namespace Domain.Models.PatientInfor
             FirstVisitDate = firstVisitDate;
             RainCountInt = rainCount;
             Comment = comment;
+            IsShowKyuSeiName = isShowKyuSeiName;
+            SinDate = sinDate;
         }
 
         public PatientInforModel(int hpId, long ptId, string comment)
@@ -210,6 +212,39 @@ namespace Domain.Models.PatientInfor
             Comment = string.Empty;
         }
 
+        public PatientInforModel(int hpId, long ptId, long ptNum, string kanaName, string name, int sex, int birthday, int isDead, int deathDate, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string mail, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int firstVisitDate, int lastVisitDate) : this(ptId, ptNum, kanaName, name, sex, birthday)
+        {
+            HpId = hpId;
+            IsDead = isDead;
+            DeathDate = deathDate;
+            HomePost = homePost;
+            HomeAddress1 = homeAddress1;
+            HomeAddress2 = homeAddress2;
+            Tel1 = tel1;
+            Tel2 = tel2;
+            Mail = mail;
+            Setanusi = setanusi;
+            Zokugara = zokugara;
+            Job = job;
+            RenrakuName = renrakuName;
+            RenrakuPost = renrakuPost;
+            RenrakuAddress1 = renrakuAddress1;
+            RenrakuAddress2 = renrakuAddress2;
+            RenrakuTel = renrakuTel;
+            RenrakuMemo = renrakuMemo;
+            OfficeName = officeName;
+            OfficePost = officePost;
+            OfficeAddress1 = officeAddress1;
+            OfficeAddress2 = officeAddress2;
+            OfficeTel = officeTel;
+            OfficeMemo = officeMemo;
+            IsRyosyoDetail = isRyosyoDetail;
+            PrimaryDoctor = primaryDoctor;
+            IsTester = isTester;
+            FirstVisitDate = firstVisitDate;
+            LastVisitDate = lastVisitDate;
+        }
+
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
@@ -295,5 +330,13 @@ namespace Domain.Models.PatientInfor
         public string Comment { get; private set; }
 
         public int LastVisitDate { get; private set; }
+
+        public bool IsShowKyuSeiName { get; private set; }
+
+        public int SinDate { get; private set; }
+
+        public string BirthdayDisplay { get => CIUtil.SDateToShowWDate2(Birthday); }
+
+        public string Age { get => CIUtil.SDateToDecodeAge(Birthday.AsString(), SinDate > 0 ? SinDate.AsString() : CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd")); }
     }
 }

@@ -1,6 +1,5 @@
 using Helper.Constants;
 using Helper.Extension;
-using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,6 +8,45 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        public static DateTime? SetKindUtc(this DateTime? dateTime)
+        {
+            if (dateTime.HasValue)
+            {
+                return dateTime.Value.SetKindUtc();
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public static DateTime SetKindUtc(this DateTime dateTime)
+        {
+            if (dateTime.Kind == DateTimeKind.Utc) { return dateTime; }
+            return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+        }
+
+        public static string CalcChkDgtM10W2(string code)
+        {
+            int weight = 2;
+            int sum = 0;
+
+            for (int i = code.Length; i >= 1; i--)
+            {
+                int wrkVal = code.Substring(i - 1, 1).AsInteger() * weight;
+                //十の位と一の位を分けて足し合わせる（分割）
+                sum += wrkVal % 10 + wrkVal / 10;
+
+                //下の桁から2・1・2・1・...の順番に係数（ウエイト）をかける
+                weight = weight == 2 ? 1 : 2;
+            }
+
+            //合計を10で割り、余りを求める（モジュラス）
+            int modulus = sum % 10;
+
+            //余りを10から引いたものをチェックデジットとする（但し、余りが0の場合はチェックデジットも0）
+            return (modulus == 0 ? 0 : 10 - modulus).ToString();
+        }
+
         public static string SDateToShowSDate3(int ymd)
         {
             string WrkStr;
@@ -3714,6 +3752,32 @@ namespace Helper.Common
         public static int MecsLength(string value)
         {
             return value.Length;
+        }
+
+        public static string GetDisplayGender(int sex)
+        {
+            return sex == 1 ? "男" : sex == 2 ? "女" : "未設定";
+        }
+
+        public static String GetComputerName()
+        {
+            return Environment.MachineName;
+        }
+
+        //convert yyyyMMddHHmmss to yyyy/MM/dd HH:mm:ss
+        public static DateTime StrDateToDate(string sDate, string format = "yyyyMMddHHmmss")
+        {
+            DateTime dateTimeResult = DateTime.Now;
+            try
+            {
+                format = "yyyyMMddHHmmss";
+                DateTime.TryParseExact(sDate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeResult);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return dateTimeResult;
         }
     }
 }

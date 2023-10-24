@@ -33,6 +33,7 @@ public class GetSinMeiInMonthListInteractor : IGetSinMeiInMonthListInputPort
         finally
         {
             _mstItemRepository.ReleaseResource();
+            _calculateService.ReleaseSource();
         }
     }
 
@@ -66,7 +67,11 @@ public class GetSinMeiInMonthListInteractor : IGetSinMeiInMonthListInputPort
         days: new List<int> { item.Day1, item.Day2, item.Day3, item.Day4, item.Day5, item.Day6, item.Day7, item.Day8, item.Day9, item.Day10,
                                   item.Day11, item.Day12, item.Day13, item.Day14, item.Day15, item.Day16, item.Day17, item.Day18, item.Day19, item.Day20,
                                   item.Day21, item.Day22, item.Day23, item.Day24, item.Day25, item.Day26, item.Day27, item.Day28, item.Day29, item.Day30,
-                                  item.Day31 }
+                                  item.Day31 },
+        item.SinRpNo,
+        item.SinSeqNo,
+        item.ItemCd,
+        item.DrugKbn
         )).ToList();
         return EditSinMei(sinMei);
     }
@@ -108,7 +113,11 @@ public class GetSinMeiInMonthListInteractor : IGetSinMeiInMonthListInputPort
                 sinMei.SanteiKbn,
                 sinMei.InOutKbn,
                 true,
-                sinMei.Days
+                sinMei.Days,
+                sinMei.SinRpNo,
+                sinMei.SinSeqNo,
+                sinMei.ItemCd,
+                sinMei.DrugKbn
                 ));
             }
         }

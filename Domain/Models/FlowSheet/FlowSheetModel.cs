@@ -19,7 +19,7 @@
             IsNotSaved = isNotSaved;
         }
 
-        public FlowSheetModel(int sinDate, long ptId, long raiinNo, string uketukeTime, int syosaisinKbn, int status)
+        public FlowSheetModel(int sinDate, long ptId, long raiinNo, string uketukeTime, int syosaisinKbn, int status, bool isNextOrder)
         {
             SinDate = sinDate;
             RaiinNo = raiinNo;
@@ -30,6 +30,8 @@
             FullLineOfKarte = string.Empty;
             Comment = string.Empty;
             RaiinListInfs = new List<RaiinListInfModel>();
+            IsNextOrder = isNextOrder;
+            IsToDayOdr = !isNextOrder;
         }
 
         public FlowSheetModel(int sinDate, int tagNo, string fullLineOfKarte, long raiinNo, string uketukeTime, int syosaisinKbn, string comment, int status, bool isNextOrder, bool isToDayOdr, List<RaiinListInfModel> raiinListInfs, long ptId, bool isNotSaved)
@@ -85,6 +87,17 @@
         public long PtId { get; private set; }
 
         public bool IsNotSaved { get; private set; }
+
+        public FlowSheetModel ChangeFlowSheet(int tagNo, string karteContent, string comment, long ptId)
+        {
+            TagNo = tagNo;
+            FullLineOfKarte = karteContent;
+            Comment = comment;
+            PtId = ptId;
+            IsNotSaved = false;
+            RaiinListInfs = new();
+            return this;
+        }
 
     }
 }

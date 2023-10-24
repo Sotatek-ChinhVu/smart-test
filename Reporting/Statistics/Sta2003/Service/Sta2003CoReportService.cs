@@ -1,5 +1,6 @@
 ﻿using Helper.Common;
 using Helper.Extension;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -28,11 +29,21 @@ public class Sta2003CoReportService : ISta2003CoReportService
     private List<CoJihiSbtMstModel> _jihiSbtMsts;
     private List<CoJihiSbtFutan> _jihiSbtFutans;
     private CoHpInfModel _hpInf;
+    private List<PutColumn> putCurColumns = new List<PutColumn>();
 
     private int _currentPage;
     private string _rowCountFieldName = string.Empty;
     private List<string> _objectRseList;
     private bool _hasNextPage;
+    private CoFileType? coFileType;
+
+    private List<PutColumn> csvTotalColumns = new List<PutColumn>
+        {
+            new PutColumn("RowType", "明細区分"),
+            new PutColumn("TotalCaption", "合計行"),
+            new PutColumn("TotalCount", "合計件数"),
+            new PutColumn("TotalPtCount", "合計実人数")
+        };
 
     public Sta2003CoReportService(ICoSta2003Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -196,7 +207,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
                 _currentPage++;
             }
         }
-        
+
         return new Sta2003Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, formFileName).GetData();
     }
 
@@ -338,21 +349,21 @@ public class Sta2003CoReportService : ISta2003CoReportService
 
             #region ソート順
             _syunoInfs =
-                _syunoInfs?
-                    .OrderBy(s => s.NyukinYm)
-                    .ThenBy(s => pbKaId ? s.KaId : 0)
-                    .ThenBy(s => pbTantoId ? s.TantoId : 0)
-                    .ThenBy(s =>
-                        _printConf.SortOpt1 == 1 ? "0" :
-                        _printConf.SortOrder1 == 1 ? s.PtKanaName :
-                        _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') : "0")
-                    .ThenByDescending(s =>
-                        _printConf.SortOpt1 == 0 ? "0" :
-                        _printConf.SortOrder1 == 1 ? s.PtKanaName :
-                        _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') : "0")
-                    .ThenBy(s => s.NyukinDate == s.SinDate ? "0" : "1" + s.SinDate.ToString())
-                    .ThenBy(s => s.PtNum)
-                    .ToList();
+                    _syunoInfs?
+                        .OrderBy(s => s.NyukinYm)
+                        .ThenBy(s => pbKaId ? s.KaId : 0)
+                        .ThenBy(s => pbTantoId ? s.TantoId : 0)
+                        .ThenBy(s =>
+                            _printConf.SortOpt1 == 1 ? "0" :
+                            _printConf.SortOrder1 == 1 ? s.PtKanaName :
+                            _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') : "0")
+                        .ThenByDescending(s =>
+                            _printConf.SortOpt1 == 0 ? "0" :
+                            _printConf.SortOrder1 == 1 ? s.PtKanaName :
+                            _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') : "0")
+                        .ThenBy(s => s.NyukinDate == s.SinDate ? "0" : "1" + s.SinDate.ToString())
+                        .ThenBy(s => s.PtNum)
+                        .ToList();
             #endregion
 
             var nyukinYms = _syunoInfs?.GroupBy(s => s.NyukinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();
@@ -472,10 +483,10 @@ public class Sta2003CoReportService : ISta2003CoReportService
             CoSta2003PrintData printData = new CoSta2003PrintData();
 
             printData.NyukinYm = nyukinYm;
-
+            
             //todo anh.vu3
             //if (prePtNum != rowDatas.First().PtNum || outputFileType == CoFileType.Csv)
-            if (prePtNum != rowDatas.First().PtNum)
+            if (prePtNum != rowDatas.First().PtNum || coFileType == CoFileType.Csv)
             {
                 printData.PtNum = isTotalRow ? "" : rowDatas.First().PtNum.ToString();
                 printData.PtName = isTotalRow ? "" : rowDatas.First().PtName;
@@ -644,5 +655,82 @@ public class Sta2003CoReportService : ISta2003CoReportService
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2003, fileName, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
+    }
+
+    public CommonExcelReportingModel ExportCsv(CoSta2003PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
+    {
+        this.coFileType = coFileType;
+        _printConf = printConf;
+        string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+        List<string> retDatas = new List<string>();
+
+        if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        if (isPutTotalRow)
+        {
+            putCurColumns.AddRange(csvTotalColumns);
+        }
+        putCurColumns.AddRange(putColumns);
+
+        var csvDatas = _printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+
+        if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
+        List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
+
+        //タイトル行
+        retDatas.Add("\"" + string.Join("\",\"", wrkTitles.Union(_jihiSbtMsts.Select(j => string.Format("保険外金額({0})", j.Name)))) + "\"");
+        if (isPutColName)
+        {
+            retDatas.Add("\"" + string.Join("\",\"", wrkColumns.Union(_jihiSbtMsts.Select(j => string.Format("JihiFutanSbt{0}", j.JihiSbt)))) + "\"");
+        }
+
+        //データ
+        int totalRow = csvDatas.Count;
+        int rowOutputed = 0;
+        foreach (var csvData in csvDatas)
+        {
+            retDatas.Add(RecordData(csvData));
+            rowOutputed++;
+        }
+
+        string RecordData(CoSta2003PrintData csvData)
+        {
+            List<string> colDatas = new List<string>();
+
+            foreach (var column in putCurColumns)
+            {
+                var value = typeof(CoSta2003PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                if (csvData.RowType == RowType.Total && !column.IsTotal)
+                {
+                    value = string.Empty;
+                }
+                else if (value is RowType)
+                {
+                    value = (int)value;
+                }
+                colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+            }
+            //自費種別毎の金額
+            if (csvData.JihiSbtFutans != null)
+            {
+                foreach (var jihiSbtFutan in csvData.JihiSbtFutans)
+                {
+                    colDatas.Add("\"" + jihiSbtFutan + "\"");
+                }
+            }
+            else
+            {
+                foreach (var jihiSbtMst in _jihiSbtMsts)
+                {
+                    colDatas.Add("\"0\"");
+                }
+            }
+
+            return string.Join(",", colDatas);
+        }
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
 }

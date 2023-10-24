@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Entity.Tenant;
+﻿using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
 using Reporting.CommonMasters.Enums;
@@ -11,6 +10,7 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3061.DB;
 using Reporting.Statistics.Sta3061.Mapper;
 using Reporting.Statistics.Sta3061.Models;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace Reporting.Statistics.Sta3061.Service;
@@ -194,7 +194,7 @@ public class Sta3061CoReportService : ISta3061CoReportService
 
         // get data to print
         GetFieldNameList(formFileName);
-        GetRowCount(formFileName);
+        GetRowCount();
 
         if (GetData(hpId))
         {
@@ -713,7 +713,21 @@ public class Sta3061CoReportService : ISta3061CoReportService
         }
 
         //データ取得
-        kouiTensus = _finder.GetKouiTensu(hpId, printConf);
+        if (printConf.IsSinDate)
+        {
+            kouiTensus = _finder.GetKouiTensu(hpId, printConf);
+        }
+        else
+        {
+            if (printConf.EndSinYm - printConf.StartSinYm == 0)
+            {
+                kouiTensus = _finder.GetKouiTensu(hpId, printConf);
+            }
+            else
+            {
+                kouiTensus = _finder.GetKouiTensu2(hpId, printConf);
+            }
+        }
         if ((kouiTensus?.Count ?? 0) == 0) return false;
 
         hpInf = _finder.GetHpInf(hpId, kouiTensus?.FirstOrDefault()?.SinDate ?? 0);
@@ -746,14 +760,6 @@ public class Sta3061CoReportService : ISta3061CoReportService
         }
     }
 
-    private void AddListData(ref Dictionary<string, CellModel> dictionary, string field, string value)
-    {
-        if (!string.IsNullOrEmpty(field) && !dictionary.ContainsKey(field))
-        {
-            dictionary.Add(field, new CellModel(value));
-        }
-    }
-
     private void GetFieldNameList(string fileName)
     {
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3061, fileName, new());
@@ -761,16 +767,87 @@ public class Sta3061CoReportService : ISta3061CoReportService
         objectRseList = javaOutputData.objectNames;
     }
 
-    private void GetRowCount(string fileName)
+    private void GetRowCount()
     {
         rowCountFieldName = putColumns.Find(p => objectRseList.Contains(p.ColName)).ColName;
-        List<ObjectCalculate> fieldInputList = new()
-        {
-            new ObjectCalculate(rowCountFieldName, (int)CalculateTypeEnum.GetListRowCount)
-        };
+    }
 
-        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3061, fileName, fieldInputList);
-        var javaOutputData = _readRseReportFileService.ReadFileRse(data);
-        maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
+    public CommonExcelReportingModel ExportCsv(CoSta3061PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+    {
+        this.printConf = printConf;
+        string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+        if (!GetData(hpId)) return new();
+
+        var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || p.RowType == RowType.Total).ToList();
+        if (csvDatas.Count == 0) return new();
+
+        bool pbKaId = new int[] { printConf.PageBreak1, printConf.PageBreak2, printConf.PageBreak3 }.Contains(2);
+        bool pbTantoId = new int[] { printConf.PageBreak1, printConf.PageBreak2, printConf.PageBreak3 }.Contains(3);
+
+        //自費明細
+        List<PutColumn> wrkRows = new List<PutColumn>();
+        wrkRows = putRows.ToList();
+
+        int jihiIndex = wrkRows.FindIndex(r => r.CsvColName == "JihiMeisai");
+        wrkRows.RemoveAt(jihiIndex);
+        for (int i = jihiSbtMsts.Count - 1; i >= 0; i--)
+        {
+            wrkRows.Insert(jihiIndex, new PutColumn() { ColName = "JihiMeisai" + jihiSbtMsts[i].JihiSbt.ToString(), JpName = jihiSbtMsts[i].Name });
+        }
+
+        //集計(縦)
+        List<string> retDatas = wrkRows.Select(p => "\"" + p.JpName + "\"").ToList();
+        //集計区分
+        retDatas.Insert(0, "\"\"");
+        //改ページ条件
+        retDatas.Insert(0, "\"\"");
+        //タイトル
+        retDatas.Insert(0, "\"(単位：点/円)\"");
+
+        //データ
+        int totalRow = csvDatas.Count;
+        int rowOutputed = 0;
+        bool pageBreak = true;
+        foreach (var csvData in csvDatas)
+        {
+            if (pageBreak)
+            {
+                retDatas[0] += ",\"" + (pbKaId ? $"<{csvData.KaSname}>" : "") + (pbTantoId ? $"<{csvData.TantoSname}>" : "") + "\",\"\",\"\",\"\"";
+                pageBreak = false;
+            }
+            else
+            {
+                retDatas[0] += ",\"\",\"\",\"\",\"\"";
+            }
+            if (csvData.RowType == RowType.Total)
+            {
+                pageBreak = true;
+            }
+
+            retDatas[1] += ",\"" + csvData.ReportKbn + "\",\"\",\"\",\"\"";
+            retDatas[2] += ",\"回数\",\"点数/金額\",\"1来院当り点数/金額\",\"構成比％\"";
+
+            for (int i = 0; i < wrkRows.Count; i++)
+            {
+                CoSta3061PrintData.CountDetail value;
+
+                if (wrkRows[i].ColName.StartsWith("JihiMeisai"))
+                {
+                    value = csvData.JihiMeisais[i - jihiIndex];
+                }
+                else
+                {
+                    value = (CoSta3061PrintData.CountDetail)typeof(CoSta3061PrintData).GetProperty(wrkRows[i].ColName).GetValue(csvData);
+                }
+                retDatas[i + 3] += ",\"" + value.Count + "\"";
+                retDatas[i + 3] += ",\"" + value.Tensu + "\"";
+                retDatas[i + 3] += ",\"" + value.RaiinTensu + "\"";
+                retDatas[i + 3] += ",\"" + value.Rate + "\"";
+            }
+
+            rowOutputed++;
+        }
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
 }

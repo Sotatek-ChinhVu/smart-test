@@ -2,11 +2,7 @@
 
 public class DeleteDocInfRequest
 {
+    public long FileId { get; set; }
+
     public long PtId { get; set; }
-
-    public int SinDate { get; set; }
-
-    public long RaiinNo { get; set; }
-
-    public int SeqNo { get; set; }
 }

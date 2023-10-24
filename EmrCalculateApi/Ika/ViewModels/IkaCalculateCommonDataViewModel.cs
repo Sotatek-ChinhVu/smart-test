@@ -114,6 +114,10 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// CALC_STATUS.CREATE_MACHINEのプレフィックス
         /// </summary>
         public string preFix { get; set; } = "";
+        /// <summary>
+        /// CALC_STATUS.CREATE_MACHINEにセットするuuid
+        /// </summary>
+        public string calcKeyId { get; set; } = "";
     }
 
     /// <summary>
@@ -3209,7 +3213,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             if (calcStatuses.Any())
             {
-                _arg.saveHandler.AddCalcStatus(calcStatuses, _arg.preFix);
+                _arg.saveHandler.AddCalcStatus(calcStatuses, _arg.preFix, _arg.calcKeyId);
             }
         }
 

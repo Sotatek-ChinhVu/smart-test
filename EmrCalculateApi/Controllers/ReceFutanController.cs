@@ -10,6 +10,7 @@ using EmrCalculateApi.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Threading;
+using Helper.Constants;
 
 namespace EmrCalculateApi.Controllers
 {
@@ -20,12 +21,17 @@ namespace EmrCalculateApi.Controllers
     {
         private readonly IReceFutanViewModel _receFutanCalculate;
         private readonly IWebSocketService _webSocketService;
+        private readonly IMessenger _messenger;
         private CancellationToken? _cancellationToken;
 
-        public ReceFutanController(IReceFutanViewModel receFutanCalculate, IWebSocketService webSocketService)
+        public ReceFutanController(
+            IReceFutanViewModel receFutanCalculate, 
+            IWebSocketService webSocketService,
+            IMessenger messenger)
         {
             _receFutanCalculate = receFutanCalculate;
             _webSocketService = webSocketService;
+            _messenger = messenger;
         }
 
         [HttpPost("ReceFutanCalculateMain")]
@@ -34,24 +40,27 @@ namespace EmrCalculateApi.Controllers
             _cancellationToken = cancellationToken;
             try
             {
-                Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
-                Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
+                _messenger.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
+                _messenger.Register<StopCalcStatus>(this, StopCalculation);
 
                 _receFutanCalculate.ReceFutanCalculateMain(
                                    calculateRequest.PtIds,
                                    calculateRequest.SeikyuYm,
                                    calculateRequest.UniqueKey);
             }
-            catch
+            catch (Exception ex)
             {
-                var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, "Error");
+                RecalculationStatus status = new RecalculationStatus(false, CalculateStatusConstant.Invalid, 0, 0, ex.Message, calculateRequest.UniqueKey);
+                var objectJson = JsonSerializer.Serialize(status);
+                var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, objectJson);
                 sendMessager.Wait();
             }
             finally
             {
-                Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
-                Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
+                _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+                _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
                 HttpContext.Response.Body.Close();
+                _receFutanCalculate.Dispose();
             }
             return Ok();
         }
@@ -60,7 +69,7 @@ namespace EmrCalculateApi.Controllers
         public ActionResult<GetListReceInfResponse> GetListReceInf([FromBody] GetListReceInfRequest request)
         {
             var response = _receFutanCalculate.KaikeiTotalCalculate(request.PtId, request.SinYm);
-
+            _receFutanCalculate.Dispose();
             return new ActionResult<GetListReceInfResponse>(new GetListReceInfResponse(response));
         }
 

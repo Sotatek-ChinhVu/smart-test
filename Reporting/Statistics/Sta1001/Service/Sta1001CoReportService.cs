@@ -1,8 +1,6 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Extension;
 using Reporting.DailyStatic.DB;
-using Reporting.DailyStatic.Model;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -11,7 +9,6 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Mapper;
 using Reporting.Statistics.Sta1001.Models;
-using Reporting.Statistics.Sta1002.Models;
 using System.Globalization;
 
 namespace Reporting.Statistics.Sta1001.Service
@@ -197,6 +194,7 @@ namespace Reporting.Statistics.Sta1001.Service
             _sta1001Finder = sta1001Finder;
             _readRseReportFileService = readRseReportFileService;
             _dailyStatisticCommandFinder = dailyStatisticCommandFinder;
+            _objectRseList = new();
         }
 
         public CommonReportingRequestModel GetSta1001ReportingData(CoSta1001PrintConf printConf, int hpId)
@@ -207,10 +205,6 @@ namespace Reporting.Statistics.Sta1001.Service
             GetFieldNameList();
             GetRowCount();
             putCurColumns.AddRange(putColumns);
-            if (_objectRseList.Contains(putOptColumns.First().ColName))
-            {
-                putCurColumns.AddRange(putOptColumns);
-            }
             if (GetData())
             {
                 _hasNextPage = true;
@@ -720,6 +714,85 @@ namespace Reporting.Statistics.Sta1001.Service
             #endregion
 
             #endregion
+        }
+
+        public CommonExcelReportingModel ExportCsv(CoSta1001PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+        {
+            HpId = hpId;
+            _printConf = printConf;
+
+            if (isPutTotalRow)
+            {
+                putCurColumns.AddRange(csvTotalColumns);
+            }
+
+            putCurColumns.AddRange(putColumns);
+            string fileName = menuName + "_" + dateFrom + "_" + dateTo;
+            List<string> retDatas = new List<string>();
+
+            if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+
+            if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            //出力フィールド
+            List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
+            List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
+
+            //タイトル行
+            retDatas.Add("\"" + string.Join("\",\"", wrkTitles.Union(jihiSbtMsts.Select(j => string.Format("保険外金額({0})", j.Name)))) + "\"");
+
+            if (isPutColName)
+            {
+                retDatas.Add("\"" + string.Join("\",\"", wrkColumns.Union(jihiSbtMsts.Select(j => string.Format("JihiFutanSbt{0}", j.JihiSbt)))) + "\"");
+            }
+
+            string RecordData(CoSta1001PrintData csvData)
+            {
+                List<string> colDatas = new List<string>();
+
+                foreach (var column in putCurColumns)
+                {
+                    var value = typeof(CoSta1001PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                    if (csvData.RowType == RowType.Total && !column.IsTotal)
+                    {
+                        value = string.Empty;
+                    }
+                    else if (value is RowType)
+                    {
+                        value = (int)value;
+                    }
+                    colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+                }
+                //自費種別毎の金額
+                if (csvData.JihiSbtFutans != null)
+                {
+                    foreach (var jihiSbtFutan in csvData.JihiSbtFutans)
+                    {
+                        colDatas.Add("\"" + jihiSbtFutan + "\"");
+                    }
+                }
+                else
+                {
+                    foreach (var jihiSbtMst in jihiSbtMsts)
+                    {
+                        colDatas.Add("\"0\"");
+                    }
+                }
+
+                return string.Join(",", colDatas);
+            }
+            //データ
+            int totalRow = csvDatas.Count;
+            int rowOutputed = 0;
+            foreach (var csvData in csvDatas)
+            {
+                retDatas.Add(RecordData(csvData));
+                rowOutputed++;
+            }
+
+            return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
         }
         #endregion
     }

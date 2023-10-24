@@ -28,9 +28,13 @@ namespace Interactor.ReceSeikyu
                                                                        inputData.NoFilter, 
                                                                        inputData.IsFilterMonthlyDelay,
                                                                        inputData.IsFilterReturn, 
-                                                                       inputData.IsFilterOnlineReturn);
+                                                                       inputData.IsFilterOnlineReturn,
+                                                                       inputData.IsGetDataPending
+                                                                       );
 
-                if(data.Any())
+                data = data.OrderByDescending(u => u.SeikyuYm).ThenBy(u => u.SinYm).ThenBy(u => u.PtNum).ToList();
+
+                if (data.Any())
                     return new GetListReceSeikyuOutputData(GetListReceSeikyuStatus.Successful, data);
                 else
                     return new GetListReceSeikyuOutputData(GetListReceSeikyuStatus.NoData, data);

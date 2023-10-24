@@ -692,6 +692,130 @@ namespace Helper.Common
             }
             return ReleasedDrugType.None;
         }
+
+        public static string GetCmtOptDisplay850(string input, string itemName)
+        {
+            string cmtOpt = GetCmtOpt850(input, itemName);
+            if (string.IsNullOrEmpty(cmtOpt))
+            {
+                return string.Empty;
+            }
+
+            if (cmtOpt.Length == 7)
+            {
+                string tempCmtOpt = HenkanJ.Instance.ToHalfsize(cmtOpt);
+                string formatDate = string.Format("{0}.{1}.{2}.{3}",
+                    CIUtil.Copy(tempCmtOpt, 1, 1),
+                    CIUtil.Copy(tempCmtOpt, 2, 2),
+                    CIUtil.Copy(tempCmtOpt, 4, 2),
+                    CIUtil.Copy(tempCmtOpt, 6, 2));
+                var tempConvertDate = CIUtil.ShowWDateToSDate(formatDate);
+                if (tempConvertDate == 0)
+                {
+                    return string.Empty;
+                }
+
+                var warekiYmd = CIUtil.SDateToShowWDate3(tempConvertDate);
+                return HenkanJ.Instance.ToFullsize(warekiYmd.Ymd.Replace(" ", ""));
+            }
+            else
+            {
+                string tempCmtOpt = HenkanJ.Instance.ToHalfsize(cmtOpt);
+                string formatDate = string.Format("{0}.{1}.{2}.{3}",
+                    CIUtil.Copy(tempCmtOpt, 1, 1),
+                    CIUtil.Copy(tempCmtOpt, 2, 2),
+                    CIUtil.Copy(tempCmtOpt, 4, 2),
+                    "01");
+                var tempConvertDate = CIUtil.ShowWDateToSDate(formatDate);
+                if (tempConvertDate == 0)
+                {
+                    return string.Empty;
+                }
+
+                var warekiYmd = CIUtil.SDateToShowWDate3(tempConvertDate);
+                string strWarekiYmn = warekiYmd.Ymd.Replace(" ", "");
+                return HenkanJ.Instance.ToFullsize(CIUtil.Copy(strWarekiYmn, 1, strWarekiYmn.Length - 3));
+            }
+        }
+
+        public static string GetCmtOptDisplay851(string cmtOpt)
+        {
+            if (string.IsNullOrEmpty(cmtOpt))
+            {
+                return string.Empty;
+            }
+            cmtOpt.PadLeft(4, '0');
+            string hours = CIUtil.Copy(cmtOpt, 1, 2);
+            string min = CIUtil.Copy(cmtOpt, 3, 2);
+            //Set _inputName with mark comment and raise this changed
+            return string.Format("{0}時{1}分", hours, min);
+        }
+
+        public static string GetCmtOptDisplay852(string cmtOpt)
+        {
+            if (string.IsNullOrEmpty(cmtOpt))
+            {
+                return string.Empty;
+            }
+
+            var value = HenkanJ.Instance.ToHalfsize(cmtOpt).AsInteger().AsString();
+
+            return string.Format("{0}分", HenkanJ.Instance.ToFullsize(value));
+        }
+
+        public static string GetCmtOptDisplay853(string cmtOpt)
+        {
+            if (string.IsNullOrEmpty(cmtOpt))
+            {
+                return string.Empty;
+            }
+
+            cmtOpt.PadLeft(6, '0');
+            string day = CIUtil.Copy(cmtOpt, 1, 2);
+            string hours = CIUtil.Copy(cmtOpt, 3, 2);
+            string min = CIUtil.Copy(cmtOpt, 5, 2);
+
+            return $"{day}日　{hours}時{min}分";
+        }
+
+        public static string GetCmtOptDisplay880(string cmtOpt)
+        {
+            if (string.IsNullOrWhiteSpace(cmtOpt))
+            {
+                return string.Empty;
+            }
+
+            cmtOpt = HenkanJ.Instance.ToHalfsize(cmtOpt).PadLeft(15, '0');
+
+            string cmtOptDate = CIUtil.Copy(cmtOpt, 1, 7);
+            string cmtOptValue = CIUtil.Copy(cmtOpt, 8, 8);
+
+            string formatDate = string.Format("{0}.{1}.{2}.{3}",
+                    CIUtil.Copy(cmtOptDate, 1, 1),
+                    CIUtil.Copy(cmtOptDate, 2, 2),
+                    CIUtil.Copy(cmtOptDate, 4, 2),
+                    CIUtil.Copy(cmtOptDate, 6, 2));
+            var tempConvertDate = CIUtil.ShowWDateToSDate(formatDate);
+            if (tempConvertDate == 0)
+            {
+                return string.Empty;
+            }
+
+            var warekiYmd = CIUtil.SDateToShowWDate3(tempConvertDate);
+            var date = HenkanJ.Instance.ToFullsize(warekiYmd.Ymd.Replace(" ", ""));
+
+            string value = "0";
+            if (cmtOptValue != "00000000")
+            {
+                value = cmtOptValue.TrimStart('0');
+                if (value.Length > 0 && value[0] == '.')
+                {
+                    value = "0" + value;
+                }
+            }
+
+            return $"{date}　検査値：{HenkanJ.Instance.ToFullsize(value)}";
+        }
     }
 
 

@@ -2,6 +2,8 @@
 using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Receipt;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.Receipt;
 using UseCase.Receipt.SaveListSyoukiInf;
 
@@ -13,13 +15,17 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly IMstItemRepository _mstItemRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveSyoukiInfListInteractor(IReceiptRepository receiptRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
+    public SaveSyoukiInfListInteractor(ITenantProvider tenantProvider, IReceiptRepository receiptRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
     {
         _receiptRepository = receiptRepository;
         _patientInforRepository = patientInforRepository;
         _insuranceRepository = insuranceRepository;
         _mstItemRepository = mstItemRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveSyoukiInfListOutputData Handle(SaveSyoukiInfListInputData inputData)
@@ -29,16 +35,31 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
             var responseValidate = ValidateInput(inputData);
             if (responseValidate != SaveSyoukiInfListStatus.ValidateSuccess)
             {
-                return new SaveSyoukiInfListOutputData(responseValidate);
+                return new SaveSyoukiInfListOutputData(responseValidate, new());
             }
+
+            var listSyoukiInfDB = _receiptRepository.GetSyoukiInfList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId, true);
+            var listSeqNoNotDeletedDB = listSyoukiInfDB.Where(item => !item.IsDeleted).Select(item => item.SeqNo).Distinct().ToList();
+            List<SyoukiInfItem> syoukiInfInvalidList = inputData.SyoukiInfList.Where(item => item.SeqNo > 0 && !listSeqNoNotDeletedDB.Contains(item.SeqNo)).ToList();
+            foreach (var syoukiInf in syoukiInfInvalidList)
+            {
+                var syoukiKbn = listSyoukiInfDB.FirstOrDefault(item => item.SeqNo == syoukiInf.SeqNo)?.SyoukiKbn ?? syoukiInf.SyoukiKbn;
+                syoukiInf.ChangeSyoukiKbn(syoukiKbn);
+            }
+
             var listReceCmtModel = inputData.SyoukiInfList.Select(item => ConvertToSyoukiInfModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
                                                           .ToList();
 
             if (_receiptRepository.SaveSyoukiInfList(inputData.HpId, inputData.UserId, listReceCmtModel))
             {
-                return new SaveSyoukiInfListOutputData(SaveSyoukiInfListStatus.Successed);
+                return new SaveSyoukiInfListOutputData(SaveSyoukiInfListStatus.Successed, syoukiInfInvalidList);
             }
-            return new SaveSyoukiInfListOutputData(SaveSyoukiInfListStatus.Failed);
+            return new SaveSyoukiInfListOutputData(SaveSyoukiInfListStatus.Failed, syoukiInfInvalidList);
+        }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
         }
         finally
         {
@@ -46,6 +67,7 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
             _patientInforRepository.ReleaseResource();
             _insuranceRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 
@@ -66,14 +88,6 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
         else if (!inputData.SyoukiInfList.Any())
         {
             return SaveSyoukiInfListStatus.Failed;
-        }
-        var listSyoukiInfDB = _receiptRepository.GetSyoukiInfList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-        var listSeqNo = inputData.SyoukiInfList.Where(item => item.SeqNo > 0).Select(item => item.SeqNo).ToList();
-        var seqNoListQuery = listSeqNo.Distinct().ToList();
-        var countSyoukiInf = listSyoukiInfDB.Count(item => seqNoListQuery.Contains(item.SeqNo));
-        if (listSeqNo.Any() && countSyoukiInf != listSeqNo.Count)
-        {
-            return SaveSyoukiInfListStatus.InvalidSeqNo;
         }
         var listSyoukiKbn = inputData.SyoukiInfList.Select(item => new SyoukiKbnMstModel(item.SyoukiKbn, item.SyoukiKbnStartYm)).ToList();
         if (listSyoukiKbn.Any() && !_receiptRepository.CheckExistSyoukiKbn(inputData.SinYm, listSyoukiKbn))

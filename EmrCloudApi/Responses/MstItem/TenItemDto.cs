@@ -11,7 +11,14 @@ namespace EmrCloudApi.Responses.MstItem
             ItemCd = model.ItemCd;
             RousaiKbn = model.RousaiKbn;
             KanaName1 = model.KanaName1;
+            KanaName2 = model.KanaName2;
+            KanaName3 = model.KanaName3;
+            KanaName4 = model.KanaName4;
+            KanaName5 = model.KanaName5;
+            KanaName6 = model.KanaName6;
+            KanaName7 = model.KanaName7;
             Name = model.Name;
+            ReceName = model.ReceName;
             KohatuKbn = model.KohatuKbn;
             MadokuKbn = model.MadokuKbn;
             KouseisinKbn = model.KouseisinKbn;
@@ -55,6 +62,8 @@ namespace EmrCloudApi.Responses.MstItem
             HandanGrpKbn = model.HandanGrpKbn;
             Yakka = model.Yakka;
             IsGetPriceInYakka = model.IsGetPriceInYakka;
+            Kasan1 = model.Kasan1;
+            Kasan2 = model.Kasan2;
         }
 
         [JsonConstructor]
@@ -64,7 +73,14 @@ namespace EmrCloudApi.Responses.MstItem
             ItemCd = itemCd;
             RousaiKbn = rousaiKbn;
             KanaName1 = kanaName1;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
             Name = name;
+            ReceName = string.Empty;
             KohatuKbn = kohatuKbn;
             MadokuKbn = madokuKbn;
             KouseisinKbn = kouseisinKbn;
@@ -115,7 +131,21 @@ namespace EmrCloudApi.Responses.MstItem
 
         public string KanaName1 { get; private set; }
 
+        public string KanaName2 { get; private set; }
+
+        public string KanaName3 { get; private set; }
+
+        public string KanaName4 { get; private set; }
+
+        public string KanaName5 { get; private set; }
+
+        public string KanaName6 { get; private set; }
+
+        public string KanaName7 { get; private set; }
+
         public string Name { get; private set; }
+
+        public string ReceName { get; private set; }
 
         public int KohatuKbn { get; private set; }
 
@@ -204,5 +234,9 @@ namespace EmrCloudApi.Responses.MstItem
         public double Yakka { get; private set; }
 
         public bool IsGetPriceInYakka { get; private set; }
+
+        public int Kasan1 { get; private set; }
+
+        public int Kasan2 { get; private set; }
     }
 }

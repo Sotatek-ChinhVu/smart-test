@@ -3,7 +3,11 @@ using Domain.Models.MstItem;
 using Domain.Models.Santei;
 using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
+using Infrastructure.CommonDB;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.SystemConf.SaveSystemSetting;
+using static Helper.Constants.StatusConstant;
 
 namespace Interactor.SystemConf
 {
@@ -13,13 +17,17 @@ namespace Interactor.SystemConf
         private readonly IHpInfRepository _hpInfRepository;
         private readonly ISanteiInfRepository _santeiInfRepository;
         private readonly IMstItemRepository _mstItemRepository;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public SaveSystemSettingInteractor(ISystemConfRepository systemConfRepository, IHpInfRepository hpInfRepository, ISanteiInfRepository santeiInfRepository, IMstItemRepository mstItemRepository)
+        public SaveSystemSettingInteractor(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository, IHpInfRepository hpInfRepository, ISanteiInfRepository santeiInfRepository, IMstItemRepository mstItemRepository)
         {
             _systemConfRepository = systemConfRepository;
             _hpInfRepository = hpInfRepository;
             _santeiInfRepository = santeiInfRepository;
             _mstItemRepository = mstItemRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveSystemSettingOutputData Handle(SaveSystemSettingInputData inputData)
@@ -53,12 +61,18 @@ namespace Interactor.SystemConf
 
                 return new SaveSystemSettingOutputData(SaveSystemSettingStatus.Successed);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _hpInfRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
                 _santeiInfRepository.ReleaseResource();
                 _mstItemRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 
@@ -68,6 +82,12 @@ namespace Interactor.SystemConf
 
             foreach (var item in hpInfs)
             {
+                var validationStatus = item.Validation();
+                if (validationStatus != ValidationHpInfStatus.None)
+                {
+                    return new();
+                }
+
                 result.Add(new HpInfModel(
                     item.HpId,
                     item.StartDate,

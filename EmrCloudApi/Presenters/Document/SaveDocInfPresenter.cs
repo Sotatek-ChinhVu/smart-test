@@ -25,7 +25,7 @@ public class SaveDocInfPresenter : ISaveDocInfOutputPort
         SaveDocInfStatus.InvalidCategoryCd => ResponseMessage.InvalidDocumentCategoryCd,
         SaveDocInfStatus.InvalidFileInput => ResponseMessage.InvalidFileInput,
         SaveDocInfStatus.InvalidPtId => ResponseMessage.InvalidPtId,
-        SaveDocInfStatus.InvalidSindate => ResponseMessage.InvalidSinDate,
+        SaveDocInfStatus.InvalidGetDate => ResponseMessage.InvalidGetDate,
         SaveDocInfStatus.InvalidDisplayFileName => ResponseMessage.InvalidDocInfFileName,
         SaveDocInfStatus.InvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
         _ => string.Empty

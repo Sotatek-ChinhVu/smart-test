@@ -2,10 +2,15 @@ using EmrCloudApi.Configs.Dependency;
 using EmrCloudApi.Configs.Options;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Security;
+using Infrastructure.Logger;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Org.BouncyCastle.Asn1.Ocsp;
+using PostgreDataContext;
 using Serilog;
 using Serilog.Events;
 using StackExchange.Redis;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,9 +24,21 @@ builder.Services.AddResponseCompression(options =>
     options.EnableForHttps = true;
 });
 
+int minWorker, minIOC;
+ThreadPool.GetMinThreads(out minWorker, out minIOC);
+if (ThreadPool.SetMinThreads(3000, minIOC))
+{
+    Console.WriteLine("Set Min thread");    
+}
+else
+{
+    Console.WriteLine("Not set min thread");
+}
+
 #if DEBUG
-builder.Services.AddSignalR()
-        .AddStackExchangeRedis(o =>
+//Temp drop to customer test
+builder.Services.AddSignalR().AddMessagePackProtocol()
+.AddStackExchangeRedis(o =>
         {
             o.ConnectionFactory = async writer =>
             {
@@ -71,7 +88,7 @@ builder.Services.AddSignalR()
                 var connection = await ConnectionMultiplexer.ConnectAsync(config, writer);
                 connection.ConnectionFailed += (_, e) =>
                 {
-                    Console.WriteLine("Connection to Redis failed.");
+                    Console.WriteLine("Connection to Redis failed." + Environment.NewLine + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
                 };
 
                 if (!connection.IsConnected)
@@ -146,7 +163,24 @@ builder.Host.UseSerilog((ctx, lc) => lc
 var dependencySetup = new ModuleDependencySetup();
 dependencySetup.Run(builder.Services);
 
+// Migration for AdminDBContext
+// This config is needed for EF Core Migrations to find the DbContext
+builder.Services.AddDbContext<AdminDataContext>(options =>
+{
+    var connectionStr = builder.Configuration["AdminDatabase"];
+    options.UseNpgsql(connectionStr, b => b.MigrationsAssembly("EmrCloudApi"));
+});
+
 var app = builder.Build();
+
+// Migrate latest database changes during startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AdminDataContext>();
+
+    // Here is the migration executed
+    dbContext.Database.Migrate();
+}
 
 //Add config from json file
 string enviroment = "Development";
@@ -189,19 +223,43 @@ Log.Logger = new LoggerConfiguration()
 
 app.UseHttpsRedirection();
 
-app.Use(async (context, next) =>
-{
-    if (context.Request.Method == "OPTIONS")
-    {
-        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { (string)context.Request.Headers["Origin"] });
-        context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept" });
-        context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
-        context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
-        context.Response.Headers.Add("Access-Control-Max-Age", "7200");
-        context.Response.StatusCode = 200;
-    }
-    await next(context);
-});
+//app.Use(async (context, next) =>
+//{
+//    if (context.Request.Method == "OPTIONS")
+//    {
+//        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { (string)context.Request.Headers["Origin"] });
+//        context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept" });
+//        context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
+//        context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
+//        context.Response.Headers.Add("Access-Control-Max-Age", "7200");
+//        context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { (string)context.Request.Headers["Login-Key"] });
+//        context.Response.StatusCode = 200;
+//        await next(context);
+//    }
+//    else
+//    {
+//        context.Request.EnableBuffering();
+
+//        using (var loggingHandler = context.RequestServices.GetService<ILoggingHandler>())
+//        {
+//            try
+//            {
+//                await loggingHandler!.WriteLogStartAsync("Start request");
+
+//                context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { (string)context.Request.Headers["Login-Key"] });
+//                await next(context);
+//            }
+//            catch (Exception ex)
+//            {
+//                await loggingHandler!.WriteLogExceptionAsync(ex);
+//            }
+//            finally
+//            {
+//                await loggingHandler!.WriteLogEndAsync("End request");
+//            }
+//        }
+//    }
+//});
 
 app.UseCors();
 

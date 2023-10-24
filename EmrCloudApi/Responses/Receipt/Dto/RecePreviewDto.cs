@@ -8,6 +8,7 @@ public class RecePreviewDto
     {
         SeikyuYm = output.SeikyuYm;
         HokenId = output.HokenId;
+        HokenKbn = output.HokenKbn;
         SinYm = output.SinYm;
         SeikyuYmDisplay = output.SeikyuYmDisplay;
         SinYmDisplay = output.SinYmDisplay;
@@ -19,6 +20,8 @@ public class RecePreviewDto
     public int SinYm { get; private set; }
 
     public int HokenId { get; private set; }
+
+    public int HokenKbn { get; private set; }
 
     public string SeikyuYmDisplay { get; private set; }
 

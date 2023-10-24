@@ -22,7 +22,7 @@ namespace Domain.Models.User
 
         IEnumerable<UserMstModel> GetAll();
 
-        List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly);
+        List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly, bool isAll);
 
         int MaxUserId();
 
@@ -77,5 +77,7 @@ namespace Domain.Models.User
         List<FunctionMstModel> GetListFunctionPermission();
 
         UserMstModel GetUserInfo(int hpId, int userId);
+
+        List<UserMstModel> GetUsersByPermission(int hpId, int managerKbn);
     }
 }

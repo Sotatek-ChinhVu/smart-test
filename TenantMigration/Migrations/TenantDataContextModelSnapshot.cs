@@ -22,6 +22,104 @@ namespace TenantMigration.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Emr.DatabaseEntity.KacodeReceYousiki", b =>
+                {
+                    b.Property<string>("ReceKaCd")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
+                        .HasColumnName("RECE_KA_CD")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("YousikiKaCd")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("YOUSIKI_KA_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("ReceKaCd", "YousikiKaCd");
+
+                    b.ToTable("KACODE_RECE_YOUSIKI");
+                });
+
+            modelBuilder.Entity("Emr.DatabaseEntity.KacodeYousikiMst", b =>
+                {
+                    b.Property<string>("YousikiKaCd")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("YOUSIKI_KA_CD")
+                        .HasColumnOrder(1);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<string>("KaName")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("KA_NAME");
+
+                    b.Property<int>("SortNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("SORT_NO");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("YousikiKaCd");
+
+                    b.ToTable("KACODE_YOUSIKI_MST");
+                });
+
             modelBuilder.Entity("Entity.Tenant.AccountingFormMst", b =>
                 {
                     b.Property<int>("HpId")
@@ -3515,21 +3613,6 @@ namespace TenantMigration.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("FileId"));
 
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("PT_ID")
-                        .HasColumnOrder(3);
-
-                    b.Property<int>("GetDate")
-                        .HasColumnType("integer")
-                        .HasColumnName("GET_DATE")
-                        .HasColumnOrder(4);
-
-                    b.Property<int>("FileNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("FILE_NO")
-                        .HasColumnOrder(5);
-
                     b.Property<int>("CategoryCd")
                         .HasColumnType("integer")
                         .HasColumnName("CATEGORY_CD");
@@ -3557,9 +3640,24 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(300)")
                         .HasColumnName("FILE_NAME");
 
+                    b.Property<int>("FileNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("FILE_NO")
+                        .HasColumnOrder(5);
+
+                    b.Property<int>("GetDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("GET_DATE")
+                        .HasColumnOrder(4);
+
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
@@ -3574,7 +3672,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId", "FileId", "PtId", "GetDate", "FileNo");
+                    b.HasKey("HpId", "FileId");
 
                     b.HasIndex(new[] { "PtId", "GetDate", "FileNo", "CategoryCd" }, "FILING_INF_IDX01");
 
@@ -4885,6 +4983,11 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
+                    b.Property<string>("YousikiKaCd")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("YOUSIKI_KA_CD");
+
                     b.HasKey("Id", "HpId");
 
                     b.HasIndex(new[] { "KaId" }, "PT_KA_MST_IDX01");
@@ -5979,6 +6082,79 @@ namespace TenantMigration.Migrations
                     b.ToTable("KENSA_CENTER_MST");
                 });
 
+            modelBuilder.Entity("Entity.Tenant.KensaCmtMst", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasMaxLength(2)
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("CmtCd")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("CMT_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("CmtSeqNo")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(9)
+                        .HasColumnType("integer")
+                        .HasColumnName("CMT_SEQ_NO")
+                        .HasColumnOrder(3);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CmtSeqNo"));
+
+                    b.Property<string>("CMT")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("CMT");
+
+                    b.Property<string>("CenterCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("CENTER_CD");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasMaxLength(8)
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<int>("IsDeleted")
+                        .HasMaxLength(1)
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DELETED");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasMaxLength(8)
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "CmtCd", "CmtSeqNo");
+
+                    b.HasIndex(new[] { "HpId", "CmtCd", "CmtSeqNo", "IsDeleted" }, "KENSA_CMT_MST_SKEY1");
+
+                    b.ToTable("KENSA_CMT_MST");
+                });
+
             modelBuilder.Entity("Entity.Tenant.KensaInf", b =>
                 {
                     b.Property<int>("HpId")
@@ -6161,6 +6337,10 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("RESULT_VAL");
+
+                    b.Property<long>("SeqParentNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_PARENT_NO");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
@@ -6388,6 +6568,203 @@ namespace TenantMigration.Migrations
                     b.HasIndex(new[] { "KensaItemCd" }, "KENSA_MST_IDX01");
 
                     b.ToTable("KENSA_MST");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.KensaResultLog", b =>
+                {
+                    b.Property<int>("OpId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("OP_ID")
+                        .HasColumnOrder(1);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OpId"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("ImpDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("IMP_DATE")
+                        .HasColumnOrder(3);
+
+                    b.Property<string>("KekaFile")
+                        .HasColumnType("text")
+                        .HasColumnName("KEKA_FILE")
+                        .HasColumnOrder(4);
+
+                    b.HasKey("OpId");
+
+                    b.HasIndex(new[] { "HpId", "ImpDate" }, "KENSA_RESULT_LOG_IDX01");
+
+                    b.ToTable("KENSA_RESULT_LOG");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.KensaSet", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasMaxLength(2)
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("SetId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(9)
+                        .HasColumnType("integer")
+                        .HasColumnName("SET_ID")
+                        .HasColumnOrder(2);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SetId"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasMaxLength(8)
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<int>("IsDeleted")
+                        .HasMaxLength(1)
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DELETED");
+
+                    b.Property<string>("SetName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("SET_NAME");
+
+                    b.Property<int>("SortNo")
+                        .HasMaxLength(9)
+                        .HasColumnType("integer")
+                        .HasColumnName("SORT_NO");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasMaxLength(8)
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "SetId");
+
+                    b.HasIndex(new[] { "HpId", "SetId" }, "KENSA_SET_PKEY");
+
+                    b.ToTable("KENSA_SET");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.KensaSetDetail", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasMaxLength(2)
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("SetId")
+                        .HasMaxLength(9)
+                        .HasColumnType("integer")
+                        .HasColumnName("SET_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("SetEdaNo")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(9)
+                        .HasColumnType("integer")
+                        .HasColumnName("SET_EDA_NO")
+                        .HasColumnOrder(3);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SetEdaNo"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasMaxLength(8)
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<int>("IsDeleted")
+                        .HasMaxLength(1)
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DELETED");
+
+                    b.Property<string>("KensaItemCd")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("KENSA_ITEM_CD");
+
+                    b.Property<int>("KensaItemSeqNo")
+                        .HasMaxLength(2)
+                        .HasColumnType("integer")
+                        .HasColumnName("KENSA_ITEM_SEQ_NO");
+
+                    b.Property<int>("SetEdaParentNo")
+                        .HasMaxLength(9)
+                        .HasColumnType("integer")
+                        .HasColumnName("SEQ_PARENT_NO");
+
+                    b.Property<int>("SortNo")
+                        .HasMaxLength(9)
+                        .HasColumnType("integer")
+                        .HasColumnName("SORT_NO");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasMaxLength(8)
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "SetId", "SetEdaNo");
+
+                    b.HasIndex(new[] { "HpId", "SetId", "SetEdaNo" }, "KENSA_SET_DETAIL_PKEY");
+
+                    b.ToTable("KENSA_SET_DETAIL");
                 });
 
             modelBuilder.Entity("Entity.Tenant.KensaStdMst", b =>
@@ -7185,6 +7562,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("LOCK_DATE");
 
+                    b.Property<string>("LoginKey")
+                        .HasColumnType("text")
+                        .HasColumnName("LOGINKEY");
+
                     b.Property<string>("Machine")
                         .HasColumnType("text")
                         .HasColumnName("MACHINE");
@@ -7197,7 +7578,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "UserId")
                         .IsUnique()
-                        .HasFilter("FunctionCd IN (02000000, 03000000)");
+                        .HasFilter("\"FUNCTION_CD\" IN ('02000000', '03000000')");
 
                     b.ToTable("LOCK_INF");
                 });
@@ -9455,13 +9836,39 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
 
+                    b.Property<string>("InfoConsFlg")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("INFO_CONS_FLG");
+
                     b.Property<DateTime>("OnlineConfirmationDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("ONLINE_CONFIRMATION_DATE");
 
+                    b.Property<int>("PrescriptionIssueType")
+                        .HasColumnType("integer")
+                        .HasColumnName("PRESCRIPTION_ISSUE_TYPE");
+
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")
                         .HasColumnName("PT_ID");
+
+                    b.Property<int>("UketukeStatus")
+                        .HasColumnType("integer")
+                        .HasColumnName("UKETUKE_STATUS");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("ID");
 
@@ -11602,6 +12009,8 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "PtId", "HokenId", "SeqNo");
 
+                    b.HasIndex(new[] { "HpId", "PtId", "HokenId", "HokenKbn", "Houbetu" }, "PT_HOKEN_INF_IDX01");
+
                     b.ToTable("PT_HOKEN_INF");
                 });
 
@@ -12000,6 +12409,8 @@ namespace TenantMigration.Migrations
                     b.HasKey("HpId", "PtId", "SeqNo");
 
                     b.HasIndex(new[] { "HpId", "PtNum" }, "PT_INF_IDX01");
+
+                    b.HasIndex(new[] { "HpId", "PtId", "IsDelete" }, "PT_INF_IDX02");
 
                     b.ToTable("PT_INF");
                 });
@@ -13612,6 +14023,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("CONFIRMATION_STATE");
 
+                    b.Property<int>("ConfirmationType")
+                        .HasColumnType("integer")
+                        .HasColumnName("CONFIRMATION_TYPE");
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -13628,6 +14043,11 @@ namespace TenantMigration.Migrations
                     b.Property<int>("HokenPid")
                         .HasColumnType("integer")
                         .HasColumnName("HOKEN_PID");
+
+                    b.Property<string>("InfoConsFlg")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("INFO_CONS_FLG");
 
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
@@ -13657,6 +14077,10 @@ namespace TenantMigration.Migrations
                     b.Property<long>("OyaRaiinNo")
                         .HasColumnType("bigint")
                         .HasColumnName("OYA_RAIIN_NO");
+
+                    b.Property<int>("PrescriptionIssueType")
+                        .HasColumnType("integer")
+                        .HasColumnName("PRESCRIPTION_ISSUE_TYPE");
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")
@@ -13738,6 +14162,8 @@ namespace TenantMigration.Migrations
                     b.HasIndex(new[] { "HpId", "PtId", "SinDate", "Status", "SyosaisinKbn", "IsDeleted" }, "RAIIN_INF_IDX02");
 
                     b.HasIndex(new[] { "IsDeleted", "SinDate", "PtId" }, "RAIIN_INF_IDX03");
+
+                    b.HasIndex(new[] { "HpId", "RaiinNo", "IsDeleted", "Status" }, "RAIIN_INF_IDX04");
 
                     b.ToTable("RAIIN_INF");
                 });
@@ -14298,6 +14724,8 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex(new[] { "HpId", "GrpId", "KbnCd", "IsDeleted" }, "RAIIN_LIST_DETAIL_IDX01");
 
+                    b.HasIndex(new[] { "HpId", "IsDeleted" }, "RAIIN_LIST_DETAIL_IDX02");
+
                     b.ToTable("RAIIN_LIST_DETAIL");
                 });
 
@@ -14435,28 +14863,23 @@ namespace TenantMigration.Migrations
                 {
                     b.Property<int>("HpId")
                         .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(1);
+                        .HasColumnName("HP_ID");
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")
-                        .HasColumnName("PT_ID")
-                        .HasColumnOrder(2);
+                        .HasColumnName("PT_ID");
 
                     b.Property<int>("SinDate")
                         .HasColumnType("integer")
-                        .HasColumnName("SIN_DATE")
-                        .HasColumnOrder(3);
+                        .HasColumnName("SIN_DATE");
 
                     b.Property<long>("RaiinNo")
                         .HasColumnType("bigint")
-                        .HasColumnName("RAIIN_NO")
-                        .HasColumnOrder(4);
+                        .HasColumnName("RAIIN_NO");
 
                     b.Property<int>("GrpId")
                         .HasColumnType("integer")
-                        .HasColumnName("GRP_ID")
-                        .HasColumnOrder(5);
+                        .HasColumnName("GRP_ID");
 
                     b.Property<int>("RaiinListKbn")
                         .HasColumnType("integer")
@@ -14481,6 +14904,10 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "GrpId", "RaiinListKbn");
+
+                    b.HasIndex(new[] { "GrpId", "KbnCd", "RaiinListKbn" }, "RAIIN_LIST_INF_IDX01");
+
+                    b.HasIndex(new[] { "HpId", "PtId" }, "RAIIN_LIST_INF_IDX02");
 
                     b.ToTable("RAIIN_LIST_INF");
                 });
@@ -18409,7 +18836,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "RsvDate")
                         .IsUnique()
-                        .HasFilter("RsvkrtKbn = 0 AND IsDeleted = 0");
+                        .HasFilter("\"RSVKRT_KBN\" = 0 AND \"IS_DELETED\" = 0");
 
                     b.ToTable("RSVKRT_MST");
                 });
@@ -19986,7 +20413,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "SetCd", "SetKbn", "SetKbnEdaNo", "GenerationId", "Level1", "Level2", "Level3")
                         .IsUnique()
-                        .HasFilter("IsDeleted = 0");
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.ToTable("SET_MST");
                 });
@@ -26795,6 +27222,10 @@ namespace TenantMigration.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SeqNo"));
 
+                    b.Property<long>("SeqParentNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_PARENT_NO");
+
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("UPDATE_DATE");
@@ -30258,6 +30689,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("CONFIRMATION_STATE");
 
+                    b.Property<int>("ConfirmationType")
+                        .HasColumnType("integer")
+                        .HasColumnName("CONFIRMATION_TYPE");
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -30278,6 +30713,11 @@ namespace TenantMigration.Migrations
                     b.Property<int>("HpId")
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID");
+
+                    b.Property<string>("InfoConsFlg")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("INFO_CONS_FLG");
 
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
@@ -30326,6 +30766,10 @@ namespace TenantMigration.Migrations
                     b.Property<long>("OyaRaiinNo")
                         .HasColumnType("bigint")
                         .HasColumnName("OYA_RAIIN_NO");
+
+                    b.Property<int>("PrescriptionIssueType")
+                        .HasColumnType("integer")
+                        .HasColumnName("PRESCRIPTION_ISSUE_TYPE");
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")

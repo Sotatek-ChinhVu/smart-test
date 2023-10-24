@@ -102,7 +102,7 @@ public class AfterCareSeikyuCoReportService : IAfterCareSeikyuCoReportService
             }
             //都道府県名
             var prefName = PrefCode.PrefName(hpInf.PrefNo);
-            if (prefName != "北海道")
+            if (prefName != "北海道" && prefName.Length > 1)
             {
                 prefName = prefName.Substring(0, prefName.Length - 1);
             }

@@ -5,9 +5,9 @@ using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
 using Reporting.Statistics.Enums;
 using Reporting.Statistics.Model;
+using Reporting.Statistics.Sta3080.DB;
 using Reporting.Statistics.Sta3080.Mapper;
 using Reporting.Statistics.Sta3080.Models;
-using Reporting.Statistics.Sta3080.DB;
 
 namespace Reporting.Statistics.Sta3080.Service;
 
@@ -48,6 +48,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
     private List<string> headerR;
     private List<CoSeisinDayCareInf> seisinDayCareInfs;
     private List<CoSta3080PrintData> printDatas;
+    private CoFileType? coFileType;
     #endregion
 
     private readonly Dictionary<string, string> _singleFieldData;
@@ -228,7 +229,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
                 var prePrintData = printDatas[ptIndex];
 
                 //患者毎に区切り線を引く
-                if (printData.PtNum != prePrintData.PtNum && prePrintData.PtNum != null && (rowNo + 1) % maxRow != 0)
+                if (!string.IsNullOrEmpty(prePrintData.PtNum) && printData.PtNum != prePrintData.PtNum && (rowNo + 1) % maxRow != 0)
                 {
                     if (!_extralData.ContainsKey("headerLine"))
                     {
@@ -298,9 +299,9 @@ public class Sta3080CoReportService : ISta3080CoReportService
                 CoSta3080PrintData printData = new CoSta3080PrintData();
 
                 //前の行と重複する値を省略
-                if (outputFileType == CoFileType.Csv || is1stRow || tgtData.PtNum != preData?.PtNum || isPageBreak)
+                if (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv || is1stRow || tgtData.PtNum != preData?.PtNum || isPageBreak)
                 {
-                    if (outputFileType == CoFileType.Csv)
+                    if (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv)
                     {
                         printData.SinYm = tgtData.SinYm.ToString();
                     }
@@ -326,7 +327,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
             {
                 CoSta3080PrintData printData = new CoSta3080PrintData();
 
-                if (outputFileType == CoFileType.Csv)
+                if (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv)
                 {
                     printData.SinYm = sinYm.ToString();
                     printData.MeisaiKbn = 1;
@@ -365,7 +366,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
 
             void AddTotalRecord(CountData totalData, CountData subTotalData)
             {
-                if (outputFileType == CoFileType.Csv)
+                if (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv)
                 {
                     printDatas.Add(
                         new CoSta3080PrintData(RowType.Total)
@@ -499,7 +500,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
                     //終了年月の場合初回算定月と経過月数を記載
                     if (tgtData?.SinYm == printConf.ToYm)
                     {
-                        if (outputFileType == CoFileType.Csv)
+                        if (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv)
                         {
                             printDatas[lastIdx].SyokaiYm = tgtData.SyokaiYm;
                         }
@@ -512,7 +513,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
                         totalKeikaMon += int.Parse(printDatas[lastIdx].KeikaMon);
                     }
 
-                    if (outputFileType == CoFileType.Csv)
+                    if (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv)
                     {
                         //CSVの場合、カウントフラグをたてる
                         if (ptTotalOdrCnt >= 1)
@@ -709,5 +710,53 @@ public class Sta3080CoReportService : ISta3080CoReportService
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3080, fileName, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
+    }
+
+    public CommonExcelReportingModel ExportCsv(CoSta3080PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
+    {
+        this.printConf = printConf;
+        string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+        this.coFileType = coFileType;
+        List<string> retDatas = new List<string>();
+        if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        var csvDatas = printDatas.Where(p => p.RowType != RowType.Brank).ToList();
+        if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        //出力フィールド
+        List<string> wrkTitles = putColumns.Select(p => p.JpName).ToList();
+        List<string> wrkColumns = putColumns.Select(p => p.CsvColName).ToList();
+
+        //タイトル行
+        retDatas.Add("\"" + string.Join("\",\"", wrkTitles) + "\"");
+        if (isPutColName)
+        {
+            retDatas.Add("\"" + string.Join("\",\"", wrkColumns) + "\"");
+        }
+
+        //データ
+        int totalRow = csvDatas.Count;
+        int rowOutputed = 0;
+        foreach (var csvData in csvDatas)
+        {
+            retDatas.Add(RecordData(csvData));
+            rowOutputed++;
+        }
+
+        string RecordData(CoSta3080PrintData csvData)
+        {
+            List<string> colDatas = new List<string>();
+
+            foreach (var column in putColumns)
+            {
+
+                var value = typeof(CoSta3080PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+            }
+
+            return string.Join(",", colDatas);
+        }
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
 }

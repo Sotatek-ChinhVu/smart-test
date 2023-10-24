@@ -34,8 +34,18 @@ public class RevertDeleteNoReceptInteractor : IRevertDeleteNoReceptInputPort
                 var reception = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId);
                 return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.Success, reception);
             }
+            else
+            {
+                Thread.Sleep(2000);
+                result = _receptionRepository.UpdateIsDeleted(inputData.HpId, inputData.RaiinNo);
+                if (result)
+                {
+                    var reception = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId);
+                    return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.Success, reception);
+                }
+            }
 
-            return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.Failed, new());
+            return new RevertDeleteNoReceptOutputData(RevertDeleteNoReceptStatus.Success, new());
         }
         finally
         {

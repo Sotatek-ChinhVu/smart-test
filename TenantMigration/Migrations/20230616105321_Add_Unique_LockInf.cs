@@ -15,7 +15,7 @@ namespace TenantMigration.Migrations
                 table: "LOCK_INF",
                 columns: new[] { "HP_ID", "PT_ID", "USER_ID" },
                 unique: true,
-                filter: "FunctionCd = \"02000000\"");
+                filter: $"\"FUNCTION_CD\" = '02000000'");
         }
 
         /// <inheritdoc />

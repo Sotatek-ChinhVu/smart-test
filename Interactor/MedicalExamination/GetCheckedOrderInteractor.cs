@@ -1,12 +1,10 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Domain.Models.Diseases;
+﻿using Domain.Models.Diseases;
 using Domain.Models.MedicalExamination;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.Reception;
 using Domain.Models.TodayOdr;
-using Entity.Tenant;
 using Helper.Constants;
 using Interactor.CalculateService;
 using UseCase.MedicalExamination.GetCheckedOrder;
@@ -175,7 +173,8 @@ namespace Interactor.MedicalExamination
                         i.StartDate,
                         i.TenkiKbn,
                         i.TenkiDate,
-                        i.SyubyoKbn
+                        i.SyubyoKbn,
+                        i.NanoNanByoCd
                     )).ToList();
 
                 var checkedOrderModelList = new List<CheckedOrderModel>();
@@ -199,6 +198,7 @@ namespace Interactor.MedicalExamination
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.ChikiHokatu(inputData.HpId, inputData.PtId, inputData.UserId, inputData.SinDate, inputData.PrimaryDoctor, inputData.TantoId, allOdrInfDetail, inputData.SyosaisinKbn));
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.YakkuZai(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.IBirthDay, allOdrInfDetail, ordInfs));
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.SiIkuji(inputData.HpId, inputData.SinDate, inputData.IBirthDay, allOdrInfDetail, isJouhou, inputData.SyosaisinKbn));
+                    checkedOrderModelList.AddRange(_medicalExaminationRepository.TrialIryoJyohoKibanCalculation(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, allOdrInfDetail));
 
                     var odrItems = ordInfs.Select(o => new OdrInfItem(
                             o.HpId,
@@ -293,6 +293,10 @@ namespace Interactor.MedicalExamination
             finally
             {
                 _medicalExaminationRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
+                _calculateRepository.ReleaseSource();
+                _todayOdrRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
             }
         }
 
@@ -328,7 +332,7 @@ namespace Interactor.MedicalExamination
             );
 
             odrInfDetails.Add(detail);
-            
+
 
             OdrInfItem odrInf = new OdrInfItem(
                     hpId,
@@ -348,7 +352,7 @@ namespace Interactor.MedicalExamination
                     0,
                     odrInfDetails
                 );
-       
+
 
             return odrInf;
         }

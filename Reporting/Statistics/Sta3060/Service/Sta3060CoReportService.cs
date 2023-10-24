@@ -16,6 +16,12 @@ public class Sta3060CoReportService : ISta3060CoReportService
     #region Constant
     private int maxRow = 45;
 
+    private List<PutColumn> csvTotalColumns = new List<PutColumn>
+        {
+            new PutColumn("RowType", "明細区分"),
+            new PutColumn("TotalCaption", "合計行"),
+        };
+
     private readonly List<PutColumn> putColumns = new List<PutColumn>
         {
             new PutColumn("ReportKbn", "集計区分", false),
@@ -174,6 +180,8 @@ public class Sta3060CoReportService : ISta3060CoReportService
     private string rowCountFieldName;
     private CoSta3060PrintConf printConf;
     private CoFileType outputFileType;
+    private CoFileType? coFileType;
+    private List<PutColumn> putCurColumns = new List<PutColumn>();
 
     public Sta3060CoReportService(ICoSta3060Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -351,8 +359,8 @@ public class Sta3060CoReportService : ISta3060CoReportService
                 CoSta3060PrintData printData = new CoSta3060PrintData();
 
                 printData.ReportKbn =
-                    printConf.ReportKbn == 0 ? outputFileType == CoFileType.Csv ? coKouiTensus.First().SinDate.ToString() : CIUtil.SDateToShowSDate(coKouiTensus.First().SinDate) :
-                    printConf.ReportKbn == 1 ? outputFileType == CoFileType.Csv ? coKouiTensus.First().SinYm.ToString() : CIUtil.SMonthToShowSMonth(coKouiTensus.First().SinYm) :
+                    printConf.ReportKbn == 0 ? outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv ? coKouiTensus.First().SinDate.ToString() : CIUtil.SDateToShowSDate(coKouiTensus.First().SinDate) :
+                    printConf.ReportKbn == 1 ? outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv ? coKouiTensus.First().SinYm.ToString() : CIUtil.SMonthToShowSMonth(coKouiTensus.First().SinYm) :
                     printConf.ReportKbn == 2 ? coKouiTensus.First().KaSname :
                     printConf.ReportKbn == 3 ? coKouiTensus.First().TantoSname :
                     printConf.ReportKbn == 4 ? hokenTitles[rowNo].TitleName :
@@ -656,5 +664,97 @@ public class Sta3060CoReportService : ISta3060CoReportService
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3060, fileName, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
+    }
+
+    public CommonExcelReportingModel ExportCsv(CoSta3060PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
+    {
+        this.printConf = printConf;
+        this.coFileType = coFileType;
+        string fileName = printConf.ReportName + "_" + monthFrom + "_" + monthTo;
+        List<string> retDatas = new List<string>();
+        if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        if (isPutTotalRow)
+        {
+            putCurColumns.AddRange(csvTotalColumns);
+        }
+        putCurColumns.AddRange(putColumns);
+
+        var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+        if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        //出力フィールド
+        List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
+        List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
+
+        //タイトル行
+        List<string> wrkCols = new List<string>();
+
+        foreach (var wrkTitle in wrkTitles)
+        {
+            if (wrkTitle == "集計区分")
+            {
+                switch (printConf.ReportKbn)
+                {
+                    case 0: wrkCols.Add($"\"{wrkTitle}(診療日)\""); break;
+                    case 1: wrkCols.Add($"\"{wrkTitle}(診療年月)\""); break;
+                    case 2: wrkCols.Add($"\"{wrkTitle}(診療科)\""); break;
+                    case 3: wrkCols.Add($"\"{wrkTitle}(担当医)\""); break;
+                    case 4: wrkCols.Add($"\"{wrkTitle}(保険種別)\""); break;
+                    case 5: wrkCols.Add($"\"{wrkTitle}(年齢区分)\""); break;
+                    case 6: wrkCols.Add($"\"{wrkTitle}(患者)\""); break;
+                    default:
+                        wrkCols.Add("\"" + wrkTitle + "\"");
+                        break;
+                }
+            }
+            else
+            {
+                wrkCols.Add("\"" + wrkTitle + "\"");
+            }
+        }
+        retDatas.Add(string.Join(",", wrkCols));
+
+        wrkCols.Clear();
+        if (isPutColName)
+        {
+            foreach (var wrkColumn in wrkColumns)
+            {
+                wrkCols.Add("\"" + wrkColumn + "\"");
+            }
+            retDatas.Add(string.Join(",", wrkCols));
+        }
+
+        //データ
+        int totalRow = csvDatas.Count;
+        int rowOutputed = 0;
+        foreach (var csvData in csvDatas)
+        {
+            retDatas.Add(RecordData(csvData));
+            rowOutputed++;
+        }
+
+        string RecordData(CoSta3060PrintData csvData)
+        {
+            List<string> colDatas = new List<string>();
+
+            foreach (var column in putCurColumns)
+            {
+                var value = typeof(CoSta3060PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                if (csvData.RowType == RowType.Total && !column.IsTotal)
+                {
+                    value = string.Empty;
+                }
+                else if (value is RowType)
+                {
+                    value = (int)value;
+                }
+                colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+            }
+
+            return string.Join(",", colDatas);
+        }
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
 }

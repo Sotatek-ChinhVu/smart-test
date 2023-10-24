@@ -138,4 +138,6 @@ public interface ICoAccountingFinder
     List<RaiinInfModel> GetOyaRaiinInfList(int hpId, List<long> raiinNoList, long ptId);
 
     List<CoAccountDueListModel> GetAccountDueList(int hpId, long ptId);
+
+    List<PtGrpNameMstModel> GetPtGrpNameMstModels(int hpId);
 }

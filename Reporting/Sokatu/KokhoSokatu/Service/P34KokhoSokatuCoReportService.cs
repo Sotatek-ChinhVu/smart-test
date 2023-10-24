@@ -32,7 +32,7 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
     /// OutPut Data
     /// </summary>
     private const string _formFileName = "p34KokhoSokatu.rse";
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -43,7 +43,7 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
     {
         _kokhoFinder = kokhoFinder;
         _singleFieldData = new();
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _listTextData = new();
         _extralData = new();
         _visibleFieldData = new();
@@ -69,23 +69,26 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
         this.seikyuType = seikyuType;
         var getData = GetData();
 
-        for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
+        if (getData)
         {
-            curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
-            if (curReceInfs.Count() == 0) continue;
-            hasNextPage = true;
-            currentPage = 1;
-
-            while (getData && hasNextPage)
+            for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
             {
-                UpdateDrawForm();
-                currentPage++;
+                curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
+                if (curReceInfs.Count() == 0) continue;
+                hasNextPage = true;
+                currentPage = 1;
+
+                while (getData && hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
             }
-        }   
+        }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     private bool UpdateDrawForm()

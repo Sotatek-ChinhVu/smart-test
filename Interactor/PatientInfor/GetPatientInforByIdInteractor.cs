@@ -41,7 +41,7 @@ namespace Interactor.PatientInfor
                     return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidRaiinNo);
                 }
 
-                var data = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+                var data = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.IsShowKyuSeiName);
                 if (data == null)
                     return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.DataNotExist);
                 return new GetPatientInforByIdOutputData(data, GetPatientInforByIdStatus.Successed);

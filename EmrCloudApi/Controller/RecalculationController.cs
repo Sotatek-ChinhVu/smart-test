@@ -8,7 +8,6 @@ using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using System.Text;
 using System.Text.Json;
 using UseCase.Core.Sync;
@@ -18,6 +17,7 @@ using UseCase.ReceiptCheck.ReceiptInfEdit;
 using EmrCloudApi.Responses.Receipt.Dto;
 using Microsoft.AspNetCore.SignalR.Client;
 using Infrastructure.Interfaces;
+using Helper.Constants;
 
 namespace EmrCloudApi.Controller;
 
@@ -29,15 +29,19 @@ public class RecalculationController : AuthorizeControllerBase
     private CancellationToken? _cancellationToken;
     private readonly ITenantProvider _tenantProvider;
     private readonly IConfiguration _configuration;
+    private readonly IMessenger _messenger;
     private HubConnection connection;
     private string uniqueKey;
+    private bool stopCalculate = false;
+    private bool allowNextStep = false;
 
-    public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider) : base(userService)
+    public RecalculationController(UseCaseBus bus, IConfiguration configuration, IUserService userService, ITenantProvider tenantProvider, IMessenger messenger) : base(userService)
     {
         _bus = bus;
         _tenantProvider = tenantProvider;
         _configuration = configuration;
         uniqueKey = string.Empty;
+        _messenger = messenger;
     }
 
     [HttpPost]
@@ -46,41 +50,60 @@ public class RecalculationController : AuthorizeControllerBase
         _cancellationToken = cancellationToken;
         try
         {
-            Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
-            Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
+            _messenger.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
+            _messenger.Register<StopCalcStatus>(this, StopCalculation);
+            _messenger.Register<AllowNextStepStatus>(this, CheckAllowNextStepAction);
 
             HttpContext.Response.ContentType = "application/json";
-            //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
-            HttpResponse response = HttpContext.Response;
-            //response.StatusCode = 202;
 
-            uniqueKey = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, uniqueKey, cancellationToken);
+            uniqueKey = Guid.NewGuid().ToString();
+            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox, uniqueKey, cancellationToken, _messenger);
             _bus.Handle(input);
         }
-        catch
+        catch (Exception ex)
         {
-            var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
-            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
-            HttpContext.Response.Body.FlushAsync();
+            allowNextStep = true;
+            stopCalculate = true;
+            Console.WriteLine("Exception Cloud:" + ex.Message);
+            SendMessage(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
         }
         finally
         {
-            Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
-            Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
+            allowNextStep = true;
+            stopCalculate = true;
+            _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+            _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
+            _messenger.Deregister<AllowNextStepStatus>(this, CheckAllowNextStepAction);
             HttpContext.Response.Body.Close();
         }
     }
 
     private void StopCalculation(StopCalcStatus stopCalcStatus)
     {
-        if (!_cancellationToken.HasValue)
+        if (stopCalculate)
+        {
+            stopCalcStatus.CallFailCallback(stopCalculate);
+        }
+        else if (!_cancellationToken.HasValue)
         {
             stopCalcStatus.CallFailCallback(false);
         }
         else
         {
             stopCalcStatus.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+        }
+    }
+
+    private void CheckAllowNextStepAction(AllowNextStepStatus status)
+    {
+        if (allowNextStep)
+        {
+            status.CallSuccessCallback(allowNextStep);
+            allowNextStep = false;
+        }
+        else
+        {
+            status.CallFailCallback(allowNextStep);
         }
     }
 
@@ -109,19 +132,25 @@ public class RecalculationController : AuthorizeControllerBase
                         var objectStatus = JsonSerializer.Deserialize<RecalculationStatus>(data);
                         if (objectStatus != null && objectStatus.UniqueKey.Equals(uniqueKey))
                         {
+                            if (objectStatus.Type == -1)
+                            {
+                                stopCalculate = true;
+                                allowNextStep = true;
+                            }
                             SendMessage(objectStatus);
                             if (objectStatus.Done)
                             {
                                 connection.DisposeAsync();
+                                allowNextStep = true;
                             }
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
-                        HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
-                        HttpContext.Response.Body.FlushAsync();
-                        Console.WriteLine(data);
+                        allowNextStep = true;
+                        stopCalculate = true;
+                        Console.WriteLine("Exception Calculate:" + data);
+                        SendMessage(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
                     }
                 }
             });
@@ -146,27 +175,25 @@ public class RecalculationController : AuthorizeControllerBase
     {
         try
         {
-            Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
-            Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
+            _messenger.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
+            _messenger.Register<StopCalcStatus>(this, StopCalculation);
 
             HttpContext.Response.ContentType = "application/json";
             //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
             HttpResponse response = HttpContext.Response;
             //response.StatusCode = 202;
 
-            var input = new ReceiptCheckRecalculationInputData(HpId, UserId, request.PtIds, request.SeikyuYm, request.ReceStatus);
+            var input = new ReceiptCheckRecalculationInputData(HpId, UserId, request.PtIds, request.SeikyuYm, request.ReceStatus, _messenger);
             _bus.Handle(input);
         }
-        catch
+        catch (Exception ex)
         {
-            var resultForFrontEnd = Encoding.UTF8.GetBytes("\n Error");
-            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
-            HttpContext.Response.Body.FlushAsync();
+            SendMessage(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
         }
         finally
         {
-            Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
-            Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
+            _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+            _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
             HttpContext.Response.Body.Close();
         }
     }

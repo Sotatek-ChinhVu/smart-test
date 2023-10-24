@@ -15,4 +15,6 @@ public class StatisticMenuRequestItem
     public List<StaConfRequestItem> StaConfigList { get; set; } = new();
 
     public bool IsDeleted { get; set; }
+
+    public bool IsSaveTemp { get; set; }
 }

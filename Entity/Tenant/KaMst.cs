@@ -109,5 +109,12 @@ namespace Entity.Tenant
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 様式診療科コード
+        /// </summary>
+        [Column(name: "YOUSIKI_KA_CD")]
+        [MaxLength(3)]
+        public string? YousikiKaCd { get; set; } = string.Empty;
     }
 }

@@ -500,8 +500,8 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var allCmtCheckMst = new List<ItemCmtModel>()
         {
-            new ItemCmtModel ("140038410", "comment abc", 0),
-            new ItemCmtModel ("140039650", "comment abc", 1)
+            new ItemCmtModel ("140038410",1, 1, "comment abc", 0),
+            new ItemCmtModel ("140039650",1, 2, "comment abc", 1)
         };
 
         var karteInf = new KarteInfModel(1, 901072057, 1, 1, 1, 20221111, "comment abc", 0, "abc", DateTime.MinValue, DateTime.MinValue, "abc");
@@ -534,8 +534,8 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var allCmtCheckMst = new List<ItemCmtModel>()
         {
-            new ItemCmtModel ("140038410", "comment abc", 0),
-            new ItemCmtModel ("140039650", "comment bcd", 1)
+            new ItemCmtModel ("140038410",1, 1, "comment abc", 0),
+            new ItemCmtModel ("140039650",1, 2, "comment bcd", 1)
         };
 
         var karteInf = new KarteInfModel(1, 901072057, 1, 1, 1, 20221111, "comment abc", 0, "abc", DateTime.MinValue, DateTime.MinValue, "abc");
@@ -3368,11 +3368,15 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         mockMstItemRepo.Setup(repo => repo.GetCmtCheckMsts(1, 1, new List<string>() { "1110001101", "111000110", "111013850", "111014210", "113019710" })).Returns(new List<ItemCmtModel>() {
             new ItemCmtModel(
                    "111000110",
+                   1,
+                   1,
                    "comment abc",
                    0
                 ),
             new ItemCmtModel(
                    "111013850",
+                   1,
+                   2,
                    "comment bcd",
                     1
                 )

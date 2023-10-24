@@ -36,7 +36,7 @@ public class P21KokhoSeikyuCoReportService : IP21KokhoSeikyuCoReportService
     /// OutPut Data
     /// </summary>
     private const string _formFileName = "p21KokhoSeikyu.rse";
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -47,7 +47,7 @@ public class P21KokhoSeikyuCoReportService : IP21KokhoSeikyuCoReportService
     {
         _kokhoFinder = kokhoFinder;
         _singleFieldData = new();
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
@@ -72,31 +72,34 @@ public class P21KokhoSeikyuCoReportService : IP21KokhoSeikyuCoReportService
         this.seikyuType = seikyuType;
         var getData = GetData();
 
-        foreach (string currentNo in hokensyaNos)
+        if (getData)
         {
-            currentHokensyaNo = currentNo;
-
-            //国保一般と退職は別に請求書を作成する
-            for (short kokhoKbn = 0; kokhoKbn <= 1; kokhoKbn++)
+            foreach (string currentNo in hokensyaNos)
             {
-                printKokhoKbn = kokhoKbn;
+                currentHokensyaNo = currentNo;
 
-                curReceInfs = receInfs.Where(r => (kokhoKbn == 0 ? r.IsNrAll : r.IsRetAll) && r.HokensyaNo == currentHokensyaNo).ToList();
-                if (curReceInfs.Count() == 0) continue;
-
-                currentPage = 1;
-                hasNextPage = true;
-                while (getData && hasNextPage)
+                //国保一般と退職は別に請求書を作成する
+                for (short kokhoKbn = 0; kokhoKbn <= 1; kokhoKbn++)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    printKokhoKbn = kokhoKbn;
+
+                    curReceInfs = receInfs.Where(r => (kokhoKbn == 0 ? r.IsNrAll : r.IsRetAll) && r.HokensyaNo == currentHokensyaNo).ToList();
+                    if (curReceInfs.Count() == 0) continue;
+
+                    currentPage = 1;
+                    hasNextPage = true;
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
             }
-        }     
+        }  
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
 
     #region Private function
@@ -134,7 +137,7 @@ public class P21KokhoSeikyuCoReportService : IP21KokhoSeikyuCoReportService
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //保険者
             fieldDataPerPage.Add("hokensyaNo", currentHokensyaNo); 
-            _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+            _setFieldData.Add(pageIndex, fieldDataPerPage);
             //国保・退職の種別
             listDataPerPage.Add(new("kokhoKbn", printKokhoKbn, 0, "○"));
             //印

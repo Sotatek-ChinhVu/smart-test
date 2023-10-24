@@ -1,7 +1,10 @@
-﻿using Domain.Models.GroupInf;
+﻿using Domain.Constant;
+using Domain.Models.GroupInf;
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
+using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -39,6 +42,22 @@ namespace Infrastructure.Repositories
                  )).ToList();
             var resultData = result.DistinctBy(item => new { item.GroupCode, item.PtId }).ToList();
             return resultData;
+        }
+
+        public List<GroupInfModel> GetAllByPtIdList(int hpId, List<long> ptIdList)
+        {
+            var ptGrpList = NoTrackingDataContext.PtGrpInfs.Where(item => item.HpId == hpId
+                                                                          && ptIdList.Contains(item.PtId)
+                                                                          && item.IsDeleted == DeleteStatus.None)
+                                                           .ToList();
+            var result = ptGrpList.Select(item => new GroupInfModel(
+                                                      item.HpId,
+                                                      item.PtId,
+                                                      item.GroupId,
+                                                      item.GroupCode ?? string.Empty,
+                                                      string.Empty
+                                   )).ToList();
+            return result;
         }
 
         public IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId)

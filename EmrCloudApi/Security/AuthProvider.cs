@@ -73,6 +73,25 @@ namespace EmrCloudApi.Security
         }
 
         /// <summary>
+        /// Create Access Token
+        /// </summary>
+        /// <param name="claims"></param>
+        /// <returns></returns>
+        public static (string token, DateTime tokenExpiryTime) GenerateAppToken(ICollection<Claim> claims)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_settingInfor.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddYears(_settingInfor.AppTokenExpires),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return new (tokenHandler.WriteToken(token), tokenDescriptor.Expires.Value);
+        }
+
+        /// <summary>
         /// Create Refresh Token
         /// </summary>
         /// <returns></returns>

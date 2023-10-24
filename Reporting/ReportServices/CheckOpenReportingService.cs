@@ -24,6 +24,11 @@ public class CheckOpenReportingService : ICheckOpenReportingService
         return _accountingCoReportService.CheckOpenReportingForm(hpId, ptId, printTypeInput, raiinNoList, raiinNoPayList, isCalculateProcess);
     }
 
+    public bool CheckExistTemplate(string templateName, int printType)
+    {
+        return _accountingCoReportService.CheckExistTemplate(templateName, printType);
+    }
+
     public bool CheckOpenAccountingForm(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> multiAccountDueListModels, bool isPrintMonth, bool ryoshusho, bool meisai)
     {
         List<CoAccountingParamModel> requestAccountting = new();

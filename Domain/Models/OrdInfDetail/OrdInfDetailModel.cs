@@ -1,4 +1,5 @@
-﻿using Domain.Types;
+﻿using Domain.Models.KensaIrai;
+using Domain.Types;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
@@ -104,8 +105,9 @@ namespace Domain.Models.OrdInfDetails
 
         public string MemoItem { get; private set; }
 
+        public KensaMstModel KensaMstModel { get; private set; }
 
-        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, string centerItemCd1, string centerItemCd2, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, int handanGrpKbn, bool isKensaMstEmpty, int odrKouiKbn = 0)
+        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, string centerItemCd1, string centerItemCd2, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, int handanGrpKbn, bool isKensaMstEmpty, KensaMstModel kensaMstModel = null, int odrKouiKbn = 0)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -176,6 +178,7 @@ namespace Domain.Models.OrdInfDetails
             YoukaiekiCd = string.Empty;
             MemoItem = string.Empty;
             OdrKouiKbn = odrKouiKbn;
+            KensaMstModel = kensaMstModel != null ? kensaMstModel : new();
         }
 
         public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline)
@@ -214,6 +217,7 @@ namespace Domain.Models.OrdInfDetails
             CmtOpt = cmtOpt;
             FontColor = fontColor;
             CommentNewline = commentNewline;
+            KensaMstModel = new();
         }
 
         public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, string centerItemCd1, string centerItemCd2, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, int handanGrpKbn, bool isKensaMstEmpty, decimal rikikaRate, string kikakiUnit, string yakkaiUnit, string rikikaUnit, string youkaiekiCd, string memoItem)
@@ -287,6 +291,7 @@ namespace Domain.Models.OrdInfDetails
             RikikaUnit = rikikaUnit;
             YoukaiekiCd = youkaiekiCd;
             MemoItem = memoItem;
+            KensaMstModel = new();
         }
 
         public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, string centerItemCd1, string centerItemCd2, decimal rikikaRate, string kikakiUnit, string yakkaiUnit, string rikikaUnit, string youkaiekiCd, string memoItem)
@@ -351,6 +356,7 @@ namespace Domain.Models.OrdInfDetails
             RikikaUnit = rikikaUnit;
             YoukaiekiCd = youkaiekiCd;
             MemoItem = memoItem;
+            KensaMstModel = new();
         }
 
         public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, string centerItemCd1, string centerItemCd2)
@@ -414,6 +420,7 @@ namespace Domain.Models.OrdInfDetails
             RikikaUnit = string.Empty;
             YoukaiekiCd = string.Empty;
             MemoItem = string.Empty;
+            KensaMstModel = new();
         }
 
         public OrdInfDetailModel(int hpId, string itemCd, int sinDate)
@@ -447,6 +454,7 @@ namespace Domain.Models.OrdInfDetails
             RikikaUnit = string.Empty;
             YoukaiekiCd = string.Empty;
             MemoItem = string.Empty;
+            KensaMstModel = new();
         }
         public OrdInfDetailModel(int hpId, string itemCd, int sinDate, int suryo)
         {
@@ -480,6 +488,7 @@ namespace Domain.Models.OrdInfDetails
             RikikaUnit = string.Empty;
             YoukaiekiCd = string.Empty;
             MemoItem = string.Empty;
+            KensaMstModel = new();
         }
 
         public OrdInfDetailModel(string itemCd, int sinKouiKbn)
@@ -514,6 +523,7 @@ namespace Domain.Models.OrdInfDetails
             RikikaUnit = string.Empty;
             YoukaiekiCd = string.Empty;
             MemoItem = string.Empty;
+            KensaMstModel = new();
         }
 
         public OrdInfDetailModel(string itemCd, int sinKouiKbn, int drugKbn)
@@ -549,6 +559,7 @@ namespace Domain.Models.OrdInfDetails
             RikikaUnit = string.Empty;
             YoukaiekiCd = string.Empty;
             MemoItem = string.Empty;
+            KensaMstModel = new();
         }
 
         public OrdInfDetailModel(int sinKouiKbn, int suryo)
@@ -581,6 +592,7 @@ namespace Domain.Models.OrdInfDetails
             RikikaUnit = string.Empty;
             YoukaiekiCd = string.Empty;
             MemoItem = string.Empty;
+            KensaMstModel = new();
         }
 
 
@@ -618,6 +630,7 @@ namespace Domain.Models.OrdInfDetails
             RikikaUnit = string.Empty;
             YoukaiekiCd = string.Empty;
             MemoItem = string.Empty;
+            KensaMstModel = new();
         }
 
         public OrdInfDetailModel()
@@ -649,6 +662,7 @@ namespace Domain.Models.OrdInfDetails
             RikikaUnit = string.Empty;
             YoukaiekiCd = string.Empty;
             MemoItem = string.Empty;
+            KensaMstModel = new();
         }
 
         public OrdInfDetailModel(int hpId, long ptId, int sinDate, long raiinNo, string itemCd, string itemName, int sinKouiKbn, long rpNo, int rpEdaNo, int rowNo
@@ -689,6 +703,7 @@ namespace Domain.Models.OrdInfDetails
             RikikaUnit = string.Empty;
             YoukaiekiCd = string.Empty;
             MemoItem = string.Empty;
+            KensaMstModel = new();
         }
 
         public bool IsSpecialItem
@@ -902,6 +917,14 @@ namespace Domain.Models.OrdInfDetails
         {
             ItemCd = itemCd;
             return this;
+        }
+
+        /// <summary>
+        /// 検査コード
+        /// </summary>
+        public string KensaItemCd
+        {
+            get { return KensaMstModel != null ? KensaMstModel.KensaItemCd : string.Empty; }
         }
     }
 }

@@ -10,5 +10,6 @@ public enum SaveKaMstStatus : byte
     KaSnameMaxLength20 = 6,
     KaNameMaxLength40 = 7,
     ReceKaCdNotFound = 8,
-    CanNotDuplicateKaId = 9
+    CanNotDuplicateKaId = 9,
+    InputNotFound = 10
 }

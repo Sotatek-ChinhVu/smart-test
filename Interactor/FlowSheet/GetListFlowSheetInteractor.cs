@@ -1,5 +1,6 @@
 ﻿using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
+using System.Diagnostics;
 using UseCase.FlowSheet.GetList;
 
 namespace Interactor.FlowSheet
@@ -7,9 +8,15 @@ namespace Interactor.FlowSheet
     public class GetListFlowSheetInteractor : IGetListFlowSheetInputPort
     {
         private readonly IFlowSheetRepository _flowsheetRepository;
-        public GetListFlowSheetInteractor(IFlowSheetRepository repository)
+        private readonly IFlowSheetRepository _flowsheetRaiinListMstRepository;
+        private readonly IFlowSheetRepository _flowsheetRaiinListInfRepository;
+        private readonly IFlowSheetRepository _flowsheetRaiinListNextOrderRepository;
+        public GetListFlowSheetInteractor(IFlowSheetRepository repository, IFlowSheetRepository flowsheetRaiinListMstRepository, IFlowSheetRepository flowsheetRaiinListInfRepository, IFlowSheetRepository flowsheetRaiinListNextOrderRepository)
         {
             _flowsheetRepository = repository;
+            _flowsheetRaiinListMstRepository = flowsheetRaiinListMstRepository;
+            _flowsheetRaiinListInfRepository = flowsheetRaiinListInfRepository;
+            _flowsheetRaiinListNextOrderRepository = flowsheetRaiinListNextOrderRepository;
         }
 
         public GetListFlowSheetOutputData Handle(GetListFlowSheetInputData inputData)
@@ -24,10 +31,25 @@ namespace Interactor.FlowSheet
                 else
                 {
                     long totalFlowSheet = 0;
-                    var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, ref totalFlowSheet);
-                    var raiinListMst = _flowsheetRepository.GetRaiinListMsts(inputData.HpId);
-                    var raiinListInfList = _flowsheetRepository.GetRaiinListInf(inputData.HpId, inputData.PtId);
-                    var raiinListInfForNextOrderList = _flowsheetRepository.GetRaiinListInfForNextOrder(inputData.HpId, inputData.PtId);
+                    var stopwatch = Stopwatch.StartNew();
+                    Console.WriteLine("Start FlowSheet Interactor");
+
+                    //var flowsheetList = 
+                    var taskFlowsheetList = Task<List<FlowSheetModel>>.Factory.StartNew(() => _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, ref totalFlowSheet));
+
+                    Console.WriteLine("Stop FlowSheet Interactor: " + stopwatch.ElapsedMilliseconds);
+                    var taskRaiinListMst = Task<List<RaiinListMstModel>>.Factory.StartNew(() => _flowsheetRaiinListMstRepository.GetRaiinListMsts(inputData.HpId));
+                    Console.WriteLine("Stop RaiinList Interactor: " + stopwatch.ElapsedMilliseconds);
+                    var taskRaiinList = Task<Dictionary<long, List<RaiinListInfModel>>>.Factory.StartNew(() => _flowsheetRaiinListInfRepository.GetRaiinListInf(inputData.HpId, inputData.PtId));
+                    Console.WriteLine("Stop raiinListInfList Interactor: " + stopwatch.ElapsedMilliseconds);
+                    var taskRaiinListInfNextOrder = Task<Dictionary<int, List<RaiinListInfModel>>>.Factory.StartNew(() => _flowsheetRaiinListNextOrderRepository.GetRaiinListInfForNextOrder(inputData.HpId, inputData.PtId));
+                    Task.WaitAll(taskFlowsheetList, taskRaiinListMst, taskRaiinList, taskRaiinListInfNextOrder);
+                    Console.WriteLine("Stop raiinListInfForNextOrderList Interactor: " + stopwatch.ElapsedMilliseconds);
+
+                    var flowsheetList = taskFlowsheetList.Result;
+                    var raiinListMst = taskRaiinListMst.Result;
+                    var raiinListInfList = taskRaiinList.Result;
+                    var raiinListInfForNextOrderList = taskRaiinListInfNextOrder.Result;
 
                     return new GetListFlowSheetOutputData(flowsheetList, raiinListMst, raiinListInfList, raiinListInfForNextOrderList, totalFlowSheet);
                 }
@@ -35,6 +57,9 @@ namespace Interactor.FlowSheet
             finally
             {
                 _flowsheetRepository.ReleaseResource();
+                _flowsheetRaiinListMstRepository.ReleaseResource();
+                _flowsheetRaiinListInfRepository.ReleaseResource();
+                _flowsheetRaiinListNextOrderRepository.ReleaseResource();
             }
         }
     }

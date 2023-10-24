@@ -1,11 +1,13 @@
 ﻿using Domain.Constant;
 using Helper.Common;
 using Helper.Constants;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.ReceSeikyu
 {
     public class RecedenHenJiyuuModel
     {
+        [JsonConstructor]
         public RecedenHenJiyuuModel(int hpId, long ptId, int hokenId, int sinYm, int seqNo, string henreiJiyuuCd, string henreiJiyuu, string hosoku, int isDeleted, int hokenKbn, string houbetu, int hokenStartDate, int hokenEndDate, string hokensyaNo)
         {
             HpId = hpId;
@@ -23,8 +25,6 @@ namespace Domain.Models.ReceSeikyu
             HokenEndDate = hokenEndDate;
             HokensyaNo = hokensyaNo;
         }
-
-
         /// <summary>
         /// 医療機関識別ID
         /// 

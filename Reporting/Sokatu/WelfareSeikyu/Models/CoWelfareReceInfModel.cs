@@ -5,11 +5,6 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
 {
     public class CoWelfareReceInfModel
     {
-        private PtHokenInf ptKohi1;
-        private PtHokenInf ptKohi2;
-        private PtHokenInf ptKohi3;
-        private PtHokenInf ptKohi4;
-
         public ReceInf ReceInf { get; private set; }
         public PtInf PtInf { get; private set; }
         public PtHokenInf PtHokenInf { get; private set; }
@@ -28,17 +23,6 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
             PtKohi2 = ptKohi2;
             PtKohi3 = ptKohi3;
             PtKohi4 = ptKohi4;
-        }
-
-        public CoWelfareReceInfModel(ReceInf receInf, PtInf ptInf, PtHokenInf ptHokenInf, PtHokenInf ptKohi1, PtHokenInf ptKohi2, PtHokenInf ptKohi3, PtHokenInf ptKohi4)
-        {
-            ReceInf = receInf;
-            PtInf = ptInf;
-            PtHokenInf = ptHokenInf;
-            this.ptKohi1 = ptKohi1;
-            this.ptKohi2 = ptKohi2;
-            this.ptKohi3 = ptKohi3;
-            this.ptKohi4 = ptKohi4;
         }
 
         /// <summary>
@@ -123,13 +107,13 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         /// <param name="kohiHoubetus">法別番号</param>
         /// <returns></returns>
-        public string JyukyusyaNo(List<string> kohiHoubetus)
+        public string? JyukyusyaNo(List<string> kohiHoubetus)
         {
             return
-                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1.JyukyusyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2.JyukyusyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3.JyukyusyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4.JyukyusyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu ?? string.Empty) ? PtKohi1?.JyukyusyaNo ?? string.Empty :
+                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu ?? string.Empty) ? PtKohi2?.JyukyusyaNo ?? string.Empty :
+                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu ?? string.Empty) ? PtKohi3?.JyukyusyaNo ?? string.Empty :
+                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu ?? string.Empty) ? PtKohi4?.JyukyusyaNo ?? string.Empty :
                 "";
         }
 
@@ -168,10 +152,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         public string TokusyuNo(List<string> kohiHoubetus)
         {
             return
-                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1.TokusyuNo ?? "" :
-                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2.TokusyuNo ?? "" :
-                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3.TokusyuNo ?? "" :
-                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4.TokusyuNo ?? "" :
+                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1?.TokusyuNo ?? "" :
+                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2?.TokusyuNo ?? "" :
+                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3?.TokusyuNo ?? "" :
+                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4?.TokusyuNo ?? "" :
                 "";
         }
 
@@ -537,7 +521,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public string ReceSbt
         {
-            get => ReceInf.ReceSbt;
+            get => ReceInf.ReceSbt ?? string.Empty;
         }
 
         /// <summary>

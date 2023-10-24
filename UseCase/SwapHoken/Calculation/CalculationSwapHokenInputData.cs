@@ -1,10 +1,11 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Helper.Messaging;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.SwapHoken.Calculation
 {
     public class CalculationSwapHokenInputData : IInputData<CalculationSwapHokenOutputData>
     {
-        public CalculationSwapHokenInputData(int hpId, int userId, List<int> seikyuYms, int ptId, bool isReCalculation, bool isReceCalculation, bool isReceCheckError)
+        public CalculationSwapHokenInputData(int hpId, int userId, List<int> seikyuYms, int ptId, bool isReCalculation, bool isReceCalculation, bool isReceCheckError, IMessenger messenger)
         {
             HpId = hpId;
             UserId = userId;
@@ -13,6 +14,7 @@ namespace UseCase.SwapHoken.Calculation
             IsReCalculation = isReCalculation;
             IsReceCalculation = isReceCalculation;
             IsReceCheckError = isReceCheckError;
+            Messenger = messenger;
         }
 
         public int HpId { get; private set; }
@@ -22,6 +24,8 @@ namespace UseCase.SwapHoken.Calculation
         public List<int> SeikyuYms { get; private set; }
 
         public int PtId { get; private set; }
+
+        public IMessenger Messenger { get; private set; }
 
         #region caculate module client
         public bool IsReCalculation { get; private set; }

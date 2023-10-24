@@ -1,11 +1,9 @@
-﻿using Reporting.CommonMasters.Enums;
-using Reporting.Mappers.Common;
-using Reporting.ReceiptList.Model;
+﻿using Reporting.Mappers.Common;
 
 namespace Reporting.ReceiptList.Service
 {
     public interface IImportCSVCoReportService
     {
-        CommonExcelReportingModel GetImportCSVCoReportServiceReportingData(List<ReceiptInputCsvModel> receiptListModels, bool outputTitle = false);
+        CommonExcelReportingModel GetImportCSVCoReportServiceReportingData(int hpId, int seikyuYm, Domain.Models.Receipt.ReceiptListAdvancedSearch.ReceiptListAdvancedSearchInput receiptCsvModel, bool outputTitle = false);
     }
 }

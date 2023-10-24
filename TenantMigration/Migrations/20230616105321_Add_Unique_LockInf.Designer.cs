@@ -7190,7 +7190,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "UserId")
                         .IsUnique()
-                        .HasFilter("FunctionCd = \"02000000\"");
+                        .HasFilter("\"FUNCTION_CD\" = '02000000'");
 
                     b.ToTable("LOCK_INF");
                 });

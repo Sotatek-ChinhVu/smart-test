@@ -1,4 +1,5 @@
 ﻿using Helper.Common;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -27,6 +28,7 @@ namespace Reporting.Statistics.Sta2021.Service
         int colIndex = 0;
         private List<string> _objectRseList;
         private CoSta2021PrintConf _printConf;
+        private CoFileType? coFileType;
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, bool> _visibleFieldData = new Dictionary<string, bool>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
@@ -211,7 +213,7 @@ namespace Reporting.Statistics.Sta2021.Service
 
                             if (grpDatas.Count == 0) continue;
 
-                            bool groupSinId = sortOrder1 == 2; //|| outputFileType == CoFileType.Csv;
+                            bool groupSinId = sortOrder1 == 2 || coFileType == CoFileType.Csv;
 
                             //項目単位のリスト
                             var itemDatas =
@@ -386,7 +388,6 @@ namespace Reporting.Statistics.Sta2021.Service
                     }
                 }
             }
-
 
             //データ取得
             sinKouis = _staFinder.GetSinKouis(HpId, _printConf);
@@ -645,6 +646,114 @@ namespace Reporting.Statistics.Sta2021.Service
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
             _colCountSinYM = javaOutputData.responses?.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListColCount)?.result ?? 0;
+        }
+
+        public CommonExcelReportingModel ExportCsv(CoSta2021PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
+        {
+            _printConf = printConf;
+            HpId = hpId;
+            this.coFileType = coFileType;
+            string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+            List<string> retDatas = new List<string>();
+            if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            //合計行
+            if (isPutTotalRow)
+            {
+                putCurColumns.AddRange(csvTotalColumns);
+            }
+            putCurColumns.AddRange(putColumns);
+
+            var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+            if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            //出力フィールド
+            List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
+            List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
+
+            //タイトル行
+            List<string> wrkCols = new List<string>();
+
+            foreach (var wrkTitle in wrkTitles)
+            {
+                if (wrkTitle == "診療年月データ")
+                {
+                    for (int i = 0; i <= csvDatas.First().SinYm.Count() - 1; i++)
+                    {
+                        wrkCols.Add($"\"回数_{csvDatas.First().SinYm[i]}\"");
+                        wrkCols.Add($"\"金額_{csvDatas.First().SinYm[i]}\"");
+                    }
+                }
+                else
+                {
+                    wrkCols.Add("\"" + wrkTitle + "\"");
+                }
+            }
+            retDatas.Add(string.Join(",", wrkCols));
+
+            wrkCols.Clear();
+            if (isPutColName)
+            {
+                foreach (var wrkColumn in wrkColumns)
+                {
+                    if (wrkColumn == "SinYmValues")
+                    {
+                        for (int i = 0; i <= csvDatas.First().SinYm.Count() - 1; i++)
+                        {
+                            wrkCols.Add($"\"Counts{i}\"");
+                            wrkCols.Add($"\"Moneys{i}\"");
+                        }
+                    }
+                    else
+                    {
+                        wrkCols.Add("\"" + wrkColumn + "\"");
+                    }
+                }
+                retDatas.Add(string.Join(",", wrkCols));
+            }
+
+            //データ
+            int totalRow = csvDatas.Count;
+            int rowOutputed = 0;
+            foreach (var csvData in csvDatas)
+            {
+                retDatas.Add(RecordData(csvData));
+                rowOutputed++;
+            }
+
+            string RecordData(CoSta2021PrintData csvData)
+            {
+                List<string> colDatas = new List<string>();
+
+                foreach (var column in putCurColumns)
+                {
+                    if (column.ColName == "SinYmValues")
+                    {
+                        for (int i = 0; i <= csvData.SinYm.Count() - 1; i++)
+                        {
+                            colDatas.Add("\"" + csvData.Counts[i] + "\"");
+                            colDatas.Add("\"" + csvData.Moneys[i] + "\"");
+                        }
+                    }
+                    else
+                    {
+                        var value = typeof(CoSta2021PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                        if (csvData.RowType == RowType.Total && !column.IsTotal)
+                        {
+                            value = string.Empty;
+                        }
+                        else if (value is RowType)
+                        {
+                            value = (int)value;
+                        }
+                        colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+                    }
+                }
+
+                return string.Join(",", colDatas);
+            }
+
+            return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
         }
         #endregion
     }

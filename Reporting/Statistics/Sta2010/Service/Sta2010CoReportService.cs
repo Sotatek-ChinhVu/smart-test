@@ -1,5 +1,6 @@
 ﻿using Helper.Common;
 using Helper.Constants;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -96,6 +97,8 @@ namespace Reporting.Statistics.Sta2010.Service
         private bool _hasNextPage;
         private int _maxRow;
         private int HpId;
+        private CoFileType? coFileType;
+        private bool isPutTotalRow;
 
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
@@ -243,26 +246,26 @@ namespace Reporting.Statistics.Sta2010.Service
                     }
                 }
 
-                //if (outputFileType == CoFileType.Csv)
-                //{
-                //    //CSV出力の場合は空白を埋める
-                //    printDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
-                //    for (int i = 1; i < printDatas.Count; i++)
-                //    {
-                //        if (printDatas[i].HokenSbt1 == null)
-                //        {
-                //            printDatas[i].HokenSbt1 = printDatas[i - 1].HokenSbt1;
-                //        }
-                //        if (printDatas[i].HokenSbt2 == null && printDatas[i].HokenSbt1 == printDatas[i - 1].HokenSbt1)
-                //        {
-                //            printDatas[i].HokenSbt2 = printDatas[i - 1].HokenSbt2;
-                //        }
-                //        if (printDatas[i].HokenSbt3 == null && printDatas[i].HokenSbt2 == printDatas[i - 1].HokenSbt2)
-                //        {
-                //            printDatas[i].HokenSbt3 = printDatas[i - 1].HokenSbt3;
-                //        }
-                //    }
-                //}
+                if (coFileType == CoFileType.Csv)
+                {
+                    //CSV出力の場合は空白を埋める
+                    printDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+                    for (int i = 1; i < printDatas.Count; i++)
+                    {
+                        if (printDatas[i].HokenSbt1 == null)
+                        {
+                            printDatas[i].HokenSbt1 = printDatas[i - 1].HokenSbt1;
+                        }
+                        if (printDatas[i].HokenSbt2 == null && printDatas[i].HokenSbt1 == printDatas[i - 1].HokenSbt1)
+                        {
+                            printDatas[i].HokenSbt2 = printDatas[i - 1].HokenSbt2;
+                        }
+                        if (printDatas[i].HokenSbt3 == null && printDatas[i].HokenSbt2 == printDatas[i - 1].HokenSbt2)
+                        {
+                            printDatas[i].HokenSbt3 = printDatas[i - 1].HokenSbt3;
+                        }
+                    }
+                }
             }
 
             #region 社保データ集計
@@ -1397,6 +1400,70 @@ namespace Reporting.Statistics.Sta2010.Service
             CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2010, "sta2010a.rse", fieldInputList);
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             _maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? _maxRow;
+        }
+
+        public CommonExcelReportingModel ExportCsv(CoSta2010PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
+        {
+            this.coFileType = coFileType;
+            this.isPutTotalRow = isPutTotalRow;
+            _printConf = printConf;
+            HpId = hpId;
+            string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+            List<string> retDatas = new List<string>();
+
+            if (!GetData()) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            if (isPutTotalRow)
+            {
+                putCurColumns.AddRange(csvTotalColumns);
+            }
+            putCurColumns.AddRange(putColumns);
+
+            var csvDatas = printDatas.Where(p => (p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)) && p.Count != null).ToList();
+            if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+            //出力フィールド
+            List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
+            List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
+
+            //タイトル行
+            retDatas.Add("\"" + string.Join("\",\"", wrkTitles) + "\"");
+            if (isPutColName)
+            {
+                retDatas.Add("\"" + string.Join("\",\"", wrkColumns) + "\"");
+            }
+
+            //データ
+            int totalRow = csvDatas.Count;
+            int rowOutputed = 0;
+            foreach (var csvData in csvDatas)
+            {
+                retDatas.Add(RecordData(csvData));
+                rowOutputed++;
+            }
+
+            string RecordData(CoSta2010PrintData csvData)
+            {
+                List<string> colDatas = new List<string>();
+
+                foreach (var column in putCurColumns)
+                {
+                    var value = typeof(CoSta2010PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                    if (csvData.RowType == RowType.Total && !column.IsTotal)
+                    {
+                        value = string.Empty;
+                    }
+                    else if (value is RowType)
+                    {
+                        value = (int)value;
+                    }
+                    colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+                }
+
+                return string.Join(",", colDatas);
+            }
+
+            return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
         }
         #endregion
     }

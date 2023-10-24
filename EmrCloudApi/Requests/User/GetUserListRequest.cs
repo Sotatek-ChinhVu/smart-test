@@ -4,4 +4,5 @@ public class GetUserListRequest
 {
     public int SinDate { get; set; }
     public bool IsDoctorOnly { get; set; }
+    public bool IsAll { get; set; }
 }

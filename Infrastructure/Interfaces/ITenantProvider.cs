@@ -1,9 +1,5 @@
-﻿using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using PostgreDataContext;
 
 namespace Infrastructure.Interfaces
 {
@@ -12,7 +8,7 @@ namespace Infrastructure.Interfaces
         string GetConnectionString();
 
         string GetTenantInfo();
-       
+
         string GetClinicID();
 
         TenantNoTrackingDataContext GetNoTrackingDataContext();
@@ -32,5 +28,23 @@ namespace Infrastructure.Interfaces
         string GetDomainFromQueryString();
 
         string GetDomainFromHeader();
+
+        string GetDomain();
+
+        string GetClientIp();
+
+        int GetHpId();
+
+        int GetUserId();
+
+        int GetDepartmentId();
+
+        Task<string> GetRequestInfoAsync();
+
+        string GetAdminConnectionString();
+
+        DbContextOptions CreateNewTrackingAdminDbContextOption();
+
+        string GetLoginKeyFromHeader();
     }
 }

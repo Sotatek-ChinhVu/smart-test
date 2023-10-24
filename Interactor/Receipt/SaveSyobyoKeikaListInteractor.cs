@@ -2,6 +2,8 @@
 using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Receipt;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.Receipt;
 using UseCase.Receipt.SaveListSyobyoKeika;
 
@@ -13,13 +15,17 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly IMstItemRepository _mstItemRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveSyobyoKeikaListInteractor(IReceiptRepository receiptRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
+    public SaveSyobyoKeikaListInteractor(ITenantProvider tenantProvider, IReceiptRepository receiptRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
     {
         _receiptRepository = receiptRepository;
         _patientInforRepository = patientInforRepository;
         _insuranceRepository = insuranceRepository;
         _mstItemRepository = mstItemRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveSyobyoKeikaListOutputData Handle(SaveSyobyoKeikaListInputData inputData)
@@ -29,16 +35,25 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
             var responseValidate = ValidateInput(inputData);
             if (responseValidate != SaveSyobyoKeikaListStatus.ValidateSuccess)
             {
-                return new SaveSyobyoKeikaListOutputData(responseValidate);
+                return new SaveSyobyoKeikaListOutputData(responseValidate, new());
             }
             var listSyobyoKeikaModel = inputData.SyobyoKeikaList.Select(item => ConvertToSyobyoKeikaModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
                                                                 .ToList();
 
+            var syobyoKeikaDBList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
+            var seqNoListDB = syobyoKeikaDBList.Select(item => item.SeqNo).Distinct().ToList();
+            List<SyobyoKeikaItem> syobyoKeikaInvalidList = inputData.SyobyoKeikaList.Where(item => item.SeqNo > 0 && !seqNoListDB.Contains(item.SeqNo)).ToList();
+
             if (_receiptRepository.SaveSyobyoKeikaList(inputData.HpId, inputData.UserId, listSyobyoKeikaModel))
             {
-                return new SaveSyobyoKeikaListOutputData(SaveSyobyoKeikaListStatus.Successed);
+                return new SaveSyobyoKeikaListOutputData(SaveSyobyoKeikaListStatus.Successed, syobyoKeikaInvalidList);
             }
-            return new SaveSyobyoKeikaListOutputData(SaveSyobyoKeikaListStatus.Failed);
+            return new SaveSyobyoKeikaListOutputData(SaveSyobyoKeikaListStatus.Failed, syobyoKeikaInvalidList);
+        }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
         }
         finally
         {
@@ -46,6 +61,7 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
             _patientInforRepository.ReleaseResource();
             _insuranceRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 
@@ -93,19 +109,6 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
         else if ((hokenKbn == 13) && inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && item.Keika == string.Empty))
         {
             return SaveSyobyoKeikaListStatus.InvalidKeika;
-        }
-        var syobyoKeikaDBList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-        var seqNoList = inputData.SyobyoKeikaList.Where(item => item.SeqNo > 0).Select(item => item.SeqNo).ToList();
-        var seqNoListQuery = seqNoList.Distinct().ToList();
-        var syobyoKeikaCount = syobyoKeikaDBList.Count(item => seqNoListQuery.Contains(item.SeqNo));
-        if (seqNoList.Any() && syobyoKeikaCount != seqNoList.Count)
-        {
-            return SaveSyobyoKeikaListStatus.InvalidSeqNo;
-        }
-        var sindayDBList = syobyoKeikaDBList.Select(item => item.SinDay);
-        if (sindayDBList.Any() && inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && item.SeqNo == 0 && sindayDBList.Contains(item.SinDay)))
-        {
-            return SaveSyobyoKeikaListStatus.InvalidSinDay;
         }
         return SaveSyobyoKeikaListStatus.ValidateSuccess;
     }

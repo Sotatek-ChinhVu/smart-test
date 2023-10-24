@@ -9,4 +9,5 @@ public enum SaveStatisticMenuStatus : byte
     InvalidGrpId,
     InvalidReportId,
     InvalidMenuName,
+    NoPermission,
 }

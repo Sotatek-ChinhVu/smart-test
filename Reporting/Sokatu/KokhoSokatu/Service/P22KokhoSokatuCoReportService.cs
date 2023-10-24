@@ -1,5 +1,4 @@
 ﻿using Helper.Common;
-using Helper.Constants;
 using Helper.Extension;
 using Reporting.CommonMasters.Constants;
 using Reporting.Mappers.Common;
@@ -45,7 +44,7 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
     /// OutPut Data
     /// </summary>
     private const string _formFileName = "p22KokhoSokatu.rse";
-    private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
@@ -56,7 +55,7 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
     {
         _kokhoFinder = kokhoFinder;
         _singleFieldData = new();
-        _singleFieldDataM = new();
+        _setFieldData = new();
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
@@ -72,20 +71,23 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
         var getData = GetData();
         hasNextPage = true;
 
-        for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
+        if (getData)
         {
-            curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
-            if (curReceInfs.Count() == 0) continue;
-            while (getData && hasNextPage)
+            for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
             {
-                UpdateDrawForm(prefCnt);
-                currentPage++;
+                curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
+                if (curReceInfs.Count() == 0) continue;
+                while (getData && hasNextPage)
+                {
+                    UpdateDrawForm(prefCnt);
+                    currentPage++;
+                }
             }
         }
 
         var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
         _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_singleFieldDataM, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
     }
     #region Private function
     private bool UpdateDrawForm(int prefCnt)
@@ -252,16 +254,16 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
             if (!kokhoNextPage && !koukiNextPage)
             {
                 pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                Dictionary<string, string> fieldDataPerPage = _singleFieldDataM.ContainsKey(pageIndex) ? _singleFieldDataM[pageIndex] : new();
+                Dictionary<string, string> fieldDataPerPage = _setFieldData.ContainsKey(pageIndex) ? _setFieldData[pageIndex] : new();
 
                 fieldDataPerPage.Add("kokhoTotalCount", curReceInfs.Count(r => r.IsNrAll || r.IsRetAll).ToString());
                 fieldDataPerPage.Add("kokhoTotalTensu", curReceInfs.Where(r => r.IsNrAll).Sum(r => r.Tensu).ToString());
                 fieldDataPerPage.Add("koukiTotalCount", curReceInfs.Count(r => r.IsKoukiAll).ToString());
                 fieldDataPerPage.Add("koukiTotalTensu", curReceInfs.Where(r => r.IsKoukiAll).Sum(r => r.Tensu).ToString());
 
-                if (!_singleFieldDataM.ContainsKey(pageIndex))
+                if (!_setFieldData.ContainsKey(pageIndex))
                 {
-                    _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
+                    _setFieldData.Add(pageIndex, fieldDataPerPage);
                 }
                 hasNextPage = false;
             }

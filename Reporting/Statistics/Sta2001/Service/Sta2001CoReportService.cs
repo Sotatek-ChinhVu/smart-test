@@ -28,6 +28,13 @@ public class Sta2001CoReportService : ISta2001CoReportService
     private List<CoJihiSbtMstModel> _jihiSbtMsts;
     private List<CoJihiSbtFutan> _jihiSbtFutans;
     private CoHpInfModel _hpInf;
+    private List<PutColumn> putCurColumns = new List<PutColumn>();
+
+    private List<PutColumn> csvTotalColumns = new List<PutColumn>
+        {
+            new PutColumn("RowType", "明細区分"),
+            new PutColumn("TotalCaption", "合計行")
+        };
 
     public Sta2001CoReportService(ICoSta2001Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -118,7 +125,7 @@ public class Sta2001CoReportService : ISta2001CoReportService
                 _currentPage++;
             }
         }
-        
+
         return new Sta2001Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, formFileName).GetData();
     }
 
@@ -178,7 +185,7 @@ public class Sta2001CoReportService : ISta2001CoReportService
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    var value = typeof(CoSta2001PrintData).GetProperty(colName).GetValue(printData);
+                    var value = typeof(CoSta2001PrintData).GetProperty(colName)?.GetValue(printData);
                     string valueInput = value?.ToString() ?? string.Empty;
                     AddListData(ref data, colName, valueInput);
 
@@ -230,9 +237,9 @@ public class Sta2001CoReportService : ISta2001CoReportService
     {
         void MakePrintData()
         {
-            _printDatas = new();
-            _headerL1 = new();
-            _headerL2 = new();
+            _printDatas = new List<CoSta2001PrintData>();
+            _headerL1 = new List<string>();
+            _headerL2 = new List<string>();
 
             //改ページ条件
             bool pbKaId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2 }.Contains(1);
@@ -249,14 +256,11 @@ public class Sta2001CoReportService : ISta2001CoReportService
                     {
                         var curDatas = _syunoInfs?.Where(s =>
                             s.NyukinYm == nyukinYm &&
-                            (!pbKaId || (kaIds != null && kaIds.Contains(j) && s.KaId == kaIds[j])) &&
-                            (!pbTantoId || (tantoIds != null && tantoIds.Contains(k) && s.TantoId == tantoIds[k]))
+                            (pbKaId ? s.KaId == kaIds?[j] : true) &&
+                            (pbTantoId ? s.TantoId == tantoIds?[k] : true)
                         ).ToList();
 
-                        if (curDatas?.Count == 0)
-                        {
-                            continue;
-                        }
+                        if (curDatas?.Count == 0) continue;
 
                         //明細
                         for (int rowNo = 0; rowNo <= maxRow - 1; rowNo++)
@@ -356,8 +360,8 @@ public class Sta2001CoReportService : ISta2001CoReportService
                             int wrkNewSeikyu = 0;
                             foreach (var wrkNyukin in wrkNyukins)
                             {
-                                wrkSeikyu += wrkDatas?.FirstOrDefault(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.SeikyuGaku ?? 0;
-                                wrkNewSeikyu += wrkDatas?.FirstOrDefault(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.NewSeikyuGaku ?? 0;
+                                wrkSeikyu += wrkDatas?.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.SeikyuGaku ?? 0;
+                                wrkNewSeikyu += wrkDatas?.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.NewSeikyuGaku ?? 0;
                             }
                             printData.SeikyuGaku = wrkSeikyu.ToString("#,0");
                             printData.NewSeikyuGaku = wrkNewSeikyu.ToString("#,0");
@@ -452,8 +456,8 @@ public class Sta2001CoReportService : ISta2001CoReportService
                                 _headerL1.Add(wrkYm + "度");
                                 //改ページ条件
                                 List<string> wrkHeaders = new List<string>();
-                                if (pbKaId) wrkHeaders.Add(curDatas?.FirstOrDefault()?.KaSname ?? string.Empty);
-                                if (pbTantoId) wrkHeaders.Add(curDatas?.FirstOrDefault()?.TantoSname ?? string.Empty);
+                                if (pbKaId) wrkHeaders.Add(curDatas?.First().KaSname ?? string.Empty);
+                                if (pbTantoId) wrkHeaders.Add(curDatas?.First().TantoSname ?? string.Empty);
 
                                 if (wrkHeaders.Count >= 1) _headerL2.Add(string.Join("／", wrkHeaders));
                             }
@@ -515,6 +519,82 @@ public class Sta2001CoReportService : ISta2001CoReportService
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2001, fileName, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
+    }
+
+    public CommonExcelReportingModel ExportCsv(CoSta2001PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
+    {
+        _printConf = printConf;
+        string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+        List<string> retDatas = new List<string>();
+        if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        if (isPutTotalRow)
+        {
+            putCurColumns.AddRange(csvTotalColumns);
+        }
+        putCurColumns.AddRange(putColumns);
+
+        var csvDatas = _printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+
+        if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        //出力フィールド
+        List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
+        List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
+
+        //タイトル行
+        retDatas.Add("\"" + string.Join("\",\"", wrkTitles.Union(_jihiSbtMsts.Select(j => string.Format("保険外金額({0})", j.Name)))) + "\"");
+        if (isPutColName)
+        {
+            retDatas.Add("\"" + string.Join("\",\"", wrkColumns.Union(_jihiSbtMsts.Select(j => string.Format("JihiFutanSbt{0}", j.JihiSbt)))) + "\"");
+        }
+
+        //データ
+        int totalRow = csvDatas.Count;
+        int rowOutputed = 0;
+        foreach (var csvData in csvDatas)
+        {
+            retDatas.Add(RecordData(csvData));
+            rowOutputed++;
+        }
+
+        string RecordData(CoSta2001PrintData csvData)
+        {
+            List<string> colDatas = new List<string>();
+
+            foreach (var column in putCurColumns)
+            {
+                var value = typeof(CoSta2001PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
+                if (csvData.RowType == RowType.Total && !column.IsTotal)
+                {
+                    value = string.Empty;
+                }
+                else if (value is RowType)
+                {
+                    value = (int)value;
+                }
+                colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+            }
+            //自費種別毎の金額
+            if (csvData.JihiSbtFutans != null)
+            {
+                foreach (var jihiSbtFutan in csvData.JihiSbtFutans)
+                {
+                    colDatas.Add("\"" + jihiSbtFutan + "\"");
+                }
+            }
+            else
+            {
+                foreach (var jihiSbtMst in _jihiSbtMsts)
+                {
+                    colDatas.Add("\"0\"");
+                }
+            }
+
+            return string.Join(",", colDatas);
+        }
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
     #endregion
 }

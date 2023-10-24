@@ -152,7 +152,7 @@ namespace Domain.Models.ReceSeikyu
 
         public bool IsChecked
         {
-            private set
+             set
             {
                 _IsChecked = value;
                 if (!value)
@@ -355,11 +355,11 @@ namespace Domain.Models.ReceSeikyu
 
         public int HokenEndDate { get; private set; }
 
-        public bool IsModified { get; private set; }
+        public bool IsModified { get; set; }
 
-        public int OriginSeikyuYm { get; private set; }
+        public int OriginSeikyuYm { get; set; }
 
-        public int OriginSinYm { get; private set; }
+        public int OriginSinYm { get; set; }
 
         public bool IsAddNew { get; private set; }
 
@@ -378,7 +378,7 @@ namespace Domain.Models.ReceSeikyu
         {
             { 1,"月遅れ" },
             { 2,"返戻" },
-            { 3,"電算返戻" }
+            { 3,"オンライン返戻" } //電算返戻
         };
 
         public void SetSeikyuYm(int value)

@@ -16,7 +16,9 @@ namespace UseCase.Lock.Check
 
         public int UserId { get; private set; }
 
-        public CheckLockInputData(int hpId, long ptId, string functionCode, int sinDate, long raiinNo, int userId)
+        public string TabKey { get; private set; }
+
+        public CheckLockInputData(int hpId, long ptId, string functionCode, int sinDate, long raiinNo, int userId, string tabKey)
         {
             HpId = hpId;
             PtId = ptId;
@@ -24,6 +26,7 @@ namespace UseCase.Lock.Check
             SinDate = sinDate;
             RaiinNo = raiinNo;
             UserId = userId;
+            TabKey = tabKey;
         }
     }
 }

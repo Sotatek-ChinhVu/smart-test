@@ -1,9 +1,0 @@
-﻿namespace EmrCloudApi.Constants;
-
-public static class LoginUserConstant
-{
-    public const int InvalidStatus = -1;
-    public const string UserId = "UserId";
-    public const string HpId = "HpId";
-    public const string DepartmentId = "DepartmentId";
-}

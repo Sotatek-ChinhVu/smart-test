@@ -42,7 +42,7 @@ namespace Interactor.MedicalExamination
 
                 var itemCds = filterCheckedExpiredItem.Select(i => i.ItemCd).Distinct().ToList();
 
-                var tenMstItemList = _mstItemRepository.FindTenMst(inputData.HpId, itemCds) ?? new();
+                var tenMstItemList = _mstItemRepository.GetTenMstList(inputData.HpId, itemCds) ?? new();
                 List<(string, int, string)> expiredItems = new();
 
                 foreach (var detail in filterCheckedExpiredItem)

@@ -2,7 +2,7 @@
 {
     public class DiseaseItem
     {
-        public DiseaseItem(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn)
+        public DiseaseItem(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, int nanoNanByoCd)
         {
             SikkanKbn = sikkanKbn;
             HokenPid = hokenPid;
@@ -10,6 +10,7 @@
             TenkiKbn = tenkiKbn;
             TenkiDate = tenkiDate;
             SyubyoKbn = syubyoKbn;
+            NanoNanByoCd = nanoNanByoCd;
         }
 
         public int SikkanKbn { get; private set; }
@@ -23,5 +24,7 @@
         public int TenkiDate { get; private set; }
 
         public int SyubyoKbn { get; private set; }
+
+        public int NanoNanByoCd { get; private set; }
     }
 }

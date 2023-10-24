@@ -11,5 +11,5 @@ public enum UpsertTodoGrpMstStatus : byte
     InvalidSortNo,
     InvalidIsDeleted,
     InvalidTodoGrpMst,
-    InvalidExistedTodoGrpNo,
+    InvalidExistedTodoGrpNoIsDeleted,
 }

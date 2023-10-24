@@ -18412,7 +18412,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "RsvDate")
                         .IsUnique()
-                        .HasFilter("RsvkrtKbn = 0 AND IsDeleted = 0");
+                        .HasFilter("\"RSVKRT_KBN\" = 0 AND \"IS_DELETED\" = 0");
 
                     b.ToTable("RSVKRT_MST");
                 });

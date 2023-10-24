@@ -2,7 +2,7 @@
 {
     public enum DeleteOrRecoverTenMstStatus
     {
-        Successful,
+        Successful = 1,
         Failed,
         InvalidUserId,
         InvalidItemCd,

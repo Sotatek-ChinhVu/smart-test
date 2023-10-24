@@ -4,7 +4,7 @@ namespace UseCase.MedicalExamination.GetHistoryFollowSindate
 {
     public class GetHistoryFollowSindateInputData : IInputData<GetHistoryFollowSindateOutputData>
     {
-        public GetHistoryFollowSindateInputData(long ptId, int hpId, int userId, int sinDate, int deleteConditon, long raiinNo, byte flag)
+        public GetHistoryFollowSindateInputData(long ptId, int hpId, int userId, int sinDate, int deleteConditon, long raiinNo, byte flag, int isShowApproval)
         {
             PtId = ptId;
             HpId = hpId;
@@ -13,6 +13,7 @@ namespace UseCase.MedicalExamination.GetHistoryFollowSindate
             DeleteConditon = deleteConditon;
             RaiinNo = raiinNo;
             Flag = flag;
+            IsShowApproval = isShowApproval;
         }
 
         public long PtId { get; private set; }
@@ -22,5 +23,6 @@ namespace UseCase.MedicalExamination.GetHistoryFollowSindate
         public int DeleteConditon { get; private set; }
         public long RaiinNo { get; private set; }
         public byte Flag { get; private set; }
+        public int IsShowApproval { get; private set; }
     }
 }

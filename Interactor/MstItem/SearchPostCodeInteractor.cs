@@ -20,12 +20,6 @@ namespace Interactor.MstItem
                 if (inputData.HpId <= 0)
                     return new SearchPostCodeOutputData(0, new List<PostCodeMstModel>(), SearchPostCodeStatus.InvalidHpId);
 
-                if (inputData.PageIndex < 0)
-                    return new SearchPostCodeOutputData(0, new List<PostCodeMstModel>(), SearchPostCodeStatus.InvalidPageIndex);
-
-                if (inputData.PageSize < 0)
-                    return new SearchPostCodeOutputData(0, new List<PostCodeMstModel>(), SearchPostCodeStatus.InvalidPageSize);
-
                 string postcode1 = CIUtil.ToHalfsize(inputData.PostCode1);
                 if (postcode1.Length > 3)
                     return new SearchPostCodeOutputData(0, new List<PostCodeMstModel>(), SearchPostCodeStatus.InvalidPostCode);

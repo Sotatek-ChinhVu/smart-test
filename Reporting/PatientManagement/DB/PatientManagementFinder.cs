@@ -4,8 +4,6 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using Reporting.CommonMasters.Constants;
 using Reporting.PatientManagement.Models;
 
 namespace Reporting.PatientManagement.DB;

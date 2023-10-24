@@ -1,4 +1,5 @@
-﻿using Helper.Constants;
+﻿using Domain.Models.HistoryOrder;
+using Helper.Constants;
 using System.Text.Json.Serialization;
 
 namespace UseCase.MedicalExamination.GetHistory
@@ -63,6 +64,9 @@ namespace UseCase.MedicalExamination.GetHistory
         [JsonPropertyName("tantoName")]
         public string TantoName { get; private set; }
 
+        [JsonPropertyName("tantoFullName")]
+        public string TantoFullName { get; private set; }
+
         [JsonPropertyName("santeiKbn")]
         public int SanteiKbn { get; private set; }
 
@@ -110,7 +114,42 @@ namespace UseCase.MedicalExamination.GetHistory
         [JsonPropertyName("listKarteFiles")]
         public List<FileInfOutputItem> ListKarteFiles { get; private set; }
 
-        public HistoryKarteOdrRaiinItem(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int syosaisinKbn, int jikanKbn, int kaId, string kaName, int tantoId, string tantoName, int santeiKbn, int tagNo, string sinryoTitle, int hokenType, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories, List<FileInfOutputItem> listKarteFiles, int status, string uketukeTime, string uketsukeName, string sinStartTime, string sinEndTime)
+        [JsonPropertyName("headerOrderModels")]
+        public List<HeaderOrderModel> HeaderOrderModels { get; private set; }
+
+        [JsonConstructor]
+        public HistoryKarteOdrRaiinItem(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int syosaisinKbn, int jikanKbn, int kaId, string kaName, int tantoId, string tantoName, string tantoFullName, int santeiKbn, int tagNo, string sinryoTitle, int hokenType, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories, List<FileInfOutputItem> listKarteFiles, int status, string uketukeTime, string uketsukeName, string sinStartTime, string sinEndTime)
+        {
+            RaiinNo = raiinNo;
+            SinDate = sinDate;
+            HokenPid = hokenPid;
+            HokenTitle = hokenTitle;
+            HokenRate = hokenRate;
+            HokenGroups = hokenGroups;
+            KarteHistories = karteHistories;
+            SyosaisinKbn = syosaisinKbn;
+            JikanKbn = jikanKbn;
+            KaId = kaId;
+            KaName = kaName;
+            TantoId = tantoId;
+            TantoName = tantoName;
+            TantoFullName = tantoFullName;
+            SanteiKbn = santeiKbn;
+            HokenGroups = hokenGroups;
+            KarteHistories = karteHistories;
+            TagNo = tagNo;
+            SinryoTitle = sinryoTitle;
+            HokenType = hokenType;
+            ListKarteFiles = listKarteFiles;
+            Status = status;
+            UketukeTime = uketukeTime;
+            UketsukeName = uketsukeName;
+            SinStartTime = sinStartTime;
+            SinEndTime = sinEndTime;
+            HeaderOrderModels = new();
+        }
+
+        public HistoryKarteOdrRaiinItem(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int syosaisinKbn, int jikanKbn, int kaId, string kaName, int tantoId, string tantoName, string tantoFullName, int santeiKbn, int tagNo, string sinryoTitle, int hokenType, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories, List<FileInfOutputItem> listKarteFiles, int status, string uketukeTime, string uketsukeName, string sinStartTime, string sinEndTime, List<HeaderOrderModel> headerOrderModels)
         {
             RaiinNo = raiinNo;
             SinDate = sinDate;
@@ -137,6 +176,8 @@ namespace UseCase.MedicalExamination.GetHistory
             UketsukeName = uketsukeName;
             SinStartTime = sinStartTime;
             SinEndTime = sinEndTime;
+            HeaderOrderModels = headerOrderModels;
+            TantoFullName = tantoFullName;
         }
     }
 }

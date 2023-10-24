@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.MstItem
         {
             Result = new Response<GetTenMstOriginInfoCreateResponse>()
             {
-                Data = new GetTenMstOriginInfoCreateResponse(outputData.ItemCd, outputData.JihiSbt),
+                Data = new GetTenMstOriginInfoCreateResponse(outputData.ItemCd, outputData.JihiSbt, outputData.TenMstOriginModel),
                 Status = (int)outputData.Status
             };
             switch (outputData.Status)

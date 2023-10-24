@@ -5,7 +5,7 @@ namespace Domain.Models.SystemConf;
 
 public interface ISystemConfRepository : IRepositoryBase
 {
-    List<SystemConfModel> GetList(int fromGrpCd, int toGrpCd);
+    List<SystemConfModel> GetList(int hpId, int fromGrpCd, int toGrpCd);
 
     List<SystemConfModel> GetList(int hpId, List<int> grpCodeList);
 
@@ -35,4 +35,10 @@ public interface ISystemConfRepository : IRepositoryBase
     bool SaveSystemGenerationConf(int userId, List<SystemConfMenuModel> systemConfMenuModels);
 
     bool SaveSystemSetting(int hpId, int userId, List<SystemConfMenuModel> SystemConfMenuModels);
+
+    List<SystemConfListXmlPathModel> GetSystemConfListXmlPath(int hpId, int grpCd, string machine, bool isKensaIrai);
+
+    List<SystemConfListXmlPathModel> GetAllPathConf(int hpId);
+
+    bool SavePathConfOnline(int hpId, int userId, List<SystemConfListXmlPathModel> systemConfListXmlPathModels);
 }

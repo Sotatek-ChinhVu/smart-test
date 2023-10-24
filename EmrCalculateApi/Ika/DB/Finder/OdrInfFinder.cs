@@ -468,8 +468,8 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 }
                 );
 
-            var joinQuery = (
-                from odrInf in odrInfs.AsEnumerable()
+            var odrDataList = (
+                from odrInf in odrInfs
                 join odrInfDetail in odrInfDetails on
                     new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                     new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
@@ -488,16 +488,6 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     new { cmtKbnMst.HpId, ItemCd = cmtKbnMst.ItemCd } into oJoin2
                 from oj2 in oJoin2.DefaultIfEmpty()
                 join ipnKasanMst in ipnKasanMsts on
-                    //new { odrInfDetail.HpId, IpnNameCd=odrInfDetail.IpnCd } equals
-                    new { HpId = oj?.HpId ?? 0, IpnNameCd = oj?.IpnNameCd ?? string.Empty } equals
-                    new { ipnKasanMst.HpId, ipnKasanMst.IpnNameCd } into oJoin3
-                from oj3 in oJoin3.DefaultIfEmpty()
-                join ipnMinYakkaMst in ipnMinYakkaMsts on
-                    //new { odrInfDetail.HpId, IpnNameCd=odrInfDetail.IpnCd } equals
-                    new { HpId = oj?.HpId ?? 0, IpnNameCd = oj?.IpnNameCd ?? string.Empty } equals
-                    new { ipnMinYakkaMst.HpId, ipnMinYakkaMst.IpnNameCd } into oJoin4
-                from oj4 in oJoin4.DefaultIfEmpty()
-                join ipnKasanMst in ipnKasanMsts on
                     new { odrInfDetail.HpId, IpnNameCd=odrInfDetail.IpnCd } equals
                     new { ipnKasanMst.HpId, ipnKasanMst.IpnNameCd } into oJoin5
                 from oj5 in oJoin5.DefaultIfEmpty()
@@ -509,33 +499,55 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     odrInf.RaiinNo, odrInf.OdrKouiKbn, odrInf.SortNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo, odrInfDetail.RowNo
                 select new
                 {
+                    odrInf,
                     odrInfDetail,
-                    //tenMst = oj2 == null ? oj: oj2,
+                    PtHokenPattern,
+                    raiinInf,
                     tenMst = oj,
                     cmtKbnMst = oj2,
-                    //PtHokenPattern,
-                    hokenKbn = PtHokenPattern.HokenKbn,
-                    hokenPid = PtHokenPattern.HokenPid,
-                    hokenId = PtHokenPattern.HokenId,
-                    hokenSbt = PtHokenPattern.HokenSbtCd,
-                    //odrInf,
-                    odrKouiKbn = odrInf.OdrKouiKbn,
-                    santeiKbn = odrInf.SanteiKbn,
-                    inoutKbn = odrInf.InoutKbn,
-                    syohoSbt = odrInf.SyohoSbt,
-                    daysCnt = odrInf.DaysCnt,
-                    sortNo = odrInf.SortNo,
-                    //raiinInf,
-                    sinStartTime = raiinInf.SinStartTime,
-                    //ipnKasanMst = oj3
-                    kasan1 = (oj3 != null ? oj3.Kasan1 : (oj5 != null ? oj5.Kasan1 : 0)),
-                    kasan2 = (oj3 != null ? oj3.Kasan2 : (oj5 != null ? oj5.Kasan2 : 0)),
-                    minYakka = (oj4 != null ? oj4.Yakka : (oj6 != null ? oj6.Yakka : 0))
-                    //kbn = (oj5 == null ? "" : oj5.Kbn),
-                    //junSenpatu = (oj5 == null ? 0 : oj5.JunSenpatu)
-                    ,odrInf, PtHokenPattern, raiinInf
                 }
             ).ToList();
+
+            List<string> ipnNameCdList = odrDataList
+                .Where(j => j.tenMst != null)
+                .Select(j => j.tenMst.IpnNameCd ?? string.Empty)
+                .Distinct()
+                .ToList();
+
+            var ipnKasanMstList = ipnKasanMsts.Where(t => ipnNameCdList.Contains(t.IpnNameCd ?? string.Empty)).ToList();
+            var ipnMinYakkaMstList = ipnMinYakkaMsts.Where(t => ipnNameCdList.Contains(t.IpnNameCd ?? string.Empty)).ToList();
+
+            var joinQuery =
+                odrDataList.Select
+                (
+                    o => new
+                    {
+                        o.odrInfDetail,
+                        o.tenMst,
+                        o.cmtKbnMst,
+                        hokenKbn = o.PtHokenPattern.HokenKbn,
+                        hokenPid = o.PtHokenPattern.HokenPid,
+                        hokenId = o.PtHokenPattern.HokenId,
+                        hokenSbt = o.PtHokenPattern.HokenSbtCd,
+                        odrKouiKbn = o.odrInf.OdrKouiKbn,
+                        santeiKbn = o.odrInf.SanteiKbn,
+                        inoutKbn = o.odrInf.InoutKbn,
+                        syohoSbt = o.odrInf.SyohoSbt,
+                        daysCnt = o.odrInf.DaysCnt,
+                        sortNo = o.odrInf.SortNo,
+                        sinStartTime = o.raiinInf.SinStartTime,
+                        kasan1 = (o.tenMst != null && ipnKasanMstList.Exists(i => i.IpnNameCd == o.tenMst!.IpnNameCd)) ? ipnKasanMstList.First(i => i.IpnNameCd == o.tenMst.IpnNameCd).Kasan1 : 0,
+                        kasan2 = (o.tenMst != null && ipnKasanMstList.Exists(i => i.IpnNameCd == o.tenMst!.IpnNameCd)) ? ipnKasanMstList.First(i => i.IpnNameCd == o.tenMst.IpnNameCd).Kasan2 : 0,
+                        minYakka = (o.tenMst != null && ipnMinYakkaMstList.Exists(i => i.IpnNameCd == o.tenMst!.IpnNameCd)) ? ipnMinYakkaMstList.First(i => i.IpnNameCd == o.tenMst.IpnNameCd).Yakka : 0,
+                        o.odrInf,
+                        o.PtHokenPattern,
+                        o.raiinInf
+
+                    }
+                )
+                .ToList();
+
+
 
             List<OdrInfModel> retInfs = new List<OdrInfModel>();
             List<OdrDtlTenModel> retDtls = new List<OdrDtlTenModel>();
@@ -598,8 +610,16 @@ namespace EmrCalculateApi.Ika.DB.Finder
                             t.StartDate <= sinDate &&
                             t.ItemCd == entity.ItemCd);
 
+                        var ipnMinYakkaMstList = (
+                            from ipnMinS1 in ipnMinYakkaMstsSub1
+                            join ipnMinS2 in ipnMinYakkaMstsSub2 on
+                                new { ipnMinS1.HpId, ipnMinS1.IpnNameCd, ipnMinS1.StartDate } equals
+                                new { ipnMinS2.HpId, ipnMinS2.IpnNameCd, ipnMinS2.StartDate }
+                            select ipnMinS1
+                        );
+
                         var tenEntities = (
-                                from tenMst in tenMstBases.AsEnumerable()
+                                from tenMst in tenMstBases
                                 join tenStart in tenMstStartDates on
                                     new { tenMst.HpId, tenMst.ItemCd, tenMst.StartDate } equals
                                     new { tenStart.HpId, tenStart.ItemCd, tenStart.StartDate }
@@ -607,16 +627,15 @@ namespace EmrCalculateApi.Ika.DB.Finder
                                     new { tenMst.HpId, tenMst.IpnNameCd } equals
                                     new { ipnKasanMst.HpId, ipnKasanMst.IpnNameCd } into oJoin3
                                 from oj3 in oJoin3.DefaultIfEmpty()
-                                join ipnMinYakkaMst in ipnMinYakkaMsts on
+                                join ipnMinYakkaMst in ipnMinYakkaMstList on
                                     new { tenMst.HpId, tenMst.IpnNameCd } equals
                                     new { ipnMinYakkaMst.HpId, ipnMinYakkaMst.IpnNameCd } into oJoin4
                                 from oj4 in oJoin4.DefaultIfEmpty()
-                                select new
+                                select new TenDataModel()
                                 {
-                                    tenMst = (tenMst != null ? tenMst : new()),
-                                    kasan1 = (oj3 != null ? oj3.Kasan1 : 0),
-                                    kasan2 = (oj3 != null ? oj3.Kasan2 : 0),
-                                    minYakka = (oj4 != null ? oj4.Yakka : 0)
+                                    tenMst = tenMst,
+                                    kasanMst = oj3,
+                                    minYakkaMst = oj4
                                 }
                             ).OrderBy(p => p.tenMst.HpId)
                         .ThenBy(p => p.tenMst.ItemCd)

@@ -90,6 +90,8 @@ namespace Infrastructure.Repositories
 
             var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => byomeiCds.Contains(b.ByomeiCd)).ToList();
 
+            string fullByomei = string.Empty;
+
             foreach (var item in byomeiCds)
             {
                 var byomei = byomeiMstList.FirstOrDefault(b => item == b.ByomeiCd);
@@ -100,18 +102,19 @@ namespace Infrastructure.Repositories
 
                 if (byomei.ByomeiCd.StartsWith('8'))
                 {
-                    ptByomei.Byomei = ptByomei.Byomei + byomei.Byomei;
+                    ptByomei.Byomei += byomei.Byomei;
                 }
                 else
                 {
-                    ptByomei.Byomei = byomei.Byomei + ptByomei.Byomei;
+                    fullByomei += byomei.Byomei;
                 }
-
             }
+
+            fullByomei += ptByomei.Byomei;
 
             return new PtDiseaseModel(ptByomei != null ? ptByomei.HokenPid : 0,
                                       ptByomei != null ? ptByomei.ByomeiCd ?? string.Empty : string.Empty,
-                                      ptByomei != null ? ptByomei.Byomei ?? string.Empty : string.Empty,
+                                      fullByomei,
                                       ptByomei != null ? ptByomei.StartDate : 0,
                                       ptByomei != null ? ptByomei.TenkiDate : 0,
                                       ptByomei != null ? ptByomei.SyubyoKbn : 0,
@@ -491,6 +494,7 @@ namespace Infrastructure.Repositories
                        receInf?.Kohi3ReceFutan ?? -1,
                        receInf?.Kohi4ReceTensu ?? -1,
                        receInf?.Kohi4ReceFutan ?? -1,
+                       receInf?.IsTester ?? 0,
                        ConvertPtInfModel(ptInf),
                        ConvertHokenInfModel(ptHokenInf),
                        ConvertKohiInfModel(kohi1),
@@ -550,7 +554,8 @@ namespace Infrastructure.Repositories
                           0,
                           0,
                           0,
-                          string.Empty
+                          string.Empty,
+                          0
                       );
         }
 

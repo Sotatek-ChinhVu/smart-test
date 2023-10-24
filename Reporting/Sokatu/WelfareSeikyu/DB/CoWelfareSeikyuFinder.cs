@@ -1,17 +1,12 @@
 ﻿using Domain.Constant;
 using Helper.Constants;
 using Infrastructure.Base;
-using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore.Internal;
-using PostgreDataContext;
 using Reporting.Calculate.Extensions;
 using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.WelfareSeikyu.Models;
 using Reporting.Structs;
-using System.Linq;
 
 namespace Reporting.Sokatu.WelfareSeikyu.DB
 {
@@ -102,7 +97,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                     IsPaperRece = receStatus == null ? 0 : receStatus.IsPaperRece,
                 }
             );
-
+            
             //請求区分
             List<int> Codes = new List<int>();
             if (seikyuType.IsNormal) Codes.Add(SeikyuKbn.Normal);
@@ -118,6 +113,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
             {
                 joinQuery = joinQuery.Where(r => r.IsPaperRece == 0 && Codes.Contains(r.receInf.SeikyuKbn));
             }
+
+            var count0 = joinQuery.ToList();
 
             //公費負担チェック窓口
             int lowKohiFutan10en = futanCheck == FutanCheck.KohiFutan10en ? 1 : 0;
@@ -143,10 +140,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                 if (kohiHoubetus?.Count >= 1)
                 {
                     joinQuery = joinQuery.Where(r =>
-                        (kohiHoubetus.Contains(r.receInf.Kohi1Houbetu) && r.receInf.Kohi1Futan10en >= lowKohiFutan10en && r.receInf.Kohi1Futan >= lowKohiFutan && r.receInf.Kohi1IchibuSotogaku + r.receInf.Kohi1Futan >= lowIchibuFutan) ||
-                        (kohiHoubetus.Contains(r.receInf.Kohi2Houbetu) && r.receInf.Kohi2Futan10en >= lowKohiFutan10en && r.receInf.Kohi2Futan >= lowKohiFutan && r.receInf.Kohi2IchibuSotogaku + r.receInf.Kohi2Futan >= lowIchibuFutan) ||
-                        (kohiHoubetus.Contains(r.receInf.Kohi3Houbetu) && r.receInf.Kohi3Futan10en >= lowKohiFutan10en && r.receInf.Kohi3Futan >= lowKohiFutan && r.receInf.Kohi3IchibuSotogaku + r.receInf.Kohi3Futan >= lowIchibuFutan) ||
-                        (kohiHoubetus.Contains(r.receInf.Kohi4Houbetu) && r.receInf.Kohi4Futan10en >= lowKohiFutan10en && r.receInf.Kohi4Futan >= lowKohiFutan && r.receInf.Kohi4IchibuSotogaku + r.receInf.Kohi4Futan >= lowIchibuFutan)
+                        (kohiHoubetus.Contains(r.receInf.Kohi1Houbetu ?? string.Empty) && r.receInf.Kohi1Futan10en >= lowKohiFutan10en && r.receInf.Kohi1Futan >= lowKohiFutan && r.receInf.Kohi1IchibuSotogaku + r.receInf.Kohi1Futan >= lowIchibuFutan) ||
+                        (kohiHoubetus.Contains(r.receInf.Kohi2Houbetu ?? string.Empty) && r.receInf.Kohi2Futan10en >= lowKohiFutan10en && r.receInf.Kohi2Futan >= lowKohiFutan && r.receInf.Kohi2IchibuSotogaku + r.receInf.Kohi2Futan >= lowIchibuFutan) ||
+                        (kohiHoubetus.Contains(r.receInf.Kohi3Houbetu ?? string.Empty) && r.receInf.Kohi3Futan10en >= lowKohiFutan10en && r.receInf.Kohi3Futan >= lowKohiFutan && r.receInf.Kohi3IchibuSotogaku + r.receInf.Kohi3Futan >= lowIchibuFutan) ||
+                        (kohiHoubetus.Contains(r.receInf.Kohi4Houbetu ?? string.Empty) && r.receInf.Kohi4Futan10en >= lowKohiFutan10en && r.receInf.Kohi4Futan >= lowKohiFutan && r.receInf.Kohi4IchibuSotogaku + r.receInf.Kohi4Futan >= lowIchibuFutan)
                     );
                 }
             }
@@ -162,19 +159,20 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                         (kohiHokenNos.Contains(r.ptKohi3.HokenNo) && r.receInf.Kohi3Futan10en >= lowKohiFutan10en && r.receInf.Kohi3Futan >= lowKohiFutan && r.receInf.Kohi3IchibuSotogaku + r.receInf.Kohi3Futan >= lowIchibuFutan && r.receInf.Kohi3ReceKisai == 0) ||
                         (kohiHokenNos.Contains(r.ptKohi4.HokenNo) && r.receInf.Kohi4Futan10en >= lowKohiFutan10en && r.receInf.Kohi4Futan >= lowKohiFutan && r.receInf.Kohi4IchibuSotogaku + r.receInf.Kohi4Futan >= lowIchibuFutan && r.receInf.Kohi4ReceKisai == 0)
                     );
+                    
                 }
                 //法別番号指定
                 if (kohiHoubetus?.Count >= 1)
                 {
                     joinQuery = joinQuery.Where(r =>
-                        (kohiHoubetus.Contains(r.receInf.Kohi1Houbetu) && r.receInf.Kohi1Futan10en >= lowKohiFutan10en && r.receInf.Kohi1Futan >= lowKohiFutan && r.receInf.Kohi1IchibuSotogaku + r.receInf.Kohi1Futan >= lowIchibuFutan && r.receInf.Kohi1ReceKisai == 0) ||
-                        (kohiHoubetus.Contains(r.receInf.Kohi2Houbetu) && r.receInf.Kohi2Futan10en >= lowKohiFutan10en && r.receInf.Kohi2Futan >= lowKohiFutan && r.receInf.Kohi2IchibuSotogaku + r.receInf.Kohi2Futan >= lowIchibuFutan && r.receInf.Kohi2ReceKisai == 0) ||
-                        (kohiHoubetus.Contains(r.receInf.Kohi3Houbetu) && r.receInf.Kohi3Futan10en >= lowKohiFutan10en && r.receInf.Kohi3Futan >= lowKohiFutan && r.receInf.Kohi3IchibuSotogaku + r.receInf.Kohi3Futan >= lowIchibuFutan && r.receInf.Kohi3ReceKisai == 0) ||
-                        (kohiHoubetus.Contains(r.receInf.Kohi4Houbetu) && r.receInf.Kohi4Futan10en >= lowKohiFutan10en && r.receInf.Kohi4Futan >= lowKohiFutan && r.receInf.Kohi4IchibuSotogaku + r.receInf.Kohi4Futan >= lowIchibuFutan && r.receInf.Kohi4ReceKisai == 0)
+                        (kohiHoubetus.Contains(r.receInf.Kohi1Houbetu ?? string.Empty) && r.receInf.Kohi1Futan10en >= lowKohiFutan10en && r.receInf.Kohi1Futan >= lowKohiFutan && r.receInf.Kohi1IchibuSotogaku + r.receInf.Kohi1Futan >= lowIchibuFutan && r.receInf.Kohi1ReceKisai == 0) ||
+                        (kohiHoubetus.Contains(r.receInf.Kohi2Houbetu ?? string.Empty) && r.receInf.Kohi2Futan10en >= lowKohiFutan10en && r.receInf.Kohi2Futan >= lowKohiFutan && r.receInf.Kohi2IchibuSotogaku + r.receInf.Kohi2Futan >= lowIchibuFutan && r.receInf.Kohi2ReceKisai == 0) ||
+                        (kohiHoubetus.Contains(r.receInf.Kohi3Houbetu ?? string.Empty) && r.receInf.Kohi3Futan10en >= lowKohiFutan10en && r.receInf.Kohi3Futan >= lowKohiFutan && r.receInf.Kohi3IchibuSotogaku + r.receInf.Kohi3Futan >= lowIchibuFutan && r.receInf.Kohi3ReceKisai == 0) ||
+                        (kohiHoubetus.Contains(r.receInf.Kohi4Houbetu ?? string.Empty) && r.receInf.Kohi4Futan10en >= lowKohiFutan10en && r.receInf.Kohi4Futan >= lowKohiFutan && r.receInf.Kohi4IchibuSotogaku + r.receInf.Kohi4Futan >= lowIchibuFutan && r.receInf.Kohi4ReceKisai == 0)
                     );
                 }
             }
-            
+
             //社保国保
             if (hokenKbn == HokenKbn.Syaho)
             {

@@ -11,6 +11,7 @@ namespace Entity.Tenant
     [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(IsDeleted), Name = "RAIIN_INF_IDX01")]
     [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(SyosaisinKbn), nameof(IsDeleted), Name = "RAIIN_INF_IDX02")]
     [Index(nameof(IsDeleted), nameof(SinDate), nameof(PtId), Name = "RAIIN_INF_IDX03")]
+    [Index(nameof(HpId), nameof(RaiinNo), nameof(IsDeleted), nameof(Status), Name = "RAIIN_INF_IDX04")]
     public class RaiinInf : EmrCloneable<RaiinInf>
     {
         /// <summary>
@@ -208,6 +209,26 @@ namespace Entity.Tenant
         [Column("CONFIRMATION_STATE")]
         [CustomAttribute.DefaultValue(0)]
         public int ConfirmationState { get; set; }
+
+        /// <summary>
+        /// 資格確認タイプ
+        ///		1: マイナンバーカードで確認
+        ///     2: 保険証で確認
+        /// </summary>
+        [Column("CONFIRMATION_TYPE")]
+        [CustomAttribute.DefaultValue(0)]
+        public int ConfirmationType { get; set; }
+
+        [Column("INFO_CONS_FLG")]
+        [MaxLength(10)]
+        public string? InfoConsFlg { get; set; } = string.Empty;
+
+        /// <summary>
+        /// PRESCRIPTION_ISSUE_TYPE
+        /// </summary>
+        [Column("PRESCRIPTION_ISSUE_TYPE")]
+        [CustomAttribute.DefaultValue(0)]
+        public int PrescriptionIssueType { get; set; }
 
         /// <summary>
         /// 削除区分

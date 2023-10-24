@@ -1,10 +1,12 @@
 ﻿using Domain.Models.RaiinListSetting;
 using Helper.Extension;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.RaiinListMst
 {
     public class RaiinListDetailModel
     {
+        [JsonConstructor]
         public RaiinListDetailModel(int grpId, int kbnCd, int sortNo, string kbnName, string colorCd, int isDeleted)
         {
             GrpId = grpId;
@@ -17,6 +19,23 @@ namespace Domain.Models.RaiinListMst
             RaiinListItem = new List<RaiinListItemModel>();
             RaiinListFile = new List<RaiinListFileModel>();
             KouCollection = ObjectExtension.CreateInstance<KouiKbnCollectionModel>();
+        }
+
+        public RaiinListDetailModel(int grpId, int kbnCd, int sortNo, string kbnName, string colorCd, int isDeleted, bool isOnlySwapSortNo, int sortNoDetailMax, int kbnCdDetailMax, List<RaiinListDocModel> raiinListDoc, List<RaiinListItemModel> raiinListItem, List<RaiinListFileModel> raiinListFile, KouiKbnCollectionModel kouCollection)
+        {
+            GrpId = grpId;
+            KbnCd = kbnCd;
+            SortNo = sortNo;
+            KbnName = kbnName;
+            ColorCd = colorCd;
+            IsDeleted = isDeleted;
+            IsOnlySwapSortNo = isOnlySwapSortNo;
+            SortNoDetailMax = sortNoDetailMax;
+            KbnCdDetailMax = kbnCdDetailMax;
+            RaiinListDoc = raiinListDoc;
+            RaiinListItem = raiinListItem;
+            RaiinListFile = raiinListFile;
+            KouCollection = kouCollection;
         }
 
         public RaiinListDetailModel(int grpId, int kbnCd, int sortNo, string kbnName, string colorCd, int isDeleted, bool isOnlySwapSortNo, List<RaiinListDocModel> raiinListDoc, List<RaiinListItemModel> raiinListItem, List<RaiinListFileModel> raiinListFile, KouiKbnCollectionModel kouCollection)
@@ -50,6 +69,10 @@ namespace Domain.Models.RaiinListMst
         /// not chage model , only change sortNo && KouiKbnCollection not Changed && RaiinListDoc not Changed && RaiinListFile not Changed && RaiinList not Changed
         /// </summary>
         public bool IsOnlySwapSortNo { get; private set; }
+        
+        public int SortNoDetailMax { get; private set; }
+
+        public int KbnCdDetailMax { get; private set; }
 
         public List<RaiinListDocModel> RaiinListDoc { get; private set; }
 

@@ -46,7 +46,7 @@ public class UserController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetUserListResponse>> GetList([FromQuery] GetUserListRequest req)
     {
-        var input = new GetUserListInputData(req.SinDate, req.IsDoctorOnly);
+        var input = new GetUserListInputData(req.SinDate, req.IsDoctorOnly, req.IsAll);
         var output = _bus.Handle(input);
 
         var presenter = new GetUserListPresenter();
@@ -91,9 +91,9 @@ public class UserController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetListUserByCurrentUser)]
-    public ActionResult<Response<GetListUserByCurrentUserResponse>> GetListUserByCurrentUser()
+    public ActionResult<Response<GetListUserByCurrentUserResponse>> GetListUserByCurrentUser([FromQuery]GetListUserByCurrentUserRequest request)
     {
-        var input = new GetListUserByCurrentUserInputData(HpId, UserId);
+        var input = new GetListUserByCurrentUserInputData(HpId, UserId, request.ManagerKbn);
         var output = _bus.Handle(input);
         var presenter = new GetListUserByCurrentUserPresenter();
         presenter.Complete(output);

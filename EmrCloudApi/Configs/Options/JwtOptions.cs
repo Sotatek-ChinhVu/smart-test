@@ -8,5 +8,7 @@ public class JwtOptions
 
     public int TokenExpires { get; set; } //hours
 
+    public int AppTokenExpires { get; set; } //years
+
     public int RefreshTokenExpires { get; set; } //hours.
 }

@@ -26,7 +26,7 @@ namespace EmrCloudApi.Presenters.TodoGroupMst
             UpsertTodoGrpMstStatus.InvalidTodoGrpNo => ResponseMessage.InvalidTodoGrpNo,
             UpsertTodoGrpMstStatus.InvalidTodoGrpMst => ResponseMessage.InvalidTodoGrpMst,
             UpsertTodoGrpMstStatus.InputNoData => ResponseMessage.InputNoData,
-            UpsertTodoGrpMstStatus.InvalidExistedTodoGrpNo => ResponseMessage.InvalidExistedTodoGrpNo,
+            UpsertTodoGrpMstStatus.InvalidExistedTodoGrpNoIsDeleted => ResponseMessage.InvalidExistedTodoGrpNoIsDeleted,
             UpsertTodoGrpMstStatus.InvalidIsDeleted => ResponseMessage.InvalidIsDeleted,
             UpsertTodoGrpMstStatus.InvalidSortNo => ResponseMessage.InvalidSortNo,
             _ => string.Empty

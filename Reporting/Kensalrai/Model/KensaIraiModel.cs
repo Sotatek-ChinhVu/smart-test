@@ -5,58 +5,76 @@ namespace Reporting.Kensalrai.Model
 {
     public class KensaIraiModel
     {
-        public PtInf PtInf { get; } = null;
-        public RaiinInf RaiinInf { get; } = null;
+        public PtInf PtInf { get; }
+        public RaiinInf RaiinInf { get; }
 
         public KensaIraiModel
             (long iraiCd, int tosekiKbn, int sikyuKbn,
             PtInf ptInf, RaiinInf raiinInf, List<KensaIraiDetailModel> details)
         {
-            IraiCd = iraiCd;
-            TosekiKbn = tosekiKbn;
-            SikyuKbn = sikyuKbn;
             PtInf = ptInf;
             RaiinInf = raiinInf;
+            SinDate = raiinInf.SinDate;
+            RaiinNo = raiinInf.RaiinNo;
+            IraiCd = iraiCd;
+            PtId = ptInf.PtId;
+            PtNum = ptInf.PtNum;
+            Name = ptInf.Name ?? string.Empty;
+            KanaName = ptInf.KanaName ?? string.Empty;
+            Sex = ptInf.Sex;
+            Birthday = ptInf.Birthday;
+            KaId = raiinInf.KaId;
+            TosekiKbn = tosekiKbn;
+            SikyuKbn = sikyuKbn;
 
             Details = details;
             if (Details != null)
             {
-                Details = Details.FindAll(p => p.IsSelected == true);
+                Details = Details.FindAll(p => p.IsSelected);
             }
         }
 
-        public int SinDate
+        public KensaIraiModel(int sinDate, long raiinNo, long iraiCd, long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int tosekiKbn, int sikyuKbn, int kaId, List<KensaIraiDetailModel> details)
         {
-            get { return RaiinInf.SinDate; }
+            SinDate = sinDate;
+            RaiinNo = raiinNo;
+            IraiCd = iraiCd;
+            PtId = ptId;
+            PtNum = ptNum;
+            Name = name;
+            KanaName = kanaName;
+            Sex = sex;
+            Birthday = birthday;
+            KaId = kaId;
+            TosekiKbn = tosekiKbn;
+            SikyuKbn = sikyuKbn;
+
+            Details = details;
+            if (Details != null)
+            {
+                Details = Details.FindAll(p => p.IsSelected);
+            }
         }
-        public long RaiinNo
-        {
-            get { return RaiinInf.RaiinNo; }
-        }
+
+        public int SinDate { get; private set; }
+
+        public long RaiinNo { get; private set; }
+
         public long IraiCd { get; set; } = 0;
-        public long PtId
-        {
-            get { return PtInf.PtId; }
-        }
-        public long PtNum
-        {
-            get { return PtInf.PtNum; }
-        }
-        public string Name
-        {
-            get { return PtInf.Name; }
-        }
-        public string KanaName
-        {
-            get { return PtInf.KanaName; }
-        }
-        public int Sex
-        {
-            get { return PtInf.Sex; }
-        }
+
+        public long PtId { get; private set; }
+
+        public long PtNum { get; private set; }
+
+        public string Name { get; private set; }
+
+        public string KanaName { get; private set; }
+
+        public int Sex { get; private set; }
+
         public string GetSexStr(string men, string female)
         {
-            string ret = "";
+            string ret = string.Empty;
             switch (Sex)
             {
                 case 1:
@@ -70,10 +88,7 @@ namespace Reporting.Kensalrai.Model
             return ret;
         }
 
-        public int Birthday
-        {
-            get { return PtInf.Birthday; }
-        }
+        public int Birthday { get; private set; }
         /// <summary>
         /// 年齢
         /// </summary>
@@ -88,7 +103,7 @@ namespace Reporting.Kensalrai.Model
         {
             get
             {
-                string ret = "";
+                string ret = string.Empty;
 
                 switch (TosekiKbn)
                 {
@@ -108,7 +123,7 @@ namespace Reporting.Kensalrai.Model
         {
             get
             {
-                string ret = "";
+                string ret = string.Empty;
 
                 if (SikyuKbn == 1)
                 {
@@ -118,21 +133,16 @@ namespace Reporting.Kensalrai.Model
                 return ret;
             }
         }
-        public string KaName { get; set; } = "";
-        public string KaCodeName { get; set; } = "";
-        public int KaId
-        {
-            get { return RaiinInf.KaId; }
-        }
-        public string TantoName { get; set; } = "";
-        public string TantoKanaName { get; set; } = "";
-        public string DrName { get; set; } = "";
+        public string KaName { get; set; } = string.Empty;
+        public string KaCodeName { get; set; } = string.Empty;
 
-        public List<KensaIraiDetailModel> Details
-        {
-            get ;
-            set ;
-        }
+        public int KaId { get; private set; }
+
+        public string TantoName { get; set; } = string.Empty;
+        public string TantoKanaName { get; set; } = string.Empty;
+        public string DrName { get; set; } = string.Empty;
+
+        public List<KensaIraiDetailModel> Details { get; set; }
 
         public int DetailCount
         {
@@ -141,12 +151,12 @@ namespace Reporting.Kensalrai.Model
                 int ret = 0;
                 if (Details != null)
                 {
-                    ret = Details.Count();
+                    ret = Details.Count;
                 }
                 return ret;
             }
         }
 
-        public string UpdateTime { get; set; } = "";
+        public string UpdateTime { get; set; } = string.Empty;
     }
 }

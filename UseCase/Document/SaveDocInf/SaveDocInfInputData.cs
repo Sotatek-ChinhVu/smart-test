@@ -4,14 +4,13 @@ namespace UseCase.Document.SaveDocInf;
 
 public class SaveDocInfInputData : IInputData<SaveDocInfOutputData>
 {
-    public SaveDocInfInputData(int hpId, int userId, long ptId, int sinDate, long raiinNo, int seqNo, int categoryCd, string file, string displayFileName, Stream streamImage)
+    public SaveDocInfInputData(int hpId, int userId, long ptId, int getDate, long fileId, int categoryCd, string file, string displayFileName, Stream streamImage)
     {
         HpId = hpId;
         UserId = userId;
         PtId = ptId;
-        SinDate = sinDate;
-        RaiinNo = raiinNo;
-        SeqNo = seqNo;
+        GetDate = getDate;
+        FileId = fileId;
         CategoryCd = categoryCd;
         FileName = file;
         DisplayFileName = displayFileName;
@@ -30,11 +29,9 @@ public class SaveDocInfInputData : IInputData<SaveDocInfOutputData>
 
     public long PtId { get; private set; }
 
-    public int SinDate { get; private set; }
+    public long FileId { get; private set; }
 
-    public long RaiinNo { get; private set; }
-
-    public int SeqNo { get; private set; }
+    public int GetDate { get; private set; }
 
     public int CategoryCd { get; private set; }
 

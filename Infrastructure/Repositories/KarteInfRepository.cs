@@ -59,11 +59,27 @@ namespace Infrastructure.Repositories
                         startDate = CIUtil.IntToDate(ptPregnancy.PeriodDueDate).AddDays(-280).ToString("yyyyMMdd").AsInteger();
                     }
                     string periodWeek = GetPeriodWeek(sinDate, startDate, 0, endDate);
-                    if (ptPregnancy != null && !string.IsNullOrEmpty(periodWeek))
+                    if (ptPregnancy != null)
                     {
-                        return new() {
-                                         new KarteInfModel(hpId, rainNo, ptId, sinDate, periodWeek),
-                                     };
+                        if (!string.IsNullOrEmpty(periodWeek))
+                        {
+                            return new() {
+                                         new KarteInfModel(hpId, rainNo, ptId, sinDate, periodWeek, true),
+                                         };
+                        }
+                        else
+                        {
+                            startDate = ptPregnancy.OvulationDate;
+                            endDate = ptPregnancy.EndDate;
+                            if (!CIUtil.SDateToDateTime(ptPregnancy.PeriodDate).HasValue && CIUtil.SDateToDateTime(ptPregnancy.PeriodDueDate).HasValue)
+                            {
+                                startDate = CIUtil.IntToDate(ptPregnancy.PeriodDueDate).AddDays(-266).ToString("yyyyMMdd").AsInteger();
+                            }
+                            string ovulationWeek = GetPeriodWeek(sinDate, startDate, 1, endDate);
+                            return new() {
+                                         new KarteInfModel(hpId, rainNo, ptId, sinDate, ovulationWeek, true),
+                                         };
+                        }
                     }
                 }
             }
@@ -140,7 +156,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 

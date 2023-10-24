@@ -15,7 +15,6 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -30,7 +29,7 @@ namespace Infrastructure.Repositories
             _receptionRepository = receptionRepository;
         }
 
-        (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId)
+        (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId, int sinDate)
         {
             var ptInf = NoTrackingDataContext.PtInfs.Where(x => x.PtNum == ptNum && x.IsDelete == 0).FirstOrDefault();
             if (ptInf == null)
@@ -53,7 +52,7 @@ namespace Infrastructure.Repositories
                 .OrderByDescending(r => r.SinDate)
                 .Select(r => r.SinDate)
                 .FirstOrDefault();
-            PatientInforModel ptInfModel = ToModel(ptInf, memo, lastVisitDate);
+            PatientInforModel ptInfModel = ToModel(ptInf, memo, lastVisitDate, sinDate);
 
             return new(ptInfModel, true);
         }
@@ -91,7 +90,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo)
+        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo, bool isShowKyuSeiName = false)
         {
             var itemData = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
 
@@ -123,14 +122,33 @@ namespace Infrastructure.Repositories
             int firstDate = _receptionRepository.GetFirstVisitWithSyosin(hpId, ptId, sinDate);
             string comment = NoTrackingDataContext.PtCmtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)?.Text ?? string.Empty;
 
+            var name = itemData.Name ?? string.Empty;
+            var kanaName = itemData.KanaName ?? string.Empty;
+            bool isKyuSeiName = false;
+            if (isShowKyuSeiName)
+            {
+                var ptKyusei = NoTrackingDataContext.PtKyuseis.Where(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && item.EndDate >= sinDate
+                                                                            && item.IsDeleted != 1)
+                                                              .OrderBy(x => x.EndDate)
+                                                              .FirstOrDefault();
+                if (ptKyusei != null)
+                {
+                    name = ptKyusei.Name;
+                    kanaName = ptKyusei.KanaName;
+                    isKyuSeiName = true;
+                }
+            }
+
             return new PatientInforModel(
                 itemData.HpId,
                 itemData.PtId,
                 itemData.ReferenceNo,
                 itemData.SeqNo,
                 itemData.PtNum,
-                itemData.KanaName ?? string.Empty,
-                itemData.Name ?? string.Empty,
+                kanaName ?? string.Empty,
+                name ?? string.Empty,
                 itemData.Sex,
                 itemData.Birthday,
                 itemData.LimitConsFlg,
@@ -165,7 +183,9 @@ namespace Infrastructure.Repositories
                 lastVisitDate,
                 firstDate,
                 raiinCount,
-                comment);
+                comment,
+                sinDate,
+                isKyuSeiName);
         }
 
         public bool CheckExistIdList(List<long> ptIds)
@@ -659,6 +679,54 @@ namespace Infrastructure.Repositories
                     .ToList();
         }
 
+        private PatientInforModel ToModel(PtInf p, string memo, int lastVisitDate, int sinDate)
+        {
+            return new PatientInforModel(
+                p.HpId,
+                p.PtId,
+                p.ReferenceNo,
+                p.SeqNo,
+                p.PtNum,
+                p.KanaName ?? string.Empty,
+                p.Name ?? string.Empty,
+                p.Sex,
+                p.Birthday,
+                p.LimitConsFlg,
+                p.IsDead,
+                p.DeathDate,
+                p.HomePost ?? string.Empty,
+                p.HomeAddress1 ?? string.Empty,
+                p.HomeAddress2 ?? string.Empty,
+                p.Tel1 ?? string.Empty,
+                p.Tel2 ?? string.Empty,
+                p.Mail ?? string.Empty,
+                p.Setanusi ?? string.Empty,
+                p.Zokugara ?? string.Empty,
+                p.Job ?? string.Empty,
+                p.RenrakuName ?? string.Empty,
+                p.RenrakuPost ?? string.Empty,
+                p.RenrakuAddress1 ?? string.Empty,
+                p.RenrakuAddress2 ?? string.Empty,
+                p.RenrakuTel ?? string.Empty,
+                p.RenrakuMemo ?? string.Empty,
+                p.OfficeName ?? string.Empty,
+                p.OfficePost ?? string.Empty,
+                p.OfficeAddress1 ?? string.Empty,
+                p.OfficeAddress2 ?? string.Empty,
+                p.OfficeTel ?? string.Empty,
+                p.OfficeMemo ?? string.Empty,
+                p.IsRyosyoDetail,
+                p.PrimaryDoctor,
+                p.IsTester,
+                p.MainHokenPid,
+                memo,
+                lastVisitDate,
+                0,
+                0,
+                string.Empty,
+                sinDate);
+        }
+
         private PatientInforModel ToModel(PtInf p, string memo, int lastVisitDate)
         {
             return new PatientInforModel(
@@ -703,7 +771,8 @@ namespace Infrastructure.Repositories
                 lastVisitDate,
                 0,
                 0,
-                string.Empty);
+                string.Empty,
+                0);
         }
 
         public PatientInforModel PatientCommentModels(int hpId, long ptId)
@@ -718,6 +787,40 @@ namespace Infrastructure.Repositories
                 data.PtId,
                 data.Text ?? string.Empty
                 );
+        }
+
+        public PatientInforModel GetPtInfByRefNo(int hpId, long refNo)
+        {
+            var ptInfWithRefNo = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                     && item.ReferenceNo == refNo
+                                                                                     && item.ReferenceNo != 0
+                                                                                     && item.IsDelete == 0
+                                                                                     && item.IsTester == 0);
+            if (ptInfWithRefNo == null)
+            {
+                return new();
+            }
+            return ToModel(ptInfWithRefNo, string.Empty, 0);
+        }
+
+        public List<PatientInforModel> GetPtInfModelsByName(int hpId, string kanaName, string name, int birthDate, int sex1, int sex2)
+        {
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                    && (item.KanaName == kanaName || item.Name == name)
+                                                                    && item.Birthday == birthDate
+                                                                    && (item.Sex == sex1 || item.Sex == sex2)
+                                                                    && item.IsDelete == 0
+                                                                    && item.IsTester == 0)
+                                                    .ToList();
+            return ptInfs.Select(item => ToModel(item, string.Empty, 0)).ToList();
+        }
+
+        public List<PatientInforModel> GetPtInfModels(int hpId, long refNo)
+        {
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                    && item.ReferenceNo == refNo)
+                                                    .ToList();
+            return ptInfs.Select(item => ToModel(item, string.Empty, 0)).ToList();
         }
 
         public List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData)
@@ -936,7 +1039,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception)
             {
-                return new List<DefHokenNoModel>();
+                throw;
             }
         }
 
@@ -1047,7 +1150,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -1080,11 +1183,20 @@ namespace Infrastructure.Repositories
             patientInsert.UpdateId = userId;
             patientInsert.UpdateDate = CIUtil.GetJapanDateTimeNow();
             patientInsert.HpId = hpId;
-            TrackingDataContext.PtInfs.Add(patientInsert);
-            bool resultCreatePatient = TrackingDataContext.SaveChanges() > 0;
+
+            string querySql = $"INSERT INTO public.\"PT_INF\"\r\n(\"HP_ID\", \"PT_NUM\", \"KANA_NAME\", \"NAME\", \"SEX\", \"BIRTHDAY\", \"IS_DEAD\", \"DEATH_DATE\", \"HOME_POST\", \"HOME_ADDRESS1\", \"HOME_ADDRESS2\", \"TEL1\", \"TEL2\", \"MAIL\", \"SETAINUSI\", \"ZOKUGARA\", \"JOB\", \"RENRAKU_NAME\", \"RENRAKU_POST\", \"RENRAKU_ADDRESS1\", \"RENRAKU_ADDRESS2\", \"RENRAKU_TEL\", \"RENRAKU_MEMO\", \"OFFICE_NAME\", \"OFFICE_POST\", \"OFFICE_ADDRESS1\", \"OFFICE_ADDRESS2\", \"OFFICE_TEL\", \"OFFICE_MEMO\", \"IS_RYOSYO_DETAIL\", \"PRIMARY_DOCTOR\", \"IS_TESTER\", \"IS_DELETE\", \"CREATE_DATE\", \"CREATE_ID\", \"CREATE_MACHINE\", \"UPDATE_DATE\", \"UPDATE_ID\", \"UPDATE_MACHINE\", \"MAIN_HOKEN_PID\", \"LIMIT_CONS_FLG\") VALUES({patientInsert.HpId}, {patientInsert.PtNum}, '{patientInsert.KanaName}', '{patientInsert.Name}', {patientInsert.Sex}, {patientInsert.Birthday}, {patientInsert.IsDead}, {patientInsert.DeathDate}, '{patientInsert.HomePost}', '{patientInsert.HomeAddress1}', '{patientInsert.HomeAddress2}', '{patientInsert.Tel1}', '{patientInsert.Tel2}', '{patientInsert.Mail}', '{patientInsert.Setanusi}', '{patientInsert.Zokugara}', '{patientInsert.Job}', '{patientInsert.RenrakuName}', '{patientInsert.RenrakuPost}', '{patientInsert.RenrakuAddress1}', '{patientInsert.RenrakuAddress2}', '{patientInsert.RenrakuTel}', '{patientInsert.RenrakuMemo}', '{patientInsert.OfficeName}', '{patientInsert.OfficePost}', '{patientInsert.OfficeAddress1}', '{patientInsert.OfficeAddress2}', '{patientInsert.OfficeTel}', '{patientInsert.OfficeMemo}', {patientInsert.IsRyosyoDetail}, {patientInsert.PrimaryDoctor}, {patientInsert.IsTester}, {patientInsert.IsDelete}, '{patientInsert.CreateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.CreateId}, '', '{patientInsert.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.UpdateId}, '', {patientInsert.MainHokenPid}, {patientInsert.LimitConsFlg}) ON CONFLICT DO NOTHING;";
+            //TrackingDataContext.PtInfs.Add(patientInsert);
+            TrackingDataContext.Database.SetCommandTimeout(1200);
+            bool resultCreatePatient = TrackingDataContext.Database.ExecuteSqlRaw(querySql) > 0;
 
             if (!resultCreatePatient)
+            {
                 return (false, 0);
+            }
+            else
+            {
+                patientInsert.PtId = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == patientInsert.PtNum)?.PtId ?? 0;
+            }
 
             if (ptSanteis != null && ptSanteis.Any())
             {
@@ -2100,7 +2212,8 @@ namespace Infrastructure.Repositories
                         0,
                         0,
                         0,
-                        string.Empty
+                        string.Empty,
+                        0
                     );
         }
 
@@ -2591,7 +2704,43 @@ namespace Infrastructure.Repositories
                                                                                   0,
                                                                                   0,
                                                                                   0,
-                                                                                  string.Empty)).ToList();
+                                                                                  string.Empty,
+                                                                                  0,
+                                                                                  false)).ToList();
+        }
+
+        public bool SavePtKyusei(int hpId, int userId, List<PtKyuseiModel> ptKyuseiList)
+        {
+            var seqNoList = ptKyuseiList.Select(item => item.SeqNo).Distinct().ToList();
+            var ptKyuseiDBList = TrackingDataContext.PtKyuseis.Where(item => item.HpId == hpId && seqNoList.Contains(item.SeqNo)).ToList();
+            foreach (var model in ptKyuseiList)
+            {
+                var entity = ptKyuseiDBList.FirstOrDefault(entity => entity.SeqNo == model.SeqNo && entity.PtId == model.PtId);
+                if (entity == null)
+                {
+                    entity = new PtKyusei();
+                    entity.HpId = hpId;
+                    entity.SeqNo = 0;
+                    entity.IsDeleted = 0;
+                    entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    entity.CreateId = userId;
+                    entity.PtId = model.PtId;
+                }
+                entity.Name = model.Name;
+                entity.KanaName = model.KanaName;
+                entity.EndDate = model.EndDate;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateId = userId;
+                if (model.IsDeleted)
+                {
+                    entity.IsDeleted = 1;
+                }
+                if (entity.SeqNo == 0)
+                {
+                    TrackingDataContext.PtKyuseis.Add(entity);
+                }
+            }
+            return TrackingDataContext.SaveChanges() > 0;
         }
 
         private void CloneByomeiWithNewHokenId(List<PtByomei> ptByomeis, int hokenId, int userId)
@@ -2614,6 +2763,120 @@ namespace Infrastructure.Repositories
             {
                 newCloneByomei.SeqNo = newCloneByomei.Id;
             }
+        }
+
+        public List<VisitTimesManagementModel> GetVisitTimesManagementModels(int hpId, int sinYm, long ptId, int kohiId)
+        {
+            var limitCntListInfList = NoTrackingDataContext.LimitCntListInfs.Where(item => item.HpId == hpId
+                                                                                           && item.SinDate / 100 == sinYm
+                                                                                           && item.PtId == ptId
+                                                                                           && item.KohiId == kohiId
+                                                                                           && item.IsDeleted == DeleteTypes.None)
+                                                                            .ToList();
+            return limitCntListInfList.Select(item => new VisitTimesManagementModel(
+                                                          item.PtId,
+                                                          item.SinDate,
+                                                          item.HokenPid,
+                                                          item.KohiId,
+                                                          item.SeqNo,
+                                                          item.SortKey ?? string.Empty))
+                                      .OrderBy(item => item.SortKey)
+                                      .ToList();
+        }
+
+        public bool UpdateVisitTimesManagement(int hpId, int userId, long ptId, int kohiId, int sinYm, List<VisitTimesManagementModel> visitTimesManagementList)
+        {
+            var limitCntListInfDBList = TrackingDataContext.LimitCntListInfs.Where(item => item.HpId == hpId
+                                                                                           && item.PtId == ptId
+                                                                                           && item.KohiId == kohiId)
+                                                                            .ToList();
+            var maxSeqNo = limitCntListInfDBList.Any() ? limitCntListInfDBList.Max(item => item.SeqNo) : 0;
+            limitCntListInfDBList = limitCntListInfDBList.Where(item => item.IsDeleted == 0
+                                                                        && item.SinDate / 100 == sinYm)
+                                                         .ToList();
+
+            var seqNoList = visitTimesManagementList.Where(item => item.SeqNo >= 0).Select(item => item.SeqNo).Distinct().ToList();
+            var deletedVisitTimeList = limitCntListInfDBList.Where(item => item.HokenPid == 0 && !seqNoList.Contains(item.SeqNo)).ToList();
+            foreach (var item in deletedVisitTimeList)
+            {
+                item.IsDeleted = 1;
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                item.UpdateId = userId;
+            }
+
+            foreach (var model in visitTimesManagementList)
+            {
+                bool isAddNew = false;
+                var entity = limitCntListInfDBList.FirstOrDefault(item => model.SeqNo > 0 && item.SeqNo == model.SeqNo);
+                if (entity == null)
+                {
+                    if (model.SeqNo == 0 && model.IsOutHospital)
+                    {
+                        entity = new LimitCntListInf();
+                        entity.HpId = hpId;
+                        entity.PtId = ptId;
+                        entity.KohiId = kohiId;
+                        entity.SinDate = model.SinDate;
+                        entity.SeqNo = maxSeqNo + 1;
+                        entity.IsDeleted = 0;
+                        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        entity.CreateId = userId;
+                        entity.SortKey = model.SortKey;
+                        maxSeqNo = entity.SeqNo;
+                        isAddNew = true;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateId = userId;
+                if (model.IsDeleted)
+                {
+                    entity.IsDeleted = 1;
+                }
+                if (isAddNew)
+                {
+                    TrackingDataContext.LimitCntListInfs.Add(entity);
+                }
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool UpdateVisitTimesManagementNeedSave(int hpId, int userId, long ptId, List<VisitTimesManagementModel> visitTimesManagementList)
+        {
+            var kohiIdList = visitTimesManagementList.Select(item => item.KohiId).Distinct().ToList();
+            var limitCntListInfDBList = TrackingDataContext.LimitCntListInfs.Where(item => item.HpId == hpId
+                                                                                           && item.PtId == ptId
+                                                                                           && kohiIdList.Contains(item.KohiId))
+                                                                            .ToList();
+            foreach (var kohiId in kohiIdList)
+            {
+                var visitTimesModelList = visitTimesManagementList.Where(item => item.KohiId == kohiId).ToList();
+                var limitCntListInfByKohiDBList = limitCntListInfDBList.Where(item => item.KohiId == kohiId).ToList();
+                var maxSeqNo = limitCntListInfByKohiDBList.Any() ? limitCntListInfByKohiDBList.Max(item => item.SeqNo) : 0;
+
+                foreach (var model in visitTimesModelList)
+                {
+                    var limitCntListInf = new LimitCntListInf()
+                    {
+                        HpId = hpId,
+                        CreateId = userId,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        PtId = ptId,
+                        SinDate = model.SinDate,
+                        KohiId = kohiId,
+                        SeqNo = maxSeqNo + 1,
+                        SortKey = model.SortKey,
+                    };
+                    TrackingDataContext.LimitCntListInfs.Add(limitCntListInf);
+                    maxSeqNo = limitCntListInf.SeqNo;
+                }
+            }
+            return TrackingDataContext.SaveChanges() > 0;
         }
     }
 }

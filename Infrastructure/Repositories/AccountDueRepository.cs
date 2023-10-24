@@ -4,9 +4,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using System.Linq;
-using System.Linq.Dynamic.Core.Tokenizer;
 
 namespace Infrastructure.Repositories;
 
@@ -68,30 +65,30 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
             (
                 hpId,
                 ptId,
-                seikyu.SinDate,
-                GetMonth(seikyu.SinDate),
-                seikyu.RaiinNo,
-                raiinItem.HokenPid,
-                raiinItem.OyaRaiinNo,
-                seikyu.NyukinKbn,
-                seikyu.SeikyuTensu,
-                seikyu.SeikyuGaku,
+                seikyu?.SinDate ?? 0,
+                GetMonth(seikyu?.SinDate ?? 0),
+                seikyu?.RaiinNo ?? 0,
+                raiinItem?.HokenPid ?? 0,
+                raiinItem?.OyaRaiinNo ?? 0,
+                seikyu?.NyukinKbn ?? 0,
+                seikyu?.SeikyuTensu ?? 0,
+                seikyu?.SeikyuGaku ?? 0,
                 nyukin != null ? nyukin.AdjustFutan : 0,
                 nyukin != null ? nyukin.NyukinGaku : 0,
                 nyukin != null ? nyukin.PaymentMethodCd : 0,
                 nyukin != null ? nyukin.NyukinDate : 0,
                 nyukin != null ? nyukin.UketukeSbt : 0,
                 nyukin != null ? nyukin.NyukinCmt ?? string.Empty : string.Empty,
-                seikyu.NewSeikyuGaku,
-                seikyu.NewAdjustFutan,
-                kaMst.KaSname ?? string.Empty,
+                seikyu?.NewSeikyuGaku ?? 0,
+                seikyu?.NewAdjustFutan ?? 0,
+                kaMst?.KaSname ?? string.Empty,
                 nyukin != null ? nyukin.SortNo : 0,
                 nyukin != null ? nyukin.SeqNo : 0,
-                seikyu.SeikyuDetail ?? string.Empty,
-                raiinItem.Status,
-                seikyu.AdjustFutan,
-                seikyu.NewSeikyuDetail ?? string.Empty,
-                seikyu.NewSeikyuTensu
+                seikyu?.SeikyuDetail ?? string.Empty,
+                raiinItem?.Status ?? 0,
+                seikyu?.AdjustFutan ?? 0,
+                seikyu?.NewSeikyuDetail ?? string.Empty,
+                seikyu?.NewSeikyuTensu ?? 0
             );
     }
     private int GetMonth(int date)
@@ -183,9 +180,9 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
             var result = CompareResultList(originalList, raiinUpdateList);
             return result;
         }
-        catch
+        catch (Exception)
         {
-            return new();
+            throw;
         }
     }
 

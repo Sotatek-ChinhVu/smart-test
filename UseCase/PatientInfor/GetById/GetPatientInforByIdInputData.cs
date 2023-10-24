@@ -17,12 +17,15 @@ namespace UseCase.PatientInformation.GetById
 
         public int RaiinNo { get; private set; }
 
-        public GetPatientInforByIdInputData(int hpId, long ptId, int sinDate, int raiinNo)
+        public bool IsShowKyuSeiName { get; private set; }
+
+        public GetPatientInforByIdInputData(int hpId, long ptId, int sinDate, int raiinNo, bool isShowKyuSeiName)
         {
             HpId = hpId;
             PtId = ptId;
             SinDate = sinDate;
             RaiinNo = raiinNo;
+            IsShowKyuSeiName = isShowKyuSeiName;
         }
     }
 }

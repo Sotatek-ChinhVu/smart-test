@@ -10,18 +10,32 @@
             KanaName = kanaName;
             Name = name;
             EndDate = endDate;
+            IsDeleted = false;
         }
 
-        public int HpId { get; set; }
+        public PtKyuseiModel(int hpId, long ptId, long seqNo, string kanaName, string name, int endDate, bool isDeleted)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            SeqNo = seqNo;
+            KanaName = kanaName;
+            Name = name;
+            EndDate = endDate;
+            IsDeleted = isDeleted;
+        }
 
-        public long PtId { get; set; }
+        public int HpId { get; private set; }
 
-        public long SeqNo { get; set; }
+        public long PtId { get; private set; }
 
-        public string KanaName { get; set; } = string.Empty;
+        public long SeqNo { get; private set; }
 
-        public string Name { get; set; } = string.Empty;
+        public string KanaName { get; private set; }
 
-        public int EndDate { get; set; }
+        public string Name { get; private set; }
+
+        public int EndDate { get; private set; }
+
+        public bool IsDeleted { get; private set; }
     }
 }

@@ -15,7 +15,7 @@ public class SearchPatientInfoByPtNumInteractor : ISearchPatientInfoByPtNumInput
 
     public SearchPatientInfoByPtNumOutputData Handle(SearchPatientInfoByPtNumInputData inputData)
     {
-        (PatientInforModel ptInfModel, bool isFound) = _patientInforRepository.SearchExactlyPtNum(inputData.PtNum, inputData.HpId);
+        (PatientInforModel ptInfModel, bool isFound) = _patientInforRepository.SearchExactlyPtNum(inputData.PtNum, inputData.HpId, inputData.SinDate);
         return new SearchPatientInfoByPtNumOutputData(ptInfModel, SearchPatientInfoByPtNumStatus.Successed);
     }
 }

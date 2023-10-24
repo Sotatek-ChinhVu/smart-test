@@ -49,7 +49,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList + "RaiinListSetting")]
         public ActionResult<Response<GetRaiiinListSettingResponse>> GetRaiinListSetting()
         {
-            var input = new GetRaiiinListSettingInputData(1);
+            var input = new GetRaiiinListSettingInputData(HpId);
             var output = _bus.Handle(input);
             var presenter = new GetRaiiinListSettingPresenter();
             presenter.Complete(output);

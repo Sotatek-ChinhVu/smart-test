@@ -11,9 +11,9 @@ namespace Domain.Models.PatientInfor
 {
     public interface IPatientInforRepository : IRepositoryBase
     {
-        PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo);
+        PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo, bool isShowKyuSeiName = false);
 
-        (PatientInforModel ptInfModel, bool isFound) SearchExactlyPtNum(long ptNum, int hpId);
+        (PatientInforModel ptInfModel, bool isFound) SearchExactlyPtNum(long ptNum, int hpId, int sinDate);
 
         List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
@@ -28,6 +28,8 @@ namespace Domain.Models.PatientInfor
         List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize, Dictionary<string, string> sortData);
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
+
+        PatientInforModel GetPtInfByRefNo(int hpId, long refNo);
 
         List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting);
 
@@ -68,6 +70,18 @@ namespace Domain.Models.PatientInfor
 
         int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus);
 
-        List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex , int birthDay);
+        List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex, int birthDay);
+
+        List<PatientInforModel> GetPtInfModelsByName(int hpId, string kanaName, string name, int birthDate, int sex1, int sex2);
+
+        List<PatientInforModel> GetPtInfModels(int hpId, long refNo);
+
+        bool SavePtKyusei(int hpId, int userId, List<PtKyuseiModel> ptKyuseiList);
+
+        List<VisitTimesManagementModel> GetVisitTimesManagementModels(int hpId, int sinYm, long ptId, int kohiId);
+
+        bool UpdateVisitTimesManagement(int hpId, int userId, long ptId, int kohiId, int sinYm, List<VisitTimesManagementModel> visitTimesManagementList);
+
+        bool UpdateVisitTimesManagementNeedSave(int hpId, int userId, long ptId, List<VisitTimesManagementModel> visitTimesManagementList);
     }
 }

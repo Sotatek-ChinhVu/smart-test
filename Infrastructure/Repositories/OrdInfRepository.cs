@@ -1,4 +1,6 @@
-﻿using Domain.Models.MstItem;
+﻿using Domain.Constant;
+using Domain.Models.KensaIrai;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
@@ -212,7 +214,7 @@ namespace Infrastructure.Repositories
             var allOdrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.SinDate == sinDate && o.RaiinNo == raiinNo && o.RpNo == odrInf.RpNo && odrInf.RpEdaNo == o.RpEdaNo)?.ToList();
 
             var odrInfModel = ConvertToModel(odrInf);
-            var odrInfDetailModels = allOdrInfDetails?.Select(od => ConvertToDetailModel(od, new(), true)).ToList();
+            var odrInfDetailModels = allOdrInfDetails?.Select(od => ConvertToDetailModel(od, new(), new(), true)).ToList();
             odrInfModel.ChangeOdrDetail(odrInfDetailModels ?? new List<OrdInfDetailModel>());
 
             return odrInfModel;
@@ -401,7 +403,7 @@ namespace Infrastructure.Repositories
                         var isGetPriceInYakka = IsGetPriceInYakka(tenMst, ipnKasanExcludes, ipnKasanExcludeItems);
 
                         int kensaGaichu = GetKensaGaichu(odrInfDetail, tenMst, rpOdrInf.InoutKbn, rpOdrInf.OdrKouiKbn, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
-                        var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, tenMst ?? new(), kensaMst == null, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, rpOdrInf.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty, isHistory ? new List<YohoSetMstModel>() : GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()), kasan?.Kasan1 ?? 0, kasan?.Kasan2 ?? 0, tenMst?.CnvUnitName ?? string.Empty, tenMst?.OdrUnitName ?? string.Empty, kensaMst?.CenterItemCd1 ?? string.Empty, kensaMst?.CenterItemCd2 ?? string.Empty);
+                        var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, tenMst ?? new(), kensaMst ?? new(), kensaMst == null, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, rpOdrInf.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty, isHistory ? new List<YohoSetMstModel>() : GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()), kasan?.Kasan1 ?? 0, kasan?.Kasan2 ?? 0, tenMst?.CnvUnitName ?? string.Empty, tenMst?.OdrUnitName ?? string.Empty, kensaMst?.CenterItemCd1 ?? string.Empty, kensaMst?.CenterItemCd2 ?? string.Empty);
                         lock (objDetail)
                         {
                             odrDetailModels.Add(odrInfDetailModel);
@@ -415,6 +417,89 @@ namespace Infrastructure.Repositories
                 }
             });
 
+            return result;
+        }
+
+        public List<OrdInfModel> GetIngaiKensaOdrInf(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            var odrInfs = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId &&
+                                                                      item.PtId == ptId &&
+                                                                      item.SinDate == sinDate &&
+                                                                      item.RaiinNo == raiinNo &&
+                                                                      item.OdrKouiKbn >= 60 &&
+                                                                      item.OdrKouiKbn <= 69 &&
+                                                                      item.InoutKbn == 1 &&
+                                                                      item.IsDeleted == DeleteStatus.None)
+                                                       .OrderBy(p => p.SortNo)
+                                                       .ToList();
+
+            return odrInfs.Select(item => ConvertToModel(item)).ToList();
+        }
+
+        public List<OrdInfDetailModel> GetIngaiKensaOdrInfDetail(int hpId, long ptId, int sinDate, long raiinNo, string centerCd, int primaryKbn)
+        {
+            var odrInfs = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId &&
+                                                                      item.PtId == ptId &&
+                                                                      item.SinDate == sinDate &&
+                                                                      item.RaiinNo == raiinNo &&
+                                                                      item.OdrKouiKbn >= 60 &&
+                                                                      item.OdrKouiKbn <= 69 &&
+                                                                      item.InoutKbn == 1 &&
+                                                                      item.IsDeleted == DeleteStatus.None)
+                                                       .ToList();
+
+            var rpNoList = odrInfs.Select(item => item.RpNo).Distinct().ToList();
+            var rpEdaNoList = odrInfs.Select(item => item.RpEdaNo).Distinct().ToList();
+
+            var odrDtls = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && item.SinDate == sinDate
+                                                                            && item.RaiinNo == raiinNo
+                                                                            && rpNoList.Contains(item.RpNo)
+                                                                            && rpEdaNoList.Contains(item.RpEdaNo))
+                                                             .ToList();
+
+            var itemCdList = odrDtls.Select(item => item.ItemCd).Distinct().ToList();
+
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                      && item.StartDate <= sinDate
+                                                                      && item.EndDate >= sinDate
+                                                                      && item.IsDeleted == DeleteTypes.None
+                                                                      && itemCdList.Contains(item.ItemCd))
+                                                       .ToList();
+
+            var kensaItemCdList = tenMsts.Select(item => item.KensaItemCd).Distinct().ToList();
+            var kensaItemSeqNoList = tenMsts.Select(item => item.KensaItemSeqNo).Distinct().ToList();
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(item => item.HpId == hpId
+                                                                          && item.IsDelete == DeleteStatus.None
+                                                                          && kensaItemCdList.Contains(item.KensaItemCd)
+                                                                          && kensaItemSeqNoList.Contains(item.KensaItemSeqNo)
+                                                                          && item.CenterCd == centerCd
+                                                                             || (primaryKbn == 1 && string.IsNullOrEmpty(item.CenterCd)))
+                                                            .ToList();
+
+            var join = (
+                    from odrInf in odrInfs
+                    join odrDtl in odrDtls on
+                        new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
+                        new { odrDtl.HpId, odrDtl.PtId, odrDtl.RaiinNo, odrDtl.RpNo, odrDtl.RpEdaNo }
+                    join tenMst in tenMsts on
+                        new { odrDtl.HpId, odrDtl.ItemCd } equals
+                        new { tenMst.HpId, tenMst.ItemCd }
+                    join kensaMst in kensaMsts on
+                        new { tenMst.HpId, tenMst.KensaItemCd, tenMst.KensaItemSeqNo } equals
+                        new { kensaMst.HpId, kensaMst.KensaItemCd, kensaMst.KensaItemSeqNo }
+                    orderby
+                        odrInf.SortNo, odrDtl.RowNo
+                    select new
+                    {
+                        odrDtl,
+                        tenMst,
+                        kensaMst
+                    }
+                ).ToList();
+
+            var result = join.Select(item => ConvertToDetailModel(item.odrDtl, item.tenMst, item.kensaMst, item.kensaMst == null)).ToList();
             return result;
         }
 
@@ -450,8 +535,36 @@ namespace Infrastructure.Repositories
                    );
         }
 
-        private OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail, TenMst tenMst, bool isKensaMstEmpty, double yakka = 0, double ten = 0, bool isGetPriceInYakka = false, int kensaGaichu = 0, int bunkatuKoui = 0, int inOutKbn = 0, int alternationIndex = 0, double odrTermVal = 0, double cnvTermVal = 0, string yjCd = "", string masterSbt = "", List<YohoSetMstModel>? yohoSets = null, int kasan1 = 0, int kasan2 = 0, string cnvUnitName = "", string odrUnitName = "", string centerItemCd1 = "", string centerItemCd2 = "")
+        private OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail, TenMst tenMst, KensaMst kensaMst, bool isKensaMstEmpty, double yakka = 0, double ten = 0, bool isGetPriceInYakka = false, int kensaGaichu = 0, int bunkatuKoui = 0, int inOutKbn = 0, int alternationIndex = 0, double odrTermVal = 0, double cnvTermVal = 0, string yjCd = "", string masterSbt = "", List<YohoSetMstModel>? yohoSets = null, int kasan1 = 0, int kasan2 = 0, string cnvUnitName = "", string odrUnitName = "", string centerItemCd1 = "", string centerItemCd2 = "")
         {
+            KensaMstModel kensaMstModel = new();
+            if (kensaMst != null)
+            {
+                kensaMstModel = new KensaMstModel(
+                                    kensaMst.KensaItemCd ?? string.Empty,
+                                    kensaMst.KensaItemSeqNo,
+                                    kensaMst.CenterCd ?? string.Empty,
+                                    kensaMst.KensaName ?? string.Empty,
+                                    kensaMst.KensaKana ?? string.Empty,
+                                    kensaMst.Unit ?? string.Empty,
+                                    kensaMst.MaterialCd,
+                                    kensaMst.ContainerCd,
+                                    kensaMst.MaleStd ?? string.Empty,
+                                    kensaMst.MaleStdLow ?? string.Empty,
+                                    kensaMst.MaleStdHigh ?? string.Empty,
+                                    kensaMst.FemaleStd ?? string.Empty,
+                                    kensaMst.FemaleStdLow ?? string.Empty,
+                                    kensaMst.FemaleStdHigh ?? string.Empty,
+                                    kensaMst.Formula ?? string.Empty,
+                                    kensaMst.Digit,
+                                    kensaMst.OyaItemCd ?? string.Empty,
+                                    kensaMst.OyaItemSeqNo,
+                                    kensaMst.SortNo,
+                                    kensaMst.CenterItemCd1 ?? string.Empty,
+                                    kensaMst.CenterItemCd2 ?? string.Empty
+                );
+            }
+
             return new OrdInfDetailModel(
                             ordInfDetail.HpId,
                             ordInfDetail.RaiinNo,
@@ -500,7 +613,7 @@ namespace Infrastructure.Repositories
                             odrTermVal,
                             cnvTermVal,
                             yjCd,
-                            yohoSets != null ? yohoSets.Where(y => y.ItemCd == ordInfDetail.ItemCd).ToList() : new List<YohoSetMstModel>(),
+                            yohoSets ?? new(),
                             kasan1,
                             kasan2,
                             cnvUnitName,
@@ -515,7 +628,8 @@ namespace Infrastructure.Repositories
                             tenMst.CmtCol3,
                             tenMst.CmtCol4,
                             tenMst.HandanGrpKbn,
-                            isKensaMstEmpty
+                            isKensaMstEmpty,
+                            kensaMstModel
                 );
         }
 

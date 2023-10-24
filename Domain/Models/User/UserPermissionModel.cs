@@ -11,6 +11,17 @@
             IsDefault = isDefault;
         }
 
+        public UserPermissionModel(int userId)
+        {
+            UserId = userId;
+            FunctionCd = string.Empty;
+        }
+
+        public UserPermissionModel()
+        {
+            FunctionCd = string.Empty;
+        }
+
         public int HpId { get; private set; }
 
         public int UserId { get; private set; }

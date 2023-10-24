@@ -201,7 +201,7 @@ namespace Infrastructure.Repositories
         {
             if (isKohi)
             {
-                return allHokenMst.Where(x => (x.HokenSbtKbn == 2 || x.HokenSbtKbn == 5 || x.HokenSbtKbn == 6 || x.HokenSbtKbn == 7) 
+                return allHokenMst.Where(x => (x.HokenSbtKbn == 2 || x.HokenSbtKbn == 5 || x.HokenSbtKbn == 6 || x.HokenSbtKbn == 7)
                                         && x.StartDate < today
                                         && x.EndDate > today)
                         .OrderBy(entity => entity.HokenNo)
@@ -231,13 +231,29 @@ namespace Infrastructure.Repositories
                 prefNo = hpInf.PrefNo;
             }
 
-            var listAllDataHokensyaMst = NoTrackingDataContext.HokensyaMsts.Where(x => (!String.IsNullOrEmpty(x.HokensyaNo) && x.HokensyaNo.StartsWith(keyword))
+            List<HokensyaMst> listAllDataHokensyaMst = new();
+
+            if (sinDate > 0)
+            {
+                listAllDataHokensyaMst = NoTrackingDataContext.HokensyaMsts.Where(x => (!String.IsNullOrEmpty(x.HokensyaNo) && x.HokensyaNo.StartsWith(keyword))
                                                         && (x.PrefNo == 0 || x.PrefNo == prefNo)
                                                         && (x.HokenKbn == 1 || x.HokenKbn == 2)
                                                         && x.HpId == hpId
                                                         && x.IsDelete == 0
                                                         && x.DeleteDate < sinDate)
                                                         .ToList();
+            }
+            else
+            {
+                var hokensyaMst = NoTrackingDataContext.HokensyaMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                                            && item.HokensyaNo == keyword
+                                                                                            && item.IsDelete == 0);
+                if (hokensyaMst != null)
+                {
+                    listAllDataHokensyaMst.Add(hokensyaMst);
+                }
+            }
+
             var listDataPaging = listAllDataHokensyaMst.Select(item => new HokensyaMstModel(
                                                                 item.HpId,
                                                                 item.Name ?? string.Empty,
@@ -257,7 +273,7 @@ namespace Infrastructure.Repositories
                                                                 item.Tel1 ?? string.Empty,
                                                                 item.IsKigoNa
                                                             ))
-                                .OrderBy(item => item.HokensyaNo).ToList();
+                                                        .OrderBy(item => item.HokensyaNo).ToList();
             return listDataPaging;
         }
 

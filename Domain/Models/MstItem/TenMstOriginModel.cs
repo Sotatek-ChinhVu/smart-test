@@ -193,6 +193,7 @@ namespace Domain.Models.MstItem
             IsStartDateKeyUpdated = isStartDateKeyUpdated;
             OriginStartDate = originStartDate;
             IsSelected = isSelected;
+            CreateId = 0;
         }
 
         public TenMstOriginModel()
@@ -247,6 +248,75 @@ namespace Domain.Models.MstItem
             RenkeiCd1 = string.Empty;
             RenkeiCd2 = string.Empty;
             MasterSbt = string.Empty;
+            IsSelected = IsSelected;
+            CreateId = 0;
+        }
+
+        public TenMstOriginModel(int hpId, int startDate, int endDate, int isAdopted, string santeiItemCd, int createId, bool isAddNew,  int sinKouiKbn, string kanaName1, string kanaName2, string syukeiSaki, int tenId, int isNodspRece, int isNodspPaperRece, string masterSbt, string receUnitName, string odrUnitName, int cmtKbn, int defaultVal, string kokuji1, string kokuji2, string itemCd, int jihiSbt)
+        {
+            HpId = hpId;
+            ItemCd = itemCd;
+            StartDate = startDate;
+            EndDate = endDate;
+            IsAdopted = isAdopted;
+            SanteiItemCd = santeiItemCd;
+            IsAddNew = isAddNew;
+            SinKouiKbn = sinKouiKbn;
+            KanaName1 = kanaName1;
+            KanaName2 = kanaName2;
+            SyukeiSaki = syukeiSaki;
+            TenId = tenId;
+            IsNodspRece = isNodspRece;
+            IsNodspPaperRece = isNodspPaperRece;
+            MasterSbt = masterSbt;
+            ReceUnitName = receUnitName;
+            OdrUnitName = odrUnitName;
+            CmtKbn = cmtKbn;
+            DefaultVal = defaultVal;
+            Kokuji1 = kokuji1;
+            Kokuji2 = kokuji2;
+            CreateId = createId;
+            JihiSbt = jihiSbt;
+            Name = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            RyosyuName = string.Empty;
+            ReceName = string.Empty;
+            ReceUnitCd = string.Empty;
+            CnvUnitName = string.Empty;
+            TyuCd = string.Empty;
+            TyuSeq = string.Empty;
+            MinAge = string.Empty;
+            MaxAge = string.Empty;
+            TenKbnNo = string.Empty;
+            AgekasanMin1 = string.Empty;
+            AgekasanMax1 = string.Empty;
+            AgekasanCd1 = string.Empty;
+            AgekasanCd1Note = string.Empty;
+            AgekasanMin2 = string.Empty;
+            AgekasanMax2 = string.Empty;
+            AgekasanCd2 = string.Empty;
+            AgekasanCd2Note = string.Empty;
+            AgekasanMin3 = string.Empty;
+            AgekasanMax3 = string.Empty;
+            AgekasanCd3 = string.Empty;
+            AgekasanCd3Note = string.Empty;
+            AgekasanMin4 = string.Empty;
+            AgekasanMax4 = string.Empty;
+            AgekasanCd4 = string.Empty;
+            AgekasanCd4Note = string.Empty;
+            CdKbn = string.Empty;
+            KokujiKbn = string.Empty;
+            YjCd = string.Empty;
+            YakkaCd = string.Empty;
+            SyohinKanren = string.Empty;
+            IpnNameCd = string.Empty;
+            KensaItemCd = string.Empty;
+            RenkeiCd1 = string.Empty;
+            RenkeiCd2 = string.Empty;
             IsSelected = IsSelected;
         }
 
@@ -1849,6 +1919,8 @@ namespace Domain.Models.MstItem
         /// </summary>
         public bool IsSelected { get; private set; }
 
+        public int CreateId { get; private set; }
+
         public ItemTypeEnums GetItemType()
         {
             if (ItemCd.StartsWith("J"))
@@ -1920,6 +1992,12 @@ namespace Domain.Models.MstItem
                 return ItemTypeEnums.CommentItem;
             }
             return ItemTypeEnums.Other;
+        }
+
+        public TenMstOriginModel ChangeHpId(int hpId)
+        {
+            HpId = hpId;
+            return this;
         }
     }
 }

@@ -15,8 +15,9 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedTodoGrpNo(List<int> todoGrpNos)
         {
-            var countTodoGrpNos = NoTrackingDataContext.TodoGrpMsts.Count(x => todoGrpNos.Distinct().Contains(x.TodoGrpNo));
-            return todoGrpNos.Count == countTodoGrpNos;
+            var countTodoGrpNos = NoTrackingDataContext.TodoGrpMsts.Where(x => todoGrpNos.Distinct().Contains(x.TodoGrpNo)).ToList();
+            var countTodoGrpNoIsDeleteds = countTodoGrpNos.Where(x => x.IsDeleted == 1);
+            return countTodoGrpNoIsDeleteds.Count() != 0;
         }
 
         public void Upsert(List<TodoGrpMstModel> upsertTodoGrpMstList, int userId, int hpId)
@@ -64,8 +65,9 @@ namespace Infrastructure.Repositories
             return new TodoGrpMst
             {
                 HpId = hpId,
-                TodoGrpNo = u.TodoGrpNo,
+                TodoGrpNo = 0,
                 TodoGrpName = u.TodoGrpName,
+                GrpColor = u.GrpColor,
                 SortNo = u.SortNo,
                 IsDeleted = u.IsDeleted,
                 CreateDate = CIUtil.GetJapanDateTimeNow(),

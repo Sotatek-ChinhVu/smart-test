@@ -5,6 +5,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using static Helper.Constants.UserConst;
 
 
@@ -39,7 +40,8 @@ namespace Infrastructure.Repositories
                                                                    x.IsDeleted == 0);
 
             var userInfs = NoTrackingDataContext.UserMsts.Where((x) => x.HpId == hpId &&
-                                                                       x.IsDeleted == 0);
+            x.IsDeleted == 0);
+
 
             var queryList = (from raiinInf in raiinInfs
                              join ptInf in ptInfs on
@@ -91,7 +93,8 @@ namespace Infrastructure.Repositories
         {
             approvalInfs.ForEach(x =>
             {
-                if (!NoTrackingDataContext.ApprovalInfs.Any(p => p.HpId == hpId && p.PtId == x.PtId && p.RaiinNo == x.RaiinNo && p.SinDate == x.SinDate))
+                var approvedInfo = NoTrackingDataContext.ApprovalInfs.Where(p => p.HpId == hpId && p.PtId == x.PtId && p.RaiinNo == x.RaiinNo && p.SinDate == x.SinDate).OrderByDescending(x => x.SeqNo).FirstOrDefault();
+                if (approvedInfo == null)
                 {
                     TrackingDataContext.ApprovalInfs.Add(new ApprovalInf()
                     {
@@ -102,7 +105,25 @@ namespace Infrastructure.Repositories
                         PtId = x.PtId,
                         RaiinNo = x.RaiinNo,
                         SinDate = x.SinDate,
-                        SeqNo = x.SeqNo,
+                        SeqNo = 1,
+                        UpdateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow()
+                    });
+                }
+                else
+                {
+                    var seqNo = approvedInfo.SeqNo + 1 ;
+
+                    TrackingDataContext.ApprovalInfs.Add(new ApprovalInf()
+                    {
+                        HpId = hpId,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        IsDeleted = 0,
+                        PtId = x.PtId,
+                        RaiinNo = x.RaiinNo,
+                        SinDate = x.SinDate,
+                        SeqNo = seqNo,
                         UpdateId = userId,
                         UpdateDate = CIUtil.GetJapanDateTimeNow()
                     });

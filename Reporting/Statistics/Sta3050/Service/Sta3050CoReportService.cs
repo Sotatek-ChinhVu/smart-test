@@ -1,20 +1,13 @@
-﻿using Entity.Tenant;
-using Helper.Constants;
-using Microsoft.EntityFrameworkCore.Internal;
+﻿using Helper.Common;
 using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
+using Reporting.Statistics.Enums;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3050.DB;
 using Reporting.Statistics.Sta3050.Mapper;
 using Reporting.Statistics.Sta3050.Models;
-using Reporting.Statistics.Sta3050.DB;
-using Reporting.Statistics.Sta3050.Models;
-using System.ComponentModel;
-using Reporting.Statistics.Enums;
-using Helper.Common;
-using Amazon.Runtime.Internal.Transform;
 
 namespace Reporting.Statistics.Sta3050.Service;
 
@@ -99,6 +92,7 @@ public class Sta3050CoReportService : ISta3050CoReportService
     private string rowCountFieldName;
     private CoSta3050PrintConf printConf;
     private CoFileType outputFileType;
+    private CoFileType? coFileType;
 
     public Sta3050CoReportService(ICoSta3050Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -358,7 +352,7 @@ public class Sta3050CoReportService : ISta3050CoReportService
                             printData.Kohi4Houbetu = curData.Kohi4Houbetu;
 
                             #region 印刷の場合、前の行と同じ値のカラムは省略
-                            if (outputFileType != CoFileType.Csv && printDatas.Count % maxRow != 0)
+                            if ((outputFileType != CoFileType.Csv || coFileType != CoFileType.Csv) && printDatas.Count % maxRow != 0)
                             {
                                 int[] sortOrders = { printConf.SortOrder1, printConf.SortOrder2, printConf.SortOrder3 };
                                 bool preBlank = true;
@@ -496,7 +490,6 @@ public class Sta3050CoReportService : ISta3050CoReportService
             printDatas.Add(totalData);
         }
 
-
         //データ取得
         sinKouis = _finder.GetSinKouis(hpId, printConf);
         if ((sinKouis?.Count ?? 0) == 0) return false;
@@ -543,5 +536,67 @@ public class Sta3050CoReportService : ISta3050CoReportService
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3050, fileName, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
+    }
+
+    public CommonExcelReportingModel ExportCsv(CoSta3050PrintConf printConf, int monthFrom, int monthTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow, CoFileType? coFileType)
+    {
+        this.printConf = printConf;
+        string fileName = menuName + "_" + monthFrom + "_" + monthTo;
+        List<string> retDatas = new List<string>();
+        this.coFileType = coFileType;
+
+        if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        if (isPutTotalRow)
+        {
+            putCurColumns.AddRange(csvTotalColumns);
+        }
+        putCurColumns.AddRange(putColumns);
+
+        var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
+        if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+
+        //出力フィールド
+        List<string> wrkTitles = putCurColumns.Select(p => p.JpName).ToList();
+        List<string> wrkColumns = putCurColumns.Select(p => p.CsvColName).ToList();
+
+        //タイトル行
+        retDatas.Add("\"" + string.Join("\",\"", wrkTitles) + "\"");
+        if (isPutColName)
+        {
+            retDatas.Add("\"" + string.Join("\",\"", wrkColumns) + "\"");
+        }
+
+        //データ
+        int totalRow = csvDatas.Count;
+        int rowOutputed = 0;
+        foreach (var csvData in csvDatas)
+        {
+            retDatas.Add(RecordData(csvData));
+            rowOutputed++;
+        }
+
+        string RecordData(CoSta3050PrintData csvData)
+        {
+            List<string> colDatas = new List<string>();
+
+            foreach (var column in putCurColumns)
+            {
+                var value = typeof(CoSta3050PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                if (csvData.RowType == RowType.Total && !column.IsTotal)
+                {
+                    value = string.Empty;
+                }
+                else if (value is RowType)
+                {
+                    value = (int)value;
+                }
+                colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
+            }
+
+            return string.Join(",", colDatas);
+        }
+
+        return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
     }
 }

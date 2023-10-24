@@ -51,7 +51,8 @@ namespace Interactor.MstItem
                     inputData.IsExpiredSearchIfNoData, inputData.IsAllowSearchDeletedItem,
                     inputData.IsExpired, inputData.IsDeleted, inputData.DrugKbns,
                     inputData.IsSearchSanteiItem, inputData.IsSearchKenSaItem,
-                    inputData.ItemFilter, inputData.IsSearch831SuffixOnly, inputData.IsSearchGazoDensibaitaiHozon);
+                    inputData.ItemFilter, inputData.IsSearch831SuffixOnly, inputData.IsSearchGazoDensibaitaiHozon,
+                    inputData.SortType, inputData.SortCol);
                 }
                 else
                 {

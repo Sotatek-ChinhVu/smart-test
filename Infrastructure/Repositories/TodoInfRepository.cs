@@ -14,39 +14,56 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public void Upsert(List<TodoInfModel> upsertTodoList, int userId, int hpId)
+        public List<TodoInfModel> Upsert(List<TodoInfModel> upsertTodoList, int userId, int hpId)
         {
+
+            var todoInfs = new List<TodoInf>();
             foreach (var input in upsertTodoList)
             {
-                var todoInfs = TrackingDataContext.TodoInfs.FirstOrDefault(x => x.TodoNo == input.TodoNo && x.TodoEdaNo == input.TodoEdaNo && x.PtId == input.PtId && x.IsDeleted == DeleteTypes.None);
-                if (todoInfs != null)
+                var todoInf = TrackingDataContext.TodoInfs.FirstOrDefault(x => x.TodoNo == input.TodoNo && x.TodoEdaNo == input.TodoEdaNo && x.PtId == input.PtId && x.IsDeleted == DeleteTypes.None);
+                if (todoInf != null)
                 {
                     if (input.IsDeleted == DeleteTypes.Deleted)
                     {
-                        todoInfs.IsDeleted = DeleteTypes.Deleted;
+                        todoInf.IsDeleted = DeleteTypes.Deleted;
                     }
                     else
                     {
-                        todoInfs.SinDate = input.SinDate;
-                        todoInfs.RaiinNo = input.RaiinNo;
-                        todoInfs.TodoKbnNo = input.TodoKbnNo;
-                        todoInfs.TodoGrpNo = input.TodoGrpNo;
-                        todoInfs.Tanto = input.Tanto;
-                        todoInfs.Term = input.Term;
-                        todoInfs.Cmt1 = input.Cmt1;
-                        todoInfs.Cmt2 = input.Cmt2;
-                        todoInfs.IsDone = input.IsDone;
-                        todoInfs.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        todoInfs.UpdateId = userId;
-                        todoInfs.UpdateMachine = string.Empty;
+                        todoInf.SinDate = input.SinDate;
+                        todoInf.RaiinNo = input.RaiinNo;
+                        todoInf.TodoKbnNo = input.TodoKbnNo;
+                        todoInf.TodoGrpNo = input.TodoGrpNo;
+                        todoInf.Tanto = input.Tanto;
+                        todoInf.Term = input.Term;
+                        todoInf.Cmt1 = input.Cmt1;
+                        todoInf.Cmt2 = input.Cmt2;
+                        todoInf.IsDone = input.IsDone;
+                        todoInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        todoInf.UpdateId = userId;
+                        todoInf.UpdateMachine = string.Empty;
                     }
+                    todoInfs.Add(todoInf);
                 }
                 else
                 {
-                    TrackingDataContext.TodoInfs.AddRange(ConvertTo_TodoGrpMst(input, userId, hpId));
+                    var newTodoInf = ConvertTo_TodoGrpMst(input, userId, hpId);
+                    TrackingDataContext.TodoInfs.AddRange(newTodoInf);
+                    todoInfs.Add(newTodoInf);
                 }
             }
+
             TrackingDataContext.SaveChanges();
+
+            var result = new List<TodoInfModel>();
+            if (todoInfs.Count <= 1)
+            {
+                var firtTodo = todoInfs.FirstOrDefault() ?? new();
+                result = GetList(hpId, firtTodo.TodoNo, firtTodo.TodoEdaNo, true, true);
+                return result;
+            }
+
+            result = GetList(hpId, 0, 0, true, true);
+            return result;
         }
 
         private TodoInf ConvertTo_TodoGrpMst(TodoInfModel u, int userId, int hpId)
@@ -93,16 +110,16 @@ namespace Infrastructure.Repositories
             return inputs.Count == countptIds;
         }
 
-        public List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, bool incDone)
+        public List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, bool incDone, bool isDeleted = false)
         {
             List<TodoInfModel> result;
-            var todoInfRes = NoTrackingDataContext.TodoInfs.Where(inf => inf.HpId == hpId && inf.IsDeleted == 0);
+            var todoInfRes = NoTrackingDataContext.TodoInfs.Where(inf => inf.HpId == hpId && (isDeleted || inf.IsDeleted == 0));
             var raiinInfRes = NoTrackingDataContext.RaiinInfs.Where(inf => inf.HpId == hpId);
-            var patientInfRes = NoTrackingDataContext.PtInfs.Where(inf => inf.HpId == hpId && inf.IsDelete == 0);
-            var userMstRes = NoTrackingDataContext.UserMsts.Where(mst => mst.HpId == hpId && mst.IsDeleted == 0);
-            var kaMstRes = NoTrackingDataContext.KaMsts.Where(mst => mst.HpId == hpId && mst.IsDeleted == 0);
+            var patientInfRes = NoTrackingDataContext.PtInfs.Where(inf => inf.HpId == hpId);
+            var userMstRes = NoTrackingDataContext.UserMsts.Where(mst => mst.HpId == hpId);
+            var kaMstRes = NoTrackingDataContext.KaMsts.Where(mst => mst.HpId == hpId);
             var todoKbnMstRes = NoTrackingDataContext.TodoKbnMsts.Where(mst => mst.HpId == hpId);
-            var todoGrpMstRes = NoTrackingDataContext.TodoGrpMsts.Where(mst => mst.HpId == hpId && mst.IsDeleted == 0);
+            var todoGrpMstRes = NoTrackingDataContext.TodoGrpMsts.Where(mst => mst.HpId == hpId);
             var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(
                 (p) => p.HpId == Session.HospitalID &&
                        p.IsDeleted == 0

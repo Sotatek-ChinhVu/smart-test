@@ -10,6 +10,7 @@ public class InsuranceReceInfItem
         PtId = model.PtId;
         SinYm = model.SinYm;
         HokenId = model.HokenId;
+        HokenPId = model.HokenPId;
         HokenId2 = model.HokenId2;
         Kohi1Id = model.Kohi1Id;
         Kohi2Id = model.Kohi2Id;
@@ -81,6 +82,8 @@ public class InsuranceReceInfItem
     public int SinYm { get; private set; }
 
     public int HokenId { get; private set; }
+
+    public int HokenPId { get; private set; }
 
     public int HokenId2 { get; private set; }
 

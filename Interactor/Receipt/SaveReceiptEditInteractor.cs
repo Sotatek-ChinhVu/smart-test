@@ -2,6 +2,8 @@
 using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Receipt;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using System.Text;
 using UseCase.Receipt.SaveReceiptEdit;
 
@@ -13,13 +15,17 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly IMstItemRepository _mstItemRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveReceiptEditInteractor(IReceiptRepository receiptRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
+    public SaveReceiptEditInteractor(ITenantProvider tenantProvider, IReceiptRepository receiptRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
     {
         _receiptRepository = receiptRepository;
         _patientInforRepository = patientInforRepository;
         _insuranceRepository = insuranceRepository;
         _mstItemRepository = mstItemRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveReceiptEditOutputData Handle(SaveReceiptEditInputData inputData)
@@ -40,18 +46,28 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
             }
             return new SaveReceiptEditOutputData(SaveReceiptEditStatus.Failed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _receiptRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
             _insuranceRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 
     private SaveReceiptEditStatus ValidateInput(SaveReceiptEditInputData inputData)
     {
-        if (inputData.SinYm.ToString().Length != 6)
+        if (inputData.ReceiptEdit.SeqNo == 0 && inputData.ReceiptEdit.IsDeleted)
+        {
+            return SaveReceiptEditStatus.Successed;
+        }
+        else if (inputData.SinYm.ToString().Length != 6)
         {
             return SaveReceiptEditStatus.InvalidSinYm;
         }

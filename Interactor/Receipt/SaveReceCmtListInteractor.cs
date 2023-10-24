@@ -3,6 +3,9 @@ using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Receipt;
 using Helper.Constants;
+using Infrastructure.CommonDB;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.Receipt;
 using UseCase.Receipt.SaveListReceCmt;
 
@@ -14,24 +17,39 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly IMstItemRepository _mstItemRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveReceCmtListInteractor(IReceiptRepository receiptRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
+    public SaveReceCmtListInteractor(ITenantProvider tenantProvider, IReceiptRepository receiptRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
     {
         _receiptRepository = receiptRepository;
         _patientInforRepository = patientInforRepository;
         _insuranceRepository = insuranceRepository;
         _mstItemRepository = mstItemRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveReceCmtListOutputData Handle(SaveReceCmtListInputData inputData)
     {
         try
         {
-            var listReceCmtDB = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId, 0);
-            var responseValidate = ValidateInput(inputData, listReceCmtDB);
+            var responseValidate = ValidateInput(inputData);
             if (responseValidate != SaveReceCmtListStatus.ValidateSuccess)
             {
-                return new SaveReceCmtListOutputData(responseValidate);
+                return new SaveReceCmtListOutputData(new(), responseValidate);
+            }
+
+            var listReceCmtDB = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId, 0, true);
+            var receCmtIdNotDeletedDB = listReceCmtDB.Where(item => !item.IsDeleted).Select(item => item.Id).Distinct().ToList();
+            List<ReceCmtItem> receCmtInvalidList = inputData.ReceCmtList.Where(item => item.Id > 0 && !receCmtIdNotDeletedDB.Contains(item.Id)).ToList();
+            foreach (var receCmt in receCmtInvalidList)
+            {
+                var cmtData = listReceCmtDB.FirstOrDefault(item => item.Id == receCmt.Id);
+                if (cmtData != null)
+                {
+                    receCmt.ChangeCmtData(cmtData.CmtData, cmtData.Cmt);
+                }
             }
 
             var receCmtDeletedList = listReceCmtDB.Where(item => (item.CmtKbn == ReceCmtKbn.Header || item.CmtKbn == ReceCmtKbn.Footer) && item.CmtSbt == ReceCmtSbt.FreeCmt)
@@ -44,9 +62,14 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
 
             if (_receiptRepository.SaveReceCmtList(inputData.HpId, inputData.UserId, listReceCmtModel))
             {
-                return new SaveReceCmtListOutputData(SaveReceCmtListStatus.Successed);
+                return new SaveReceCmtListOutputData(receCmtInvalidList, SaveReceCmtListStatus.Successed);
             }
-            return new SaveReceCmtListOutputData(SaveReceCmtListStatus.Failed);
+            return new SaveReceCmtListOutputData(receCmtInvalidList, SaveReceCmtListStatus.Failed);
+        }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
         }
         finally
         {
@@ -54,10 +77,11 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
             _patientInforRepository.ReleaseResource();
             _insuranceRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 
-    private SaveReceCmtListStatus ValidateInput(SaveReceCmtListInputData inputData, List<ReceCmtModel> listReceCmtDB)
+    private SaveReceCmtListStatus ValidateInput(SaveReceCmtListInputData inputData)
     {
         if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
         {
@@ -71,21 +95,15 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
         {
             return SaveReceCmtListStatus.InvalidHokenId;
         }
-        return ValidateReceCmtItem(inputData, listReceCmtDB);
+        return ValidateReceCmtItem(inputData);
     }
 
-    private SaveReceCmtListStatus ValidateReceCmtItem(SaveReceCmtListInputData inputData, List<ReceCmtModel> listReceCmtDB)
+    private SaveReceCmtListStatus ValidateReceCmtItem(SaveReceCmtListInputData inputData)
     {
         var listItemCds = inputData.ReceCmtList.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).Distinct().ToList();
         if (listItemCds.Any() && _mstItemRepository.GetCheckItemCds(listItemCds).Count != listItemCds.Count)
         {
             return SaveReceCmtListStatus.InvalidItemCd;
-        }
-        var listReceCmtIds = inputData.ReceCmtList.Where(item => item.Id > 0).Select(item => item.Id).Distinct().ToList();
-        var countReceCmt = listReceCmtDB.Count(item => listReceCmtIds.Contains(item.Id));
-        if (listReceCmtIds.Any() && countReceCmt != listReceCmtIds.Count)
-        {
-            return SaveReceCmtListStatus.InvalidReceCmtId;
         }
         else if (inputData.ReceCmtList.Any(item => item.CmtKbn > 2 || item.CmtKbn < 1))
         {

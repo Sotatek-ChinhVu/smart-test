@@ -130,8 +130,8 @@ public class ValidateFamilyList : IValidateFamilyList
                     return ValidateFamilyListStatus.InvalidZokugaraCd;
                 }
 
-                var totalItemSameZokugaraCd = listFamily.Count(item => item.ZokugaraCd.Equals(familyItem.ZokugaraCd)
-                                                                       && !item.IsDeleted);
+                var totalItemSameZokugaraCd = listFamily.Where(item => item.PtId == ptId).Count(item => item.ZokugaraCd.Equals(familyItem.ZokugaraCd)
+                                                                                                        && !item.IsDeleted);
 
                 if (totalItemSameZokugaraCd > dicZokugaraCd[familyItem.ZokugaraCd] && !familyItem.IsDeleted)
                 {

@@ -11,10 +11,7 @@ namespace EmrCloudApi.Presenters.PtGroupMst
 
         public void Complete(GetGroupNameMstOutputData outputData)
         {
-            Result.Data = new GetGroupNameMstResponse()
-            {
-                Data = outputData.Data.Select(x => new GroupNameDtoResponse(x)).ToList()
-            };
+            Result.Data = new GetGroupNameMstResponse(outputData.Data.Select(x => new GroupNameDtoResponse(x)).ToList());
             Result.Status = (int)outputData.Status;
             Result.Message = GetMessage(outputData.Status);
         }
@@ -22,7 +19,6 @@ namespace EmrCloudApi.Presenters.PtGroupMst
         private string GetMessage(GetGroupNameMstStatus status) => status switch
         {
             GetGroupNameMstStatus.Successful => ResponseMessage.Success,
-            GetGroupNameMstStatus.Exception => ResponseMessage.ExceptionError,
             GetGroupNameMstStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             GetGroupNameMstStatus.DataNotFound => ResponseMessage.NotFound,
             _ => string.Empty

@@ -9,6 +9,7 @@ using Helper.Messaging.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Threading;
+using Helper.Constants;
 
 namespace EmrCalculateApi.Controllers
 {
@@ -18,12 +19,14 @@ namespace EmrCalculateApi.Controllers
     {
         private readonly IIkaCalculateViewModel _ikaCalculate;
         private readonly IWebSocketService _webSocketService;
+        private readonly IMessenger _messenger;
         private CancellationToken? _cancellationToken;
 
-        public CalculateController(IIkaCalculateViewModel ikaCalculate, IWebSocketService webSocketService)
+        public CalculateController(IIkaCalculateViewModel ikaCalculate, IWebSocketService webSocketService, IMessenger messenger)
         {
             _ikaCalculate = ikaCalculate;
             _webSocketService = webSocketService;
+            _messenger = messenger;
         }
 
         [HttpPost("RunCalculateOne")]
@@ -35,6 +38,7 @@ namespace EmrCalculateApi.Controllers
                 calculateOneRequest.SinDate,
                 calculateOneRequest.SeikyuUp,
                 calculateOneRequest.Prefix);
+            _ikaCalculate.Dispose();
             return Ok();
         }
 
@@ -47,6 +51,7 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.SinDate,
                 calculateRequest.SeikyuUp,
                 calculateRequest.Prefix);
+            _ikaCalculate.Dispose();
             return Ok();
         }
 
@@ -58,6 +63,7 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.Reception,
                 calculateRequest.CalcFutan);
             var result = new RunTraialCalculateResponse(data.sinMeis, data.kaikeis.Select(k => new KaikeiInfItemResponse(k)).ToList(), data.calcLogs);
+            _ikaCalculate.Dispose();
             return Ok(result);
         }
 
@@ -67,8 +73,8 @@ namespace EmrCalculateApi.Controllers
             _cancellationToken = cancellationToken;
             try
             {
-                Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
-                Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
+                _messenger.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
+                _messenger.Register<StopCalcStatus>(this, StopCalculation);
 
                 _ikaCalculate.RunCalculateMonth(
                               monthRequest.HpId,
@@ -77,16 +83,19 @@ namespace EmrCalculateApi.Controllers
                               monthRequest.PreFix,
                               monthRequest.UniqueKey);
             }
-            catch
+            catch (Exception ex)
             {
-                var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, "Error");
+                RecalculationStatus status = new RecalculationStatus(false, CalculateStatusConstant.Invalid, 0, 0, ex.Message, monthRequest.UniqueKey);
+                var objectJson = JsonSerializer.Serialize(status);
+                var sendMessager = _webSocketService.SendMessageAsync(FunctionCodes.RunCalculate, objectJson);
                 sendMessager.Wait();
             }
             finally
             {
-                Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
-                Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
+                _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+                _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
                 HttpContext.Response.Body.Close();
+                _ikaCalculate.Dispose();
             }
             return Ok();
         }

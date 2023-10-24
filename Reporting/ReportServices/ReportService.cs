@@ -1,4 +1,7 @@
-﻿using Reporting.Accounting.DB;
+﻿using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Domain.Models.SpecialNote.PatientInfo;
+using Helper.Common;
+using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.Accounting.Service;
@@ -16,6 +19,7 @@ using Reporting.GrowthCurve.Service;
 using Reporting.InDrug.Service;
 using Reporting.Karte1.Service;
 using Reporting.Karte3.Service;
+using Reporting.KensaHistory.Service;
 using Reporting.KensaLabel.Model;
 using Reporting.KensaLabel.Service;
 using Reporting.Kensalrai.Service;
@@ -27,6 +31,7 @@ using Reporting.OrderLabel.Model;
 using Reporting.OrderLabel.Service;
 using Reporting.OutDrug.Model.Output;
 using Reporting.OutDrug.Service;
+using Reporting.PatientManagement.Models;
 using Reporting.PatientManagement.Service;
 using Reporting.Receipt.Service;
 using Reporting.ReceiptCheck.Service;
@@ -35,10 +40,11 @@ using Reporting.ReceiptList.Service;
 using Reporting.ReceiptPrint.Service;
 using Reporting.ReceTarget.Service;
 using Reporting.Sijisen.Service;
-using Reporting.Sokatu.WelfareDisk.Service;
-using Reporting.Structs;
+using Reporting.Statistics.Sta9000.Models;
+using Reporting.Statistics.Sta9000.Service;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.Service;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Reporting.ReportServices;
 
@@ -75,8 +81,12 @@ public class ReportService : IReportService
     private readonly IKensaLabelCoReportService _kensaLabelCoReportService;
     private readonly IReceiptPrintExcelService _receiptPrintExcelService;
     private readonly IImportCSVCoReportService _importCSVCoReportService;
+    private readonly IStaticsticExportCsvService _staticsticExportCsvService;
+    private readonly ISta9000CoReportService _sta9000CoReportService;
+    private readonly IKensaHistoryCoReportService _kensaHistoryCoReportService;
+    private readonly IKensaResultMultiCoReportService _kensaResultMultiCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService, IReceiptPrintExcelService receiptPrintExcelService, IImportCSVCoReportService importCSVCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService, IReceiptPrintExcelService receiptPrintExcelService, IImportCSVCoReportService importCSVCoReportService, IStaticsticExportCsvService staticsticExportCsvService, ISta9000CoReportService sta9000CoReportService, IKensaHistoryCoReportService kensaHistoryCoReportService, IKensaResultMultiCoReportService kensaResultMultiCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -109,6 +119,10 @@ public class ReportService : IReportService
         _kensaLabelCoReportService = kensaLabelCoReportService;
         _receiptPrintExcelService = receiptPrintExcelService;
         _importCSVCoReportService = importCSVCoReportService;
+        _staticsticExportCsvService = staticsticExportCsvService;
+        _sta9000CoReportService = sta9000CoReportService;
+        _kensaHistoryCoReportService = kensaHistoryCoReportService;
+        _kensaResultMultiCoReportService = kensaResultMultiCoReportService;
     }
 
     //Byomei
@@ -268,7 +282,21 @@ public class ReportService : IReportService
 
         List<CoAccountDueListModel> nyukinModels = _coAccountingFinder.GetAccountDueList(hpId, ptId);
         List<int> months = new();
+
+        List<CoAccountDueListModel> accountDueListUnique = new();
         foreach (var model in multiAccountDueListModels)
+        {
+            if (accountDueListUnique.Any(item => item.SinDate == model.SinDate
+                                                 && item.NyukinKbn == model.NyukinKbn
+                                                 && item.RaiinNo == model.RaiinNo
+                                                 && item.OyaRaiinNo == model.OyaRaiinNo))
+            {
+                continue;
+            }
+            accountDueListUnique.Add(model);
+        }
+
+        foreach (var model in accountDueListUnique)
         {
             var selectedAccountDueListModel = model;
             var accountDueListModels = nyukinModels.FindAll(p => p.SinDate / 100 == model.SinDate / 100);
@@ -456,15 +484,22 @@ public class ReportService : IReportService
         return _statisticService.PrintExecute(hpId, formName, menuId, monthFrom, monthTo, dateFrom, dateTo, timeFrom, timeTo, coFileType, isPutTotalRow, tenkiDateFrom, tenkiDateTo, enableRangeFrom, enableRangeTo, ptNumFrom, ptNumTo);
     }
 
-    public CommonReportingRequestModel GetPatientManagement(int hpId, int menuId)
+    public CommonReportingRequestModel GetPatientManagement(int hpId, PatientManagementModel patientManagementModel)
     {
-        return _patientManagementService.PrintData(hpId, menuId);
+        return _patientManagementService.PrintData(hpId, patientManagementModel);
     }
 
     //Receipt Preview
-    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId)
+    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, int seikyuYm, int hokenKbn, bool isIncludeOutDrug, bool isModePrint, bool isOpenedFromAccounting)
     {
-        return _receiptCoReportService.GetReceiptData(hpId, ptId, sinYm, hokenId);
+        if (isOpenedFromAccounting)
+        {
+            return _receiptCoReportService.GetReceiptDataFromAccounting(hpId, ptId, sinYm, hokenId, isIncludeOutDrug, isModePrint);
+        }
+        else
+        {
+            return _receiptCoReportService.GetReceiptDataFromReceCheck(hpId, ptId, sinYm, seikyuYm, hokenId, hokenKbn, isIncludeOutDrug, isModePrint);
+        }
     }
 
     public CommonReportingRequestModel GetKensalraiData(int hpId, int systemDate, int fromDate, int toDate, string centerCd)
@@ -472,9 +507,14 @@ public class ReportService : IReportService
         return _kensaIraiCoReportService.GetKensalraiData(hpId, systemDate, fromDate, toDate, centerCd);
     }
 
-    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos)
+    //public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, List<long> printPtIds)
+    //{
+    //    return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos, printPtIds);
+    //}
+
+    public CommonReportingRequestModel GetReceiptPrint(int hpId, string formName, int prefNo, int reportId, int reportEdaNo, int dataKbn, long ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt, int welfareType, List<string> printHokensyaNos, int hokenKbn, ReseputoShubetsuModel selectedReseputoShubeusu, int departmentId, int doctorId, int printNoFrom, int printNoTo, bool includeTester, bool includeOutDrug, int sort, List<long> listPtId)
     {
-        return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos);
+        return _receiptPrintService.GetReceiptPrint(hpId, formName, prefNo, reportId, reportEdaNo, dataKbn, ptId, seikyuYm, sinYm, hokenId, diskKind, diskCnt, welfareType, printHokensyaNos, hokenKbn, selectedReseputoShubeusu, departmentId, doctorId, printNoFrom, printNoTo, includeTester, includeOutDrug, sort, listPtId);
     }
 
     public CommonReportingRequestModel GetMemoMsgReportingData(string reportName, string title, List<string> listMessage)
@@ -518,15 +558,169 @@ public class ReportService : IReportService
         return _growthCurveA5CoReportService.GetGrowthCurveA5PrintData(hpId, growthCurveConfig);
     }
 
-    // P24WelfareDisk
-
     public CommonExcelReportingModel GetReceiptPrintExcel(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int seikyuYm)
     {
         return _receiptPrintExcelService.GetReceiptPrintExcel(hpId, prefNo, reportId, reportEdaNo, dataKbn, seikyuYm);
     }
 
-    public CommonExcelReportingModel GetReceiptListExcel(List<ReceiptInputCsvModel> receiptListModel)
+    public CommonExcelReportingModel GetReceiptListExcel(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput receiptListModel, bool isIsExportTitle)
     {
-        return _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(receiptListModel);
+        return _importCSVCoReportService.GetImportCSVCoReportServiceReportingData(hpId, seikyuYm, receiptListModel, isIsExportTitle);
+    }
+
+    public List<string> OutputExcelForPeriodReceipt(int hpId, int startDate, int endDate, List<Tuple<long, int>> ptConditions, List<Tuple<int, string>> grpConditions, int sort, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn)
+    {
+        return _accountingCoReportService.ExportCsv(hpId, startDate, endDate, ptConditions, grpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
+    }
+
+    #region Period Report
+    public AccountingResponse GetPeriodPrintData(int hpId, int startDate, int endDate, List<PtInfInputItem> sourcePt, List<(int grpId, string grpCd)> grpConditions, int printSort, bool isPrintList, bool printByMonth, bool printByGroup, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn, int hakkoDay, string memo, string formFileName, bool nyukinBase)
+    {
+        DateTime startDateOrigin = CIUtil.IntToDate(startDate);
+        DateTime endDateOrigin = CIUtil.IntToDate(endDate);
+        List<CoAccountingParamListModel> requestModelList = new();
+        List<CoAccountingParamModel> coAccountingParamModels = new();
+
+        List<(int startDate, int endDate)> dates = GetDates(startDateOrigin, endDateOrigin, startDate, endDate, printByMonth);
+        if (isPrintList)
+        {
+            List<(long ptId, int hokenId)> ptCoditions = GetPtCondition(sourcePt, printSort);
+
+            if (printByGroup)
+            {
+                foreach (var group in grpConditions)
+                {
+                    foreach (var date in dates)
+                    {
+                        requestModelList.Add(new(date.startDate,
+                                                 date.endDate,
+                                                 ptCoditions,
+                                                 new List<(int grpId, string grpCd)>() { group }));
+                    }
+                }
+                return _accountingCoReportService.GetAccountingReportingData(hpId, requestModelList, printSort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn, hakkoDay, memo, formFileName);
+            }
+            else
+            {
+                foreach (var date in dates)
+                {
+                    requestModelList.Add(new(date.startDate,
+                                             date.endDate,
+                                             ptCoditions,
+                                             grpConditions));
+                }
+                return _accountingCoReportService.GetAccountingReportingData(hpId, requestModelList, printSort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn, hakkoDay, memo, formFileName);
+            }
+        }
+        else
+        {
+            foreach (var date in dates)
+            {
+                foreach (var ptInf in sourcePt)
+                {
+                    coAccountingParamModels.Add(new CoAccountingParamModel(
+                                                    ptInf.PtId,
+                                                    date.startDate,
+                                                    date.endDate,
+                                                    raiinNos: new List<long>(),
+                                                    hokenId: ptInf.HokenId,
+                                                    miseisanKbn,
+                                                    saiKbn,
+                                                    misyuKbn,
+                                                    seikyuKbn,
+                                                    hokenKbn,
+                                                    nyukinBase: nyukinBase,
+                                                    hakkoDay: hakkoDay,
+                                                    memo: memo,
+                                                    formFileName: formFileName));
+                }
+            }
+        }
+        return _accountingCoReportService.GetAccountingReportingData(hpId, coAccountingParamModels);
+    }
+
+    #region private function
+    private List<(int startDate, int endDate)> GetDates(DateTime startDateOrigin, DateTime endDateOrigin, int startDate, int endDate, bool printByMonth)
+    {
+        List<(int startDate, int endDate)> dates = new();
+        if (printByMonth)
+        {
+            int differenceMonth = CountMonth(startDateOrigin, endDateOrigin);
+            int lastDayOfMonth = DateTime.DaysInMonth(startDateOrigin.Year, startDateOrigin.Month);
+            int lastDateInMonth = startDateOrigin.Year * 10000 + startDateOrigin.Month * 100 + lastDayOfMonth;
+            dates.Add((startDate, lastDateInMonth));
+            for (int i = 1; i <= differenceMonth; i++)
+            {
+                if (i == differenceMonth)
+                {
+                    int firstDateInMonth = endDateOrigin.Year * 10000 + endDateOrigin.Month * 100 + 1;
+                    dates.Add((firstDateInMonth, endDate));
+                }
+                else
+                {
+                    DateTime nexttimeInMonth = startDateOrigin.AddMonths(i);
+                    int nextStartDateInMonth = nexttimeInMonth.Year * 10000 + nexttimeInMonth.Month * 100 + 1;
+                    int nextEndDateInMonth = nexttimeInMonth.Year * 10000 + nexttimeInMonth.Month * 100 + DateTime.DaysInMonth(nexttimeInMonth.Year, nexttimeInMonth.Month);
+                    dates.Add((nextStartDateInMonth, nextEndDateInMonth));
+                }
+            }
+        }
+        else
+        {
+            dates.Add((startDate, endDate));
+        }
+        return dates;
+    }
+
+    private int CountMonth(DateTime startD, DateTime endD)
+    {
+        return 12 * (endD.Year - startD.Year) + endD.Month - startD.Month;
+    }
+
+    private List<(long ptId, int hokenId)> GetPtCondition(List<PtInfInputItem> sourcePt, int printSort, bool exportCSV = false)
+    {
+        List<(long ptId, int hokenId)> ptCoditions = new();
+        var listPt = GetPtListBySort(sourcePt, printSort, exportCSV);
+        foreach (var item in listPt)
+        {
+            ptCoditions.Add((item.PtId, 0));
+        }
+        return ptCoditions;
+    }
+
+    private List<PtInfInputItem> GetPtListBySort(List<PtInfInputItem> sourcePt, int printSort, bool exportCSV = false)
+    {
+        if (printSort == 0)
+        {
+            sourcePt = sourcePt.OrderBy(item => item.PtNum).ToList();
+        }
+        else if (printSort == 1)
+        {
+            sourcePt = sourcePt.OrderBy(item => item.KanaName).ToList();
+        }
+        if (exportCSV) return sourcePt;
+        return sourcePt.GroupBy(p => new { p.PtNum, p.HokenId }).Select(g => g.First()).ToList();
+    }
+    #endregion
+    #endregion
+
+    public CommonExcelReportingModel ExportCsv(int hpId, string menuName, int menuId, int timeFrom, int timeTo, int? monthFrom = 0, int? monthTo = 0, int? dateFrom = 0, int? dateTo = 0, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1, long? ptNumFrom = 0, long? ptNumTo = 0, bool? isPutColName = false, CoFileType? coFileType = null)
+    {
+        return _staticsticExportCsvService.ExportCsv(hpId, menuName, menuId, timeFrom, timeTo, monthFrom, monthTo, dateFrom, dateTo, isPutTotalRow, tenkiDateFrom, tenkiDateTo, enableRangeFrom, enableRangeTo, ptNumFrom, ptNumTo, isPutColName, coFileType);
+    }
+
+    public (string message, CoPrintExitCode code, List<string> data) OutPutFileSta900(int hpId, List<string> outputColumns, bool isPutColName, CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf, CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf, CoSta9000KensaConf? kensaConf, List<long> ptIds, int sortOrder, int sortOrder2, int sortOrder3)
+    {
+        return _sta9000CoReportService.OutPutFile(hpId, outputColumns, isPutColName, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf, kensaConf, ptIds, sortOrder, sortOrder2, sortOrder3);
+    }
+
+    public CommonReportingRequestModel GetKensaHistoryPrint(int hpId, int userId, long ptId, int setId, int iraiCd, int seikyuYm, int startDate, int endDate, bool showAbnormalKbn, int itemQuantity)
+    {
+        return _kensaHistoryCoReportService.GetKensaHistoryPrintData(hpId, userId, ptId, setId, iraiCd, seikyuYm, startDate, endDate, showAbnormalKbn, itemQuantity);
+    }
+
+    public CommonReportingRequestModel GetKensaResultMultiPrint(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, int endDate, bool showAbnormalKbn, int itemQuantity)
+    {
+        return _kensaResultMultiCoReportService.GetKensaResultMultiPrintData(hpId, userId, ptId, setId, iraiCd, startDate, endDate, showAbnormalKbn, itemQuantity);
     }
 }

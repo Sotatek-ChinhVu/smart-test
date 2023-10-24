@@ -1,8 +1,7 @@
-﻿namespace UseCase.Receipt.CheckExisReceInfEdit
+﻿namespace UseCase.Receipt.CheckExisReceInfEdit;
+
+public enum CheckExisReceInfEditStatus
 {
-    public enum CheckExisReceInfEditStatus
-    {
-        Success = 1,
-        Failed = 2
-    }
+    Success = 1,
+    Failed = 2
 }

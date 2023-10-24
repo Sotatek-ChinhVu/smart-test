@@ -1,9 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
     [Table(name: "RAIIN_LIST_INF")]
+    [Index(nameof(GrpId), nameof(KbnCd), nameof(RaiinListKbn), Name = "RAIIN_LIST_INF_IDX01")]
+    [Index(nameof(HpId), nameof(PtId), Name = "RAIIN_LIST_INF_IDX02")]
+
+
     public class RaiinListInf : EmrCloneable<RaiinListInf>
     {
         /// <summary>
@@ -12,7 +17,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("HP_ID")]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +25,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("PT_ID", Order = 2)]
+        [Column("PT_ID")]
         public long PtId { get; set; }
 
         /// <summary>
@@ -28,7 +33,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SIN_DATE", Order = 3)]
+        [Column("SIN_DATE")]
         public int SinDate { get; set; }
 
         /// <summary>
@@ -36,7 +41,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RAIIN_NO", Order = 4)]
+        [Column("RAIIN_NO")]
         public long RaiinNo { get; set; }
 
         /// <summary>
@@ -44,7 +49,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("GRP_ID", Order = 5)]
+        [Column("GRP_ID")]
         public int GrpId { get; set; }
 
         /// <summary>

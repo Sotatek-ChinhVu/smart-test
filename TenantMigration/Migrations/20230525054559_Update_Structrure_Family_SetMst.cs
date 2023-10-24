@@ -11,10 +11,6 @@ namespace TenantMigration.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_SET_MST_HP_ID_SET_KBN_SET_KBN_EDA_NO_GENERATION_ID_LEVEL1_L~",
-                table: "SET_MST");
-
             migrationBuilder.DropPrimaryKey(
                 name: "PK_PT_GRP_INF",
                 table: "PT_GRP_INF");
@@ -53,18 +49,18 @@ namespace TenantMigration.Migrations
                 column: "FAMILY_ID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SET_MST_HP_ID_SET_CD_SET_KBN_SET_KBN_EDA_NO_GENERATION_ID_L~",
+                name: "IX_SET_MST_HP_ID_SET_KBN_SET_KBN_EDA_NO_GENERATION_ID",
                 table: "SET_MST",
                 columns: new[] { "HP_ID", "SET_CD", "SET_KBN", "SET_KBN_EDA_NO", "GENERATION_ID", "LEVEL1", "LEVEL2", "LEVEL3" },
                 unique: true,
-                filter: "IsDeleted = 0");
+                filter: $"\"IS_DELETED\" = 0");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_SET_MST_HP_ID_SET_CD_SET_KBN_SET_KBN_EDA_NO_GENERATION_ID_L~",
+                name: "IX_SET_MST_HP_ID_SET_KBN_SET_KBN_EDA_NO_GENERATION_ID",
                 table: "SET_MST");
 
             migrationBuilder.DropPrimaryKey(
@@ -105,13 +101,6 @@ namespace TenantMigration.Migrations
                 name: "PK_PT_FAMILY",
                 table: "PT_FAMILY",
                 column: "PT_ID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SET_MST_HP_ID_SET_KBN_SET_KBN_EDA_NO_GENERATION_ID_LEVEL1_L~",
-                table: "SET_MST",
-                columns: new[] { "HP_ID", "SET_KBN", "SET_KBN_EDA_NO", "GENERATION_ID", "LEVEL1", "LEVEL2", "LEVEL3" },
-                unique: true,
-                filter: "IsDeleted = 0");
         }
     }
 }

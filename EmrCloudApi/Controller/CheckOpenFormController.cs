@@ -1,27 +1,24 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportPDF;
-using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.AccountDue;
+using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
-using Reporting.CommonMasters.Enums;
 using Reporting.ReportServices;
 using System.Text.Json;
-using UseCase.AccountDue.GetAccountDueList;
 
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CheckOpenFormController : ControllerBase
+public class CheckOpenFormController : AuthorizeControllerBase
 {
     private readonly ICheckOpenReportingService _checkOpenReportingService;
 
-    public CheckOpenFormController(ICheckOpenReportingService checkOpenReportingService)
+    public CheckOpenFormController(ICheckOpenReportingService checkOpenReportingService, IUserService userService) : base(userService)
     {
         _checkOpenReportingService = checkOpenReportingService;
     }
-
+   
     [HttpPost(ApiPath.AccountingReport)]
     public IActionResult CheckOpenReportingForm([FromForm] AccountingReportRequest requestStringJson)
     {
@@ -29,14 +26,21 @@ public class CheckOpenFormController : ControllerBase
         var request = JsonSerializer.Deserialize<AccountingCoReportModelRequest>(stringJson) ?? new();
         var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
 
-        var data = _checkOpenReportingService.CheckOpenAccountingForm(request.HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
+        var data = _checkOpenReportingService.CheckOpenAccountingForm(HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
         return Ok(data);
     }
 
     [HttpGet(ApiPath.ReceiptReport)]
     public IActionResult GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
     {
-        var data = _checkOpenReportingService.CheckOpenAccountingForm(request.HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
+        var data = _checkOpenReportingService.CheckOpenAccountingForm(HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
+        return Ok(data);
+    }
+
+    [HttpPost(ApiPath.CheckExistTemplateAccounting)]
+    public IActionResult CheckExistTemplateAccounting([FromBody] CheckExistTemplateAccountingRequest request)
+    {
+        var data = _checkOpenReportingService.CheckExistTemplate(request.TemplateName, request.PrintType);
         return Ok(data);
     }
 

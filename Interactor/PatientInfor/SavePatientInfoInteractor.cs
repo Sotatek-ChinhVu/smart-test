@@ -9,6 +9,9 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using UseCase.PatientInfor.Save;
 
 namespace Interactor.PatientInfor
@@ -19,15 +22,21 @@ namespace Interactor.PatientInfor
         private readonly ISystemConfRepository _systemConfRepository;
         private readonly IPtDiseaseRepository _ptDiseaseRepository;
         private readonly IAmazonS3Service _amazonS3Service;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
+        private const byte retryNumber = 50;
 
-        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service, IPtDiseaseRepository ptDiseaseRepository)
+        public SavePatientInfoInteractor(ITenantProvider tenantProvider, IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service, IPtDiseaseRepository ptDiseaseRepository)
         {
             _patientInforRepository = patientInforRepository;
             _systemConfRepository = systemConfRepository;
             _amazonS3Service = amazonS3Service;
             _ptDiseaseRepository = ptDiseaseRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
+        [Obsolete]
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
         {
             PatientInforModel patientInforModel = new();
@@ -82,10 +91,20 @@ namespace Interactor.PatientInfor
                     return listReturn;
                 }
 
-                (bool resultSave, long ptId) result;
+                (bool resultSave, long ptId) result = new();
                 if (inputData.Patient.PtId == 0)
                 {
-                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                    var count = 0;
+                    while (count < retryNumber)
+                    {
+
+                        result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                        if (result.resultSave)
+                        {
+                            break;
+                        }
+                        count++;
+                    }
                 }
                 else
                     result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId, inputData.HokenIdList);
@@ -98,10 +117,16 @@ namespace Interactor.PatientInfor
                 else
                     return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0, patientInforModel, false);
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
             finally
             {
                 _patientInforRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
 
@@ -846,5 +871,28 @@ namespace Interactor.PatientInfor
             }
             return true;
         }
+
+        #region Catch Exception
+        [Obsolete]
+        private static string HandleException(Exception exception)
+        {
+            if (exception is DbUpdateConcurrencyException concurrencyEx)
+            {
+                return "0";
+            }
+            else if (exception is DbUpdateException dbUpdateEx)
+            {
+                if (dbUpdateEx.InnerException != null)
+                {
+                    if (dbUpdateEx.InnerException is PostgresException postgreException)
+                    {
+                        return postgreException.Code ?? string.Empty;
+                    }
+                }
+            }
+
+            return "0";
+        }
+        #endregion
     }
 }

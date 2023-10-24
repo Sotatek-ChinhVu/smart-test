@@ -6,7 +6,6 @@ using Domain.Models.Insurance;
 using Domain.Models.Ka;
 using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
-using Domain.Models.Lock;
 using Domain.Models.Medical;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
@@ -22,6 +21,7 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Infrastructure.Options;
 using Interactor.CalculateService;
 using Interactor.Family.ValidateFamilyList;
@@ -35,6 +35,7 @@ using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
+using static Helper.Constants.UserConst;
 using DiseaseValidationStatus = Helper.Constants.PtDiseaseConst.ValidationStatus;
 
 namespace Interactor.MedicalExamination;
@@ -56,9 +57,12 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     private readonly IValidateFamilyList _validateFamilyList;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly ICalculateService _calculateService;
+    private readonly ISummaryInfRepository _summaryInfRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
     private readonly AmazonS3Options _options;
 
-    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList)
+    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ITenantProvider tenantProvider, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ISummaryInfRepository summaryInfRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
@@ -76,6 +80,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _karteInfRepository = karteInfRepository;
         _calculateService = calculateService;
         _validateFamilyList = validateFamilyList;
+        _summaryInfRepository = summaryInfRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveMedicalOutputData Handle(SaveMedicalInputData inputDatas)
@@ -87,6 +94,25 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             {
                 return new SaveMedicalOutputData(
                        SaveMedicalStatus.MedicalScreenLocked,
+                       RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                       new(),
+                       KarteValidationStatus.Valid,
+                       ValidateFamilyListStatus.ValidateSuccess,
+                       UpsertFlowSheetStatus.Valid,
+                       UpsertPtDiseaseListStatus.Valid,
+                       0,
+                       0,
+                       0,
+                       new(),
+                       new()
+                       );
+            }
+
+            var sumaryInf = _summaryInfRepository.Get(inputDatas.HpId, inputDatas.PtId);
+            if ((sumaryInf.Text != inputDatas.SpecialNoteItem.SummaryTab.Text || sumaryInf.Rtext != inputDatas.SpecialNoteItem.SummaryTab.Rtext) && _userRepository.GetPermissionByScreenCode(inputDatas.HpId, inputDatas.UserId, FunctionCode.EditSummary) != PermissionType.Unlimited)
+            {
+                return new SaveMedicalOutputData(
+                       SaveMedicalStatus.NoPermissionSaveSummary,
                        RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
                        new(),
                        KarteValidationStatus.Valid,
@@ -293,8 +319,8 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                        true,
                        true,
                        new List<RaiinListInfModel>(),
-                       i.PtId,
-                       false
+            i.PtId,
+            false
                    )).ToList() ?? new List<FlowSheetModel>();
 
             var check = _saveMedicalRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, inputDatas.Status, allOdrInfs, karteModel, inputDatas.UserId, familyList, nextOrderModels, summaryInfModel, inputDatas.SpecialNoteItem.ImportantNoteTab, patientInfTab, ptDiseaseModels, flowSheetData, inputDatas.Monshins);
@@ -361,6 +387,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     new()
                     );
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _ordInfRepository.ReleaseResource();
@@ -375,6 +406,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _todayOdrRepository.ReleaseResource();
             _karteInfRepository.ReleaseResource();
             _validateFamilyList.ReleaseResource();
+            _summaryInfRepository.ReleaseResource();
+            _tenantProvider.DisposeDataContext();
+            _loggingHandler.Dispose();
+            _saveMedicalRepository.ReleaseResource();
         }
     }
 

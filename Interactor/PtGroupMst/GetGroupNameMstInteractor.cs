@@ -1,34 +1,42 @@
 ﻿using Domain.Models.PtGroupMst;
 using UseCase.PtGroupMst.GetGroupNameMst;
 
-namespace Interactor.PtGroupMst
+namespace Interactor.PtGroupMst;
+
+public class GetGroupNameMstInteractor : IGetGroupNameMstInputPort
 {
-    public class GetGroupNameMstInteractor : IGetGroupNameMstInputPort
+    private readonly IGroupNameMstRepository _groupNameMstRepository;
+
+    public GetGroupNameMstInteractor(IGroupNameMstRepository groupNameMstRepository)
     {
-        private readonly IGroupNameMstRepository _groupNameMstRepository;
+        _groupNameMstRepository = groupNameMstRepository;
+    }
 
-        public GetGroupNameMstInteractor(IGroupNameMstRepository groupNameMstRepository)
+    public GetGroupNameMstOutputData Handle(GetGroupNameMstInputData inputData)
+    {
+        try
         {
-            _groupNameMstRepository = groupNameMstRepository;
+            if (inputData.HpId <= 0)
+            {
+                return new GetGroupNameMstOutputData(GetGroupNameMstStatus.InvalidHpId, new List<GroupNameMstModel>());
+            }
+
+            var result = _groupNameMstRepository.GetListGroupNameMst(inputData.HpId);
+            if (result.Any())
+            {
+                if (!inputData.IsGetAll)
+                {
+                    result = result.Where(item => item.IsDeleted == 0)
+                                   .OrderBy(item => item.SortNo)
+                                   .ToList();
+                }
+                return new GetGroupNameMstOutputData(GetGroupNameMstStatus.Successful, result);
+            }
+            return new GetGroupNameMstOutputData(GetGroupNameMstStatus.DataNotFound, result);
         }
-
-        public GetGroupNameMstOutputData Handle(GetGroupNameMstInputData inputData)
+        finally
         {
-            try
-            {
-                if (inputData.HpId <= 0)
-                    return new GetGroupNameMstOutputData(GetGroupNameMstStatus.InvalidHpId, new List<GroupNameMstModel>());
-
-                var result = _groupNameMstRepository.GetListGroupNameMst(inputData.HpId);
-                if (result.Any())
-                    return new GetGroupNameMstOutputData(GetGroupNameMstStatus.Successful, result);
-                else
-                    return new GetGroupNameMstOutputData(GetGroupNameMstStatus.DataNotFound, result);
-            }
-            catch
-            {
-                return new GetGroupNameMstOutputData(GetGroupNameMstStatus.Exception, new List<GroupNameMstModel>());
-            }
+            _groupNameMstRepository.ReleaseResource();
         }
     }
 }

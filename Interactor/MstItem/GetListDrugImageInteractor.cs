@@ -3,6 +3,7 @@ using Helper.Constants;
 using Helper.Enum;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
+using System;
 using System.Text;
 using UseCase.MstItem.GetListDrugImage;
 
@@ -30,13 +31,13 @@ namespace Interactor.MstItem
             }
             else
             {
-                return new GetListDrugImageOutputData(GetListDrugImageStatus.InvalidTypeImage, new List<string>());
+                return new GetListDrugImageOutputData(GetListDrugImageStatus.InvalidTypeImage, new());
             }
 
             string path = BuildPathAws(folderPaths);
             List<string> images = _amazonS3Service.GetListObjectAsync(path).Result;
             if (!images.Any())
-                return new GetListDrugImageOutputData(GetListDrugImageStatus.NoData, images);
+                return new GetListDrugImageOutputData(GetListDrugImageStatus.NoData, new());
             else
             {
                 string prefix = _amazonS3Service.GetAccessBaseS3();
@@ -48,7 +49,26 @@ namespace Interactor.MstItem
                                .Select(x => prefix + x)
                                .ToList();
 
-                return new GetListDrugImageOutputData(GetListDrugImageStatus.Successful, images);
+                List<DrugImageOutputItem> result = new()
+                {
+                    SetItemData(string.Empty, inputData.YjCd, inputData.SelectedImage, images)
+                };
+
+                foreach (var extention in "ABCDEFGHIJZ")
+                {
+                    var drugImageItem = SetItemData(extention.ToString(), inputData.YjCd, inputData.SelectedImage, images);
+                    if (extention.ToString().Equals("A") && string.IsNullOrEmpty(result.First().FileLink))
+                    {
+                        result = new();
+                    }
+                    if (extention.ToString().Equals("Z") && result.Count == 10)
+                    {
+                        result.Add(new());
+                    }
+                    result.Add(drugImageItem);
+                }
+
+                return new GetListDrugImageOutputData(GetListDrugImageStatus.Successful, result);
             }
         }
 
@@ -61,6 +81,16 @@ namespace Interactor.MstItem
                 result.Append("/");
             }
             return result.ToString();
+        }
+
+        private DrugImageOutputItem SetItemData(string extentionKey, string yjCd, string selectedImage, List<string> images)
+        {
+            string keyCheck = yjCd + extentionKey.ToString();
+            var imageLink = images.FirstOrDefault(link => Path.GetFileName(link).Equals(keyCheck + Path.GetExtension(link)));
+            DrugImageOutputItem drugImageItem = new(imageLink ?? string.Empty,
+                                                    !string.IsNullOrEmpty(imageLink),
+                                                    selectedImage.Equals(Path.GetFileName(imageLink)));
+            return drugImageItem;
         }
     }
 }

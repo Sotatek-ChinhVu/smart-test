@@ -27,6 +27,7 @@ namespace Domain.Models.InsuranceInfor
             StartDate = startDate;
             EndDate = endDate;
             IsAddNew = isAddNew;
+            HokenId = hokenInf.HokenId;
         }
 
         public InsuranceModel() // new model
@@ -113,6 +114,34 @@ namespace Domain.Models.InsuranceInfor
             Kohi2Id = kohi2Id;
             Kohi3Id = kohi3Id;
             Kohi4Id = kohi4Id;
+            IsAddNew = isAddNew;
+            HokenPatternSelected = hokenPatternSelected;
+        }
+
+        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int startDate, int endDate, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, bool isAddNew, int isDeleted, bool hokenPatternSelected)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            PtBirthday = ptBirthday;
+            SeqNo = seqNo;
+            HokenSbtCd = hokenSbtCd;
+            HokenPid = hokenPid;
+            HokenKbn = hokenKbn;
+            HokenMemo = hokenMemo;
+            SinDate = sinDate;
+            IsDeleted = isDeleted;
+            HokenInf = hokenInf;
+            Kohi1 = kohi1;
+            Kohi2 = kohi2;
+            Kohi3 = kohi3;
+            Kohi4 = kohi4;
+            StartDate = startDate;
+            EndDate = endDate;
+            HokenId = hokenInf.HokenId;
+            Kohi1Id = kohi1.HokenId;
+            Kohi2Id = kohi2.HokenId;
+            Kohi3Id = kohi3.HokenId;
+            Kohi4Id = kohi4.HokenId;
             IsAddNew = isAddNew;
             HokenPatternSelected = hokenPatternSelected;
         }
@@ -250,7 +279,11 @@ namespace Domain.Models.InsuranceInfor
 
         public bool IsAddNew { get; private set; }
 
-        public bool IsExpirated => !(StartDate <= SinDate && EndDate >= SinDate);
+        public bool IsExpirated => ((!HokenInf.IsEmptyModel && HokenInf.IsExpirated) ||
+                 (!Kohi1.IsEmptyModel && Kohi1.IsExpirated) ||
+                 (!Kohi2.IsEmptyModel && Kohi2.IsExpirated) ||
+                 (!Kohi3.IsEmptyModel && Kohi3.IsExpirated) ||
+                 (!Kohi4.IsEmptyModel && Kohi4.IsExpirated));
 
         #endregion
 
@@ -278,7 +311,12 @@ namespace Domain.Models.InsuranceInfor
         {
             string hokenName = HokenPid.ToString().PadLeft(3, '0') + ". ";
 
-            if (!(HokenInf.StartDate <= SinDate && HokenInf.EndDate >= SinDate))
+            if ((!HokenInf.IsEmptyModel && HokenInf.IsExpirated) ||
+                 (!Kohi1.IsEmptyModel && Kohi1.IsExpirated) ||
+                 (!Kohi2.IsEmptyModel && Kohi2.IsExpirated) ||
+                 (!Kohi3.IsEmptyModel && Kohi3.IsExpirated) ||
+                 (!Kohi4.IsEmptyModel && Kohi4.IsExpirated)
+                )
             {
                 hokenName = "×" + hokenName;
             }

@@ -1,5 +1,4 @@
 ﻿using Helper.Constants;
-using System.Text.Json.Serialization;
 
 namespace Domain.Models.MstItem
 {

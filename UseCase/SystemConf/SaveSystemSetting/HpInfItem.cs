@@ -1,4 +1,5 @@
 ﻿using Helper.Constants;
+using static Helper.Constants.StatusConstant;
 
 namespace UseCase.SystemConf.SaveSystemSetting
 {
@@ -54,5 +55,33 @@ namespace UseCase.SystemConf.SaveSystemSetting
         public int UpdateId { get; private set; }
 
         public ModelStatus HpInfModelStatus { get; private set; }
+
+        #region common
+        public ValidationHpInfStatus Validation()
+        {
+            if (HpId <= 0)
+                return ValidationHpInfStatus.InvalidHpId;
+            if (HpCd.Length > 7)
+                return ValidationHpInfStatus.InvalidHpCd;
+            if (RousaiHpCd.Length > 7)
+                return ValidationHpInfStatus.InvalidRousaiHpCd;
+            if (HpName.Length > 80)
+                return ValidationHpInfStatus.InvalidHpName;
+            if (ReceHpName.Length > 80)
+                return ValidationHpInfStatus.InvalidReceHpName;
+            if (KaisetuName.Length > 40)
+                return ValidationHpInfStatus.InvalidKaisetuName;
+            if (PostCd.Length > 7)
+                return ValidationHpInfStatus.InvalidPostCd;
+            if (Address1.Length > 100)
+                return ValidationHpInfStatus.InvalidAddress1;
+            if (Address2.Length > 100)
+                return ValidationHpInfStatus.InvalidAddress2;
+            if (Tel.Length > 15)
+                return ValidationHpInfStatus.InvalidTel;
+
+            return ValidationHpInfStatus.None;
+        }
+        #endregion
     }
 }

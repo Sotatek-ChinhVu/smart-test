@@ -46,6 +46,8 @@ public class CancelSeikyuInteractor : ICancelSeikyuInputPort
         finally
         {
             _receSeikyuRepository.ReleaseResource();
+            _calculateRepository.ReleaseSource();
+            _receiptRepository.ReleaseResource();
         }
     }
 }

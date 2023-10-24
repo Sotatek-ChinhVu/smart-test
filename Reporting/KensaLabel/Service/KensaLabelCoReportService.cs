@@ -1,5 +1,4 @@
 ﻿using Helper.Common;
-using Reporting.CommonMasters.Enums;
 using Reporting.KensaLabel.DB;
 using Reporting.KensaLabel.Mapper;
 using Reporting.KensaLabel.Model;

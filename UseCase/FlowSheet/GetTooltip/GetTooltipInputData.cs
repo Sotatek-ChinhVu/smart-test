@@ -4,13 +4,14 @@ namespace UseCase.FlowSheet.GetTooltip
 {
     public class GetTooltipInputData : IInputData<GetTooltipOutputData>
     {
-        public GetTooltipInputData(int hpId, long ptId, int sinDate, int startDate, int endDate)
+        public GetTooltipInputData(int hpId, long ptId, int sinDate, int startDate, int endDate, bool isAll)
         {
             HpId = hpId;
             PtId = ptId;
             SinDate = sinDate;
             StartDate = startDate;
             EndDate = endDate;
+            IsAll = isAll;
         }
 
         public int HpId { get; private set; }
@@ -23,5 +24,6 @@ namespace UseCase.FlowSheet.GetTooltip
 
         public int EndDate { get; private set; }
 
+        public bool IsAll { get; private set; }
     }
 }

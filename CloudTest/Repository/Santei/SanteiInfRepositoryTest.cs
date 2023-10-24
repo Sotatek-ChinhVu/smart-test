@@ -201,7 +201,7 @@ public class SanteiInfRepositoryTest : BaseUT
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         // Act
-        var resultComman = santeiInfRepository.SaveSantei(1, 1, listSanteiModels);
+        var resultComman = santeiInfRepository.SaveSantei(1, 1, ptId, listSanteiModels);
         var santeiInf = tenant.SanteiInfs.OrderBy(item => item.Id)
                                          .LastOrDefault(item => item.PtId == ptId
                                                              && item.AlertDays == alertDays
@@ -287,7 +287,7 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                                     false
                                                                                 )
                                                             };
-        var resultComman = santeiInfRepository.SaveSantei(1, 1, listSanteiUpdateModels);
+        var resultComman = santeiInfRepository.SaveSantei(1, 1, ptId, listSanteiUpdateModels);
         var santeiInfCheck = tenant.SanteiInfs.OrderBy(item => item.Id)
                                               .LastOrDefault(item => item.Id == santeiInfUnitTest.Id);
         var listSanteiInfChecks = new List<SanteiInf>() { santeiInfCheck ?? new SanteiInf() };
@@ -354,7 +354,7 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                                     true
                                                                                 )
                                                             };
-        var resultComman = santeiInfRepository.SaveSantei(1, 1, listSanteiUpdateModels);
+        var resultComman = santeiInfRepository.SaveSantei(1, 1, ptId, listSanteiUpdateModels);
         var santeiInfCheck = tenant.SanteiInfs.OrderBy(item => item.Id)
                                               .LastOrDefault(item => item.Id == santeiInfUnitTest.Id);
         // Assert
@@ -405,7 +405,7 @@ public class SanteiInfRepositoryTest : BaseUT
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
         // Act
-        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, 1, listSanteiDetailModels);
+        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, 1, ptId, listSanteiDetailModels);
 
         var santeiInfDetail = tenant.SanteiInfDetails.OrderBy(item => item.Id)
                                                      .LastOrDefault(item => item.PtId == ptId
@@ -503,7 +503,7 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                 hosokuCommentNew,
                                                                 commentNew
                                                             );
-        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, 1, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
+        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, 1, ptId, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
 
         var santeiInfDetail = tenant.SanteiInfDetails.OrderBy(item => item.Id)
                                                      .LastOrDefault(item => item.Id == santeiInfDetailUnitTest.Id);
@@ -578,7 +578,7 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                 comment,
                                                                 true
                                                             );
-        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, 1, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
+        var resultComman = santeiInfRepository.SaveListSanteiInfDetail(1, 1, ptId, new List<SanteiInfDetailModel>() { santeiInfDetailModel });
 
         var santeiInfDetail = tenant.SanteiInfDetails.OrderBy(item => item.Id)
                                                      .LastOrDefault(item => item.Id == santeiInfDetailUnitTest.Id);

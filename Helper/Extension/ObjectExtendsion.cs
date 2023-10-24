@@ -271,6 +271,12 @@ namespace Helper.Extension
         {
             return (T)FormatterServices.GetUninitializedObject(typeof(T));
         }
+
+        public static string AsString(this String inputString)
+        {
+            if (string.IsNullOrEmpty(inputString)) return "";
+            return inputString;
+        }
     }
 
     public enum SizeUnits

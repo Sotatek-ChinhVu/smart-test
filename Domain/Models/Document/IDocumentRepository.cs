@@ -20,11 +20,11 @@ public interface IDocumentRepository : IRepositoryBase
 
     bool CheckDuplicateCategoryName(int hpId, int categoryCd, string categoryName);
 
-    DocInfModel GetDocInfDetail(int hpId, long ptId, int sinDate, long raiinNo, int seqNo);
+    DocInfModel GetDocInfDetail(int hpId, long fileId);
 
     bool SaveDocInf(int userId, DocInfModel model, bool overwriteFile);
 
-    bool DeleteDocInf(int hpId, int userId, long ptId, int sinDate, long raiinNo, int seqNo);
+    bool DeleteDocInf(int hpId, int userId, long fileId);
 
     bool DeleteDocInfs(int hpId, int userId, long ptId, int categoryCd);
 

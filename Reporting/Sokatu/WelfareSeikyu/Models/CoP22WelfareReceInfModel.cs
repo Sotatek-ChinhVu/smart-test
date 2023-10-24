@@ -92,8 +92,6 @@ public class CoP22WelfareReceInfModel
                 case "085": return "牧之原市";
                 default: return CityCode;
             }
-
-            return "";
         }
     }
 

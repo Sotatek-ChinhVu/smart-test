@@ -6,6 +6,8 @@ namespace Entity.Tenant
 {
     [Table(name: "RAIIN_LIST_DETAIL")]
     [Index(nameof(HpId), nameof(GrpId), nameof(KbnCd), nameof(IsDeleted), Name = "RAIIN_LIST_DETAIL_IDX01")]
+    [Index(nameof(HpId), nameof(IsDeleted), Name = "RAIIN_LIST_DETAIL_IDX02")]
+
     public class RaiinListDetail : EmrCloneable<RaiinListDetail>
     {
         /// <summary>

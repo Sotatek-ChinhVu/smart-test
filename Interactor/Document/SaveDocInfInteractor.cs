@@ -1,13 +1,12 @@
-﻿using Domain.Models.Document;
-using Domain.Models.HpInf;
+﻿using Domain.Models.AuditLog;
+using Domain.Models.Document;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
-using Domain.Models.User;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;
-using System.Text.RegularExpressions;
+using Infrastructure.Logger;
 using UseCase.Document.SaveDocInf;
 
 namespace Interactor.Document;
@@ -16,19 +15,21 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
 {
     private readonly IDocumentRepository _documentRepository;
     private readonly IAmazonS3Service _amazonS3Service;
-    private readonly IHpInfRepository _hpInfRepository;
     private readonly IPatientInforRepository _patientInforRepository;
-    private readonly IUserRepository _userRepository;
     private readonly IReceptionRepository _receptionRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveDocInfInteractor(IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IReceptionRepository receptionRepository)
+    public SaveDocInfInteractor(ITenantProvider tenantProvider, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IAuditLogRepository auditLogRepository)
     {
         _documentRepository = documentRepository;
         _amazonS3Service = amazonS3Service;
-        _hpInfRepository = hpInfRepository;
         _patientInforRepository = patientInforRepository;
-        _userRepository = userRepository;
         _receptionRepository = receptionRepository;
+        _auditLogRepository = auditLogRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveDocInfOutputData Handle(SaveDocInfInputData inputData)
@@ -46,7 +47,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             Console.WriteLine("StartConsoleWriteLineDocument");
             // upload file to S3
             var memoryStream = inputData.StreamImage.ToMemoryStreamAsync().Result;
-            if (memoryStream.Length == 0 && inputData.SeqNo <= 0)
+            if (memoryStream.Length == 0 && inputData.FileId <= 0)
             {
                 return new SaveDocInfOutputData(SaveDocInfStatus.InvalidFileInput);
             }
@@ -55,9 +56,9 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
                 Console.WriteLine("memoryStream.Length: " + memoryStream.Length);
                 var ptNum = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0)?.PtNum ?? 0;
                 var listFolderPath = new List<string>(){
-                                                   CommonConstants.Store,
-                                                   CommonConstants.Files
-                                                };
+                                                          CommonConstants.Store,
+                                                          CommonConstants.Files
+                                                       };
                 path = _amazonS3Service.GetFolderUploadToPtNum(listFolderPath, ptNum);
                 fileName = _amazonS3Service.GetUniqueFileNameKey(inputData.FileName.Trim());
                 var response = _amazonS3Service.UploadObjectAsync(path, fileName, memoryStream);
@@ -74,6 +75,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             }
             if (_documentRepository.SaveDocInf(inputData.UserId, ConvertToDocInfModel(inputData), overwriteFile))
             {
+                AddAuditTrailLog(inputData.HpId, inputData.UserId, inputData.PtId, inputData.FileName);
                 return new SaveDocInfOutputData(SaveDocInfStatus.Successed);
             }
             if (!string.IsNullOrEmpty(path) && !string.IsNullOrEmpty(fileName))
@@ -82,41 +84,39 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             }
             return new SaveDocInfOutputData(SaveDocInfStatus.Failed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _documentRepository.ReleaseResource();
-            _hpInfRepository.ReleaseResource();
             _receptionRepository.ReleaseResource();
-            _userRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
+            _auditLogRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 
     private DocInfModel ConvertToDocInfModel(SaveDocInfInputData inputData)
     {
-        return new DocInfModel(
-                                inputData.HpId,
-                                inputData.PtId,
-                                inputData.SinDate,
-                                inputData.RaiinNo,
-                                inputData.SeqNo,
-                                inputData.CategoryCd,
-                                string.Empty,
-                                inputData.FileName,
-                                inputData.DisplayFileName,
-                                CIUtil.GetJapanDateTimeNow()
-                            );
+        return new DocInfModel(inputData.HpId,
+                               inputData.FileId,
+                               inputData.PtId,
+                               inputData.GetDate,
+                               inputData.CategoryCd,
+                               string.Empty,
+                               inputData.FileName,
+                               inputData.DisplayFileName,
+                               CIUtil.GetJapanDateTimeNow());
     }
 
     private SaveDocInfStatus ValidateInputData(SaveDocInfInputData inputData)
     {
-        if (inputData.SinDate.ToString().Length != 8)
+        if (inputData.GetDate.ToString().Length != 8)
         {
-            return SaveDocInfStatus.InvalidSindate;
-        }
-        else if (!_userRepository.CheckExistedUserId(inputData.UserId))
-        {
-            return SaveDocInfStatus.InvalidUserId;
+            return SaveDocInfStatus.InvalidGetDate;
         }
         else if (!_documentRepository.CheckExistDocCategory(inputData.HpId, inputData.CategoryCd))
         {
@@ -126,9 +126,9 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
         {
             return SaveDocInfStatus.InvalidDisplayFileName;
         }
-        if (inputData.SeqNo > 0)
+        if (inputData.FileId > 0)
         {
-            var docInfDetail = _documentRepository.GetDocInfDetail(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.SeqNo);
+            var docInfDetail = _documentRepository.GetDocInfDetail(inputData.HpId, inputData.FileId);
             if (docInfDetail != null)
             {
                 return SaveDocInfStatus.ValidateSuccess;
@@ -136,19 +136,27 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
         }
         else
         {
-            if (!_hpInfRepository.CheckHpId(inputData.HpId))
-            {
-                return SaveDocInfStatus.InvalidHpId;
-            }
-            else if (!_patientInforRepository.CheckExistIdList(new List<long> { inputData.PtId }))
+            if (!_patientInforRepository.CheckExistIdList(new List<long> { inputData.PtId }))
             {
                 return SaveDocInfStatus.InvalidPtId;
             }
-            else if (!_receptionRepository.CheckExistRaiinNo(inputData.HpId, inputData.PtId, inputData.RaiinNo))
-            {
-                return SaveDocInfStatus.InvalidRaiinNo;
-            }
         }
         return SaveDocInfStatus.ValidateSuccess;
+    }
+
+    private void AddAuditTrailLog(int hpId, int userId, long ptId, string hosoku)
+    {
+        var arg = new ArgumentModel(
+                        EventCode.EditDocumentSave,
+                        ptId,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        hosoku
+                  );
+        _auditLogRepository.AddAuditTrailLog(hpId, userId, arg);
     }
 }

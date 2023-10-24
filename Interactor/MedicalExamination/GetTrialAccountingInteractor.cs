@@ -78,6 +78,8 @@ namespace Interactor.MedicalExamination
             {
                 _receptionRepository.ReleaseResource();
                 _accountingRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
+                _calculateRepository.ReleaseSource();
             }
 
         }

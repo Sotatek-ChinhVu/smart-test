@@ -2,6 +2,7 @@
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.OrdInfDetails;
+using Domain.Types;
 
 namespace Domain.Models.OrdInfs
 {
@@ -48,5 +49,9 @@ namespace Domain.Models.OrdInfs
         List<Tuple<string, string>> GetIpnMst(int hpId, int sinDateMin, int sinDateMax, List<string> ipnCds);
 
         bool CheckOrdInfInDrug(int hpId, long ptId, long raiinNo);
+
+        List<OrdInfModel> GetIngaiKensaOdrInf(int hpId, long ptId, int sinDate, long raiinNo);
+
+        List<OrdInfDetailModel> GetIngaiKensaOdrInfDetail(int hpId, long ptId, int sinDate, long raiinNo, string centerCd, int primaryKbn);
     }
 }

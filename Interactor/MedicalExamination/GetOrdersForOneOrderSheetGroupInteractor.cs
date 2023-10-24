@@ -73,6 +73,7 @@ namespace Interactor.MedicalExamination
                             history.KaName,
                             history.TantoId,
                             history.TantoName,
+                            history.TantoFullName,
                             history.SanteiKbn,
                             history.TagNo,
                             history.SinryoTitle,

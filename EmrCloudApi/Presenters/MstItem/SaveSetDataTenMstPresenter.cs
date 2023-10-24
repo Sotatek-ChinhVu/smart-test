@@ -27,6 +27,9 @@ namespace EmrCloudApi.Presenters.MstItem
                 case SaveSetDataTenMstStatus.Successful:
                     Result.Message = ResponseMessage.Success;
                     break;
+                case SaveSetDataTenMstStatus.Failed:
+                    Result.Message = ResponseMessage.Failed;
+                    break;
             }
         }
     }

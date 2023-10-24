@@ -86,7 +86,7 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<GetFlowSheetTooltipResponse>> GetToolTip([FromQuery] GetFlowSheetTooltipRequest inputData)
         {
 
-            var input = new GetTooltipInputData(HpId, inputData.PtId, inputData.SinDate, inputData.StartDate, inputData.EndDate);
+            var input = new GetTooltipInputData(HpId, inputData.PtId, inputData.SinDate, inputData.StartDate, inputData.EndDate, inputData.IsAll);
             var output = _bus.Handle(input);
             var presenter = new GetFlowSheetTooltipPresenter();
             presenter.Complete(output);

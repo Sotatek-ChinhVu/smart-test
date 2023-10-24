@@ -3,7 +3,7 @@ using UseCase.Receipt.GetListKaikeiInf;
 
 namespace Interactor.Receipt;
 
-public class GetListKaikeiInfInteractor: IGetListKaikeiInfInputPort
+public class GetListKaikeiInfInteractor : IGetListKaikeiInfInputPort
 {
     private readonly IReceiptRepository _receiptRepository;
 

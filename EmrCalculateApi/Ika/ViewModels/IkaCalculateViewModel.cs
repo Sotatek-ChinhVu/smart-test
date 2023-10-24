@@ -15,13 +15,17 @@ using Helper.Constants;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using PostgreDataContext;
+using System.Diagnostics;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
     public class IkaCalculateViewModel : IIkaCalculateViewModel
     {
         private readonly IFutancalcViewModel _iFutancalcViewModel;
+        private readonly IMessenger _messenger;
 
         private const string ModuleName = ModuleNameConst.EmrCalculateIka;
         private IkaCalculateFinder _ikaCalculateFinder;
@@ -38,6 +42,8 @@ namespace EmrCalculateApi.Ika.ViewModels
         private List<DensiSanteiKaisuModel> _cacheDensiSanteiKaisu;
         private List<ItemGrpMstModel> _cacheItemGrpMst;
         private List<KouiHoukatuMstModel> _cacheKouiHoukatuMst;
+
+        private string _uuid = string.Empty;
 
         /// <summary>
         /// 来院情報
@@ -96,7 +102,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
 
-        public IkaCalculateViewModel(IFutancalcViewModel iFutancalcViewModel, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
+        public IkaCalculateViewModel(IFutancalcViewModel iFutancalcViewModel, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger)
         {
             _iFutancalcViewModel = iFutancalcViewModel;
             // 変数初期化
@@ -115,6 +121,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             // 点数マスタのキャッシュ
             //_cacheTenMst = new List<TenMstModel>();
             _cacheTenMst = GetDefaultTenMst();
+            _messenger = messenger;
             // 電子算定回数マスタのキャッシュ
             //_cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu();
             //FutanCalcVM = new FutancalcViewModel();
@@ -162,6 +169,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             ikaCalculateArgumentViewModel.cacheKouiHoukatuMst = _cacheKouiHoukatuMst;
             ikaCalculateArgumentViewModel.cacheItemGrpMst = _cacheItemGrpMst;
             ikaCalculateArgumentViewModel.preFix = preFix;
+            ikaCalculateArgumentViewModel.calcKeyId = CalcKeyID;
 
             _common = new IkaCalculateCommonDataViewModel(ikaCalculateArgumentViewModel, _systemConfigProvider, _emrLogger);
 
@@ -256,17 +264,17 @@ namespace EmrCalculateApi.Ika.ViewModels
             ikaCalculateArgumentViewModel = new IkaCalculateArgumentViewModel();
 
             // 要求登録           
-            AddCalcStatus(hpId, ptId, sinDate, seikyuUp, preFix);
+            AddCalcStatus(hpId, ptId, sinDate, seikyuUp, preFix, CalcKeyID);
 
             int successCount = 0;
             // 要求がある限りループ
-            while (!IsStopCalc && GetCalcStatus(hpId, ptId, sinDate, ref calcStatus, preFix))
+            while (!IsStopCalc && GetCalcStatus(hpId, ptId, sinDate, ref calcStatus, CalcKeyID))
             {
-                if (AllowSendProgress)
-                {
-                    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-                    IsStopCalc = statusCallBack.Result.Result;
-                }
+                //if (AllowSendProgress)
+                //{
+                //    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                //    IsStopCalc = statusCallBack.Result.Result;
+                //}
                 if (IsStopCalc)
                 {
                     break;
@@ -283,11 +291,11 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                     if (calcStatus.PtId == ptId && calcStatus.SinDate == sinDate)
                     {
-                        calcStatusies.AddRange(_ikaCalculateFinder.GetSameCalcStatus(calcStatus.CalcId, preFix));
+                        calcStatusies.AddRange(_ikaCalculateFinder.GetSameCalcStatus(calcStatus.CalcId, CalcKeyID));
                     }
                     else
                     {
-                        calcStatusies.AddRange(_ikaCalculateFinder.GetSameCalcStatus(calcStatus, preFix));
+                        calcStatusies.AddRange(_ikaCalculateFinder.GetSameCalcStatus(calcStatus, CalcKeyID));
                     }
                     foreach (CalcStatusModel updCalcStatus in calcStatusies)
                     {
@@ -299,7 +307,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                         // falseのまま、放置するわけにいかないのでリトライする
                         List<long> calcIds = calcStatusies.Select(p => p.CalcId).ToList();
 
-                        List<CalcStatusModel> updCalcStatusies = _ikaCalculateFinder.GetCalcStatusies(calcIds, preFix);
+                        List<CalcStatusModel> updCalcStatusies = _ikaCalculateFinder.GetCalcStatusies(calcIds, CalcKeyID);
 
                         foreach (CalcStatusModel updCalcStatus in updCalcStatusies)
                         {
@@ -368,11 +376,11 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                     if (calcStatus.PtId == ptId && calcStatus.SinDate == sinDate)
                     {
-                        calcStatusies.AddRange(_ikaCalculateFinder.GetSameCalcStatus(calcStatus.CalcId, preFix));
+                        calcStatusies.AddRange(_ikaCalculateFinder.GetSameCalcStatus(calcStatus.CalcId, CalcKeyID));
                     }
                     else
                     {
-                        calcStatusies.AddRange(_ikaCalculateFinder.GetSameCalcStatus(calcStatus, preFix));
+                        calcStatusies.AddRange(_ikaCalculateFinder.GetSameCalcStatus(calcStatus, CalcKeyID));
                     }
                     foreach (CalcStatusModel updCalcStatus in calcStatusies)
                     {
@@ -391,7 +399,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                         // falseのまま、放置するわけにいかないので、0に戻すようリトライする
                         List<long> calcIds = calcStatusies.Select(p => p.CalcId).ToList();
 
-                        List<CalcStatusModel> updCalcStatusies = _ikaCalculateFinder.GetCalcStatusies(calcIds, preFix);
+                        List<CalcStatusModel> updCalcStatusies = _ikaCalculateFinder.GetCalcStatusies(calcIds, CalcKeyID);
 
                         foreach (CalcStatusModel updCalcStatus in updCalcStatusies)
                         {
@@ -467,7 +475,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                             // falseのまま、放置するわけにいかないのでリトライする
                             List<long> calcIds = calcStatusies.Select(p => p.CalcId).ToList();
 
-                            List<CalcStatusModel> updCalcStatusies = _ikaCalculateFinder.GetCalcStatusies(calcIds, preFix);
+                            List<CalcStatusModel> updCalcStatusies = _ikaCalculateFinder.GetCalcStatusies(calcIds, CalcKeyID);
 
                             foreach (CalcStatusModel updCalcStatus in updCalcStatusies)
                             {
@@ -511,12 +519,12 @@ namespace EmrCalculateApi.Ika.ViewModels
                 }
                 if (AllowSendProgress)
                 {
-                    SendMessager(new RecalculationStatus(false, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
+                    SendMessager(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, AllCalcCount, successCount, string.Empty, UniqueKey));
                 }
             }
             if (AllowSendProgress)
             {
-                SendMessager(new RecalculationStatus(true, 1, AllCalcCount, successCount, string.Empty, UniqueKey));
+                SendMessager(new RecalculationStatus(true, CalculateStatusConstant.RecalculationCheckBox, AllCalcCount, successCount, string.Empty, UniqueKey));
             }
         }
         /// <summary>
@@ -536,10 +544,10 @@ namespace EmrCalculateApi.Ika.ViewModels
             //要求登録
             AddCalcStatusMonth(hpId, seikyuYm, ptIds, preFix);
 
-            AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(preFix);
+            AllCalcCount = _ikaCalculateFinder.GetCountCalcInMonth(CalcKeyID);
             if (AllowSendProgress)
             {
-                SendMessager(new RecalculationStatus(false, 1, AllCalcCount, 0, string.Empty, UniqueKey));
+                SendMessager(new RecalculationStatus(false, CalculateStatusConstant.RecalculationCheckBox, AllCalcCount, 0, string.Empty, UniqueKey));
             }
 
             //計算処理
@@ -550,7 +558,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
         private void SendMessager(RecalculationStatus status)
         {
-            Messenger.Instance.Send(status);
+            _messenger.Send(status);
         }
 
         /// <summary>
@@ -676,7 +684,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <param name="hpId">医療機関識別ID</param>
         /// <param name="seikyuYm">請求年月</param>
         /// <param name="ptIds">患者ID</param>
-        public void AddCalcStatusMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix = "")
+        public void AddCalcStatusMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix)
         {
             List<RaiinDaysModel> raiinDays = _raiinInfFinder.FindRaiinInfDaysInMonth(hpId, seikyuYm, ptIds);
 
@@ -688,12 +696,12 @@ namespace EmrCalculateApi.Ika.ViewModels
                             HpId = r.HpId,
                             PtId = r.PtId,
                             SinDate = r.SinDate,
-                            CalcMode = CalcModeConst.Continuity
+                            CalcMode = CalcModeConst.Continuity,
                         }
                     )
             ).ToList();
 
-            _saveIkaCalculateCommandHandler.AddCalcStatus(calcStatusies, preFix);
+            _saveIkaCalculateCommandHandler.AddCalcStatus(calcStatusies, preFix, CalcKeyID);
         }
 
         /// <summary>
@@ -703,7 +711,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <param name="ptId">患者ID</param>
         /// <param name="sinDate">診療日</param>
         /// <param name="seikyuUp">請求情報更新</param>
-        public void AddCalcStatus(int hpId, long ptId, int sinDate, int seikyuUp, string preFix)
+        public void AddCalcStatus(int hpId, long ptId, int sinDate, int seikyuUp, string preFix, string calcKeyId)
         {
             List<CalcStatusModel> calcStatusies = new List<CalcStatusModel>();
 
@@ -731,7 +739,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                     calcStatusies.Add(calcStatus);
                 }
             }
-            _saveIkaCalculateCommandHandler.AddCalcStatus(calcStatusies, preFix);
+            _saveIkaCalculateCommandHandler.AddCalcStatus(calcStatusies, preFix, calcKeyId);
 
         }
         /// <summary>
@@ -758,7 +766,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 calcStatus.CalcMode = CalcModeConst.Normal;
                 calcStatusies.Add(calcStatus);
             }
-            _saveIkaCalculateCommandHandler.AddCalcStatus(calcStatusies, preFix);
+            _saveIkaCalculateCommandHandler.AddCalcStatus(calcStatusies, preFix, CalcKeyID);
 
         }
         /// <summary>
@@ -766,11 +774,11 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// </summary>
         /// <param name="calcStatus"></param>
         /// <returns></returns>
-        public bool GetCalcStatus(int hpId, long ptId, int sinDate, ref CalcStatusModel calcStatus, string preFix)
+        public bool GetCalcStatus(int hpId, long ptId, int sinDate, ref CalcStatusModel calcStatus, string calcKeyId)
         {
             bool ret = false;
 
-            calcStatus = _ikaCalculateFinder.GetCalcStatus(hpId, ptId, sinDate, preFix);
+            calcStatus = _ikaCalculateFinder.GetCalcStatus(hpId, ptId, sinDate, calcKeyId);
 
             if (calcStatus != null)
             {
@@ -934,6 +942,27 @@ namespace EmrCalculateApi.Ika.ViewModels
             }
             catch (Exception e)
             {
+                // Update Calculate Status when has exception
+                void UpdateCalulateStatus()
+                {
+                    try
+                    {
+                        string sql = "UPDATE \"public\".\"CALC_STATUS\"  SET  \"STATUS\" = 8"
+                                                              + " WHERE  \"HP_ID\" = @hpId"
+                                                              + "        AND  \"STATUS\" in (0, 1)"
+                                                              + "        AND \"CREATE_MACHINE\" = @createMachine";
+                        TenantDataContext.Database.SetCommandTimeout(1800);
+                        TenantDataContext.Database.ExecuteSqlRaw(sql,
+                                new NpgsqlParameter("@hpId", _hpId),
+                                new NpgsqlParameter("@createMachine", UniqueKey));
+                    }
+                    catch (Exception e)
+                    {
+                        _emrLogger.WriteLogError(this, conFncName, e);
+                    }
+                }
+
+                UpdateCalulateStatus();
                 _emrLogger.WriteLogError(this, conFncName, e);
 
                 // 変更取り消し
@@ -1426,6 +1455,18 @@ namespace EmrCalculateApi.Ika.ViewModels
         private void WrkToSin()
         {
             new IkaCalculateWrkToSinViewModel(_common).Calculate();
+        }
+
+        private string CalcKeyID
+        {
+            get
+            {
+                if(string.IsNullOrEmpty(_uuid))
+                {
+                    _uuid = Guid.NewGuid().ToString();
+                }
+                return _uuid;
+            }            
         }
 
         public void Dispose()

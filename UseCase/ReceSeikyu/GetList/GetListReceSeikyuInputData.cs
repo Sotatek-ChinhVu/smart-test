@@ -4,7 +4,7 @@ namespace UseCase.ReceSeikyu.GetList
 {
     public class GetListReceSeikyuInputData : IInputData<GetListReceSeikyuOutputData>
     {
-        public GetListReceSeikyuInputData(int hpId, int sinDate, int sinYm, bool isIncludingUnConfirmed, long ptNumSearch, bool noFilter, bool isFilterMonthlyDelay, bool isFilterReturn, bool isFilterOnlineReturn)
+        public GetListReceSeikyuInputData(int hpId, int sinDate, int sinYm, bool isIncludingUnConfirmed, long ptNumSearch, bool noFilter, bool isFilterMonthlyDelay, bool isFilterReturn, bool isFilterOnlineReturn, bool isGetDataPending)
         {
             HpId = hpId;
             SinDate = sinDate;
@@ -15,6 +15,7 @@ namespace UseCase.ReceSeikyu.GetList
             IsFilterMonthlyDelay = isFilterMonthlyDelay;
             IsFilterReturn = isFilterReturn;
             IsFilterOnlineReturn = isFilterOnlineReturn;
+            IsGetDataPending = isGetDataPending;
         }
 
         public int HpId { get; private set; }
@@ -34,5 +35,7 @@ namespace UseCase.ReceSeikyu.GetList
         public bool IsFilterReturn { get; private set; }
 
         public bool IsFilterOnlineReturn { get; private set; }
+
+        public bool IsGetDataPending { get; private set; }
     }
 }

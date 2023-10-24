@@ -1,280 +1,277 @@
-﻿using Entity.Tenant;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
-using Reporting.CommonMasters.Config;
+using System.Text.Json.Serialization;
 
 namespace Reporting.ReceiptList.Model
 {
     public class ReceiptInputCsvModel
     {
-        public int SeikyuYm { get; set; }
+        [JsonConstructor]
+        public ReceiptInputCsvModel(int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenId, int hokenKbn, int output, int fusenKbn, int statusKbn, int isPending, long ptId, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int hokenSbtCd, int kohi1Nissu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest, int kohi1ReceKisai, int kohi2ReceKisai, int kohi3ReceKisai, int kohi4ReceKisai, string tokki, int hokenNissu, string receCheckCmt)
+        {
+            SeikyuKbn = seikyuKbn;
+            SinYm = sinYm;
+            IsReceInfDetailExist = isReceInfDetailExist;
+            IsPaperRece = isPaperRece;
+            HokenId = hokenId;
+            HokenKbn = hokenKbn;
+            Output = output;
+            FusenKbn = fusenKbn;
+            StatusKbn = statusKbn;
+            IsPending = isPending;
+            PtId = ptId;
+            PtNum = ptNum;
+            KanaName = kanaName;
+            Name = name;
+            Sex = sex;
+            Age = CIUtil.SDateToAge(birthDay, lastSinDateByHokenId);
+            LastSinDateByHokenId = lastSinDateByHokenId;
+            BirthDay = birthDay;
+            ReceSbt = receSbt;
+            HokensyaNo = hokensyaNo;
+            Tensu = tensu;
+            HokenSbtCd = hokenSbtCd;
+            Kohi1Nissu = kohi1Nissu;
+            IsSyoukiInfExist = isSyoukiInfExist;
+            IsReceCmtExist = isReceCmtExist;
+            IsSyobyoKeikaExist = isSyobyoKeikaExist;
+            ReceSeikyuCmt = receSeikyuCmt;
+            LastVisitDate = lastVisitDate;
+            KaName = kaName;
+            SName = sName;
+            IsPtKyuseiExist = isPtKyuseiExist;
+            FutansyaNoKohi1 = futansyaNoKohi1;
+            FutansyaNoKohi2 = futansyaNoKohi2;
+            FutansyaNoKohi3 = futansyaNoKohi3;
+            FutansyaNoKohi4 = futansyaNoKohi4;
+            IsPtTest = isPtTest;
+            Kohi1ReceKisai = kohi1ReceKisai;
+            Kohi2ReceKisai = kohi2ReceKisai;
+            Kohi3ReceKisai = kohi3ReceKisai;
+            Kohi4ReceKisai = kohi4ReceKisai;
+            Tokki = tokki;
+            HokenNissu = hokenNissu;
+            ReceCheckCmt = receCheckCmt;
+            JibaiHokenName = string.Empty;
+            JibaiHokenTanto = string.Empty;
+            JibaiHokenTel = string.Empty;
+            RousaiCityName = string.Empty;
+            RousaiJigyosyoName = string.Empty;
+            RousaiKofuNo = string.Empty;
+            RousaiPrefName = string.Empty;
+        }
 
-        /// <summary>
-        /// 患者ID
-        /// </summary>
-        public long PtId { get; set; }
+        public ReceiptInputCsvModel(int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenId, int hokenKbn, int output, int fusenKbn, int statusKbn, int isPending, long ptId, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int hokenSbtCd, int kohi1Nissu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest, int kohi1ReceKisai, int kohi2ReceKisai, int kohi3ReceKisai, int kohi4ReceKisai, string tokki, int hokenNissu, string receCheckCmt, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, string rousaiCityName, string rousaiJigyosyoName, string rousaiKofuNo, string rousaiPrefName)
+        {
+            SeikyuKbn = seikyuKbn;
+            SinYm = sinYm;
+            IsReceInfDetailExist = isReceInfDetailExist;
+            IsPaperRece = isPaperRece;
+            HokenId = hokenId;
+            HokenKbn = hokenKbn;
+            Output = output;
+            FusenKbn = fusenKbn;
+            StatusKbn = statusKbn;
+            IsPending = isPending;
+            PtId = ptId;
+            PtNum = ptNum;
+            KanaName = kanaName;
+            Name = name;
+            Sex = sex;
+            Age = CIUtil.SDateToAge(birthDay, lastSinDateByHokenId);
+            LastSinDateByHokenId = lastSinDateByHokenId;
+            BirthDay = birthDay;
+            ReceSbt = receSbt;
+            HokensyaNo = hokensyaNo;
+            Tensu = tensu;
+            HokenSbtCd = hokenSbtCd;
+            Kohi1Nissu = kohi1Nissu;
+            IsSyoukiInfExist = isSyoukiInfExist;
+            IsReceCmtExist = isReceCmtExist;
+            IsSyobyoKeikaExist = isSyobyoKeikaExist;
+            ReceSeikyuCmt = receSeikyuCmt;
+            LastVisitDate = lastVisitDate;
+            KaName = kaName;
+            SName = sName;
+            IsPtKyuseiExist = isPtKyuseiExist;
+            FutansyaNoKohi1 = futansyaNoKohi1;
+            FutansyaNoKohi2 = futansyaNoKohi2;
+            FutansyaNoKohi3 = futansyaNoKohi3;
+            FutansyaNoKohi4 = futansyaNoKohi4;
+            IsPtTest = isPtTest;
+            Kohi1ReceKisai = kohi1ReceKisai;
+            Kohi2ReceKisai = kohi2ReceKisai;
+            Kohi3ReceKisai = kohi3ReceKisai;
+            Kohi4ReceKisai = kohi4ReceKisai;
+            Tokki = tokki;
+            HokenNissu = hokenNissu;
+            ReceCheckCmt = receCheckCmt;
+            JibaiHokenName = jibaiHokenName;
+            JibaiHokenTanto = jibaiHokenTanto;
+            JibaiHokenTel = jibaiHokenTel;
+            RousaiCityName = rousaiCityName;
+            RousaiJigyosyoName = rousaiJigyosyoName;
+            RousaiKofuNo = rousaiKofuNo;
+            RousaiPrefName = rousaiPrefName;
+        }
 
-        /// <summary>
-        ///  請求区分
-        /// </summary>
-        public int SeikyuKbn { get; set; }
+        public int SeikyuKbn { get; private set; }
 
-        public string SeikyuKbnisplay
+        public int SinYm { get; private set; }
+
+        public int IsReceInfDetailExist { get; private set; }
+
+        public int IsPaperRece { get; private set; }
+
+        public int HokenId { get; private set; }
+
+        public int HokenKbn { get; private set; }
+
+        public int Output { get; private set; }
+
+        public int FusenKbn { get; private set; }
+
+        public int StatusKbn { get; private set; }
+
+        public int IsPending { get; private set; }
+
+        public long PtId { get; private set; }
+
+        public long PtNum { get; private set; }
+
+        public string KanaName { get; private set; }
+
+        public string Name { get; private set; }
+
+        public int Sex { get; private set; }
+
+        public int Age { get; private set; }
+
+        public int LastSinDateByHokenId { get; private set; }
+
+        public int BirthDay { get; private set; }
+
+        public string ReceSbt { get; private set; }
+
+        public string HokensyaNo { get; private set; }
+
+        public int Tensu { get; private set; }
+
+        public int HokenSbtCd { get; private set; }
+
+        public int Kohi1Nissu { get; private set; }
+
+        public int IsSyoukiInfExist { get; private set; }
+
+        public int IsReceCmtExist { get; private set; }
+
+        public int IsSyobyoKeikaExist { get; private set; }
+
+        public string ReceSeikyuCmt { get; private set; }
+
+        public int LastVisitDate { get; private set; }
+
+        public string KaName { get; private set; }
+
+        public string SName { get; private set; }
+
+        public string FutansyaNoKohi1 { get; private set; }
+
+        public string FutansyaNoKohi2 { get; private set; }
+
+        public string FutansyaNoKohi3 { get; private set; }
+
+        public string FutansyaNoKohi4 { get; private set; }
+
+        public int Kohi1ReceKisai { get; private set; }
+
+        public int Kohi2ReceKisai { get; private set; }
+
+        public int Kohi3ReceKisai { get; private set; }
+
+        public int Kohi4ReceKisai { get; private set; }
+
+        public string Tokki { get; private set; }
+
+        public int HokenNissu { get; private set; }
+
+        public string ReceCheckCmt { get; private set; }
+
+        public string JibaiHokenName { get; private set; }
+
+        public string JibaiHokenTanto { get; private set; }
+
+        public string JibaiHokenTel { get; private set; }
+
+        public string RousaiCityName { get; private set; }
+
+        public string RousaiJigyosyoName { get; private set; }
+
+        public string RousaiKofuNo { get; private set; }
+
+        public string RousaiPrefName { get; private set; }
+
+        public int ExpectedPayment { get; set; }
+
+        public bool IsPtTest { get; set; }
+
+        public string IsPtTestDisplay
         {
             get
             {
-                string result = string.Empty;
-                switch (SeikyuKbn)
+                if (IsPtTest)
                 {
-                    case 1:
-                        result = "月遅れ";
-                        break;
-                    case 2:
-                        result = "返戻";
-                        break;
-                    case 3:
-                        result = "オ返戻";
-                        break;
+                    return "○";
                 }
-                return result;
-            }
-        }
-
-        /// <summary>
-        /// 診療年月
-        /// </summary>
-        public int SinYm { get; set; }
-
-        public string SinYmDisplay
-        {
-            get
-            {
-                return CIUtil.SMonthToShowSMonth(SinYm);
-            }
-        }
-
-        /// <summary>
-        /// 変更
-        /// </summary>
-        /// <returns></returns>
-        public int IsReceInfDetailExist { get; set; }
-
-        public string ReceInfDetailExistDisplay
-        {
-            get => GetStringFromPropertyValue(IsReceInfDetailExist);
-        }
-
-        public int RosaiReceden { get; set; }
-
-        public string RosaiRecedenTerm { get; set; }
-
-        /// <summary>
-        /// 紙
-        /// </summary>
-        private int _isPaperRece;
-        public int IsPaperRece
-        {
-            get
-            {
-                int ret = 0;
-
-                if (_isPaperRece == 1)
-                {
-                    ret = 1;
-                }
-                else if (SeikyuKbn == 2)
-                {
-                    ret = 1;
-                }
-                else if (HokenKbn == 0)
-                {
-                    ret = 1;
-                }
-                else if (HokenKbn == 13 || HokenKbn == 14)
-                {
-                    ret = 1;
-                }
-                else if (((RosaiReceden != 1) ||
-                       (RosaiReceden == 1 && SeikyuYm < CIUtil.StrToIntDef(RosaiRecedenTerm, 0))) &&
-                       (HokenKbn == 11 || HokenKbn == 12))
-                {
-                    ret = 1;
-                }
-                return ret;
-            }
-            set
-            {
-                _isPaperRece = value;
-            }
-        }
-
-        public string PaperReceDisplay
-        {
-            get => GetStringFromPropertyValue(IsPaperRece);
-        }
-
-        /// <summary>
-        /// 印刷
-        /// </summary>
-        /// <returns></returns>
-        public int Output { get; set; }
-
-        public string OutputDisplay
-        {
-            get => GetStringFromPropertyValue(Output);
-        }
-
-        /// <summary>
-        /// 付箋
-        /// </summary>
-        public int FusenKbn { get; set; }
-
-        public string FusenKbnDisplay
-        {
-            get
-            {
-                if (FusenKbn >= 1) return "☆";
                 return string.Empty;
             }
         }
 
-        public bool IsLoginUserFusen
-        {
-            get
-            {
-                if (ReceStatusCreateId == Session.UserID) return true;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 確認
-        /// </summary>
-        public int StatusKbn
+        public int IsPtKyuseiExist
         {
             get; set;
         }
 
-        public string StatusKbnDisplay
+        public string PtKyuseiExistDisplay
+        {
+            get => GetStringFromPropertyValue(IsPtKyuseiExist);
+        }
+
+        public string GetStringFromPropertyValue(int propertyValue)
+        {
+            if (propertyValue == 1) return "○";
+            return string.Empty;
+        }
+
+        public string SyobyoKeikaExistDisplay
+        {
+            get => GetStringFromPropertyValue(IsSyobyoKeikaExist);
+        }
+
+        public string ReceCmtExistDisplay
+        {
+            get => GetStringFromPropertyValue(IsReceCmtExist);
+        }
+
+        public string SyoukiInfExistDisplay
+        {
+            get => GetStringFromPropertyValue(IsSyoukiInfExist);
+        }
+
+        public int Nissu
         {
             get
             {
-                string status = string.Empty;
-                switch (StatusKbn)
+                int ret = HokenNissu.AsInteger();
+
+                if (new int[] { 1, 2 }.Contains(HokenKbn) && ReceSbt.StartsWith("12"))
                 {
-                    case 1:
-                        status = "システム保留";
-                        break;
-                    case 2:
-                        status = "保留1";
-                        break;
-                    case 3:
-                        status = "保留2";
-                        break;
-                    case 4:
-                        status = "保留3";
-                        break;
-                    case 8:
-                        status = "仮";
-                        break;
-                    case 9:
-                        status = "済";
-                        break;
+                    ret = Kohi1Nissu;
                 }
-                return status;
+                return ret;
             }
         }
-
-        /// <summary>
-        /// コメント
-        /// </summary>
-        public string ReceCheckCmt { get; set; }
-
-        /// <summary>
-        /// 患者番号
-        /// </summary>
-        public long PtNum { get; set; }
-
-        public string PtNumDisplay
-        {
-            get
-            {
-                if (IsDefaultModel)
-                {
-                    return string.Empty;
-                }
-                return PtNum.AsString();
-            }
-        }
-
-        /// <summary>
-        /// カナ
-        /// </summary>
-        public string KanaName { get; set; }
-
-        /// <summary>
-        /// 氏名
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 性
-        /// </summary>
-        public int Sex { get; set; }
-
-        public string SexDisplay
-        {
-            get
-            {
-                if (Sex == 1)
-                {
-                    return "男";
-                }
-                else if (Sex == 2)
-                {
-                    return "女";
-                }
-                return string.Empty;
-            }
-        }
-
-        /// <summary>
-        /// 年齢
-        /// </summary>
-        public int Age { get; set; }
-
-        public string AgeDisplay
-        {
-            get
-            {
-                if (IsDefaultModel)
-                {
-                    return string.Empty;
-                }
-                return Age.AsString();
-            }
-        }
-
-        /// <summary>
-        /// 生年月日
-        /// </summary>
-        public int BirthDay { get; set; }
-
-        public string BirthDayDisplay
-        {
-            get => CIUtil.SDateToShowSDate(BirthDay);
-        }
-
-        /// <summary>
-        /// レセプト種別
-        /// </summary>
-        public string ReceSbt { get; set; }
-
-        public int HokenKbn { get; set; }
-
-        public int HokenId { get; set; }
-
 
         public string ReceSbtDisplay
         {
@@ -331,223 +328,81 @@ namespace Reporting.ReceiptList.Model
             }
         }
 
-        /// <summary>
-        /// 保険者番号
-        /// </summary>
-        public string HokensyaNo { get; set; }
-
-        /// <summary>
-        /// 診療点数
-        /// </summary>
-        public int Tensu { get; set; }
-
-        public string TensuDisplay
-        {
-            get
-            {
-                if (IsDefaultModel)
-                {
-                    return string.Empty;
-                }
-                return Tensu.AsString();
-            }
-        }
-
-        /// <summary>
-        /// 実日数
-        /// </summary>
-        public int HokenNissu { get; set; }
-
-        public string HokenNissuDisplay
-        {
-            get
-            {
-                if (IsDefaultModel)
-                {
-                    return string.Empty;
-                }
-                return HokenNissu.AsString();
-            }
-        }
-
-        public int Kohi1Nissu { get; set; }
-
-        public int Nissu
-        {
-            get
-            {
-                int ret = HokenNissu.AsInteger();
-
-                if (new int[] { 1, 2 }.Contains(HokenKbn) && ReceSbt.StartsWith("12"))
-                {
-                    ret = Kohi1Nissu;
-                }
-                return ret;
-            }
-        }
-
-        public string NissuDisplay
-        {
-            get { return Nissu.AsString(); }
-        }
-
-        /// <summary>
-        /// 症状詳記
-        /// </summary>
-        public int IsSyoukiInfExist { get; set; }
-
-        public string SyoukiInfExistDisplay
-        {
-            get => GetStringFromPropertyValue(IsSyoukiInfExist);
-        }
-
-        /// <summary>
-        /// レセコメント
-        /// </summary>
-        public int IsReceCmtExist { get; set; }
-
-        public string ReceCmtExistDisplay
-        {
-            get => GetStringFromPropertyValue(IsReceCmtExist);
-        }
-
-        /// <summary>
-        /// 傷病の経過
-        /// </summary>
-        public int IsSyobyoKeikaExist
-        {
-            get; set;
-        }
-
-        public string SyobyoKeikaExistDisplay
-        {
-            get => GetStringFromPropertyValue(IsSyobyoKeikaExist);
-        }
-
-        /// <summary>
-        /// 再請求コメント
-        /// </summary>
-        public string ReceSeikyuCmt { get; set; }
-
-        /// <summary>
-        /// 最終来院
-        /// </summary>
-        public int LastVisitDate { get; set; }
-
-        public string LastVisitDateDisplay
-        {
-            get => CIUtil.SDateToShowSDate(LastVisitDate);
-        }
-
-        /// <summary>
-        /// 診療科
-        /// </summary>
-        public string KaName { get; set; }
-
-        /// <summary>
-        /// 担当医
-        /// </summary>
-        public string SName { get; set; }
-
-        /// <summary>
-        /// 旧姓
-        /// </summary>
-        public int IsPtKyuseiExist
-        {
-            get; set;
-        }
-
-        public string PtKyuseiExistDisplay
-        {
-            get => GetStringFromPropertyValue(IsPtKyuseiExist);
-        }
-
-        /// <summary>
-        /// 公１負担者番号
-        /// </summary>
-        public string FutansyaNoKohi1 { get; set; }
-
-        /// <summary>
-        /// 公２負担者番号
-        /// </summary>
-        public string FutansyaNoKohi2 { get; set; }
-
-        /// <summary>
-        /// 公３負担者番号
-        /// </summary>
-        public string FutansyaNoKohi3 { get; set; }
-
-        /// <summary>
-        /// 公４負担者番号
-        /// </summary>
-        public string FutansyaNoKohi4 { get; set; }
-
-        public string GetStringFromPropertyValue(int propertyValue)
-        {
-            if (propertyValue == 1) return "○";
-            return string.Empty;
-        }
-
-
         public bool IsDefaultModel
         {
             get => PtId == 0;
         }
 
-        public int ReceStatusCreateId { get; set; }
-        public bool CheckDefaultValue()
-        {
-            return IsDefaultModel;
-        }
-        public bool IsPtTest { get; set; }
-        public string IsPtTestDisplay
+        public string SexDisplay
         {
             get
             {
-                if (IsPtTest)
+                if (Sex == 1)
                 {
-                    return "○";
+                    return "男";
+                }
+                else if (Sex == 2)
+                {
+                    return "女";
                 }
                 return string.Empty;
             }
         }
 
-        public int ExpectedPayment { get; set; }
+        public string StatusKbnDisplay
+        {
+            get
+            {
+                string status = string.Empty;
+                switch (StatusKbn)
+                {
+                    case 1:
+                        status = "システム保留";
+                        break;
+                    case 2:
+                        status = "保留1";
+                        break;
+                    case 3:
+                        status = "保留2";
+                        break;
+                    case 4:
+                        status = "保留3";
+                        break;
+                    case 8:
+                        status = "仮";
+                        break;
+                    case 9:
+                        status = "済";
+                        break;
+                }
+                return status;
+            }
+        }
 
+        public string FusenKbnDisplay
+        {
+            get
+            {
+                if (FusenKbn >= 1) return "☆";
+                return string.Empty;
+            }
+        }
 
-        /// <summary>
-        /// 労災交付番号
-        /// </summary>
-        public string RousaiKofuNo { get; set; }
+        public int SeikyuYm { get; set; }
 
-        /// <summary>
-        /// 労災事業所名
-        /// </summary>
-        public string RousaiJigyosyoName { get; set; }
+        public string ReceInfDetailExistDisplay
+        {
+            get => GetStringFromPropertyValue(IsReceInfDetailExist);
+        }
 
-        /// <summary>
-        /// 労災都道府県名
-        /// </summary>
-        public string RousaiPrefName { get; set; }
+        public string PaperReceDisplay
+        {
+            get => GetStringFromPropertyValue(IsPaperRece);
+        }
 
-        /// <summary>
-        /// 労災所在地郡市区名
-        /// </summary>
-        public string RousaiCityName { get; set; }
-
-        /// <summary>
-        /// 自賠保険会社名
-        /// </summary>
-        public string JibaiHokenName { get; set; }
-
-        /// <summary>
-        /// 自賠保険担当者
-        /// </summary>
-        public string JibaiHokenTanto { get; set; }
-
-        /// <summary>
-        /// 自賠保険連絡先
-        /// </summary>
-        public string JibaiHokenTel { get; set; }
+        public string OutputDisplay
+        {
+            get => GetStringFromPropertyValue(Output);
+        }
     }
 }

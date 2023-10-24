@@ -44,7 +44,7 @@ namespace Interactor.PatientInfor
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
                     }
 
-                    (PatientInforModel ptInfModel, bool isFound) = _patientInforRepository.SearchExactlyPtNum(ptNum, inputData.HpId);
+                    (PatientInforModel ptInfModel, bool isFound) = _patientInforRepository.SearchExactlyPtNum(ptNum, inputData.HpId, 0);
                     if (!isFound)
                     {
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);

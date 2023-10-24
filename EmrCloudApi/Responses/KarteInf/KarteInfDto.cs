@@ -15,6 +15,7 @@ public class KarteInfDto
         Text = model.Text;
         IsDeleted = model.IsDeleted;
         RichText = model.RichText;
+        IsAutoFill = model.IsAutoFill;
     }
 
     public int HpId { get; private set; }
@@ -34,4 +35,6 @@ public class KarteInfDto
     public int IsDeleted { get; private set; }
 
     public string RichText { get; private set; }
+
+    public bool IsAutoFill { get; private set; }
 }

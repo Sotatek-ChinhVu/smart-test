@@ -2,15 +2,20 @@
 using EmrCloudApi.Presenters.DrugDetail;
 using EmrCloudApi.Presenters.DrugDetailData;
 using EmrCloudApi.Presenters.DrugInfor;
+using EmrCloudApi.Presenters.ListSetMst;
+using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Presenters.UsageTreeSet;
 using EmrCloudApi.Presenters.YohoSetMst;
 using EmrCloudApi.Requests.DrugDetail;
 using EmrCloudApi.Requests.DrugInfor;
+using EmrCloudApi.Requests.ListSetMst;
 using EmrCloudApi.Requests.UsageTreeSet;
 using EmrCloudApi.Requests.YohoSetMst;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.DrugDetail;
 using EmrCloudApi.Responses.DrugInfor;
+using EmrCloudApi.Responses.MstItem;
+using EmrCloudApi.Responses.NewFolder;
 using EmrCloudApi.Responses.UsageTreeSetResponse;
 using EmrCloudApi.Responses.YohoSetMst;
 using EmrCloudApi.Services;
@@ -24,6 +29,7 @@ using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
+using UseCase.ListSetMst.UpdateListSetMst;
 using UseCase.UsageTreeSet.GetTree;
 using UseCase.YohoSetMst.GetByItemCd;
 
@@ -88,7 +94,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetYohoSetMstByItemCd)]
         public ActionResult<Response<GetYohoSetMstByItemCdResponse>> GetYohoSetMstByItemCd([FromQuery] GetYohoSetMstByItemCdRequest request)
         {
-            var input = new GetYohoMstByItemCdInputData(HpId, UserId, request.ItemCd, request.StartDate);
+            var input = new GetYohoMstByItemCdInputData(HpId, UserId, request.ItemCd, request.StartDate, request.SinDate);
             var output = _bus.Handle(input);
             var presenter = new GetYohoMstByItemCdPresenter();
             presenter.Complete(output);
@@ -141,6 +147,16 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetDataPrintDrugInfoResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateListSetMst)]
+        public ActionResult<Response<UpdateListSetMstResponse>> UpdateListSetMst([FromBody] UpdateListSetMstRequest request)
+        {
+            var input = new UpdateListSetMstInputData(UserId, HpId, request.ListSetMsts);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateListSetMstPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
     }
 }

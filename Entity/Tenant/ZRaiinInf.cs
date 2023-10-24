@@ -10,7 +10,7 @@ namespace Entity.Tenant
 	[Table("Z_RAIIN_INF")]
     public class ZRaiinInf : EmrCloneable<ZRaiinInf>
     {
-        
+
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 
@@ -262,7 +262,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 算定区分
@@ -272,5 +272,24 @@ namespace Entity.Tenant
         [CustomAttribute.DefaultValue(0)]
         public int SanteiKbn { get; set; }
 
+        /// <summary>
+        /// 資格確認タイプ
+        ///		1: マイナンバーカードで確認
+        ///     2: 保険証で確認
+        /// </summary>
+        [Column("CONFIRMATION_TYPE")]
+        [CustomAttribute.DefaultValue(0)]
+        public int ConfirmationType { get; set; }
+
+        [Column("INFO_CONS_FLG")]
+        [MaxLength(10)]
+        public string? InfoConsFlg { get; set; } = string.Empty;
+
+        /// <summary>
+        /// PRESCRIPTION_ISSUE_TYPE
+        /// </summary>
+        [Column("PRESCRIPTION_ISSUE_TYPE")]
+        [CustomAttribute.DefaultValue(0)]
+        public int PrescriptionIssueType { get; set; }
     }
 }

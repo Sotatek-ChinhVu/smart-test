@@ -4,7 +4,7 @@ namespace Domain.Models.ReceSeikyu
 {
     public interface IReceSeikyuRepository : IRepositoryBase
     {
-        List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int sinDate, int sinYm, bool isIncludingUnConfirmed, long ptNumSearch, bool noFilter, bool isFilterMonthlyDelay, bool isFilterReturn, bool isFilterOnlineReturn);
+        List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int sinDate, int sinYm, bool isIncludingUnConfirmed, long ptNumSearch, bool noFilter, bool isFilterMonthlyDelay, bool isFilterReturn, bool isFilterOnlineReturn, bool isGetDataPending);
 
         List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int seikyuYm, List<long> ptIdList);
 
@@ -41,5 +41,7 @@ namespace Domain.Models.ReceSeikyu
         ReceSeikyuModel GetReceSeikyuDuplicate(int hpId, long ptId, int sinYm, int hokenId);
 
         bool SaveChangeImportFileRececeikyus();
+
+        ReceSeikyuModel GetReceSeikyModelByPtNum(int hpId, int sinDate, int sinYm, long ptNum);
     }
 }

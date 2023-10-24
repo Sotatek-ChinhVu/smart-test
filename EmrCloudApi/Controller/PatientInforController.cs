@@ -98,6 +98,16 @@ using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Calculation;
 using UseCase.SwapHoken.Save;
 using UseCase.SwapHoken.Validate;
+using UseCase.PatientInfor.SavePtKyusei;
+using UseCase.PatientInfor;
+using UseCase.PatientInfor.SearchPatientInfoByPtIdList;
+using UseCase.PatientInfor.GetPtInfByRefNo;
+using UseCase.PatientInfor.GetPtInfModelsByName;
+using UseCase.PatientInfor.GetPtInfModelsByRefNo;
+using System.Linq;
+using UseCase.PatientInfor.GetVisitTimesManagementModels;
+using UseCase.PatientInfor.UpdateVisitTimesManagement;
+using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 
 namespace EmrCloudApi.Controller
 {
@@ -106,12 +116,14 @@ namespace EmrCloudApi.Controller
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
+        private readonly IMessenger _messenger;
         private CancellationToken? _cancellationToken;
 
-        public PatientInforController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
+        public PatientInforController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService, IMessenger messenger) : base(userService)
         {
             _bus = bus;
             _webSocketService = webSocketService;
+            _messenger = messenger;
         }
 
         [HttpGet(ApiPath.Get + "PatientComment")]
@@ -127,7 +139,7 @@ namespace EmrCloudApi.Controller
         [HttpGet("GetPatientById")]
         public ActionResult<Response<GetPatientInforByIdResponse>> GetPatientById([FromQuery] GetByIdRequest request)
         {
-            var input = new GetPatientInforByIdInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var input = new GetPatientInforByIdInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.IsShowKyuSeiName);
             var output = _bus.Handle(input);
 
             var present = new GetPatientInforByIdPresenter();
@@ -219,6 +231,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet("GetInsuranceMst")]
+        [ResponseCache(Duration = 1800, Location = ResponseCacheLocation.Any, NoStore = true)]
         public ActionResult<Response<GetInsuranceMstResponse>> GetInsuranceMst([FromQuery] GetInsuranceMstRequest request)
         {
             var input = new GetInsuranceMstInputData(HpId, request.PtId, request.SinDate);
@@ -471,104 +484,77 @@ namespace EmrCloudApi.Controller
                       patientInfo.Patient.LimitConsFlg,
                       patientInfo.Patient.Memo);
 
-            List<InsuranceModel> insurances = patientInfo.Insurances.Select(x => new InsuranceModel(HpId,
-                       x.PtId,
-                       0,
-                       x.SeqNo,
-                       x.HokenSbtCd,
-                       x.HokenPid,
-                       x.HokenKbn,
-                       x.HokenMemo,
-                       x.SinDate,
-                       x.StartDate,
-                       x.EndDate,
-                       x.HokenId,
-                       x.Kohi1Id,
-                       x.Kohi2Id,
-                       x.Kohi3Id,
-                       x.Kohi4Id,
-                       x.IsAddNew,
-                       x.IsDeleted,
-                       x.HokenPatternSelected)).ToList();
-
-            List<GroupInfModel> grpInfs = patientInfo.PtGrps.Select(x => new GroupInfModel(
-                                                x.HpPt,
-                                                x.PtId,
-                                                x.GroupId,
-                                                x.GroupCode,
-                                                x.GroupName)).ToList();
-
             List<HokenInfModel> hokenInfs = patientInfo.HokenInfs.Select(x => new HokenInfModel(HpId,
-                                                                                x.PtId,
-                                                                                x.HokenId,
-                                                                                x.SeqNo,
-                                                                                x.HokenNo,
-                                                                                x.HokenEdaNo,
-                                                                                x.HokenKbn,
-                                                                                x.HokensyaNo,
-                                                                                x.Kigo,
-                                                                                x.Bango,
-                                                                                x.EdaNo,
-                                                                                x.HonkeKbn,
-                                                                                x.StartDate,
-                                                                                x.EndDate,
-                                                                                x.SikakuDate,
-                                                                                x.KofuDate,
-                                                                                0,
-                                                                                x.KogakuKbn,
-                                                                                x.TasukaiYm,
-                                                                                x.TokureiYm1,
-                                                                                x.TokureiYm2,
-                                                                                x.GenmenKbn,
-                                                                                x.GenmenRate,
-                                                                                x.GenmenGaku,
-                                                                                x.SyokumuKbn,
-                                                                                x.KeizokuKbn,
-                                                                                x.Tokki1,
-                                                                                x.Tokki2,
-                                                                                x.Tokki3,
-                                                                                x.Tokki4,
-                                                                                x.Tokki5,
-                                                                                x.RousaiKofuNo,
-                                                                                x.RousaiRoudouCd,
-                                                                                x.RousaiSaigaiKbn,
-                                                                                x.RousaiKantokuCd,
-                                                                                x.RousaiSyobyoDate,
-                                                                                x.RyoyoStartDate,
-                                                                                x.RyoyoEndDate,
-                                                                                x.RousaiSyobyoCd,
-                                                                                x.RousaiJigyosyoName,
-                                                                                x.RousaiPrefName,
-                                                                                x.RousaiCityName,
-                                                                                x.RousaiReceCount,
-                                                                                string.Empty,
-                                                                                string.Empty,
-                                                                                string.Empty,
-                                                                                x.SinDate,
-                                                                                x.JibaiHokenName,
-                                                                                x.JibaiHokenTanto,
-                                                                                x.JibaiHokenTel,
-                                                                                x.JibaiJyusyouDate,
-                                                                                x.Houbetu,
-                                                                                x.ConfirmDates.Select(c => new ConfirmDateModel(
-                                                                                    c.HokenGrp,
-                                                                                    c.HokenId,
-                                                                                    c.SeqNo,
-                                                                                    c.CheckId,
-                                                                                    c.CheckName,
-                                                                                    c.CheckComment,
-                                                                                    c.ConfirmDate)).ToList(),
-                                                                                x.RousaiTenkis.Select(m => new RousaiTenkiModel(m.RousaiTenkiSinkei,
-                                                                                m.RousaiTenkiTenki,
-                                                                                m.RousaiTenkiEndDate,
-                                                                                m.RousaiTenkiIsDeleted,
-                                                                                m.SeqNo)).ToList(),
-                                                                                false,
-                                                                                x.IsDeleted,
-                                                                                new HokenMstModel(),
-                                                                                new HokensyaMstModel(),
-                                                                                x.IsAddNew,
-                                                                                false)).ToList();
+                                                                           x.PtId,
+                                                                           x.HokenId,
+                                                                           x.SeqNo,
+                                                                           x.HokenNo,
+                                                                           x.HokenEdaNo,
+                                                                           x.HokenKbn,
+                                                                           x.HokensyaNo,
+                                                                           x.Kigo,
+                                                                           x.Bango,
+                                                                           x.EdaNo,
+                                                                           x.HonkeKbn,
+                                                                           x.StartDate,
+                                                                           x.EndDate,
+                                                                           x.SikakuDate,
+                                                                           x.KofuDate,
+                                                                           0,
+                                                                           x.KogakuKbn,
+                                                                           x.TasukaiYm,
+                                                                           x.TokureiYm1,
+                                                                           x.TokureiYm2,
+                                                                           x.GenmenKbn,
+                                                                           x.GenmenRate,
+                                                                           x.GenmenGaku,
+                                                                           x.SyokumuKbn,
+                                                                           x.KeizokuKbn,
+                                                                           x.Tokki1,
+                                                                           x.Tokki2,
+                                                                           x.Tokki3,
+                                                                           x.Tokki4,
+                                                                           x.Tokki5,
+                                                                           x.RousaiKofuNo,
+                                                                           x.RousaiRoudouCd,
+                                                                           x.RousaiSaigaiKbn,
+                                                                           x.RousaiKantokuCd,
+                                                                           x.RousaiSyobyoDate,
+                                                                           x.RyoyoStartDate,
+                                                                           x.RyoyoEndDate,
+                                                                           x.RousaiSyobyoCd,
+                                                                           x.RousaiJigyosyoName,
+                                                                           x.RousaiPrefName,
+                                                                           x.RousaiCityName,
+                                                                           x.RousaiReceCount,
+                                                                           string.Empty,
+                                                                           string.Empty,
+                                                                           string.Empty,
+                                                                           x.SinDate,
+                                                                           x.JibaiHokenName,
+                                                                           x.JibaiHokenTanto,
+                                                                           x.JibaiHokenTel,
+                                                                           x.JibaiJyusyouDate,
+                                                                           x.Houbetu,
+                                                                           x.ConfirmDates.Select(c => new ConfirmDateModel(
+                                                                               c.HokenGrp,
+                                                                               c.HokenId,
+                                                                               c.SeqNo,
+                                                                               c.CheckId,
+                                                                               c.CheckName,
+                                                                               c.CheckComment,
+                                                                               c.ConfirmDate)).ToList(),
+                                                                           x.RousaiTenkis.Select(m => new RousaiTenkiModel(m.RousaiTenkiSinkei,
+                                                                           m.RousaiTenkiTenki,
+                                                                           m.RousaiTenkiEndDate,
+                                                                           m.RousaiTenkiIsDeleted,
+                                                                           m.SeqNo)).ToList(),
+                                                                           false,
+                                                                           x.IsDeleted,
+                                                                           new HokenMstModel(),
+                                                                           new HokensyaMstModel(),
+                                                                           x.IsAddNew,
+                                                                           false)).ToList();
 
             List<KohiInfModel> hokenKohis = patientInfo.HokenKohis.Select(x => new KohiInfModel(
                                             x.ConfirmDates.Select(c =>
@@ -603,6 +589,35 @@ namespace EmrCloudApi.Controller
                                             x.SeqNo,
                                             x.IsAddNew)).ToList();
 
+            List<InsuranceModel> insurances = patientInfo.Insurances.Select(x => new InsuranceModel(HpId,
+                       x.PtId,
+                       0,
+                       x.SeqNo,
+                       x.HokenSbtCd,
+                       x.HokenPid,
+                       x.HokenKbn,
+                       x.HokenMemo,
+                       x.SinDate,
+                       x.StartDate,
+                       x.EndDate,
+                       hokenInfs.FirstOrDefault(h => h.HokenId == x.HokenId) ?? new(),
+                       hokenKohis.FirstOrDefault(k => k.HokenId == x.Kohi1Id) ?? new(),
+                       hokenKohis.FirstOrDefault(k => k.HokenId == x.Kohi2Id) ?? new(),
+                       hokenKohis.FirstOrDefault(k => k.HokenId == x.Kohi3Id) ?? new(),
+                       hokenKohis.FirstOrDefault(k => k.HokenId == x.Kohi4Id) ?? new(),
+                       x.IsAddNew,
+                       x.IsDeleted,
+                       x.HokenPatternSelected)).ToList();
+
+            List<GroupInfModel> grpInfs = patientInfo.PtGrps.Select(x => new GroupInfModel(
+                                                x.HpPt,
+                                                x.PtId,
+                                                x.GroupId,
+                                                x.GroupCode,
+                                                x.GroupName)).ToList();
+
+
+
             var insuranceScans = request.ImageScans.Select(x => new InsuranceScanModel(
                                                                     HpId,
                                                                     0,
@@ -621,7 +636,7 @@ namespace EmrCloudApi.Controller
             }
 
             var input = new SavePatientInfoInputData(patient,
-                 patientInfo.PtKyuseis,
+                 patientInfo.PtKyuseis.Select(item => new PtKyuseiModel(HpId, item.PtId, item.SeqNo, item.KanaName, item.Name, item.EndDate)).ToList(),
                  patientInfo.PtSanteis,
                  insurances,
                  hokenInfs,
@@ -746,7 +761,6 @@ namespace EmrCloudApi.Controller
                     request.IsOrderOr
                 );
         }
-
 
         [HttpPost(ApiPath.ValidHokenInfAllType)]
         public ActionResult<Response<ValidHokenInfAllTypeResponse>> ValidHokenInfAllType([FromBody] ValidHokenInfAllTypeRequest request)
@@ -895,7 +909,17 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetGroupNameMst)]
         public ActionResult<Response<GetGroupNameMstResponse>> GetGroupNameMst()
         {
-            var input = new GetGroupNameMstInputData(HpId);
+            var input = new GetGroupNameMstInputData(HpId, true);
+            var output = _bus.Handle(input);
+            var presenter = new GetGroupNameMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetGroupNameMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListGroupInfo)]
+        public ActionResult<Response<GetGroupNameMstResponse>> GetListGroupInfo()
+        {
+            var input = new GetGroupNameMstInputData(HpId, false);
             var output = _bus.Handle(input);
             var presenter = new GetGroupNameMstPresenter();
             presenter.Complete(output);
@@ -925,7 +949,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.SearchPatientInfoByPtNum)]
         public ActionResult<Response<SearchPatientInfoByPtNumResponse>> SearchPatientInfoByPtNum([FromQuery] SearchPatientInfoByPtNumRequest request)
         {
-            var input = new SearchPatientInfoByPtNumInputData(HpId, request.PtNum);
+            var input = new SearchPatientInfoByPtNumInputData(HpId, request.PtNum, request.SinDate);
             var output = _bus.Handle(input);
             var presenter = new SearchPatientInfoByPtNumPresenter();
             presenter.Complete(output);
@@ -942,18 +966,48 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetTokkiMstListResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.GetPtInfByRefNo)]
+        public ActionResult<Response<GetPtInfByRefNoResponse>> GetPtInfByRefNo([FromQuery] GetPtInfByRefNoRequest request)
+        {
+            var input = new GetPtInfByRefNoInputData(HpId, request.RefNo);
+            var output = _bus.Handle(input);
+            var presenter = new GetPtInfByRefNoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPtInfByRefNoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPtInfModelsByName)]
+        public ActionResult<Response<GetPtInfModelsByNameResponse>> GetPtInfModelsByName([FromQuery] GetPtInfModelsByNameRequest request)
+        {
+            var input = new GetPtInfModelsByNameInputData(HpId, request.KanaName, request.Name, request.BirthDate, request.Sex1, request.Sex2);
+            var output = _bus.Handle(input);
+            var presenter = new GetPtInfModelsByNamePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPtInfModelsByNameResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPtInfModelsByRefNo)]
+        public ActionResult<Response<GetPtInfModelsByRefNoResponse>> GetPtInfModelsByRefNo([FromQuery] GetPtInfModelsByRefNoRequest request)
+        {
+            var input = new GetPtInfModelsByRefNoInputData(HpId, request.RefNo);
+            var output = _bus.Handle(input);
+            var presenter = new GetPtInfModelsByRefNoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPtInfModelsByRefNoResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.CalculationSwapHoken)]
         public void CalculationSwapHoken([FromBody] CalculationSwapHokenRequest request, CancellationToken cancellationToken)
         {
             _cancellationToken = cancellationToken;
             try
             {
-                Messenger.Instance.Register<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
-                Messenger.Instance.Register<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
+                _messenger.Register<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
+                _messenger.Register<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
                 HttpContext.Response.ContentType = "application/json";
                 HttpResponse response = HttpContext.Response;
 
-                var input = new CalculationSwapHokenInputData(HpId, UserId, request.SeikyuYms, request.PtId, request.IsReCalculation, request.IsReceCalculation, request.IsReceCheckError);
+                var input = new CalculationSwapHokenInputData(HpId, UserId, request.SeikyuYms, request.PtId, request.IsReCalculation, request.IsReceCalculation, request.IsReceCheckError, _messenger);
                 var output = _bus.Handle(input);
                 if (output.Status == CalculationSwapHokenStatus.Successful)
                     UpdateCalculationSwapHokenStatus(new CalculationSwapHokenMessageStatus(string.Empty, 100, true, true));
@@ -963,8 +1017,8 @@ namespace EmrCloudApi.Controller
             }
             finally
             {
-                Messenger.Instance.Deregister<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
-                Messenger.Instance.Deregister<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
+                _messenger.Deregister<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
+                _messenger.Deregister<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
             }
         }
 
@@ -982,6 +1036,26 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<CheckValidSamePatientResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.SavePtKyusei)]
+        public ActionResult<Response<SavePtKyuseiResponse>> SavePtKyuseiPatient([FromBody] SavePtKyuseiRequest request)
+        {
+            var input = new SavePtKyuseiInputData(HpId,
+                                                  UserId,
+                                                  request.PtId,
+                                                  request.PtKyuseiList.Select(item => new PtKyuseiItem(
+                                                           HpId,
+                                                           request.PtId,
+                                                           item.SeqNo,
+                                                           item.KanaName,
+                                                           item.Name,
+                                                           item.EndDate,
+                                                           item.IsDeleted)).ToList());
+            var output = _bus.Handle(input);
+            var presenter = new SavePtKyuseiPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SavePtKyuseiResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.CheckAllowDeletePatientInfo)]
         public ActionResult<Response<CheckAllowDeletePatientInfoResponse>> CheckAllowDeletePatientInfo([FromBody] CheckAllowDeletePatientInfoRequest request)
         {
@@ -990,6 +1064,74 @@ namespace EmrCloudApi.Controller
             var presenter = new CheckAllowDeletePatientInfoPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CheckAllowDeletePatientInfoResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SearchPatientInfoByPtIdList)]
+        public ActionResult<Response<SearchPatientInfoByPtIdListResponse>> SearchPatientInfoByPtIdList([FromBody] SearchPatientInfoByPtIdListRequest request)
+        {
+            var input = new SearchPatientInfoByPtIdListInputData(HpId, request.PtIdList);
+            var output = _bus.Handle(input);
+            var presenter = new SearchPatientInfoByPtIdListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SearchPatientInfoByPtIdListResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetVisitTimesManagementModels)]
+        public ActionResult<Response<GetVisitTimesManagementModelsResponse>> GetVisitTimesManagementModels([FromQuery] GetVisitTimesManagementModelsRequest request)
+        {
+            var input = new GetVisitTimesManagementModelsInputData(HpId, request.SinYm, request.PtId, request.KohiId);
+            var output = _bus.Handle(input);
+            var presenter = new GetVisitTimesManagementModelsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetVisitTimesManagementModelsResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateVisitTimesManagement)]
+        public ActionResult<Response<UpdateVisitTimesManagementResponse>> UpdateVisitTimesManagement([FromBody] UpdateVisitTimesManagementRequest request)
+        {
+            var input = new UpdateVisitTimesManagementInputData(HpId, UserId, request.SinYm, request.PtId, request.KohiId, ConvertToVisitTimesManagementList(request));
+            var output = _bus.Handle(input);
+            var presenter = new UpdateVisitTimesManagementPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateVisitTimesManagementResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateVisitTimesManagementNeedSave)]
+        public ActionResult<Response<UpdateVisitTimesManagementNeedSaveResponse>> UpdateVisitTimesManagementNeedSave([FromBody] UpdateVisitTimesManagementNeedSaveRequest request)
+        {
+            var input = new UpdateVisitTimesManagementNeedSaveInputData(HpId, UserId, request.PtId, ConvertToVisitTimesManagementList(request));
+            var output = _bus.Handle(input);
+            var presenter = new UpdateVisitTimesManagementNeedSavePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateVisitTimesManagementNeedSaveResponse>>(presenter.Result);
+        }
+
+        private List<VisitTimesManagementModel> ConvertToVisitTimesManagementList(UpdateVisitTimesManagementRequest request)
+        {
+            var result = request.VisitTimesManagementList.Select(item => new VisitTimesManagementModel(
+                                                                             request.PtId,
+                                                                             item.SinDate,
+                                                                             item.HokenPid,
+                                                                             request.KohiId,
+                                                                             item.SeqNo,
+                                                                             item.SortKey,
+                                                                             item.IsDeleted
+                                                          )).ToList();
+            return result;
+        }
+
+        private List<VisitTimesManagementModel> ConvertToVisitTimesManagementList(UpdateVisitTimesManagementNeedSaveRequest request)
+        {
+            var result = request.VisitTimesManagementList.Select(item => new VisitTimesManagementModel(
+                                                                             request.PtId,
+                                                                             item.SinDate,
+                                                                             0,
+                                                                             item.KohiId,
+                                                                             0,
+                                                                             item.SortKey,
+                                                                             false
+                                                          )).ToList();
+            return result;
         }
 
         private void StopCalculationCaculaleSwapHoken(CalculationSwapHokenMessageStop stopCalcStatus)

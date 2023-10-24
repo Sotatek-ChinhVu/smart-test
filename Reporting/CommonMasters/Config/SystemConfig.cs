@@ -760,6 +760,8 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// </summary>
     public int ByomeiCondition => (int)GetSettingValue(2002, 4);
 
+    public int SyohosenKouiDivide() { return (int)GetSettingValue(92003, 10); }
+
     /// <summary>
     /// 特処１病名条件
     /// </summary>
@@ -1581,7 +1583,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// オーダー時検査依頼連携　科コード
     /// 0 - 未使用, 1 - 指定グループの指定の値の場合、値の名称をセット(PT_GRP_ITEM.GRP_CODE_NAME)
     /// </summary>
-    public int OdrKensaIraiKaCode => (int)GetSettingValue(100019, 8);
+    public int OdrKensaIraiKaCode() { return (int)GetSettingValue(100019, 8); }
     /// <summary>
     /// オーダー時検査依頼連携　科コード パラメータ
     /// <グループID>=<グループコード>,<グループID>=<グループコード>・・・

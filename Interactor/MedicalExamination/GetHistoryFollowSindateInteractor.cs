@@ -48,7 +48,8 @@ namespace Interactor.MedicalExamination
                     inputData.DeleteConditon,
                     inputData.RaiinNo,
                     inputData.Flag,
-                    new()
+                    new(),
+                    inputData.IsShowApproval
                     );
 
                 var insuranceModelList = _insuranceRepository.GetInsuranceList(inputData.HpId, inputData.PtId, inputData.SinDate, true);
@@ -79,6 +80,7 @@ namespace Interactor.MedicalExamination
                             history.KaName,
                             history.TantoId,
                             history.TantoName,
+                            history.TantoFullName,
                             history.SanteiKbn,
                             history.TagNo,
                             history.SinryoTitle,
@@ -104,6 +106,7 @@ namespace Interactor.MedicalExamination
                             history.KaName,
                             history.TantoId,
                             history.TantoName,
+                            history.TantoFullName,
                             history.SanteiKbn,
                             history.TagNo,
                             history.SinryoTitle,
@@ -125,7 +128,8 @@ namespace Interactor.MedicalExamination
                             string.Empty,
                             string.Empty,
                             string.Empty,
-                            string.Empty
+                            string.Empty,
+                            history.HeaderOrderModels
                         );
 
                     //Excute order

@@ -18,9 +18,10 @@ namespace Domain.Models.KarteInfs
             CreateDate = createDate;
             UpdateDate = updateDate;
             CreateName = createName;
+            IsAutoFill = false;
         }
 
-        public KarteInfModel(int hpId, long raiinNo, long ptId, int sinDate, string text)
+        public KarteInfModel(int hpId, long raiinNo, long ptId, int sinDate, string text, bool isAutoFill)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -34,6 +35,7 @@ namespace Domain.Models.KarteInfs
             CreateDate = DateTime.MinValue;
             UpdateDate = DateTime.MinValue;
             CreateName = string.Empty;
+            IsAutoFill = isAutoFill;
         }
 
         public KarteInfModel(int hpId, long raiinNo)
@@ -43,6 +45,7 @@ namespace Domain.Models.KarteInfs
             Text = string.Empty;
             RichText = string.Empty;
             CreateName = String.Empty;
+            IsAutoFill = false;
         }
 
         public int HpId { get; private set; }
@@ -57,6 +60,7 @@ namespace Domain.Models.KarteInfs
         public DateTime CreateDate { get; private set; }
         public DateTime UpdateDate { get; private set; }
         public string CreateName { get; private set; }
+        public bool IsAutoFill { get; private set; }
 
         public KarteValidationStatus Validation()
         {

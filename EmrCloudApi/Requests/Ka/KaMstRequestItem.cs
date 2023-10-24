@@ -7,4 +7,5 @@ public class KaMstRequestItem
     public string ReceKaCd { get; set; } = string.Empty;
     public string KaSname { get; set; } = string.Empty;
     public string KaName { get; set; } = string.Empty;
+    public string YousikiKaCd { get; set; } = string.Empty;
 }

@@ -19964,7 +19964,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "SetCd", "SetKbn", "SetKbnEdaNo", "GenerationId", "Level1", "Level2", "Level3")
                         .IsUnique()
-                        .HasFilter("IsDeleted = 0");
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.ToTable("SET_MST");
                 });

@@ -1,13 +1,9 @@
-﻿using EmrCalculateApi.Constants;
-using EmrCalculateApi.Extensions;
-using Entity.Tenant;
+﻿using EmrCalculateApi.Extensions;
 using PostgreDataContext;
 using Helper.Constants;
 using EmrCalculateApi.Ika.Models;
-using Helper.Common;
 using EmrCalculateApi.Interface;
 using Domain.Constant;
-using Infrastructure.Interfaces;
 
 namespace EmrCalculateApi.Ika.DB.Finder
 {
@@ -53,8 +49,8 @@ namespace EmrCalculateApi.Ika.DB.Finder
             var joinQuery = (
                 from raiinInf in raiinInfs
                 join ptInf in ptInfs on
-                    new { raiinInf.HpId, raiinInf.PtId} equals
-                    new { ptInf.HpId, ptInf.PtId}
+                    new { raiinInf.HpId, raiinInf.PtId } equals
+                    new { ptInf.HpId, ptInf.PtId }
                 join kaMst in kaMsts on
                     new { raiinInf.HpId, raiinInf.KaId } equals
                     new { kaMst.HpId, kaMst.KaId } into kaJoin
@@ -81,7 +77,8 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
             List<RaiinInfModel> results = new List<RaiinInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new RaiinInfModel(entity.RaiinInf, entity.KaMst));
             });
 
@@ -116,23 +113,22 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     raiinInf.SinDate >= sinDate / 100 * 100 + 1 &&
                     raiinInf.SinDate <= sinDate / 100 * 100 + 31 &&
                     raiinInf.IsDeleted == DeleteTypes.None
-                group raiinInf by
-                    new { HpId = raiinInf.HpId, PtId = raiinInf.PtId, SinDate = raiinInf.SinDate } into A
-                orderby
-                    A.Key.HpId, A.Key.PtId, A.Key.SinDate
-                select new
-                {
-                    A
-                }
+                //group raiinInf by
+                //    new { HpId = raiinInf.HpId, PtId = raiinInf.PtId, SinDate = raiinInf.SinDate } into A
+                //orderby
+                //    A.Key.HpId, A.Key.PtId, A.Key.SinDate
+                select raiinInf
             );
 
+            var raiinList = joinQuery.ToList();
+
+            var result = raiinList
+                .GroupBy(r => new { r.HpId, r.PtId, r.SinDate })
+                .Select(r => new RaiinDaysModel(r.Key.HpId, r.Key.PtId, r.Key.SinDate))
+                .ToList();
+
             //var entities =
-            return
-                joinQuery.Select(
-                    data =>
-                        new RaiinDaysModel(data.A.Key.HpId, data.A.Key.PtId, data.A.Key.SinDate)
-                    )
-                    .ToList();
+            return result;
 
             //List<RaiinDaysModel> results = new List<RaiinDaysModel>();
 
@@ -181,9 +177,33 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 raiinInfs = raiinInfs.Where(r => ptIds.Contains(r.PtId));
             }
 
+            var maxReceSeikyuList = maxReceSeikyus.Where(item => item.SeikyuYm == seikyuYm).ToList();
+            var ptIdList = maxReceSeikyuList.Select(item => item.PtId).Distinct().ToList();
+            var sinYmList = maxReceSeikyuList.Select(item => item.SinYm).Distinct().ToList();
+
+            var raiinInfList = raiinInfs.Where(raiinInf => raiinInf.HpId == hpId &&
+                                               raiinInf.Status >= RaiinState.Calculate &&
+                                               raiinInf.IsDeleted == DeleteTypes.None &&
+                                               (
+                                                   //当月分
+                                                   (raiinInf.SinDate >= fromSinDate && raiinInf.SinDate <= toSinDate) ||
+                                                   //月遅れ・返戻分
+                                                   (
+                                                   ptIdList.Contains(raiinInf.PtId) &&
+                                                   sinYmList.Contains(raiinInf.SinDate / 100))
+                                               ))
+                                         .ToList();
+
+            ptIdList = raiinInfList.Select(item => item.PtId).Distinct().ToList();
+            sinYmList = raiinInfList.Select(item => (int)Math.Floor((double)item.SinDate / 100)).Distinct().ToList();
+            var receSeikyuList = receSeikyus.Where(item => item.HpId == hpId
+                                                           && ptIdList.Contains(item.PtId)
+                                                           && sinYmList.Contains(item.SinYm))
+                                            .ToList();
+
             var joinQuery = (
-                from raiinInf in raiinInfs.AsEnumerable()
-                join rs in receSeikyus on
+                from raiinInf in raiinInfList
+                join rs in receSeikyuList on
                     new { raiinInf.HpId, raiinInf.PtId, SinYm = (int)Math.Floor((double)raiinInf.SinDate / 100) } equals
                     new { rs.HpId, rs.PtId, rs.SinYm } into rsJoin
                 from receSeikyu in rsJoin.DefaultIfEmpty()
@@ -197,7 +217,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                                 //月遅れ・返戻分
                                 (
                                     (
-                                        from rs1 in maxReceSeikyus
+                                        from rs1 in maxReceSeikyuList
                                         where
                                             rs1.HpId == hpId &&
                                             rs1.SeikyuYm == seikyuYm
@@ -210,38 +230,34 @@ namespace EmrCalculateApi.Ika.DB.Finder
                                     )
                                 )
                             )
-                            //&&
-                            //(
-                            //    //当月の月遅れ・返戻分を除く
-                            //    !(
-                            //        from rs2 in receSeikyus
-                            //        where
-                            //            rs2.HpId == hpId &&
-                            //            rs2.SeikyuYm != seikyuYm
-                            //        select rs2
-                            //    ).Any(
-                            //        r =>
-                            //            r.HpId == raiinInf.HpId &&
-                            //            r.PtId == raiinInf.PtId &&
-                            //            r.SinYm == raiinInf.SinDate / 100
-                            //    )
-                            //)
-
-                group raiinInf by
-                    new { raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate } into A
-                orderby
-                    A.Key.HpId, A.Key.PtId, A.Key.SinDate
-                select new
-                {
-                    A
-                }
+                //&&
+                //(
+                //    //当月の月遅れ・返戻分を除く
+                //    !(
+                //        from rs2 in receSeikyus
+                //        where
+                //            rs2.HpId == hpId &&
+                //            rs2.SeikyuYm != seikyuYm
+                //        select rs2
+                //    ).Any(
+                //        r =>
+                //            r.HpId == raiinInf.HpId &&
+                //            r.PtId == raiinInf.PtId &&
+                //            r.SinYm == raiinInf.SinDate / 100
+                //    )
+                //)
+                select raiinInf
             );
 
-            return
-                joinQuery.AsEnumerable().Select(
-                    data =>
-                        new RaiinDaysModel(data.A.Key.HpId, data.A.Key.PtId, data.A.Key.SinDate)
-                ).ToList();
+            var raiinList = joinQuery.ToList();
+
+            var result =
+                raiinList
+                .GroupBy(r => new { r.HpId, r.PtId, r.SinDate })
+                .Select(k => new RaiinDaysModel(k.Key.HpId, k.Key.PtId, k.Key.SinDate))
+                .ToList();
+
+            return result;
         }
     }
 }

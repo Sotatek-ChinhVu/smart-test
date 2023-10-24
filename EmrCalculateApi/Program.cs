@@ -4,6 +4,7 @@ using EmrCalculateApi.Implementation;
 using EmrCalculateApi.Interface;
 using EmrCalculateApi.Realtime;
 using EmrCalculateApi.ReceFutan.ViewModels;
+using Helper.Messaging;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Serilog;
@@ -74,6 +75,7 @@ services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 services.AddScoped<ITenantProvider, TenantProvider>();
 services.AddScoped<ISystemConfigProvider, SystemConfigProvider>();
 services.AddScoped<IEmrLogger, EmrLogger>();
+services.AddScoped<IMessenger, Messenger>();
 
 services.AddScoped<IFutancalcViewModel, FutancalcViewModel>();
 services.AddScoped<IReceFutanViewModel, ReceFutanViewModel>();

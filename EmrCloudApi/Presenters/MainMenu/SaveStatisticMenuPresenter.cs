@@ -11,7 +11,7 @@ public class SaveStatisticMenuPresenter : ISaveStatisticMenuOutputPort
 
     public void Complete(SaveStatisticMenuOutputData output)
     {
-        Result.Data = new SaveStatisticMenuResponse(output.Status == SaveStatisticMenuStatus.Successed);
+        Result.Data = new SaveStatisticMenuResponse(output.MenuIdTemp, output.Status == SaveStatisticMenuStatus.Successed);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }
@@ -24,6 +24,7 @@ public class SaveStatisticMenuPresenter : ISaveStatisticMenuOutputPort
         SaveStatisticMenuStatus.InvalidGrpId => ResponseMessage.InvalidGrpId,
         SaveStatisticMenuStatus.InvalidReportId => ResponseMessage.InvalidReportId,
         SaveStatisticMenuStatus.InvalidMenuName => ResponseMessage.InvalidMenuName,
+        SaveStatisticMenuStatus.NoPermission => ResponseMessage.NoPermission,
         _ => string.Empty
     };
 }

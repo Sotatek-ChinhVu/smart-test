@@ -60,8 +60,9 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
         private readonly TenantDataContext _tenantDataContext;
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
+        private readonly IMessenger _messenger;
 
-        public ReceFutanViewModel(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
+        public ReceFutanViewModel(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger)
         {
             _systemConfigProvider = systemConfigProvider;
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
@@ -79,6 +80,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                 receKyufuKisai2: _systemConfigProvider.GetReceKyufuKisai2(),
                 jibaiRousaiRate: _systemConfigProvider.GetJibaiRousaiRate()
             );
+            _messenger = messenger;
         }
 
         /// <summary>
@@ -133,7 +135,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                 _emrLogger.WriteLogEnd(this, conFncName, $"ptIds.Count:{ptIds?.Count ?? 0} seikyuYm:{seikyuYm}");
                 if (AllowSendProgress)
                 {
-                    SendMessager(new RecalculationStatus(true, 2, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                    SendMessager(new RecalculationStatus(true, CalculateStatusConstant.ReceiptAggregationCheckBox, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
                 }
             }
             catch (Exception E)
@@ -145,7 +147,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
 
         private void SendMessager(RecalculationStatus status)
         {
-            Messenger.Instance.Send(status);
+            _messenger.Send(status);
         }
 
         /// <summary>
@@ -252,16 +254,16 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
             AllCalcCount = ReceInfs.Count;
             if (AllowSendProgress)
             {
-                SendMessager(new RecalculationStatus(false, 2, AllCalcCount, 0, string.Empty, UniqueKey));
+                SendMessager(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, AllCalcCount, 0, string.Empty, UniqueKey));
             }
             CalculatedCount = 0;
             for (int rCnt = ReceInfs.Count - 1; rCnt >= 0 && !IsStopCalc; rCnt--)
             {
-                if (AllowSendProgress)
-                {
-                    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-                    IsStopCalc = statusCallBack.Result.Result;
-                }
+                //if (AllowSendProgress)
+                //{
+                //    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                //    IsStopCalc = statusCallBack.Result.Result;
+                //}
                 if (IsStopCalc)
                 {
                     return;
@@ -377,7 +379,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                     }
                     if (AllowSendProgress)
                     {
-                        SendMessager(new RecalculationStatus(false, 2, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
+                        SendMessager(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, AllCalcCount, CalculatedCount, string.Empty, UniqueKey));
                     }
                 }
                 catch (Exception E)
@@ -2558,5 +2560,10 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
 
         //    return false;
         //}
+
+        public void Dispose()
+        {
+            _tenantDataContext.Dispose();
+        }
     }
 }

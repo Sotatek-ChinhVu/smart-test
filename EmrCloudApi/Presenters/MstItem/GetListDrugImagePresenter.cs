@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.MstItem
         {
             Result = new Response<GetListDrugImageResponse>
             {
-                Data = new GetListDrugImageResponse(outputData.ImageUrl),
+                Data = new GetListDrugImageResponse(outputData.ImageList),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)

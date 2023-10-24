@@ -36,6 +36,8 @@ public class PatientInfoWithGroup
 
     public string LastVisitDate { get; private set; }
 
+    public string BirthdayDisplay { get => CIUtil.SDateToShowWDate2(BirthdayRaw); }
+
     public PatientInfoWithGroup(PatientInforModel patientInfo, List<GroupInfModel> groupInfList)
     {
         PtId = patientInfo.PtId;

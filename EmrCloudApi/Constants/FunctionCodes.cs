@@ -12,4 +12,7 @@ public static class FunctionCodes
     public const string RunCalculateMonth = "RunCalculateMonth";
     public const string ReceCheckCmtChanged = "ReceCheckCmtChanged";
     public const string RunCalculate = "RunCalculate";
+    public const string TodoInfIsDeleted = "TodoInfIsDeleted";
+    public const string TodoInfInserted = "TodoInfInserted";
+    public const string TodoInfUpdated = "TodoInfUpdated";
 }

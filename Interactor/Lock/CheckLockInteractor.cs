@@ -34,6 +34,10 @@ namespace Interactor.Lock
                 {
                     return new CheckLockOutputData(CheckLockStatus.NotLock, new LockModel());
                 }
+                else if (!string.IsNullOrEmpty(inputData.TabKey) && lockInfList.Exists(item => item.TabKey.Contains(inputData.TabKey)))
+                {
+                    return new CheckLockOutputData(CheckLockStatus.NotLock, new LockModel());
+                }
                 return new CheckLockOutputData(CheckLockStatus.Locked, lockInf);
             }
             finally

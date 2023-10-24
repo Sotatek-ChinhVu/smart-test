@@ -1,12 +1,16 @@
 ﻿using Domain.Models.InsuranceMst;
 using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.Insurance;
 using EmrCloudApi.Presenters.InsuranceMst;
+using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Requests.InsuranceMst;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.Insurance;
 using EmrCloudApi.Responses.InsuranceMst;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Insurance.FindHokenInfByPtId;
 using UseCase.InsuranceMst.DeleteHokenMaster;
 using UseCase.InsuranceMst.GetHokenMasterReadOnly;
 using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
@@ -151,6 +155,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetHokenMasterReadOnlyPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.FindHokenInfByPtId)]
+        public ActionResult<Response<FindHokenInfByPtIdResponse>> FindHokenInfByPtId([FromQuery] FindHokenInfByPtIdRequest request)
+        {
+            var input = new FindHokenInfByPtIdInputData(HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new FindHokenInfByPtIdPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<FindHokenInfByPtIdResponse>>(presenter.Result);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace UseCase.KarteInf.GetList
 {
     public class GetListKarteInfOuputItem : IOutputData
     {
-        public GetListKarteInfOuputItem(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, int isDeleted, string richText)
+        public GetListKarteInfOuputItem(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, int isDeleted, string richText, bool isAutoFill)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -15,6 +15,7 @@ namespace UseCase.KarteInf.GetList
             Text = text;
             IsDeleted = isDeleted;
             RichText = richText;
+            IsAutoFill = isAutoFill;
         }
 
         public int HpId { get; private set; }
@@ -26,5 +27,6 @@ namespace UseCase.KarteInf.GetList
         public string Text { get; private set; }
         public int IsDeleted { get; private set; }
         public string RichText { get; private set; }
+        public bool IsAutoFill { get; private set; }
     }
 }
