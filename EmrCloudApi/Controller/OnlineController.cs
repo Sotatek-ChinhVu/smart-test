@@ -248,7 +248,7 @@ public class OnlineController : AuthorizeControllerBase
     [HttpPost(ApiPath.InsertOnlineConfirmation)]
     public ActionResult<Response<InsertOnlineConfirmationResponse>> InsertOnlineConfirmation([FromBody] InsertOnlineConfirmationRequest request)
     {
-        var input = new InsertOnlineConfirmationInputData(UserId, request.SinDate, request.QCBIXmlMsgRequest, request.QCBIXmlMsgResponse);
+        var input = new InsertOnlineConfirmationInputData(UserId, request.SinDate, request.ArbitraryFileIdentifier, request.QCBIXmlMsgResponse);
         var output = _bus.Handle(input);
 
         var presenter = new InsertOnlineConfirmationPresenter();

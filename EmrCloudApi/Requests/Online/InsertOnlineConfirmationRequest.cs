@@ -2,10 +2,10 @@
 {
     public class InsertOnlineConfirmationRequest
     {
-        public int SinDate { get; private set; }
+        public int SinDate { get; set; }
 
-        public string QCBIXmlMsgRequest { get; private set; } = string.Empty;
+        public string ArbitraryFileIdentifier { get; set; } = string.Empty;
 
-        public string QCBIXmlMsgResponse { get; private set; } = string.Empty;
+        public string QCBIXmlMsgResponse { get; set; } = string.Empty;
     }
 }

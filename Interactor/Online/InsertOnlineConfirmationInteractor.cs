@@ -18,7 +18,7 @@ namespace Interactor.Online
         {
             var message = string.Empty;
             //check ArbitraryFileIdentifier
-            if (inputData.QCBIResponse.MessageHeader.ArbitraryFileIdentifier != inputData.QCBIRequest.MessageHeader.ArbitraryFileIdentifier)
+            if (inputData.QCBIResponse.MessageHeader.ArbitraryFileIdentifier != inputData.ArbitraryFileIdentifier)
                 return new InsertOnlineConfirmationOutputData(message, InsertOnlineConfirmationStatus.InvalidArbitraryFileIdentifier);
 
             var receptionDateTime = CIUtil.StrDateToDate(inputData.QCBIResponse.MessageBody.ReceptionDateTime);
