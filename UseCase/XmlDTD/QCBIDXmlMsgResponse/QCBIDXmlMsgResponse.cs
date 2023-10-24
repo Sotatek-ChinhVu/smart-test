@@ -1,5 +1,5 @@
-﻿using System.Xml.Serialization;
-using UseCase.Online.QualificationConfirmation;
+﻿using Domain.Models.Online.QualificationConfirmation;
+using System.Xml.Serialization;
 
 namespace UseCase.XmlDTD.QCBIDXmlMsgResponse
 {

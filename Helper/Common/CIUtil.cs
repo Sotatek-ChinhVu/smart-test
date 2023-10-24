@@ -3788,21 +3788,5 @@ namespace Helper.Common
         {
             return Environment.MachineName;
         }
-
-        //convert yyyyMMddHHmmss to yyyy/MM/dd HH:mm:ss
-        public static DateTime StrDateToDate(string sDate, string format = "yyyyMMddHHmmss")
-        {
-            DateTime dateTimeResult = DateTime.Now;
-            try
-            {
-                format = "yyyyMMddHHmmss";
-                DateTime.TryParseExact(sDate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeResult);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            return dateTimeResult;
-        }
     }
 }

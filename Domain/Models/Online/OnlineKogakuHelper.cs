@@ -1,4 +1,5 @@
 ﻿using Domain.Converter;
+using Domain.Models.Online.QualificationConfirmation;
 using Helper.Common;
 
 namespace Domain.Models.Online

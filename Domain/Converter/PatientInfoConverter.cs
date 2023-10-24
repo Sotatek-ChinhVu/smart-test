@@ -1,6 +1,7 @@
 ﻿using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.Online;
+using Domain.Models.Online.QualificationConfirmation;
 using Domain.Models.PatientInfor;
 using Helper.Common;
 using Helper.Constants;
