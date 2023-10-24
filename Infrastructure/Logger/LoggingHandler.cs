@@ -142,11 +142,11 @@ namespace Infrastructure.Logger
 
         public bool WriteAuditLog(List<AuditLogModel> auditLogList)
         {
-            string domain = _tenantProvider.GetDomain();
+            string domain = _tenantProvider.GetDomainFromHeader().Replace(".org", "").Replace(".works", "");
             int hpId = _tenantProvider.GetHpId();
             int departmentId = _tenantProvider.GetDepartmentId();
             int userId = _tenantProvider.GetUserId();
-            string tenantId = _tenantProvider.GetClinicID();
+            string tenantId = _tenantProvider.GetDomainFromHeader().Replace(".org", "").Replace(".works", "");
 
             if (domain.Contains("uat-tenant.smartkarte.org"))
             {
