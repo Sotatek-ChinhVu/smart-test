@@ -9,4 +9,6 @@ public interface ICoKarte1Finder
     List<CoPtByomeiModel> FindPtByomei(int hpId, long ptId, int hokenPid, bool TenkiByomei);
 
     CoPtHokenInfModel FindPtHokenInf(int hpId, long ptId, int hokenId, int sinDate);
+
+    void ReleaseResource();
 }

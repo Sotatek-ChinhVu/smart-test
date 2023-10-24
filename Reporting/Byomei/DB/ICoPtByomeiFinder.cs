@@ -11,4 +11,6 @@ public interface ICoPtByomeiFinder
         bool tenkiIn, List<int> hokenIds);
 
     List<CoPtHokenInfModel> GetPtHokenInf(int hpId, long ptId, List<int> hokenIds, int sinDate);
+
+    void ReleaseResource();
 }

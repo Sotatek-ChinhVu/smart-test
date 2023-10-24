@@ -304,4 +304,10 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         }
         return new PathPicture(defaultPicZai, defaultPicHou);
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+        _systemConfRepository.ReleaseResource();
+    }
 }

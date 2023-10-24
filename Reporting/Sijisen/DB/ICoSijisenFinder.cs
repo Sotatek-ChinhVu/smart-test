@@ -95,4 +95,6 @@ public interface ICoSijisenFinder
     /// <param name="ptId"></param>
     /// <returns></returns>
     int GetLastSinDate(int hpId, long ptId);
+
+    void ReleaseResource();
 }

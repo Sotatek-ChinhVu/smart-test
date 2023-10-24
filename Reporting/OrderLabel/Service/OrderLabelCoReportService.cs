@@ -601,4 +601,9 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
 
         return result;
     }
+
+    public void ReleaseResource()
+    {
+        _tenantProvider.DisposeDataContext();
+    }
 }

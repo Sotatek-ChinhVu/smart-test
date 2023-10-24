@@ -104,4 +104,9 @@ public class CoPtByomeiFinder : RepositoryBase, ICoPtByomeiFinder
             .ToList();
         return entities;
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

@@ -1066,4 +1066,9 @@ public class SijisenReportService : ISijisenReportService
             );
     }
     #endregion
+
+    public void ReleaseResource()
+    {
+        _finder.ReleaseResource();
+    }
 }

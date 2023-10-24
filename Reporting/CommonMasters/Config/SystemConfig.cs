@@ -15,6 +15,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     public SystemConfig(ITenantProvider tenantProvider) : base(tenantProvider)
     {
         RefreshData();
+        tenantProvider.DisposeDataContext();
     }
 
     public void RefreshData()

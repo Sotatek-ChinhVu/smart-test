@@ -17,6 +17,7 @@ namespace Reporting.Calculate.Implementation
             _logger = logger;
             _tenantInfo = tenantProvider.GetTenantInfo();
             _loggingHandler = loggingHandler;
+            tenantProvider.DisposeDataContext();
         }
 
         public void WriteLogEnd(object className, string functionName, string message)
@@ -56,6 +57,11 @@ namespace Reporting.Calculate.Implementation
             string dateTime = CIUtil.GetJapanDateTimeNow().ToString("MM/dd/yyyy HH:mm:ss.fff");
             string logContent = $"{_tenantInfo} {messageType} {dateTime} {prefix} {className}.{functionName} {message}";
             _logger.LogInformation(logContent);
+        }
+
+        public void ReleaseResource()
+        {
+            _loggingHandler.Dispose();
         }
     }
 }

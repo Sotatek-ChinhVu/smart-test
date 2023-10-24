@@ -723,4 +723,13 @@ public class ReportService : IReportService
     {
         return _kensaResultMultiCoReportService.GetKensaResultMultiPrintData(hpId, userId, ptId, setId, iraiCd, startDate, endDate, showAbnormalKbn, itemQuantity);
     }
+
+    public void ReleaseResource()
+    {
+        _accountingCoReportService.ReleaseResource();
+        _orderLabelCoReportService.ReleaseResource();
+        _drugInfoCoReportService.ReleaseResource();
+        _sijisenReportService.ReleaseResource();
+        _byomeiService.ReleaseResource();
+    }
 }

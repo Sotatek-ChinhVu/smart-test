@@ -344,4 +344,9 @@ public class ByomeiService : IByomeiService
         dataCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsByomei" && item.typeInt == (int)CalculateTypeEnum.GetFormatLendB)?.result ?? dataCharCount;
         dataRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsByomei" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? dataRowCount;
     }
+
+    public void ReleaserResource()
+    {
+        _finder.ReleaseResource();
+    }
 }

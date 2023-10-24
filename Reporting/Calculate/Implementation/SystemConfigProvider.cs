@@ -12,6 +12,7 @@ namespace Reporting.Calculate.Implementation
         public SystemConfigProvider(ITenantProvider tenantProvider)
         {
             _systemConfigs = tenantProvider.GetNoTrackingDataContext().SystemConfs.ToList();
+            tenantProvider.DisposeDataContext();
         }
 
         public int GetChokiDateRange()

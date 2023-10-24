@@ -22,4 +22,6 @@ public interface ICoDrugInfFinder
     List<DrugInf> GetDrugInfo(int hpId, string itemCd, int age, int gender);
 
     PathPicture GetDefaultPathPicture();
+
+    void ReleaseResource();
 }

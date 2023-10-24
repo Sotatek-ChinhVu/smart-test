@@ -4315,4 +4315,12 @@ public class AccountingCoReportService : IAccountingCoReportService
     {
         return JavaOutputData.responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListFormatLendB && item.listName == fileName)?.result ?? 0;
     }
+
+    public void ReleaseResource()
+    {
+        _tenantProvider.DisposeDataContext();
+        _finder.ReleaseResource();
+        _emrLogger.ReleaseResource();
+    }
+
 }

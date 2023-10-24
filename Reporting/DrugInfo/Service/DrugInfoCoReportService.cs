@@ -506,4 +506,10 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         string usageComment = string.Join(Environment.NewLine, usageComments);
         drugInfoModel.usageComment = usageComment;
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+        _systemConfRepository.ReleaseResource();
+    }
 }

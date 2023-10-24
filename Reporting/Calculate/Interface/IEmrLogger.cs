@@ -9,5 +9,7 @@
         void WriteLogStart(object className, string functionName, string message);
 
         void WriteLogMsg(object className, string functionName, string message);
+
+        void ReleaseResource();
     }
 }

@@ -140,4 +140,6 @@ public interface ICoAccountingFinder
     List<CoAccountDueListModel> GetAccountDueList(int hpId, long ptId);
 
     List<PtGrpNameMstModel> GetPtGrpNameMstModels(int hpId);
+
+    void ReleaseResource();
 }

@@ -1925,4 +1925,9 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                        )).OrderBy(gr => gr.SortNo).ToList();
         return result;
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

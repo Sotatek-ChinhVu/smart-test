@@ -806,5 +806,10 @@ namespace Reporting.Sijisen.DB
 
             return ret;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }
