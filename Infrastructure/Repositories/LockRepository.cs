@@ -6,6 +6,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
@@ -622,6 +623,38 @@ namespace Infrastructure.Repositories
         {
             var listSessionToUnlock = TrackingDataContext.SessionInfs.Where(u => u.HpId == hpId && listMachineToUnlock.Contains(u.Machine)).ToList();
             TrackingDataContext.SessionInfs.RemoveRange(listSessionToUnlock);
+        }
+
+        public LockModel CheckIsExistedOQLockInfo(int hpId, int userId, long ptId, string functionCd, long raiinNo, int sinDate)
+        {
+            var listCheckedResult =
+            (
+                   from lockInf in NoTrackingDataContext.LockInfs.Where(i => i.HpId == hpId && i.FunctionCd == functionCd)
+                   join raiinInf in NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId)
+                   on lockInf.RaiinNo equals raiinInf.RaiinNo into rfg
+                   from lockedRaiinInf in rfg.DefaultIfEmpty()
+                   join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted != 1 && u.StartDate <= sinDate && sinDate <= u.EndDate)
+                   on lockInf.UserId equals userMst.UserId into gj
+                   from lockedUserInf in gj.DefaultIfEmpty()
+                   join functionMst in NoTrackingDataContext.FunctionMsts
+                   on lockInf.FunctionCd equals functionMst.FunctionCd
+                   where (lockInf.UserId != userId)
+                   select new
+                   {
+                       lockInf,
+                       lockedUserInf,
+                       functionMst,
+                       lockedRaiinInf
+                   }
+               ).FirstOrDefault();
+            if (listCheckedResult == null)
+            {
+                return new();
+            }
+            return new LockModel(listCheckedResult.lockInf.FunctionCd,
+                                 listCheckedResult.lockedUserInf.UserId,
+                                 listCheckedResult.lockedUserInf.Name ?? string.Empty,
+                                 listCheckedResult.functionMst?.FunctionName ?? string.Empty);
         }
 
         private void UnlockPtInf(int hpId, int userId, List<LockPtInfModel> listLockPtInfModel)
