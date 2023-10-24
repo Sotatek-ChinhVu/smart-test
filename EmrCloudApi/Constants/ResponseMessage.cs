@@ -77,6 +77,7 @@
         public static readonly string InvalidPtNum = "Invalid PtNum";
         public static readonly string InvalidKanjiName = "Invalid Kanji Name";
         public static readonly string InvalidSex = "Invalid sex";
+        public static readonly string CanNotDeleted = "Can Not Deleted.";
 
         // RousaiJibai
         public static readonly string InvalidHokenKbn = "Invalid HokenKbn";
@@ -317,7 +318,7 @@
         public static readonly string UpsertKarteInfInvalidPtId = "Invalid PtId";
         public static readonly string UpsertKarteInfInvalidSinDate = "Invalid SinDate";
         public static readonly string UpsertKarteInfInvalidIsDeleted = "Invalid IsDeleted";
-        public static readonly string UpsertKarteInfRaiinNoNoExist = "RaiinNo No Exist";
+        public static readonly string UpsertKarteInfRaiinNoNoExist = "指定された来院情報がないためオーダーは入力できません";
         public static readonly string UpsertKarteInfPtIdNoExist = "PtId No Exist";
         public static readonly string UpsertKarteInfKarteKbnNoExist = "KarteKbn No Exist";
 
@@ -390,6 +391,9 @@
         public static readonly string InvalidWeightKbn = "Invalid WeightKbn, WeightKbn >= 0";
         public static readonly string InvalidColor = "Invalid Color, Color >= 0";
         public static readonly string InvalidMemo = "Invalid Memo";
+        public static readonly string InvalidSourceItemCd = "Invalid SourceItemCd.";
+        public static readonly string InvalidConversionItemCd = "Invalid ConversionItemCd.";
+        public static readonly string InvalidQuanlity = "Invalid Quanlity.";
 
         //Set
         public static readonly string GetSetKbnListInvalidHpId = "Invalid HpId";
@@ -642,7 +646,7 @@
         public static readonly string RaiinInfTodayOdrInvalidSinEndTime = "Invalid SinEndTime";
         public static readonly string RaiinInfTodayOdrPtIdNoExist = "PtId no exist";
         public static readonly string RaiinInfTodayOdrHpIdNoExist = "HpId no exist";
-        public static readonly string RaiinInfTodayOdrRaiinNoExist = "RaiinNo no exist";
+        public static readonly string RaiinInfTodayOdrRaiinNoExist = "指定された来院情報がないためオーダーは入力できません";
 
         //Monshin
         public static readonly string InputDataDoesNotExists = "Input Data does not exist";
@@ -1019,6 +1023,10 @@
         public static readonly string InvalidReportId = "Invalid ReportId!";
         public static readonly string InvalidMenuName = "Invalid MenuName!";
         public static readonly string InvalidIraiCd = "Invalid IraiCd!";
+        public static readonly string InvalidInputFile = "Invalid InputFile!";
+        public static readonly string InvalidAbnormalKbn = "Invalid AbnormalKbn!";
+        public static readonly string InvalidResultType = "Invalid ResultType!";
+        public static readonly string InvalidKensaItemCd = "Invalid KensaItemCd!";
 
         public static readonly string NoPermission = "No permission";
         public static readonly string InvalidContentFile = "Invalid file content";
@@ -1028,6 +1036,7 @@
         public static readonly string InvalidOnlineId = "Invalid OnlineId.";
         public static readonly string InvalidUketukeStatus = "Invalid UketukeStatus.";
         public static readonly string InvalidOnlineConfirmationDate = "Invalid OnlineConfirmationDate.";
+        public static readonly string InvalidXmlFile = "Invalid XmlFile.";
         public static readonly string InvalidArbitraryFileIdentifier = "Invalid InvalidArbitraryFileIdentifier.";
 
         // KensaIrai

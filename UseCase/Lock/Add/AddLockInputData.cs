@@ -1,4 +1,5 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Newtonsoft.Json;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.Lock.Add
 {
@@ -20,6 +21,7 @@ namespace UseCase.Lock.Add
 
         public string LoginKey { get; private set; }
 
+        [JsonConstructor]
         public AddLockInputData(int hpId, long ptId, string functionCode, int sinDate, long raiinNo, int userId, string tabKey, string loginKey)
         {
             HpId = hpId;
@@ -30,6 +32,13 @@ namespace UseCase.Lock.Add
             UserId = userId;
             TabKey = tabKey;
             LoginKey = loginKey;
+        }
+
+        public AddLockInputData()
+        {
+            FunctionCode = string.Empty;
+            TabKey = string.Empty;
+            LoginKey = string.Empty;
         }
     }
 }

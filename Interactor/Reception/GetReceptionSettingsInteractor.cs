@@ -24,7 +24,7 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
     {
         try
         {
-            var settings = GetSettings(input.UserId);
+            var settings = GetSettings(input.UserId, input.HpId);
             return new GetReceptionSettingsOutputData(GetReceptionSettingsStatus.Success, settings);
         }
         finally
@@ -34,7 +34,7 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
         }
     }
 
-    private VisitingListSettingModel GetSettings(int userId)
+    private VisitingListSettingModel GetSettings(int userId, int hpId)
     {
         string fontName = "";
         int fontSize = 0;
@@ -68,7 +68,7 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
             }
         }
 
-        var systemConfigs = _systemConfRepository.GetList(SystemConfGroupCodes.ReceptionTimeColor, SystemConfGroupCodes.ReceptionStatusColor);
+        var systemConfigs = _systemConfRepository.GetList(hpId, SystemConfGroupCodes.ReceptionTimeColor, SystemConfGroupCodes.ReceptionStatusColor);
 
         var receptionTimeColorConfigs = systemConfigs
                 .Where(c => c.GrpCd == SystemConfGroupCodes.ReceptionTimeColor)

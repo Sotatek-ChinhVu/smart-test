@@ -25,6 +25,10 @@
         public const string GetToolTip = "GetToolTip";
         public const string GetSuperSetDetailForTodayOrder = "GetSuperSetDetailForTodayOrder";
         public const string ParrentKensaMst = "ParrentKensaMst";
+        public const string GetConversion = "GetConversion";
+        public const string SaveConversion = "SaveConversion";
+        public const string GetOdrSetName = "GetOdrSetName";
+        public const string SaveOdrSet = "SaveOdrSet";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
@@ -65,6 +69,7 @@
         public const string GetContainerMsts = "GetContainerMsts";
         public const string GetKensaCenterMsts = "GetKensaCenterMsts";
         public const string GetTenOfHRTItem = "GetTenOfHRTItem";
+        public const string GetListKensaMst = "GetListKensaMst";
         public const string GetListYohoSetMstModelByUserID = "GetListYohoSetMstModelByUserID";
         public const string GetRenkeiConf = "GetRenkeiConf";
         public const string SaveRenkei = "SaveRenkei";
@@ -158,6 +163,7 @@
         public const string CheckExistTemplateAccounting = "CheckExistTemplateAccounting";
         public const string ExportStatics = "ExportStatics";
         public const string ExportSta9000Csv = "ExportSta9000Csv";
+        public const string KensaHistoryReport = "KensaHistoryReport";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -176,6 +182,9 @@
         public const string GetPtInfByRefNo = "GetPtInfByRefNo";
         public const string GetPtInfModelsByName = "GetPtInfModelsByName";
         public const string GetPtInfModelsByRefNo = "GetPtInfModelsByRefNo";
+        public const string GetVisitTimesManagementModels = "GetVisitTimesManagementModels";
+        public const string UpdateVisitTimesManagement = "UpdateVisitTimesManagement";
+        public const string UpdateVisitTimesManagementNeedSave = "UpdateVisitTimesManagementNeedSave";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -350,6 +359,7 @@
         public const string GetListSokatuMst = "GetListSokatuMst";
         public const string CheckExistsReceInf = "CheckExistsReceInf";
         public const string CheckExistSyobyoKeika = "CheckExistSyobyoKeika";
+        public const string GetNextUketukeNoBySetting = "GetNextUketukeNoBySetting";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -423,7 +433,10 @@
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
         public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
-        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut";
+        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut"; 
+        public const string GetLockInf = "GetLockInf"; 
+        public const string Unlock = "Unlock";
+        public const string CheckIsExistedOQLockInfo = "CheckIsExistedOQLockInfo";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
@@ -449,6 +462,7 @@
         public const string GetStaCsvMst = "GetStaCsvMst";
         public const string KensaIraiReport = "KensaIraiReport";
         public const string SaveStaCsvMst = "SaveStaCsvMst";
+        public const string ImportKensaIrai = "ImportKensaIrai";
         public const string GetRsvInfToConfirm = "GetRsvInfToConfirm";
         public const string GetListQualificationInf = "GetListQualificationInf";
 
@@ -477,6 +491,8 @@
         public const string GetListOnlineConfirmationHistoryByPtId = "GetListOnlineConfirmationHistoryByPtId";
         public const string GetListOnlineConfirmationHistoryModel = "GetListOnlineConfirmationHistoryModel";
         public const string ConvertXmlToQCXmlMsg = "ConvertXmlToQCXmlMsg";
+        public const string GetOnlineConsent = "GetOnlineConsent";
+        public const string UpdateOnlineConsents = "UpdateOnlineConsents";
         public const string UpdateOnlineConfirmation = "UpdateOnlineConfirmation";
         public const string InsertOnlineConfirmation = "InsertOnlineConfirmation";
 
@@ -492,6 +508,9 @@
 
         //ListSetMst
         public const string UpdateListSetMst = "UpdateListSetMst";
+
+        //ByomeiSetMst
+        public const string UpdateByomeiSetMst = "UpdateByomeiSetMst";
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";
@@ -500,8 +519,25 @@
 
         //SetSendaiGeneration
         public const string Restore = "Restore";
+
+        //KensaHistory
+        public const string UpdateKensaSet = "UpdateKensaSet";
+        public const string GetListKensaSet = "GetListKensaSet";
+        public const string GetListKensaSetDetail = "GetListKensaSetDetail";
+        public const string GetListKensaCmtMst = "GetListKensaCmtMst";
+        public const string UpdateKensaInfDetail = "UpdateKensaInfDetail";
+        public const string GetListKensaInfDetail = "GetListKensaInfDetail";
+        public const string GetKensaInfDetailByIraiCd = "GetKensaInfDetailByIraiCd";
+
         //Search Compare Tenmst
         public const string SearchCompareTenMst = "SearchCompareTenMst";
         public const string SaveCompareTenMst = "SaveCompareTenMst";
+        public const string SaveSetNameMnt = "SaveSetNameMnt";
+        public const string GetColumnSettingByTableNameList = "GetColumnSettingByTableNameList";
+        public const string GetRenkeiTiming = "GetRenkeiTiming";
+
+        //log
+        public const string WriteLog = "WriteLog";
+        public const string WriteListLog = "WriteListLog";
     }
 }

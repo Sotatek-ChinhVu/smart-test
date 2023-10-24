@@ -1305,9 +1305,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     transaction.Commit();
                     success = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return success;
@@ -2211,15 +2212,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                      item.SinKouiDetail.SinYm,
                                                                      item.SinDate,
                                                                      item.SinKouiDetail.PtId,
-                                                                     item.TenMst.MaxAge ?? string.Empty,
-                                                                     item.TenMst.MinAge ?? string.Empty,
+                                                                     item.TenMst != null ? item.TenMst.MaxAge ?? string.Empty : string.Empty,
+                                                                     item.TenMst != null ? item.TenMst.MinAge ?? string.Empty : string.Empty,
                                                                      item.SinKouiDetail.ItemCd ?? string.Empty,
                                                                      item.SinKouiDetail.CmtOpt ?? string.Empty,
                                                                      item.SinKouiDetail.ItemName ?? string.Empty,
-                                                                     item.TenMst.ReceName ?? string.Empty,
+                                                                     item.TenMst != null ? item.TenMst.ReceName ?? string.Empty : string.Empty,
                                                                      item.SinKouiDetail.Suryo,
                                                                      item.SinKouiDetail.IsNodspPaperRece,
-                                                                     item.TenMst.MasterSbt ?? string.Empty,
+                                                                     item.TenMst != null ? item.TenMst.MasterSbt ?? string.Empty : string.Empty,
                                                                      item.TenMst != null))
                                                 .ToList();
 

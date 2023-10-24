@@ -233,7 +233,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                 catch (Exception)
                 {
                     transaction.Rollback();
-                    return false;
+                    throw;
                 }
             });
     }

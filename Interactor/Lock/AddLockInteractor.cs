@@ -29,7 +29,7 @@ namespace Interactor.Lock
                 if (result)
                 {
                     var responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate, raiinNo);
-                    return new AddLockOutputData(AddLockStatus.Successed, new LockModel(), responseLockList);
+                    return new AddLockOutputData(AddLockStatus.Successed, new LockModel(), responseLockList, inputData);
                 }
                 else
                 {

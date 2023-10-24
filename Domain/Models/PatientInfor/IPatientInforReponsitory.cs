@@ -1,7 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Models.CalculationInf;
 using Domain.Models.GroupInf;
-using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
@@ -78,5 +77,11 @@ namespace Domain.Models.PatientInfor
         List<PatientInforModel> GetPtInfModels(int hpId, long refNo);
 
         bool SavePtKyusei(int hpId, int userId, List<PtKyuseiModel> ptKyuseiList);
+
+        List<VisitTimesManagementModel> GetVisitTimesManagementModels(int hpId, int sinYm, long ptId, int kohiId);
+
+        bool UpdateVisitTimesManagement(int hpId, int userId, long ptId, int kohiId, int sinYm, List<VisitTimesManagementModel> visitTimesManagementList);
+
+        bool UpdateVisitTimesManagementNeedSave(int hpId, int userId, long ptId, List<VisitTimesManagementModel> visitTimesManagementList);
     }
 }

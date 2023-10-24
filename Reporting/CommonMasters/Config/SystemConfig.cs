@@ -760,6 +760,8 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// </summary>
     public int ByomeiCondition => (int)GetSettingValue(2002, 4);
 
+    public int SyohosenKouiDivide() { return (int)GetSettingValue(92003, 10); }
+
     /// <summary>
     /// 特処１病名条件
     /// </summary>

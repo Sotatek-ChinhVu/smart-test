@@ -17,7 +17,7 @@ public static class ReceErrCdConst
     public const string ExpiredEndDateOdrErrMsg = "期限切れ項目が登録されています。";
 
     public const string ExpiredStartDateOdrErrCd = "E3002";
-    public const string ExpiredStartDateOdrErrMsg = "期限切れ項目が登録されています。";
+    public const string ExpiredStartDateOdrErrMsg = "開始日前の項目が登録されています。";
 
     public const string FirstExamFeeCheckErrCd = "E3003";
     public const string FirstExamFeeCheckErrMsg = "初診料を同一月に複数回算定しています。";

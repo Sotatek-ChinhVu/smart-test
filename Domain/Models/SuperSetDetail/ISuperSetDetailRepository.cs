@@ -19,4 +19,12 @@ public interface ISuperSetDetailRepository : IRepositoryBase
     bool CheckExistSupperSetDetail(int hpId, int setCd);
 
     bool ClearTempData(int hpId, List<string> listFileNames);
+
+    List<ConversionItemInfModel> GetConversionItem(int hpId, string itemCd, int sinDate);
+
+    bool SaveConversionItemInf(int hpId, int userId, string conversionItemCd, string sourceItemCd);
+
+    List<OdrSetNameModel> GetOdrSetName(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, int timeExpired, string itemName);
+
+    bool SaveOdrSet(int hpId, int userId, int sinDate, List<OdrSetNameModel> setNameModelList);
 }

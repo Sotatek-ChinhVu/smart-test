@@ -4,39 +4,91 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using System.Collections;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
 public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 {
-    public SystemConfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
-    {
+    private readonly IDatabase _cache;
+    private readonly string key;
+    private readonly IConfiguration _configuration;
 
+    public SystemConfRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
+    {
+        key = GetCacheKey() + "SystemConf";
+        _configuration = configuration;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
     }
 
-    public List<SystemConfModel> GetList(int fromGrpCd, int toGrpCd)
+    public void GetRedis()
     {
-        return NoTrackingDataContext.SystemConfs
-            .Where(s => s.GrpCd >= fromGrpCd && s.GrpCd <= toGrpCd)
-            .AsEnumerable().Select(s => ToModel(s)).ToList();
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
+    }
+
+    private List<SystemConf> ReloadCache(int hpId)
+    {
+        var result = NoTrackingDataContext.SystemConfs
+                                    .Where(item => item.HpId == hpId)
+                                    .ToList();
+        var json = JsonSerializer.Serialize(result);
+        _cache.StringSet(key, json);
+
+        return result;
+    }
+
+    private List<SystemConf> ReadCache(int hpId)
+    {
+        var results = _cache.StringGet(key);
+        var json = results.AsString();
+        var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SystemConf>>(json) : new();
+        return datas ?? new();
+    }
+
+    private List<SystemConf> GetData(int hpId)
+    {
+        var result = new List<SystemConf>();
+        if (!_cache.KeyExists(key))
+        {
+            result = ReloadCache(hpId);
+        }
+        else
+        {
+            result = ReadCache(hpId);
+        }
+
+        return result;
+    }
+
+    public List<SystemConfModel> GetList(int hpId, int fromGrpCd, int toGrpCd)
+    {
+        var result = GetData(hpId);
+        return result.Where(s => s.GrpCd >= fromGrpCd && s.GrpCd <= toGrpCd).AsEnumerable().Select(s => ToModel(s)).ToList();
     }
 
     public List<SystemConfModel> GetList(int hpId, List<int> grpCodeList)
     {
         grpCodeList = grpCodeList.Distinct().ToList();
-        var systemConfigList = NoTrackingDataContext.SystemConfs.Where(item => item.HpId == hpId
-                                                                               && grpCodeList.Contains(item.GrpCd))
-                                                                .ToList();
+        var result = GetData(hpId);
+        var systemConfigList = result.Where(item => grpCodeList.Contains(item.GrpCd)).ToList();
         return systemConfigList.Select(item => ToModel(item)).ToList();
     }
 
     public SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo)
     {
-        var data = NoTrackingDataContext.SystemConfs
-            .FirstOrDefault(s => s.HpId == hpId && s.GrpCd == grpCd && s.GrpEdaNo == grpEdaNo);
+        var result = GetData(hpId);
+        var data = result.FirstOrDefault(s => s.GrpCd == grpCd && s.GrpEdaNo == grpEdaNo);
         if (data == null) return new SystemConfModel();
         return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data?.Param ?? string.Empty, data?.Biko ?? string.Empty);
     }
@@ -44,9 +96,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
     public bool SaveSystemConfigList(int hpId, int userId, List<SystemConfModel> systemConfigList)
     {
         var grpCdList = systemConfigList.Select(item => item.GrpCd).Distinct().ToList();
-        var systemConfigDBList = TrackingDataContext.SystemConfs.Where(item => item.HpId == hpId
-                                                                               && grpCdList.Contains(item.GrpCd))
-                                                                .ToList();
+        var systemConfigDBList = TrackingDataContext.SystemConfs.Where(item => item.HpId == hpId && grpCdList.Contains(item.GrpCd)).ToList();
         foreach (var model in systemConfigList)
         {
             bool addNew = false;
@@ -71,35 +121,44 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                 TrackingDataContext.SystemConfs.Add(systemConfigItem);
             }
         }
-        TrackingDataContext.SaveChanges();
+       
+        var result = TrackingDataContext.SaveChanges();
+        if (result > 0)
+        {
+            ReloadCache(hpId);
+        }
+
         return true;
     }
 
     public List<SystemConfModel> GetAllSystemConfig(int hpId)
     {
-        var result = NoTrackingDataContext.SystemConfs.Where(item => item.HpId == hpId)
-                                                      .Select(item => new SystemConfModel(
-                                                                          item.GrpCd,
-                                                                          item.GrpEdaNo,
-                                                                          item.Val,
-                                                                          item.Param ??
-                                                                          string.Empty,
-                                                                          item.Biko ??
-                                                                          string.Empty))
-                                                      .ToList();
+        var data = GetData(hpId);
+
+        var result = data.Select(item => new SystemConfModel(
+                                                         item.GrpCd,
+                                                         item.GrpEdaNo,
+                                                         item.Val,
+                                                         item.Param ??
+                                                         string.Empty,
+                                                         item.Biko ??
+                                                         string.Empty))
+                    .ToList();
         return result;
     }
 
     public double GetSettingValue(int groupCd, int grpEdaNo, int hpId)
     {
-        var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo && p.HpId == hpId);
+        var result = GetData(hpId);
+        var systemConf = result.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
         return systemConf != null ? systemConf.Val : 0;
     }
 
     public string GetSettingParams(int groupCd, int grpEdaNo, int hpId, string defaultParam = "")
     {
+        var result = GetData(hpId);
 
-        var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo && p.HpId == hpId);
+        var systemConf = result.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
 
         //Fix comment 894 (duong.vu)
         //Return value in DB if and only if Param is not null or white space
@@ -231,7 +290,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
     {
         var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && menuGrp.Contains(u.MenuGrp) && u.IsVisible == 1);
         var systemConfItems = NoTrackingDataContext.SystemConfItem.Where(u => u.HpId == hpId).OrderBy(u => u.SortNo);
-        var systemSettings = NoTrackingDataContext.SystemConfs.Where(u => u.HpId == hpId);
+        var systemSettings = GetData(hpId);
         var systemConfs = (from menu in systemConfMenus.AsEnumerable()
                            join item in systemConfItems on menu.MenuId equals item.MenuId into items
                            join setting in systemSettings on new { menu.GrpCd, menu.GrpEdaNo } equals new { setting.GrpCd, setting.GrpEdaNo }
@@ -485,7 +544,13 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             }
         }
 
-        return TrackingDataContext.SaveChanges() > 0;
+        var result = TrackingDataContext.SaveChanges() > 0;
+        if (result)
+        {
+            ReloadCache(hpId);
+        }
+
+        return result;
     }
 
     private void UpdatePtRyosyoDetail(int userId, SystemConfModel model)

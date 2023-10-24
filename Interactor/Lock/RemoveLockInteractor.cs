@@ -22,8 +22,9 @@ namespace Interactor.Lock
                 int hpId = inputData.HpId;
                 int userId = inputData.UserId;
                 string tabKey = inputData.TabKey;
+                int removeCounted = 0;
 
-                List<long> raiinNoList;
+                List<long>? raiinNoList;
                 if (inputData.IsRemoveAllLock)
                 {
                     raiinNoList = _lockRepository.RemoveAllLock(hpId, userId);
@@ -31,7 +32,9 @@ namespace Interactor.Lock
                 }
                 else if (inputData.IsRemoveAllLockPtId)
                 {
-                    raiinNoList = _lockRepository.RemoveAllLock(hpId, userId, ptId, sinDate, functionCode, tabKey);
+                    var removeResult = _lockRepository.RemoveAllLock(hpId, userId, ptId, sinDate, functionCode, tabKey);
+                    raiinNoList = removeResult.raiinNoList;
+                    removeCounted = removeResult.removedCount;
                     raiinNo = 0;
                 }
                 else if (inputData.IsRemoveLockWhenLogOut)
@@ -41,10 +44,12 @@ namespace Interactor.Lock
                 }
                 else
                 {
-                    raiinNoList = _lockRepository.RemoveLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, tabKey);
+                    var removeResult = _lockRepository.RemoveLock(hpId, functionCode, ptId, sinDate, raiinNo, userId, tabKey);
+                    raiinNoList = removeResult.raiinList;
+                    removeCounted = removeResult.removedCount;
                     raiinNo = 0;
                 }
-                if (raiinNoList.Any())
+                if (raiinNoList?.Any() == true)
                 {
                     List<ResponseLockModel> responseLockList;
                     if (inputData.IsRemoveLockWhenLogOut)
@@ -55,7 +60,7 @@ namespace Interactor.Lock
                     {
                         responseLockList = _lockRepository.GetResponseLockModel(hpId, ptId, sinDate, raiinNo);
                     }
-                    return new RemoveLockOutputData(RemoveLockStatus.Successed, responseLockList);
+                    return new RemoveLockOutputData(RemoveLockStatus.Successed, responseLockList, removeCounted);
                 }
                 // if remove lock when logout and don't exist raiinNoList, return true
                 if (inputData.IsRemoveLockWhenLogOut)

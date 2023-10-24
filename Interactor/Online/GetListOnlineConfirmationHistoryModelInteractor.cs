@@ -28,7 +28,7 @@ public class GetListOnlineConfirmationHistoryModelInteractor : IGetListOnlineCon
         }
         else
         {
-            result = _onlineRepository.GetListOnlineConfirmationHistoryModel(inputData.OnlQuaResFileDict, inputData.OnlQuaConfirmationTypeDict);
+            result = _onlineRepository.GetListOnlineConfirmationHistoryModel(inputData.UserId, inputData.OnlQuaResFileDict, inputData.OnlQuaConfirmationTypeDict);
         }
         return new GetListOnlineConfirmationHistoryModelOutputData(result, GetListOnlineConfirmationHistoryModelStatus.Successed);
     }

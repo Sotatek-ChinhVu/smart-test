@@ -69,7 +69,7 @@ public class VisitingController : AuthorizeControllerBase
     [HttpGet(ApiPath.Get + "Settings")]
     public ActionResult<Response<GetReceptionSettingsResponse>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
     {
-        var input = new GetReceptionSettingsInputData(UserId);
+        var input = new GetReceptionSettingsInputData(UserId, HpId);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionSettingsPresenter();
         presenter.Complete(output);

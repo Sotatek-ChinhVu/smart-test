@@ -5,7 +5,7 @@ namespace Domain.Models.SystemConf;
 
 public interface ISystemConfRepository : IRepositoryBase
 {
-    List<SystemConfModel> GetList(int fromGrpCd, int toGrpCd);
+    List<SystemConfModel> GetList(int hpId, int fromGrpCd, int toGrpCd);
 
     List<SystemConfModel> GetList(int hpId, List<int> grpCodeList);
 

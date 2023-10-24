@@ -184,8 +184,8 @@ public class KarteFilterMstRepository : RepositoryBase, IKarteFilterMstRepositor
                     }
                     catch (Exception)
                     {
-                        status = false;
                         transaction.Rollback();
+                        throw;
                     }
                 }
             });

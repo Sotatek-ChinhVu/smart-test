@@ -38,6 +38,50 @@ public class AuditLogRepository : RepositoryBase, IAuditLogRepository
         return saveAuditLog > 0 || TrackingDataContext.SaveChanges() > 0;
     }
 
+    public void AddAuditTrailLog(int hpId, int userId, ArgumentModel arg)
+    {
+        var eventMsts = GetEventMstModel();
+
+        if (eventMsts.Any(p => p.EventCd == arg.EventCd && p.AuditTrailing == 1))
+        {
+            var auditTrailLog = new AuditTrailLog();
+
+            auditTrailLog.HpId = hpId;
+            auditTrailLog.PtId = arg.PtId;
+            auditTrailLog.SinDay = arg.SinDate;
+            auditTrailLog.UserId = userId;
+            auditTrailLog.RaiinNo = arg.RaiinNo;
+            auditTrailLog.EventCd = arg.EventCd;
+            auditTrailLog.LogDate = CIUtil.GetJapanDateTimeNow();
+
+            TrackingDataContext.AuditTrailLogs.Add(auditTrailLog);
+            TrackingDataContext.SaveChanges();
+
+            if (!string.IsNullOrEmpty(arg.Hosoku))
+            {
+                var auditTrailLogDetail = new AuditTrailLogDetail();
+                auditTrailLogDetail.LogId = auditTrailLog.LogId;
+                auditTrailLogDetail.Hosoku = arg.Hosoku;
+                TrackingDataContext.AuditTrailLogDetails.Add(auditTrailLogDetail);
+                TrackingDataContext.SaveChanges();
+            }
+        }
+    }
+
+    private List<EventMstModel> GetEventMstModel()
+    {
+        var eventMsts = NoTrackingDataContext.EventMsts
+                                             .Where(p => p.AuditTrailing == 1)
+                                             .Select(x => new EventMstModel(
+                                                                            x.EventCd ?? string.Empty,
+                                                                            x.EventName ?? string.Empty,
+                                                                            x.AuditTrailing,
+                                                                            x.CreateDate
+                                             )).ToList();
+
+        return eventMsts ?? new();
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();

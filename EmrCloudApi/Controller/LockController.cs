@@ -1,19 +1,23 @@
-﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Messages;
+﻿using Domain.Models.Lock;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Lock;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
 using EmrCloudApi.Services;
-using Helper.Constants;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
+using UseCase.Lock.CheckIsExistedOQLockInfo;
 using UseCase.Lock.Get;
+using UseCase.Lock.GetLockInf;
 using UseCase.Lock.Remove;
+using UseCase.Lock.Unlock;
 
 namespace EmrCloudApi.Controller
 {
@@ -36,10 +40,11 @@ namespace EmrCloudApi.Controller
         {
             var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, request.TabKey, request.LoginKey);
             var output = _bus.Handle(input);
-            var presenter = new AddLockPresenter();
+            AddLockPresenter presenter = new();
+            presenter.Complete(output);
+            var result = new ActionResult<Response<LockResponse>>(presenter.Result);
 
             _cancellationToken = cancellationToken;
-
             if (_cancellationToken!.Value.IsCancellationRequested)
             {
                 Console.WriteLine("Come in cancelation Addlock");
@@ -60,9 +65,7 @@ namespace EmrCloudApi.Controller
                     await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockModel);
                 }
             }
-            presenter.Complete(output);
-
-            return new ActionResult<Response<LockResponse>>(presenter.Result);
+            return result;
         }
 
         [HttpPost(ApiPath.CheckLock)]
@@ -188,6 +191,80 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<CheckLockVisitingResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetLockInf)]
+        public ActionResult<Response<GetLockInfResponse>> GetLockInf([FromQuery] GetLockInfRequest request)
+        {
+            var input = new GetLockInfInputData(HpId, UserId, request.ManagerKbn);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetLockInfPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetLockInfResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckIsExistedOQLockInfo)]
+        public ActionResult<Response<CheckIsExistedOQLockInfoResponse>> CheckIsExistedOQLockInfo(CheckIsExistedOQLockInfoRequest request)
+        {
+            var input = new CheckIsExistedOQLockInfoInputData(HpId, UserId, request.PtId, request.FunctionCd, request.RaiinNo, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckIsExistedOQLockInfoPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckIsExistedOQLockInfoResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Unlock)]
+        public ActionResult<Response<UnlockResponse>> Unlock(UnlockRequest request)
+        {
+            var input = new UnlockInputData(HpId, UserId, request.LockInfModels.Select(x => LockInfInputItemRequestToModel(x)).ToList(), request.ManagerKbn);
+            var output = _bus.Handle(input);
+
+            var presenter = new UnlockPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UnlockResponse>>(presenter.Result);
+        }
+
+        private LockInfModel LockInfInputItemRequestToModel(LockInfInputItem lockInfInputItem)
+        {
+            return
+                new LockInfModel
+                (
+                    new LockPtInfModel(lockInfInputItem.PatientInfoModels.PtId,
+                                       lockInfInputItem.PatientInfoModels.FunctionName,
+                                       lockInfInputItem.PatientInfoModels.PtNum,
+                                       lockInfInputItem.PatientInfoModels.SinDate,
+                                       lockInfInputItem.PatientInfoModels.LockDate,
+                                       lockInfInputItem.PatientInfoModels.Machine,
+                                       lockInfInputItem.PatientInfoModels.FunctionCd,
+                                       lockInfInputItem.PatientInfoModels.RaiinNo,
+                                       lockInfInputItem.PatientInfoModels.OyaRaiinNo,
+                                       lockInfInputItem.PatientInfoModels.UserId),
+                    new LockCalcStatusModel(lockInfInputItem.CalcStatusModels.CalcId,
+                                            lockInfInputItem.CalcStatusModels.PtId,
+                                            lockInfInputItem.CalcStatusModels.PtNum,
+                                            lockInfInputItem.CalcStatusModels.SinDate,
+                                            lockInfInputItem.CalcStatusModels.CreateDate,
+                                            lockInfInputItem.CalcStatusModels.CreateMachine,
+                                            lockInfInputItem.CalcStatusModels.CreateId),
+                    new LockDocInfModel(lockInfInputItem.DocInfModels.PtId,
+                                        lockInfInputItem.DocInfModels.PtNum,
+                                        lockInfInputItem.DocInfModels.SinDate,
+                                        lockInfInputItem.DocInfModels.RaiinNo,
+                                        lockInfInputItem.DocInfModels.SeqNo,
+                                        lockInfInputItem.DocInfModels.CategoryCd,
+                                        lockInfInputItem.DocInfModels.FileName,
+                                        lockInfInputItem.DocInfModels.DspFileName,
+                                        lockInfInputItem.DocInfModels.IsLocked,
+                                        lockInfInputItem.DocInfModels.LockDate,
+                                        lockInfInputItem.DocInfModels.LockId,
+                                        lockInfInputItem.DocInfModels.LockMachine,
+                                        lockInfInputItem.DocInfModels.IsDeleted)
+                );
         }
     }
 

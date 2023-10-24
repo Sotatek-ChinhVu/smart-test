@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Online;
+using Domain.Models.Online.QualificationConfirmation;
 using System.Xml.Serialization;
-using UseCase.Online.QualificationConfirmation;
 
 namespace EmrCloudApi.Responses.Online.Dto;
 

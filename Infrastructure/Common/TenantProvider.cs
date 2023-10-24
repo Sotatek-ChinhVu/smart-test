@@ -1,5 +1,6 @@
 ﻿using Helper.Constants;
 using Infrastructure.Common;
+using Helper.Redis;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Microsoft.AspNetCore.Http;
@@ -48,6 +49,11 @@ namespace Infrastructure.CommonDB
 
             return result;
         }
+        public string GetAdminConnectionString()
+        {
+            string dbSample = _configuration["AdminDatabase"] ?? string.Empty;
+            return dbSample;
+        }
 
         public string GetClinicID()
         {
@@ -63,6 +69,7 @@ namespace Infrastructure.CommonDB
         private int _hpId;
         private int _userId;
         private int _departmentId;
+        private string _loginKey = string.Empty;
 
         public async Task<string> GetRequestInfoAsync()
         {
@@ -196,7 +203,7 @@ namespace Infrastructure.CommonDB
 
         public string GetDomainFromHeader()
         {
-            var headers = _httpContextAccessor.HttpContext.Request.Headers;
+            var headers = _httpContextAccessor.HttpContext?.Request?.Headers;
             if (headers == null || !headers.ContainsKey(ParamConstant.Domain))
             {
                 return string.Empty;
@@ -206,9 +213,21 @@ namespace Infrastructure.CommonDB
             return clientDomain ?? string.Empty;
         }
 
+        public string GetLoginKeyFromHeader()
+        {
+            var headers = _httpContextAccessor.HttpContext?.Request?.Headers;
+            if (headers == null || !headers.ContainsKey(ParamConstant.LoginKey))
+            {
+                return string.Empty;
+            }
+            string? loginkey = headers[ParamConstant.LoginKey];
+
+            return loginkey ?? string.Empty;
+        }
+
         public string GetDomainFromQueryString()
         {
-            var queryString = _httpContextAccessor.HttpContext.Request.QueryString.Value;
+            var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value;
             if (string.IsNullOrEmpty(queryString) || !queryString.Contains(ParamConstant.Domain))
             {
                 return string.Empty;
@@ -278,6 +297,16 @@ namespace Infrastructure.CommonDB
             return _trackingDataContext;
         }
 
+        private DbContextOptions? _dbAdminContextOptions;
+        public DbContextOptions GetAdminTrackingDbContextOption()
+        {
+            if (_dbAdminContextOptions == null)
+            {
+                _dbAdminContextOptions = CreateNewTrackingAdminDbContextOption();
+            }
+            return _dbAdminContextOptions;
+        }
+
         public TenantDataContext CreateNewTrackingDataContext()
         {
             ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
@@ -302,6 +331,18 @@ namespace Infrastructure.CommonDB
                 .Options;
             var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
             return factory.CreateDbContext();
+        }
+
+        public DbContextOptions CreateNewTrackingAdminDbContextOption()
+        {
+            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            var options = new DbContextOptionsBuilder<AdminDataContext>().UseNpgsql(GetAdminConnectionString(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+                    .UseLoggerFactory(loggerFactory)
+                    .Options;
+            return options;
         }
 
         #endregion

@@ -1,10 +1,12 @@
-﻿using Domain.Models.Document;
+﻿using Domain.Models.AuditLog;
+using Domain.Models.Document;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.Document.SaveDocInf;
 
 namespace Interactor.Document;
@@ -15,13 +17,19 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IReceptionRepository _receptionRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
-    public SaveDocInfInteractor(IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository)
+    public SaveDocInfInteractor(ITenantProvider tenantProvider, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IAuditLogRepository auditLogRepository)
     {
         _documentRepository = documentRepository;
         _amazonS3Service = amazonS3Service;
         _patientInforRepository = patientInforRepository;
         _receptionRepository = receptionRepository;
+        _auditLogRepository = auditLogRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveDocInfOutputData Handle(SaveDocInfInputData inputData)
@@ -67,6 +75,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             }
             if (_documentRepository.SaveDocInf(inputData.UserId, ConvertToDocInfModel(inputData), overwriteFile))
             {
+                AddAuditTrailLog(inputData.HpId, inputData.UserId, inputData.PtId, inputData.FileName);
                 return new SaveDocInfOutputData(SaveDocInfStatus.Successed);
             }
             if (!string.IsNullOrEmpty(path) && !string.IsNullOrEmpty(fileName))
@@ -75,11 +84,18 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             }
             return new SaveDocInfOutputData(SaveDocInfStatus.Failed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _documentRepository.ReleaseResource();
             _receptionRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
+            _auditLogRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 
@@ -126,5 +142,21 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             }
         }
         return SaveDocInfStatus.ValidateSuccess;
+    }
+
+    private void AddAuditTrailLog(int hpId, int userId, long ptId, string hosoku)
+    {
+        var arg = new ArgumentModel(
+                        EventCode.EditDocumentSave,
+                        ptId,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        hosoku
+                  );
+        _auditLogRepository.AddAuditTrailLog(hpId, userId, arg);
     }
 }

@@ -60,6 +60,7 @@ namespace EmrCalculateApi.Controllers
                 _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
                 _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
                 HttpContext.Response.Body.Close();
+                _receFutanCalculate.Dispose();
             }
             return Ok();
         }
@@ -68,7 +69,7 @@ namespace EmrCalculateApi.Controllers
         public ActionResult<GetListReceInfResponse> GetListReceInf([FromBody] GetListReceInfRequest request)
         {
             var response = _receFutanCalculate.KaikeiTotalCalculate(request.PtId, request.SinYm);
-
+            _receFutanCalculate.Dispose();
             return new ActionResult<GetListReceInfResponse>(new GetListReceInfResponse(response));
         }
 

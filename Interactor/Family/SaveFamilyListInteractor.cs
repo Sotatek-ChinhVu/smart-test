@@ -4,6 +4,8 @@ using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
 using Helper.Common;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.Family;
 using UseCase.Family.SaveFamilyList;
 
@@ -16,6 +18,8 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IUserRepository _userRepository;
     private readonly IMstItemRepository _mstItemRepository;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
     private const string FREE_WORD = "0000999";
     private readonly Dictionary<string, int> dicZokugaraCd = new Dictionary<string, int>() {
                                                                                                 {"GF1",1 },
@@ -36,13 +40,15 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
                                                                                                 {"OT",10 },
                                                                                             };
 
-    public SaveFamilyListInteractor(IFamilyRepository familyRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IMstItemRepository mstItemRepository)
+    public SaveFamilyListInteractor(ITenantProvider tenantProvider, IFamilyRepository familyRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IMstItemRepository mstItemRepository)
     {
         _familyRepository = familyRepository;
         _hpInfRepository = hpInfRepository;
         _patientInforRepository = patientInforRepository;
         _userRepository = userRepository;
         _mstItemRepository = mstItemRepository;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveFamilyListOutputData Handle(SaveFamilyListInputData inputData)
@@ -61,6 +67,11 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
             }
             return new SaveFamilyListOutputData(ValidateFamilyListStatus.Successed);
         }
+        catch (Exception ex)
+        {
+            _loggingHandler.WriteLogExceptionAsync(ex);
+            throw;
+        }
         finally
         {
             _familyRepository.ReleaseResource();
@@ -68,6 +79,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
             _patientInforRepository.ReleaseResource();
             _userRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

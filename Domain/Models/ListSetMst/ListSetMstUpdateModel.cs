@@ -34,6 +34,5 @@ namespace Domain.Models.ListSetMst
             IsTitle = isTitle;
             IsDeleted = isDeleted;
         }
-
     }
 }

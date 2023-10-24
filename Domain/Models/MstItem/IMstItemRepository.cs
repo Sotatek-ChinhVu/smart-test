@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Enum;
+using Domain.Models.AuditLog;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
@@ -172,6 +173,8 @@ namespace Domain.Models.MstItem
 
         (int, List<PostCodeMstModel>) SearchAddress(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
 
+        (List<KensaMstModel>, int) GetListKensaMst(int hpId, string searchValue, int pageIndex, int pageSize);
+
         string GetDrugAction(string yjCd);
 
         string GetPrecautions(string yjCd);
@@ -182,6 +185,7 @@ namespace Domain.Models.MstItem
 
         bool CheckPostCodeExist(int hpId, string zipCD);
 
+        TenItemModel GetTenMst(int hpId, string itemCd, int sinDate);
 
         List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
 
@@ -210,15 +214,15 @@ namespace Domain.Models.MstItem
 
         bool SaveRenkei(int hpId, int userId, List<(int renkeiSbt, List<RenkeiConfModel> renkeiConfList)> renkeiTabList);
 
-        List<SetNameMntModel> GetSetNameMnt(SetCheckBoxStatusModel checkBoxStatus,int generationId, int hpId);
+        List<SetNameMntModel> GetSetNameMnt(SetCheckBoxStatusModel checkBoxStatus, int generationId, int hpId);
 
         List<SetKbnMstModel> GetListSetKbnMst(int generationId, int hpId);
 
         int GetGenerationId(int hpId);
-        
+
 
         List<UserMstModel> GetListUser(int hpId, int userId, int sinDate);
-        
+
         List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison);
 
         bool SaveCompareTenMst(List<SaveCompareTenMstModel> ListData, ComparisonSearchModel comparison, int userId);
@@ -226,7 +230,11 @@ namespace Domain.Models.MstItem
         bool UpdateYohoSetMst(int hpId, int userId, List<YohoSetMstModel> listYohoSetMstModels);
 
         TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate);
-        ByomeiMstModel GetByomeiByCode(string byomeiCd);
-    }
 
+        ByomeiMstModel GetByomeiByCode(string byomeiCd);
+
+        bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate);
+
+        List<RenkeiTimingModel> GetRenkeiTimingModel(int hpId, int renkeiId);
+    }
 }

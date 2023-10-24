@@ -1,6 +1,7 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Domain.Constant;
 using Domain.Enum;
+using Domain.Models.AuditLog;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
@@ -19,6 +20,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -1209,6 +1211,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                        p.StartDate <= sTDDate &&
                                                                        p.EndDate >= sTDDate).ToList();
 
+        var ipnKasanMst = NoTrackingDataContext.IpnKasanMsts.Where(p =>
+                                                                        p.HpId == hpId &&
+                                                                        p.StartDate <= sTDDate &&
+                                                                        p.EndDate > sTDDate).ToList();
         var joinedQuery = from q in queryJoinWithKensa
                           join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
                           from ipnExclude in ipnExcludes.DefaultIfEmpty()
@@ -1218,6 +1224,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                           from ipnYakka in ipnYakkas.DefaultIfEmpty()
                           join i in ipnNameMstList on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
                           from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
+                          join kasan in ipnKasanMst on q.TenMst.IpnNameCd equals kasan.IpnNameCd into kasans
+                          from ipnKasan in ipnKasanMst.DefaultIfEmpty()
                           select new
                           {
                               q.TenMst,
@@ -1227,7 +1235,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                               q.KensaMst,
                               IpnName = ipnNameMst?.IpnName ?? string.Empty,
                               IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
-                              Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
+                              Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka,
+                              IpnKasan = ipnKasan
                           };
 
         var tenMstModels = joinedQuery.Select(item => new TenItemModel(
@@ -1284,7 +1293,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                        item.TenMst?.HandanGrpKbn ?? 0,
                                                        item.KensaMst == null,
                                                        item.Yakka == null ? 0 : item.Yakka ?? 0,
-                                                       item.IsGetYakkaPrice
+                                                       item.IsGetYakkaPrice,
+                                                       item.IpnKasan.Kasan1,
+                                                       item.IpnKasan.Kasan2
                                                         )).ToList();
 
         if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
@@ -2669,7 +2680,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
         return NoTrackingDataContext.OdrInfDetails.Any(x => x.HpId == hpId && x.ItemCd == itemCd);
     }
-
 
     public bool SaveDeleteOrRecoverTenMstOrigin(DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds)
     {
@@ -5340,6 +5350,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
         var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
+        var ipnKasanMst = NoTrackingDataContext.IpnKasanMsts.Where(p =>
+                                                                        p.HpId == hpId &&
+                                                                        p.StartDate <= sTDDate &&
+                                                                        p.EndDate > sTDDate).ToList();
 
         var joinedQuery = from q in queryFinal
                           join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
@@ -5350,6 +5364,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                           from ipnYakka in ipnYakkas.DefaultIfEmpty()
                           join i in ipnNameMstList on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
                           from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
+                          join kasan in ipnKasanMst on q.TenMst.IpnNameCd equals kasan.IpnNameCd into kasans
+                          from ipnKasan in ipnKasanMst.DefaultIfEmpty()
                           select new
                           {
                               q.TenMst,
@@ -5359,7 +5375,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                               KensaMst = q.KensaMst,
                               IpnName = ipnNameMst?.IpnName ?? string.Empty,
                               IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
-                              Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
+                              Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka,
+                              IpnKasan = ipnKasan
                           };
 
         var totalCount = joinedQuery.Count();
@@ -5420,7 +5437,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                        item.TenMst?.HandanGrpKbn ?? 0,
                                                        item.KensaMst == null,
                                                        item.Yakka == null ? 0 : item.Yakka ?? 0,
-                                                       item.IsGetYakkaPrice
+                                                       item.IsGetYakkaPrice,
+                                                       item.IpnKasan.Kasan1,
+                                                       item.IpnKasan.Kasan2
                                                         )).ToList();
 
         return (tenMstModels, totalCount);
@@ -6148,7 +6167,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                             y.SanteiItemCd ?? string.Empty,
                                                             y.SanteigaiKbn,
                                                             y.IsNosearch)).OrderByDescending(x => x.StartDate).ToList(),
-                entity.ChildKensaMsts.OrderBy(x => x.MaterialCd).ToList()
+                entity.ChildKensaMsts.OrderBy(x => x.MaterialCd).ToList(),
+                new(),
+                string.Empty
                 ));
         }
 
@@ -6701,6 +6722,33 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
+    public TenItemModel GetTenMst(int hpId, string itemCd, int sinDate)
+    {
+        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                          && item.StartDate <= sinDate
+                                                                          && item.EndDate >= sinDate
+                                                                          && item.ItemCd == itemCd);
+
+        if (tenMst == null)
+        {
+            tenMst = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                 && item.StartDate < sinDate
+                                                                 && item.EndDate < sinDate
+                                                                 && item.ItemCd == itemCd)
+                                                  .OrderByDescending(item => item.EndDate)
+                                                  .FirstOrDefault();
+        }
+
+        return new TenItemModel(
+                   tenMst?.ItemCd ?? string.Empty,
+                   tenMst?.Ten ?? 0,
+                   tenMst?.HandanGrpKbn ?? 0,
+                   tenMst?.EndDate ?? 0,
+                   tenMst?.KensaItemCd ?? string.Empty,
+                   tenMst?.KensaItemSeqNo ?? 0,
+                   tenMst?.IpnNameCd ?? string.Empty);
+    }
+
     public List<KensaIjiSettingModel> GetListKensaIjiSettingModel(int hpId, string keyWords, bool isValid, bool isExpired, bool? isPayment)
     {
         List<KensaIjiSettingModel> result = null;
@@ -6830,7 +6878,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         int dateNow = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
         var listSetKbn = GetListSetKbn(checkBoxStatus);
 
-        if (listSetKbn.Count <= 0 || CheckTargetSetOdrInfDetail(checkBoxStatus) == false)
+        if (listSetKbn.Count <= 0 || !CheckTargetSetOdrInfDetail(checkBoxStatus))
             return new List<SetNameMntModel>();
 
         var setMstRepo = TrackingDataContext.SetMsts
@@ -6845,25 +6893,25 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         IQueryable<SetOdrInfDetail> setOdrInfDetailRepo = null;
 
-        if (checkBoxStatus.JihiChecked == true)
+        if (checkBoxStatus.JihiChecked)
         {
-            var jihi = setOdrInfDetailRepoAll.Where(item => item.ItemCd.StartsWith("J"));
+            var jihi = setOdrInfDetailRepoAll.Where(item => !string.IsNullOrEmpty(item.ItemCd) && item.ItemCd.StartsWith("J"));
             setOdrInfDetailRepo = jihi;
         }
-        if (checkBoxStatus.KihonChecked == true)
+        if (checkBoxStatus.KihonChecked)
         {
-            var Kihon = setOdrInfDetailRepoAll.Where(item => !item.ItemCd.StartsWith("J") &&
+            var Kihon = setOdrInfDetailRepoAll.Where(item => !string.IsNullOrEmpty(item.ItemCd) && !item.ItemCd.StartsWith("J") &&
             !item.ItemCd.StartsWith("Z") && !item.ItemCd.StartsWith("Y"));
             setOdrInfDetailRepo = setOdrInfDetailRepo == null ? Kihon : setOdrInfDetailRepo.Union(Kihon);
         }
-        if (checkBoxStatus.TokuChecked == true)
+        if (checkBoxStatus.TokuChecked)
         {
-            var toku = setOdrInfDetailRepoAll.Where(item => item.ItemCd.StartsWith("Z"));
+            var toku = setOdrInfDetailRepoAll.Where(item => !string.IsNullOrEmpty(item.ItemCd) && item.ItemCd.StartsWith("Z"));
             setOdrInfDetailRepo = setOdrInfDetailRepo == null ? toku : setOdrInfDetailRepo.Union(toku);
         }
-        if (checkBoxStatus.YohoChecked == true)
+        if (checkBoxStatus.YohoChecked)
         {
-            var yoho = setOdrInfDetailRepoAll.Where(item => item.ItemCd.StartsWith("Y"));
+            var yoho = setOdrInfDetailRepoAll.Where(item => !string.IsNullOrEmpty(item.ItemCd) && item.ItemCd.StartsWith("Y"));
             setOdrInfDetailRepo = setOdrInfDetailRepo == null ? yoho : setOdrInfDetailRepo.Union(yoho);
         }
 
@@ -6876,11 +6924,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
         else
         {
-            if (checkBoxStatus.DiffChecked == true)
+            if (checkBoxStatus.DiffChecked)
             {
                 var setOdrInfDetailCmt =
-                    setOdrInfDetailRepo.Where(item =>
-                        item.ItemCd.StartsWith(ItemCdConst.Comment830Pattern) ||
+                    setOdrInfDetailRepo.Where(item => !string.IsNullOrEmpty(item.ItemCd)
+                        && (item.ItemCd.StartsWith(ItemCdConst.Comment830Pattern) ||
                         item.ItemCd.StartsWith(ItemCdConst.Comment831Pattern) ||
                         (item.ItemCd.StartsWith(ItemCdConst.Comment840Pattern) && item.ItemCd != ItemCdConst.GazoDensibaitaiHozon) ||
                         item.ItemCd.StartsWith(ItemCdConst.Comment842Pattern) ||
@@ -6888,11 +6936,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                         item.ItemCd.StartsWith(ItemCdConst.Comment851Pattern) ||
                         item.ItemCd.StartsWith(ItemCdConst.Comment852Pattern) ||
                         item.ItemCd.StartsWith(ItemCdConst.Comment853Pattern) ||
-                        item.ItemCd.StartsWith(ItemCdConst.Comment880Pattern));
+                        item.ItemCd.StartsWith(ItemCdConst.Comment880Pattern)));
 
                 var setOdrInfDetailNotCmt =
-                    setOdrInfDetailRepo.Where(item =>
-                        !item.ItemCd.StartsWith(ItemCdConst.Comment830Pattern) &&
+                    setOdrInfDetailRepo.Where(item => !string.IsNullOrEmpty(item.ItemCd)
+                        && (!item.ItemCd.StartsWith(ItemCdConst.Comment830Pattern) &&
                         !item.ItemCd.StartsWith(ItemCdConst.Comment831Pattern) &&
                         !(item.ItemCd.StartsWith(ItemCdConst.Comment840Pattern) && item.ItemCd != ItemCdConst.GazoDensibaitaiHozon) &&
                         !item.ItemCd.StartsWith(ItemCdConst.Comment842Pattern) &&
@@ -6900,7 +6948,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                         !item.ItemCd.StartsWith(ItemCdConst.Comment851Pattern) &&
                         !item.ItemCd.StartsWith(ItemCdConst.Comment852Pattern) &&
                         !item.ItemCd.StartsWith(ItemCdConst.Comment853Pattern) &&
-                        !item.ItemCd.StartsWith(ItemCdConst.Comment880Pattern));
+                        !item.ItemCd.StartsWith(ItemCdConst.Comment880Pattern)));
 
                 var queryDetailCmt = from setMst in setMstRepo
                                      join setOdrInfDetail in setOdrInfDetailCmt on
@@ -6971,14 +7019,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
                 var listSetNameMntOdrDetail = queryDetail.AsEnumerable()
                     .Select(item => new SetNameMntModel(true, item.ItemNameTenMst, item.CmtCol1, item.CmtColKeta1, item.CmtCol2, item.CmtColKeta2, item.CmtCol3, item.CmtColKeta3, item.CmtCol4, item.CmtColKeta4,
-                    item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName,
-                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd, item.SetOdrInfDetail.ItemName, item.SetOdrInfDetail.CmtName, item.SetOdrInfDetail.CmtOpt, item.SetMst.CreateDate, item.SetMst.CreateId,
-                    item.SetMst.CreateMachine, item.SetMst.UpdateDate, item.SetMst.UpdateId, item.SetMst.UpdateMachine));
+                    item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName ?? string.Empty,
+                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd ?? string.Empty, item.SetOdrInfDetail.ItemName ?? string.Empty, item.SetOdrInfDetail.CmtName ?? string.Empty, item.SetOdrInfDetail.CmtOpt ?? string.Empty,
+                    item.SetOdrInfDetail.RpNo, item.SetOdrInfDetail.RpEdaNo));
 
                 var listSetNameMntSetMst = querySet.AsEnumerable()
                     .Distinct()
-                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName, item.CreateDate, item.CreateId,
-                    item.CreateMachine, item.UpdateDate, item.UpdateId, item.UpdateMachine, "", 0, 0, 0, 0, 0, 0, 0, 0));
+                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName ?? string.Empty,
+                    string.Empty, 0, 0, 0, 0, 0, 0, 0, 0));
 
                 return listSetNameMntSetMst
                     .Union(listSetNameMntOdrDetail)
@@ -7025,14 +7073,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
                 var listSetNameMntOdrDetail = queryDetail.AsEnumerable()
                     .Select(item => new SetNameMntModel(true, item.ItemNameTenMst, item.CmtCol1, item.CmtColKeta1, item.CmtCol2, item.CmtColKeta2, item.CmtCol3, item.CmtColKeta3, item.CmtCol4, item.CmtColKeta4,
-                    item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName,
-                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd, item.SetOdrInfDetail.ItemName, item.SetOdrInfDetail.CmtName, item.SetOdrInfDetail.CmtOpt, item.SetMst.CreateDate, item.SetMst.CreateId,
-                    item.SetMst.CreateMachine, item.SetMst.UpdateDate, item.SetMst.UpdateId, item.SetMst.UpdateMachine));
+                    item.SetMst.SetCd, item.SetMst.SetKbn, item.SetMst.SetKbnEdaNo, item.SetMst.GenerationId, item.SetMst.Level1, item.SetMst.Level2, item.SetMst.Level3, item.SetMst.SetName ?? string.Empty,
+                    item.SetOdrInfDetail.RowNo, item.SetOdrInfDetail.ItemCd ?? string.Empty, item.SetOdrInfDetail.ItemName ?? string.Empty, item.SetOdrInfDetail.CmtName ?? string.Empty, item.SetOdrInfDetail.CmtOpt ?? string.Empty,
+                    item.SetOdrInfDetail.RpNo, item.SetOdrInfDetail.RpEdaNo));
 
                 var listSetNameMntSetMst = querySet.AsEnumerable()
                     .Distinct()
-                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName, item.CreateDate, item.CreateId,
-                    item.CreateMachine, item.UpdateDate, item.UpdateId, item.UpdateMachine, "", 0, 0, 0, 0, 0, 0, 0, 0));
+                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName,
+                    string.Empty, 0, 0, 0, 0, 0, 0, 0, 0));
 
                 return listSetNameMntSetMst
                     .Union(listSetNameMntOdrDetail)
@@ -7047,6 +7095,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
         }
     }
+
     public List<YohoSetMstModel> GetListYohoSetMstModelByUserID(int hpId, int userIdLogin, int sinDate, int userId = 0)
     {
         List<YohoSetMstModel> result = new List<YohoSetMstModel>();
@@ -7215,7 +7264,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                 )
                      .OrderBy(u => u.ItemCd).ToList();
         }
-        catch
+        catch (Exception)
         {
             throw;
         }
@@ -7404,9 +7453,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
             return false;
         }
-        catch
+        catch (Exception)
         {
-            return false;
+            throw;
         }
     }
 
@@ -7540,12 +7589,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         TrackingDataContext.YohoSetMsts.UpdateRange(yohoSetUpdate);
         return TrackingDataContext.SaveChanges() > 0;
     }
+
     private void _UpdateYohoSetMst(int userId, YohoSetMst yohoSetMst)
     {
         yohoSetMst.CreateDate = TimeZoneInfo.ConvertTimeToUtc(yohoSetMst.CreateDate);
         yohoSetMst.UpdateId = userId;
         yohoSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
     }
+
     private void _CreateYohoSetMst(int userId, YohoSetMst yohoSetMst)
     {
         yohoSetMst.CreateDate = CIUtil.GetJapanDateTimeNow();
@@ -7553,6 +7604,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         yohoSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
         yohoSetMst.UpdateId = userId;
     }
+
     public List<RenkeiMstModel> GetRenkeiMstModels(int hpId)
     {
         var result = NoTrackingDataContext.RenkeiMsts.Where(item => item.HpId == hpId
@@ -7587,7 +7639,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
     public List<EventMstModel> GetEventMstModelList()
     {
-        var result = NoTrackingDataContext.EventMsts.Select(item => new EventMstModel(item.EventCd, item.EventName, item.AuditTrailing)).ToList();
+        var result = NoTrackingDataContext.EventMsts.Select(item => new EventMstModel(item.EventCd, item.EventName ?? string.Empty, item.AuditTrailing, item.CreateDate)).ToList();
         return result;
     }
 
@@ -7649,6 +7701,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     continue;
                 }
                 renkeiEntity.Param = renkeiModel.Param;
+                renkeiEntity.RenkeiId = renkeiModel.RenkeiId;
                 renkeiEntity.PtNumLength = renkeiModel.PtNumLength;
                 renkeiEntity.TemplateId = renkeiModel.TemplateId;
                 renkeiEntity.IsInvalid = renkeiModel.IsInvalid;
@@ -7688,6 +7741,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     pathEntity.Machine = pathModel.Machine;
                     pathEntity.CharCd = pathModel.CharCd;
                     pathEntity.IsInvalid = pathModel.IsInvalid;
+                    pathEntity.Param = pathModel.Param;
                     pathEntity.Biko = pathModel.Biko;
                     pathEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     pathEntity.UpdateId = userId;
@@ -7778,6 +7832,315 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return 1;
     }
 
+    public (List<KensaMstModel>, int) GetListKensaMst(int hpId, string keyWord, int pageIndex, int pageSize)
+    {
+        var result = new List<KensaMstModel>();
+        var allkensaKensaMst = (
+            from kensaMst in NoTrackingDataContext.KensaMsts
+            where kensaMst.HpId == hpId && kensaMst.IsDelete == DeleteTypes.None
+            join centerMst in NoTrackingDataContext.KensaCenterMsts
+            on new { kensaMst.CenterCd, kensaMst.HpId } equals new { centerMst.CenterCd, centerMst.HpId }
+            into joinedData
+            from res in joinedData.DefaultIfEmpty()
+            join kensaStd in NoTrackingDataContext.KensaStdMsts
+                             on kensaMst.KensaItemCd equals kensaStd.KensaItemCd into leftJoinKensaStd
+            from kensaStd in leftJoinKensaStd.DefaultIfEmpty()
+            select new KensaMstModel(
+               kensaMst.KensaItemCd,
+               kensaMst.KensaItemSeqNo,
+                kensaMst.CenterCd ?? string.Empty,
+                kensaMst.KensaName ?? string.Empty,
+                kensaMst.KensaKana ?? string.Empty,
+                kensaMst.Unit ?? string.Empty,
+                kensaMst.MaterialCd,
+                kensaMst.ContainerCd,
+                kensaMst.MaleStd ?? string.Empty,
+                kensaStd.MaleStdLow ?? string.Empty,
+                kensaStd.MaleStdHigh ?? string.Empty,
+                kensaStd.FemaleStd ?? string.Empty,
+                kensaStd.FemaleStdLow ?? string.Empty,
+                kensaStd.FemaleStdHigh ?? string.Empty,
+                kensaMst.Formula ?? string.Empty,
+                kensaMst.Digit,
+                kensaMst.OyaItemCd ?? string.Empty,
+                kensaMst.OyaItemSeqNo,
+                kensaMst.SortNo,
+                kensaMst.CenterItemCd1 ?? string.Empty,
+                kensaMst.CenterItemCd2 ?? string.Empty,
+                new(),
+                new(),
+                new(),
+                new(),
+                res.CenterName ?? string.Empty
+            )
+        ).ToList();
+
+        if (allkensaKensaMst == null)
+        {
+            return (result, 0);
+        }
+
+        string bigKeyWord = keyWord.ToUpper()
+                                   .Replace("ｧ", "ｱ")
+                                   .Replace("ｨ", "ｲ")
+                                   .Replace("ｩ", "ｳ")
+                                   .Replace("ｪ", "ｴ")
+                                   .Replace("ｫ", "ｵ")
+                                   .Replace("ｬ", "ﾔ")
+                                   .Replace("ｭ", "ﾕ")
+                                   .Replace("ｮ", "ﾖ")
+                                   .Replace("ｯ", "ﾂ");
+
+        //get kensa in KensaMst
+        var kensaInKensaMst = allkensaKensaMst.Where(p =>
+                    (p.KensaItemCd.Contains(bigKeyWord) ||
+                    (keyWord == "ﾊﾞｲﾀﾙ" ? p.KensaItemCd.Contains("V") :
+                    (p.KensaName != null && p.KensaKana != null &&
+                     (p.KensaName.ToUpper().Contains(bigKeyWord) ||
+                      p.KensaKana.ToUpper()
+                              .Replace("ｧ", "ｱ")
+                              .Replace("ｨ", "ｲ")
+                              .Replace("ｩ", "ｳ")
+                              .Replace("ｪ", "ｴ")
+                              .Replace("ｫ", "ｵ")
+                              .Replace("ｬ", "ﾔ")
+                              .Replace("ｭ", "ﾕ")
+                              .Replace("ｮ", "ﾖ")
+                              .Replace("ｯ", "ﾂ")
+                              .StartsWith(bigKeyWord)))))).ToList(); ;
+
+
+        foreach (var entity in kensaInKensaMst)
+        {
+            var parentItem = allkensaKensaMst.Where(x => !string.IsNullOrEmpty(entity.OyaItemCd) && x.KensaItemCd == entity.OyaItemCd)
+                .Select(x => new KensaMstModel(
+                      x.KensaItemCd,
+                      x.KensaItemSeqNo,
+                      x.CenterCd ?? string.Empty,
+                      x.KensaName ?? string.Empty,
+                      x.KensaKana ?? string.Empty,
+                      x.Unit ?? string.Empty,
+                      x.MaterialCd,
+                      x.ContainerCd,
+                      x.MaleStd ?? string.Empty,
+                      x.MaleStdLow ?? string.Empty,
+                      x.MaleStdHigh ?? string.Empty,
+                      x.FemaleStd ?? string.Empty,
+                      x.FemaleStdLow ?? string.Empty,
+                      x.FemaleStdHigh ?? string.Empty,
+                      x.Formula ?? string.Empty,
+                      x.Digit,
+                      x.OyaItemCd ?? string.Empty,
+                      x.OyaItemSeqNo,
+                      x.SortNo,
+                      x.CenterItemCd1 ?? string.Empty,
+                      x.CenterItemCd2 ?? string.Empty,
+                      new(),
+                      new(),
+                      new(),
+                      new(),
+                      x.CenterName
+                    )).FirstOrDefault();
+            var chilrenItems = allkensaKensaMst.Where(x => x.OyaItemCd == entity.KensaItemCd).Select(x => new KensaMstModel(
+                      x.KensaItemCd,
+                      x.KensaItemSeqNo,
+                      x.CenterCd ?? string.Empty,
+                      x.KensaName ?? string.Empty,
+                      x.KensaKana ?? string.Empty,
+                      x.Unit ?? string.Empty,
+                      x.MaterialCd,
+                      x.ContainerCd,
+                      x.MaleStd ?? string.Empty,
+                      x.MaleStdLow ?? string.Empty,
+                      x.MaleStdHigh ?? string.Empty,
+                      x.FemaleStd ?? string.Empty,
+                      x.FemaleStdLow ?? string.Empty,
+                      x.FemaleStdHigh ?? string.Empty,
+                      x.Formula ?? string.Empty,
+                      x.Digit,
+                      x.OyaItemCd ?? string.Empty,
+                      x.OyaItemSeqNo,
+                      x.SortNo,
+                      x.CenterItemCd1 ?? string.Empty,
+                      x.CenterItemCd2 ?? string.Empty,
+                      new(),
+                      new(),
+                      new(),
+                      entity,
+                      x.CenterName
+                    )).OrderBy(x => x.SortNo).ToList();
+
+            result.Add(new KensaMstModel(
+              entity.KensaItemCd,
+              entity.KensaItemSeqNo,
+              entity.CenterCd ?? string.Empty,
+              entity.KensaName ?? string.Empty,
+              entity.KensaKana ?? string.Empty,
+              entity.Unit ?? string.Empty,
+              entity.MaterialCd,
+              entity.ContainerCd,
+              entity.MaleStd ?? string.Empty,
+              entity.MaleStdLow ?? string.Empty,
+              entity.MaleStdHigh ?? string.Empty,
+              entity.FemaleStd ?? string.Empty,
+              entity.FemaleStdLow ?? string.Empty,
+              entity.FemaleStdHigh ?? string.Empty,
+              entity.Formula ?? string.Empty,
+              entity.Digit,
+              entity.OyaItemCd ?? string.Empty,
+              entity.OyaItemSeqNo,
+              entity.SortNo,
+              entity.CenterItemCd1 ?? string.Empty,
+              entity.CenterItemCd2 ?? string.Empty,
+              new(),
+              new(),
+              chilrenItems,
+              parentItem,
+              entity.CenterName
+            ));
+
+
+        }
+        var total = result.Count();
+        var models = result.OrderBy(u => u.SortNo).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+        return (models, total);
+    }
+
+    public bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate)
+    {
+        try
+        {
+            foreach (var setNameMnt in lstModel)
+            {
+                if (setNameMnt.SetFlag == "●")
+                {
+                    if (!setNameMnt.IsSet)
+                    {
+                        var getItem = TrackingDataContext.SetOdrInfDetail.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == setNameMnt.ItemCd && x.SetCd == setNameMnt.SetCd && x.RpNo == setNameMnt.RpNo && x.RpEdaNo == setNameMnt.RpEdaNo && x.RowNo == setNameMnt.RowNo);
+                        if (getItem != null)
+                        {
+                            if (setNameMnt.IsCommentMaster)
+                            {
+                                getItem.ItemName = GetNewItemName(setNameMnt, sinDate, hpId);
+                                getItem.CmtName = setNameMnt.ItemNameTenMst;
+                            }
+                            else
+                            {
+                                getItem.ItemName = setNameMnt.ItemNameTenMst;
+                            }
+                        }
+                    }
+                    else if (!string.IsNullOrWhiteSpace(setNameMnt.ItemNameTenMstBinding))
+                    {
+                        var setItem = TrackingDataContext.SetMsts.FirstOrDefault(x => x.HpId == hpId && x.SetCd == setNameMnt.SetCd && x.SetKbn == setNameMnt.SetKbn && x.SetKbnEdaNo == setNameMnt.SetKbnEdaNo);
+                        if (setItem != null)
+                        {
+                            setItem.SetName = setNameMnt.ItemNameTenMstBinding;
+                            setItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            setItem.UpdateId = userId;
+                        }
+                    }
+                }
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    public string GetNewItemName(SetNameMntModel setNameMnt, int sinDate, int hpId)
+    {
+        string cmtOptTemp = string.Empty;
+        string itemName = setNameMnt.ItemNameTenMst;
+
+        if (!string.IsNullOrWhiteSpace(setNameMnt.ItemName) && !string.IsNullOrWhiteSpace(setNameMnt.CmtName))
+        {
+            if (setNameMnt.ItemName.StartsWith(setNameMnt.CmtName))
+            {
+                cmtOptTemp = setNameMnt.ItemName.Replace(setNameMnt.CmtName, "");
+            }
+            else if (setNameMnt.ItemName.Contains("；"))
+            {
+                var nameArray = setNameMnt.ItemName.Split('；');
+                if (nameArray.Count() > 1)
+                {
+                    cmtOptTemp = nameArray[nameArray.Count() - 1];
+                }
+            }
+            else if (setNameMnt.ItemName.Contains("："))
+            {
+                var nameArray = setNameMnt.ItemName.Split('：');
+                if (nameArray.Count() > 1)
+                {
+                    cmtOptTemp = nameArray[nameArray.Count() - 1];
+                }
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(cmtOptTemp))
+        {
+            itemName += cmtOptTemp;
+            return itemName;
+        }
+
+        if (string.IsNullOrWhiteSpace(setNameMnt.CmtOpt))
+        {
+            return itemName;
+        }
+
+        if (setNameMnt.Is830Cmt)
+        {
+            itemName += setNameMnt.CmtOpt;
+        }
+        else if (setNameMnt.Is831Cmt)
+        {
+            var itemCd = HenkanJ.Instance.ToHalfsize(setNameMnt.CmtOpt);
+            var itemCmt = TrackingDataContext.TenMsts.FirstOrDefault(p =>
+               p.HpId == hpId &&
+               p.StartDate <= sinDate &&
+               p.EndDate >= sinDate &&
+               p.ItemCd == itemCd &&
+               p.IsDeleted == DeleteTypes.None);
+            itemName += itemCmt?.Name ?? "";
+        }
+        else if (setNameMnt.Is840Cmt)
+        {
+            itemName = OdrUtil.GetItemNameComment(itemName, setNameMnt.CmtOpt,
+                                                  setNameMnt.CmtCol1, setNameMnt.CmtColKeta1,
+                                                  setNameMnt.CmtCol2, setNameMnt.CmtColKeta2,
+                                                  setNameMnt.CmtCol3, setNameMnt.CmtColKeta3,
+                                                  setNameMnt.CmtCol4, setNameMnt.CmtColKeta4);
+        }
+        else if (setNameMnt.Is842Cmt)
+        {
+            itemName += setNameMnt.CmtOpt;
+        }
+        else if (setNameMnt.Is850Cmt)
+        {
+            itemName += OdrUtil.GetCmtOptDisplay850(setNameMnt.CmtOpt, setNameMnt.ItemNameTenMst);
+        }
+        else if (setNameMnt.Is851Cmt)
+        {
+            itemName += OdrUtil.GetCmtOptDisplay851(setNameMnt.CmtOpt);
+        }
+        else if (setNameMnt.Is852Cmt)
+        {
+            itemName += OdrUtil.GetCmtOptDisplay852(setNameMnt.CmtOpt);
+        }
+        else if (setNameMnt.Is853Cmt)
+        {
+            itemName += OdrUtil.GetCmtOptDisplay853(setNameMnt.CmtOpt);
+        }
+        else if (setNameMnt.Is880Cmt)
+        {
+            itemName += OdrUtil.GetCmtOptDisplay880(setNameMnt.CmtOpt);
+        }
+
+        return itemName;
+    }
+
     public TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate)
     {
         List<int> setKbns = new List<int>();
@@ -7815,5 +8178,32 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         if (byomeiMst == null)
             return new ByomeiMstModel(string.Empty);
         return new ByomeiMstModel(byomeiMst.Byomei ?? string.Empty);
+    }
+
+    public List<RenkeiTimingModel> GetRenkeiTimingModel(int hpId, int renkeiId)
+    {
+        var renkeiTimingMsts = NoTrackingDataContext.RenkeiTimingMsts.Where(x =>
+                x.HpId == hpId &&
+                x.RenkeiId == renkeiId);
+        var eventMsts = NoTrackingDataContext.EventMsts;
+        var query = from renkeiTimingMst in renkeiTimingMsts
+                    join eventMst in eventMsts on renkeiTimingMst.EventCd equals eventMst.EventCd into eventMstTimings
+                    from eventMstTiming in eventMstTimings
+                    select new
+                    {
+                        renkeiTimingMst,
+                        eventName =  eventMstTiming.EventName
+                    };
+        var result = query.AsEnumerable()
+                          .Select(item => new RenkeiTimingModel(
+                                          0,
+                                          item.eventName ?? string.Empty,
+                                          item.renkeiTimingMst.RenkeiId,
+                                          0,
+                                          item.renkeiTimingMst.EventCd,
+                                          item.renkeiTimingMst.IsInvalid,
+                                          false))
+                          .ToList();
+        return result;
     }
 }

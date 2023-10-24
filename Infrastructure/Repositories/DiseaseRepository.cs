@@ -7,6 +7,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using System.ComponentModel;
 
 namespace Infrastructure.Repositories
 {
@@ -263,7 +264,15 @@ namespace Infrastructure.Repositories
             {
                 string createName = userMstList.FirstOrDefault(item => item.UserId == ptByomei.CreateId)?.Sname ?? string.Empty;
                 string updateName = userMstList.FirstOrDefault(item => item.UserId == ptByomei.UpdateId)?.Sname ?? string.Empty;
-                string byomeiName = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd)?.Byomei ?? ptByomei.Byomei ?? string.Empty;
+                string byomeiName = "";
+                if (ptByomei.ByomeiCd != "0000999")
+                {
+                    byomeiName = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd)?.Byomei ?? ptByomei.Byomei ?? string.Empty;
+                }
+                else
+                {
+                    byomeiName =  ptByomei.Byomei ?? (byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd)?.Byomei ?? string.Empty);
+                }
 
                 var ptDiseaseModel = new PtDiseaseModel(
                         ptByomei.HpId,
@@ -297,6 +306,7 @@ namespace Infrastructure.Repositories
                 ptDiseaseModel = ptDiseaseModel.ChangeCreateUserUpdateDate(createName, updateName, ptByomei.CreateDate, ptByomei.UpdateDate);
                 result.Add(ptDiseaseModel);
             }
+            result = result.OrderByDescending(p => p.UpdateDate).ThenByDescending(p => p.Id).ToList();
             return result;
         }
 
@@ -869,6 +879,73 @@ namespace Infrastructure.Repositories
             return rs;
         }
 
+        public bool UpdateByomeiSetMst(int userId, int hpId, List<ByomeiSetMstUpdateModel> listData)
+        {
+            foreach (var item in listData)
+            {
+                // Create
+                if (item.SeqNo == 0)
+                {
+                    var listSetMst = TrackingDataContext.ByomeiSetMsts.FirstOrDefault(x => x.HpId == item.HpId && x.GenerationId == item.GenerationId
+                    && x.SeqNo == item.SeqNo && x.ByomeiCd == item.ByomeiCd && x.Level1 == item.Level1 && x.Level2 == item.Level2 && x.Level3 == item.Level3
+                    && x.Level4 == item.Level4 && x.Level5 == item.Level5);
+                    if (listSetMst != null)
+                    {
+                        return false;
+                    }
+
+                    TrackingDataContext.ByomeiSetMsts.Add(new ByomeiSetMst()
+                    {
+                        CreateId = userId,
+                        UpdateId = userId,
+                        HpId = hpId,
+                        GenerationId = item.GenerationId,
+                        SetName = item.SetName,
+                        ByomeiCd = item.ByomeiCd,
+                        CreateMachine = CIUtil.GetComputerName(),
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        Level1 = item.Level1,
+                        Level2 = item.Level2,
+                        Level3 = item.Level3,
+                        Level4 = item.Level4,
+                        Level5 = item.Level5,
+                        IsDeleted = 0,
+                        IsTitle = item.IsTitle,
+                        SelectType = item.SelectType
+
+                    });
+                }
+
+                // Update
+                else
+                {
+                    var listSetMst = TrackingDataContext.ByomeiSetMsts.FirstOrDefault(x => x.HpId == item.HpId && x.GenerationId == item.GenerationId
+                    && x.SeqNo == item.SeqNo);
+                    if (listSetMst == null)
+                    {
+                        return false;
+                    }
+                    listSetMst.UpdateId = userId;
+                    listSetMst.SetName = item.SetName;
+                    listSetMst.ByomeiCd = item.ByomeiCd;
+                    listSetMst.Level1 = item.Level1;
+                    listSetMst.Level2 = item.Level2;
+                    listSetMst.Level3 = item.Level3;
+                    listSetMst.Level4 = item.Level4;
+                    listSetMst.Level5 = item.Level5;
+                    listSetMst.IsDeleted = item.IsDeleted;
+                    listSetMst.IsTitle = item.IsTitle;
+                    listSetMst.SelectType = item.SelectType;
+                    listSetMst.UpdateMachine = CIUtil.GetComputerName();
+                    listSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                }
+
+            }
+            TrackingDataContext.SaveChanges();
+            return true;
+        }
+        
         public Dictionary<string, string> GetByomeiMst(int hpId, List<string> byomeiCds)
         {
             var result = new Dictionary<string, string>();

@@ -3,6 +3,7 @@ using Domain.Converter;
 using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.Online;
+using Domain.Models.Online.QualificationConfirmation;
 using Domain.Models.PatientInfor;
 using Entity.Tenant;
 using Helper.Common;
@@ -55,9 +56,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     }
                     transaction.Commit();
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return idList;
@@ -170,9 +172,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     transaction.Commit();
                     success = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return success;
@@ -223,9 +226,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     transaction.Commit();
                     success = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return success;
@@ -283,9 +287,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     transaction.Commit();
                     success = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return success;
@@ -311,9 +316,10 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     transaction.Commit();
                     success = true;
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
+                    throw;
                 }
             });
         return success;
@@ -445,7 +451,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return result;
     }
 
-    public List<OnlineConfirmationHistoryModel> GetListOnlineConfirmationHistoryModel(Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
+    public List<OnlineConfirmationHistoryModel> GetListOnlineConfirmationHistoryModel(int userId, Dictionary<string, string> onlQuaResFileDict, Dictionary<string, (int confirmationType, string infConsFlg)> onlQuaConfirmationTypeDict)
     {
         var listOnlineConfirmationHistory = new List<OnlineConfirmationHistory>();
         foreach (var item in onlQuaResFileDict)
@@ -457,14 +463,111 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 ConfirmationType = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].confirmationType : 1,
                 InfoConsFlg = onlQuaConfirmationTypeDict.ContainsKey(item.Key) ? onlQuaConfirmationTypeDict[item.Key].infConsFlg : "    ",
                 ConfirmationResult = item.Value,
-                CreateDate = DateTime.Now,
-                CreateId = Session.UserID,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                CreateId = userId,
             });
         }
         var result = listOnlineConfirmationHistory.Select(item => ConvertToModel(item))
                                                   .OrderByDescending(item => item.OnlineConfirmationDate)
                                                   .ToList();
         return result;
+    }
+
+    public List<OnlineConsentModel> GetOnlineConsentModel(long ptId)
+    {
+        var systemDate = CIUtil.GetJapanDateTimeNow();
+        var onlineConsentList = NoTrackingDataContext.OnlineConsents.Where(item => item.PtId == ptId
+                                                                                   && new List<int>() { 1, 2, 3 }.Contains(item.ConsKbn))
+                                                                    .ToList();
+        onlineConsentList = onlineConsentList.Where(item => item.LimitDate >= systemDate).ToList();
+        return onlineConsentList.Select(item => new OnlineConsentModel(item.PtId, item.ConsKbn, item.ConsDate, item.LimitDate)).ToList();
+    }
+
+    public bool UpdateOnlineConsents(int userId, long ptId, List<QCXmlMsgResponse> responseList)
+    {
+        void UpdateOnlineConsent(int consKbn, DateTime consDate, DateTime limitDate, List<OnlineConsent> onlineConsentList)
+        {
+            if (consKbn == 0) return;
+            var onlineConsent = onlineConsentList.FirstOrDefault(x => x.PtId == ptId && x.ConsKbn == consKbn);
+            if (onlineConsent != null)
+            {
+                onlineConsent.ConsDate = consDate;
+                onlineConsent.LimitDate = limitDate;
+                onlineConsent.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                onlineConsent.UpdateId = userId;
+            }
+            else
+            {
+                TrackingDataContext.OnlineConsents.Add(new OnlineConsent()
+                {
+                    PtId = ptId,
+                    ConsKbn = consKbn,
+                    ConsDate = consDate,
+                    LimitDate = limitDate,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    CreateId = userId,
+                });
+            }
+            TrackingDataContext.SaveChanges();
+        }
+
+        bool successed = true;
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
+            {
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
+                {
+                    foreach (var confirmation in from response in responseList
+                                                 where response.MessageBody.ResultList != null && response.MessageBody.ResultList.ResultOfQualificationConfirmation != null
+                                                 from confirmation in response.MessageBody.ResultList.ResultOfQualificationConfirmation
+                                                 select confirmation)
+                    {
+                        var onlineConsentList = TrackingDataContext.OnlineConsents.Where(item => item.PtId == ptId && new List<int>() { 1, 2, 3, 4 }.Contains(item.ConsKbn)).ToList();
+                        if (confirmation.SpecificHealthCheckupsInfoConsFlg.AsInteger() == 1)
+                        {
+                            int consKbn = 2;
+                            DateTime consDate = DateTime.SpecifyKind(CIUtil.StrDateToDate(confirmation.SpecificHealthCheckupsInfoConsTime), DateTimeKind.Utc);
+                            DateTime limitDate = DateTime.SpecifyKind(CIUtil.StrDateToDate(confirmation.SpecificHealthCheckupsInfoAvailableTime), DateTimeKind.Utc);
+                            UpdateOnlineConsent(consKbn, consDate, limitDate, onlineConsentList);
+                        }
+
+                        if (confirmation.PharmacistsInfoConsFlg.AsInteger() == 1)
+                        {
+                            int consKbn = 1;
+                            DateTime consDate = DateTime.SpecifyKind(CIUtil.StrDateToDate(confirmation.PharmacistsInfoConsTime), DateTimeKind.Utc);
+                            DateTime limitDate = DateTime.SpecifyKind(CIUtil.StrDateToDate(confirmation.PharmacistsInfoAvailableTime), DateTimeKind.Utc);
+                            UpdateOnlineConsent(consKbn, consDate, limitDate, onlineConsentList);
+                        }
+
+                        if (confirmation.DiagnosisInfoConsFlg.AsInteger() == 1)
+                        {
+                            int consKbn = 3;
+                            DateTime consDate = DateTime.SpecifyKind(CIUtil.StrDateToDate(confirmation.DiagnosisInfoConsTime), DateTimeKind.Utc);
+                            DateTime limitDate = DateTime.SpecifyKind(CIUtil.StrDateToDate(confirmation.DiagnosisInfoAvailableTime), DateTimeKind.Utc);
+                            UpdateOnlineConsent(consKbn, consDate, limitDate, onlineConsentList);
+                        }
+
+                        if (confirmation.OperationInfoConsFlg.AsInteger() == 1)
+                        {
+                            int consKbn = 4;
+                            DateTime consDate = DateTime.SpecifyKind(CIUtil.StrDateToDate(confirmation.OperationInfoConsTime), DateTimeKind.Utc);
+                            DateTime limitDate = DateTime.SpecifyKind(CIUtil.StrDateToDate(confirmation.OperationInfoAvailableTime), DateTimeKind.Utc);
+                            UpdateOnlineConsent(consKbn, consDate, limitDate, onlineConsentList);
+                        }
+                    }
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            });
+        return successed;
     }
 
 

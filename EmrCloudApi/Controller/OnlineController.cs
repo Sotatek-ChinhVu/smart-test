@@ -11,6 +11,7 @@ using System.Xml;
 using UseCase.Core.Sync;
 using UseCase.Online;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
+using UseCase.Online.GetOnlineConsent;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
 using UseCase.Online.InsertOnlineConfirmation;
 using UseCase.Online.InsertOnlineConfirmHistory;
@@ -18,6 +19,7 @@ using UseCase.Online.SaveAllOQConfirmation;
 using UseCase.Online.SaveOnlineConfirmation;
 using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdateOnlineConfirmationHistory;
+using UseCase.Online.UpdateOnlineConsents;
 using UseCase.Online.UpdateOnlineHistoryById;
 using UseCase.Online.UpdateOnlineInRaiinInf;
 using UseCase.Online.UpdateOQConfirmation;
@@ -186,13 +188,25 @@ public class OnlineController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetListOnlineConfirmationHistoryByPtId)]
     public ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>> GetListOnlineConfirmationHistoryByPtId([FromQuery] GetListOnlineConfirmationHistoryByPtIdRequest request)
     {
-        var input = new GetListOnlineConfirmationHistoryModelInputData(request.PtId, new(), new());
+        var input = new GetListOnlineConfirmationHistoryModelInputData(UserId, request.PtId, new(), new());
         var output = _bus.Handle(input);
 
         var presenter = new GetListOnlineConfirmationHistoryModelPresenter();
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListOnlineConfirmationHistoryModelResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetOnlineConsent)]
+    public ActionResult<Response<GetOnlineConsentResponse>> GetOnlineConsent([FromQuery] GetOnlineConsentRequest request)
+    {
+        var input = new GetOnlineConsentInputData(request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetOnlineConsentPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetOnlineConsentResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.GetListOnlineConfirmationHistoryModel)]
@@ -203,7 +217,7 @@ public class OnlineController : AuthorizeControllerBase
         {
             onlQuaConfirmationTypeDict.Add(item.Key, (item.Value.ConfirmationType, item.Value.InfConsFlg));
         }
-        var input = new GetListOnlineConfirmationHistoryModelInputData(0, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
+        var input = new GetListOnlineConfirmationHistoryModelInputData(UserId, 0, request.OnlQuaResFileDict, onlQuaConfirmationTypeDict);
         var output = _bus.Handle(input);
 
         var presenter = new GetListOnlineConfirmationHistoryModelPresenter();
@@ -231,6 +245,18 @@ public class OnlineController : AuthorizeControllerBase
             response.Status = 2;
         }
         return new ActionResult<Response<ConvertXmlToQCXmlMsgResponse>>(response);
+    }
+
+    [HttpPost(ApiPath.UpdateOnlineConsents)]
+    public ActionResult<Response<UpdateOnlineConsentsResponse>> UpdateOnlineConsents([FromBody] UpdateOnlineConsentsRequest request)
+    {
+        var input = new UpdateOnlineConsentsInputData(UserId, request.PtId, request.ResponseList);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOnlineConsentsPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOnlineConsentsResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.UpdateOnlineConfirmation)]

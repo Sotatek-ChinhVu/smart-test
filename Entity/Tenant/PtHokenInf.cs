@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Xml.Linq;
 
 namespace Entity.Tenant
 {
@@ -7,6 +9,7 @@ namespace Entity.Tenant
     /// 患者保険情報
     /// </summary>
     [Table("PT_HOKEN_INF")]
+    [Index(nameof(HpId), nameof(PtId), nameof(HokenId), nameof(HokenKbn), nameof(Houbetu), Name = "PT_HOKEN_INF_IDX01")]
     public class PtHokenInf : EmrCloneable<PtHokenInf>
     {
         /// <summary>

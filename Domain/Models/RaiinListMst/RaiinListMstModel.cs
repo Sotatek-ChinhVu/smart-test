@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.RaiinListMst
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.RaiinListMst
 {
     public class RaiinListMstModel
     {
@@ -13,6 +15,7 @@
             KbnCdDetailMax = kbnCdDetailMax;
         }
 
+        [JsonConstructor]
         public RaiinListMstModel(int grpId, string grpName, int sortNo, int isDeleted, List<RaiinListDetailModel> raiinListDetailsList)
         {
             GrpId = grpId;

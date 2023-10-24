@@ -1,26 +1,36 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Domain.Models.SetGenerationMst;
+﻿using Domain.Models.SetGenerationMst;
 using Domain.Models.SetMst;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
+using Helper.Extension;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using Microsoft.Extensions.Caching.Memory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
     public class SetGenerationMstRepository : RepositoryBase, ISetGenerationMstRepository
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly string _computerName = "SmartKarte";
-        public SetGenerationMstRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
+        private readonly StackExchange.Redis.IDatabase _cache;
+        private readonly string key;
+        private readonly IConfiguration _configuration;
+        public SetGenerationMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
-            _memoryCache = memoryCache;
+            key = GetCacheKey() + "SetGenerationMst";
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         private IEnumerable<SetGenerationMstModel> ReloadCache()
@@ -33,21 +43,36 @@ namespace Infrastructure.Repositories
                         s.IsDeleted
                     )
                   ).ToList();
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetPriority(CacheItemPriority.Normal);
-            _memoryCache.Set(GetCacheKey(), setGenerationMstList, cacheEntryOptions);
+
+            var json = JsonSerializer.Serialize(setGenerationMstList);
+            _cache.StringSet(key, json);
 
             return setGenerationMstList;
         }
 
         public IEnumerable<SetGenerationMstModel> GetList(int hpId, int sinDate)
         {
-            if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetGenerationMstModel>? setGenerationMstList))
+            IEnumerable<SetGenerationMstModel>? setGenerationMstList =
+
+Enumerable.Empty<SetGenerationMstModel>();
+            if (!_cache.KeyExists(key))
             {
                 setGenerationMstList = ReloadCache();
             }
+            else
+            {
+                setGenerationMstList = ReadCache();
+            }
 
             return setGenerationMstList!.Where(s => s.StartDate <= sinDate).OrderByDescending(x => x.StartDate).ToList();
+        }
+
+        private List<SetGenerationMstModel> ReadCache()
+        {
+            var results = _cache.StringGet(key);
+            var json = results.AsString();
+            var datas = JsonSerializer.Deserialize<List<SetGenerationMstModel>>(json);
+            return datas ?? new();
         }
 
         public int GetGenerationId(int hpId, int sinDate)
@@ -62,9 +87,9 @@ namespace Infrastructure.Repositories
                     generationId = generation.GenerationId;
                 }
             }
-            catch
+            catch (Exception)
             {
-                return 0;
+                throw;
             }
             return generationId;
         }
@@ -137,7 +162,7 @@ namespace Infrastructure.Repositories
                 if (ListDataUpdate.Count > 0)
                 {
                     TrackingDataContext.SetGenerationMsts.UpdateRange(ListDataUpdate);
-                    _memoryCache.Remove(GetCacheKey());
+                    ReloadCache();
                     return TrackingDataContext.SaveChanges() > 0;
                 }
                 return false;
@@ -165,7 +190,7 @@ namespace Infrastructure.Repositories
             itemAdd.UpdateMachine = "SmartKarte";
             TrackingDataContext.SetGenerationMsts.Add(itemAdd);
             var checkAdd = TrackingDataContext.SaveChanges();
-            _memoryCache.Remove(GetCacheKey());
+            ReloadCache();
             if (checkAdd == 0)
             {
                 return null;
@@ -243,10 +268,8 @@ namespace Infrastructure.Repositories
                     x.GenerationId = targetGenerationId;
                     x.CreateDate = CIUtil.GetJapanDateTimeNow();
                     x.CreateId = userId;
-                    x.CreateMachine = _computerName;
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     x.UpdateId = userId;
-                    x.UpdateMachine = _computerName;
                 });
                 if (setMstsBackuped.Any())
                 {
@@ -262,9 +285,9 @@ namespace Infrastructure.Repositories
                 }
                 return new GetCountProcessModel(setMstsBackuped.Count, setKbnMstSource.Count, setByomeisSource.Count, setKarteInfsSource.Count, setKarteImgInfsSource.Count, setOdrInfsSource.Count, setOdrInfDetailsSource.Count, setOdrInfCmtSource.Count, ListSetMstNew, listMstDict);
             }
-            catch
+            catch (Exception)
             {
-                return new GetCountProcessModel();
+                throw;
             }
         }
 
@@ -283,10 +306,8 @@ namespace Infrastructure.Repositories
                     x.GenerationId = targetGenerationId;
                     x.CreateDate = CIUtil.GetJapanDateTimeNow();
                     x.CreateId = userId;
-                    x.CreateMachine = _computerName;
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     x.UpdateId = userId;
-                    x.UpdateMachine = _computerName;
                 });
                 if (setMstsBackuped.Any())
                 {
@@ -296,9 +317,9 @@ namespace Infrastructure.Repositories
                 }
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -314,10 +335,8 @@ namespace Infrastructure.Repositories
                 setKbnMst.GenerationId = targetGenerationId;
                 setKbnMst.CreateDate = CIUtil.GetJapanDateTimeNow();
                 setKbnMst.CreateId = userId;
-                setKbnMst.CreateMachine = _computerName;
                 setKbnMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 setKbnMst.UpdateId = userId;
-                setKbnMst.UpdateMachine = _computerName;
             });
 
             if (setKbnMstSource.Any())
@@ -328,10 +347,10 @@ namespace Infrastructure.Repositories
                     TrackingDataContext.SaveChanges();
                     return true;
                 }
-                catch
+                catch (Exception)
                 {
                     TrackingDataContext.SetKbnMsts.RemoveRange(setKbnMstSource);
-                    return false;
+                    throw;
                 }
             }
             return false;
@@ -351,10 +370,8 @@ namespace Infrastructure.Repositories
                     x.SetCd = setMstDict[x.SetCd].SetCd;
                     x.CreateDate = CIUtil.GetJapanDateTimeNow();
                     x.CreateId = userId;
-                    x.CreateMachine = _computerName;
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     x.UpdateId = userId;
-                    x.UpdateMachine = _computerName;
                 });
                 if (setByomeisSource.Any())
                 {
@@ -364,9 +381,9 @@ namespace Infrastructure.Repositories
                         TrackingDataContext.SaveChanges();
                         return true;
                     }
-                    catch {
-                        TrackingDataContext.SetByomei.RemoveRange(setByomeisSource);
-                        return false;
+                    catch (Exception)
+                    {
+                        throw;
                     }
                 }
 
@@ -392,10 +409,8 @@ namespace Infrastructure.Repositories
                     x.SetCd = setMstDict[x.SetCd].SetCd;
                     x.CreateDate = CIUtil.GetJapanDateTimeNow();
                     x.CreateId = userId;
-                    x.CreateMachine = _computerName;
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     x.UpdateId = userId;
-                    x.UpdateMachine = _computerName;
                 });
                 if (setKarteInfsSource.Any())
                 {
@@ -408,14 +423,15 @@ namespace Infrastructure.Repositories
                     catch
                     {
                         TrackingDataContext.SetKarteInf.RemoveRange(setKarteInfsSource);
+                        TrackingDataContext.SaveChanges();
                         return false;
                     }
                 }
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -444,15 +460,16 @@ namespace Infrastructure.Repositories
                     catch
                     {
                         TrackingDataContext.SetKarteImgInf.RemoveRange(setKarteImgInfsSource);
+                        TrackingDataContext.SaveChanges();
                         return false;
                     }
                 }
 
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -471,10 +488,8 @@ namespace Infrastructure.Repositories
                     x.Id = 0;
                     x.CreateDate = CIUtil.GetJapanDateTimeNow();
                     x.CreateId = userId;
-                    x.CreateMachine = _computerName;
                     x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     x.UpdateId = userId;
-                    x.UpdateMachine = _computerName;
                 });
                 if (setOdrInfsSource.Any())
                 {
@@ -487,15 +502,16 @@ namespace Infrastructure.Repositories
                     catch
                     {
                         TrackingDataContext.SetOdrInf.RemoveRange(setOdrInfsSource);
+                        TrackingDataContext.SaveChanges();
                         return false;
                     }
                 }
 
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -523,15 +539,16 @@ namespace Infrastructure.Repositories
                     catch
                     {
                         TrackingDataContext.SetOdrInfDetail.RemoveRange(setOdrInfDetailsSource);
+                        TrackingDataContext.SaveChanges();
                         return false;
                     }
                 }
 
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -559,15 +576,16 @@ namespace Infrastructure.Repositories
                     catch
                     {
                         TrackingDataContext.SetOdrInfCmt.RemoveRange(setOdrInfCmtSource);
+                        TrackingDataContext.SaveChanges();
                         return false;
                     }
                 }
 
                 return false;
             }
-            catch
+            catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
@@ -663,13 +681,13 @@ namespace Infrastructure.Repositories
                     TrackingDataContext.SetKarteImgInf.RemoveRange(targetSetKarteImgInfs);
                     TrackingDataContext.SetOdrInfDetail.RemoveRange(targetSetOdrInfDetails);
                     TrackingDataContext.SaveChanges();
-                    _memoryCache.Remove(GetCacheKey());
+                    ReloadCache();
                     // clone data from newest to restore item
                     return new AddSetSendaiModel(itemNewest.GenerationId, restoreGenerationId);
                 }
-                catch
+                catch (Exception)
                 {
-                    return null;
+                    throw;
                 }
             }
 

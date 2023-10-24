@@ -1,6 +1,7 @@
 ﻿using Amazon.S3.Model.Internal.MarshallTransformations;
 using EmrCalculateApi.Interface;
 using Entity.Tenant;
+using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -12,6 +13,7 @@ namespace EmrCalculateApi.Implementation
         public SystemConfigProvider(ITenantProvider tenantProvider)
         {
             _systemConfigs = tenantProvider.GetNoTrackingDataContext().SystemConfs.ToList();
+            tenantProvider.DisposeDataContext();
         }
 
         public int GetChokiDateRange()

@@ -1,11 +1,14 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Receipt;
+using EmrCloudApi.Presenters.Reception;
 using EmrCloudApi.Presenters.SinKoui;
 using EmrCloudApi.Requests.Receipt;
 using EmrCloudApi.Requests.Receipt.RequestItem;
+using EmrCloudApi.Requests.Reception;
 using EmrCloudApi.Requests.SinKoui;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Receipt;
+using EmrCloudApi.Responses.Reception;
 using EmrCloudApi.Responses.SinKoui;
 using EmrCloudApi.Services;
 using Helper.Extension;
@@ -49,6 +52,7 @@ using UseCase.Receipt.SaveReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ValidateCreateUKEFile;
+using UseCase.Reception.GetNextUketukeNoBySetting;
 using UseCase.SinKoui.GetSinKoui;
 
 namespace EmrCloudApi.Controller;
@@ -535,8 +539,6 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<CheckExistsReceInfResponse>>(presenter.Result);
     }
 
-
-
     [HttpGet(ApiPath.CheckExistSyobyoKeika)]
     public ActionResult<Response<CheckExistSyobyoKeikaResponse>> CheckExistSyobyoKeika([FromQuery] CheckExistSyobyoKeikaRequest request)
     {
@@ -547,6 +549,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<CheckExistSyobyoKeikaResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetNextUketukeNoBySetting)]
+    public ActionResult<Response<GetNextUketukeNoBySettingResponse>> GetNextUketukeNoBySetting([FromQuery] GetNextUketukeNoBySettingRequest request)
+    {
+        var input = new GetNextUketukeNoBySettingInputData(HpId, request.Sindate, request.InfKbn, request.KaId, request.UketukeMode, request.DefaultUkeNo);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetNextUketukeNoBySettingPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetNextUketukeNoBySettingResponse>>(presenter.Result);
     }
 
     #region Private function

@@ -83,7 +83,7 @@ namespace Infrastructure.Repositories
                             SinDate = monshinInfor.SinDate,
                             Text = model.Text,
                             Rtext = monshinInfor.Rtext,
-                            GetKbn = 0,
+                            GetKbn = model.GetKbn,
                             IsDeleted = monshinInfor.IsDeleted,
                             CreateId = monshinInfor.CreateId,
                             CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
@@ -105,7 +105,7 @@ namespace Infrastructure.Repositories
                             SinDate = monshinInfor.SinDate,
                             Text = monshinInfor.Text,
                             Rtext = monshinInfor.Rtext,
-                            GetKbn = monshinInfor.GetKbn,
+                            GetKbn = model.GetKbn,
                             IsDeleted = 1,
                             CreateId = monshinInfor.CreateId,
                             CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
@@ -139,7 +139,7 @@ namespace Infrastructure.Repositories
             }
             catch (Exception)
             {
-                return false;
+                throw;
             }
         }
 
