@@ -28,7 +28,7 @@ namespace Interactor.Online
 
                 if (inputData.QCBIDResponse == null ||
                     inputData.QCBIDResponse.MessageHeader == null ||
-                    inputData.QCBIDResponse.MessageHeader.ReceptionNumber != inputData.QCBIDRequest.MessageBody.ReceptionNumber)
+                    inputData.QCBIDResponse.MessageHeader.ReceptionNumber != inputData.ReceptionNumber)
                 {
                     return new UpdateOnlineConfirmationOutputData(UpdateOnlineConfirmationStatus.InvalidReceptionNumber, message);
                 }
