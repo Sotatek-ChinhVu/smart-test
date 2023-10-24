@@ -7683,6 +7683,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     continue;
                 }
                 renkeiEntity.Param = renkeiModel.Param;
+                renkeiEntity.RenkeiId = renkeiModel.RenkeiId;
                 renkeiEntity.PtNumLength = renkeiModel.PtNumLength;
                 renkeiEntity.TemplateId = renkeiModel.TemplateId;
                 renkeiEntity.IsInvalid = renkeiModel.IsInvalid;
@@ -7722,6 +7723,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     pathEntity.Machine = pathModel.Machine;
                     pathEntity.CharCd = pathModel.CharCd;
                     pathEntity.IsInvalid = pathModel.IsInvalid;
+                    pathEntity.Param = pathModel.Param;
                     pathEntity.Biko = pathModel.Biko;
                     pathEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     pathEntity.UpdateId = userId;
