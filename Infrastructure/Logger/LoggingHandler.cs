@@ -102,42 +102,52 @@ namespace Infrastructure.Logger
 
         public bool WriteAuditLog(string path, string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType)
         {
-            var domain = _tenantProvider.GetDomainFromHeader();
-            if (domain.Contains("uat-tenant.smartkarte.org"))
+            try
             {
-                domain = "UAT";
+                var domain = _tenantProvider.GetDomainFromHeader();
+                if (domain.Contains("uat-tenant.smartkarte.org"))
+                {
+                    domain = "UAT";
+                }
+                else if (domain.Contains("smartkarte-api.sotatek.works"))
+                {
+                    domain = "SMARTKARTE";
+                }
+                else
+                {
+                    domain = string.Empty;
+                }
+
+                AuditLog audit = new AuditLog()
+                {
+                    Domain = domain,
+                    HpId = _tenantProvider.GetHpId(),
+                    DepartmentId = _tenantProvider.GetDepartmentId(),
+                    UserId = _tenantProvider.GetUserId(),
+                    TenantId = domain,
+                    Path = path,
+                    RequestInfo = requestInfo,
+                    LogDate = CIUtil.GetJapanDateTimeNow(),
+                    EventCd = eventCd,
+                    PtId = ptId,
+                    RaiinNo = raiinNo,
+                    SinDay = sinDay,
+                    Desciption = description,
+                    LogType = logType,
+                    LoginKey = _tenantProvider.GetLoginKeyFromHeader()
+                };
+
+                AuditLogs.Add(audit);
+
+                Console.WriteLine("domain is: " + domain);
+                return SaveChanges() > 0;
             }
-            else if (domain.Contains("smartkarte-api.sotatek.works"))
+            catch (Exception ex)
             {
-                domain = "SMARTKARTE";
-            }
-            else
-            {
-                domain = string.Empty;
+                Console.WriteLine("EXCEPTION: " + ex);
+                throw;
             }
 
-            AuditLog audit = new AuditLog()
-            {
-                Domain = domain,
-                HpId = _tenantProvider.GetHpId(),
-                DepartmentId = _tenantProvider.GetDepartmentId(),
-                UserId = _tenantProvider.GetUserId(),
-                TenantId = domain,
-                Path = path,
-                RequestInfo = requestInfo,
-                LogDate = CIUtil.GetJapanDateTimeNow(),
-                EventCd = eventCd,
-                PtId = ptId,
-                RaiinNo = raiinNo,
-                SinDay = sinDay,
-                Desciption = description,
-                LogType = logType,
-                LoginKey = _tenantProvider.GetLoginKeyFromHeader()
-            };
-
-            AuditLogs.Add(audit);
-
-            return SaveChanges() > 0;
         }
 
         public bool WriteAuditLog(List<AuditLogModel> auditLogList)
